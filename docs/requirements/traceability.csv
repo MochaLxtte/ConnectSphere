@@ -1,0 +1,21 @@
+feature_id,feature_name,story_ids,acceptance_criterion_ids,implementation_path,test_case_ids,automated_test_path,status,source
+CF-01,User Authorisation and Authentication,KAN-25,,,TC-01,,Planned; not implemented,Week 4 Project Instructions.docx
+CF-02,Event Request Creation,KAN-31; KAN-6,,,TC-02,,Planned; not implemented,Week 4 Project Instructions.docx
+CF-03,Draft Event Requests,KAN-4; KAN-34,,,TC-03,,Planned; not implemented,Week 4 Project Instructions.docx
+CF-04,Event Review and Approval,KAN-33; KAN-27; KAN-36,,,TC-04,,Planned; not implemented,Week 4 Project Instructions.docx
+CF-05,Coordinator Assignment,,,,TC-05,,Planned; not implemented,Week 4 Project Instructions.docx
+CF-06,Event Status Management,KAN-16,,,TC-06,,Planned; not implemented,Week 4 Project Instructions.docx
+CF-07,Event Information Management,KAN-34 (draft editing only),,,TC-07,,Planned; not implemented,Week 4 Project Instructions.docx
+CF-08,Venue Catalogue,,,,TC-08,,Planned; not implemented,Week 4 Project Instructions.docx
+CF-09,Venue Availability Calendar,,,,TC-09,,Planned; not implemented,Week 4 Project Instructions.docx
+CF-10,Venue Search and Filtering,,,,TC-10,,Planned; not implemented,Week 4 Project Instructions.docx
+CF-11,Venue Suitability Checking,,,,TC-11,,Planned; not implemented,Week 4 Project Instructions.docx
+CF-12,Venue Booking Request,,,,TC-12,,Planned; not implemented,Week 4 Project Instructions.docx
+CF-13,Venue Booking Approval,,,,TC-13,,Planned; not implemented,Week 4 Project Instructions.docx
+CF-14,Booking Conflict Detection,,,,TC-14,,Planned; not implemented,Week 4 Project Instructions.docx
+CF-15,Equipment Request Management,,,,TC-15,,Planned; not implemented,Week 4 Project Instructions.docx
+CF-16,Equipment Availability Checking,,,,TC-16,,Planned; not implemented,Week 4 Project Instructions.docx
+CF-17,Equipment Reservation,,,,TC-17,,Planned; not implemented,Week 4 Project Instructions.docx
+CF-18,Attendee Registration,,,,TC-18,,Planned; not implemented,Week 4 Project Instructions.docx
+CF-19,Event Change Requests,,,,TC-19,,Planned; not implemented,Week 4 Project Instructions.docx
+CF-20,Notification System,,,,TC-20,,Planned; not implemented,Week 4 Project Instructions.docx
