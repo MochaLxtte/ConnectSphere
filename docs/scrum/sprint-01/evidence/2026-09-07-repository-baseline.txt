@@ -1,0 +1,19 @@
+﻿ConnectSphere local repository baseline
+Captured at: 2026-09-07T03:25:23.0417329+08:00
+Source: local Git commands
+Evidence ID: E17
+
+Command: git log -1 --format="Commit: %H%nCommit time: %cI%nSubject: %s%nTree: %T"
+Commit: db6930dfb052a0f51626457f32dcb9bfa484a77a
+Commit time: 2026-09-07T02:58:37+08:00
+Subject: chore: scaffold ConnectSphere project
+Tree: 05c6e4a6744f2c4d100d8efbd437ca030fa6202a
+
+Command: git branch --show-current
+main
+
+Command: git remote get-url origin
+https://github.com/MochaLxtte/ConnectSphere.git
+
+Scope: local repository metadata. Remote commit availability, PR review and CI results require separate evidence. This baseline does not establish story completion.
+The Sprint 1 documentation was uncommitted at capture time and is not included in the recorded HEAD commit.

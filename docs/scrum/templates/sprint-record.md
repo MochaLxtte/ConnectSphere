@@ -1,6 +1,6 @@
 # Sprint record template
 
-Copy into a sprint folder and fill with actual records. Remove unused prompts; do not invent retrospective evidence.
+Copy into a sprint folder and complete it as the sprint progresses. Remove unused prompts and record retrospective findings after the meeting.
 
 ## Planning
 

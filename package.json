@@ -12,6 +12,7 @@
   ],
   "scripts": {
     "setup": "node scripts/setup.mjs",
+    "submission:prepare": "node scripts/prepare-submission.mjs",
     "dev": "concurrently -k -n api,web -c cyan,green \"npm run dev -w @connectsphere/backend\" \"npm run dev -w @connectsphere/frontend\"",
     "build": "npm run build --workspaces",
     "typecheck": "tsc -p tsconfig.tools.json && npm run typecheck --workspaces",

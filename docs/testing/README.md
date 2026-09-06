@@ -18,6 +18,8 @@ Follow the README for database and browser prerequisites. Treat the exit status 
 
 [test-cases.csv](test-cases.csv) contains scenario outlines for all 20 release features. Every row starts as **Not executed** and must be refined into concrete preconditions, actions, expected outcomes and acceptance-criterion links before it becomes a test case. Questions such as interval boundaries and registration eligibility must reference a recorded decision.
 
+Sprint 1 has [33 proposed acceptance scenarios](../scrum/sprint-01/sprint-backlog.md#acceptance-test-plan), each linked to a specific acceptance criterion. Review these alongside the story cards, then link the implemented tests and actual results in the [test evidence record](test-evidence.md). The release-wide CSV remains the coverage index for all 20 core features.
+
 Choose the test level for the behavior being verified:
 
 - Unit tests for domain validation, permitted state transitions and suitability calculations.
@@ -31,5 +33,7 @@ Add the actual test file and acceptance-criterion ID to [traceability.csv](../re
 ## Recording a test run
 
 Keep concise evidence containing the date, commit SHA, environment, command or manual steps, actual result, report link, and any failures or exclusions. Link CI runs and store exports needed for the course submission. Do not commit credentials, attendee data, `node_modules`, or bulky generated browser artifacts.
+
+Test documents, the traceability matrix and curated results are assembled into **submission folder 3**; Sprint 1 scenario details remain linked in folder 4. Executable test code is included with the software in folder 6. See the [submission checklist](../submission/checklist.md).
 
 The excellent course rubric asks for 100% coverage unless infeasible and explained. Agree what coverage measures apply, report the measured result, and explain gaps. Line coverage alone cannot demonstrate all requirements or concurrency behavior; the release traceability matrix must also be complete.

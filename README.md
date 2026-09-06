@@ -47,7 +47,7 @@ See [architecture](docs/architecture/README.md) and the [API contract](docs/arch
 
 ## Team handoff
 
-Start with the [Sprint 1 workstreams](docs/scrum/sprint-01/README.md). They retain the planning conversation's Jira allocation:
+Start with the [Sprint 1 plan](docs/scrum/sprint-01/README.md). The following workstreams were agreed at the planning meeting on 6 September 2026:
 
 | Workstream | Jira items              | Starting areas                                |
 | ---------- | ----------------------- | --------------------------------------------- |
@@ -58,7 +58,7 @@ Start with the [Sprint 1 workstreams](docs/scrum/sprint-01/README.md). They reta
 | Dev 5      | KAN-36, KAN-16          | Decisions and visible event status            |
 | Dev 6      | KAN-24, optional KAN-30 | Database, schema coordination and integration |
 
-Read [CONTRIBUTING.md](CONTRIBUTING.md) before the first feature branch. The team should agree on authentication, event field validation, coordinator visibility and transitions using the [open questions](docs/requirements/assumptions-and-questions.md). The scaffold makes proposals explicit; no customer clarification, estimate, meeting record, or story completion has been invented.
+Read [CONTRIBUTING.md](CONTRIBUTING.md) before the first feature branch. Resolve authentication, event field validation, coordinator visibility and transitions using the [open questions](docs/requirements/assumptions-and-questions.md). Proposed acceptance criteria and implementation details remain subject to team review and customer clarification.
 
 ## Checks
 
@@ -97,22 +97,23 @@ npm run test:e2e
 
 The browser suite covers infrastructure and placeholder navigation. Expand tests around real acceptance criteria as features are delivered. GitHub Actions repeats the checks with its own PostgreSQL service and uploads coverage/browser evidence. See [testing guidance](docs/testing/README.md).
 
-## Create your GitHub repository
+## Join the repository
 
-Create an empty GitHub repository, then run the following from this folder. Replace `YOUR_ORG/YOUR_REPO` with its actual path before running the remote command:
+Clone [ConnectSphere](https://github.com/MochaLxtte/ConnectSphere), then follow the setup instructions above:
 
 ```sh
-git init -b main
-git add .
-git commit -m "chore: scaffold ConnectSphere project"
-git remote add origin https://github.com/YOUR_ORG/YOUR_REPO.git
-git push -u origin main
+git clone https://github.com/MochaLxtte/ConnectSphere.git
+cd ConnectSphere
 ```
 
-The scaffold creation does not create a GitHub repository, commit, or push. Invite teammates, then configure `main` to require PR review and the CI `verify` check once the first workflow has run. Keep coursework exports and recording links in the appropriate docs area. Instructor access and eLearn submission are team actions described in the [submission checklist](docs/submission/checklist.md).
+Invite teammates and configure `main` to require PR review and the CI `verify` check once the first workflow has run. Follow [CONTRIBUTING.md](CONTRIBUTING.md) for feature branches and reviews.
 
-## Source and scope
+## Course deliverables
 
-The baseline is the [shared initial sprint planning conversation](https://chatgpt.com/share/6a9da8d8-0dcc-83ec-925e-d798f4974edb), `Week 1 Customer Briefing.docx`, and `Week 4 Project Instructions.docx` supplied for this task. Week 4 defines the 20 first-release features; Week 1 describes the wider system. Source documents have not been copied into this repository. Vue/Express/PostgreSQL is the user's selected stack; architecture and schema details are scaffold design decisions. Course instructions are documented as project requirements and future deliverables, not executed as external actions.
+The [submission checklist](docs/submission/checklist.md) maps the submission requirements to folders **1–7**, with project records and outstanding evidence. Keep working records in `docs/`; run `npm run submission:prepare` to assemble a fresh numbered snapshot in `dist/submission-.../`. Complete the checklist before creating the final ZIP. Sprint 1 records are in [docs/scrum/sprint-01](docs/scrum/sprint-01/README.md).
 
-Contributors and repository URL can be added after the team creates the repository. No public distribution license has been chosen for this coursework scaffold.
+## Project context
+
+The first release covers 20 core features across connected event workflows. Sprint 1 decisions are recorded in the [planning notes](docs/scrum/sprint-01/planning.md). The team selected Vue, Express and PostgreSQL; the initial architecture and schema provide a starting point for implementation.
+
+Team members and Scrum roles are maintained in the Sprint 1 plan. No public distribution license has been chosen for this coursework project.

@@ -24,7 +24,7 @@ Use the README for database/browser prerequisites. Run integration tests when AP
 - Once a migration has been shared or applied by others, add a new migration instead of rewriting it. Coordinate schema changes and use fictional seed data.
 - Commit configuration examples, not secrets or personal data. Keep dependencies, build outputs and local test artifacts out of source control.
 - Include a brief explanation of substantive AI-assisted code in the PR and verify it. Every contributor must understand and be able to justify their changes.
-- Preserve actual Scrum evidence as work happens. Never backfill invented estimates, meetings, reviews or passing test results.
+- Record Scrum decisions, meeting notes and test results as work happens. Keep planned activities separate from completed work and attach supporting evidence.
 
 ## Pull request notes
 

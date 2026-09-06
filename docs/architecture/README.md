@@ -1,6 +1,6 @@
 # Architecture
 
-ConnectSphere uses one Git repository, one Vue frontend, one Express backend, and one PostgreSQL database. The backend is a modular monolith: domain modules run in the same process and database transaction boundary. This follows the [shared sprint planning conversation](https://chatgpt.com/share/6a9da8d8-0dcc-83ec-925e-d798f4974edb). Vue + Express + PostgreSQL was selected by the user while creating this scaffold.
+ConnectSphere uses one Git repository, one Vue frontend, one Express backend, and one PostgreSQL database. The backend is a modular monolith: domain modules run in the same process and database transaction boundary. The team selected this structure during Sprint 1 planning to keep development and integration manageable across the six workstreams.
 
 ## C4 system context
 
