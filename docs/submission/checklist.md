@@ -54,7 +54,7 @@ For final submission, review the contents, then ZIP **the seven numbered folders
 - [ ] Every sprint has starting scope, estimation records, an ending board and burndown, review outcomes and retrospective actions.
 - [ ] Final-sprint planning/review/retro/standup recording links work for the instructors; video files are excluded.
 - [ ] The self-contained PDF slide deck uses the prescribed course template.
-- [ ] Setup and checks reproduce from folder 6 in a clean environment; the run README, test code and CI scripts are present.
+- [ ] Setup and checks reproduce from folder 6 in a clean environment; the run README, test code and CI scripts are present. Supabase prerequisites and hosted setup verification are documented separately from isolated database tests; credentials are excluded.
 - [ ] The intended release is committed and pushed; the package record and folder 6 match that commit.
 - [ ] Folder 7 contains the repository link and both instructors' access has been verified.
 - [ ] Missing record fields are completed or explained; no template prompts are presented as finished evidence.

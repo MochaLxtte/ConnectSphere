@@ -2,7 +2,7 @@
 
 The first release covers the 20 core features below. This directory records the release scope, workflow requirements and team decisions.
 
-The initial Jira workstreams were agreed at the planning meeting on 6 September 2026 and are recorded in the [Sprint 1 plan](../scrum/sprint-01/README.md). The team selected Vue 3 with TypeScript and Vite, Express with TypeScript, and PostgreSQL. Further architecture choices will be recorded as implementation decisions.
+The initial Jira workstreams were agreed at the planning meeting on 6 September 2026 and are recorded in the [Sprint 1 plan](../scrum/sprint-01/README.md). The stack is Vue 3 with TypeScript and Vite, Express with TypeScript, and PostgreSQL. On 8 September 2026, the team selected Supabase to host PostgreSQL; see the [dated database decision](assumptions-and-questions.md#8-september-2026--hosted-postgresql). The authentication approach remains to be agreed under KAN-25.
 
 This repository starts with infrastructure and health checks. **None of the business features below is implemented by the scaffold.** A module folder, route placeholder, database table, or passing health check is not evidence that a story is complete.
 

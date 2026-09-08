@@ -1,10 +1,11 @@
 name: connectsphere
+# Optional isolated PostgreSQL for local tests; application development uses Supabase.
 services:
   db:
     image: postgres:17
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-connectsphere}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Run npm run setup first}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-connectsphere_local}
       POSTGRES_DB: ${POSTGRES_DB:-connectsphere}
     ports:
       - '127.0.0.1:${POSTGRES_PORT:-5432}:5432'

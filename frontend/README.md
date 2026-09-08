@@ -9,7 +9,7 @@ npm test --workspace frontend
 npm run build --workspace frontend
 ```
 
-The dev server runs at `http://127.0.0.1:5173` and fails clearly if that port is already in use. Requests to `/api` proxy to Express at `http://127.0.0.1:3000`. Set `API_PROXY_TARGET` in the root `.env` or shell environment before starting Vite to use another backend. A shell value takes precedence. The browser never receives database credentials.
+The dev server runs at `http://127.0.0.1:5173` and fails clearly if that port is already in use. Requests to `/api` proxy to Express at `http://127.0.0.1:3000`. Set `API_PROXY_TARGET` in the root `.env` or shell environment before starting Vite to use another backend. A shell value takes precedence. Express connects to Supabase PostgreSQL; the browser never receives database credentials or queries the application tables directly. Do not put database passwords or privileged Supabase keys in `VITE_*` variables.
 
 ## What works now
 
@@ -45,6 +45,6 @@ GET /api/health/ready
 503 { "error": { "code": "DATABASE_UNAVAILABLE", "message": "..." } }
 ```
 
-Business APIs are not implemented by this scaffold. Agree request/response contracts with the backend owner before connecting the event and account pages. Frontend TypeScript types describe data; they do not replace server-side validation.
+Business APIs are not implemented by this scaffold. Agree request/response contracts with the backend owner before connecting the event and account pages. Supabase Auth is a separate choice for KAN-25; no authentication client is configured yet. Frontend TypeScript types describe data; they do not replace server-side validation.
 
 For production, serve `dist/` with a history fallback to `index.html` and route `/api/*` to the backend. The Vite proxy is development-only. The interface uses system-font fallbacks if the optional Google Fonts stylesheet is unavailable.

@@ -1,5 +1,6 @@
 import { fileURLToPath } from 'node:url';
 import dotenv from 'dotenv';
+import { validateDatabaseUrl } from '../db/connection.js';
 
 export interface Environment {
   databaseUrl: string;
@@ -18,12 +19,7 @@ export function loadEnvironment(): Environment {
 }
 
 export function parseEnvironment(values: NodeJS.ProcessEnv): Environment {
-  const databaseUrl = values.DATABASE_URL?.trim();
-  if (!databaseUrl) {
-    throw new Error(
-      'DATABASE_URL is required. Copy .env.example to .env and configure PostgreSQL.',
-    );
-  }
+  const databaseUrl = validateDatabaseUrl(values.DATABASE_URL);
 
   const rawPort = values.API_PORT ?? '3000';
   const apiPort = Number(rawPort);

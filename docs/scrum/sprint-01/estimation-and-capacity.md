@@ -4,6 +4,8 @@ Sprint window: **6–19 September 2026 inclusive**, Asia/Singapore. Planning occ
 
 **Status: agreed 32-SP baseline; capacity details and supporting records to complete.** At Sprint Planning on 6 September, the team selected nine user stories totalling **27 SP**, including KAN-27, and **KAN-24 as a separate 5-SP infrastructure backlog item**. The sprint commitment is **10 items and 32 SP**. Estimates used relative sizing with KAN-33 and KAN-16 as 2-point anchors.
 
+The [8 September decision to use Supabase for database hosting](../../requirements/assumptions-and-questions.md#8-september-2026--hosted-postgresql) does not change these estimates. KAN-24 retains 5 SP; hosted setup and verification remain part of its database-foundation work. Authentication design remains open under KAN-25.
+
 This record documents the estimation method, comparative rationale, capacity calculation, scope decision and eventual velocity. The companion [sprint backlog](sprint-backlog.md) holds scope and acceptance criteria; [daily progress](daily-progress.md) records changes and completion evidence.
 
 ## Agreed estimation method

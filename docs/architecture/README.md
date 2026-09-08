@@ -1,6 +1,6 @@
 # Architecture
 
-ConnectSphere uses one Git repository, one Vue frontend, one Express backend, and one PostgreSQL database. The backend is a modular monolith: domain modules run in the same process and database transaction boundary. The team selected this structure during Sprint 1 planning to keep development and integration manageable across the six workstreams.
+ConnectSphere uses one Git repository, one Vue frontend, one Express backend, and one Supabase PostgreSQL database. The backend is a modular monolith: domain modules run in the same process and database transaction boundary. The team selected this structure during Sprint 1 planning to keep development and integration manageable across the six workstreams. Supabase was selected for database hosting on 8 September 2026.
 
 ## C4 system context
 
@@ -29,14 +29,16 @@ flowchart LR
   subgraph boundary["ConnectSphere system boundary"]
     web["Web application<br/>Vue 3, TypeScript, Vite<br/>Pages and API client"]
     api["API application<br/>Express 5, TypeScript<br/>Authorization and business rules"]
-    db[("Database<br/>PostgreSQL 17<br/>Persistent application records")]
+    db[("Database<br/>Supabase PostgreSQL<br/>Persistent application records")]
   end
   user -->|Uses browser| web
   web -->|HTTP JSON /api| api
-  api -->|SQL via pg| db
+  api -->|SQL via pg over TLS| db
 ```
 
-In local development Vite proxies `/api` to Express; the browser needs no database credentials or direct database access. Production hosting and authentication are not configured. Plan HTTPS and same-origin API routing when deployment enters scope.
+In local development Vite proxies `/api` to Express; the browser needs no database credentials or direct database access. Supabase hosts PostgreSQL, while the frontend and API run locally. Deployment of the frontend and API is not configured. Plan HTTPS and same-origin API routing when deployment enters scope.
+
+Application tables remain in the `public` schema. Disable Supabase's unused Data API before the first migration. A subsequent hardening migration enables row-level security and removes Data API roles' access to the scaffold tables. Express uses its server database connection and owns application reads, writes, role checks and event ownership checks. That connection alone does not identify the person using the web application. KAN-25 must establish and verify that identity. The choice of Supabase Auth or another authentication approach remains open.
 
 ## Module boundaries
 
@@ -100,7 +102,9 @@ The SQL migration is the complete schema source. The ERD omits housekeeping fiel
 
 - Use one repository and modular backend to keep setup and integration manageable for six developers. There are no independently deployed business services.
 - Use TypeScript across Vue and Express for consistent types and tooling. HTTP contracts still need runtime validation; static types do not validate user input.
-- Use PostgreSQL and explicit SQL migrations for visible schema changes and future reservation transactions. The small migration runner is forward-only, transactional, checksummed, and tested for repeat execution. Evaluate a fuller migration tool if lifecycle needs grow.
+- Use hosted Supabase PostgreSQL and explicit SQL migrations for visible schema changes and future reservation transactions. Retain `pg` and the Express service boundary. The small migration runner is forward-only, transactional, checksummed, and tested for repeat execution. Evaluate a fuller migration tool if lifecycle needs grow.
+- Use a direct database connection where the network supports it, or the session pooler on port 5432 for IPv4 development. Connections verify TLS certificates. Compose remains available for optional local databases and isolated tests; GitHub Actions uses its own temporary PostgreSQL service.
+- Coordinate changes against the shared development database. A feature branch isolates code, but it does not isolate Supabase tables or data. Keep schema changes in migrations and agree their order before applying them.
 - Keep credentials out of the scaffold. Seed users have no password and cannot log in. KAN-25 must deliver authentication and deny unauthorized API access before event routers are exposed.
 - Keep optional draft values nullable. Do not reuse draft validation as submission validation. Record confirmed required fields in the clarification log.
 - Use six provisional Sprint 1 statuses. Request approval is distinct from a later fully arranged event confirmation. Later lifecycle states require explicit rules and migrations.

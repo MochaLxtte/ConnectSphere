@@ -20,7 +20,7 @@
 
 The planned demonstration follows one integrated path: an authenticated organiser creates a request, saves an incomplete draft, reopens and edits it, submits it, an authorised coordinator reviews it and records a decision, and the organiser can see the outcome. Clarification is included in the committed scope at 3 points. Any later deferral will be recorded as a scope change.
 
-This record summarises the 6 September planning meeting. Supporting notes and dated Jira exports will be retained in the evidence folder.
+This record summarises the 6 September planning meeting. Supporting notes and dated Jira exports will be retained in the evidence folder. The [8 September Supabase decision](../../requirements/assumptions-and-questions.md#8-september-2026--hosted-postgresql) is a subsequent technical decision; it preserves the original 32-point commitment.
 
 ## Team and accountabilities
 
@@ -82,6 +82,7 @@ Review and testing will run throughout these windows, with 17–18 September res
 | S1-R05 | No verified historical velocity is available | Use real availability and uncertainty to select a feasible first scope; inspect daily | All Developers | Not recorded |
 | S1-R06 | Scaffold exists but feature completion remains unverified | Verify setup and remaining KAN-24 work; do not mark business stories Done from infrastructure checks | Dev 6 and story owners | Not recorded |
 | S1-R07 | Planning exports and supporting meeting records are not yet attached | Collect dated notes and Jira snapshots; record export dates in the evidence index | Note taker/Scrum Master to confirm | Not recorded |
+| S1-R08, added 8 September | Shared Supabase development database requires coordinated schema and fixture changes | Verify hosted TLS connection and project settings; agree migration ownership/order and keep automated tests isolated | Dev 6 with affected story owners | Database hosting selected; setup verification pending |
 
 Record customer answers in the shared [clarification log](../../requirements/assumptions-and-questions.md) with the team's own section as the source. Carry affected acceptance criteria, estimates, tests and design documents forward together.
 

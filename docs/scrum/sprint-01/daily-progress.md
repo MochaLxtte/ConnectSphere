@@ -14,7 +14,7 @@ On each working day, record participants, progress toward the sprint goal, imped
 | --- | --- | --- | --- | --- | --- |
 | 6 September | Sunday | Not recorded | | | |
 | 7 September | Monday | Not recorded | Scaffold commit `db6930d` recorded at 02:58:37 +08:00 | Assess remaining KAN-24 work and business stories against their acceptance criteria | E17 |
-| 8 September | Tuesday | Not recorded | | | |
+| 8 September | Tuesday | Not recorded | Supabase selected for hosted PostgreSQL; [technical decision](../../requirements/assumptions-and-questions.md#8-september-2026--hosted-postgresql) recorded | Dev 6 to verify hosted setup and coordinate migrations; KAN-25 authentication approach remains to be agreed. Commitment remains 32 points. | E09 |
 | 9 September | Wednesday | Not recorded | | | |
 | 10 September | Thursday | Not recorded | | | |
 | 11 September | Friday | Not recorded | | | |
@@ -28,6 +28,12 @@ On each working day, record participants, progress toward the sprint goal, imped
 | 19 September | Saturday | Not recorded | | | |
 
 For decisions needing more context, append a dated note with the meeting time and attendees, affected story, issue, options discussed, decision, owner and follow-up date. If notes are completed later, record the event date and the date the notes were prepared.
+
+## Technical decision — 8 September
+
+Supabase will host the development PostgreSQL database. Express continues to use PostgreSQL directly through the driver; the Vue application uses Express for business data. The [decision record](../../requirements/assumptions-and-questions.md#8-september-2026--hosted-postgresql) sets out connection security, project settings, shared migration coordination and isolated testing.
+
+KAN-24 retains its 5-point estimate, and the sprint retains its original ten PBIs and 32 points. No item is marked Done by this decision. Supabase Auth has not yet been selected. Participants and meeting time for this decision are to be recorded; the entry does not establish Daily Scrum attendance.
 
 ## Impediments and adaptations
 

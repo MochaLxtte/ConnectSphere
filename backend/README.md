@@ -1,8 +1,10 @@
 # ConnectSphere API scaffold
 
-Express 5, TypeScript, and PostgreSQL on Node.js 24. Run dependency installation and database setup from the repository root using the root README, then run `npm run dev --workspace @connectsphere/backend`. `npm run build --workspace @connectsphere/backend` produces `dist/`; `npm run start --workspace @connectsphere/backend` starts that build.
+Express 5, TypeScript, and Supabase PostgreSQL on Node.js 24. Run dependency installation and database setup from the repository root using the root README, then run `npm run dev --workspace @connectsphere/backend`. `npm run build --workspace @connectsphere/backend` produces `dist/`; `npm run start --workspace @connectsphere/backend` starts that build.
 
 `src/config/env.ts` loads the repository root `.env` in both source and compiled execution, regardless of the shell's working directory. Existing environment variables take precedence. `DATABASE_URL` is required at server startup; `API_PORT` defaults to `3000`, `API_HOST` to `127.0.0.1`, and `NODE_ENV` to `development`. Bind to `0.0.0.0` explicitly when a container or another machine must reach the API.
+
+The API connects to Supabase through `pg`; event data continues to pass through Express. Configure `DATABASE_URL` with `sslmode=verify-full` and disable the unused Data API as described in [database setup](../database/README.md). The optional `MIGRATION_DATABASE_URL` is used only by migrations and seeds. No Supabase API key is needed for this SQL connection. Database hosting does not implement authentication or business access rules.
 
 ## Available endpoints
 

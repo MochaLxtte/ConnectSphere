@@ -14,6 +14,14 @@ npm run test:e2e
 
 Follow the README for database and browser prerequisites. Treat the exit status and test report as evidence of an actual run; this document is not a stored passing result.
 
+## Database environments
+
+Supabase hosts the development PostgreSQL database following the [8 September technical decision](../requirements/assumptions-and-questions.md#8-september-2026--hosted-postgresql). Keep database integration tests on an isolated test database: CI uses PostgreSQL 17, and Docker Compose provides an optional local test instance. Do not run tests that create or clean up fixtures against the shared development project or production.
+
+Record hosted setup verification separately: project/environment, connection mode, verified TLS, migration and seed results, API readiness, disabled Data API setting and application-table RLS/privilege protections. Keep credentials out of evidence. Local or CI PostgreSQL results do not prove those hosted settings have been checked.
+
+KAN-25's authentication approach is still to be agreed. Whatever the identity provider, tests must exercise Express role and event-relationship checks directly; database hosting and RLS configuration alone do not demonstrate application authorisation.
+
 ## Business-test planning
 
 [test-cases.csv](test-cases.csv) contains scenario outlines for all 20 release features. Every row starts as **Not executed** and must be refined into concrete preconditions, actions, expected outcomes and acceptance-criterion links before it becomes a test case. Questions such as interval boundaries and registration eligibility must reference a recorded decision.

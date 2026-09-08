@@ -27,7 +27,7 @@ Use the shared [Definition of Done](../definition-of-done.md), [release requirem
 | Area | Record |
 | --- | --- |
 | Team | Six developers; one also serves as Scrum Master and another as Product Owner. Names and Dev 1–6 mapping are to be added. |
-| Stack | Vue, Express and PostgreSQL. |
+| Stack | Vue, Express and PostgreSQL. Supabase selected for database hosting on 8 September; [technical decision](../../requirements/assumptions-and-questions.md#8-september-2026--hosted-postgresql). Authentication approach remains to be agreed. |
 | Scope | Ten committed items, 32 points. KAN-30 ERD work is optional and outside this baseline. |
 | Estimation | Relative estimation, using KAN-33 and KAN-16 as 2-point reference stories. Individual votes or a voting method have not been recorded. |
 | Availability | Members are available on Saturdays and Sundays for review and planning. Individual development hours remain to be recorded. |

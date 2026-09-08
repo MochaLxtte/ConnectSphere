@@ -3,10 +3,14 @@ import { readdir, readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import pg from 'pg';
-import { databaseUrl } from './config.js';
+import { migrationDatabaseUrl } from './config.js';
+import { validateDatabaseUrl } from '../backend/src/db/connection.js';
 
 export async function migrate(connectionString: string): Promise<string[]> {
-  const client = new pg.Client({ connectionString, connectionTimeoutMillis: 5000 });
+  const client = new pg.Client({
+    connectionString: validateDatabaseUrl(connectionString),
+    connectionTimeoutMillis: 5000,
+  });
   await client.connect();
   try {
     await client.query('BEGIN');
@@ -52,7 +56,7 @@ export async function migrate(connectionString: string): Promise<string[]> {
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   try {
-    const applied = await migrate(databaseUrl());
+    const applied = await migrate(migrationDatabaseUrl());
     console.log(applied.length ? `Applied: ${applied.join(', ')}` : 'Database is up to date.');
   } catch (error) {
     console.error(error instanceof Error ? error.message : 'Migration failed.');

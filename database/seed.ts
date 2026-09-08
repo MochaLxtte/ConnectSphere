@@ -1,12 +1,16 @@
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import pg from 'pg';
-import { databaseUrl } from './config.js';
+import { migrationDatabaseUrl } from './config.js';
+import { validateDatabaseUrl } from '../backend/src/db/connection.js';
 
 export async function seed(connectionString: string): Promise<void> {
   if (process.env.NODE_ENV === 'production')
     throw new Error('Development seed is disabled in production.');
-  const client = new pg.Client({ connectionString, connectionTimeoutMillis: 5000 });
+  const client = new pg.Client({
+    connectionString: validateDatabaseUrl(connectionString),
+    connectionTimeoutMillis: 5000,
+  });
   await client.connect();
   try {
     await client.query('BEGIN');
@@ -29,7 +33,7 @@ export async function seed(connectionString: string): Promise<void> {
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   try {
-    await seed(databaseUrl());
+    await seed(migrationDatabaseUrl());
     console.log(
       'Development sample data added; existing records preserved. These accounts have no login credentials.',
     );

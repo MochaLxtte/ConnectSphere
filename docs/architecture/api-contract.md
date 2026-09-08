@@ -2,7 +2,7 @@
 
 ## Implemented endpoints
 
-All responses are JSON. Development uses a same-origin Vite proxy at `/api`.
+All responses are JSON. Development uses a same-origin Vite proxy at `/api`. Express connects to Supabase PostgreSQL through `pg`; this hosting choice does not change the HTTP routes or expose application tables through Supabase's Data API.
 
 | Method / route          | Result                                                                                             |
 | ----------------------- | -------------------------------------------------------------------------------------------------- |
@@ -27,7 +27,7 @@ Malformed JSON returns 400 (`INVALID_JSON`), oversized JSON returns 413 (`PAYLOA
 
 ## Proposed Sprint 1 routes
 
-These are coordination proposals, not implemented APIs. Refine them together before independent UI/API implementation; add an OpenAPI file when request validation and authentication are settled.
+These are coordination proposals, not implemented APIs. Refine them together before independent UI/API implementation; add an OpenAPI file when request validation and authentication are settled. If KAN-25 adopts Supabase Auth, revise the login, logout and session contract to match that integration before building the account pages.
 
 | Owner                 | Method / route                                                      | Purpose                                                     |
 | --------------------- | ------------------------------------------------------------------- | ----------------------------------------------------------- |
