@@ -18,6 +18,16 @@ npm run test:e2e
 
 Use the README for database/browser prerequisites. Run integration tests when API or persistence behavior changes and browser tests when user workflows change. CI supplements review; a green scaffold check does not complete a business story.
 
+## Test organization
+
+- Group backend feature tests under `backend/test/<module>/`, for example `backend/test/events/review-input.test.ts`. Keep shared application and configuration tests directly in `backend/test/`.
+- Keep frontend `*.test.ts` files beside the components or functions they test.
+- Put database integration tests in `database/tests/` with the `.integration.test.ts` suffix.
+- Put browser tests in `tests/e2e/` with the `.spec.ts` suffix.
+- Include Jira story IDs in business-feature suite names, for example `describe('KAN-36 review request input', ...)`.
+
+Create module folders when they have tests to contain. The existing test configurations discover these locations; update relative imports when moving a test.
+
 ## Shared conventions
 
 - Keep customer rules separate from provisional implementation decisions. Record new clarifications in [assumptions and questions](docs/requirements/assumptions-and-questions.md), then update affected stories and tests.

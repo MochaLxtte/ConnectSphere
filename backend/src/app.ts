@@ -1,10 +1,17 @@
 import express, { type ErrorRequestHandler } from 'express';
 import helmet from 'helmet';
 import type { HealthDatabase } from './db/pool.js';
+import { createReviewRouter, type ReviewRouterDependencies } from './modules/events/review-router.js';
+import {
+  createSubmittedRequestsRouter,
+  type SubmittedRequestsRouterDependencies,
+} from './modules/events/submitted-requests-router.js';
 
 export interface AppDependencies {
   database: HealthDatabase;
   logger?: Pick<Console, 'error'>;
+  reviews?: ReviewRouterDependencies;
+  submittedRequests?: SubmittedRequestsRouterDependencies;
 }
 
 const databaseUnavailable = {
@@ -15,7 +22,7 @@ const databaseUnavailable = {
 };
 
 /** Construct the HTTP app without opening a socket or creating database connections. */
-export function createApp({ database, logger = console }: AppDependencies) {
+export function createApp({ database, logger = console, reviews, submittedRequests }: AppDependencies) {
   const app = express();
   app.disable('x-powered-by');
   app.use(helmet());
@@ -42,7 +49,11 @@ export function createApp({ database, logger = console }: AppDependencies) {
     }
   });
 
-  // Add protected domain routers here when authentication and the sprint stories exist.
+  // Queue/detail reads require verified identity and explicit visibility/decision policies.
+  if (submittedRequests) app.use('/api/events', createSubmittedRequestsRouter(submittedRequests));
+  // Keep review writes unavailable until KAN-25 supplies verified identity and a review policy.
+  if (reviews) app.use('/api/events', createReviewRouter(reviews));
+
   app.use((_request, response) => {
     response.status(404).json({
       error: { code: 'NOT_FOUND', message: 'The requested endpoint does not exist.' },

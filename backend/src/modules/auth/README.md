@@ -1,6 +1,6 @@
 # Authentication and roles workstream
 
-The teammate assigned authentication owns this directory: persistence mapping, password hashing, login/logout, session verification, and role middleware. Coordinate public request/response contracts with the frontend auth workstream before implementing them.
+Ryan owns this directory and the frontend authentication workstream: persistence mapping, password hashing, login/logout, session verification, and role middleware. Coordinate public request/response contracts with the other feature owners before implementing them.
 
 Only the five role identifiers and a safe user representation are provided. Authentication, sessions, role enforcement, and account provisioning are not implemented. There are no default passwords, fixed tokens, login bypasses, or mounted auth endpoints. A frontend role selector is not an authorization mechanism.
 

@@ -12,7 +12,7 @@ At Sprint Planning on 6 September, the team selected **ten backlog items totalli
 
 | Document | Purpose | Update when |
 | --- | --- | --- |
-| [Planning and meeting record](planning.md) | Goal, scope decisions, roles, dependencies, delivery plan and meeting notes | Complete attendance and assignments; add later decisions as dated entries |
+| [Planning and meeting record](planning.md) | Goal, scope decisions, roles, dependencies, delivery plan and meeting notes | Complete attendance and Scrum role holders; add later decisions as dated entries |
 | [Estimation and capacity](estimation-and-capacity.md) | Relative estimates, rationale, availability and scope selection | Complete capacity details; record changes and compare with actual outcomes |
 | [Sprint backlog](sprint-backlog.md) | Committed items, draft acceptance criteria, tasks and test links | Review detailed criteria; update execution status as work progresses |
 | [Daily progress and burndown](daily-progress.md) | Progress, blockers, scope changes and remaining work | On agreed working days; export the chart at sprint end |
@@ -26,9 +26,9 @@ Use the shared [Definition of Done](../definition-of-done.md), [release requirem
 
 | Area | Record |
 | --- | --- |
-| Team | Six developers; one also serves as Scrum Master and another as Product Owner. Names and Dev 1–6 mapping are to be added. |
+| Team | Ryan, Ernest, Kai Jie, Irfan, Tristan and Arvin; workstreams and item ownership are recorded in [planning](planning.md#team-and-accountabilities) and the [sprint backlog](sprint-backlog.md). One developer also serves as Scrum Master and another as Product Owner; these two role holders remain to be confirmed. |
 | Stack | Vue, Express and PostgreSQL. Supabase selected for database hosting on 8 September; [technical decision](../../requirements/assumptions-and-questions.md#8-september-2026--hosted-postgresql). Authentication approach remains to be agreed. |
-| Scope | Ten committed items, 32 points. KAN-30 ERD work is optional and outside this baseline. |
+| Scope | Ten committed items, 32 points: nine user stories at 27 points and KAN-24 database setup at 5 points. |
 | Estimation | Relative estimation, using KAN-33 and KAN-16 as 2-point reference stories. Individual votes or a voting method have not been recorded. |
 | Availability | Members are available on Saturdays and Sundays for review and planning. Individual development hours remain to be recorded. |
 | Repository baseline | Initial scaffold commit `db6930d`, 7 September 2026 at 02:58:37 +08:00; see the evidence register. |
@@ -57,7 +57,7 @@ For submission, these sprint records and their supporting exports go into **fold
 
 ## Next actions
 
-1. Add names, Scrum accountabilities, attendance and meeting times.
+1. Confirm the Scrum Master and Product Owner, and record meeting attendance and times.
 2. Review the detailed acceptance criteria and tasks; record development capacity and the estimation discussion supporting the 32-point commitment.
 3. Export the planning backlog and board. Label each export with its actual capture time; note any missing start-of-sprint snapshot.
 4. Agree the Definition of Done and link tasks and acceptance criteria to PRs and tests.

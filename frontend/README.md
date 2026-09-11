@@ -22,15 +22,17 @@ Account access, event requests, and coordinator review pages are explicitly mark
 
 ## Team work areas
 
-| Work area                            | Location                                      | Planning references |
-| ------------------------------------ | --------------------------------------------- | ------------------- |
-| Application shell and routes         | `src/app`, `src/components`                   | Shared foundation   |
-| Sign in and account state            | `src/features/auth`                           | KAN-25              |
-| Event creation and draft saving      | `src/features/events`                         | KAN-31, KAN-4       |
-| Event editing and submission         | `src/features/events`                         | KAN-34, KAN-6       |
-| Coordinator review and clarification | `src/features/reviews`                        | KAN-33, KAN-27      |
-| Decisions and organiser status       | `src/features/reviews`, `src/features/events` | KAN-36, KAN-16      |
-| Health checks                        | `src/features/system`                         | Shared foundation   |
+| Work area                            | Owner   | Location                                      | Planning references |
+| ------------------------------------ | ------- | --------------------------------------------- | ------------------- |
+| Application shell and routes         | Shared  | `src/app`, `src/components`                   | Shared foundation   |
+| Sign in and account state            | Ryan    | `src/features/auth`                           | KAN-25              |
+| Event creation and draft saving      | Ernest  | `src/features/events`                         | KAN-31, KAN-4       |
+| Event editing and submission         | Kai Jie | `src/features/events`                         | KAN-34, KAN-6       |
+| Coordinator review and clarification | Irfan   | `src/features/reviews`                        | KAN-33, KAN-27      |
+| Decisions and organiser status       | Tristan | `src/features/reviews`, `src/features/events` | KAN-36, KAN-16      |
+| Health checks                        | Shared  | `src/features/system`                         | Shared foundation   |
+
+Arvin supports cross-feature integration, end-to-end testing and resolving integration issues after database setup.
 
 Keep domain-specific components, API wrappers, and tests in their feature directory. Promote components to `src/components` only when they are shared. Place API transport behavior in `src/lib/api-client.ts`. Replace the relevant placeholder page as you implement each item; coordinate route changes in `src/app/router.ts`.
 
@@ -45,6 +47,42 @@ GET /api/health/ready
 503 { "error": { "code": "DATABASE_UNAVAILABLE", "message": "..." } }
 ```
 
-Business APIs are not implemented by this scaffold. Agree request/response contracts with the backend owner before connecting the event and account pages. Supabase Auth is a separate choice for KAN-25; no authentication client is configured yet. Frontend TypeScript types describe data; they do not replace server-side validation.
+The queue, shared request-detail and decision-write handlers are implemented but remain unavailable in the normal server until authentication and access policies are supplied. Use the [API contract](../docs/architecture/api-contract.md) when connecting event pages. Supabase Auth is a separate choice for KAN-25; no authentication client is configured yet. Frontend TypeScript types describe data; they do not replace server-side validation.
 
 For production, serve `dist/` with a history fallback to `index.html` and route `/api/*` to the backend. The Vite proxy is development-only. The interface uses system-font fallbacks if the optional Google Fonts stylesheet is unavailable.
+
+## KAN-36 decision panel
+
+`src/features/reviews/components/ReviewDecisionPanel.vue` provides approval/rejection controls for a single event request. KAN-33's `ReviewRequestPage.vue` mounts it and supplies API calls and feedback; `ReviewQueuePage.vue` lists requests. The panel itself does not fetch requests, authenticate users or call the review endpoint.
+
+The shared GET retains the flat event fields and adds `review` and `actions`. Frontend types and permission/outcome wiring still need updating: the parent currently hardcodes `canReview` to true. Separate permission to display an outcome from `actions.canMakeInitialDecision`; binding that flag directly to the existing `canReview` prop would hide saved outcomes. Refresh the shared detail after a successful or uncertain decision write. Live authenticated browser integration remains pending.
+
+The parent page supplies:
+
+- `request`: the current request's `id`, `status` and optional `recordedDecision`, read from the server. Unknown statuses cannot be reviewed; the supported initial state is `SUBMITTED`.
+- `canReview`: permission for this request, derived from verified access state. Omission denies access. This controls display only; Express must enforce the role and request-specific permission again when saving.
+- `feedback`: a `ReviewFeedback` value from `src/features/reviews/types.ts`, scoped to `eventRequestId`. Use `state: 'saving'`, `state: 'saved'` with the confirmed `decision`, or `state: 'error'` with the API error `code`.
+
+Example placement inside the request-review page:
+
+```vue
+<ReviewDecisionPanel
+  :request="reviewRequest"
+  :can-review="canReviewRequest"
+  :feedback="reviewFeedback"
+  @submit="recordDecision"
+  @refresh="reloadRequest"
+/>
+```
+
+`submit` emits `{ eventRequestId, input: { decision, reason } }`. The reason is trimmed and blank text becomes `null`. The parent sets saving feedback immediately and sends only `input` to `POST /api/events/:id/reviews` through the authenticated API client. Set saved feedback only after a successful server response; set error feedback when the call fails. Each update should supply a new feedback object for that request. The panel prevents duplicate submissions while waiting and ignores feedback for other request IDs.
+
+`refresh` emits the current request ID. Reload its status and recorded decision from the server before clearing error feedback. A conflict or uncertain network/server failure requires this refresh because the decision may already have been saved. Invalid-input feedback preserves the selected decision and reason for correction. Authentication/access failures hide decision controls. Changing request IDs clears the previous selection and typed reason.
+
+Recorded outcomes replace the form, including when an existing decision accompanies a stale `SUBMITTED` status. Component tests use supplied state and emitted events; they are not evidence of live authentication, API integration or completion of KAN-16.
+
+Run the component tests from the repository root:
+
+```powershell
+npm.cmd run test --workspace @connectsphere/frontend -- src/features/reviews/components/ReviewDecisionPanel.test.ts
+```

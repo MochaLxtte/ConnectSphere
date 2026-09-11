@@ -27,7 +27,7 @@ Open **http://localhost:5173**. The dashboard checks the API and migrated databa
 
 On Windows, use `npm.cmd` / `npx.cmd` if PowerShell blocks npm's `.ps1` wrapper.
 
-Never commit `.env` or place database passwords in frontend `VITE_*` variables. The example connection contains placeholders that must be replaced locally. If changing the API port, change `API_PORT` and `API_PROXY_TARGET` together. Restart the dev servers after environment changes. Coordinate migrations and seed changes with Dev 6 because teammates using the same Supabase project share its database.
+Never commit `.env` or place database passwords in frontend `VITE_*` variables. The example connection contains placeholders that must be replaced locally. If changing the API port, change `API_PORT` and `API_PROXY_TARGET` together. Restart the dev servers after environment changes. Coordinate migrations and seed changes with Arvin because teammates using the same Supabase project share its database.
 
 ## Repository map
 
@@ -53,14 +53,16 @@ See [architecture](docs/architecture/README.md) and the [API contract](docs/arch
 
 Start with the [Sprint 1 plan](docs/scrum/sprint-01/README.md). The following workstreams were agreed at the planning meeting on 6 September 2026:
 
-| Workstream | Jira items              | Starting areas                                |
-| ---------- | ----------------------- | --------------------------------------------- |
-| Dev 1      | KAN-25                  | Backend auth module and frontend auth feature |
-| Dev 2      | KAN-31, KAN-4           | Event creation and draft saving               |
-| Dev 3      | KAN-34, KAN-6           | Draft editing, validation and submission      |
-| Dev 4      | KAN-33, KAN-27          | Coordinator review and clarification          |
-| Dev 5      | KAN-36, KAN-16          | Decisions and visible event status            |
-| Dev 6      | KAN-24, optional KAN-30 | Database, schema coordination and integration |
+| Developer | Jira items              | Responsibilities                                                   |
+| --------- | ----------------------- | ------------------------------------------------------------------ |
+| Ryan      | KAN-25                  | Authentication, authorisation, protected routes and permission checks |
+| Ernest    | KAN-31, KAN-4           | Event form, request creation and draft saving                       |
+| Kai Jie   | KAN-34, KAN-6           | Draft retrieval/editing, validation and submission                  |
+| Irfan     | KAN-33, KAN-27          | Coordinator review, clarification requests and organiser visibility |
+| Tristan   | KAN-36, KAN-16          | Approval/rejection workflow and organiser-facing status             |
+| Arvin     | KAN-24                  | Initial database, schema, configuration and seed data                |
+
+After database setup, Arvin supports cross-feature integration, end-to-end testing and resolving integration issues with the feature owners.
 
 Read [CONTRIBUTING.md](CONTRIBUTING.md) before the first feature branch. Resolve authentication, event field validation, coordinator visibility and transitions using the [open questions](docs/requirements/assumptions-and-questions.md). Proposed acceptance criteria and implementation details remain subject to team review and customer clarification.
 

@@ -33,7 +33,7 @@ This repository starts with infrastructure and health checks. **None of the busi
 | CF-19 | Event Change Requests                 | To be linked                | Events with affected modules |
 | CF-20 | Notification System                   | To be linked                | Notifications                |
 
-KAN-24 is a separate 5-point database setup item in Sprint 1. KAN-30 is an optional ERD task outside the 32-point commitment; neither is an additional customer feature.
+KAN-24 is a separate 5-point database setup item in Sprint 1, supporting the customer-facing stories within the 32-point commitment. The ERD is supporting system design documentation maintained in the [architecture record](../architecture/README.md).
 
 ## Connected workflows
 

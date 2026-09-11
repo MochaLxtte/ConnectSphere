@@ -2,7 +2,7 @@
 
 **Sprint window: 6–19 September 2026, inclusive (Asia/Singapore).** At Sprint Planning on Sunday 6 September, the team committed to the nine user stories and separate KAN-24 infrastructure PBI listed below. The six developers share the workstreams, with one developer also serving as Scrum Master and another as Product Owner. Sprint Review is scheduled for Saturday 19 September, followed by Sprint 2 Planning on Sunday 20 September. Feature links map the backlog items to the project's core requirements.
 
-Detailed story wording, acceptance criteria (AC), task splits, reviewers and tests below are **drafts for team review**. Dev 1–Dev 6 identify workstreams; member names and capacity are to be added. Local task IDs are documentation references for creating or linking Jira subtasks. Attach a dated Jira export with the full story titles and agreed criteria.
+Detailed story wording, acceptance criteria (AC), task splits, reviewers and tests below are **drafts for team review**. Story owners are assigned below; individual development capacity is still to be recorded. Local task IDs are documentation references for creating or linking Jira subtasks. Attach a dated Jira export with the full story titles and agreed criteria.
 
 Use [planning](planning.md) for the commitment and decisions, [estimation and capacity](estimation-and-capacity.md) for actual estimates and availability, and [daily progress](daily-progress.md) for dated changes. Assess completion against the team's adopted [definition of done](../definition-of-done.md), then record actual outcomes in the [review](review.md), [retrospective](retrospective.md) and [evidence index](evidence/README.md).
 
@@ -10,21 +10,20 @@ Use [planning](planning.md) for the commitment and decisions, [estimation and ca
 
 The nine committed user stories, **including KAN-27**, total **27 story points**. **KAN-24 is a separate 5-point infrastructure PBI**, giving a **32-point Sprint 1 commitment across 10 PBIs**. KAN-33 and KAN-16 are the team's 2-point reference stories for relative estimation. KAN-24 covers shared database foundations; individual business implementations and their tests stay with the functional stories. Completion and velocity will be assessed at sprint close.
 
-| Jira item | Story slice | Workstream | Proposed reviewer | Agreed points | Selection | Feature link |
+| Jira item | Story slice | Owner | Proposed reviewer | Agreed points | Selection | Feature link |
 | --- | --- | --- | --- | ---: | --- | --- |
-| KAN-25 | Authenticate users and enforce agreed access rules | Dev 1 | Dev 4 or Dev 5 | 5 | Committed | CF-01 |
-| KAN-31 | Start a new event request | Dev 2 | Dev 3 | 3 | Committed | CF-02 |
-| KAN-4 | Save an incomplete draft | Dev 2 | Dev 3 | 3 | Committed | CF-03 |
-| KAN-34 | Resume and edit an owned draft | Dev 3 | Dev 2 | 3 | Committed | CF-03; partial CF-07 |
-| KAN-6 | Submit a valid draft | Dev 3 | Dev 2 | 3 | Committed | CF-02 |
-| KAN-33 | View submitted requests permitted by the access policy | Dev 4 | Dev 1 or Dev 5 | 2 | Committed | CF-04 |
-| KAN-36 | Approve or reject an eligible request | Dev 5 | Dev 4 | 3 | Committed | CF-04 |
-| KAN-16 | View current event-request status | Dev 5 | Dev 4 | 2 | Committed | CF-06 |
-| KAN-27 | Request clarification | Dev 4 | Dev 1 or Dev 5 | 3 | Committed | CF-04 |
-| KAN-24 | Verify and evolve database/integration foundations | Dev 6 | Dev 1 | 5 | Committed infrastructure PBI | Supports the selected stories |
-| KAN-30 | Document the implemented schema in an ERD | Dev 6 | Dev 2 | — | Optional task | Architecture evidence |
+| KAN-25 | Authenticate users and enforce agreed access rules | Ryan | Irfan or Tristan | 5 | Committed | CF-01 |
+| KAN-31 | Start a new event request | Ernest | Kai Jie | 3 | Committed | CF-02 |
+| KAN-4 | Save an incomplete draft | Ernest | Kai Jie | 3 | Committed | CF-03 |
+| KAN-34 | Resume and edit an owned draft | Kai Jie | Ernest | 3 | Committed | CF-03; partial CF-07 |
+| KAN-6 | Submit a valid draft | Kai Jie | Ernest | 3 | Committed | CF-02 |
+| KAN-33 | View submitted requests permitted by the access policy | Irfan | Ryan or Tristan | 2 | Committed | CF-04 |
+| KAN-36 | Approve or reject an eligible request | Tristan | Irfan | 3 | Committed | CF-04 |
+| KAN-16 | View current event-request status | Tristan | Irfan | 2 | Committed | CF-06 |
+| KAN-27 | Request clarification | Irfan | Ryan or Tristan | 3 | Committed | CF-04 |
+| KAN-24 | Verify and evolve database/integration foundations | Arvin | Ryan | 5 | Committed infrastructure PBI | Supports the selected stories |
 
-**Current repository baseline:** login, event and review pages are placeholders. Shared auth/event types, an initial schema, migrations, seed scripts and infrastructure checks provide the starting point. Business stories still require implementation and acceptance testing. Jira status and named ownership are to be updated as work progresses.
+**Current repository baseline:** login, event and review pages are placeholders. Shared auth/event types, an initial schema, migrations, seed scripts and infrastructure checks provide the starting point. Business stories still require implementation and acceptance testing. Keep Jira ownership aligned with the allocation above and update status as work progresses.
 
 ## Decisions needed to finalize implementation details
 
@@ -45,7 +44,7 @@ All path targets below are relative to the repository root. Existing files are s
 
 As a ConnectSphere user, I want to authenticate and access only permitted functions and event information so that I can perform my role without exposing other users' information.
 
-**Workstream/reviewer:** Dev 1 / Dev 4 or Dev 5. **Dependencies:** KAN-24; Q-01/Q-02; agreed Sprint 1 role scope.
+**Owner / proposed reviewer:** Ryan / Irfan or Tristan. **Dependencies:** KAN-24; Q-01/Q-02; agreed Sprint 1 role scope.
 
 - **KAN-25-AC1:** Given a valid test account in the agreed role scope, when the user signs in with valid credentials, then the server establishes the authenticated identity and the UI shows the corresponding signed-in state.
 - **KAN-25-AC2:** Given invalid credentials or no authenticated session, when sign-in fails or a protected API is requested, then protected data is withheld and the UI/API gives the agreed failure response.
@@ -55,7 +54,7 @@ As a ConnectSphere user, I want to authenticate and access only permitted functi
 | Local task | Proposed implementation work |
 | --- | --- |
 | S1-25-01 | Record account/session and access contracts; extend `backend/src/modules/auth/types.ts` only as needed. |
-| S1-25-02 | Add auth handlers/services/middleware under `backend/src/modules/auth/` (new files) and wire `backend/src/app.ts`; coordinate the chosen identity mapping and synthetic account fixtures with Dev 6. Do not assume locally stored credentials or Supabase Auth before the authentication approach is agreed. |
+| S1-25-02 | Add auth handlers/services/middleware under `backend/src/modules/auth/` (new files) and wire `backend/src/app.ts`; coordinate the chosen identity mapping and synthetic account fixtures with Arvin. Do not assume locally stored credentials or Supabase Auth before the authentication approach is agreed. |
 | S1-25-03 | Implement `frontend/src/features/auth/pages/LoginPage.vue`, session-aware `frontend/src/lib/api-client.ts` behavior and navigation in `frontend/src/app/router.ts`. |
 | S1-25-04 | Implement S1-T01–S1-T04, including direct API tests; integrate event access checks with the other workstreams. |
 
@@ -63,7 +62,7 @@ As a ConnectSphere user, I want to authenticate and access only permitted functi
 
 As an event organiser, I want to start a request and enter event information so that I can prepare an event for submission.
 
-**Workstream/reviewer:** Dev 2 / Dev 3. **Dependencies:** KAN-25; Q-03; shared contract with KAN-4/KAN-34.
+**Owner / proposed reviewer:** Ernest / Kai Jie. **Dependencies:** KAN-25; Q-03; shared contract with KAN-4/KAN-34.
 
 - **KAN-31-AC1:** Given an authenticated organiser permitted to create requests, when the organiser starts a new request, then a form exposes the event fields agreed for this slice and allows those details to be entered.
 - **KAN-31-AC2:** Given details entered in a new request, when the organiser chooses Save draft, then those details are passed to the shared draft-save flow and successful creation returns an identifiable request owned by the authenticated organiser.
@@ -71,7 +70,7 @@ As an event organiser, I want to start a request and enter event information so 
 
 | Local task | Proposed implementation work |
 | --- | --- |
-| S1-31-01 | Agree form field types and draft/submission boundaries in `backend/src/modules/events/types.ts` and `docs/architecture/api-contract.md` with Dev 3. |
+| S1-31-01 | Agree form field types and draft/submission boundaries in `backend/src/modules/events/types.ts` and `docs/architecture/api-contract.md` with Kai Jie. |
 | S1-31-02 | Replace `frontend/src/features/events/pages/NewEventPage.vue` with the creation form; extract a shared form component under the events feature (new file) if needed by KAN-34. |
 | S1-31-03 | Connect the form to KAN-4's save service, including pending/error feedback; implement S1-T05–S1-T07 without duplicating persistence work. |
 
@@ -79,7 +78,7 @@ As an event organiser, I want to start a request and enter event information so 
 
 As an event organiser, I want to save an incomplete request so that I can retain my progress before all submission details are available.
 
-**Workstream/reviewer:** Dev 2 / Dev 3. **Dependencies:** KAN-24/KAN-25; Q-03; KAN-31 form contract.
+**Owner / proposed reviewer:** Ernest / Kai Jie. **Dependencies:** KAN-24/KAN-25; Q-03; KAN-31 form contract.
 
 - **KAN-4-AC1:** Given a request missing fields allowed to remain incomplete in a draft, when the organiser saves it, then the permitted values persist as a draft without applying full submission requirements.
 - **KAN-4-AC2:** Given a successfully saved draft, when it is retrieved in a subsequent session, then its identifier and saved values are retained and it has not entered the submitted review workflow.
@@ -88,14 +87,14 @@ As an event organiser, I want to save an incomplete request so that I can retain
 | Local task | Proposed implementation work |
 | --- | --- |
 | S1-4-01 | Implement agreed draft validation and create/save service under `backend/src/modules/events/` (new files), deriving ownership server-side. |
-| S1-4-02 | Add PostgreSQL draft persistence using `backend/src/db/pool.ts`; coordinate any new migration under `database/migrations/` with Dev 6. |
+| S1-4-02 | Add PostgreSQL draft persistence using `backend/src/db/pool.ts`; coordinate any new migration under `database/migrations/` with Arvin. |
 | S1-4-03 | Add save feedback to the shared event form and implement S1-T08–S1-T10, including persistence and cross-owner denial. |
 
 ### KAN-34 — Resume and edit drafts
 
 As an event organiser, I want to reopen and update my saved draft so that I can complete or correct it before submission.
 
-**Workstream/reviewer:** Dev 3 / Dev 2. **Dependencies:** KAN-4/KAN-25; Q-03/Q-05; shared form. This is draft editing only, not all CF-07 event-information changes.
+**Owner / proposed reviewer:** Kai Jie / Ernest. **Dependencies:** KAN-4/KAN-25; Q-03/Q-05; shared form. This is draft editing only, not all CF-07 event-information changes.
 
 - **KAN-34-AC1:** Given an owned saved draft, when the organiser selects it, then the edit form is populated with the persisted values.
 - **KAN-34-AC2:** Given changes to permitted draft fields, when the organiser saves and reloads, then the changed values persist, omitted fields remain unchanged, and permitted explicitly cleared fields are cleared under the agreed update contract.
@@ -103,15 +102,15 @@ As an event organiser, I want to reopen and update my saved draft so that I can 
 
 | Local task | Proposed implementation work |
 | --- | --- |
-| S1-34-01 | Implement owned-draft retrieval and update behavior under `backend/src/modules/events/` (new files), reusing Dev 2's persistence service. |
+| S1-34-01 | Implement owned-draft retrieval and update behavior under `backend/src/modules/events/` (new files), reusing Ernest's persistence service. |
 | S1-34-02 | Implement draft discovery in `frontend/src/features/events/pages/EventRequestsPage.vue` and an edit route/page under the events feature (new file) using the shared form. |
-| S1-34-03 | Implement S1-T11–S1-T13 for reload, PATCH semantics and disallowed edits; review shared form changes with Dev 2. |
+| S1-34-03 | Implement S1-T11–S1-T13 for reload, PATCH semantics and disallowed edits; review shared form changes with Ernest. |
 
 ### KAN-6 — Submit event requests
 
 As an event organiser, I want to submit a complete draft for review so that a coordinator can assess my proposed event.
 
-**Workstream/reviewer:** Dev 3 / Dev 2. **Dependencies:** KAN-4/KAN-34/KAN-25; Q-03/Q-04; downstream reviewer-access agreement.
+**Owner / proposed reviewer:** Kai Jie / Ernest. **Dependencies:** KAN-4/KAN-34/KAN-25; Q-03/Q-04; downstream reviewer-access agreement.
 
 - **KAN-6-AC1:** Given an owned draft satisfying the agreed submission rules, when the organiser submits it, then submission is persisted and the request becomes eligible for the agreed review workflow.
 - **KAN-6-AC2:** Given a draft that fails an agreed submission rule, when submission is attempted, then field-specific or actionable validation feedback is returned, saved draft data is retained, and no submission transition occurs.
@@ -121,30 +120,41 @@ As an event organiser, I want to submit a complete draft for review so that a co
 | Local task | Proposed implementation work |
 | --- | --- |
 | S1-6-01 | Record agreed submission rules and allowed source/target states in `docs/architecture/api-contract.md`; add validation/transition functions under `backend/src/modules/events/` (new files). |
-| S1-6-02 | Implement the submit handler and atomic database update, including agreed repeat/concurrency behavior; coordinate the request shape with Dev 4. |
+| S1-6-02 | Implement the submit handler and atomic database update, including agreed repeat/concurrency behavior; coordinate the request shape with Irfan. |
 | S1-6-03 | Add submission and error feedback to the event form; implement S1-T14–S1-T17 against the real persistence path where required. |
 
 ### KAN-33 — View submitted requests
 
 As an event coordinator, I want to view submitted requests I am permitted to review so that I can assess the organiser's event details.
 
-**Workstream/reviewer:** Dev 4 / Dev 1 or Dev 5. **Dependencies:** KAN-25/KAN-6; Q-02; conditional KAN-29 assignment decision.
+**Owner / proposed reviewer:** Irfan / Ryan or Tristan. **Dependencies:** KAN-25/KAN-6; Q-02; conditional KAN-29 assignment decision.
 
 - **KAN-33-AC1:** Given requests in the agreed reviewable states and access scope, when the coordinator opens the review queue, then the queue shows only requests eligible for that coordinator under the recorded policy.
 - **KAN-33-AC2:** Given a visible submitted request, when the coordinator opens it, then the saved submission details and current status needed for review are displayed.
 - **KAN-33-AC3:** Given an unrelated or otherwise unauthorized request, when the coordinator or another actor attempts to fetch its details directly, then the API withholds the protected information under the agreed response policy.
+- **KAN-33-AC4 (added during implementation, 11 September):** Given no request is currently in a reviewable state, when an authorised coordinator opens the queue, then it returns an empty list rather than an error.
+- **KAN-33-AC5 (historical implementation assumption, superseded on 11 September):** The original implementation masked all drafts and decided requests as `404 EVENT_REQUEST_NOT_FOUND`. The shared detail handler now allows organisers to retrieve their own drafts and outcomes, and authorised coordinators to retrieve decided requests. Coordinator access to drafts and any request-specific access denial still return the same 404 as a missing request. The queue continues to exclude drafts and decided requests.
+- **KAN-33-AC6 (added during implementation, 11 September):** Given a malformed event request ID in the detail route, when it is requested, then the API rejects it with a validation error before any database lookup.
+
+The shared `GET /api/events/:id` handler now serves KAN-34/KAN-33/KAN-16. Its detail access
+rules are separate from queue membership; coordinator policy and live authentication remain
+open. The [API contract](../../architecture/api-contract.md) and
+[dated implementation records](../../requirements/assumptions-and-questions.md) explain
+the current behaviour and retain the superseded queue/detail assumption and route fallback.
 
 | Local task | Proposed implementation work |
 | --- | --- |
-| S1-33-01 | Agree queue/detail fields and reviewer-access fixtures; implement scoped list/detail queries under `backend/src/modules/events/` (new files). |
-| S1-33-02 | Replace `frontend/src/features/reviews/pages/ReviewQueuePage.vue`; add a review detail component/page under the reviews feature (new file), including empty/error states. |
-| S1-33-03 | Implement S1-T18–S1-T20 and expose a shared review-detail contract for Dev 5's decisions and KAN-27. |
+| S1-33-01 | Queue query implemented in `submitted-requests.ts`; shared detail query in `event-request-detail.ts`. Contract review and the production coordinator policy remain pending. |
+| S1-33-02 | Replace `frontend/src/features/reviews/pages/ReviewQueuePage.vue`; add a review detail component/page under the reviews feature (new file), including empty/error states. — Done: `ReviewQueuePage.vue` (list) and new `ReviewRequestPage.vue` (detail, mounts Tristan's `ReviewDecisionPanel.vue`), with component tests. `canReview` is currently hardcoded `true` on the detail page pending KAN-25 — see note below. |
+| S1-33-03 | Shared backend detail, access checks and outcome refresh pass HTTP and isolated PostgreSQL tests. The browser queue error/retry check passes with response fixtures. Full S1-T18–S1-T20 coverage with live authentication and the agreed visibility policy remains pending. |
+
+**Known gap (11 September):** `ReviewRequestPage.vue` still passes `can-review="true"` to the decision panel. The next UI step must consume the shared action flags while keeping a recorded outcome visible when another decision is unavailable. Server enforcement is independent: the shared GET requires verified identity and ownership/visibility checks; the decision POST additionally requires coordinator identity and request-specific write permission. Live authentication remains part of KAN-25.
 
 ### KAN-36 — Approve or reject requests
 
 As an event coordinator, I want to record an approval or rejection for an eligible request so that the organiser receives a clear review outcome.
 
-**Workstream/reviewer:** Dev 5 / Dev 4. **Dependencies:** KAN-25/KAN-33; Q-02/Q-04; conditional assignment decision. A mandatory rejection reason is not assumed; record the team's/customer's decision before implementing that rule.
+**Owner / proposed reviewer:** Tristan / Irfan. **Dependencies:** KAN-25/KAN-33; Q-02/Q-04; conditional assignment decision. A mandatory rejection reason is not assumed; record the team's/customer's decision before implementing that rule.
 
 - **KAN-36-AC1:** Given an eligible request and an authorized reviewer, when the reviewer approves it, then the decision, reviewer identity and resulting state are recorded consistently according to the agreed transition policy.
 - **KAN-36-AC2:** Given an eligible request and an authorized reviewer, when the reviewer rejects it with any explanation required by the agreed policy, then the rejection and any supplied explanation are recorded consistently with the resulting state.
@@ -153,7 +163,7 @@ As an event coordinator, I want to record an approval or rejection for an eligib
 
 | Local task | Proposed implementation work |
 | --- | --- |
-| S1-36-01 | Agree approval/rejection eligibility, explanation and conflict rules with Dev 4; implement shared transition validation under `backend/src/modules/events/` (new files). |
+| S1-36-01 | Agree approval/rejection eligibility, explanation and conflict rules with Irfan; implement shared transition validation under `backend/src/modules/events/` (new files). |
 | S1-36-02 | Implement review recording and event-state change in one transaction; coordinate `event_reviews` schema changes through a new migration if required. |
 | S1-36-03 | Add review actions and result/error feedback to the review detail UI; implement S1-T21–S1-T24, including PostgreSQL transaction/conflict checks. |
 
@@ -161,7 +171,7 @@ As an event coordinator, I want to record an approval or rejection for an eligib
 
 As an event organiser, I want to see the current status of my request so that I know its progress and the outcome of review.
 
-**Workstream/reviewer:** Dev 5 / Dev 4. **Dependencies:** KAN-25; KAN-6/KAN-36 state contract; Q-04; KAN-27 clarification display/state contract.
+**Owner / proposed reviewer:** Tristan / Irfan. **Dependencies:** KAN-25; KAN-6/KAN-36 state contract; Q-04; KAN-27 clarification display/state contract.
 
 - **KAN-16-AC1:** Given an owned request, when the organiser opens its list entry or detail, then the displayed status matches the persisted state using the agreed user-facing labels.
 - **KAN-16-AC2:** Given a successful submission or review decision, when the organiser reloads the request, then the latest persisted status and permitted review information are displayed.
@@ -169,7 +179,7 @@ As an event organiser, I want to see the current status of my request so that I 
 
 | Local task | Proposed implementation work |
 | --- | --- |
-| S1-16-01 | Agree status labels and visible decision fields with Dev 3/Dev 4; extend the event response contract without allowing arbitrary client-set status. |
+| S1-16-01 | Agree status labels and visible decision fields with Kai Jie and Irfan; extend the event response contract without allowing arbitrary client-set status. |
 | S1-16-02 | Implement status display in `frontend/src/features/events/pages/EventRequestsPage.vue` and the event detail view; reuse the scoped event API. |
 | S1-16-03 | Implement S1-T25–S1-T27 and verify the integrated organiser-to-coordinator-to-organiser path. |
 
@@ -177,7 +187,7 @@ As an event organiser, I want to see the current status of my request so that I 
 
 As an event coordinator, I want to request clarification on an eligible event request so that the organiser can understand what additional information is needed for review.
 
-**Workstream/reviewer:** Dev 4 / Dev 1 or Dev 5. **Dependencies:** KAN-25/KAN-33; Q-02/Q-04. KAN-27 is committed at 3 points. The proposed detail below covers requesting and displaying clarification; confirm response, editing and resubmission expectations against the actual Jira story before adopting the AC. If those expectations change the estimated scope, record the decision and estimate revision rather than silently excluding required behavior.
+**Owner / proposed reviewer:** Irfan / Ryan or Tristan. **Dependencies:** KAN-25/KAN-33; Q-02/Q-04. KAN-27 is committed at 3 points. The proposed detail below covers requesting and displaying clarification; confirm response, editing and resubmission expectations against the actual Jira story before adopting the AC. If those expectations change the estimated scope, record the decision and estimate revision rather than silently excluding required behavior.
 
 - **KAN-27-AC1:** Given an eligible request and an authorized coordinator, when a non-empty clarification message is submitted, then it is linked to that request and actor and any state change follows the agreed policy.
 - **KAN-27-AC2:** Given a recorded clarification, when the owning organiser opens the request, then the clarification text and its context are visible within the agreed access rules.
@@ -191,9 +201,9 @@ As an event coordinator, I want to request clarification on an eligible event re
 
 ## KAN-24 — Database and integration infrastructure
 
-**Committed infrastructure PBI: 5 points. Workstream/reviewer: Dev 6 / Dev 1**, with the relevant feature owners reviewing their database contracts. This supports customer-facing stories rather than adding another customer feature.
+**Committed infrastructure PBI: 5 points. Owner / proposed reviewer: Arvin / Ryan**, with the relevant feature owners reviewing their database contracts. This supports customer-facing stories rather than adding another customer feature.
 
-**Proposed outcome, refined after the 8 September hosting decision:** team members can reproduce the Supabase PostgreSQL connection and schema setup, evolve a consistent schema and connect the application to the persistence foundations needed by the selected stories. Dev 6 also supports cross-story integration, but the complete business workflow is assessed under its functional stories; it is not an additional requirement for database setup to be Done.
+**Proposed outcome, refined after the 8 September hosting decision:** team members can reproduce the Supabase PostgreSQL connection and schema setup, evolve a consistent schema and connect the application to the persistence foundations needed by the selected stories. After database setup, Arvin supports cross-feature integration, end-to-end testing and resolving integration issues with the relevant story owners. The complete business workflow is assessed under its functional stories; it is not an additional requirement for database setup to be Done.
 
 KAN-24 has existing scaffold material to inspect: the root setup instructions, `database/migrate.ts`, `database/seed.ts`, `database/migrations/`, `backend/src/db/pool.ts` and `database/tests/database.integration.test.ts`. Retain `001_initial_scaffold.sql` unchanged once applied and review the additional security migration before applying it. `compose.yaml` supports an optional isolated test database; it is not the hosted development setup. Completion requires verification against the adopted criteria, including the actual Supabase project configuration. The following criteria are **drafts for team review**:
 
@@ -201,14 +211,15 @@ KAN-24 has existing scaffold material to inspect: the root setup instructions, `
 - **KAN-24-AC2:** Given the adopted Sprint 1 data contracts, when the reviewed migrations and synthetic fixtures are applied in the agreed order and rerun as documented, then required relationships/constraints and database access boundaries exist, fixtures support the agreed access scenarios, and rerunning setup does not overwrite existing event data unexpectedly. Verify that the Supabase Data API is disabled and application tables have the reviewed RLS/privilege protections; Express business permissions are assessed under the functional stories.
 - **KAN-24-AC3:** Given the migrated development database and application connection configuration, when the agreed database integration checks run, then the application connects successfully and representative synthetic records can be persisted and retrieved under the agreed schema constraints, with actual commands, commit and results linked as evidence. This checks database foundations, not completion of the dependent business workflows.
 
-| Local task | Workstream / proposed reviewer | Work and completion evidence to collect |
+| Local task | Owner / proposed reviewer | Work and completion evidence to collect |
 | --- | --- | --- |
-| S1-24-01 | Dev 6 / Dev 1 | Verify clean-checkout setup against the Supabase development project, including session-pooler or supported direct connection and verified TLS. Record the environment, actual date, commands, commit and results without credentials. |
-| S1-24-02 | Dev 6 / relevant story owner | Review schema and database access protections, disable the project Data API, and agree migration order for the shared project. Keep applied migrations unchanged; add reviewed migrations and synthetic fixtures for the agreed auth, draft and review contracts. Record migration PRs and project-setting verification. |
-| S1-24-03 | Dev 6 / Dev 1 | Verify application/database connectivity and representative record persistence/retrieval using the adopted schema; record actual commands and results for S1-T33. |
-| S1-24-04 | Dev 6 / Dev 1 | Verify committed setup/API documentation and isolated PostgreSQL 17 CI checks; link hosted setup evidence separately from local/CI test results. Never run cleanup-based tests against the shared development project. |
-| S1-INT-01 | Dev 6 / affected story owners | Shared support task, no extra points: integrate auth → draft → submission → review/clarification → status with the functional story owners. Link failures and fixes to the relevant story tests; do not count their implementation a second time under KAN-24. |
-| S1-30-01 | Dev 6 / Dev 2 | Optional: review/update the existing ERD in `docs/architecture/README.md` to reflect the implemented schema, keys and relationships. Check it against migrations rather than creating a competing diagram. |
+| S1-24-01 | Arvin / Ryan | Verify clean-checkout setup against the Supabase development project, including session-pooler or supported direct connection and verified TLS. Record the environment, actual date, commands, commit and results without credentials. |
+| S1-24-02 | Arvin / relevant story owner | Review schema and database access protections, disable the project Data API, and agree migration order for the shared project. Keep applied migrations unchanged; add reviewed migrations and synthetic fixtures for the agreed auth, draft and review contracts. Record migration PRs and project-setting verification. |
+| S1-24-03 | Arvin / Ryan | Verify application/database connectivity and representative record persistence/retrieval using the adopted schema; record actual commands and results for S1-T33. |
+| S1-24-04 | Arvin / Ryan | Verify committed setup/API documentation and isolated PostgreSQL 17 CI checks; link hosted setup evidence separately from local/CI test results. Never run cleanup-based tests against the shared development project. |
+| S1-INT-01 | Arvin / affected story owners | Shared support task after database setup, no extra points: integrate auth → draft → submission → review/clarification → status with the functional story owners, support end-to-end testing and resolve integration issues. Link failures and fixes to the relevant story tests; do not count their implementation a second time under KAN-24. |
+
+Keep the ERD in [the architecture record](../../architecture/README.md) aligned with the implemented schema, keys and relationships as part of the system design documentation.
 
 ## Acceptance test plan
 
@@ -254,8 +265,8 @@ These are **planned scenarios, all Not executed**. The file/evidence cells are i
 
 ## Updating the backlog during and after the sprint
 
-Keep the agreed **32-point baseline** intact: nine user stories at 27 points plus KAN-24 at 5 points. Add member names and adopted AC. During the sprint, keep Jira and this document aligned when scope changes, and link the dated decision in [daily progress](daily-progress.md). Record actual task hours where the team tracks them, separately from story points.
+Keep the agreed **32-point baseline** intact: nine user stories at 27 points plus KAN-24 at 5 points. Record the adopted AC. During the sprint, keep Jira and this document aligned when scope changes, and link the dated decision in [daily progress](daily-progress.md). Record actual task hours where the team tracks them, separately from story points.
 
-At review, assess every committed PBI against its adopted AC and definition of done, linking PRs, commits, tests and demonstration evidence. Carry incomplete PBIs back to the product backlog with the unfinished criteria and reason. A partially completed PBI does not earn its full points. Explicitly record the outcome of KAN-24 and whether optional KAN-30 work was selected, deferred or completed.
+At review, assess every committed PBI against its adopted AC and definition of done, linking PRs, commits, tests and demonstration evidence. Carry incomplete PBIs back to the product backlog with the unfinished criteria and reason. A partially completed PBI does not earn its full points. Explicitly record the outcome of KAN-24.
 
 The [20-feature release scope](../../requirements/README.md) remains broader than this sprint. CF-05 is the conditional assignment dependency; CF-07 is covered here only for draft editing. CF-08–CF-20 and the rest of CF-07 remain release work unless explicitly planned later. Partial Sprint 1 slices of CF-01–CF-04 and CF-06 must not be reported as complete release features without verifying their full agreed scope.

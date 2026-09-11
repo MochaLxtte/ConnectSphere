@@ -1,0 +1,236 @@
+import { fireEvent, render, screen, within } from '@testing-library/vue';
+import { describe, expect, it } from 'vitest';
+import ReviewDecisionPanel from './ReviewDecisionPanel.vue';
+import type { ReviewDecision, ReviewRequestSummary } from '../types';
+
+const request: ReviewRequestSummary = { id: 'request-one', status: 'SUBMITTED' };
+
+function renderPanel() {
+  return render(ReviewDecisionPanel, { props: { request, canReview: true } });
+}
+
+async function choose(decision: ReviewDecision) {
+  await fireEvent.click(screen.getByRole('radio', {
+    name: decision === 'APPROVED' ? /^Approve request/ : /^Reject request/,
+  }));
+}
+
+describe('KAN-36 coordinator decision panel', () => {
+  it.each([
+    ['APPROVED', '  Ready for planning.  ', 'Ready for planning.'],
+    ['REJECTED', '  Unsuitable venue.  ', 'Unsuitable venue.'],
+    ['APPROVED', '', null],
+    ['REJECTED', '   ', null],
+  ] as const)('emits %s with a trimmed optional reason', async (decision, reason, expectedReason) => {
+    const view = renderPanel();
+    expect(screen.getByRole('button', { name: 'Record decision' })).toBeDisabled();
+    await choose(decision);
+    await fireEvent.update(screen.getByRole('textbox', { name: /Reason/ }), reason);
+    await fireEvent.click(screen.getByRole('button', { name: /^Record (approval|rejection)$/ }));
+
+    expect(view.emitted('submit')).toEqual([[{
+      eventRequestId: request.id,
+      input: { decision, reason: expectedReason },
+    }]]);
+    expect(screen.getByRole('status')).toHaveTextContent('Recording your decision');
+    expect(screen.queryByText(/Request (approved|rejected)/)).not.toBeInTheDocument();
+    expect(screen.getByRole('textbox', { name: /Reason/ })).toBeDisabled();
+    expect(screen.getAllByRole('radio').every((radio) => radio.matches(':disabled'))).toBe(true);
+    expect(screen.getByRole('button', { name: /Recording decision/ })).toBeDisabled();
+  });
+
+  it('guards duplicate submissions before the parent supplies saving feedback', async () => {
+    const view = renderPanel();
+    await choose('APPROVED');
+    const form = view.container.querySelector('form')!;
+    form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    expect(view.emitted('submit')).toHaveLength(1);
+  });
+
+  it('disables all decision fields while the parent is saving', () => {
+    render(ReviewDecisionPanel, {
+      props: { request, canReview: true, feedback: { eventRequestId: request.id, state: 'saving' } },
+    });
+    expect(screen.getByRole('group', { name: 'Choose a decision' })).toBeDisabled();
+    expect(screen.getByRole('textbox', { name: /Reason/ })).toBeDisabled();
+    expect(screen.getByRole('button', { name: /Recording decision/ })).toBeDisabled();
+    expect(screen.getByRole('status')).toHaveTextContent('Please wait');
+  });
+
+  it.each(['APPROVED', 'REJECTED'] as const)('shows success only after confirmed %s feedback', async (decision) => {
+    const view = renderPanel();
+    await choose(decision);
+    await fireEvent.click(screen.getByRole('button', { name: /^Record (approval|rejection)$/ }));
+    expect(screen.getByRole('status')).toHaveTextContent('Recording your decision');
+
+    await view.rerender({ feedback: { eventRequestId: request.id, state: 'saved', decision } });
+    expect(screen.getByRole('status')).toHaveTextContent(
+      decision === 'APPROVED' ? 'Request approved' : 'Request rejected',
+    );
+    expect(screen.queryByRole('button')).not.toBeInTheDocument();
+    expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
+  });
+
+  it.each([
+    { status: 'APPROVED', outcome: 'Request approved' },
+    { status: 'REJECTED', outcome: 'Request rejected' },
+    { status: 'SUBMITTED', recordedDecision: 'APPROVED' as const, outcome: 'Request approved' },
+    { status: 'SUBMITTED', recordedDecision: 'REJECTED' as const, outcome: 'Request rejected' },
+  ])('prevents another decision for $status / $recordedDecision', (state) => {
+    const { outcome, ...savedRequest } = state;
+    const view = render(ReviewDecisionPanel, {
+      props: { request: { ...request, ...savedRequest }, canReview: true },
+    });
+    expect(screen.getByRole('status')).toHaveTextContent(outcome);
+    expect(screen.queryByRole('radio')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button')).not.toBeInTheDocument();
+    expect(view.emitted('submit')).toBeUndefined();
+  });
+
+  it.each([false, undefined])('hides controls and outcomes when permission is %s', (canReview) => {
+    render(ReviewDecisionPanel, {
+      props: { request: { ...request, status: 'APPROVED' }, canReview },
+    });
+    expect(screen.getByRole('status')).toHaveTextContent('You do not have permission');
+    expect(screen.queryByText('Request approved')).not.toBeInTheDocument();
+    expect(screen.queryByRole('radio')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button')).not.toBeInTheDocument();
+  });
+
+  it.each(['DRAFT', 'UNDER_REVIEW', 'CLARIFICATION_REQUESTED', 'UNKNOWN_STATUS'])(
+    'does not offer initial decisions for %s requests', (status) => {
+      const view = render(ReviewDecisionPanel, { props: { request: { ...request, status }, canReview: true } });
+      expect(screen.getByRole('status')).toHaveTextContent(
+        status === 'DRAFT' ? 'Draft requests cannot be approved or rejected' : 'not awaiting an initial review decision',
+      );
+      expect(screen.queryByRole('button')).not.toBeInTheDocument();
+      expect(screen.queryByRole('radio')).not.toBeInTheDocument();
+      expect(view.emitted('submit')).toBeUndefined();
+    },
+  );
+
+  it('preserves input after a validation error and allows a corrected retry', async () => {
+    const view = renderPanel();
+    await choose('REJECTED');
+    await fireEvent.update(screen.getByRole('textbox', { name: /Reason/ }), 'Needs a suitable venue.');
+    await fireEvent.click(screen.getByRole('button', { name: 'Record rejection' }));
+    await view.rerender({ feedback: { eventRequestId: request.id, state: 'error', code: 'INVALID_REVIEW_INPUT' } });
+
+    expect(screen.getByRole('alert')).toHaveTextContent('Check your decision and reason');
+    expect(screen.getByRole('textbox', { name: /Reason/ })).toHaveValue('Needs a suitable venue.');
+    expect(screen.getByRole('radio', { name: /^Reject request/ })).toBeChecked();
+    await fireEvent.update(screen.getByRole('textbox', { name: /Reason/ }), 'Venue unavailable.');
+    await fireEvent.click(screen.getByRole('button', { name: 'Record rejection' }));
+    expect(view.emitted('submit')).toHaveLength(2);
+    expect(view.emitted('submit')[1]).toEqual([{
+      eventRequestId: request.id,
+      input: { decision: 'REJECTED', reason: 'Venue unavailable.' },
+    }]);
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it.each([
+    ['REVIEW_ALREADY_DECIDED', 'already has a decision'],
+    ['REQUEST_NOT_REVIEWABLE', 'no longer awaiting an initial decision'],
+    ['NETWORK_ERROR', 'could not confirm whether your decision was recorded'],
+    ['INVALID_RESPONSE', 'could not confirm whether your decision was recorded'],
+    ['INTERNAL_ERROR', 'could not confirm whether your decision was recorded'],
+  ])('requires a refresh after %s instead of blindly resubmitting', async (code, message) => {
+    const view = renderPanel();
+    await choose('APPROVED');
+    await fireEvent.click(screen.getByRole('button', { name: 'Record approval' }));
+    await view.rerender({ feedback: { eventRequestId: request.id, state: 'error', code } });
+    expect(screen.getByRole('alert')).toHaveTextContent(message);
+    expect(screen.queryByRole('radio')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /^Record/ })).not.toBeInTheDocument();
+    await fireEvent.click(screen.getByRole('button', { name: 'Refresh request' }));
+    expect(view.emitted('refresh')).toEqual([[request.id]]);
+    expect(view.emitted('submit')).toHaveLength(1);
+  });
+
+  it.each(['AUTHENTICATION_REQUIRED', 'REVIEW_FORBIDDEN', 'EVENT_REQUEST_NOT_FOUND'])(
+    'hides controls and prior outcomes after %s', (code) => {
+      render(ReviewDecisionPanel, {
+        props: {
+          request: { ...request, status: 'APPROVED' },
+          canReview: true,
+          feedback: { eventRequestId: request.id, state: 'error', code },
+        },
+      });
+      expect(screen.getByRole('alert')).toHaveTextContent(
+        code === 'AUTHENTICATION_REQUIRED' ? 'Sign in again' : 'unavailable or you no longer have permission',
+      );
+      expect(screen.queryByText('Request approved')).not.toBeInTheDocument();
+      expect(screen.queryByRole('radio')).not.toBeInTheDocument();
+      expect(screen.queryByRole('button')).not.toBeInTheDocument();
+    },
+  );
+
+  it.each([
+    { state: 'saving' },
+    { state: 'saved', decision: 'REJECTED' },
+    { state: 'error', code: 'REVIEW_FORBIDDEN' },
+  ] as const)('resets when switching requests and ignores old $state feedback', async (lateFeedback) => {
+    const view = renderPanel();
+    await choose('REJECTED');
+    await fireEvent.update(screen.getByRole('textbox', { name: /Reason/ }), 'Only for request one.');
+    await fireEvent.click(screen.getByRole('button', { name: 'Record rejection' }));
+    await view.rerender({ request: { id: 'request-two', status: 'SUBMITTED' } });
+    await view.rerender({ feedback: { ...lateFeedback, eventRequestId: request.id } });
+
+    expect(screen.getByRole('textbox', { name: /Reason/ })).toHaveValue('');
+    expect(screen.getByRole('textbox', { name: /Reason/ })).toBeEnabled();
+    for (const radio of screen.getAllByRole('radio')) expect(radio).not.toBeChecked();
+    expect(screen.getByRole('button', { name: 'Record decision' })).toBeDisabled();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    expect(screen.queryByText('Request rejected')).not.toBeInTheDocument();
+    await choose('APPROVED');
+    await fireEvent.click(screen.getByRole('button', { name: 'Record approval' }));
+    expect(view.emitted('submit')[1]).toEqual([{
+      eventRequestId: 'request-two', input: { decision: 'APPROVED', reason: null },
+    }]);
+  });
+
+  it('keeps the current submission locked when an earlier request reports a late result', async () => {
+    const view = renderPanel();
+    await choose('APPROVED');
+    await fireEvent.click(screen.getByRole('button', { name: 'Record approval' }));
+    await view.rerender({ request: { id: 'request-two', status: 'SUBMITTED' } });
+    await choose('REJECTED');
+    await fireEvent.click(screen.getByRole('button', { name: 'Record rejection' }));
+    await view.rerender({ feedback: { eventRequestId: 'request-two', state: 'saving' } });
+
+    for (const lateFeedback of [
+      { eventRequestId: request.id, state: 'saved', decision: 'APPROVED' },
+      { eventRequestId: request.id, state: 'error', code: 'INVALID_REVIEW_INPUT' },
+    ] as const) {
+      await view.rerender({ feedback: lateFeedback });
+      expect(screen.getByRole('status')).toHaveTextContent('Recording your decision');
+      expect(screen.getByRole('textbox', { name: /Reason/ })).toBeDisabled();
+      expect(screen.getByRole('group', { name: 'Choose a decision' })).toBeDisabled();
+      expect(screen.getByRole('button', { name: /Recording decision/ })).toBeDisabled();
+      expect(screen.queryByText('Request approved')).not.toBeInTheDocument();
+      await fireEvent.submit(view.container.querySelector('form')!);
+      expect(view.emitted('submit')).toHaveLength(2);
+    }
+
+    await view.rerender({ feedback: { eventRequestId: 'request-two', state: 'saved', decision: 'REJECTED' } });
+    expect(screen.getByRole('status')).toHaveTextContent('Request rejected');
+    expect(screen.queryByRole('button')).not.toBeInTheDocument();
+  });
+
+  it('provides independent accessible labels and radio groups for multiple panels', () => {
+    render({
+      components: { ReviewDecisionPanel },
+      template: '<ReviewDecisionPanel :request="first" can-review /><ReviewDecisionPanel :request="second" can-review />',
+      setup: () => ({ first: request, second: { id: 'request-two', status: 'SUBMITTED' } }),
+    });
+    const panels = screen.getAllByRole('region', { name: 'Record a decision' });
+    const reasons = panels.map((panel) => within(panel).getByRole('textbox', { name: 'Reason (optional)' }));
+    expect(reasons[0].id).not.toBe(reasons[1].id);
+    for (const reason of reasons) expect(reason).toHaveAccessibleDescription('Add an explanation to accompany the decision.');
+    expect(within(panels[0]).getByRole('radio', { name: /^Approve request/ }).getAttribute('name'))
+      .not.toBe(within(panels[1]).getByRole('radio', { name: /^Approve request/ }).getAttribute('name'));
+  });
+});
