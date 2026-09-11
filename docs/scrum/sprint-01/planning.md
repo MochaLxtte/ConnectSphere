@@ -24,18 +24,18 @@ This record summarises the 6 September planning meeting. Supporting notes and da
 
 ## Team and accountabilities
 
-The team has six developers. One developer also serves as Scrum Master and another as Product Owner. The workstreams below divide the initial responsibilities; member names and role holders are to be added.
+The team has six developers with the Sprint 1 responsibilities below. One developer also serves as Scrum Master and another as Product Owner; these two role holders remain to be confirmed. Review partners are proposed and remain to be agreed.
 
 | Accountability or workstream | Person | Starting responsibility | Proposed review partner |
 | --- | --- | --- | --- |
-| Product Owner, also one of Dev 1–6 | To confirm | Product goal, ordering and stakeholder needs | Team |
-| Scrum Master, also another of Dev 1–6 | To confirm | Facilitation, impediments and process improvement | Team |
-| Dev 1 | To confirm | KAN-25 authentication and access | Dev 4 or Dev 5 |
-| Dev 2 | To confirm | KAN-31 create request; KAN-4 save draft | Dev 3 |
-| Dev 3 | To confirm | KAN-34 resume/edit draft; KAN-6 submit | Dev 2 |
-| Dev 4 | To confirm | KAN-33 submitted request review; KAN-27 clarification | Dev 1 or Dev 5 |
-| Dev 5 | To confirm | KAN-36 approve/reject; KAN-16 visible status | Dev 4 |
-| Dev 6 | To confirm | KAN-24 database, then integration/testing; KAN-30 ERD if selected | Dev 1 plus affected story owners |
+| Product Owner, also a developer | To confirm | Product goal, ordering and stakeholder needs | Team |
+| Scrum Master, also a different developer | To confirm | Facilitation, impediments and process improvement | Team |
+| Authentication and authorisation | Ryan | KAN-25 login/authentication, role-based access, protected routes and permission checks | Irfan or Tristan |
+| Event creation and draft saving | Ernest | KAN-31 event form and creation flow; KAN-4 draft persistence | Kai Jie |
+| Draft editing and submission | Kai Jie | KAN-34 reload/edit drafts; KAN-6 validation and Draft → Submitted transition | Ernest |
+| Coordinator review and clarification | Irfan | KAN-33 coordinator review page; KAN-27 clarification requests and organiser visibility | Ryan or Tristan |
+| Approval/rejection and status | Tristan | KAN-36 approval/rejection workflow; KAN-16 organiser-facing status and outcome | Irfan |
+| Database and integration | Arvin | KAN-24 initial database/schema/configuration/seed data, then cross-feature integration, E2E testing and resolving integration issues | Ryan plus affected story owners |
 
 Record the Product Owner and Scrum Master alongside their development workstreams, and include time for these responsibilities in the capacity plan.
 
@@ -48,13 +48,14 @@ The [sprint backlog](sprint-backlog.md) records the ten committed items and a pr
 | Goal path | KAN-25, KAN-31, KAN-4, KAN-34, KAN-6, KAN-33, KAN-36, KAN-16 | Committed to support the organiser-to-coordinator workflow; 24 points |
 | Clarification | KAN-27 | Committed so a coordinator can request further information; 3 points |
 | Database/integration | KAN-24 supports the shared path; check existing scaffold against remaining needs | Committed as a separate 5-point PBI; completion and remaining work to verify |
-| Design support | KAN-30 optional ERD task; an initial diagram already exists | To confirm actual remaining design work |
 | Coordinator assignment | KAN-29 conditional dependency if assignment is necessary for review authorization | Resolve Q-02 and decide scope; not automatically included |
 | Later release work | Venue/equipment/registration/change/notification capabilities remain in the product backlog | Confirm no accidental removal from release scope |
 | Account scope | Working planning assumption: suitable test accounts for the organiser/coordinator slice | Confirm provisioning, role coverage and boundaries of KAN-25 |
 | Final committed items and baseline point total | Nine user stories plus KAN-24; 32 points | Agreed at Sprint Planning on 6 September; dated backlog export to attach |
 
 Do not silently give every coordinator access to every event to bypass an assignment dependency. Record and implement the agreed event relationship policy. A narrower Sprint 1 slice does not complete the full five-role release requirement.
+
+Maintain the ERD in the [system design documentation](../../architecture/README.md) so that it reflects the implemented schema and relationships.
 
 ## Proposed delivery sequence
 
@@ -75,14 +76,14 @@ Review and testing will run throughout these windows, with 17–18 September res
 
 | ID | Dependency or risk | Next decision/action | Proposed coordination lead | Resolution/evidence |
 | --- | --- | --- | --- | --- |
-| S1-R01 | Authentication and actor identity affect every protected endpoint | Agree session/account approach and server-side role/relationship checks; Q-01/Q-02 | Dev 1 with Dev 4 | Not recorded |
-| S1-R02 | Several developers touch the same draft fields and schema | Agree shared DTO, update semantics and migration order before conflicting changes | Dev 2/3/6 | Not recorded |
-| S1-R03 | Submission requirements are not fully specified | Resolve Q-03; separate incomplete draft validation from submission validation | Dev 3 with customer liaison | Not recorded |
-| S1-R04 | Review and clarification transitions may be interpreted differently | Resolve Q-04 and agree one transition policy; approval is not full event confirmation | Dev 4/5 | Not recorded |
+| S1-R01 | Authentication and actor identity affect every protected endpoint | Agree session/account approach and server-side role/relationship checks; Q-01/Q-02 | Ryan with Irfan | Not recorded |
+| S1-R02 | Several developers touch the same draft fields and schema | Agree shared DTO, update semantics and migration order before conflicting changes | Ernest, Kai Jie and Arvin | Not recorded |
+| S1-R03 | Submission requirements are not fully specified | Resolve Q-03; separate incomplete draft validation from submission validation | Kai Jie with customer liaison | Not recorded |
+| S1-R04 | Review and clarification transitions may be interpreted differently | Resolve Q-04 and agree one transition policy; approval is not full event confirmation | Irfan and Tristan | Not recorded |
 | S1-R05 | No verified historical velocity is available | Use real availability and uncertainty to select a feasible first scope; inspect daily | All Developers | Not recorded |
-| S1-R06 | Scaffold exists but feature completion remains unverified | Verify setup and remaining KAN-24 work; do not mark business stories Done from infrastructure checks | Dev 6 and story owners | Not recorded |
+| S1-R06 | Scaffold exists but feature completion remains unverified | Verify setup and remaining KAN-24 work; do not mark business stories Done from infrastructure checks | Arvin and story owners | Not recorded |
 | S1-R07 | Planning exports and supporting meeting records are not yet attached | Collect dated notes and Jira snapshots; record export dates in the evidence index | Note taker/Scrum Master to confirm | Not recorded |
-| S1-R08, added 8 September | Shared Supabase development database requires coordinated schema and fixture changes | Verify hosted TLS connection and project settings; agree migration ownership/order and keep automated tests isolated | Dev 6 with affected story owners | Database hosting selected; setup verification pending |
+| S1-R08, added 8 September | Shared Supabase development database requires coordinated schema and fixture changes | Verify hosted TLS connection and project settings; agree migration ownership/order and keep automated tests isolated | Arvin with affected story owners | Database hosting selected; setup verification pending |
 
 Record customer answers in the shared [clarification log](../../requirements/assumptions-and-questions.md) with the team's own section as the source. Carry affected acceptance criteria, estimates, tests and design documents forward together.
 

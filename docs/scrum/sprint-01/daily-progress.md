@@ -14,7 +14,7 @@ On each working day, record participants, progress toward the sprint goal, imped
 | --- | --- | --- | --- | --- | --- |
 | 6 September | Sunday | Not recorded | | | |
 | 7 September | Monday | Not recorded | Scaffold commit `db6930d` recorded at 02:58:37 +08:00 | Assess remaining KAN-24 work and business stories against their acceptance criteria | E17 |
-| 8 September | Tuesday | Not recorded | Supabase selected for hosted PostgreSQL; [technical decision](../../requirements/assumptions-and-questions.md#8-september-2026--hosted-postgresql) recorded | Dev 6 to verify hosted setup and coordinate migrations; KAN-25 authentication approach remains to be agreed. Commitment remains 32 points. | E09 |
+| 8 September | Tuesday | Not recorded | Supabase selected for hosted PostgreSQL; [technical decision](../../requirements/assumptions-and-questions.md#8-september-2026--hosted-postgresql) recorded | Arvin to verify hosted setup and coordinate migrations; KAN-25 authentication approach remains to be agreed. Commitment remains 32 points. | E09 |
 | 9 September | Wednesday | Not recorded | | | |
 | 10 September | Thursday | Not recorded | | | |
 | 11 September | Friday | Not recorded | | | |

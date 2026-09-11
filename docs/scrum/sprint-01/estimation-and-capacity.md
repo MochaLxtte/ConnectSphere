@@ -42,12 +42,11 @@ The item selection and points below were **agreed at Sprint Planning on 6 Septem
 
 Question IDs refer to [customer questions](../../requirements/assumptions-and-questions.md). Link any answer to the affected acceptance criteria and estimate decision.
 
-### Agreed infrastructure estimate and optional work
+### Agreed infrastructure estimate
 
 | Item | Agreed treatment / scope rationale | Effect on totals |
 | --- | --- | --- |
 | KAN-24, database and integration | **Separate infrastructure backlog item, agreed at 5 SP.** Shared persistence foundations, migration/seed/setup reproducibility and integration across workstreams involve more breadth and coordination than either 2-SP anchor. Review its acceptance criteria and test the shared foundation and application connection points. | **27 business-story SP + 5 infrastructure SP = 32 SP.** KAN-24 covers shared database foundations; story-specific behavior and tests stay with their functional stories. Its subtasks receive no extra points. |
-| KAN-30, optional ERD/design task | Record as an unpointed supporting task under the relevant work, unless the team explicitly defines and estimates an independent backlog item. | Outside the 32-point commitment; no separate estimate agreed. Count shared design work once under the relevant item. |
 
 The scaffold was committed on **7 September**. KAN-24 completion will be assessed against its adopted acceptance criteria and setup/test evidence. Existing scaffold components provide a starting point for the functional stories.
 
@@ -84,7 +83,7 @@ The estimates were agreed during Sprint Planning on **6 September**. Add the par
 
 ## Capacity for 6–19 September
 
-The team has **six developers**, with one also serving as Scrum Master and another as Product Owner. `Dev 1`–`Dev 6` identify the workstreams until member names and role holders are added. Members are available on Saturday/Sunday for the agreed review and planning events. Record development hours separately, taking other coursework, employment, leave and realistic working slots across the **14 calendar days** into account.
+The team has **six developers: Ryan, Ernest, Kai Jie, Irfan, Tristan and Arvin**. One also serves as Scrum Master and another as Product Owner; these two role holders remain to be confirmed. Members are available on Saturday/Sunday for the agreed review and planning events. Record development hours separately, taking other coursework, employment, leave and realistic working slots across the **14 calendar days** into account.
 
 Use one consistent calculation per member:
 
@@ -94,13 +93,13 @@ Meeting and absence deductions must not overlap. If an unavailable period was al
 
 | Workstream | Member name | Gross availability (h) | Meetings (h) | Absences/unavailable time not already excluded (h) | Usable delivery hours | Availability basis / constraints |
 | --- | --- | --- | --- | --- | --- | --- |
-| Dev 1 | Pending | Pending | Pending | Pending | Pending | Pending |
-| Dev 2 | Pending | Pending | Pending | Pending | Pending | Pending |
-| Dev 3 | Pending | Pending | Pending | Pending | Pending | Pending |
-| Dev 4 | Pending | Pending | Pending | Pending | Pending | Pending |
-| Dev 5 | Pending | Pending | Pending | Pending | Pending | Pending |
-| Dev 6 | Pending | Pending | Pending | Pending | Pending | Pending |
-| **Team total** | **Six developers; names to add** | **Pending** | **Pending** | **Pending** | **Pending** | **Calculate after development availability is recorded** |
+| Authentication and authorisation | Ryan | Pending | Pending | Pending | Pending | Pending |
+| Event creation and draft saving | Ernest | Pending | Pending | Pending | Pending | Pending |
+| Draft editing and submission | Kai Jie | Pending | Pending | Pending | Pending | Pending |
+| Coordinator review and clarification | Irfan | Pending | Pending | Pending | Pending | Pending |
+| Approval/rejection and status | Tristan | Pending | Pending | Pending | Pending | Pending |
+| Database and integration | Arvin | Pending | Pending | Pending | Pending | Pending |
+| **Team total** | **Six developers** | **Pending** | **Pending** | **Pending** | **Pending** | **Calculate after development availability is recorded** |
 
 Code review, integration, testing, fixing defects and maintaining required evidence are delivery work that must fit within usable hours. Make room for them when selecting tasks; do not allocate every hour to feature coding. Record any explicit contingency reserve below as part of the usable total, so it is not deducted a second time.
 
@@ -134,7 +133,6 @@ KAN-27 is committed Sprint 1 work. Any later deferral is a dated change to the a
 | Actual commitment date/time and participants | Planning held 6 September; exact time and named participants pending |
 | Accepted item IDs and estimates | Nine business stories plus KAN-24 listed above, agreed on 6 September; dated Jira snapshot to attach |
 | **Original committed total, P0** | **32 SP = 27 business-story SP + 5 infrastructure SP** |
-| Optional supporting work | KAN-30 optional ERD/design task; no separate estimate recorded |
 | Capacity-based rationale, constraints and fallback | Pending |
 | Meeting and backlog records | Sprint Planning decisions on 6 September; supporting notes and Jira snapshot to attach |
 

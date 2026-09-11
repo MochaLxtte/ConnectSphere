@@ -22,15 +22,17 @@ Account access, event requests, and coordinator review pages are explicitly mark
 
 ## Team work areas
 
-| Work area                            | Location                                      | Planning references |
-| ------------------------------------ | --------------------------------------------- | ------------------- |
-| Application shell and routes         | `src/app`, `src/components`                   | Shared foundation   |
-| Sign in and account state            | `src/features/auth`                           | KAN-25              |
-| Event creation and draft saving      | `src/features/events`                         | KAN-31, KAN-4       |
-| Event editing and submission         | `src/features/events`                         | KAN-34, KAN-6       |
-| Coordinator review and clarification | `src/features/reviews`                        | KAN-33, KAN-27      |
-| Decisions and organiser status       | `src/features/reviews`, `src/features/events` | KAN-36, KAN-16      |
-| Health checks                        | `src/features/system`                         | Shared foundation   |
+| Work area                            | Owner   | Location                                      | Planning references |
+| ------------------------------------ | ------- | --------------------------------------------- | ------------------- |
+| Application shell and routes         | Shared  | `src/app`, `src/components`                   | Shared foundation   |
+| Sign in and account state            | Ryan    | `src/features/auth`                           | KAN-25              |
+| Event creation and draft saving      | Ernest  | `src/features/events`                         | KAN-31, KAN-4       |
+| Event editing and submission         | Kai Jie | `src/features/events`                         | KAN-34, KAN-6       |
+| Coordinator review and clarification | Irfan   | `src/features/reviews`                        | KAN-33, KAN-27      |
+| Decisions and organiser status       | Tristan | `src/features/reviews`, `src/features/events` | KAN-36, KAN-16      |
+| Health checks                        | Shared  | `src/features/system`                         | Shared foundation   |
+
+Arvin supports cross-feature integration, end-to-end testing and resolving integration issues after database setup.
 
 Keep domain-specific components, API wrappers, and tests in their feature directory. Promote components to `src/components` only when they are shared. Place API transport behavior in `src/lib/api-client.ts`. Replace the relevant placeholder page as you implement each item; coordinate route changes in `src/app/router.ts`.
 

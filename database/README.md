@@ -34,11 +34,11 @@ The migration runner applies numbered SQL files in order within one transaction,
 
 Application tables remain in the `public` schema. The hardening migration enables row-level security and revokes access for Supabase Data API roles on the scaffold tables; it creates no client access policies. The Data API must remain disabled for this architecture. Express's database owner connection can access these tables, so services still have to enforce each person's role and ownership. Apply equivalent restrictions to new tables as they are introduced. See [Supabase data access guidance](https://supabase.com/docs/guides/database/secure-data).
 
-A Git branch does not isolate a shared database. Agree schema changes with Dev 6 before applying them to the team's project. Use separate projects or the local test database for experiments that would disrupt other developers. Do not run destructive reset commands against the shared project.
+A Git branch does not isolate a shared database. Agree schema changes with Arvin before applying them to the team's project. Use separate projects or the local test database for experiments that would disrupt other developers. Do not run destructive reset commands against the shared project.
 
 The initial schema covers user identity, incomplete event drafts, coordinator linkage, clarification records, and review outcomes. It intentionally has no reservation or registration schema yet. Draft fields may be NULL, and submission rules must be implemented separately after clarification. The six statuses, single role per user, single proposed time interval, and text requirement fields are starting design choices, not approved customer policy. Services must update `updated_at` on writes and enforce roles, ownership, transitions, and atomic review operations; the schema alone does not do so.
 
-Seeds contain fictional `.test` accounts with NULL password hashes, plus one incomplete draft. They cannot authenticate. Re-running seeding inserts missing examples without replacing existing data. Seeding is disabled for `NODE_ENV=production`; point it only at a development database. KAN-25 owns identity integration, KAN-24 owns schema evolution and representative integration fixtures.
+Seeds contain fictional `.test` accounts with NULL password hashes, plus one incomplete draft. They cannot authenticate. Re-running seeding inserts missing examples without replacing existing data. Seeding is disabled for `NODE_ENV=production`; point it only at a development database. Ryan owns identity integration under KAN-25; Arvin owns schema evolution and representative integration fixtures under KAN-24.
 
 ## Optional local PostgreSQL and integration tests
 

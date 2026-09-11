@@ -64,7 +64,6 @@ Assess completion against the team's adopted [definition of done](../definition-
 | KAN-36 — approval and rejection | Committed, 3 points | [Unassessed] | [Evidence] | [Record] |
 | KAN-16 — organiser event status | Committed, 2 points | [Unassessed] | [Evidence] | [Record] |
 | KAN-24 — database/integration PBI | Separately committed, 5 points | [Unassessed] | [Evidence] | [Record] |
-| KAN-30 — ERD task | Optional; inclusion not confirmed; excluded from the 32-point PBI baseline | [Verify whether supporting work was selected; record any scope change] | [If selected] | [Record] |
 | KAN-29 — conditional item | Not committed; conditional | Not selected unless a dated scope change is agreed | [If later selected] | [Record] |
 
 The commitment agreed at Sprint Planning on 6 September is **10 PBIs, 32 points**: nine user stories totalling 27 points and KAN-24 estimated separately at 5 points. Attach the original Jira backlog export and check its titles against this record. Add any scope changes with links to the decisions, and link owners and reviewers to their tasks and PRs.
@@ -78,7 +77,7 @@ The commitment agreed at Sprint Planning on 6 September is **10 PBIs, 32 points*
 | Final in-scope PBI points | [32 + added − removed unfinished + net estimate changes] |
 | Done PBI points / actual velocity | [Blank until closure; sum only Done PBIs using each item's latest agreed estimate before completion] |
 | Unfinished in-scope points | [Final in-scope − Done, reconciled to PBI rows] |
-| Technical PBI and supporting task completion | [KAN-24 earns its separately committed 5 points only if Done; do not add points again for its subtasks. KAN-30/KAN-29 require a recorded scope decision to count.] |
+| Technical PBI and supporting task completion | [KAN-24 earns its separately committed 5 points only if Done; do not add points again for its subtasks. KAN-29 requires a recorded scope decision and estimate to count.] |
 | Remaining defects or limitations | [Issue links, impact and disposition] |
 
 Reconcile scope, estimates and velocity with [estimation and capacity](estimation-and-capacity.md), the [daily burndown](daily-progress.md) and the [sprint backlog](sprint-backlog.md). Keep the original commitment at 32 points. Estimates normally remain stable; count any agreed revision once as a signed difference, and report completion of the original commitment separately using its original estimates. Return unfinished work to the product backlog for consideration at Sprint 2 Planning on **Sunday 20 September**.
