@@ -132,12 +132,22 @@ As an event coordinator, I want to view submitted requests I am permitted to rev
 - **KAN-33-AC1:** Given requests in the agreed reviewable states and access scope, when the coordinator opens the review queue, then the queue shows only requests eligible for that coordinator under the recorded policy.
 - **KAN-33-AC2:** Given a visible submitted request, when the coordinator opens it, then the saved submission details and current status needed for review are displayed.
 - **KAN-33-AC3:** Given an unrelated or otherwise unauthorized request, when the coordinator or another actor attempts to fetch its details directly, then the API withholds the protected information under the agreed response policy.
+- **KAN-33-AC4 (added during implementation, 11 September):** Given no request is currently in a reviewable state, when an authorised coordinator opens the queue, then it returns an empty list rather than an error.
+- **KAN-33-AC5 (added during implementation, 11 September):** Given a request that is a draft or already has a recorded decision (approved/rejected), when the coordinator or any other actor requests its detail directly by ID, then the API responds identically to an unrelated/unauthorized request (`404 EVENT_REQUEST_NOT_FOUND`) so its existence and current state are not distinguishable from an inaccessible request.
+- **KAN-33-AC6 (added during implementation, 11 September):** Given a malformed event request ID in the detail route, when it is requested, then the API rejects it with a validation error before any database lookup.
+
+See the dated assumptions this story's implementation depends on: reviewable-state scope,
+no default coordinator-visibility grant, and the `GET /api/events/:id` route collision with
+KAN-34/KAN-16 — all recorded in
+[assumptions and questions](../../requirements/assumptions-and-questions.md#11-september-2026--kan-33-review-queuedetail-scope).
 
 | Local task | Proposed implementation work |
 | --- | --- |
-| S1-33-01 | Agree queue/detail fields and reviewer-access fixtures; implement scoped list/detail queries under `backend/src/modules/events/` (new files). |
-| S1-33-02 | Replace `frontend/src/features/reviews/pages/ReviewQueuePage.vue`; add a review detail component/page under the reviews feature (new file), including empty/error states. |
-| S1-33-03 | Implement S1-T18–S1-T20 and expose a shared review-detail contract for Tristan's decisions and KAN-27. |
+| S1-33-01 | Agree queue/detail fields and reviewer-access fixtures; implement scoped list/detail queries under `backend/src/modules/events/` (new files). — Done: `submitted-requests.ts`. |
+| S1-33-02 | Replace `frontend/src/features/reviews/pages/ReviewQueuePage.vue`; add a review detail component/page under the reviews feature (new file), including empty/error states. — Done: `ReviewQueuePage.vue` (list) and new `ReviewRequestPage.vue` (detail, mounts Tristan's `ReviewDecisionPanel.vue`), with component tests. `canReview` is currently hardcoded `true` on the detail page pending KAN-25 — see note below. |
+| S1-33-03 | Implement S1-T18–S1-T20 and expose a shared review-detail contract for Tristan's decisions and KAN-27. — Backend + frontend contract done, component/HTTP-boundary unit-tested. S1-T18–S1-T20 integration/browser levels (real Postgres, real browser) not yet executed (need a reachable database — see KAN-24). |
+
+**Known gap (11 September):** `ReviewRequestPage.vue` passes `can-review="true"` to the decision panel unconditionally, since there is no real authenticated actor yet (KAN-25). This must become a real permission check once KAN-25 lands — it is a stub, not an access-control decision, and does not affect server-side enforcement (`submitted-requests-router.ts` and Tristan's `review-router.ts` both independently require verified `EVENT_COORDINATOR` identity regardless of what the frontend sends).
 
 ### KAN-36 — Approve or reject requests
 

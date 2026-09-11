@@ -73,7 +73,7 @@ The estimates were agreed during Sprint Planning on **6 September**. Add the par
 | KAN-4 | 3 | Further discussion notes to add | Agreed 6 September; supporting notes to attach |
 | KAN-34 | 3 | Further discussion notes to add | Agreed 6 September; supporting notes to attach |
 | KAN-6 | 3 | Further discussion notes to add | Agreed 6 September; supporting notes to attach |
-| KAN-33 | 2 | Reference story; further discussion notes to add | Agreed 6 September; supporting notes to attach |
+| KAN-33 | 2 | Reference story. Post-implementation justification (Irfan, 11 September): matches the anchor definition — one scoped read query (list) plus one scoped read query (detail), no state mutation and no cross-table write. Complexity comes from *authorization*, not mechanics: every row must pass an explicit visibility policy (KAN-29/Q-02 still unresolved), and drafts/already-decided requests must be masked identically to unauthorized ones so a client can't distinguish "doesn't exist," "not yours," and "not reviewable yet." That masking logic and its edge cases (empty queue, draft, approved, rejected, non-coordinator actor, malformed ID) are what the 2 SP anchor is meant to represent — bounded scope, but not trivial. Confirmed no re-estimate needed once implemented. | Agreed 6 September; implementation justification added 11 September |
 | KAN-27 | 3 | Further discussion notes to add | Agreed 6 September; supporting notes to attach |
 | KAN-36 | 3 | Further discussion notes to add | Agreed 6 September; supporting notes to attach |
 | KAN-16 | 2 | Reference story; further discussion notes to add | Agreed 6 September; supporting notes to attach |

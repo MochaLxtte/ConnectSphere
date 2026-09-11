@@ -46,6 +46,46 @@ Never accept organiser identity, acting role, arbitrary status, or reviewer iden
 
 Agree on an authentication strategy, runtime validation, 401/403/404 behavior, concurrency handling, and error details as part of KAN-25 and the first event stories. For significant contract changes, update this document and the corresponding UI, service and integration test in the same PR.
 
+## KAN-33 review queue/detail: authentication integration pending
+
+`GET /api/events` (queue) and `GET /api/events/:id` (detail) are implemented in
+`backend/src/modules/events/submitted-requests-router.ts`. They are mounted only when
+`createApp` receives `submittedRequests` dependencies containing the database pool, an
+`authenticate(request)` function and a `canViewRequest(actor, request)` visibility policy.
+The normal server does not supply these yet, so both routes return the standard
+`404 NOT_FOUND` response when running `npm run dev`, matching the KAN-36 pattern.
+
+Only `SUBMITTED`, `UNDER_REVIEW` and `CLARIFICATION_REQUESTED` requests are reviewable; see
+the dated decision in
+[assumptions and questions](../requirements/assumptions-and-questions.md#11-september-2026--kan-33-review-queuedetail-scope).
+There is no default coordinator-visibility rule — see the
+[KAN-29/Q-02 decision](../requirements/assumptions-and-questions.md#11-september-2026--coordinator-visibility-has-no-default-grant-kan-29q-02-still-open).
+`GET /api/events/:id` only answers for a verified `EVENT_COORDINATOR`; any other actor falls
+through via `next()` to a future KAN-34/KAN-16 handler — see the
+[route-collision note](../requirements/assumptions-and-questions.md#11-september-2026--get-apieventsid-owner-collision).
+
+`GET /api/events` response:
+
+```json
+{ "items": [{ "id": "...", "name": "...", "status": "SUBMITTED", "createdAt": "...", "updatedAt": "..." }] }
+```
+
+`GET /api/events/:id` response is the full `EventRecord` shape from
+`backend/src/modules/events/types.ts` (all draft/submission fields plus `status`).
+
+| Response | Meaning |
+| --- | --- |
+| `200` | Queue array (possibly empty) or full request detail. |
+| `400 INVALID_EVENT_REQUEST_ID` | The route ID is not a UUID (detail only). |
+| `401 AUTHENTICATION_REQUIRED` | The authentication adapter reports absent or invalid credentials. |
+| `403 VIEW_FORBIDDEN` | The verified account is not an event coordinator (queue only; detail defers instead). |
+| `404 EVENT_REQUEST_NOT_FOUND` | The request does not exist, is a draft, is already decided, or this coordinator cannot view it; all four cases return the same response. |
+| `500 INTERNAL_ERROR` | An unexpected verification or persistence failure occurred; details are not returned. |
+
+Responses use `Cache-Control: no-store`. HTTP tests cover validation, role checks and error
+mapping; database integration tests are planned (see traceability) once local Supabase access
+is available for this workstream.
+
 ## KAN-36 review endpoint: authentication integration pending
 
 The handler for `POST /api/events/:id/reviews` is implemented. It is mounted only when `createApp` receives `reviews` dependencies containing the database pool, an `authenticate(request)` function and a `canReviewRequest(reviewer, event, client)` policy. The normal server does not supply these dependencies yet, so this route currently returns the standard `404 NOT_FOUND` response when running `npm run dev`.
