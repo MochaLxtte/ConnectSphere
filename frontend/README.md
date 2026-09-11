@@ -47,13 +47,15 @@ GET /api/health/ready
 503 { "error": { "code": "DATABASE_UNAVAILABLE", "message": "..." } }
 ```
 
-Business APIs are not implemented by this scaffold. Agree request/response contracts with the backend owner before connecting the event and account pages. Supabase Auth is a separate choice for KAN-25; no authentication client is configured yet. Frontend TypeScript types describe data; they do not replace server-side validation.
+The queue, shared request-detail and decision-write handlers are implemented but remain unavailable in the normal server until authentication and access policies are supplied. Use the [API contract](../docs/architecture/api-contract.md) when connecting event pages. Supabase Auth is a separate choice for KAN-25; no authentication client is configured yet. Frontend TypeScript types describe data; they do not replace server-side validation.
 
 For production, serve `dist/` with a history fallback to `index.html` and route `/api/*` to the backend. The Vite proxy is development-only. The interface uses system-font fallbacks if the optional Google Fonts stylesheet is unavailable.
 
 ## KAN-36 decision panel
 
-`src/features/reviews/components/ReviewDecisionPanel.vue` provides approval/rejection controls for a single event request. It is tested independently; the review queue remains a placeholder until KAN-33 supplies the real request-review page. The panel does not fetch requests, authenticate users or call the review endpoint itself.
+`src/features/reviews/components/ReviewDecisionPanel.vue` provides approval/rejection controls for a single event request. KAN-33's `ReviewRequestPage.vue` mounts it and supplies API calls and feedback; `ReviewQueuePage.vue` lists requests. The panel itself does not fetch requests, authenticate users or call the review endpoint.
+
+The shared GET retains the flat event fields and adds `review` and `actions`. Frontend types and permission/outcome wiring still need updating: the parent currently hardcodes `canReview` to true. Separate permission to display an outcome from `actions.canMakeInitialDecision`; binding that flag directly to the existing `canReview` prop would hide saved outcomes. Refresh the shared detail after a successful or uncertain decision write. Live authenticated browser integration remains pending.
 
 The parent page supplies:
 

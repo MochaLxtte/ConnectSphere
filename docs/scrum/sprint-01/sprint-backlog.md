@@ -133,21 +133,22 @@ As an event coordinator, I want to view submitted requests I am permitted to rev
 - **KAN-33-AC2:** Given a visible submitted request, when the coordinator opens it, then the saved submission details and current status needed for review are displayed.
 - **KAN-33-AC3:** Given an unrelated or otherwise unauthorized request, when the coordinator or another actor attempts to fetch its details directly, then the API withholds the protected information under the agreed response policy.
 - **KAN-33-AC4 (added during implementation, 11 September):** Given no request is currently in a reviewable state, when an authorised coordinator opens the queue, then it returns an empty list rather than an error.
-- **KAN-33-AC5 (added during implementation, 11 September):** Given a request that is a draft or already has a recorded decision (approved/rejected), when the coordinator or any other actor requests its detail directly by ID, then the API responds identically to an unrelated/unauthorized request (`404 EVENT_REQUEST_NOT_FOUND`) so its existence and current state are not distinguishable from an inaccessible request.
+- **KAN-33-AC5 (historical implementation assumption, superseded on 11 September):** The original implementation masked all drafts and decided requests as `404 EVENT_REQUEST_NOT_FOUND`. The shared detail handler now allows organisers to retrieve their own drafts and outcomes, and authorised coordinators to retrieve decided requests. Coordinator access to drafts and any request-specific access denial still return the same 404 as a missing request. The queue continues to exclude drafts and decided requests.
 - **KAN-33-AC6 (added during implementation, 11 September):** Given a malformed event request ID in the detail route, when it is requested, then the API rejects it with a validation error before any database lookup.
 
-See the dated assumptions this story's implementation depends on: reviewable-state scope,
-no default coordinator-visibility grant, and the `GET /api/events/:id` route collision with
-KAN-34/KAN-16 — all recorded in
-[assumptions and questions](../../requirements/assumptions-and-questions.md#11-september-2026--kan-33-review-queuedetail-scope).
+The shared `GET /api/events/:id` handler now serves KAN-34/KAN-33/KAN-16. Its detail access
+rules are separate from queue membership; coordinator policy and live authentication remain
+open. The [API contract](../../architecture/api-contract.md) and
+[dated implementation records](../../requirements/assumptions-and-questions.md) explain
+the current behaviour and retain the superseded queue/detail assumption and route fallback.
 
 | Local task | Proposed implementation work |
 | --- | --- |
-| S1-33-01 | Agree queue/detail fields and reviewer-access fixtures; implement scoped list/detail queries under `backend/src/modules/events/` (new files). — Done: `submitted-requests.ts`. |
+| S1-33-01 | Queue query implemented in `submitted-requests.ts`; shared detail query in `event-request-detail.ts`. Contract review and the production coordinator policy remain pending. |
 | S1-33-02 | Replace `frontend/src/features/reviews/pages/ReviewQueuePage.vue`; add a review detail component/page under the reviews feature (new file), including empty/error states. — Done: `ReviewQueuePage.vue` (list) and new `ReviewRequestPage.vue` (detail, mounts Tristan's `ReviewDecisionPanel.vue`), with component tests. `canReview` is currently hardcoded `true` on the detail page pending KAN-25 — see note below. |
-| S1-33-03 | Implement S1-T18–S1-T20 and expose a shared review-detail contract for Tristan's decisions and KAN-27. — Backend + frontend contract done, component/HTTP-boundary unit-tested. S1-T18–S1-T20 integration/browser levels (real Postgres, real browser) not yet executed (need a reachable database — see KAN-24). |
+| S1-33-03 | Shared backend detail, access checks and outcome refresh pass HTTP and isolated PostgreSQL tests. The browser queue error/retry check passes with response fixtures. Full S1-T18–S1-T20 coverage with live authentication and the agreed visibility policy remains pending. |
 
-**Known gap (11 September):** `ReviewRequestPage.vue` passes `can-review="true"` to the decision panel unconditionally, since there is no real authenticated actor yet (KAN-25). This must become a real permission check once KAN-25 lands — it is a stub, not an access-control decision, and does not affect server-side enforcement (`submitted-requests-router.ts` and Tristan's `review-router.ts` both independently require verified `EVENT_COORDINATOR` identity regardless of what the frontend sends).
+**Known gap (11 September):** `ReviewRequestPage.vue` still passes `can-review="true"` to the decision panel. The next UI step must consume the shared action flags while keeping a recorded outcome visible when another decision is unavailable. Server enforcement is independent: the shared GET requires verified identity and ownership/visibility checks; the decision POST additionally requires coordinator identity and request-specific write permission. Live authentication remains part of KAN-25.
 
 ### KAN-36 — Approve or reject requests
 
