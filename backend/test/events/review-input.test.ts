@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseReviewInput, ReviewInputError } from '../src/modules/events/review-input.js';
+import { parseReviewInput, ReviewInputError } from '../../src/modules/events/review-input.js';
 
 describe('KAN-36 review request input', () => {
   it.each(['APPROVED', 'REJECTED'] as const)('accepts a %s decision', (decision) => {
