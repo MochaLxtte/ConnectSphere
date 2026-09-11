@@ -48,3 +48,37 @@ GET /api/health/ready
 Business APIs are not implemented by this scaffold. Agree request/response contracts with the backend owner before connecting the event and account pages. Supabase Auth is a separate choice for KAN-25; no authentication client is configured yet. Frontend TypeScript types describe data; they do not replace server-side validation.
 
 For production, serve `dist/` with a history fallback to `index.html` and route `/api/*` to the backend. The Vite proxy is development-only. The interface uses system-font fallbacks if the optional Google Fonts stylesheet is unavailable.
+
+## KAN-36 decision panel
+
+`src/features/reviews/components/ReviewDecisionPanel.vue` provides approval/rejection controls for a single event request. It is tested independently; the review queue remains a placeholder until KAN-33 supplies the real request-review page. The panel does not fetch requests, authenticate users or call the review endpoint itself.
+
+The parent page supplies:
+
+- `request`: the current request's `id`, `status` and optional `recordedDecision`, read from the server. Unknown statuses cannot be reviewed; the supported initial state is `SUBMITTED`.
+- `canReview`: permission for this request, derived from verified access state. Omission denies access. This controls display only; Express must enforce the role and request-specific permission again when saving.
+- `feedback`: a `ReviewFeedback` value from `src/features/reviews/types.ts`, scoped to `eventRequestId`. Use `state: 'saving'`, `state: 'saved'` with the confirmed `decision`, or `state: 'error'` with the API error `code`.
+
+Example placement inside the request-review page:
+
+```vue
+<ReviewDecisionPanel
+  :request="reviewRequest"
+  :can-review="canReviewRequest"
+  :feedback="reviewFeedback"
+  @submit="recordDecision"
+  @refresh="reloadRequest"
+/>
+```
+
+`submit` emits `{ eventRequestId, input: { decision, reason } }`. The reason is trimmed and blank text becomes `null`. The parent sets saving feedback immediately and sends only `input` to `POST /api/events/:id/reviews` through the authenticated API client. Set saved feedback only after a successful server response; set error feedback when the call fails. Each update should supply a new feedback object for that request. The panel prevents duplicate submissions while waiting and ignores feedback for other request IDs.
+
+`refresh` emits the current request ID. Reload its status and recorded decision from the server before clearing error feedback. A conflict or uncertain network/server failure requires this refresh because the decision may already have been saved. Invalid-input feedback preserves the selected decision and reason for correction. Authentication/access failures hide decision controls. Changing request IDs clears the previous selection and typed reason.
+
+Recorded outcomes replace the form, including when an existing decision accompanies a stale `SUBMITTED` status. Component tests use supplied state and emitted events; they are not evidence of live authentication, API integration or completion of KAN-16.
+
+Run the component tests from the repository root:
+
+```powershell
+npm.cmd run test --workspace @connectsphere/frontend -- src/features/reviews/components/ReviewDecisionPanel.test.ts
+```

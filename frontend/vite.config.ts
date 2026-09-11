@@ -30,7 +30,7 @@ export default defineConfig(({ mode }) => {
       coverage: {
         provider: 'v8',
         reporter: ['text', 'html'],
-        include: ['src/lib/**/*.ts', 'src/features/system/**/*.{ts,vue}'],
+        include: ['src/lib/**/*.ts', 'src/features/system/**/*.{ts,vue}', 'src/features/reviews/**/*.{ts,vue}'],
         exclude: ['**/*.test.ts'],
       },
     },
