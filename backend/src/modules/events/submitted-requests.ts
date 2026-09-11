@@ -6,10 +6,8 @@ export type QueueActor = Pick<AuthenticatedUser, 'id' | 'role'>;
 export type ReviewableRequest = Pick<EventRecord, 'id' | 'organiserId' | 'coordinatorId' | 'status'>;
 
 /**
- * KAN-33 scope decision (documented in docs/requirements/assumptions-and-questions.md):
- * the coordinator queue/detail surfaces only requests actively awaiting an outcome.
- * Draft, approved and rejected requests are excluded here; KAN-16 owns organiser-facing
- * status/outcome display once a decision exists.
+ * Queue membership only: shared request detail has separate visibility rules so an
+ * authorised reader can still view an outcome after the request leaves this queue.
  */
 export const REVIEWABLE_STATUSES = [
   'SUBMITTED',
@@ -28,15 +26,6 @@ export interface SubmittedRequestQueryDependencies {
   canViewRequest(actor: QueueActor, request: ReviewableRequest): boolean | Promise<boolean>;
 }
 
-export class SubmittedRequestNotFoundError extends Error {
-  readonly code = 'EVENT_REQUEST_NOT_FOUND';
-
-  constructor() {
-    super('The event request does not exist.');
-    this.name = 'SubmittedRequestNotFoundError';
-  }
-}
-
 export interface SubmittedRequestSummary {
   id: string;
   name: string | null;
@@ -48,15 +37,6 @@ export interface SubmittedRequestSummary {
 const listColumns = `
   id, organiser_id AS "organiserId", coordinator_id AS "coordinatorId", status,
   name, created_at AS "createdAt", updated_at AS "updatedAt"
-`;
-
-const detailColumns = `
-  id, organiser_id AS "organiserId", coordinator_id AS "coordinatorId", status,
-  name, purpose, description, starts_at AS "startsAt", ends_at AS "endsAt",
-  expected_attendance AS "expectedAttendance", venue_requirements AS "venueRequirements",
-  accessibility_needs AS "accessibilityNeeds", equipment_requirements AS "equipmentRequirements",
-  registration_required AS "registrationRequired",
-  created_at AS "createdAt", updated_at AS "updatedAt"
 `;
 
 /** List reviewable requests visible to this actor. Non-coordinators see an empty queue. */
@@ -85,30 +65,4 @@ export async function listReviewableRequests(
     }
   }
   return visible;
-}
-
-/**
- * Fetch full detail for one reviewable request. Unauthorised, non-coordinator, draft and
- * already-decided requests all raise the same not-found error so a caller cannot learn
- * whether a protected request exists (mirrors the KAN-36 review handler's masking).
- */
-export async function getReviewableRequestDetail(
-  { pool, canViewRequest }: SubmittedRequestQueryDependencies,
-  actor: QueueActor,
-  id: string,
-): Promise<EventRecord> {
-  const result = await pool.query<EventRecord & ReviewableRequest>(
-    `SELECT ${detailColumns} FROM event_requests WHERE id = $1`,
-    [id],
-  );
-  const row = result.rows[0];
-  if (!row) throw new SubmittedRequestNotFoundError();
-
-  const reviewable = (REVIEWABLE_STATUSES as readonly EventStatus[]).includes(row.status);
-  if (actor.role !== 'EVENT_COORDINATOR' || !reviewable) throw new SubmittedRequestNotFoundError();
-
-  const authorised = await canViewRequest(actor, row);
-  if (!authorised) throw new SubmittedRequestNotFoundError();
-
-  return row;
 }

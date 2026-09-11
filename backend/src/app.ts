@@ -49,7 +49,7 @@ export function createApp({ database, logger = console, reviews, submittedReques
     }
   });
 
-  // Keep the review queue unavailable until KAN-25 supplies verified identity and a visibility policy.
+  // Queue/detail reads require verified identity and explicit visibility/decision policies.
   if (submittedRequests) app.use('/api/events', createSubmittedRequestsRouter(submittedRequests));
   // Keep review writes unavailable until KAN-25 supplies verified identity and a review policy.
   if (reviews) app.use('/api/events', createReviewRouter(reviews));

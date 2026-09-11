@@ -1,9 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import {
-  getReviewableRequestDetail,
   listReviewableRequests,
   REVIEWABLE_STATUSES,
-  SubmittedRequestNotFoundError,
   type QueueActor,
   type ReviewableRequest,
 } from '../../src/modules/events/submitted-requests.js';
@@ -74,55 +72,5 @@ describe('KAN-33 listReviewableRequests', () => {
     const pool = fakePool([]);
     const items = await listReviewableRequests({ pool, canViewRequest: () => true }, coordinator);
     expect(items).toEqual([]);
-  });
-});
-
-describe('KAN-33 getReviewableRequestDetail', () => {
-  it('returns full detail for an authorised, reviewable request', async () => {
-    const pool = fakePool([baseRow]);
-    const detail = await getReviewableRequestDetail(
-      { pool, canViewRequest: () => true }, coordinator, baseRow.id,
-    );
-    expect(detail).toEqual(baseRow);
-  });
-
-  it('raises not-found for a request ID that does not exist', async () => {
-    const pool = fakePool([]);
-    await expect(
-      getReviewableRequestDetail({ pool, canViewRequest: () => true }, coordinator, 'missing'),
-    ).rejects.toThrow(SubmittedRequestNotFoundError);
-  });
-
-  it('masks a draft as not-found so it is never treated as awaiting review', async () => {
-    const pool = fakePool([{ ...baseRow, status: 'DRAFT' }]);
-    await expect(
-      getReviewableRequestDetail({ pool, canViewRequest: () => true }, coordinator, baseRow.id),
-    ).rejects.toThrow(SubmittedRequestNotFoundError);
-  });
-
-  it.each(['APPROVED', 'REJECTED'] as const)(
-    'masks an already-decided (%s) request as not-found; KAN-16 owns organiser status display',
-    async (status) => {
-      const pool = fakePool([{ ...baseRow, status }]);
-      await expect(
-        getReviewableRequestDetail({ pool, canViewRequest: () => true }, coordinator, baseRow.id),
-      ).rejects.toThrow(SubmittedRequestNotFoundError);
-    },
-  );
-
-  it('masks the request for a non-coordinator actor without checking the visibility policy', async () => {
-    const pool = fakePool([baseRow]);
-    const canViewRequest = vi.fn().mockReturnValue(true);
-    await expect(
-      getReviewableRequestDetail({ pool, canViewRequest }, organiser, baseRow.id),
-    ).rejects.toThrow(SubmittedRequestNotFoundError);
-    expect(canViewRequest).not.toHaveBeenCalled();
-  });
-
-  it('masks a reviewable request the coordinator is not authorised to see', async () => {
-    const pool = fakePool([baseRow]);
-    await expect(
-      getReviewableRequestDetail({ pool, canViewRequest: () => false }, coordinator, baseRow.id),
-    ).rejects.toThrow(SubmittedRequestNotFoundError);
   });
 });

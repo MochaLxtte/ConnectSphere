@@ -1,13 +1,17 @@
 import { Router, type Request } from 'express';
+import type { Pool } from 'pg';
 import {
-  getReviewableRequestDetail,
+  getEventRequestDetail, EventRequestNotFoundError, type EventRequestDetailDependencies,
+} from './event-request-detail.js';
+import {
   listReviewableRequests,
-  SubmittedRequestNotFoundError,
   type QueueActor,
   type SubmittedRequestQueryDependencies,
 } from './submitted-requests.js';
 
 export interface SubmittedRequestsRouterDependencies extends SubmittedRequestQueryDependencies {
+  pool: Pick<Pool, 'query' | 'connect'>;
+  canReviewRequest: EventRequestDetailDependencies['canReviewRequest'];
   /**
    * KAN-25 must verify the session and resolve the trusted app_users identity/role.
    * Return null for absent/invalid credentials; throw for verification service failures.
@@ -21,15 +25,7 @@ const unavailableRequest = {
   error: { code: 'EVENT_REQUEST_NOT_FOUND', message: 'The event request was not found.' },
 };
 
-/**
- * Mount only with real authentication and an explicit coordinator-visibility policy.
- *
- * GET /:id is also a proposed route for KAN-34 (organiser's own draft) and KAN-16
- * (organiser-facing status) in docs/architecture/api-contract.md. This handler only acts
- * for a verified EVENT_COORDINATOR and calls next() for any other actor, so another
- * router mounted after this one can still handle the same path for its own actor. See the
- * "GET /api/events/:id owner collision" note in docs/requirements/assumptions-and-questions.md.
- */
+/** Coordinator queue and one shared KAN-34/KAN-33/KAN-16 detail route, with explicit policies. */
 export function createSubmittedRequestsRouter(dependencies: SubmittedRequestsRouterDependencies) {
   const router = Router();
 
@@ -58,6 +54,7 @@ export function createSubmittedRequestsRouter(dependencies: SubmittedRequestsRou
   });
 
   router.get('/:id', async (request, response, next) => {
+    response.set('Cache-Control', 'no-store');
     try {
       const actor = await dependencies.authenticate(request);
       if (!actor) {
@@ -66,13 +63,13 @@ export function createSubmittedRequestsRouter(dependencies: SubmittedRequestsRou
         });
         return;
       }
-      // Not our actor: defer to a handler for KAN-34/KAN-16 mounted after this router.
-      if (actor.role !== 'EVENT_COORDINATOR') {
-        next();
+      if (actor.role !== 'EVENT_COORDINATOR' && actor.role !== 'EVENT_ORGANISER') {
+        response.status(403).json({
+          error: { code: 'VIEW_FORBIDDEN', message: 'This account cannot view event request details.' },
+        });
         return;
       }
 
-      response.set('Cache-Control', 'no-store');
       if (!uuid.test(request.params.id)) {
         response.status(400).json({
           error: { code: 'INVALID_EVENT_REQUEST_ID', message: 'The event request ID must be a UUID.' },
@@ -80,11 +77,10 @@ export function createSubmittedRequestsRouter(dependencies: SubmittedRequestsRou
         return;
       }
 
-      const detail = await getReviewableRequestDetail(dependencies, actor as QueueActor, request.params.id);
+      const detail = await getEventRequestDetail(dependencies, actor, request.params.id);
       response.status(200).json(detail);
     } catch (error) {
-      if (error instanceof SubmittedRequestNotFoundError) {
-        response.set('Cache-Control', 'no-store');
+      if (error instanceof EventRequestNotFoundError) {
         response.status(404).json(unavailableRequest);
         return;
       }
