@@ -45,3 +45,36 @@ Use camelCase in JSON and snake_case in SQL. IDs are UUID strings. Dates over HT
 Never accept organiser identity, acting role, arbitrary status, or reviewer identity from an untrusted request body. Derive them from the authenticated session and service action. Filter in repositories as well as enforcing service access rules. Determine coordinator visibility and assignment policy before exposing a review queue. Client navigation is not access control.
 
 Agree on an authentication strategy, runtime validation, 401/403/404 behavior, concurrency handling, and error details as part of KAN-25 and the first event stories. For significant contract changes, update this document and the corresponding UI, service and integration test in the same PR.
+
+## KAN-36 review endpoint: authentication integration pending
+
+The handler for `POST /api/events/:id/reviews` is implemented. It is mounted only when `createApp` receives `reviews` dependencies containing the database pool, an `authenticate(request)` function and a `canReviewRequest(reviewer, event, client)` policy. The normal server does not supply these dependencies yet, so this route currently returns the standard `404 NOT_FOUND` response when running `npm run dev`.
+
+Ryan's authentication adapter must verify credentials and return the corresponding `app_users` ID and trusted application role. It returns `null` for absent or invalid credentials and throws on verification-service failures. An identity provider's subject must be mapped to the application account; it is not assumed to equal `app_users.id`. Browser-supplied identity, role fields and unverified token contents cannot establish access.
+
+The reviewer must be an event coordinator. The request-specific policy then runs inside the saving transaction against the locked event row. Coordinator assignment and delegation rules must be agreed before supplying this policy. There is no default policy that grants access. Tests use a fixture-only assigned-coordinator policy and synthetic verified identities; they do not implement or verify live login.
+
+Request body:
+
+```json
+{
+  "decision": "APPROVED",
+  "reason": "Ready to proceed."
+}
+```
+
+`decision` must be `APPROVED` or `REJECTED`. `reason` is optional, is trimmed, and becomes `null` when absent or blank. Other body fields are rejected. The event request ID must use UUID format. Initial decisions currently require `SUBMITTED` status with no existing review decision.
+
+| Response | Meaning |
+| --- | --- |
+| `201` | Returns `reviewId`, `eventRequestId`, `reviewedBy`, `decision` and `reason` after the review and matching event status commit together. |
+| `400 INVALID_EVENT_REQUEST_ID` | The route ID is not a UUID. |
+| `400 INVALID_REVIEW_INPUT` | The JSON body does not match the decision contract. |
+| `401 AUTHENTICATION_REQUIRED` | The authentication adapter reports absent or invalid credentials. |
+| `403 REVIEW_FORBIDDEN` | The verified account is not an event coordinator. |
+| `404 EVENT_REQUEST_NOT_FOUND` | The request does not exist or this coordinator cannot review it; both cases return the same response. |
+| `409 REQUEST_NOT_REVIEWABLE` | The authorised request is not in a supported initial-review state, including a draft. |
+| `409 REVIEW_ALREADY_DECIDED` | The authorised request already has an approval or rejection outcome. |
+| `500 INTERNAL_ERROR` | An unexpected verification or persistence failure occurred; details are not returned. |
+
+The existing malformed-JSON and payload-size responses also apply. Responses from the review handler use `Cache-Control: no-store`. HTTP tests cover validation, role checks, error mapping and unavailable integration; database tests additionally exercise the mounted handler with real PostgreSQL and fixture authentication.

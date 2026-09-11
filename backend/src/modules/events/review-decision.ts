@@ -7,7 +7,7 @@ import { assertCanMakeInitialReview, ReviewEligibilityError } from './review-eli
 export type ReviewActor = Pick<AuthenticatedUser, 'id' | 'role'>;
 export type ReviewRequest = Pick<EventRecord, 'id' | 'organiserId' | 'coordinatorId' | 'status'>;
 
-interface ReviewPersistenceDependencies {
+export interface ReviewPersistenceDependencies {
   pool: Pick<Pool, 'connect'>;
   /** Required server-side policy for this actor and the locked request; no default grants access. */
   canReviewRequest(

@@ -1,6 +1,8 @@
 import { randomUUID } from 'node:crypto';
 import pg from 'pg';
+import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { createApp } from '../../../backend/src/app.js';
 import {
   recordInitialReview,
   ReviewRequestNotFoundError,
@@ -191,5 +193,49 @@ describe('KAN-36 review decision persistence', () => {
       eventRequestId, reviewer: coordinator, input: { decision: 'APPROVED' },
     })).rejects.toBeInstanceOf(ReviewRequestNotFoundError);
     expect(await readState(eventRequestId)).toEqual({ event: undefined, reviews: [] });
+  });
+
+  it('persists a decision through HTTP using the verified actor and request policy', async () => {
+    const eventRequestId = await createEvent();
+    const app = createApp({
+      database: pool,
+      // Test fixture identity only; live authentication belongs to KAN-25.
+      reviews: { ...dependencies, authenticate: async () => coordinator },
+    });
+    const response = await request(app)
+      .post(`/api/events/${eventRequestId}/reviews`)
+      .send({ decision: 'APPROVED', reason: '  Ready to proceed.  ' });
+
+    expect(response.status).toBe(201);
+    expect(response.body).toEqual({
+      reviewId: expect.any(String), eventRequestId, reviewedBy: coordinator.id,
+      decision: 'APPROVED', reason: 'Ready to proceed.',
+    });
+    const state = await readState(eventRequestId);
+    expect(state.event.status).toBe('APPROVED');
+    expect(state.reviews).toEqual([{
+      id: response.body.reviewId, event_request_id: eventRequestId,
+      reviewed_by: coordinator.id, decision: 'APPROVED', reason: 'Ready to proceed.',
+    }]);
+  });
+
+  it('hides another coordinator\'s request through HTTP and leaves it unchanged', async () => {
+    const eventRequestId = await createEvent();
+    const before = await readState(eventRequestId);
+    const app = createApp({
+      database: pool,
+      reviews: { ...dependencies, authenticate: async () => otherCoordinator },
+    });
+    const forbidden = await request(app)
+      .post(`/api/events/${eventRequestId}/reviews`)
+      .send({ decision: 'REJECTED' });
+    const missing = await request(app)
+      .post(`/api/events/${randomUUID()}/reviews`)
+      .send({ decision: 'REJECTED' });
+
+    expect(forbidden.status).toBe(404);
+    expect(missing.status).toBe(404);
+    expect(forbidden.body).toEqual(missing.body);
+    expect(await readState(eventRequestId)).toEqual(before);
   });
 });
