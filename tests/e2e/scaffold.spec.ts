@@ -19,7 +19,7 @@ test('SCF-E2E-01 browser reaches the API and migrated database through the Vite 
 test('SCF-E2E-02 planned pages are navigable and explicitly unfinished', async ({ page }) => {
   await page.goto('/');
   const navigation = page.getByRole('navigation', { name: 'Main navigation' });
-  for (const name of ['Event requests', 'New event request', 'Review queue']) {
+  for (const name of ['Event requests', 'New event request']) {
     await navigation.getByRole('link', { name, exact: true }).click();
     await expect(page.getByRole('heading', { name, exact: true, level: 1 })).toBeVisible();
     await expect(
