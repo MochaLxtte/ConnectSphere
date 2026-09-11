@@ -2,11 +2,16 @@ import express, { type ErrorRequestHandler } from 'express';
 import helmet from 'helmet';
 import type { HealthDatabase } from './db/pool.js';
 import { createReviewRouter, type ReviewRouterDependencies } from './modules/events/review-router.js';
+import {
+  createSubmittedRequestsRouter,
+  type SubmittedRequestsRouterDependencies,
+} from './modules/events/submitted-requests-router.js';
 
 export interface AppDependencies {
   database: HealthDatabase;
   logger?: Pick<Console, 'error'>;
   reviews?: ReviewRouterDependencies;
+  submittedRequests?: SubmittedRequestsRouterDependencies;
 }
 
 const databaseUnavailable = {
@@ -17,7 +22,7 @@ const databaseUnavailable = {
 };
 
 /** Construct the HTTP app without opening a socket or creating database connections. */
-export function createApp({ database, logger = console, reviews }: AppDependencies) {
+export function createApp({ database, logger = console, reviews, submittedRequests }: AppDependencies) {
   const app = express();
   app.disable('x-powered-by');
   app.use(helmet());
@@ -44,6 +49,8 @@ export function createApp({ database, logger = console, reviews }: AppDependenci
     }
   });
 
+  // Keep the review queue unavailable until KAN-25 supplies verified identity and a visibility policy.
+  if (submittedRequests) app.use('/api/events', createSubmittedRequestsRouter(submittedRequests));
   // Keep review writes unavailable until KAN-25 supplies verified identity and a review policy.
   if (reviews) app.use('/api/events', createReviewRouter(reviews));
 

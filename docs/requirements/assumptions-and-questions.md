@@ -34,6 +34,73 @@ These items are unresolved unless a dated decision is added. The proposed defaul
 
 **Sprint impact:** The original 6 September commitment remains ten PBIs and 32 points, including KAN-24 at 5 points. This is a technical implementation decision; no scope, point or completion change has been recorded. Hosted setup and project-setting checks remain to be evidenced.
 
+## 11 September 2026 — KAN-33 review queue/detail scope
+
+**Decision and rationale:** `GET /api/events` (queue) and `GET /api/events/:id` (detail) only
+surface requests in `SUBMITTED`, `UNDER_REVIEW` or `CLARIFICATION_REQUESTED` status. `DRAFT`,
+`APPROVED` and `REJECTED` requests are masked as `404 EVENT_REQUEST_NOT_FOUND` from these
+endpoints — drafts are explicitly excluded by KAN-33's acceptance criteria, and decided
+requests are organiser-facing status/outcome display, owned by KAN-16, not a re-review surface.
+
+**Kind:** Team implementation assumption (not yet a customer clarification).
+
+**Source and date:** Irfan, 11 September 2026, while implementing KAN-33.
+
+**Affected story and acceptance-criterion IDs:** KAN-33-AC1–AC3 (repo copy in
+`docs/scrum/sprint-01/sprint-backlog.md`); interacts with KAN-16-AC1 (status display) and
+KAN-36 (which independently enforces its own reviewable-state check on write).
+
+**Affected implementation and tests:** `backend/src/modules/events/submitted-requests.ts`
+(`REVIEWABLE_STATUSES`), `backend/test/events/submitted-requests.test.ts`.
+
+**Supersedes:** None.
+
+## 11 September 2026 — Coordinator visibility has no default grant (KAN-29/Q-02 still open)
+
+**Decision and rationale:** Since KAN-29 (coordinator assignment) is not committed Sprint 1
+scope and Q-02 is unresolved, `submitted-requests.ts` requires callers to supply a
+`canViewRequest(actor, request)` policy function — there is no built-in rule that grants a
+coordinator visibility into every submitted request. Production wiring in `app.ts` currently
+has no policy supplied (the router mounts as unavailable, matching the KAN-36 pattern), so
+this endpoint returns 404 for the whole app until KAN-25 and a real KAN-29/Q-02 answer exist.
+Unit tests use a fixture-only policy and do not establish or endorse "every coordinator sees
+every request" as the eventual rule.
+
+**Kind:** Team implementation assumption.
+
+**Source and date:** Irfan, 11 September 2026.
+
+**Affected story and acceptance-criterion IDs:** KAN-33-AC1, KAN-33-AC3.
+
+**Affected implementation and tests:** `backend/src/modules/events/submitted-requests.ts`,
+`backend/src/modules/events/submitted-requests-router.ts`,
+`backend/test/events/submitted-requests-router.test.ts`.
+
+**Supersedes:** None.
+
+## 11 September 2026 — `GET /api/events/:id` owner collision
+
+**Decision and rationale:** `docs/architecture/api-contract.md`'s proposed-routes table lists
+`GET /api/events/:id` under three different owners (Kai Jie/KAN-34 draft retrieval,
+Tristan/KAN-16 status display, Irfan/KAN-33 review detail) for three different actor
+relationships to the same request. KAN-33's handler now only acts when the verified actor is
+an `EVENT_COORDINATOR`; for any other actor it calls `next()` so a handler for KAN-34/KAN-16
+can be mounted after it on the same path. This is a stopgap, not a resolved contract — the
+three implementations should be reconciled (either into one role-aware handler or an agreed
+mount order) before all three exist, to avoid silent precedence bugs.
+
+**Kind:** Team implementation assumption; needs a team decision before KAN-34 or KAN-16 add
+their own `GET /:id` handler.
+
+**Source and date:** Irfan, 11 September 2026.
+
+**Affected story and acceptance-criterion IDs:** KAN-33-AC2, KAN-34-AC1, KAN-16-AC1/AC2.
+
+**Affected implementation and tests:** `backend/src/modules/events/submitted-requests-router.ts`,
+`backend/test/events/submitted-requests-router.test.ts` (the "defers to a later handler" case).
+
+**Supersedes:** None.
+
 ## Decision record template
 
 Copy this block when the team receives an answer or adopts an explicit implementation assumption. Keep superseded decisions so later changes remain explainable.

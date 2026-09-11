@@ -2,7 +2,7 @@ feature_id,feature_name,story_ids,acceptance_criterion_ids,implementation_path,t
 CF-01,User Authorisation and Authentication,KAN-25,,,TC-01,,Planned; not implemented
 CF-02,Event Request Creation,KAN-31; KAN-6,,,TC-02,,Planned; not implemented
 CF-03,Draft Event Requests,KAN-4; KAN-34,,,TC-03,,Planned; not implemented
-CF-04,Event Review and Approval,KAN-33; KAN-27; KAN-36,,,TC-04,,Planned; not implemented
+CF-04,Event Review and Approval,KAN-33; KAN-27; KAN-36,KAN-33-AC1; KAN-33-AC2; KAN-33-AC3; KAN-33-AC4; KAN-33-AC5; KAN-33-AC6,backend/src/modules/events/submitted-requests.ts; backend/src/modules/events/submitted-requests-router.ts; frontend/src/features/reviews/api/submitted-requests.ts; frontend/src/features/reviews/pages/ReviewQueuePage.vue; frontend/src/features/reviews/pages/ReviewRequestPage.vue,TC-04; S1-T18; S1-T19; S1-T20,backend/test/events/submitted-requests.test.ts; backend/test/events/submitted-requests-router.test.ts; frontend/src/features/reviews/pages/ReviewQueuePage.test.ts; frontend/src/features/reviews/pages/ReviewRequestPage.test.ts,In progress - KAN-33 backend + frontend unit/component-tested (no integration/browser evidence yet, needs reachable database); KAN-27 not started; KAN-36 backend implemented separately on feat/KAN-36-event-decisions (not yet merged); coordinator auth is stubbed pending KAN-25
 CF-05,Coordinator Assignment,,,,TC-05,,Planned; not implemented
 CF-06,Event Status Management,KAN-16,,,TC-06,,Planned; not implemented
 CF-07,Event Information Management,KAN-34 (draft editing only),,,TC-07,,Planned; not implemented
