@@ -169,6 +169,33 @@ coordinators remain unable to view drafts; authorised viewers may retrieve decid
 The queue filter, KAN-33-AC4 empty-queue behaviour, KAN-33-AC6 ID validation and requirement
 for explicit coordinator policies remain in force.
 
+## 13 September 2026 — KAN-6 submission-completeness rule (Q-03 still open)
+
+**Decision and rationale:** Q-03 (which fields are mandatory for submission, and what
+may remain incomplete in a draft) remains an open customer question. As a provisional
+team implementation assumption, KAN-6 requires `name`, `purpose`, `startsAt`, `endsAt`,
+`expectedAttendance` and `venueRequirements` to be non-null before a `DRAFT` request may
+transition to `SUBMITTED`. `description`, `accessibilityNeeds`, `equipmentRequirements`
+and `registrationRequired` may remain blank at submission. This selection follows the
+fields a coordinator needs to actually evaluate and schedule an event; it is not a
+customer-confirmed rule and should be revisited once Q-03 is answered.
+
+**Kind:** Team implementation assumption (not yet a customer clarification).
+
+**Source and date:** Kai Jie, 13 September 2026, while implementing KAN-6.
+
+**Affected story and acceptance-criterion IDs:** KAN-6-AC1, KAN-6-AC2 (repo copy in
+`docs/scrum/sprint-01/sprint-backlog.md`).
+
+**Affected implementation and tests:** `backend/src/modules/events/submit-input.ts`,
+`backend/src/modules/events/submit-eligibility.ts`,
+`backend/src/modules/events/submit-request.ts`,
+`backend/test/events/submit-input.test.ts`,
+`backend/test/events/submit-eligibility.test.ts`,
+`database/tests/events/submit-request.integration.test.ts`.
+
+**Supersedes:** None.
+
 ## Decision record template
 
 Copy this block when the team receives an answer or adopts an explicit implementation assumption. Keep superseded decisions so later changes remain explainable.
