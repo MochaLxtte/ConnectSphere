@@ -12,8 +12,12 @@ import {
 import { updateOwnedDraft, DraftRequestNotFoundError, type UpdateDraftDependencies } from './update-draft.js';
 import { DraftEligibilityError } from './draft-eligibility.js';
 import { DraftUpdateInputError } from './draft-update-input.js';
+import { submitEventRequest, SubmitRequestNotFoundError, type SubmitRequestDependencies } from './submit-request.js';
+import { SubmitEligibilityError } from './submit-eligibility.js';
+import { SubmissionValidationError } from './submit-input.js';
 
-export interface SubmittedRequestsRouterDependencies extends SubmittedRequestQueryDependencies, UpdateDraftDependencies {
+export interface SubmittedRequestsRouterDependencies
+  extends SubmittedRequestQueryDependencies, UpdateDraftDependencies, SubmitRequestDependencies {
   pool: Pick<Pool, 'query' | 'connect'>;
   canReviewRequest: EventRequestDetailDependencies['canReviewRequest'];
   /**
@@ -138,6 +142,55 @@ export function createSubmittedRequestsRouter(dependencies: SubmittedRequestsRou
         return;
       }
       if (error instanceof DraftEligibilityError) {
+        response.status(409).json({ error: { code: error.code, message: error.message } });
+        return;
+      }
+      next(error);
+    }
+  });
+
+  router.post('/:id/submit', async (request, response, next) => {
+    response.set('Cache-Control', 'no-store');
+    try {
+      const actor = await dependencies.authenticate(request);
+      if (!actor) {
+        response.status(401).json({
+          error: { code: 'AUTHENTICATION_REQUIRED', message: 'Sign in to submit an event request.' },
+        });
+        return;
+      }
+      if (actor.role !== 'EVENT_ORGANISER') {
+        response.status(403).json({
+          error: { code: 'SUBMIT_FORBIDDEN', message: 'Only event organisers can submit a draft event request.' },
+        });
+        return;
+      }
+
+      if (!uuid.test(request.params.id)) {
+        response.status(400).json({
+          error: { code: 'INVALID_EVENT_REQUEST_ID', message: 'The event request ID must be a UUID.' },
+        });
+        return;
+      }
+      const submitted = await submitEventRequest(dependencies, {
+        eventRequestId: request.params.id,
+        actor,
+      });
+      response.status(200).json(submitted);
+    } catch (error) {
+      if (error instanceof SubmissionValidationError) {
+        response.status(400).json({
+          error: { code: 'SUBMISSION_INCOMPLETE', message: error.message, missingFields: error.missingFields },
+        });
+        return;
+      }
+      // An unrelated organiser must not learn whether this request exists or its current state.
+      if (error instanceof SubmitRequestNotFoundError ||
+          (error instanceof SubmitEligibilityError && error.code === 'SUBMIT_FORBIDDEN')) {
+        response.status(404).json(unavailableRequest);
+        return;
+      }
+      if (error instanceof SubmitEligibilityError) {
         response.status(409).json({ error: { code: error.code, message: error.message } });
         return;
       }

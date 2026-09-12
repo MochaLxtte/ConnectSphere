@@ -11,6 +11,9 @@ import type { SubmittedRequestsRouterDependencies } from '../../src/modules/even
 import { updateOwnedDraft, DraftRequestNotFoundError } from '../../src/modules/events/update-draft.js';
 import { DraftEligibilityError } from '../../src/modules/events/draft-eligibility.js';
 import { DraftUpdateInputError } from '../../src/modules/events/draft-update-input.js';
+import { submitEventRequest, SubmitRequestNotFoundError } from '../../src/modules/events/submit-request.js';
+import { SubmitEligibilityError } from '../../src/modules/events/submit-eligibility.js';
+import { SubmissionValidationError } from '../../src/modules/events/submit-input.js';
 
 vi.mock('../../src/modules/events/submitted-requests.js', async (importOriginal) => {
   const actual =
@@ -24,12 +27,19 @@ vi.mock('../../src/modules/events/update-draft.js', async (importOriginal) => {
   return { ...actual, updateOwnedDraft: vi.fn() };
 });
 
+vi.mock('../../src/modules/events/submit-request.js', async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import('../../src/modules/events/submit-request.js')>();
+  return { ...actual, submitEventRequest: vi.fn() };
+});
+
 const coordinator: QueueActor = { id: '20000000-0000-4000-8000-000000000001', role: 'EVENT_COORDINATOR' };
 const organiser: QueueActor = { id: '20000000-0000-4000-8000-000000000002', role: 'EVENT_ORGANISER' };
 const requestId = '10000000-0000-4000-8000-000000000001';
 const list = vi.mocked(listReviewableRequests);
 const ownedDrafts = vi.mocked(listOwnedDrafts);
 const updateDraft = vi.mocked(updateOwnedDraft);
+const submitRequest = vi.mocked(submitEventRequest);
 
 function setup(actor: QueueActor | null = coordinator) {
   const query = vi.fn<HealthDatabase['query']>();
@@ -48,6 +58,7 @@ beforeEach(() => {
   list.mockReset();
   ownedDrafts.mockReset();
   updateDraft.mockReset();
+  submitRequest.mockReset();
 });
 
 describe('KAN-33 GET /api/events (review queue)', () => {
@@ -204,5 +215,95 @@ describe('KAN-34 PATCH /api/events/:id (edit a draft)', () => {
     const response = await request(app).patch(`/api/events/${requestId}`).send({ name: 'x' });
     expect(response.status).toBe(409);
     expect(response.body.error.code).toBe('DRAFT_NOT_EDITABLE');
+  });
+});
+
+describe('KAN-6 POST /api/events/:id/submit', () => {
+  it('submits a ready draft', async () => {
+    const { app, submittedRequests } = setup(organiser);
+    const submitted = { id: requestId, organiserId: organiser.id, coordinatorId: null, status: 'SUBMITTED' as const,
+      name: 'Career Fair', purpose: 'Recruitment', description: null,
+      startsAt: '2026-10-01T09:00:00.000Z', endsAt: '2026-10-01T17:00:00.000Z',
+      expectedAttendance: 250, venueRequirements: 'Hall A', accessibilityNeeds: null,
+      equipmentRequirements: null, registrationRequired: null,
+      createdAt: '2026-09-07T00:00:00Z', updatedAt: '2026-09-08T00:00:00Z' };
+    submitRequest.mockResolvedValue(submitted);
+
+    const response = await request(app).post(`/api/events/${requestId}/submit`);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(submitted);
+    expect(response.headers['cache-control']).toBe('no-store');
+    expect(submitRequest).toHaveBeenCalledExactlyOnceWith(submittedRequests, {
+      eventRequestId: requestId, actor: organiser,
+    });
+  });
+
+  it('requires verified authentication', async () => {
+    const { app } = setup(null);
+    const response = await request(app).post(`/api/events/${requestId}/submit`);
+    expect(response.status).toBe(401);
+    expect(response.body.error.code).toBe('AUTHENTICATION_REQUIRED');
+    expect(submitRequest).not.toHaveBeenCalled();
+  });
+
+  it.each(['EVENT_COORDINATOR', 'VENUE_STAFF', 'TECHNICAL_SUPPORT_STAFF', 'ATTENDEE'] as const)(
+    'rejects the verified %s role before touching the database',
+    async (role) => {
+      const { app } = setup({ ...organiser, role });
+      const response = await request(app).post(`/api/events/${requestId}/submit`);
+      expect(response.status).toBe(403);
+      expect(response.body.error.code).toBe('SUBMIT_FORBIDDEN');
+      expect(submitRequest).not.toHaveBeenCalled();
+    },
+  );
+
+  it('rejects an invalid UUID before calling the service', async () => {
+    const { app } = setup(organiser);
+    const response = await request(app).post('/api/events/not-a-uuid/submit');
+    expect(response.status).toBe(400);
+    expect(response.body.error.code).toBe('INVALID_EVENT_REQUEST_ID');
+    expect(submitRequest).not.toHaveBeenCalled();
+  });
+
+  it('returns 400 with the missing fields when the draft is incomplete', async () => {
+    const { app } = setup(organiser);
+    submitRequest.mockRejectedValue(new SubmissionValidationError(['purpose', 'venueRequirements']));
+    const response = await request(app).post(`/api/events/${requestId}/submit`);
+    expect(response.status).toBe(400);
+    expect(response.body.error.code).toBe('SUBMISSION_INCOMPLETE');
+    expect(response.body.error.missingFields).toEqual(['purpose', 'venueRequirements']);
+  });
+
+  it('masks a missing request as unavailable', async () => {
+    const { app } = setup(organiser);
+    submitRequest.mockRejectedValue(new SubmitRequestNotFoundError());
+    const response = await request(app).post(`/api/events/${requestId}/submit`);
+    expect(response.status).toBe(404);
+    expect(response.body).toEqual({
+      error: { code: 'EVENT_REQUEST_NOT_FOUND', message: 'The event request was not found.' },
+    });
+  });
+
+  it('masks another organiser\'s draft the same way as a missing request', async () => {
+    const { app } = setup(organiser);
+    submitRequest.mockRejectedValue(
+      new SubmitEligibilityError('SUBMIT_FORBIDDEN', 'You are not authorised to submit this event request.'),
+    );
+    const response = await request(app).post(`/api/events/${requestId}/submit`);
+    expect(response.status).toBe(404);
+    expect(response.body).toEqual({
+      error: { code: 'EVENT_REQUEST_NOT_FOUND', message: 'The event request was not found.' },
+    });
+  });
+
+  it('refuses to submit a request that is not a draft', async () => {
+    const { app } = setup(organiser);
+    submitRequest.mockRejectedValue(
+      new SubmitEligibilityError('REQUEST_NOT_SUBMITTABLE', 'This event request is not a draft and cannot be submitted.'),
+    );
+    const response = await request(app).post(`/api/events/${requestId}/submit`);
+    expect(response.status).toBe(409);
+    expect(response.body.error.code).toBe('REQUEST_NOT_SUBMITTABLE');
   });
 });
