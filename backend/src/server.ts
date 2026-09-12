@@ -1,7 +1,7 @@
 import { createApp } from './app.js';
 import { loadEnvironment } from './config/env.js';
 import { createDatabasePool } from './db/pool.js';
-import { createFirebaseAuth } from './modules/auth/firebase.js';
+import { defaultSupabaseSessionAuth } from './modules/auth/router.js';
 
 const environment = loadEnvironment();
 const pool = createDatabasePool(environment.databaseUrl);
@@ -9,7 +9,7 @@ const app = createApp({
   database: pool,
   auth: {
     database: pool,
-    firebaseAuth: createFirebaseAuth(),
+    supabaseAuth: defaultSupabaseSessionAuth,
     isProduction: environment.nodeEnv === 'production',
   },
 });

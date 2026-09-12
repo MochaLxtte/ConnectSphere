@@ -1,20 +1,29 @@
 import { Router, type Request } from 'express';
 import type { AuthDatabase } from './user-repository.js';
-import { findUserByFirebaseUid } from './user-repository.js';
+import { findUserBySupabaseUid } from './user-repository.js';
+import { isSupabaseTokenError, verifySupabaseAccessToken } from './supabase.js';
 import type { AuthenticatedUser } from './types.js';
 
 const COOKIE_NAME = 'connectsphere_session';
-const SESSION_DURATION_MS = 5 * 24 * 60 * 60 * 1000;
+// Upper bound only — the cookie's actual lifetime always follows the token's own `exp` claim,
+// so raising your Supabase project's JWT expiry is what actually extends sessions.
+const MAX_SESSION_DURATION_SECONDS = 5 * 24 * 60 * 60;
 
-export interface FirebaseSessionAuth {
-  verifyIdToken(idToken: string): Promise<{ uid: string; auth_time?: number }>;
-  createSessionCookie(idToken: string, options: { expiresIn: number }): Promise<string>;
-  verifySessionCookie(cookie: string, checkRevoked: boolean): Promise<{ uid: string }>;
+export interface SupabaseSessionAuth {
+  verifyAccessToken(accessToken: string): Promise<{ uid: string; exp: number }>;
 }
+
+/** Default wiring against the real Supabase verifier; inject a fake in tests. */
+export const defaultSupabaseSessionAuth: SupabaseSessionAuth = {
+  async verifyAccessToken(accessToken) {
+    const claims = await verifySupabaseAccessToken(accessToken);
+    return { uid: claims.sub, exp: claims.exp };
+  },
+};
 
 export interface AuthRouterDependencies {
   database: AuthDatabase;
-  firebaseAuth: FirebaseSessionAuth;
+  supabaseAuth: SupabaseSessionAuth;
   isProduction?: boolean;
 }
 
@@ -30,38 +39,39 @@ function readCookie(request: Request): string | null {
   return null;
 }
 
-function serializeSessionCookie(value: string, maxAge: number, isProduction: boolean): string {
-  return `${COOKIE_NAME}=${encodeURIComponent(value)}; Path=/api; HttpOnly; SameSite=Lax; Max-Age=${maxAge}${isProduction ? '; Secure' : ''}`;
+function serializeSessionCookie(value: string, maxAgeSeconds: number, isProduction: boolean): string {
+  return `${COOKIE_NAME}=${encodeURIComponent(value)}; Path=/api; HttpOnly; SameSite=Lax; Max-Age=${maxAgeSeconds}${isProduction ? '; Secure' : ''}`;
 }
 
-function isFirebaseCredentialError(error: unknown): boolean {
-  return typeof error === 'object' && error !== null && 'code' in error
-    && typeof error.code === 'string' && error.code.startsWith('auth/');
-}
-
-function parseIdToken(value: unknown): string | null {
+function parseAccessToken(value: unknown): string | null {
   if (typeof value !== 'object' || value === null || Array.isArray(value)) return null;
   const input = value as Record<string, unknown>;
-  return Object.keys(input).length === 1 && typeof input.idToken === 'string' && input.idToken.length > 0
-    ? input.idToken : null;
+  return Object.keys(input).length === 1 && typeof input.accessToken === 'string' && input.accessToken.length > 0
+    ? input.accessToken : null;
 }
 
-/** Verify the Firebase session and derive the application's trusted profile and role. */
+/** Never let a Supabase token outlive its own `exp`, and never exceed our own cap either. */
+function cookieMaxAgeSeconds(exp: number): number {
+  const secondsUntilExpiry = exp - Math.floor(Date.now() / 1000);
+  return Math.max(0, Math.min(secondsUntilExpiry, MAX_SESSION_DURATION_SECONDS));
+}
+
+/** Verify the session cookie and derive the application's trusted profile and role. */
 export async function authenticateRequest(
-  database: AuthDatabase, firebaseAuth: FirebaseSessionAuth, request: Request,
+  database: AuthDatabase, supabaseAuth: SupabaseSessionAuth, request: Request,
 ): Promise<AuthenticatedUser | null> {
   const cookie = readCookie(request);
   if (!cookie) return null;
   try {
-    const session = await firebaseAuth.verifySessionCookie(cookie, true);
-    return findUserByFirebaseUid(database, session.uid);
+    const claims = await supabaseAuth.verifyAccessToken(cookie);
+    return findUserBySupabaseUid(database, claims.uid);
   } catch (error) {
-    if (isFirebaseCredentialError(error)) return null;
+    if (isSupabaseTokenError(error)) return null;
     throw error;
   }
 }
 
-export function createAuthRouter({ database, firebaseAuth, isProduction = false }: AuthRouterDependencies) {
+export function createAuthRouter({ database, supabaseAuth, isProduction = false }: AuthRouterDependencies) {
   const router = Router();
   router.use((_request, response, next) => {
     response.set('Cache-Control', 'no-store');
@@ -69,25 +79,26 @@ export function createAuthRouter({ database, firebaseAuth, isProduction = false 
   });
 
   router.post('/login', async (request, response, next) => {
-    const idToken = parseIdToken(request.body);
-    if (!idToken) {
-      response.status(400).json({ error: { code: 'INVALID_LOGIN_INPUT', message: 'A Firebase ID token is required.' } });
+    const accessToken = parseAccessToken(request.body);
+    if (!accessToken) {
+      response.status(400).json({ error: { code: 'INVALID_LOGIN_INPUT', message: 'A Supabase access token is required.' } });
       return;
     }
     try {
-      const decoded = await firebaseAuth.verifyIdToken(idToken);
-      const user = await findUserByFirebaseUid(database, decoded.uid);
+      const claims = await supabaseAuth.verifyAccessToken(accessToken);
+      const user = await findUserBySupabaseUid(database, claims.uid);
       if (!user) {
         response.status(403).json({ error: { code: 'ACCOUNT_NOT_PROVISIONED', message: 'This account is not authorised for ConnectSphere.' } });
         return;
       }
-      const firebaseSessionCookie = await firebaseAuth.createSessionCookie(idToken, { expiresIn: SESSION_DURATION_MS });
-      response.set('Set-Cookie', serializeSessionCookie(firebaseSessionCookie, SESSION_DURATION_MS / 1000, isProduction));
+      // The verified Supabase access token *is* the session artifact — the cookie just carries
+      // it to the browser as HttpOnly so client-side JS never touches it again.
+      response.set('Set-Cookie', serializeSessionCookie(accessToken, cookieMaxAgeSeconds(claims.exp), isProduction));
       response.status(200).json({ user });
     } catch (error) {
-      // Firebase credential errors are expected user-facing authentication failures; unexpected
-      // repository/Admin failures still follow the application's generic error handler.
-      if (isFirebaseCredentialError(error)) {
+      // Malformed/expired/untrusted tokens are expected user-facing authentication failures;
+      // unexpected repository failures still follow the application's generic error handler.
+      if (isSupabaseTokenError(error)) {
         response.status(401).json({ error: { code: 'AUTHENTICATION_REQUIRED', message: 'Sign in to continue.' } });
         return;
       }
@@ -97,7 +108,7 @@ export function createAuthRouter({ database, firebaseAuth, isProduction = false 
 
   router.get('/me', async (request, response, next) => {
     try {
-      const user = await authenticateRequest(database, firebaseAuth, request);
+      const user = await authenticateRequest(database, supabaseAuth, request);
       if (!user) {
         response.status(401).json({ error: { code: 'AUTHENTICATION_REQUIRED', message: 'Sign in to continue.' } });
         return;
@@ -107,6 +118,10 @@ export function createAuthRouter({ database, firebaseAuth, isProduction = false 
   });
 
   router.post('/logout', (_request, response) => {
+    // The session is a stateless verified token, so logout just stops sending the cookie back —
+    // there is nothing to revoke server-side. The token remains valid, at Supabase's layer,
+    // until it naturally expires; that's why the JWT expiry configured in Supabase should stay
+    // short-to-moderate rather than relying on this endpoint for revocation.
     response.set('Set-Cookie', serializeSessionCookie('', 0, isProduction));
     response.status(204).end();
   });

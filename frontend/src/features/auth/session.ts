@@ -1,6 +1,6 @@
 import { reactive, readonly } from 'vue';
 import { ApiError, getJson, postJson } from '../../lib/api-client.js';
-import { getFirebaseIdToken } from './firebase-client.js';
+import { getSupabaseAccessToken } from './supabase-client.js';
 
 export type UserRole =
   | 'EVENT_ORGANISER'
@@ -42,8 +42,8 @@ export async function restoreSession(): Promise<void> {
 }
 
 export async function signIn(email: string, password: string): Promise<SignedInUser> {
-  const idToken = await getFirebaseIdToken(email, password);
-  const user = (await postJson<{ user: SignedInUser }>('/api/auth/login', { idToken })).user;
+  const accessToken = await getSupabaseAccessToken(email, password);
+  const user = (await postJson<{ user: SignedInUser }>('/api/auth/login', { accessToken })).user;
   state.user = user;
   return user;
 }

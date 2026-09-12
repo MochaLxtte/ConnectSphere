@@ -20,16 +20,15 @@ function isUserRole(value: string): value is UserRole {
   ].includes(value);
 }
 
-/** Resolve a Firebase subject to the application-owned profile and role. */
-export async function findUserByFirebaseUid(
-  database: AuthDatabase, firebaseUid: string,
+/** Resolve a Supabase auth user id (uuid) to the application-owned profile and role. */
+export async function findUserBySupabaseUid(
+  database: AuthDatabase, supabaseUserId: string,
 ): Promise<AuthenticatedUser | null> {
   const result = await database.query<UserRow>(`
-    SELECT u.id, u.email, u.display_name, u.role
-    FROM app_user_identities AS identity
-    JOIN app_users AS u ON u.id = identity.user_id
-    WHERE identity.firebase_uid = $1
-  `, [firebaseUid]);
+    SELECT id, email, display_name, role
+    FROM app_users
+    WHERE supabase_user_id = $1
+  `, [supabaseUserId]);
   const row = result.rows[0];
   if (!row || !isUserRole(row.role)) return null;
   return { id: row.id, email: row.email, displayName: row.display_name, role: row.role };
