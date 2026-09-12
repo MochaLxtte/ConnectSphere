@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import {
+  listOwnedDrafts,
   listReviewableRequests,
   REVIEWABLE_STATUSES,
   type QueueActor,
@@ -71,6 +72,39 @@ describe('KAN-33 listReviewableRequests', () => {
   it('returns an empty queue when no request is currently reviewable', async () => {
     const pool = fakePool([]);
     const items = await listReviewableRequests({ pool, canViewRequest: () => true }, coordinator);
+    expect(items).toEqual([]);
+  });
+});
+
+describe('KAN-34 listOwnedDrafts', () => {
+  it('never queries the database for a non-organiser actor', async () => {
+    const pool = fakePool([{ ...baseRow, status: 'DRAFT' as const }]);
+    const items = await listOwnedDrafts({ pool }, coordinator);
+    expect(items).toEqual([]);
+    expect(pool.query).not.toHaveBeenCalled();
+  });
+
+  it('queries only this organiser\'s own draft requests', async () => {
+    const pool = fakePool([]);
+    await listOwnedDrafts({ pool }, organiser);
+    expect(pool.query).toHaveBeenCalledExactlyOnceWith(
+      expect.stringContaining("organiser_id = $1 AND status = 'DRAFT'"),
+      [organiser.id],
+    );
+  });
+
+  it('returns draft summaries for the organiser', async () => {
+    const draftRow = { ...baseRow, id: 'a', organiserId: organiser.id, status: 'DRAFT' as const };
+    const pool = fakePool([draftRow]);
+    const items = await listOwnedDrafts({ pool }, organiser);
+    expect(items).toEqual([
+      { id: 'a', name: draftRow.name, status: 'DRAFT', createdAt: draftRow.createdAt, updatedAt: draftRow.updatedAt },
+    ]);
+  });
+
+  it('returns an empty list when the organiser has no saved drafts', async () => {
+    const pool = fakePool([]);
+    const items = await listOwnedDrafts({ pool }, organiser);
     expect(items).toEqual([]);
   });
 });

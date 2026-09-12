@@ -4,12 +4,16 @@ import {
   getEventRequestDetail, EventRequestNotFoundError, type EventRequestDetailDependencies,
 } from './event-request-detail.js';
 import {
+  listOwnedDrafts,
   listReviewableRequests,
   type QueueActor,
   type SubmittedRequestQueryDependencies,
 } from './submitted-requests.js';
+import { updateOwnedDraft, DraftRequestNotFoundError, type UpdateDraftDependencies } from './update-draft.js';
+import { DraftEligibilityError } from './draft-eligibility.js';
+import { DraftUpdateInputError } from './draft-update-input.js';
 
-export interface SubmittedRequestsRouterDependencies extends SubmittedRequestQueryDependencies {
+export interface SubmittedRequestsRouterDependencies extends SubmittedRequestQueryDependencies, UpdateDraftDependencies {
   pool: Pick<Pool, 'query' | 'connect'>;
   canReviewRequest: EventRequestDetailDependencies['canReviewRequest'];
   /**
@@ -37,6 +41,11 @@ export function createSubmittedRequestsRouter(dependencies: SubmittedRequestsRou
         response.status(401).json({
           error: { code: 'AUTHENTICATION_REQUIRED', message: 'Sign in to view submitted event requests.' },
         });
+        return;
+      }
+      if (actor.role === 'EVENT_ORGANISER') {
+        const items = await listOwnedDrafts(dependencies, actor);
+        response.status(200).json({ items });
         return;
       }
       if (actor.role !== 'EVENT_COORDINATOR') {
@@ -82,6 +91,54 @@ export function createSubmittedRequestsRouter(dependencies: SubmittedRequestsRou
     } catch (error) {
       if (error instanceof EventRequestNotFoundError) {
         response.status(404).json(unavailableRequest);
+        return;
+      }
+      next(error);
+    }
+  });
+
+  router.patch('/:id', async (request, response, next) => {
+    response.set('Cache-Control', 'no-store');
+    try {
+      const actor = await dependencies.authenticate(request);
+      if (!actor) {
+        response.status(401).json({
+          error: { code: 'AUTHENTICATION_REQUIRED', message: 'Sign in to edit an event request.' },
+        });
+        return;
+      }
+      if (actor.role !== 'EVENT_ORGANISER') {
+        response.status(403).json({
+          error: { code: 'DRAFT_EDIT_FORBIDDEN', message: 'Only event organisers can edit a draft event request.' },
+        });
+        return;
+      }
+
+      if (!uuid.test(request.params.id)) {
+        response.status(400).json({
+          error: { code: 'INVALID_EVENT_REQUEST_ID', message: 'The event request ID must be a UUID.' },
+        });
+        return;
+      }
+      const updated = await updateOwnedDraft(dependencies, {
+        eventRequestId: request.params.id,
+        actor,
+        input: request.body,
+      });
+      response.status(200).json(updated);
+    } catch (error) {
+      if (error instanceof DraftUpdateInputError) {
+        response.status(400).json({ error: { code: 'INVALID_DRAFT_UPDATE', message: error.message } });
+        return;
+      }
+      // An unrelated organiser must not learn whether this request exists or its current state.
+      if (error instanceof DraftRequestNotFoundError ||
+          (error instanceof DraftEligibilityError && error.code === 'DRAFT_EDIT_FORBIDDEN')) {
+        response.status(404).json(unavailableRequest);
+        return;
+      }
+      if (error instanceof DraftEligibilityError) {
+        response.status(409).json({ error: { code: error.code, message: error.message } });
         return;
       }
       next(error);

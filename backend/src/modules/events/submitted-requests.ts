@@ -66,3 +66,17 @@ export async function listReviewableRequests(
   }
   return visible;
 }
+
+/** List this organiser's own saved drafts. Self-ownership needs no separate visibility policy. */
+export async function listOwnedDrafts(
+  { pool }: Pick<SubmittedRequestQueryDependencies, 'pool'>,
+  actor: QueueActor,
+): Promise<SubmittedRequestSummary[]> {
+  if (actor.role !== 'EVENT_ORGANISER') return [];
+
+  const result = await pool.query<SubmittedRequestSummary>(
+    `SELECT ${listColumns} FROM event_requests WHERE organiser_id = $1 AND status = 'DRAFT' ORDER BY updated_at DESC`,
+    [actor.id],
+  );
+  return result.rows.map(({ id, name, status, createdAt, updatedAt }) => ({ id, name, status, createdAt, updatedAt }));
+}
