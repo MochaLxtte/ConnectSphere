@@ -1,10 +1,18 @@
 import { createApp } from './app.js';
 import { loadEnvironment } from './config/env.js';
 import { createDatabasePool } from './db/pool.js';
+import { createFirebaseAuth } from './modules/auth/firebase.js';
 
 const environment = loadEnvironment();
 const pool = createDatabasePool(environment.databaseUrl);
-const app = createApp({ database: pool });
+const app = createApp({
+  database: pool,
+  auth: {
+    database: pool,
+    firebaseAuth: createFirebaseAuth(),
+    isProduction: environment.nodeEnv === 'production',
+  },
+});
 
 const server = app.listen(environment.apiPort, environment.apiHost, () => {
   console.info(
