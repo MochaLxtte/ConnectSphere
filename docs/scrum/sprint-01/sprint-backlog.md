@@ -176,9 +176,10 @@ request through the webpage; Supabase showed `SUBMITTED` → `APPROVED`. This ve
 the hosted approval/status path only. The remaining checks at that point are listed in
 [the recorded check](../../testing/test-evidence.md#15-september-hosted-approval-check).
 
-**Follow-up (16 September):** The saved approval, reviewer identity, refreshed outcome
-and removal from the queue passed manual checks. S1-T21 is passed; rejection, denied
-access and organiser outcome acceptance remain open in the [test register](../../testing/test-evidence.md).
+**Follow-up (16 September):** Approval and rejection passed manual checks for the stored
+decision, reviewer, supplied reason, refreshed outcome and removal from the queue.
+S1-T21 and S1-T22 are passed; denied access and organiser outcome acceptance remain open
+in the [test register](../../testing/test-evidence.md).
 
 ### KAN-16 — View event-request status
 
@@ -263,7 +264,7 @@ This plan records scenario coverage, not story completion. **Partial** means onl
 | S1-T19 | KAN-33-AC2 | Browser | Open an allowed queue item; displayed submission details and status match persisted data. | Partial; response-fixture browser/component checks passed | [AUTO-20260915-01/03; ReviewRequestPage.test.ts and review-decision.spec.ts; hosted detail-field comparison pending](../../testing/test-evidence.md) |
 | S1-T20 | KAN-33-AC3 | API integration | Request an unauthorized event ID directly using coordinator and other actor fixtures; protected fields are withheld. | Passed (isolated) | [AUTO-20260915-02; authenticated-review.integration.test.ts and event-request-detail.integration.test.ts](../../testing/test-evidence.md) |
 | S1-T21 | KAN-36-AC1 | API integration + browser | Authorized reviewer approves an eligible request; decision, actor and state agree after reload. | Passed (isolated and hosted manual checks) | [AUTO-20260915-02/03; MAN-20260915-01; MAN-20260916-01: approval, review-row identity, reload and queue removal](../../testing/test-evidence.md) |
-| S1-T22 | KAN-36-AC2 | API integration + browser | Authorized reviewer rejects under the adopted explanation rule; persisted decision, supplied explanation and state agree. | Partial; backend and response-fixture browser checks passed | [AUTO-20260915-02/03; review-decision.integration.test.ts and review-decision.spec.ts; hosted rejection pending](../../testing/test-evidence.md) |
+| S1-T22 | KAN-36-AC2 | API integration + browser | Authorized reviewer rejects under the adopted explanation rule; persisted decision, supplied explanation and state agree. | Passed (isolated and hosted manual checks) | [AUTO-20260915-02/03; MAN-20260916-02: rejection, reason, reviewer, reload and queue removal](../../testing/test-evidence.md) |
 | S1-T23 | KAN-36-AC3 | API integration | Wrong actor and disallowed-state decisions are rejected; neither review rows nor state changes are persisted. | Passed (isolated) | [AUTO-20260915-02; authenticated-review.integration.test.ts and review-decision.integration.test.ts](../../testing/test-evidence.md) |
 | S1-T24 | KAN-36-AC4 | PostgreSQL integration | Exercise repeated/competing decisions and transaction failure; no contradictory outcomes or partially committed review/state pairs remain. | Passed (isolated) | [AUTO-20260915-02; review-decision.integration.test.ts](../../testing/test-evidence.md) |
 | S1-T25 | KAN-16-AC1 | Browser | Open owned requests in each selected workflow state; list/detail labels match persisted state. | Not executed | |

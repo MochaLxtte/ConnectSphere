@@ -13,6 +13,7 @@ The automated entries below preserve the results recorded for their implementati
 | AUTO-20260915-03 / 15 September 2026 | `c14eaf4`; local Playwright Chromium | KAN-33/KAN-36 interface plus application startup/navigation | `npm run test:e2e` | Passed: 9 checks. Decision cases use intercepted API responses to check approval/rejection, reason/outcome after reload and absent decision controls when permission is false. | [Decision browser tests](../../tests/e2e/review-decision.spec.ts); retained report and CI run link to add | Automated local run |
 | MAN-20260915-01 / 15 September 2026 | Local webpage and Supabase development project; working branch at `c14eaf4`; exact served build/time not captured | KAN-25 login; partial S1-T21 / KAN-36-AC1 | Sign in; open the assigned synthetic submitted request; record approval; inspect its status in Supabase | Login succeeded. After approval on the webpage, Supabase showed `SUBMITTED` → `APPROVED`. See the scope and exclusions below. | Written observation below; screenshot/recording not captured | Tristan |
 | MAN-20260916-01 / 16 September 2026 | Local webpage and Supabase development project; working branch at `00f5168`; exact served build/time not captured | S1-T21 / KAN-36-AC1; approval persistence and queue removal | Reload the approved request; inspect its matching review row and reviewer; return to the review queue | Passed: approval persisted on reload, reason display behaved as expected where supplied, and decision controls were absent. The matching review row recorded `APPROVED` with the coordinator's application ID. The approved request was absent from the queue. | Written observation below; screenshot/recording not captured | Tristan |
+| MAN-20260916-02 / 16 September 2026 | Local webpage and Supabase development project; working branch at `2661219`; exact served build/time not captured | S1-T22 / KAN-36-AC2; rejection persistence and queue removal | Reject a separate assigned submitted request with a reason; inspect its request/review rows; reload the webpage and return to the queue | Passed: status and review decision were `REJECTED`; the reason and reviewer were correct. Rejection and reason remained after reload, decision controls were absent, and the request left the queue. | Written observation below; screenshot/recording not captured | Tristan |
 
 For manual cases, record preconditions, input values, expected and actual outcomes. For automated runs, link the test files and retain results that show the relevant cases. Track failed cases through their fixes and reruns.
 
@@ -22,7 +23,7 @@ For manual cases, record preconditions, input values, expected and actual outcom
 - **Action:** Tristan signed in and approved the request through the webpage, then inspected the corresponding request in Supabase.
 - **Expected and observed:** the request status changed from `SUBMITTED` to `APPROVED` in Supabase.
 - **Limit:** this records the approval/status path only. The review row and reviewer identity, reason persistence, browser reload, removal from the queue, rejection, unauthorised attempts and organiser-facing outcome have not been demonstrated by this manual check. It does not complete S1-T21 or close KAN-36.
-- **Follow-up:** The approval persistence and queue checks were completed on 16 September below. Rejection, denied access and the organiser outcome workflow remain to be checked.
+- **Follow-up:** Approval persistence and rejection were checked on 16 September below. Denied access and the organiser outcome workflow remain to be checked.
 
 ## 16 September: approval persistence and queue checks
 
@@ -30,8 +31,16 @@ For manual cases, record preconditions, input values, expected and actual outcom
 - **Reload:** The webpage retained `APPROVED`, displayed the reason as expected if supplied, and offered no further approval/rejection controls. No specific reason text was recorded for this check.
 - **Stored review:** The `event_reviews` row matched the request's `event_request_id`, recorded `APPROVED`, and had `reviewed_by` matching the coordinator's `app_users.id`.
 - **Queue:** The approved request no longer appeared in the review queue.
-- **Result:** S1-T21 passed across the approval and follow-up checks. This completes the manual saved-approval checks; KAN-36 still needs rejection and access checks, plus the organiser outcome acceptance shared with KAN-16.
-- **Next:** Test rejection on a separate submitted request, then check unauthorised access. Capture dated evidence for those checks.
+- **Result:** S1-T21 passed across the approval and follow-up checks. The subsequent rejection check is recorded below; access checks and the organiser outcome acceptance shared with KAN-16 remain outstanding.
+
+## 16 September: rejection persistence and queue checks
+
+- **Tested by:** Tristan, using a separate submitted synthetic request assigned to the coordinator.
+- **Action:** Selected Reject request, entered a reason and recorded the rejection through the webpage.
+- **Stored result:** The request status and matching review decision were `REJECTED`. The supplied reason and coordinator's application ID were recorded correctly.
+- **Reload and queue:** Rejection and its reason remained visible after refreshing, decision controls were absent, and the rejected request no longer appeared in the pending queue.
+- **Result:** S1-T22 passed. Both approval and rejection now have manual persistence and reload evidence. The exact reason text and screenshot were not captured in this record.
+- **Next:** Check unauthorised decision attempts and confirm that they create no review or status change. Complete organiser outcome acceptance after KAN-16 is implemented; KAN-36 remains open until its remaining criteria are verified.
 
 ## Executable evidence map
 

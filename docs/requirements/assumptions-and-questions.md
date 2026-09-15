@@ -301,7 +301,7 @@ This single check does not mark KAN-36, KAN-16 or the complete workflow Done.
 **Result:** Approval follow-up checks passed for the matching saved review row and reviewer,
 the retained outcome after reload with decision controls hidden, and removal from the
 pending-review queue. The [test evidence record](../testing/test-evidence.md) contains the
-acceptance results and remaining rejection, unauthorised-access and organiser-workflow checks.
+acceptance results. The subsequent rejection check also passed; unauthorised-access and organiser-workflow checks remain open.
 KAN-16 still needs the organiser interface and an organiser list that includes submitted
 and decided requests. These results do not mark either story Done.
 

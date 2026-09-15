@@ -113,7 +113,7 @@ npm run test:e2e
 
 The browser suite covers infrastructure, navigation, queue recovery and coordinator decisions using API response fixtures. PostgreSQL integration tests exercise persistence and access rules in an isolated database. GitHub Actions repeats the checks with its own PostgreSQL service and uploads coverage/browser evidence. See [testing guidance](docs/testing/README.md) and [test evidence](docs/testing/test-evidence.md) for the distinction between automated checks and hosted acceptance testing.
 
-Hosted approval checks passed, including the saved review row, outcome after reload and removal from the pending queue. See the [test evidence](docs/testing/test-evidence.md) for the dated results and remaining rejection, unauthorised-access and organiser-workflow checks. KAN-16 still requires the organiser interface and extending the organiser list API beyond drafts.
+Hosted approval and rejection checks passed, including the saved review row, outcome after reload and removal from the pending queue. See the [test evidence](docs/testing/test-evidence.md) for the dated results and remaining unauthorised-access and organiser-workflow checks. KAN-16 still requires the organiser interface and extending the organiser list API beyond drafts.
 
 ## Join the repository
 

@@ -59,7 +59,7 @@ For production, serve `dist/` with a history fallback to `index.html` and route 
 
 The shared GET retains the flat event fields and adds `review` and `actions`. The page consumes these fields, enables decisions only when the backend allows them, and keeps a saved outcome and reason visible after decision actions become unavailable. It reloads the detail after a successful write.
 
-Hosted approval checks passed, including outcome display after reload, hidden decision controls and removal from the pending queue. The [test evidence](../docs/testing/test-evidence.md) records the dated results and remaining rejection, unauthorised-access and organiser-workflow checks.
+Hosted approval and rejection checks passed, including outcome display after reload, hidden decision controls and removal from the pending queue. The [test evidence](../docs/testing/test-evidence.md) records the dated results and remaining unauthorised-access and organiser-workflow checks.
 
 The parent page supplies:
 
