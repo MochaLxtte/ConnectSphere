@@ -4,7 +4,7 @@ Sprint window: **6–19 September 2026 inclusive**, Asia/Singapore. Planning occ
 
 **Status: agreed 32-SP baseline; capacity details and supporting records to complete.** At Sprint Planning on 6 September, the team selected nine user stories totalling **27 SP**, including KAN-27, and **KAN-24 as a separate 5-SP infrastructure backlog item**. The sprint commitment is **10 items and 32 SP**. Estimates used relative sizing with KAN-33 and KAN-16 as 2-point anchors.
 
-The [8 September decision to use Supabase for database hosting](../../requirements/assumptions-and-questions.md#8-september-2026--hosted-postgresql) does not change these estimates. KAN-24 retains 5 SP; hosted setup and verification remain part of its database-foundation work. Authentication design remains open under KAN-25.
+The [8 September decision to use Supabase for database hosting](../../requirements/assumptions-and-questions.md#8-september-2026--hosted-postgresql) does not change these estimates. KAN-24 retains 5 SP; hosted setup and verification remain part of its database-foundation work. Authentication was still open at the hosting decision; Supabase Auth is now implemented under KAN-25. The original estimates remain unchanged.
 
 This record documents the estimation method, comparative rationale, capacity calculation, scope decision and eventual velocity. The companion [sprint backlog](sprint-backlog.md) holds scope and acceptance criteria; [daily progress](daily-progress.md) records changes and completion evidence.
 
@@ -78,6 +78,8 @@ The estimates were agreed during Sprint Planning on **6 September**. Add the par
 | KAN-36 | 3 | Further discussion notes to add | Agreed 6 September; supporting notes to attach |
 | KAN-16 | 2 | Reference story; further discussion notes to add | Agreed 6 September; supporting notes to attach |
 | KAN-24 | 5 | Separate infrastructure item; further discussion notes to add | Agreed 6 September; supporting notes to attach |
+
+**15 September implementation note:** the KAN-33 justification above records the original 11 September queue/detail assumption. It has been superseded: assigned coordinators may retrieve decided requests even though those requests are excluded from the queue, and organisers may retrieve their own drafts/outcomes. Supabase Auth and assigned-coordinator access are connected. This refinement does not change the original estimate; see the [shared API contract](../../architecture/api-contract.md).
 
 **Voting record, if applicable:** attach any votes captured during estimation, including the item, date, participants, differing assumptions and final estimate. If estimates were agreed through discussion without voting, record `Not applicable`.
 

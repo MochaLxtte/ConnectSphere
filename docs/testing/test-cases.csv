@@ -1,11 +1,11 @@
 test_case_id,feature_id,scenario_outline,planned_level,acceptance_criterion_ids,preconditions_and_steps,expected_result,result,evidence
-TC-01,CF-01,Authenticate and enforce role plus event relationship; reject unrelated organiser and attendee access,integration,,,,Not executed,
-TC-02,CF-02,Submit a valid event request; reject missing required fields without partial submission,integration,,,,Not executed,
-TC-03,CF-03,Save incomplete draft and reopen it; preserve draft distinction and ownership,integration,,,,Not executed,
-TC-04,CF-04,Review then request clarification or approve/reject; verify relevant users see the decision,integration,,,,Not executed,
+TC-01,CF-01,Authenticate and enforce role plus event relationship; reject unrelated organiser and attendee access,integration,KAN-25-AC1; KAN-25-AC2; KAN-25-AC3; KAN-25-AC4,,,Partial; linked implementation checks passed; release feature acceptance incomplete,docs/testing/test-evidence.md; AUTO-20260915-01/02; MAN-20260915-01 (login and approval/status only)
+TC-02,CF-02,Submit a valid event request; reject missing required fields without partial submission,integration,KAN-6-AC1; KAN-6-AC2; KAN-6-AC3; KAN-6-AC4,,,Partial; linked implementation checks passed; release feature acceptance incomplete,docs/testing/test-evidence.md; AUTO-20260915-01/02
+TC-03,CF-03,Save incomplete draft and reopen it; preserve draft distinction and ownership,integration,KAN-34-AC1; KAN-34-AC2; KAN-34-AC3,,,Partial; linked implementation checks passed; release feature acceptance incomplete,docs/testing/test-evidence.md; AUTO-20260915-01/02
+TC-04,CF-04,Review then request clarification or approve/reject; verify relevant users see the decision,integration,KAN-33-AC1; KAN-33-AC2; KAN-33-AC3; KAN-33-AC4; KAN-33-AC6; KAN-36-AC1; KAN-36-AC2; KAN-36-AC3; KAN-36-AC4,,,Partial; linked implementation checks passed; release feature acceptance incomplete,docs/testing/test-evidence.md; AUTO-20260915-01/02; MAN-20260915-01 (login and approval/status only); AUTO-20260915-03 (response-fixture browser checks)
 TC-05,CF-05,Assign and reassign coordinator; enforce agreed authority and updated relationship access,integration,,,,Not executed,
-TC-06,CF-06,Apply legal transitions and reject illegal transitions without changing state,unit and integration,,,,Not executed,
-TC-07,CF-07,Apply ordinary edit and protect changes affecting existing arrangements,integration,,,,Not executed,
+TC-06,CF-06,Apply legal transitions and reject illegal transitions without changing state,unit and integration,KAN-16-AC1; KAN-16-AC2; KAN-16-AC3,,,Partial; linked implementation checks passed; release feature acceptance incomplete,docs/testing/test-evidence.md; AUTO-20260915-01/02
+TC-07,CF-07,Apply ordinary edit and protect changes affecting existing arrangements,integration,KAN-34-AC1; KAN-34-AC2; KAN-34-AC3,,,Partial; linked implementation checks passed; release feature acceptance incomplete,docs/testing/test-evidence.md; AUTO-20260915-01/02
 TC-08,CF-08,Read venue planning information and enforce catalogue management permissions,integration,,,,Not executed,
 TC-09,CF-09,Show bookings and blocked periods across relevant date boundaries,integration and browser,,,,Not executed,
 TC-10,CF-10,Combine timing and venue requirement filters; handle no suitable match,integration,,,,Not executed,

@@ -16,7 +16,7 @@ The release and evidence ZIP is due **Friday Week 12 at 23:59**, and the final s
 | **6** | Software release — code | Repository source, [run instructions](../../README.md), test files and [.github/workflows/ci.yml](../../.github/workflows/ci.yml) | Implement all core features and coherent workflows; verify clean setup. Include working code, run README, relevant unit/integration test classes and the CI scripts used. |
 | **7** | Repository README and instructor access | [Repository and access record](7/README.md) | Verify both instructors can access the linked repository; record names, account checks and the submitted release commit. |
 
-**Current stage:** Sprint 1 planning records and the application scaffold are available. The table describes the full Week 12 submission; pending exports, results and later-sprint records must be completed as the project progresses.
+**Current stage, 15 September:** Sprint 1 implementation includes Supabase authentication, draft/submission backend work and the connected coordinator decision interface. The [test register](../testing/test-evidence.md) contains automated results and a limited hosted approval/status observation. KAN-16 organiser list/status work, broader acceptance, and the missing Scrum/export artifacts remain outstanding. This checklist covers the full Week 12 submission; a GitHub push is not the final release or evidence ZIP.
 
 ## Prepare the numbered folders
 

@@ -27,20 +27,20 @@ Malformed JSON returns 400 (`INVALID_JSON`), oversized JSON returns 413 (`PAYLOA
 
 ## Sprint 1 routes
 
-The normal server mounts Supabase authentication, event listing, shared detail, draft editing, submission and decision writing through `createRuntimeApp` in `backend/src/runtime-app.ts`. The coordinator review page consumes the shared detail, decision permissions and saved outcomes. Draft creation and clarification remain coordination proposals; organiser-page integration and verification of the complete workflow with real Supabase accounts remain pending.
+The normal server mounts Supabase authentication, event listing, shared detail, draft editing, submission and decision writing through `createRuntimeApp` in `backend/src/runtime-app.ts`. The coordinator review page consumes the shared detail, decision permissions and saved outcomes. The two routes marked planned below are not implemented. Organiser-page integration and verification of the complete workflow with real Supabase accounts remain pending.
 
-| Owner                 | Method / route                                                      | Purpose                                                     |
-| --------------------- | ------------------------------------------------------------------- | ----------------------------------------------------------- |
-| Ryan, KAN-25         | `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me` | Establish, end and inspect authenticated identity           |
-| Ernest, KAN-31 / KAN-4 | `POST /api/events`                                                  | Save an incomplete draft for the authenticated organiser    |
-| Kai Jie / Irfan / Tristan, KAN-34 / KAN-33 / KAN-16 | `GET /api/events/:id`                         | Shared request details, status and recorded decision; see contract below |
-| Kai Jie, KAN-34       | `PATCH /api/events/:id`                                            | Update an owned draft                                      |
-| Kai Jie, KAN-6        | `POST /api/events/:id/submit`                                       | Validate submission and transition atomically               |
-| Irfan / Kai Jie, KAN-33 / KAN-34 | `GET /api/events`                                          | Assigned coordinator queue, or the organiser's own drafts; pagination pending |
-| Irfan, KAN-27         | `POST /api/events/:id/clarifications`                               | Request clarification and make it visible to the organiser  |
-| Tristan, KAN-36       | `POST /api/events/:id/reviews`                                      | Record an approval/rejection and update status atomically   |
+| Owner | Method / route | Purpose | State |
+| --- | --- | --- | --- |
+| Ryan, KAN-25 | `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me` | Establish, end and inspect authenticated identity | Implemented |
+| Ernest, KAN-31 / KAN-4 | `POST /api/events` | Save an incomplete draft for the authenticated organiser | Planned |
+| Kai Jie / Irfan / Tristan, KAN-34 / KAN-33 / KAN-16 | `GET /api/events/:id` | Shared details, status and recorded decision | Implemented |
+| Kai Jie, KAN-34 | `PATCH /api/events/:id` | Update an owned draft | Implemented |
+| Kai Jie, KAN-6 | `POST /api/events/:id/submit` | Validate submission and transition atomically | Implemented |
+| Irfan / Kai Jie, KAN-33 / KAN-34 | `GET /api/events` | Assigned coordinator queue, or the organiser's own drafts; pagination pending | Implemented; organiser status listing pending |
+| Irfan, KAN-27 | `POST /api/events/:id/clarifications` | Request clarification and make it visible to the organiser | Planned |
+| Tristan, KAN-36 | `POST /api/events/:id/reviews` | Record an approval/rejection and update status atomically | Implemented |
 
-Use camelCase in JSON and snake_case in SQL. IDs are UUID strings. Dates over HTTP should be ISO 8601 timestamps with an offset; PostgreSQL stores `timestamptz`. The expected display timezone is provisionally Asia/Singapore. Missing draft fields are nullable; PATCH omission should mean unchanged, and explicit null should clear an allowed field. Confirm these conventions before implementing handlers.
+Use camelCase in JSON and snake_case in SQL. IDs are UUID strings. Dates over HTTP should be ISO 8601 timestamps with an offset; PostgreSQL stores `timestamptz`. The expected display timezone is provisionally Asia/Singapore. Missing draft fields are nullable; PATCH omission leaves a field unchanged, and explicit null clears an allowed field. Preserve these conventions in new handlers.
 
 Never accept organiser identity, acting role, arbitrary status, or reviewer identity from an untrusted request body. Derive them from the authenticated session and service action. Filter in repositories as well as enforcing service access rules. Sprint 1 uses assigned-coordinator access as a team implementation assumption; customer clarification about unassigned triage and delegation remains open under [Q-02](../requirements/assumptions-and-questions.md). Client navigation is not access control.
 
@@ -135,8 +135,8 @@ Check authentication and supported role before looking up the request. All detai
 Remaining integration work:
 
 1. Review the shared response with Kai Jie and Irfan. Use mapped test accounts and assigned synthetic requests while the KAN-29 assignment workflow is pending.
-2. Connect the organiser's draft and status pages to the shared response. The coordinator's decision controls and outcome display are connected.
-3. Verify the complete workflow with real authentication, including saving, reloading the outcome and removal from the pending-review queue.
+2. Connect the organiser's draft and status pages to the shared response. Extend the organiser list API to include submitted and decided requests for KAN-16; its current draft-only result cannot populate that status list. The coordinator's decision controls and outcome display are connected.
+3. Complete hosted checks for rejection, saved review/reason after reload, queue removal, unauthorised access and organiser outcome visibility. A manual webpage approval on 15 September changed the synthetic request's Supabase status from `SUBMITTED` to `APPROVED`; the other scenarios are not yet recorded as passed.
 
 **Verification, 11 September 2026:** Type checking and all 42 targeted backend tests passed: 31 shared-detail service/HTTP cases in `backend/test/events/event-request-detail.test.ts`, four queue-service cases and seven queue-HTTP cases. All 25 PostgreSQL tests passed, including the 11 new cases in `database/tests/events/event-request-detail.integration.test.ts`. These exercise ownership, coordinator visibility, state-dependent actions, the shared response and persisted approval/rejection outcomes through the composed GET and POST routes. They use fixture authentication and an isolated PostgreSQL test database; they do not verify live login or the hosted development project.
 
@@ -146,6 +146,8 @@ For a coordinator, `GET /api/events` returns the review queue implemented in
 `submitted-requests-router.ts` and `submitted-requests.ts`. For an organiser, the same
 endpoint returns only their own drafts. It shares the router dependencies described above
 but keeps its list query and status filter separate from the shared request-detail read.
+KAN-16 must extend organiser listing to include their submitted and decided requests;
+the shared detail already permits those owned requests.
 
 The queue includes only `SUBMITTED`, `UNDER_REVIEW` and `CLARIFICATION_REQUESTED` requests
 that pass `canViewRequest`. This filter describes queue membership, not permission to

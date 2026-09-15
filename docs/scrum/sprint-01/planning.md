@@ -76,7 +76,7 @@ Review and testing will run throughout these windows, with 17–18 September res
 
 | ID | Dependency or risk | Next decision/action | Proposed coordination lead | Resolution/evidence |
 | --- | --- | --- | --- | --- |
-| S1-R01 | Authentication and actor identity affect every protected endpoint | Agree session/account approach and server-side role/relationship checks; Q-01/Q-02 | Ryan with Irfan | Not recorded |
+| S1-R01 | Authentication and actor identity affect every protected endpoint | Complete hosted access acceptance and account-administration decisions; Q-01/Q-02 | Ryan with Irfan | 15 September: Supabase Auth and assigned-coordinator enforcement connected; local automated checks and hosted login/approval observation linked in [test evidence](../../testing/test-evidence.md). Broader acceptance remains outstanding. |
 | S1-R02 | Several developers touch the same draft fields and schema | Agree shared DTO, update semantics and migration order before conflicting changes | Ernest, Kai Jie and Arvin | Not recorded |
 | S1-R03 | Submission requirements are not fully specified | Resolve Q-03; separate incomplete draft validation from submission validation | Kai Jie with customer liaison | Not recorded |
 | S1-R04 | Review and clarification transitions may be interpreted differently | Resolve Q-04 and agree one transition policy; approval is not full event confirmation | Irfan and Tristan | Not recorded |
@@ -110,7 +110,7 @@ Use the following checklist to complete planning details and guide refinement:
 
 ## Working agreement to adopt or revise
 
-- Hold a brief Daily Scrum on agreed working days to inspect progress toward the goal and adapt the plan. Record the chosen time, location and weekend arrangement; do not infer attendance from a scheduled event.
+- The team plans two standups per week to inspect progress toward the goal and adapt the plan. Record the actual days, times, location and participants; development updates between meetings do not establish meeting attendance.
 - Use focused Jira branches and reviewed PRs as described in [CONTRIBUTING.md](../../../CONTRIBUTING.md). Surface shared-contract and migration changes early.
 - Adopt or revise the shared [Definition of Done](../definition-of-done.md), recording its version/date. Task completion and a merged stub are not equivalent to a Done story.
 - Run relevant checks and link actual results. Existing scaffold tests establish infrastructure behavior, not the business acceptance criteria proposed in the backlog.

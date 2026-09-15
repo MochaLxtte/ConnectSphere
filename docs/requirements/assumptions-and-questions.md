@@ -271,10 +271,28 @@ exercise approval and rejection through a reload, including the mobile outcome d
 These checks do not establish that the full workflow has passed against the hosted
 Supabase project.
 
-**Remaining integration:** Verify the coordinator workflow with mapped Supabase accounts
-and assigned test requests, then implement the organiser-facing status/outcome page for KAN-16.
+**Remaining integration at this stage:** Verify the coordinator workflow with mapped
+Supabase accounts and assigned test requests. KAN-16 also needs the organiser-facing
+status/outcome page and an organiser list API that includes submitted and decided requests;
+the current list returns drafts only. The next entry records the first hosted approval check.
 
 **Affected stories:** KAN-36, KAN-33 and the shared response used by KAN-16.
+
+## 15 September 2026 — Hosted approval check
+
+**Tested by:** Tristan.
+
+**Procedure and result:** Signed in to the webpage and approved a synthetic event request.
+The corresponding request in Supabase changed from `SUBMITTED` to `APPROVED`.
+
+**Evidence scope:** This records the successful webpage approval and observed hosted
+status update. Rejection, inspection of the saved review row/reason, outcome persistence
+after reload, queue removal and unauthorised-access checks remain to be completed against
+the hosted project. The organiser's status/outcome workflow also remains incomplete.
+Screenshots and the remaining acceptance results belong in the [test evidence record](../testing/test-evidence.md).
+
+**Sprint impact:** KAN-36 implementation has progressed to hosted acceptance testing.
+This single check does not mark KAN-36, KAN-16 or the complete workflow Done.
 
 ## Decision record template
 

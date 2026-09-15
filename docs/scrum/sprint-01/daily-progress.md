@@ -4,9 +4,9 @@ Sprint: **6–19 September 2026, Asia/Singapore**. Record daily progress, decisi
 
 ## Cadence
 
-Daily Scrum time/location: **To confirm**. Development working days and daily meeting arrangement: **To confirm**. The team is available on Saturdays and Sundays for review and planning; development availability will be recorded separately.
+The team plans **two standups per week**; exact days, times and location remain to be recorded. Development working days and hours remain to be confirmed. Members are available on Saturdays and Sundays for review and planning. This meeting cadence does not establish attendance on any date.
 
-On each working day, record participants, progress toward the sprint goal, impediments and the next steps. Mark agreed non-working days as `Non-working day`.
+Record actual standup participants and outcomes when each meeting occurs. Development updates may be recorded between meetings without implying a standup took place. Mark agreed non-working days as `Non-working day`; leave missing observations blank.
 
 ## Daily log
 
@@ -21,7 +21,7 @@ On each working day, record participants, progress toward the sprint goal, imped
 | 12 September | Saturday | Not recorded | | | |
 | 13 September | Sunday | Not recorded | | | |
 | 14 September | Monday | Not recorded | | | |
-| 15 September | Tuesday | Not recorded | | | |
+| 15 September | Tuesday | Tristan (development update) | Supabase authentication and assigned-coordinator access connected (`8334f94`); coordinator decision permissions, outcomes and refresh connected (`c14eaf4`). Login worked; approving a synthetic request on the webpage changed Supabase status from `SUBMITTED` to `APPROVED`. | Finish hosted review/rejection/access checks and KAN-16 organiser list/status UI plus an all-status organiser list API. | E10, E11; [test runs and manual scope](../../testing/test-evidence.md) |
 | 16 September | Wednesday | Not recorded | | | |
 | 17 September | Thursday | Not recorded | | | |
 | 18 September | Friday | Not recorded | | | |
@@ -33,7 +33,7 @@ For decisions needing more context, append a dated note with the meeting time an
 
 Supabase will host the development PostgreSQL database. Express continues to use PostgreSQL directly through the driver; the Vue application uses Express for business data. The [decision record](../../requirements/assumptions-and-questions.md#8-september-2026--hosted-postgresql) sets out connection security, project settings, shared migration coordination and isolated testing.
 
-KAN-24 retains its 5-point estimate, and the sprint retains its original ten PBIs and 32 points. No item is marked Done by this decision. Supabase Auth has not yet been selected. Participants and meeting time for this decision are to be recorded; the entry does not establish Daily Scrum attendance.
+KAN-24 retains its 5-point estimate, and the sprint retains its original ten PBIs and 32 points. No item is marked Done by this decision. Supabase Auth had not yet been selected on 8 September; the 15 September implementation uses Supabase Auth. Participants and meeting time for the hosting decision are to be recorded; this entry does not establish Daily Scrum attendance.
 
 ## Impediments and adaptations
 

@@ -20,7 +20,7 @@ The dev server runs at `http://127.0.0.1:5173` and fails clearly if that port is
 - Supabase sign-in, application session state and sign-out, backed by Express verification.
 - Coordinator review queue and detail, with approval/rejection controls and saved outcomes.
 
-The organiser's event list and creation pages remain placeholders. Express authenticates event API calls and enforces roles, ownership and the Sprint 1 coordinator assignment policy. Frontend navigation and action flags do not replace those checks.
+The organiser's event list and creation pages remain placeholders. KAN-16 needs the organiser list API extended beyond drafts as well as its status/outcome interface; shared detail reads already support the owner's submitted and decided requests. Express authenticates event API calls and enforces roles, ownership and the Sprint 1 coordinator assignment policy. Frontend navigation and action flags do not replace those checks.
 
 ## Team work areas
 
@@ -57,7 +57,9 @@ For production, serve `dist/` with a history fallback to `index.html` and route 
 
 `src/features/reviews/components/ReviewDecisionPanel.vue` provides approval/rejection controls for a single event request. KAN-33's `ReviewRequestPage.vue` mounts it and supplies API calls and feedback; `ReviewQueuePage.vue` lists requests. The panel itself does not fetch requests, authenticate users or call the review endpoint.
 
-The shared GET retains the flat event fields and adds `review` and `actions`. The page consumes these fields, enables decisions only when the backend allows them, and keeps a saved outcome and reason visible after decision actions become unavailable. It reloads the detail after a successful write. Verification of the complete workflow with hosted accounts remains pending.
+The shared GET retains the flat event fields and adds `review` and `actions`. The page consumes these fields, enables decisions only when the backend allows them, and keeps a saved outcome and reason visible after decision actions become unavailable. It reloads the detail after a successful write.
+
+On 15 September, a manual webpage approval changed a synthetic request's Supabase status from `SUBMITTED` to `APPROVED`. Rejection, outcome/reason after reload, queue removal, unauthorised access and the complete organiser workflow still require hosted acceptance checks; see [test evidence](../docs/testing/test-evidence.md).
 
 The parent page supplies:
 

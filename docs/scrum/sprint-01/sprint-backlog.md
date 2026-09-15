@@ -23,16 +23,16 @@ The nine committed user stories, **including KAN-27**, total **27 story points**
 | KAN-27 | Request clarification | Irfan | Ryan or Tristan | 3 | Committed | CF-04 |
 | KAN-24 | Verify and evolve database/integration foundations | Arvin | Ryan | 5 | Committed infrastructure PBI | Supports the selected stories |
 
-**Current repository baseline:** login, event and review pages are placeholders. Shared auth/event types, an initial schema, migrations, seed scripts and infrastructure checks provide the starting point. Business stories still require implementation and acceptance testing. Keep Jira ownership aligned with the allocation above and update status as work progresses.
+**Implementation snapshot, 15 September:** Supabase login and server-side identity/access checks are connected. The backend supports owned-draft editing/submission and shared request detail. The coordinator queue/detail and approval/rejection interface are connected, including recorded outcomes and refresh. Tristan's hosted approval check changed a synthetic request from `SUBMITTED` to `APPROVED`. KAN-16 still needs the organiser list/status interface and an organiser list API covering submitted and decided requests; the current organiser list returns drafts only. Full story acceptance and review remain outstanding. This snapshot does not change the original commitment or mark any item Done.
 
 ## Decisions needed to finalize implementation details
 
 - **Database hosting, decided 8 September:** use Supabase for PostgreSQL, with Express accessing it through the PostgreSQL driver. Follow the [technical decision](../../requirements/assumptions-and-questions.md#8-september-2026--hosted-postgresql) for verified TLS, Data API settings, ordered migrations and isolated test data. The ten-PBI, 32-point commitment is unchanged.
-- **Authentication and access:** decide whether to use Supabase Auth or another approach; settle account provisioning, session strategy and the actor/event access matrix using Q-01 and Q-02 in [customer questions](../../requirements/assumptions-and-questions.md). The application has five roles; the exact Sprint 1 role coverage still needs agreement. A client-supplied role or organiser ID must not grant access.
+- **Authentication and access, updated 15 September:** Supabase Auth is implemented, with verified server sessions mapped to `app_users`. Organisers access their own requests; coordinator reads and decisions use the Sprint 1 assigned-coordinator policy. Account administration and broader role/triage rules remain open under Q-01/Q-02 in [customer questions](../../requirements/assumptions-and-questions.md). A client-supplied role or organiser ID must not grant access.
 - **Draft versus submission:** settle the field list and validation rules through Q-03. No particular event field is declared mandatory for submission by this document. Agree which incomplete values may be stored as drafts.
 - **Story boundaries:** KAN-31 owns starting a new request and the initial form; KAN-4 owns persisting incomplete work; KAN-34 owns retrieving and editing an existing draft. They share a form and persistence contract. Confirm these detailed boundaries so that tasks and delivered outcomes do not double-count the same work. Preserve the agreed estimates unless the team explicitly records a revision.
 - **Transitions and decisions:** resolve Q-04/Q-05 and record a permitted-transition table. The status constants in `backend/src/modules/events/types.ts` are provisional vocabulary. Clarification/resubmission behavior and whether rejection requires a reason remain unresolved.
-- **Coordinator assignment:** KAN-29 / CF-05 is a **conditional dependency, not committed Sprint 1 scope**. KAN-33 and KAN-36 need a justified way to establish reviewer access. If assignment is required for the demo, explicitly add and estimate it or agree a clearly documented fixture boundary. Seeded assignment is not completed assignment functionality. Do not expose all requests to every coordinator to bypass this dependency.
+- **Coordinator assignment:** KAN-29 / CF-05 is **not committed Sprint 1 scope**. Sprint 1 uses manually assigned synthetic requests in Supabase: `coordinator_id` references the assigned coordinator's `app_users.id`. This fixture setup enables assigned-coordinator checks without claiming assignment/reassignment functionality is complete. Customer triage/delegation clarification remains open.
 
 Record decisions with their source, date and affected AC IDs before treating dependent criteria as ready. If a decision changes scope or estimates, preserve the original baseline and record the revision in planning and estimation.
 
@@ -54,7 +54,7 @@ As a ConnectSphere user, I want to authenticate and access only permitted functi
 | Local task | Proposed implementation work |
 | --- | --- |
 | S1-25-01 | Record account/session and access contracts; extend `backend/src/modules/auth/types.ts` only as needed. |
-| S1-25-02 | Add auth handlers/services/middleware under `backend/src/modules/auth/` (new files) and wire `backend/src/app.ts`; coordinate the chosen identity mapping and synthetic account fixtures with Arvin. Do not assume locally stored credentials or Supabase Auth before the authentication approach is agreed. |
+| S1-25-02 | Supabase Auth handlers/session verification are implemented under `backend/src/modules/auth/`, with runtime event wiring in `backend/src/runtime-app.ts`. Keep `app_users.supabase_user_id` mappings and synthetic account fixtures aligned with Arvin; complete the remaining account-provisioning and acceptance checks. |
 | S1-25-03 | Implement `frontend/src/features/auth/pages/LoginPage.vue`, session-aware `frontend/src/lib/api-client.ts` behavior and navigation in `frontend/src/app/router.ts`. |
 | S1-25-04 | Implement S1-T01–S1-T04, including direct API tests; integrate event access checks with the other workstreams. |
 
@@ -164,15 +164,18 @@ As an event coordinator, I want to record an approval or rejection for an eligib
 
 | Local task | Proposed implementation work |
 | --- | --- |
-| S1-36-01 | Agree approval/rejection eligibility, explanation and conflict rules with Irfan; implement shared transition validation under `backend/src/modules/events/` (new files). |
-| S1-36-02 | Implement review recording and event-state change in one transaction; coordinate `event_reviews` schema changes through a new migration if required. |
-| S1-36-03 | Add review actions and result/error feedback to the review detail UI; implement S1-T21–S1-T24, including PostgreSQL transaction/conflict checks. |
+| S1-36-01 | Implemented validation and initial-decision eligibility: assigned coordinator, `SUBMITTED`, no recorded decision; optional reason. Broader transition/triage rules remain documented questions. |
+| S1-36-02 | Implemented review recording and matching status update in one transaction, with row locking, assignment recheck, rollback and competing-decision tests. |
+| S1-36-03 | Coordinator actions and result/error feedback are connected and tested. Finish the hosted acceptance checks and organiser outcome integration before story closure; see [test evidence](../../testing/test-evidence.md). |
 
 **Integration update (15 September):** The coordinator interface now uses the backend's
 decision flag, displays saved outcomes and reasons, and reloads the detail after recording
 a decision. Component and browser tests cover the interface, including failed refreshes
-and preventing repeat decisions. Manual acceptance with a mapped coordinator and an
-assigned Supabase test request remains to be completed.
+and preventing repeat decisions. Tristan signed in and approved an assigned synthetic
+request through the webpage; Supabase showed `SUBMITTED` → `APPROVED`. This verifies
+the hosted approval/status path only. Review-row identity, reason persistence, reload,
+queue removal, rejection, denied access and the organiser outcome still need manual
+acceptance evidence. See [the recorded check](../../testing/test-evidence.md#15-september-hosted-approval-check).
 
 ### KAN-16 — View event-request status
 
@@ -186,8 +189,8 @@ As an event organiser, I want to see the current status of my request so that I 
 
 | Local task | Proposed implementation work |
 | --- | --- |
-| S1-16-01 | Agree status labels and visible decision fields with Kai Jie and Irfan; extend the event response contract without allowing arbitrary client-set status. |
-| S1-16-02 | Implement status display in `frontend/src/features/events/pages/EventRequestsPage.vue` and the event detail view; reuse the scoped event API. |
+| S1-16-01 | Shared detail already returns the owned request's status and recorded review with caller-specific actions. Agree final user-facing labels; extend the organiser list API beyond drafts without allowing arbitrary client-set status. |
+| S1-16-02 | Implement organiser list/status display in `frontend/src/features/events/pages/EventRequestsPage.vue` and an organiser detail view; reuse the scoped detail API. The current organiser list page is a placeholder. |
 | S1-16-03 | Implement S1-T25–S1-T27 and verify the integrated organiser-to-coordinator-to-organiser path. |
 
 ### KAN-27 — Request clarification
@@ -230,15 +233,15 @@ Keep the ERD in [the architecture record](../../architecture/README.md) aligned 
 
 ## Acceptance test plan
 
-These are **planned scenarios, all Not executed**. The file/evidence cells are intentionally blank until an actual test exists and has a recorded run. Integration means exercising the API/service against PostgreSQL where persistence, access filtering or atomicity matters; browser tests cover visible behavior. The setup needs synthetic accounts/events that match the adopted policy. Exact fixtures and rule-dependent expected results must be finalized after the decisions above.
+This plan records scenario coverage, not story completion. **Partial** means only the linked parts have been exercised; **Passed (isolated)** identifies automated checks against a dedicated local database. Blank evidence cells remain unexecuted/unrecorded. Integration means exercising the API/service against PostgreSQL where persistence, access filtering or atomicity matters; browser tests cover visible behaviour. Hosted acceptance and fixture-based automation are recorded separately in the [test run register](../../testing/test-evidence.md).
 
 `S1-Txx` IDs are Sprint 1 scenario IDs. They supplement the broader `TC-xx` release outlines in [test-cases.csv](../../testing/test-cases.csv); they are not aliases for an existing test file. When implementing, link the corresponding AC, actual test path and result in [traceability.csv](../../requirements/traceability.csv). Attach dated runs to [evidence](evidence/README.md), including commit SHA, environment, commands or manual steps, actual result and exclusions.
 
 | Scenario | AC | Planned level | Scenario and expected result | Execution status | Actual test file / run evidence |
 | --- | --- | --- | --- | --- | --- |
-| S1-T01 | KAN-25-AC1 | API integration + browser | Valid fixture account signs in; verified identity and signed-in UI agree. | Not executed | |
-| S1-T02 | KAN-25-AC2 | API integration + browser | Invalid credentials and an unauthenticated protected request expose no protected data; feedback matches the contract. | Not executed | |
-| S1-T03 | KAN-25-AC3 | API integration | Wrong-role and unrelated-owner fixtures attempt direct calls and forged role/owner fields; permissions do not expand. | Not executed | |
+| S1-T01 | KAN-25-AC1 | API integration + browser | Valid fixture account signs in; verified identity and signed-in UI agree. | Partial; hosted login succeeded | [MAN-20260915-01; signed-in UI/identity acceptance still to complete](../../testing/test-evidence.md) |
+| S1-T02 | KAN-25-AC2 | API integration + browser | Invalid credentials and an unauthenticated protected request expose no protected data; feedback matches the contract. | Partial; API automation passed | [AUTO-20260915-01/02; invalid signature/expiry and unauthenticated routes covered; invalid-credential browser check pending](../../testing/test-evidence.md) |
+| S1-T03 | KAN-25-AC3 | API integration | Wrong-role and unrelated-owner fixtures attempt direct calls and forged role/owner fields; permissions do not expand. | Partial; organiser/coordinator checks passed | [AUTO-20260915-02; authenticated-review.integration.test.ts; full five-role matrix pending](../../testing/test-evidence.md) |
 | S1-T04 | KAN-25-AC4 | API integration + browser | Sign out and reuse the former session; protected access is denied and the UI is signed out. | Not executed | |
 | S1-T05 | KAN-31-AC1 | Browser | Authorized organiser opens the new-request page and enters agreed fields; usable form state is shown. | Not executed | |
 | S1-T06 | KAN-31-AC2 | Browser + API integration | Enter values and save through the integrated draft flow; one identifiable request has the authenticated owner and expected values. | Not executed | |
@@ -247,22 +250,22 @@ These are **planned scenarios, all Not executed**. The file/evidence cells are i
 | S1-T09 | KAN-4-AC2 | API integration + browser | Save, end the session, sign in and reload; values and identifier persist and the request remains outside the submitted queue. | Not executed | |
 | S1-T10 | KAN-4-AC3 | API integration | An unrelated organiser attempts to overwrite a draft; access is denied and a database read confirms unchanged values. | Not executed | |
 | S1-T11 | KAN-34-AC1 | Browser | Select an owned saved draft; all applicable persisted values populate the form. | Not executed | |
-| S1-T12 | KAN-34-AC2 | API integration + browser | Change, omit and explicitly clear permitted fields; reload confirms update semantics and unrelated fields are unchanged. | Not executed | |
-| S1-T13 | KAN-34-AC3 | API integration | Attempt edit as another owner and in a disallowed state; both are refused without a write. | Not executed | |
-| S1-T14 | KAN-6-AC1 | API integration + browser | Submit a valid owned draft; persisted state and review eligibility match the adopted transition policy. | Not executed | |
-| S1-T15 | KAN-6-AC2 | Validation unit + API integration + browser | Violate each adopted submission rule; actionable feedback appears, draft data remains and state does not change. | Not executed | |
-| S1-T16 | KAN-6-AC3 | API integration | Submit as an unrelated actor and from a disallowed state; no transition occurs. | Not executed | |
-| S1-T17 | KAN-6-AC4 | PostgreSQL integration | Repeat submission and send competing requests; responses follow the adopted policy with no duplicated effects or inconsistent state. | Not executed | |
-| S1-T18 | KAN-33-AC1 | API integration + browser | Queue fixtures mix eligible/ineligible states and access relationships; only permitted reviewable requests are listed. | Not executed | |
-| S1-T19 | KAN-33-AC2 | Browser | Open an allowed queue item; displayed submission details and status match persisted data. | Not executed | |
-| S1-T20 | KAN-33-AC3 | API integration | Request an unauthorized event ID directly using coordinator and other actor fixtures; protected fields are withheld. | Not executed | |
-| S1-T21 | KAN-36-AC1 | API integration + browser | Authorized reviewer approves an eligible request; decision, actor and state agree after reload. | Not executed | |
-| S1-T22 | KAN-36-AC2 | API integration + browser | Authorized reviewer rejects under the adopted explanation rule; persisted decision, supplied explanation and state agree. | Not executed | |
-| S1-T23 | KAN-36-AC3 | API integration | Wrong actor and disallowed-state decisions are rejected; neither review rows nor state changes are persisted. | Not executed | |
-| S1-T24 | KAN-36-AC4 | PostgreSQL integration | Exercise repeated/competing decisions and transaction failure; no contradictory outcomes or partially committed review/state pairs remain. | Not executed | |
+| S1-T12 | KAN-34-AC2 | API integration + browser | Change, omit and explicitly clear permitted fields; reload confirms update semantics and unrelated fields are unchanged. | Partial; backend integration passed | [AUTO-20260915-02; update-draft.integration.test.ts; browser edit/reload pending](../../testing/test-evidence.md) |
+| S1-T13 | KAN-34-AC3 | API integration | Attempt edit as another owner and in a disallowed state; both are refused without a write. | Passed (isolated) | [AUTO-20260915-02; update-draft.integration.test.ts and authenticated-review.integration.test.ts](../../testing/test-evidence.md) |
+| S1-T14 | KAN-6-AC1 | API integration + browser | Submit a valid owned draft; persisted state and review eligibility match the adopted transition policy. | Partial; backend integration passed | [AUTO-20260915-02; submit-request.integration.test.ts; integrated browser submission pending](../../testing/test-evidence.md) |
+| S1-T15 | KAN-6-AC2 | Validation unit + API integration + browser | Violate each adopted submission rule; actionable feedback appears, draft data remains and state does not change. | Partial; backend validation/integration passed | [AUTO-20260915-01/02; submit-input.test.ts and submit-request.integration.test.ts; browser feedback pending](../../testing/test-evidence.md) |
+| S1-T16 | KAN-6-AC3 | API integration | Submit as an unrelated actor and from a disallowed state; no transition occurs. | Passed (isolated) | [AUTO-20260915-02; submit-request.integration.test.ts and authenticated-review.integration.test.ts](../../testing/test-evidence.md) |
+| S1-T17 | KAN-6-AC4 | PostgreSQL integration | Repeat submission and send competing requests; responses follow the adopted policy with no duplicated effects or inconsistent state. | Passed (isolated) | [AUTO-20260915-02; submit-request.integration.test.ts](../../testing/test-evidence.md) |
+| S1-T18 | KAN-33-AC1 | API integration + browser | Queue fixtures mix eligible/ineligible states and access relationships; only permitted reviewable requests are listed. | Partial; scoped API checks passed | [AUTO-20260915-02; authenticated-review.integration.test.ts; hosted queue acceptance pending](../../testing/test-evidence.md) |
+| S1-T19 | KAN-33-AC2 | Browser | Open an allowed queue item; displayed submission details and status match persisted data. | Partial; response-fixture browser/component checks passed | [AUTO-20260915-01/03; ReviewRequestPage.test.ts and review-decision.spec.ts; hosted detail-field comparison pending](../../testing/test-evidence.md) |
+| S1-T20 | KAN-33-AC3 | API integration | Request an unauthorized event ID directly using coordinator and other actor fixtures; protected fields are withheld. | Passed (isolated) | [AUTO-20260915-02; authenticated-review.integration.test.ts and event-request-detail.integration.test.ts](../../testing/test-evidence.md) |
+| S1-T21 | KAN-36-AC1 | API integration + browser | Authorized reviewer approves an eligible request; decision, actor and state agree after reload. | Partial; automation passed and hosted status change observed | [AUTO-20260915-02/03; MAN-20260915-01; hosted review-row identity and reload still to check](../../testing/test-evidence.md) |
+| S1-T22 | KAN-36-AC2 | API integration + browser | Authorized reviewer rejects under the adopted explanation rule; persisted decision, supplied explanation and state agree. | Partial; backend and response-fixture browser checks passed | [AUTO-20260915-02/03; review-decision.integration.test.ts and review-decision.spec.ts; hosted rejection pending](../../testing/test-evidence.md) |
+| S1-T23 | KAN-36-AC3 | API integration | Wrong actor and disallowed-state decisions are rejected; neither review rows nor state changes are persisted. | Passed (isolated) | [AUTO-20260915-02; authenticated-review.integration.test.ts and review-decision.integration.test.ts](../../testing/test-evidence.md) |
+| S1-T24 | KAN-36-AC4 | PostgreSQL integration | Exercise repeated/competing decisions and transaction failure; no contradictory outcomes or partially committed review/state pairs remain. | Passed (isolated) | [AUTO-20260915-02; review-decision.integration.test.ts](../../testing/test-evidence.md) |
 | S1-T25 | KAN-16-AC1 | Browser | Open owned requests in each selected workflow state; list/detail labels match persisted state. | Not executed | |
-| S1-T26 | KAN-16-AC2 | Browser + API integration | Complete submission and both review outcomes on separate fixtures; organiser reload shows the latest status and permitted decision details. | Not executed | |
-| S1-T27 | KAN-16-AC3 | API integration | An unrelated actor fetches status/decision data by event ID; protected information is withheld. | Not executed | |
+| S1-T26 | KAN-16-AC2 | Browser + API integration | Complete submission and both review outcomes on separate fixtures; organiser reload shows the latest status and permitted decision details. | Partial; API outcome retrieval passed | [AUTO-20260915-02; event-request-detail.integration.test.ts; organiser browser outcome still pending](../../testing/test-evidence.md) |
+| S1-T27 | KAN-16-AC3 | API integration | An unrelated actor fetches status/decision data by event ID; protected information is withheld. | Passed (isolated) | [AUTO-20260915-02; event-request-detail.integration.test.ts and authenticated-review.integration.test.ts](../../testing/test-evidence.md) |
 | S1-T28 | KAN-27-AC1 | API integration + browser | Authorized coordinator sends clarification on an eligible request; message/actor/event link and any state change persist consistently. | Not executed | |
 | S1-T29 | KAN-27-AC2 | Browser | Owning organiser opens a request with clarification; the permitted message and context are visible. | Not executed | |
 | S1-T30 | KAN-27-AC3 | API integration | Empty, unauthorized and disallowed-state clarification attempts create no record or partial state change. | Not executed | |

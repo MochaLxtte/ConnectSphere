@@ -27,14 +27,14 @@ Use the shared [Definition of Done](../definition-of-done.md), [release requirem
 | Area | Record |
 | --- | --- |
 | Team | Ryan, Ernest, Kai Jie, Irfan, Tristan and Arvin; workstreams and item ownership are recorded in [planning](planning.md#team-and-accountabilities) and the [sprint backlog](sprint-backlog.md). One developer also serves as Scrum Master and another as Product Owner; these two role holders remain to be confirmed. |
-| Stack | Vue, Express and PostgreSQL. Supabase selected for database hosting on 8 September; [technical decision](../../requirements/assumptions-and-questions.md#8-september-2026--hosted-postgresql). Authentication approach remains to be agreed. |
+| Stack | Vue, Express and PostgreSQL. Supabase hosts PostgreSQL and provides authentication; Express enforces sessions and event access. See the [technical decisions](../../requirements/assumptions-and-questions.md). |
 | Scope | Ten committed items, 32 points: nine user stories at 27 points and KAN-24 database setup at 5 points. |
 | Estimation | Relative estimation, using KAN-33 and KAN-16 as 2-point reference stories. Individual votes or a voting method have not been recorded. |
 | Availability | Members are available on Saturdays and Sundays for review and planning. Individual development hours remain to be recorded. |
 | Repository baseline | Initial scaffold commit `db6930d`, 7 September 2026 at 02:58:37 +08:00; see the evidence register. |
 | Planning attendance | Names, meeting times and supporting meeting artifacts remain to be added. |
 | Detailed criteria and tasks | Drafts for team review in the sprint backlog. |
-| Execution and closure | Update daily progress during the sprint; complete review results and retrospective findings at the respective meetings. |
+| Execution and closure | The 15 September progress/evidence records cover authenticated coordinator decisions and a hosted approval/status check. KAN-16 organiser list/status work and full acceptance remain outstanding. Complete review results and retrospective findings at the respective meetings. |
 
 Record missing details as **To confirm** or **Not recorded**, and tests without a recorded run as **Not executed**. These statuses do not count as completion or as a failed test.
 
