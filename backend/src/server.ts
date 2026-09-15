@@ -1,10 +1,18 @@
 import { createApp } from './app.js';
 import { loadEnvironment } from './config/env.js';
 import { createDatabasePool } from './db/pool.js';
+import { defaultSupabaseSessionAuth } from './modules/auth/router.js';
 
 const environment = loadEnvironment();
 const pool = createDatabasePool(environment.databaseUrl);
-const app = createApp({ database: pool });
+const app = createApp({
+  database: pool,
+  auth: {
+    database: pool,
+    supabaseAuth: defaultSupabaseSessionAuth,
+    isProduction: environment.nodeEnv === 'production',
+  },
+});
 
 const server = app.listen(environment.apiPort, environment.apiHost, () => {
   console.info(

@@ -1,4 +1,4 @@
-/** Product roles; authorization still needs to be implemented by the auth workstream. */
+/** Product roles; routes must enforce role and resource ownership using verified identity. */
 export const USER_ROLES = [
   'EVENT_ORGANISER',
   'EVENT_COORDINATOR',
@@ -17,5 +17,5 @@ export interface UserSummary {
   role: UserRole;
 }
 
-/** Populated only after the eventual authentication middleware verifies a session. */
+/** Populated only after Firebase session verification and application-user mapping. */
 export type AuthenticatedUser = UserSummary;
