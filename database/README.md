@@ -44,7 +44,7 @@ Seeds contain fictional `.test` accounts with NULL password hashes, plus one inc
 
 Create test login accounts in Supabase Auth, then link each UUID to its application profile's `supabase_user_id`. The mapping is nullable and unique. `organiser_id` and `coordinator_id` on event requests refer to `app_users.id`, not the Supabase Auth UUID. Migration `004_add_supabase_user_id.sql` supplies the mapping for local/CI databases; migration 003 remains historical and its Firebase identity table is unused by the current authentication code.
 
-On 15 September, the live approval check recorded a decision through the webpage and verified the shared Supabase request changed from `SUBMITTED` to `APPROVED`. This check does not yet establish rejection, persisted reason display, queue removal or the organiser-facing outcome flow; see the [test evidence](../docs/testing/test-evidence.md).
+Hosted approval checks verified the `APPROVED` request status and matching review row with the assigned coordinator's application ID. See the [test evidence](../docs/testing/test-evidence.md) for the dated results and remaining hosted acceptance checks.
 
 ## Optional local PostgreSQL and integration tests
 

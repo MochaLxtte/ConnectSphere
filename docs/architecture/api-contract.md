@@ -136,7 +136,7 @@ Remaining integration work:
 
 1. Review the shared response with Kai Jie and Irfan. Use mapped test accounts and assigned synthetic requests while the KAN-29 assignment workflow is pending.
 2. Connect the organiser's draft and status pages to the shared response. Extend the organiser list API to include submitted and decided requests for KAN-16; its current draft-only result cannot populate that status list. The coordinator's decision controls and outcome display are connected.
-3. Complete hosted checks for rejection, saved review/reason after reload, queue removal, unauthorised access and organiser outcome visibility. A manual webpage approval on 15 September changed the synthetic request's Supabase status from `SUBMITTED` to `APPROVED`; the other scenarios are not yet recorded as passed.
+3. Complete hosted checks for rejection, unauthorised access and organiser outcome visibility. Approval, the saved review row, outcome after reload and queue removal have passed; see the dated [test evidence](../testing/test-evidence.md).
 
 **Verification, 11 September 2026:** Type checking and all 42 targeted backend tests passed: 31 shared-detail service/HTTP cases in `backend/test/events/event-request-detail.test.ts`, four queue-service cases and seven queue-HTTP cases. All 25 PostgreSQL tests passed, including the 11 new cases in `database/tests/events/event-request-detail.integration.test.ts`. These exercise ownership, coordinator visibility, state-dependent actions, the shared response and persisted approval/rejection outcomes through the composed GET and POST routes. They use fixture authentication and an isolated PostgreSQL test database; they do not verify live login or the hosted development project.
 
@@ -177,8 +177,9 @@ Responses use `Cache-Control: no-store`. Queue service and HTTP-boundary tests p
 11 September. All five browser checks also passed after updating the scaffold expectation;
 `tests/e2e/review-queue.spec.ts` verifies error feedback, retry and an empty result using
 browser-response fixtures. The new PostgreSQL detail suite also checks queue inclusion
-before a decision and removal afterwards. Full queue visibility and detail-page acceptance
-with live authentication remain pending; these checks do not complete the KAN-33 workflow.
+before a decision and removal afterwards. Hosted approval checks also verified removal from
+the queue and retained detail access after reload. Remaining hosted acceptance scenarios
+are tracked in the [test evidence](../testing/test-evidence.md); KAN-33 is not yet complete.
 
 ## KAN-36 review endpoint: authentication connected
 

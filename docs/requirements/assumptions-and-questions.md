@@ -285,14 +285,25 @@ the current list returns drafts only. The next entry records the first hosted ap
 **Procedure and result:** Signed in to the webpage and approved a synthetic event request.
 The corresponding request in Supabase changed from `SUBMITTED` to `APPROVED`.
 
-**Evidence scope:** This records the successful webpage approval and observed hosted
-status update. Rejection, inspection of the saved review row/reason, outcome persistence
-after reload, queue removal and unauthorised-access checks remain to be completed against
-the hosted project. The organiser's status/outcome workflow also remains incomplete.
+**Evidence scope at this stage:** This records the successful webpage approval and observed
+hosted status update. Rejection, inspection of the saved review row/reason, outcome
+persistence after reload, queue removal and unauthorised-access checks had not yet been
+completed against the hosted project. The organiser's status/outcome workflow was also incomplete.
 Screenshots and the remaining acceptance results belong in the [test evidence record](../testing/test-evidence.md).
 
 **Sprint impact:** KAN-36 implementation has progressed to hosted acceptance testing.
 This single check does not mark KAN-36, KAN-16 or the complete workflow Done.
+
+## 16 September 2026 — Hosted approval follow-up
+
+**Tested by:** Tristan.
+
+**Result:** Approval follow-up checks passed for the matching saved review row and reviewer,
+the retained outcome after reload with decision controls hidden, and removal from the
+pending-review queue. The [test evidence record](../testing/test-evidence.md) contains the
+acceptance results and remaining rejection, unauthorised-access and organiser-workflow checks.
+KAN-16 still needs the organiser interface and an organiser list that includes submitted
+and decided requests. These results do not mark either story Done.
 
 ## Decision record template
 

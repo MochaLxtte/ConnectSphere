@@ -22,7 +22,7 @@ Record actual standup participants and outcomes when each meeting occurs. Develo
 | 13 September | Sunday | Not recorded | | | |
 | 14 September | Monday | Not recorded | | | |
 | 15 September | Tuesday | Tristan (development update) | Supabase authentication and assigned-coordinator access connected (`8334f94`); coordinator decision permissions, outcomes and refresh connected (`c14eaf4`). Login worked; approving a synthetic request on the webpage changed Supabase status from `SUBMITTED` to `APPROVED`. | Finish hosted review/rejection/access checks and KAN-16 organiser list/status UI plus an all-status organiser list API. | E10, E11; [test runs and manual scope](../../testing/test-evidence.md) |
-| 16 September | Wednesday | Not recorded | | | |
+| 16 September | Wednesday | Tristan (development update) | Approved request retained its status on reload with no decision controls; the matching review row recorded the coordinator's application ID; the request no longer appeared in the queue. | Test rejection on a separate request and check denied access, then continue KAN-16. | E11; [MAN-20260916-01](../../testing/test-evidence.md#16-september-approval-persistence-and-queue-checks) |
 | 17 September | Thursday | Not recorded | | | |
 | 18 September | Friday | Not recorded | | | |
 | 19 September | Saturday | Not recorded | | | |
