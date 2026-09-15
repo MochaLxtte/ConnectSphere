@@ -27,28 +27,28 @@ Malformed JSON returns 400 (`INVALID_JSON`), oversized JSON returns 413 (`PAYLOA
 
 ## Sprint 1 routes
 
-The shared detail, coordinator queue and decision-write handlers are implemented with authentication integration pending, as described below. Other routes remain coordination proposals. Add an OpenAPI file when request validation and authentication are settled. If KAN-25 adopts Supabase Auth, revise the login, logout and session contract to match that integration before building the account pages.
+The normal server mounts Supabase authentication, event listing, shared detail, draft editing, submission and decision writing through `createRuntimeApp` in `backend/src/runtime-app.ts`. The coordinator review page consumes the shared detail, decision permissions and saved outcomes. The two routes marked planned below are not implemented. Organiser-page integration and verification of the complete workflow with real Supabase accounts remain pending.
 
-| Owner                 | Method / route                                                      | Purpose                                                     |
-| --------------------- | ------------------------------------------------------------------- | ----------------------------------------------------------- |
-| Ryan, KAN-25         | `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me` | Establish, end and inspect authenticated identity           |
-| Ernest, KAN-31 / KAN-4 | `POST /api/events`                                                  | Save an incomplete draft for the authenticated organiser    |
-| Kai Jie / Irfan / Tristan, KAN-34 / KAN-33 / KAN-16 | `GET /api/events/:id`                         | Shared request details, status and recorded decision; see contract below |
-| Kai Jie, KAN-34       | `PATCH /api/events/:id`                                            | Update an owned draft                                      |
-| Kai Jie, KAN-6        | `POST /api/events/:id/submit`                                       | Validate submission and transition atomically               |
-| Irfan, KAN-33         | `GET /api/events`                                                   | Filtered coordinator queue; pagination pending             |
-| Irfan, KAN-27         | `POST /api/events/:id/clarifications`                               | Request clarification and make it visible to the organiser  |
-| Tristan, KAN-36       | `POST /api/events/:id/reviews`                                      | Record an approval/rejection and update status atomically   |
+| Owner | Method / route | Purpose | State |
+| --- | --- | --- | --- |
+| Ryan, KAN-25 | `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me` | Establish, end and inspect authenticated identity | Implemented |
+| Ernest, KAN-31 / KAN-4 | `POST /api/events` | Save an incomplete draft for the authenticated organiser | Planned |
+| Kai Jie / Irfan / Tristan, KAN-34 / KAN-33 / KAN-16 | `GET /api/events/:id` | Shared details, status and recorded decision | Implemented |
+| Kai Jie, KAN-34 | `PATCH /api/events/:id` | Update an owned draft | Implemented |
+| Kai Jie, KAN-6 | `POST /api/events/:id/submit` | Validate submission and transition atomically | Implemented |
+| Irfan / Kai Jie, KAN-33 / KAN-34 | `GET /api/events` | Assigned coordinator queue, or the organiser's own drafts; pagination pending | Implemented; organiser status listing pending |
+| Irfan, KAN-27 | `POST /api/events/:id/clarifications` | Request clarification and make it visible to the organiser | Planned |
+| Tristan, KAN-36 | `POST /api/events/:id/reviews` | Record an approval/rejection and update status atomically | Implemented |
 
-Use camelCase in JSON and snake_case in SQL. IDs are UUID strings. Dates over HTTP should be ISO 8601 timestamps with an offset; PostgreSQL stores `timestamptz`. The expected display timezone is provisionally Asia/Singapore. Missing draft fields are nullable; PATCH omission should mean unchanged, and explicit null should clear an allowed field. Confirm these conventions before implementing handlers.
+Use camelCase in JSON and snake_case in SQL. IDs are UUID strings. Dates over HTTP should be ISO 8601 timestamps with an offset; PostgreSQL stores `timestamptz`. The expected display timezone is provisionally Asia/Singapore. Missing draft fields are nullable; PATCH omission leaves a field unchanged, and explicit null clears an allowed field. Preserve these conventions in new handlers.
 
-Never accept organiser identity, acting role, arbitrary status, or reviewer identity from an untrusted request body. Derive them from the authenticated session and service action. Filter in repositories as well as enforcing service access rules. Determine coordinator visibility and assignment policy before exposing a review queue. Client navigation is not access control.
+Never accept organiser identity, acting role, arbitrary status, or reviewer identity from an untrusted request body. Derive them from the authenticated session and service action. Filter in repositories as well as enforcing service access rules. Sprint 1 uses assigned-coordinator access as a team implementation assumption; customer clarification about unassigned triage and delegation remains open under [Q-02](../requirements/assumptions-and-questions.md). Client navigation is not access control.
 
-Agree on an authentication strategy, runtime validation, 401/403/404 behavior, concurrency handling, and error details as part of KAN-25 and the first event stories. Proposals can be reviewed before implementation. When adopting a significant contract change, keep this document, the corresponding UI, service and integration tests consistent in the implementation PR.
+Supabase Auth handles sign-in. Express verifies the access token and resolves `app_users.supabase_user_id` to the application profile and trusted role. `POST /api/auth/login` accepts `{ "accessToken": "..." }` and sets the verified token in an HttpOnly session cookie; `GET /api/auth/me` returns the mapped profile, and `POST /api/auth/logout` clears the cookie. Accounts must be provisioned before login; an unmapped account receives `403 ACCOUNT_NOT_PROVISIONED`. See the [authentication workstream](../../backend/src/modules/auth/README.md) for configuration and identity mapping. When adopting a significant contract change, keep this document, the corresponding UI, service and integration tests consistent in the implementation PR.
 
-## Shared request detail: backend implemented, integration pending
+## Shared request detail: backend and coordinator page connected
 
-**Status:** The shared backend handler for KAN-34, KAN-33 and KAN-16 is implemented on Tristan's feature branch. Authentication and frontend action/outcome integration remain pending. Kai Jie, Irfan and Tristan still need to review the shared contract; coordinator assignment and delegation remain open under [Q-02](../requirements/assumptions-and-questions.md). This implementation does not establish an agreed coordinator policy.
+**Status:** The shared backend handler for KAN-34, KAN-33 and KAN-16 uses Ryan's verified session and the Sprint 1 assigned-coordinator policy. The coordinator page uses its action flags and displays saved outcomes; organiser-page integration and full real-account workflow verification remain pending. Assignment workflows, unassigned triage and delegation still need customer clarification under [Q-02](../requirements/assumptions-and-questions.md); the current policy is a team implementation assumption.
 
 ### One route for all three pages
 
@@ -94,6 +94,8 @@ The backend computes `actions` for the verified caller:
 
 These flags guide the UI. Each write endpoint must recheck authentication, permission and current state; flags returned by an earlier GET are not permission to save later.
 
+`ReviewRequestPage` passes `actions.canMakeInitialDecision` to the decision panel. A false or missing flag prevents new decisions while a recorded outcome and its reason remain visible after an authorised detail read. Successful saves reload the shared detail to display the current status and review. A failed refresh reports that the decision was saved and offers a read retry; an uncertain write or conflict requires a refresh before another submission. Responses from a previously opened request cannot overwrite the current page.
+
 ### Access and responses
 
 | Caller / request | Detail access |
@@ -101,12 +103,12 @@ These flags guide the UI. Each write endpoint must recheck authentication, permi
 | Organiser viewing their own request | Allow all current Sprint 1 statuses, including `DRAFT`, `APPROVED` and `REJECTED`. |
 | Organiser viewing another organiser's request | Return `404 EVENT_REQUEST_NOT_FOUND`. |
 | Coordinator viewing a draft | Return `404 EVENT_REQUEST_NOT_FOUND`. |
-| Coordinator viewing another current Sprint 1 status | Allow only when the explicit coordinator-visibility policy permits access to that request. This includes `APPROVED` and `REJECTED`. |
+| Coordinator viewing another current Sprint 1 status | Allow only when the request's `coordinatorId` matches their verified `app_users.id`. This includes `APPROVED` and `REJECTED`. |
 | Coordinator who fails the visibility policy, or a missing request | Return the same `404 EVENT_REQUEST_NOT_FOUND` response. |
 
-Viewing permission and decision permission are separate checks. A successful detail read does not establish permission to edit or approve/reject. Role alone does not grant coordinator access; there is no assigned-only or all-coordinators default. Ryan's adapter must supply the verified application identity; the shared route remains unavailable until authentication and the required policies are wired in.
+Viewing permission and decision permission are separate checks. A successful detail read does not establish permission to edit or approve/reject. Role alone does not grant coordinator access: unassigned requests and requests assigned to another coordinator are unavailable. `event_requests.coordinator_id` references `app_users.id`, not the Supabase Auth UUID. Reassignment changes access on subsequent requests; the decision write rechecks assignment against the locked event row.
 
-An approved or rejected request leaves the pending-review queue but remains readable by its organiser and any coordinator who still passes the visibility policy. Refreshing after a decision should show the recorded outcome, without offering another initial decision. The queue's status filter must not be reused as the detail-access rule.
+An approved or rejected request leaves the pending-review queue but remains readable by its organiser and currently assigned coordinator. Refreshing after a decision should show the recorded outcome, without offering another initial decision. The queue's status filter must not be reused as the detail-access rule.
 
 | Response | Meaning |
 | --- | --- |
@@ -128,27 +130,32 @@ Check authentication and supported role before looking up the request. All detai
 - `canViewRequest(actor, request)`, the explicit coordinator visibility policy.
 - `canReviewRequest(actor, request, client)`, using the same policy signature as KAN-36's write service. It receives the detail service's checked-out `PoolClient` and determines whether an otherwise eligible coordinator can make an initial decision. The write endpoint still rechecks this policy inside its transaction.
 
-The normal server supplies none of these authentication/policy adapters, so `npm run dev` still returns the standard `404 NOT_FOUND` for these routes. Fixture authentication in tests is not a login implementation.
+`server.ts` uses `createRuntimeApp` to supply the database pool, Ryan's `authenticateRequest` adapter and the assigned-coordinator policies. The same session verifier is used by the auth and event routes. The organiser's own-draft listing, editing and submission routes are mounted through the same router and retain their ownership checks. Local tests with synthetic identities do not verify hosted Supabase login.
 
 Remaining integration work:
 
-1. Review the response and access rules with Kai Jie and Irfan, and supply Ryan's verified authentication and the agreed coordinator policies.
-2. Connect the draft, coordinator and status pages to the shared response. Separate outcome visibility from action availability in `ReviewDecisionPanel`: its current `canReview` prop also gates the outcome display, so binding it directly to `actions.canMakeInitialDecision` would hide saved decisions. Refresh the shared detail after saving or an uncertain write result, and show the latest status and outcome.
-3. Verify the integrated pages with real authentication, including keeping a recorded outcome visible when decision actions are disabled.
+1. Review the shared response with Kai Jie and Irfan. Use mapped test accounts and assigned synthetic requests while the KAN-29 assignment workflow is pending.
+2. Connect the organiser's draft and status pages to the shared response. Extend the organiser list API to include submitted and decided requests for KAN-16; its current draft-only result cannot populate that status list. The coordinator's decision controls and outcome display are connected.
+3. Complete hosted checks for unauthorised access and organiser outcome visibility. Approval and rejection, their saved review rows, outcomes after reload and queue removal have passed; see the dated [test evidence](../testing/test-evidence.md).
 
 **Verification, 11 September 2026:** Type checking and all 42 targeted backend tests passed: 31 shared-detail service/HTTP cases in `backend/test/events/event-request-detail.test.ts`, four queue-service cases and seven queue-HTTP cases. All 25 PostgreSQL tests passed, including the 11 new cases in `database/tests/events/event-request-detail.integration.test.ts`. These exercise ownership, coordinator visibility, state-dependent actions, the shared response and persisted approval/rejection outcomes through the composed GET and POST routes. They use fixture authentication and an isolated PostgreSQL test database; they do not verify live login or the hosted development project.
 
-## KAN-33 review queue: authentication integration pending
+## KAN-33 review queue: authentication connected
 
-`GET /api/events` is the coordinator queue, implemented in `submitted-requests-router.ts`
-and `submitted-requests.ts`. It shares the router dependencies described above but keeps
-its list query and status filter separate from the shared request-detail read.
+For a coordinator, `GET /api/events` returns the review queue implemented in
+`submitted-requests-router.ts` and `submitted-requests.ts`. For an organiser, the same
+endpoint returns only their own drafts. It shares the router dependencies described above
+but keeps its list query and status filter separate from the shared request-detail read.
+KAN-16 must extend organiser listing to include their submitted and decided requests;
+the shared detail already permits those owned requests.
 
 The queue includes only `SUBMITTED`, `UNDER_REVIEW` and `CLARIFICATION_REQUESTED` requests
 that pass `canViewRequest`. This filter describes queue membership, not permission to
 record an initial decision or view a decided request. The shared detail read includes
-approved and rejected requests when its access checks pass. There is no default
-coordinator-visibility grant; [Q-02 remains open](../requirements/assumptions-and-questions.md).
+approved and rejected requests when its access checks pass. The runtime policy requires
+the current coordinator assignment; unassigned requests and another coordinator's
+requests are excluded. [Q-02 remains open](../requirements/assumptions-and-questions.md)
+for customer clarification about triage, assignment and delegation.
 
 `GET /api/events` response:
 
@@ -163,23 +170,24 @@ not implemented. `GET /api/events/:id` uses the shared detail response documente
 | --- | --- |
 | `200` | An object containing an `items` array, which may be empty. |
 | `401 AUTHENTICATION_REQUIRED` | The authentication adapter reports absent or invalid credentials. |
-| `403 VIEW_FORBIDDEN` | The verified account is not an event coordinator. |
+| `403 VIEW_FORBIDDEN` | The verified account is neither an event coordinator nor an event organiser. |
 | `500 INTERNAL_ERROR` | An unexpected verification or persistence failure occurred; details are not returned. |
 
 Responses use `Cache-Control: no-store`. Queue service and HTTP-boundary tests passed on
 11 September. All five browser checks also passed after updating the scaffold expectation;
 `tests/e2e/review-queue.spec.ts` verifies error feedback, retry and an empty result using
 browser-response fixtures. The new PostgreSQL detail suite also checks queue inclusion
-before a decision and removal afterwards. Full queue visibility and detail-page acceptance
-with live authentication remain pending; these checks do not complete the KAN-33 workflow.
+before a decision and removal afterwards. Hosted approval checks also verified removal from
+the queue and retained detail access after reload. Remaining hosted acceptance scenarios
+are tracked in the [test evidence](../testing/test-evidence.md); KAN-33 is not yet complete.
 
-## KAN-36 review endpoint: authentication integration pending
+## KAN-36 review endpoint: authentication connected
 
-The handler for `POST /api/events/:id/reviews` is implemented. It is mounted only when `createApp` receives `reviews` dependencies containing the database pool, an `authenticate(request)` function and a `canReviewRequest(reviewer, event, client)` policy. The normal server does not supply these dependencies yet, so this route currently returns the standard `404 NOT_FOUND` response when running `npm run dev`.
+The handler for `POST /api/events/:id/reviews` is mounted by the normal server through `createRuntimeApp`. It supplies `createApp` with `reviews` dependencies containing the database pool, Ryan's `authenticateRequest` adapter and the assigned-coordinator `canReviewRequest(reviewer, event, client)` policy.
 
-Ryan's authentication adapter must verify credentials and return the corresponding `app_users` ID and trusted application role. It returns `null` for absent or invalid credentials and throws on verification-service failures. An identity provider's subject must be mapped to the application account; it is not assumed to equal `app_users.id`. Browser-supplied identity, role fields and unverified token contents cannot establish access.
+Ryan's authentication adapter verifies credentials and returns the corresponding `app_users` ID and trusted application role. It returns `null` for absent or invalid credentials and throws on verification-service failures. The verified Supabase subject is mapped through `app_users.supabase_user_id`; it is not assumed to equal `app_users.id`. Browser-supplied identity, role fields and unverified token contents cannot establish access.
 
-The reviewer must be an event coordinator. The request-specific policy then runs inside the saving transaction against the locked event row. Coordinator assignment and delegation rules must be agreed before supplying this policy. There is no default policy that grants access. Tests use a fixture-only assigned-coordinator policy and synthetic verified identities; they do not implement or verify live login.
+The reviewer must be an event coordinator whose application ID matches the request's current `coordinator_id`. The policy runs inside the saving transaction against the locked event row, so a prior page view does not retain permission after reassignment. Null or different assignments do not grant access. Assignment is a Sprint 1 implementation assumption while Q-02 remains open; it does not bypass the status and recorded-decision checks. Automated tests with synthetic verified identities do not establish that hosted login has been tested.
 
 Request body:
 

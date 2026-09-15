@@ -1,8 +1,8 @@
 # Testing and evidence
 
-The scaffold checks application wiring: API health/error responses, database migration/seed/readiness behavior, and browser navigation through the scaffold. These checks do not demonstrate authentication, event processing, booking, equipment allocation, or registration.
+The suite covers application wiring and implemented Sprint 1 behaviour: authentication/session handling, draft editing and submission, scoped request retrieval, and approval/rejection validation, persistence and coordinator controls. Booking, equipment allocation, registration and other unfinished release features still need their own tests.
 
-Database checks live in [database.integration.test.ts](../../database/tests/database.integration.test.ts), and browser checks live in [scaffold.spec.ts](../../tests/e2e/scaffold.spec.ts). Business-story tests still need to be implemented and linked separately.
+Infrastructure database checks live in [database.integration.test.ts](../../database/tests/database.integration.test.ts); feature integration suites live in `database/tests/events/` and `database/tests/auth.integration.test.ts`. Browser checks live in `tests/e2e/`, including [review-decision.spec.ts](../../tests/e2e/review-decision.spec.ts). The [test evidence register](test-evidence.md) records actual runs, manual observations and remaining gaps.
 
 Run commands from the repository root using the setup in the [main README](../../README.md):
 
@@ -20,11 +20,11 @@ Supabase hosts the development PostgreSQL database following the [8 September te
 
 Record hosted setup verification separately: project/environment, connection mode, verified TLS, migration and seed results, API readiness, disabled Data API setting and application-table RLS/privilege protections. Keep credentials out of evidence. Local or CI PostgreSQL results do not prove those hosted settings have been checked.
 
-KAN-25's authentication approach is still to be agreed. Whatever the identity provider, tests must exercise Express role and event-relationship checks directly; database hosting and RLS configuration alone do not demonstrate application authorisation.
+KAN-25 uses Supabase Auth. Express verifies the session and maps the Supabase identity to `app_users`, then enforces role, ownership and assigned-coordinator access. Local authenticated integration tests exercise this boundary with local tokens/profiles; they do not establish real Supabase login or hosted acceptance. The 15 September manual login/approval observation is recorded separately in [test evidence](test-evidence.md).
 
 ## Business-test planning
 
-[test-cases.csv](test-cases.csv) contains scenario outlines for all 20 release features. Every row starts as **Not executed** and must be refined into concrete preconditions, actions, expected outcomes and acceptance-criterion links before it becomes a test case. Questions such as interval boundaries and registration eligibility must reference a recorded decision.
+[test-cases.csv](test-cases.csv) indexes scenario outlines for all 20 release features. Rows with linked partial evidence do not establish full feature acceptance; remaining outlines must be refined into concrete preconditions, actions, expected outcomes and acceptance-criterion links. Questions such as interval boundaries and registration eligibility must reference a recorded decision.
 
 Sprint 1 has [33 proposed acceptance scenarios](../scrum/sprint-01/sprint-backlog.md#acceptance-test-plan), each linked to a specific acceptance criterion. Review these alongside the story cards, then link the implemented tests and actual results in the [test evidence record](test-evidence.md). The release-wide CSV remains the coverage index for all 20 core features.
 

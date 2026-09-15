@@ -1,8 +1,8 @@
 # ConnectSphere
 
-Development scaffold for the IS212 event planning and venue booking project. The team selected **Vue 3 + TypeScript, Express 5 + TypeScript, and Supabase PostgreSQL**, organised as a monorepo with a modular backend.
+IS212 event planning and venue booking project, built with **Vue 3 + TypeScript, Express 5 + TypeScript, Supabase PostgreSQL and Supabase Auth**, organised as a monorepo with a modular backend.
 
-The starter runs a web application, an API, and a database connection check. It includes initial migrations, fictional seed data, automated checks, CI, and team handoff documentation. **Business stories such as login, event creation, submission, review, booking and registration are not implemented.** The visible feature pages are clearly labelled placeholders; seed users cannot log in.
+The application supports sign-in, an assigned coordinator's review queue, request details and approval/rejection. The backend also supports owned-draft editing and submission. The organiser's creation, draft and status pages remain placeholders; draft creation and clarification endpoints are not implemented. Venue, equipment, registration and notification workflows remain for later work. Database migrations, fictional seed data, automated checks, CI and team documentation support development.
 
 ## Start here
 
@@ -15,11 +15,18 @@ npm ci
 npm run setup
 ```
 
-Configure the root `.env` with the Supabase database connection and TLS settings described in [database setup](database/README.md). `npm run setup` creates `.env` without overwriting an existing file, so existing clones must update their database settings manually. Then run:
+Configure the root `.env` with the database connection and TLS settings in [database setup](database/README.md), plus `SUPABASE_URL`, `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` for [authentication](backend/src/modules/auth/README.md). Use the project's publishable key for `VITE_SUPABASE_ANON_KEY`; never a privileged secret key. Leave `SUPABASE_JWT_SECRET` blank for the project's asymmetric signing keys. `npm run setup` creates `.env` without overwriting an existing file, so existing clones must add missing settings manually.
+
+For a fresh database, initialise the schema and fictional profiles:
 
 ```sh
 npm run db:migrate
 npm run db:seed
+```
+
+When joining the team's existing Supabase project, confirm its schema with Arvin before applying migrations or changing seed data. Provision each login in Supabase Auth and link it to `app_users.supabase_user_id` with the correct application role. Seed profiles alone do not create login credentials. Then start the application:
+
+```sh
 npm run dev
 ```
 
@@ -33,14 +40,14 @@ Never commit `.env` or place database passwords in frontend `VITE_*` variables. 
 
 ```text
 frontend/                  Vue application, navigation, API client, component tests
-backend/src/modules/       Auth and event domain starting points
+backend/src/modules/       Authentication, event services and HTTP routes
 backend/src/               HTTP application, configuration, database pool
 backend/test/              API and environment tests
-database/                  SQL migrations, seed, database integration test
-tests/e2e/                 Browser smoke tests
+database/                  SQL migrations, seed and database integration tests
+tests/e2e/                 Browser checks and coordinator decision scenarios
 docs/requirements/         20 core features, customer questions, traceability
-docs/architecture/         C4 context/container views, ERD, API proposals
-docs/testing/              Test plan and planned business test cases
+docs/architecture/         C4 views, ERD and implemented/proposed API contracts
+docs/testing/              Test plan, acceptance cases and evidence records
 docs/scrum/                Workstreams, Definition of Done, evidence templates
 docs/submission/           Course deliverable checklist
 scripts/                   Cross-platform setup
@@ -64,7 +71,7 @@ Start with the [Sprint 1 plan](docs/scrum/sprint-01/README.md). The following wo
 
 After database setup, Arvin supports cross-feature integration, end-to-end testing and resolving integration issues with the feature owners.
 
-Read [CONTRIBUTING.md](CONTRIBUTING.md) before the first feature branch. Resolve authentication, event field validation, coordinator visibility and transitions using the [open questions](docs/requirements/assumptions-and-questions.md). Proposed acceptance criteria and implementation details remain subject to team review and customer clarification.
+Read [CONTRIBUTING.md](CONTRIBUTING.md) before the first feature branch. Sprint 1 uses pre-provisioned Supabase accounts and assigned-coordinator access. Account administration, event field validation, assignment/delegation and later transitions still have [open customer questions](docs/requirements/assumptions-and-questions.md). Team assumptions remain distinct from customer clarifications.
 
 ## Checks
 
@@ -73,7 +80,7 @@ npm run check
 npm run test:coverage
 ```
 
-`check` runs TypeScript checks (including database/tooling), workspace tests, and both builds. Coverage reports measure the scaffold code; they do not establish coverage of the 20 business features.
+`check` runs TypeScript checks (including database/tooling), workspace tests, and both builds. Coverage reports measure the included code; they do not establish completion or acceptance coverage of all 20 business features.
 
 For database integration tests, use a dedicated test database. The optional Docker Compose service provides PostgreSQL 17 locally without using the team's Supabase data. With Docker Desktop's Linux engine running:
 
@@ -104,7 +111,9 @@ npx playwright install chromium
 npm run test:e2e
 ```
 
-The browser suite covers infrastructure and placeholder navigation. Expand tests around real acceptance criteria as features are delivered. GitHub Actions repeats the checks with its own PostgreSQL service and uploads coverage/browser evidence. See [testing guidance](docs/testing/README.md).
+The browser suite covers infrastructure, navigation, queue recovery and coordinator decisions using API response fixtures. PostgreSQL integration tests exercise persistence and access rules in an isolated database. GitHub Actions repeats the checks with its own PostgreSQL service and uploads coverage/browser evidence. See [testing guidance](docs/testing/README.md) and [test evidence](docs/testing/test-evidence.md) for the distinction between automated checks and hosted acceptance testing.
+
+Hosted approval and rejection checks passed, including the saved review row, outcome after reload and removal from the pending queue. See the [test evidence](docs/testing/test-evidence.md) for the dated results and remaining unauthorised-access and organiser-workflow checks. KAN-16 still requires the organiser interface and extending the organiser list API beyond drafts.
 
 ## Join the repository
 
@@ -123,6 +132,6 @@ The [submission checklist](docs/submission/checklist.md) maps the submission req
 
 ## Project context
 
-The first release covers 20 core features across connected event workflows. Sprint 1 decisions are recorded in the [planning notes](docs/scrum/sprint-01/planning.md). The team uses Vue, Express and Supabase PostgreSQL; the initial architecture and schema provide a starting point for implementation. Supabase database hosting is selected; the authentication approach for KAN-25 remains to be agreed.
+The first release covers 20 core features across connected event workflows. Sprint 1 decisions are recorded in the [planning notes](docs/scrum/sprint-01/planning.md). Supabase hosts PostgreSQL and handles sign-in; Express verifies sessions and enforces application roles, ownership and coordinator assignment.
 
 Team members and Scrum roles are maintained in the Sprint 1 plan. No public distribution license has been chosen for this coursework project.

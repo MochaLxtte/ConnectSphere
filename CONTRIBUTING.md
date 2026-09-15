@@ -1,6 +1,6 @@
 # Contributing
 
-Read the [setup instructions](README.md), [release scope](docs/requirements/README.md), and [initial workstreams](docs/scrum/sprint-01/README.md) before starting. Business features are intentionally unfinished. Agree acceptance criteria and shared contracts before implementing a story.
+Read the [setup instructions](README.md), [release scope](docs/requirements/README.md), and [initial workstreams](docs/scrum/sprint-01/README.md) before starting. Several Sprint 1 features are implemented while other release work remains unfinished; consult the dated backlog and test evidence for current boundaries. Agree acceptance criteria and shared contracts before implementing a story.
 
 ## Working on a story
 
@@ -16,7 +16,7 @@ npm run test:integration
 npm run test:e2e
 ```
 
-Use the README for database/browser prerequisites. Run integration tests when API or persistence behavior changes and browser tests when user workflows change. CI supplements review; a green scaffold check does not complete a business story.
+Use the README for database/browser prerequisites. Run integration tests when API or persistence behavior changes and browser tests when user workflows change. CI supplements review; passing checks do not complete a business story without its acceptance criteria and Definition of Done.
 
 ## Test organization
 

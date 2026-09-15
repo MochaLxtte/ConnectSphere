@@ -1,6 +1,7 @@
 import express, { type ErrorRequestHandler } from 'express';
 import helmet from 'helmet';
 import type { HealthDatabase } from './db/pool.js';
+import { createAuthRouter, type AuthRouterDependencies } from './modules/auth/router.js';
 import { createReviewRouter, type ReviewRouterDependencies } from './modules/events/review-router.js';
 import {
   createSubmittedRequestsRouter,
@@ -12,6 +13,7 @@ export interface AppDependencies {
   logger?: Pick<Console, 'error'>;
   reviews?: ReviewRouterDependencies;
   submittedRequests?: SubmittedRequestsRouterDependencies;
+  auth?: AuthRouterDependencies;
 }
 
 const databaseUnavailable = {
@@ -22,7 +24,7 @@ const databaseUnavailable = {
 };
 
 /** Construct the HTTP app without opening a socket or creating database connections. */
-export function createApp({ database, logger = console, reviews, submittedRequests }: AppDependencies) {
+export function createApp({ database, logger = console, reviews, submittedRequests, auth }: AppDependencies) {
   const app = express();
   app.disable('x-powered-by');
   app.use(helmet());
@@ -49,9 +51,11 @@ export function createApp({ database, logger = console, reviews, submittedReques
     }
   });
 
+  if (auth) app.use('/api/auth', createAuthRouter(auth));
+
   // Queue/detail reads require verified identity and explicit visibility/decision policies.
   if (submittedRequests) app.use('/api/events', createSubmittedRequestsRouter(submittedRequests));
-  // Keep review writes unavailable until KAN-25 supplies verified identity and a review policy.
+  // The runtime supplies verified identity and the same assignment policy for review writes.
   if (reviews) app.use('/api/events', createReviewRouter(reviews));
 
   app.use((_request, response) => {

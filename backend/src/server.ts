@@ -1,10 +1,13 @@
-import { createApp } from './app.js';
+import { createRuntimeApp } from './runtime-app.js';
 import { loadEnvironment } from './config/env.js';
 import { createDatabasePool } from './db/pool.js';
 
 const environment = loadEnvironment();
 const pool = createDatabasePool(environment.databaseUrl);
-const app = createApp({ database: pool });
+const app = createRuntimeApp({
+  pool,
+  isProduction: environment.nodeEnv === 'production',
+});
 
 const server = app.listen(environment.apiPort, environment.apiHost, () => {
   console.info(

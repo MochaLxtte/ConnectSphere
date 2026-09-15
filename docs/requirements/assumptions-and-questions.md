@@ -21,6 +21,10 @@ These items are unresolved unless a dated decision is added. The proposed defaul
 
 ## 8 September 2026 — Hosted PostgreSQL
 
+**Current status:** The hosted-database arrangements remain in force. KAN-25 now uses
+Supabase Auth, as recorded on 15 September below; the earlier note that authentication
+had not been selected is historical. Q-01 and Q-02 remain open.
+
 **Decision:** Use Supabase to host the development PostgreSQL database. The application keeps its Vue → Express → PostgreSQL structure, with Express using the PostgreSQL driver for database access.
 
 **Implementation arrangements:**
@@ -61,9 +65,9 @@ KAN-36 (which independently enforces its own reviewable-state check on write).
 
 ## 11 September 2026 — Coordinator visibility has no default grant (KAN-29/Q-02 still open)
 
-**Current status:** Still applies to the queue and shared detail endpoint. The detail read
-also requires an explicit decision policy to compute its available-action flags. Q-02
-remains open; no coordinator access policy has been selected by this integration.
+**Current status:** The requirement for explicit policies remains in force. The absence
+of runtime policies and authentication described below is superseded by the 15 September
+assigned-coordinator implementation assumption. Q-02 remains open for customer clarification.
 
 **Decision and rationale:** Since KAN-29 (coordinator assignment) is not committed Sprint 1
 scope and Q-02 is unresolved, `submitted-requests.ts` requires callers to supply a
@@ -89,8 +93,10 @@ every request" as the eventual rule.
 ## 11 September 2026 — `GET /api/events/:id` owner collision
 
 **Current status:** The fallback described below is superseded by the shared detail handler.
-There is now one GET registration for both supported roles. Contract review, production
-authentication and frontend integration remain pending.
+There is now one GET registration for both supported roles. Runtime authentication is
+connected as recorded on 15 September below, along with the coordinator page's action and
+outcome display. Team contract review, organiser-page integration and verification of the
+complete workflow with hosted accounts remain pending.
 
 **Decision and rationale:** `docs/architecture/api-contract.md`'s proposed-routes table lists
 `GET /api/events/:id` under three different owners (Kai Jie/KAN-34 draft retrieval,
@@ -114,6 +120,10 @@ their own `GET /:id` handler.
 **Supersedes:** None.
 
 ## 11 September 2026 — Shared request-detail backend
+
+**Current status:** The shared response and access boundaries below remain in force.
+The 15 September entries supersede the backend-wiring and coordinator-page gaps recorded
+here; organiser-page integration and the complete real-account workflow remain pending.
 
 **Implementation and rationale:** Consolidate `GET /api/events/:id` into one handler for
 KAN-34 draft retrieval, KAN-33 coordinator detail and KAN-16 status/outcome retrieval.
@@ -142,7 +152,7 @@ and customer clarifications remain separate; this record does not close Q-01, Q-
 
 **Implementation owner and date:** Tristan, 11 September 2026.
 
-**Remaining integration:** The normal server still supplies no authentication or coordinator
+**Remaining integration at the time:** The normal server still supplies no authentication or coordinator
 policy adapters, so the routes remain unavailable during ordinary startup. The draft,
 coordinator and status pages still need to consume the shared actions and outcome correctly.
 In particular, viewing a saved outcome must not depend on permission to submit a new decision.
@@ -195,6 +205,105 @@ customer-confirmed rule and should be revisited once Q-03 is answered.
 `database/tests/events/submit-request.integration.test.ts`.
 
 **Supersedes:** None.
+
+## 15 September 2026 — Supabase Auth and assigned-coordinator access
+
+**Decision and rationale:** Sprint 1 uses Supabase Auth with pre-provisioned application
+profiles. Express verifies the session token and maps its Supabase subject through
+`app_users.supabase_user_id` to the application's user ID and role. Account provisioning
+and role administration still need customer clarification under Q-01.
+
+Only the currently assigned coordinator may view or review an event request through
+the coordinator workflow. `event_requests.coordinator_id` must match the verified
+`app_users.id`; it does not contain the Supabase Auth UUID. A null assignment or assignment
+to another coordinator denies access. This gives Sprint 1 an explicit relationship rule
+while Q-02 remains open for unassigned triage, assignment authority and delegation.
+
+The coordinator queue excludes drafts and decided requests. Assigned coordinators can
+retrieve non-draft details, including recorded outcomes after approval or rejection.
+Organisers retain access to their own request details in every current Sprint 1 status,
+and only their own drafts may be edited or submitted. Initial approval/rejection still
+requires `SUBMITTED` status with no recorded decision. Assignment does not make a draft
+reviewable. Reassignment changes subsequent access; decision writes check the assignment
+against the locked event row before saving.
+
+**Kind:** Team implementation assumption, pending customer clarification. This does not
+close Q-01, Q-02 or Q-04, or add KAN-29 to the Sprint 1 commitment.
+
+**Implementation:** `server.ts` uses `createRuntimeApp` in `backend/src/runtime-app.ts`
+to mount authentication, event listing, shared detail, draft editing, submission and
+decision writing with the same session verifier and explicit coordinator policies.
+Until the assignment workflow is implemented, provision mapped test accounts and assign
+synthetic requests through the Supabase dashboard.
+
+**Verification:** Type checking, builds, 320 unit/component tests, 59 PostgreSQL tests
+and six Playwright checks passed. The new authenticated review tests use locally signed
+tokens with the actual verifier, session cookies, application-user mapping and runtime
+policies against an isolated test database. They cover approval, rejection, ownership,
+invalid sessions, impersonation attempts and reassignment. The startup check confirms
+the running server requires login for each mounted event route. These checks do not
+verify hosted Supabase sign-in or its signing-key service.
+
+**Remaining integration at this stage:** The coordinator page's action and outcome display
+is addressed by the next entry. Organiser-page integration and verification of the complete
+workflow with hosted accounts remain pending. Backend wiring alone does not complete the
+corresponding story acceptance scenarios.
+
+**Affected stories:** KAN-25, KAN-33, KAN-34, KAN-6, KAN-36 and KAN-16.
+
+**Supersedes:** The earlier absence of an authentication-provider selection and the
+11 September runtime-wiring gap. The explicit-policy requirement and shared-detail
+contract remain in force; the assigned-coordinator rule supplies the runtime policy.
+
+## 15 September 2026 — Coordinator decision interface
+
+**Implementation:** The coordinator page now uses the shared `canMakeInitialDecision` flag
+instead of assuming permission. Recorded approval/rejection outcomes and reasons remain
+visible when another decision is unavailable. Successful saves reload the request's status
+and review; failed refreshes offer a read retry without submitting the decision again.
+Uncertain writes and conflicts require a refresh before retrying, and late responses from
+a previous request cannot replace the current page.
+
+**Verification:** Type checking, builds, 337 unit/component tests and nine Playwright
+checks passed. Component tests cover eligibility, saved outcomes, reasons, refresh failures
+and navigation during requests. The decision browser checks use response fixtures to
+exercise approval and rejection through a reload, including the mobile outcome display.
+These checks do not establish that the full workflow has passed against the hosted
+Supabase project.
+
+**Remaining integration at this stage:** Verify the coordinator workflow with mapped
+Supabase accounts and assigned test requests. KAN-16 also needs the organiser-facing
+status/outcome page and an organiser list API that includes submitted and decided requests;
+the current list returns drafts only. The next entry records the first hosted approval check.
+
+**Affected stories:** KAN-36, KAN-33 and the shared response used by KAN-16.
+
+## 15 September 2026 — Hosted approval check
+
+**Tested by:** Tristan.
+
+**Procedure and result:** Signed in to the webpage and approved a synthetic event request.
+The corresponding request in Supabase changed from `SUBMITTED` to `APPROVED`.
+
+**Evidence scope at this stage:** This records the successful webpage approval and observed
+hosted status update. Rejection, inspection of the saved review row/reason, outcome
+persistence after reload, queue removal and unauthorised-access checks had not yet been
+completed against the hosted project. The organiser's status/outcome workflow was also incomplete.
+Screenshots and the remaining acceptance results belong in the [test evidence record](../testing/test-evidence.md).
+
+**Sprint impact:** KAN-36 implementation has progressed to hosted acceptance testing.
+This single check does not mark KAN-36, KAN-16 or the complete workflow Done.
+
+## 16 September 2026 — Hosted approval follow-up
+
+**Tested by:** Tristan.
+
+**Result:** Approval follow-up checks passed for the matching saved review row and reviewer,
+the retained outcome after reload with decision controls hidden, and removal from the
+pending-review queue. The [test evidence record](../testing/test-evidence.md) contains the
+acceptance results. The subsequent rejection check also passed; unauthorised-access and organiser-workflow checks remain open.
+KAN-16 still needs the organiser interface and an organiser list that includes submitted
+and decided requests. These results do not mark either story Done.
 
 ## Decision record template
 

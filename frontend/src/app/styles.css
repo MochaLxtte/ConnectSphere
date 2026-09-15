@@ -283,6 +283,26 @@ svg {
 .sign-in-link:hover {
   background: #edf1e6;
 }
+.account-summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 10px;
+  color: #64725f;
+}
+.account-summary span { display: grid; gap: 3px; text-align: right; }
+.account-summary strong { color: #3b5041; font-weight: 650; }
+.account-summary small { color: #809078; font-size: 9px; }
+.sign-out-button {
+  border: 1px solid #dde4d7;
+  background: #fff;
+  color: #5c6d54;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 10px;
+  font-weight: 600;
+}
+.sign-out-button:hover { background: #edf1e6; }
 .main-content {
   padding: 40px 43px 35px;
   max-width: 1350px;
@@ -659,6 +679,32 @@ h1 {
   border: 1px solid var(--border);
   border-radius: 12px;
 }
+.login-form,
+.account-panel {
+  width: min(100%, 430px);
+  padding: 26px;
+}
+.login-form { display: grid; gap: 17px; }
+.login-form label {
+  display: grid;
+  gap: 7px;
+  color: #52614e;
+  font-size: 11px;
+  font-weight: 600;
+}
+.login-form input {
+  width: 100%;
+  border: 1px solid #dce3d6;
+  border-radius: 6px;
+  padding: 10px 11px;
+  color: #293a33;
+  background: #fff;
+}
+.login-form input:focus { outline: 2px solid #b9cf9e; border-color: #8ba778; }
+.auth-error { color: #9a4e3c; font-size: 11px; line-height: 1.5; }
+.account-panel h2 { font-size: 20px; margin-top: 8px; }
+.account-panel > p:not(.eyebrow) { color: var(--muted); font-size: 12px; margin-top: 7px; }
+.account-panel .button { margin-top: 20px; }
 .feature-placeholder {
   padding: 32px 30px 42px;
   min-height: 440px;

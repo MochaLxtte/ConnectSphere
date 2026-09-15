@@ -19,9 +19,8 @@ export interface SubmittedRequestQueryDependencies {
   pool: Pick<Pool, 'query'>;
   /**
    * Required server-side visibility policy; there is no default that grants access.
-   * KAN-29 (coordinator assignment) and Q-02 are unresolved, so callers (tests, and the
-   * eventual production wiring once KAN-29 lands) must supply this explicitly rather than
-   * this module assuming every coordinator may see every request.
+   * The runtime supplies the Sprint 1 assigned-coordinator policy. Keep this explicit
+   * so queue membership cannot accidentally grant access to another coordinator's requests.
    */
   canViewRequest(actor: QueueActor, request: ReviewableRequest): boolean | Promise<boolean>;
 }

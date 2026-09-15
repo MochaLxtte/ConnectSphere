@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import ReviewDecisionPanel from '../components/ReviewDecisionPanel.vue';
 import { fetchReviewRequestDetail, submitReview } from '../api/submitted-requests';
@@ -15,6 +15,7 @@ const eventRequestId = computed(() => String(route.params.id));
 const state = ref<LoadState>({ status: 'loading' });
 const feedback = ref<ReviewFeedback | null>(null);
 let controller: AbortController | undefined;
+let viewVersion = 0;
 
 async function load() {
   controller?.abort();
@@ -39,11 +40,18 @@ async function load() {
 }
 
 async function handleSubmit(submission: ReviewSubmission) {
+  if (state.value.status !== 'ready' || state.value.detail.id !== submission.eventRequestId ||
+    state.value.detail.actions?.canMakeInitialDecision !== true || feedback.value?.state === 'saving') return;
+  const currentView = viewVersion;
   feedback.value = { eventRequestId: submission.eventRequestId, state: 'saving' };
   try {
     const saved = await submitReview(submission);
+    // A completed write must not replace the request opened after navigation.
+    if (currentView !== viewVersion) return;
     feedback.value = { eventRequestId: submission.eventRequestId, state: 'saved', decision: saved.decision };
+    await load();
   } catch (error) {
+    if (currentView !== viewVersion) return;
     const code = error && typeof error === 'object' && 'code' in error
       ? String((error as { code: unknown }).code) : 'REQUEST_FAILED';
     feedback.value = { eventRequestId: submission.eventRequestId, state: 'error', code };
@@ -55,21 +63,28 @@ function handleRefresh() {
   void load();
 }
 
-watch(eventRequestId, load, { immediate: false });
-onMounted(load);
-onBeforeUnmount(() => controller?.abort());
+watch(eventRequestId, () => {
+  viewVersion += 1;
+  feedback.value = null;
+  void load();
+}, { immediate: true });
+onBeforeUnmount(() => {
+  viewVersion += 1;
+  controller?.abort();
+});
 </script>
 
 <template>
   <section class="page-heading">
     <p class="eyebrow">For coordinators</p>
-    <h1>Submitted event request</h1>
+    <h1>Event request review</h1>
     <p class="page-description">Review the organiser's submitted details and record an outcome.</p>
   </section>
 
   <p v-if="state.status === 'loading'" role="status">Loading the event request…</p>
 
   <div v-else-if="state.status === 'error'" class="panel" role="alert">
+    <p v-if="feedback?.state === 'saved'">Your decision was recorded, but the latest request details could not be loaded.</p>
     <p>{{ state.code === 'EVENT_REQUEST_NOT_FOUND'
       ? 'This event request is unavailable or you do not have permission to review it.'
       : state.message }}</p>
@@ -99,8 +114,8 @@ onBeforeUnmount(() => controller?.abort());
 
     <ReviewDecisionPanel
       class="panel"
-      :request="{ id: state.detail.id, status: state.detail.status }"
-      :can-review="true"
+      :request="state.detail"
+      :can-make-initial-decision="state.detail.actions?.canMakeInitialDecision === true"
       :feedback="feedback"
       @submit="handleSubmit"
       @refresh="handleRefresh"
@@ -109,9 +124,15 @@ onBeforeUnmount(() => controller?.abort());
 </template>
 
 <style scoped>
-.event-detail { margin-bottom: 16px; }
+.event-detail { margin-bottom: 16px; padding: 24px; }
 .event-detail dl { display: grid; grid-template-columns: 200px 1fr; row-gap: 12px; column-gap: 16px; margin-top: 16px; }
 .event-detail dl > div { display: contents; }
 .event-detail dt { font-weight: 600; font-size: 13px; color: #59685e; }
-.event-detail dd { margin: 0; }
+.event-detail dd { margin: 0; overflow-wrap: anywhere; min-width: 0; }
+@media (max-width: 520px) {
+  .event-detail { padding: 20px; }
+  .event-detail dl { grid-template-columns: 1fr; gap: 16px; }
+  .event-detail dl > div { display: block; }
+  .event-detail dd { margin-top: 4px; }
+}
 </style>

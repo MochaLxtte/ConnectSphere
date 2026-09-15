@@ -19,14 +19,16 @@ Copy the host, username and database name from the dashboard. Use the database p
 
 `MIGRATION_DATABASE_URL` is optional. Leave it blank to run migrations and seeds through `DATABASE_URL`, or set it to a separate direct or session connection for schema administration. Both URLs must target the same project and use verified TLS. The application uses `DATABASE_URL`; `TEST_DATABASE_URL` is reserved for a dedicated test database.
 
-Run the migrations and optional fictional development seeds:
+For a new isolated database, run the migrations and optional fictional development seeds:
 
 ```sh
 npm run db:migrate
 npm run db:seed
 ```
 
-Verify the connection using the application's overview page or `GET /api/health/ready`. An unconfigured URL, unreachable project or missing migration produces a readiness failure. Hosting the database does not implement login; authentication remains part of KAN-25.
+The team manages the shared development schema in the Supabase dashboard. Coordinate changes with Arvin and retain equivalent numbered migrations for reproducible local and CI databases. Before applying migrations to an existing shared project, reconcile its tables and migration history; do not recreate tables already managed through the dashboard.
+
+Verify the connection using the application's overview page or `GET /api/health/ready`. An unconfigured URL, unreachable project or missing scaffold metadata produces a readiness failure. Supabase Auth handles sign-in separately; Express verifies the session and resolves the application profile through `app_users.supabase_user_id`.
 
 ## Shared schema and migrations
 
@@ -36,9 +38,13 @@ Application tables remain in the `public` schema. The hardening migration enable
 
 A Git branch does not isolate a shared database. Agree schema changes with Arvin before applying them to the team's project. Use separate projects or the local test database for experiments that would disrupt other developers. Do not run destructive reset commands against the shared project.
 
-The initial schema covers user identity, incomplete event drafts, coordinator linkage, clarification records, and review outcomes. It intentionally has no reservation or registration schema yet. Draft fields may be NULL, and submission rules must be implemented separately after clarification. The six statuses, single role per user, single proposed time interval, and text requirement fields are starting design choices, not approved customer policy. Services must update `updated_at` on writes and enforce roles, ownership, transitions, and atomic review operations; the schema alone does not do so.
+The schema covers application profiles, incomplete event drafts, coordinator linkage, clarification records, and review outcomes. It has no reservation or registration schema yet. Draft fields may be NULL; the submission service validates the required fields before moving an owned draft to `SUBMITTED`. The review service saves the review row and matching `APPROVED`/`REJECTED` status in one transaction, after checking the assigned coordinator and current state. The six statuses, single role per user, single proposed time interval, and text requirement fields remain design choices subject to the recorded open questions. Services update `updated_at` on writes and enforce roles, ownership and transitions; the schema alone does not do so.
 
 Seeds contain fictional `.test` accounts with NULL password hashes, plus one incomplete draft. They cannot authenticate. Re-running seeding inserts missing examples without replacing existing data. Seeding is disabled for `NODE_ENV=production`; point it only at a development database. Ryan owns identity integration under KAN-25; Arvin owns schema evolution and representative integration fixtures under KAN-24.
+
+Create test login accounts in Supabase Auth, then link each UUID to its application profile's `supabase_user_id`. The mapping is nullable and unique. `organiser_id` and `coordinator_id` on event requests refer to `app_users.id`, not the Supabase Auth UUID. Migration `004_add_supabase_user_id.sql` supplies the mapping for local/CI databases; migration 003 remains historical and its Firebase identity table is unused by the current authentication code.
+
+Hosted approval checks verified the `APPROVED` request status and matching review row with the assigned coordinator's application ID. See the [test evidence](../docs/testing/test-evidence.md) for the dated results and remaining hosted acceptance checks.
 
 ## Optional local PostgreSQL and integration tests
 

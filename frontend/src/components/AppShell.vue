@@ -1,5 +1,13 @@
 <script setup lang="ts">
+import { onMounted } from 'vue';
 import AppIcon from './AppIcon.vue';
+import { authSession, restoreSession, roleLabel, signOut } from '../features/auth/session.js';
+
+onMounted(() => { void restoreSession().catch(() => undefined); });
+
+async function handleSignOut(): Promise<void> {
+  try { await signOut(); } catch { /* The active session remains visible so the user can retry. */ }
+}
 </script>
 
 <template>
@@ -49,7 +57,11 @@ import AppIcon from './AppIcon.vue';
         <div class="breadcrumb">
           Workspace <span>/</span> <strong>{{ $route.meta.title || 'Overview' }}</strong>
         </div>
-        <RouterLink to="/login" class="sign-in-link"
+        <div v-if="authSession.user" class="account-summary">
+          <span><strong>{{ authSession.user.displayName }}</strong><small>{{ roleLabel(authSession.user.role) }}</small></span>
+          <button class="sign-out-button" type="button" @click="handleSignOut">Sign out</button>
+        </div>
+        <RouterLink v-else to="/login" class="sign-in-link"
           ><AppIcon name="user" :size="16" />Sign in<AppIcon name="arrow" :size="16"
         /></RouterLink>
       </header>

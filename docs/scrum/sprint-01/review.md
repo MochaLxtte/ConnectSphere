@@ -27,7 +27,9 @@ Suggested 45-minute agenda: recap goal and scope (5 minutes), demonstrate workin
 - [ ] Ensure the coordinator is eligible to review the demonstrated request under the agreed access policy. If assignment is outside this sprint, document the agreed demo setup rather than claiming assignment functionality is complete.
 - [ ] Link every demonstrated story to acceptance criteria, implementation and executed tests. Include failures and limitations in the review.
 
-The scaffold currently proposes `DRAFT`, `SUBMITTED`, `UNDER_REVIEW`, `CLARIFICATION_REQUESTED`, `APPROVED`, and `REJECTED`. These are implementation proposals, not confirmed customer rules. Demonstrate only agreed transitions and update the [API contract](../../architecture/api-contract.md) and story criteria if that policy changes.
+The shared status model includes `DRAFT`, `SUBMITTED`, `UNDER_REVIEW`, `CLARIFICATION_REQUESTED`, `APPROVED`, and `REJECTED`. The implemented initial-decision path allows the assigned coordinator to approve/reject a `SUBMITTED` request without a recorded decision, with an optional reason. Broader review/clarification transitions remain open questions. Follow the [API contract](../../architecture/api-contract.md) and update story criteria if the policy changes.
+
+The 15 September [development test record](../../testing/test-evidence.md) includes a hosted approval/status check. It is separate from the scheduled review and does not fill any demonstration outcome below.
 
 ## Demo run sheet
 
