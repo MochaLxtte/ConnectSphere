@@ -181,8 +181,10 @@ decision, reviewer, supplied reason, refreshed outcome and removal from the queu
 S1-T21 and S1-T22 are passed. The owning organiser's direct decision attempt was refused
 with `403 REVIEW_FORBIDDEN`. A coordinator could not read or decide an unassigned
 submitted request; the direct decision attempt returned `404 EVENT_REQUEST_NOT_FOUND`
-without a write. Remaining hosted access/state cases and organiser outcome acceptance
-are tracked in the [test register](../../testing/test-evidence.md).
+without a write. An assigned coordinator's attempt to approve a draft returned
+`409 REQUEST_NOT_REVIEWABLE`; the request remained `DRAFT` without a review row.
+KAN-16 organiser list/status implementation and outcome acceptance remain outstanding.
+Remaining hosted checks are tracked in the [test register](../../testing/test-evidence.md).
 
 ### KAN-16 — View event-request status
 
@@ -268,7 +270,7 @@ This plan records scenario coverage, not story completion. **Partial** means onl
 | S1-T20 | KAN-33-AC3 | API integration | Request an unauthorized event ID directly using coordinator and other actor fixtures; protected fields are withheld. | Passed (isolated); unassigned coordinator case also passed manually | [AUTO-20260915-02; MAN-20260916-04; authenticated-review.integration.test.ts and event-request-detail.integration.test.ts](../../testing/test-evidence.md) |
 | S1-T21 | KAN-36-AC1 | API integration + browser | Authorized reviewer approves an eligible request; decision, actor and state agree after reload. | Passed (isolated and hosted manual checks) | [AUTO-20260915-02/03; MAN-20260915-01; MAN-20260916-01: approval, review-row identity, reload and queue removal](../../testing/test-evidence.md) |
 | S1-T22 | KAN-36-AC2 | API integration + browser | Authorized reviewer rejects under the adopted explanation rule; persisted decision, supplied explanation and state agree. | Passed (isolated and hosted manual checks) | [AUTO-20260915-02/03; MAN-20260916-02: rejection, reason, reviewer, reload and queue removal](../../testing/test-evidence.md) |
-| S1-T23 | KAN-36-AC3 | API integration | Wrong actor and disallowed-state decisions are rejected; neither review rows nor state changes are persisted. | Passed (isolated); organiser and unassigned coordinator cases also passed manually | [AUTO-20260915-02; MAN-20260916-03/04; other hosted access/state cases remain open](../../testing/test-evidence.md) |
+| S1-T23 | KAN-36-AC3 | API integration | Wrong actor and disallowed-state decisions are rejected; neither review rows nor state changes are persisted. | Passed (isolated); organiser, unassigned coordinator and assigned draft cases also passed manually | [AUTO-20260915-02; MAN-20260916-03/04/05; other hosted access/state cases remain open](../../testing/test-evidence.md) |
 | S1-T24 | KAN-36-AC4 | PostgreSQL integration | Exercise repeated/competing decisions and transaction failure; no contradictory outcomes or partially committed review/state pairs remain. | Passed (isolated) | [AUTO-20260915-02; review-decision.integration.test.ts](../../testing/test-evidence.md) |
 | S1-T25 | KAN-16-AC1 | Browser | Open owned requests in each selected workflow state; list/detail labels match persisted state. | Not executed | |
 | S1-T26 | KAN-16-AC2 | Browser + API integration | Complete submission and both review outcomes on separate fixtures; organiser reload shows the latest status and permitted decision details. | Partial; API outcome retrieval passed | [AUTO-20260915-02; event-request-detail.integration.test.ts; organiser browser outcome still pending](../../testing/test-evidence.md) |

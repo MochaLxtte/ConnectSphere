@@ -16,6 +16,7 @@ The automated entries below preserve the results recorded for their implementati
 | MAN-20260916-02 / 16 September 2026 | Local webpage and Supabase development project; working branch at `2661219`; exact served build/time not captured | S1-T22 / KAN-36-AC2; rejection persistence and queue removal | Reject a separate assigned submitted request with a reason; inspect its request/review rows; reload the webpage and return to the queue | Passed: status and review decision were `REJECTED`; the reason and reviewer were correct. Rejection and reason remained after reload, decision controls were absent, and the request left the queue. | Written observation below; screenshot/recording not captured | Tristan |
 | MAN-20260916-03 / 16 September 2026 | Local webpage and Supabase development project; working branch at `2c5f3e8`; exact served build/time not captured | S1-T23 / KAN-36-AC3; organiser role case | Sign in as the owning organiser; open the rejected request; directly POST an approval from the browser console | Passed: the outcome was readable without decision controls. The direct POST returned `403 REVIEW_FORBIDDEN`; the original rejection and review row remained unchanged. | Console capture shows HTTP 403 and `REVIEW_FORBIDDEN`; screenshot file not stored in the repository | Tristan |
 | MAN-20260916-04 / 16 September 2026 | Local webpage and Supabase development project; working branch at `039bed8`; exact served build/time not captured | S1-T20 / KAN-33-AC3 and S1-T23 / KAN-36-AC3; unassigned coordinator case | Sign in as a coordinator; open a separate submitted request with no assigned coordinator; directly POST an approval from the browser console | Passed: the page withheld the request and decision controls. The POST returned `404 EVENT_REQUEST_NOT_FOUND`; the request remained `SUBMITTED` with no review created. | Console capture shows HTTP 404 and `EVENT_REQUEST_NOT_FOUND`; screenshot file not stored in the repository | Tristan |
+| MAN-20260916-05 / 16 September 2026 | Local webpage and Supabase development project; working branch at `18e8dea`; exact served build/time not captured | S1-T23 / KAN-36-AC3; assigned draft case | Sign in as the assigned coordinator; open a separate draft with no recorded review; directly POST an approval from the browser console | Passed: the page withheld the draft details and decision controls. The POST returned `409 REQUEST_NOT_REVIEWABLE`; the request remained `DRAFT` with no review created. | Console capture shows HTTP 409 and `REQUEST_NOT_REVIEWABLE`; screenshot file not stored in the repository | Tristan |
 
 For manual cases, record preconditions, input values, expected and actual outcomes. For automated runs, link the test files and retain results that show the relevant cases. Track failed cases through their fixes and reruns.
 
@@ -25,7 +26,7 @@ For manual cases, record preconditions, input values, expected and actual outcom
 - **Action:** Tristan signed in and approved the request through the webpage, then inspected the corresponding request in Supabase.
 - **Expected and observed:** the request status changed from `SUBMITTED` to `APPROVED` in Supabase.
 - **Limit:** this records the approval/status path only. The review row and reviewer identity, reason persistence, browser reload, removal from the queue, rejection, unauthorised attempts and organiser-facing outcome have not been demonstrated by this manual check. It does not complete S1-T21 or close KAN-36.
-- **Follow-up:** Approval persistence, rejection, organiser write denial and unassigned-coordinator denial were checked on 16 September below. Remaining hosted access/state cases and the organiser outcome workflow are listed below.
+- **Follow-up:** Approval persistence, rejection, organiser write denial, unassigned-coordinator denial and draft refusal were checked on 16 September below. Remaining hosted checks and the organiser outcome workflow are listed below.
 
 ## 16 September: approval persistence and queue checks
 
@@ -42,7 +43,7 @@ For manual cases, record preconditions, input values, expected and actual outcom
 - **Stored result:** The request status and matching review decision were `REJECTED`. The supplied reason and coordinator's application ID were recorded correctly.
 - **Reload and queue:** Rejection and its reason remained visible after refreshing, decision controls were absent, and the rejected request no longer appeared in the pending queue.
 - **Result:** S1-T22 passed. Both approval and rejection now have manual persistence and reload evidence. The exact reason text and screenshot were not captured in this record.
-- **Follow-up:** The organiser write-denial and unassigned-coordinator cases passed below. Complete the remaining hosted access/state cases and organiser outcome acceptance after KAN-16 is implemented.
+- **Follow-up:** The organiser write-denial, unassigned-coordinator and assigned-draft cases passed below. Continue KAN-16 implementation and organiser outcome acceptance; remaining hosted checks are listed below.
 
 ## 16 September: organiser cannot record a decision
 
@@ -60,7 +61,16 @@ For manual cases, record preconditions, input values, expected and actual outcom
 - **Direct write:** A POST to `/api/events/:id/reviews` with `{"decision":"APPROVED"}` returned HTTP `404` and error code `EVENT_REQUEST_NOT_FOUND`, as shown in the console capture.
 - **Stored result:** The request remained `SUBMITTED` and unassigned, with no review created.
 - **Result:** The unassigned-request cases in S1-T20 and S1-T23 passed. Coordinator role alone did not grant read or decision access. The 404 deliberately uses the same response as a missing request.
-- **Scope:** This checks an unassigned request, not one assigned to another coordinator. Hosted checks for a different coordinator, signed-out access and draft-state refusal remain unrecorded; isolated tests cover those cases separately. KAN-16 organiser list/status implementation and acceptance remain outstanding.
+- **Scope:** This checks an unassigned request, not one assigned to another coordinator. Hosted checks for a different coordinator and signed-out access remain unrecorded; isolated tests cover those cases separately. The assigned-draft refusal check passed below. KAN-16 organiser list/status implementation and acceptance remain outstanding.
+
+## 16 September: assigned coordinator cannot decide a draft
+
+- **Tested by:** Tristan, using a separate synthetic request in `DRAFT`, assigned through `coordinator_id` to the signed-in coordinator's `app_users.id`, with no recorded review. The console script checked `/api/auth/me` for `EVENT_COORDINATOR` before sending the write.
+- **Read access:** Opening `/reviews/:id` withheld draft details and decision controls.
+- **Direct write:** A POST to `/api/events/:id/reviews` with `{"decision":"APPROVED"}` returned HTTP `409` and error code `REQUEST_NOT_REVIEWABLE`, as shown in the console capture.
+- **Stored result:** The request remained `DRAFT`, with no review created.
+- **Result:** The assigned-draft case in S1-T23 passed. Assignment was valid, so this exercised the draft-state restriction separately from the unassigned-request denial.
+- **Scope and next work:** Approval, rejection, organiser denial, unassigned-coordinator denial and assigned-draft refusal now have manual evidence. Other negative cases remain covered by isolated automation; this run does not establish hosted checks for every role, assignment or state. Continue KAN-16's organiser list API and status/outcome interface before completing the organiser workflow acceptance.
 
 ## Executable evidence map
 
