@@ -17,8 +17,10 @@ The dev server runs at `http://127.0.0.1:5173` and fails clearly if that port is
 - Live API liveness and database readiness checks on the overview, with separate loading, error, success, and retry states.
 - A shared JSON API client that preserves structured backend error codes.
 - Component and API contract tests for the connection checks and failure recovery.
+- Supabase sign-in, application session state and sign-out, backed by Express verification.
+- Coordinator review queue and detail, with approval/rejection controls and saved outcomes.
 
-Account access, event requests, and coordinator review pages are explicitly marked placeholders. There is no simulated login, fake event data, or role enforcement yet. All scaffold routes are public and contain no protected data. Add authentication and server-side authorization before exposing business features.
+The organiser's event list and creation pages remain placeholders. Express authenticates event API calls and enforces roles, ownership and the Sprint 1 coordinator assignment policy. Frontend navigation and action flags do not replace those checks.
 
 ## Team work areas
 
@@ -47,7 +49,7 @@ GET /api/health/ready
 503 { "error": { "code": "DATABASE_UNAVAILABLE", "message": "..." } }
 ```
 
-The queue, shared request-detail and decision-write handlers are implemented but remain unavailable in the normal server until authentication and access policies are supplied. Use the [API contract](../docs/architecture/api-contract.md) when connecting event pages. Supabase Auth is a separate choice for KAN-25; no authentication client is configured yet. Frontend TypeScript types describe data; they do not replace server-side validation.
+The normal server mounts the queue, shared request-detail and decision-write handlers with Supabase session verification and the assigned-coordinator policy. Use the [API contract](../docs/architecture/api-contract.md) when connecting event pages. Frontend TypeScript types describe data; they do not replace server-side validation.
 
 For production, serve `dist/` with a history fallback to `index.html` and route `/api/*` to the backend. The Vite proxy is development-only. The interface uses system-font fallbacks if the optional Google Fonts stylesheet is unavailable.
 
@@ -55,12 +57,12 @@ For production, serve `dist/` with a history fallback to `index.html` and route 
 
 `src/features/reviews/components/ReviewDecisionPanel.vue` provides approval/rejection controls for a single event request. KAN-33's `ReviewRequestPage.vue` mounts it and supplies API calls and feedback; `ReviewQueuePage.vue` lists requests. The panel itself does not fetch requests, authenticate users or call the review endpoint.
 
-The shared GET retains the flat event fields and adds `review` and `actions`. Frontend types and permission/outcome wiring still need updating: the parent currently hardcodes `canReview` to true. Separate permission to display an outcome from `actions.canMakeInitialDecision`; binding that flag directly to the existing `canReview` prop would hide saved outcomes. Refresh the shared detail after a successful or uncertain decision write. Live authenticated browser integration remains pending.
+The shared GET retains the flat event fields and adds `review` and `actions`. The page consumes these fields, enables decisions only when the backend allows them, and keeps a saved outcome and reason visible after decision actions become unavailable. It reloads the detail after a successful write. Verification of the complete workflow with hosted accounts remains pending.
 
 The parent page supplies:
 
-- `request`: the current request's `id`, `status` and optional `recordedDecision`, read from the server. Unknown statuses cannot be reviewed; the supported initial state is `SUBMITTED`.
-- `canReview`: permission for this request, derived from verified access state. Omission denies access. This controls display only; Express must enforce the role and request-specific permission again when saving.
+- `request`: the current request's `id`, `status` and nullable `review`, read from the server. The review includes the recorded decision and reason. Unknown statuses cannot be reviewed; the supported initial state is `SUBMITTED`.
+- `canMakeInitialDecision`: the backend's action flag for this request. False or omitted prevents submission while leaving an existing outcome readable. Render the panel only after an authorised detail read; Express rechecks role, assignment and state when saving.
 - `feedback`: a `ReviewFeedback` value from `src/features/reviews/types.ts`, scoped to `eventRequestId`. Use `state: 'saving'`, `state: 'saved'` with the confirmed `decision`, or `state: 'error'` with the API error `code`.
 
 Example placement inside the request-review page:
@@ -68,7 +70,7 @@ Example placement inside the request-review page:
 ```vue
 <ReviewDecisionPanel
   :request="reviewRequest"
-  :can-review="canReviewRequest"
+  :can-make-initial-decision="reviewRequest.actions?.canMakeInitialDecision === true"
   :feedback="reviewFeedback"
   @submit="recordDecision"
   @refresh="reloadRequest"
@@ -77,9 +79,9 @@ Example placement inside the request-review page:
 
 `submit` emits `{ eventRequestId, input: { decision, reason } }`. The reason is trimmed and blank text becomes `null`. The parent sets saving feedback immediately and sends only `input` to `POST /api/events/:id/reviews` through the authenticated API client. Set saved feedback only after a successful server response; set error feedback when the call fails. Each update should supply a new feedback object for that request. The panel prevents duplicate submissions while waiting and ignores feedback for other request IDs.
 
-`refresh` emits the current request ID. Reload its status and recorded decision from the server before clearing error feedback. A conflict or uncertain network/server failure requires this refresh because the decision may already have been saved. Invalid-input feedback preserves the selected decision and reason for correction. Authentication/access failures hide decision controls. Changing request IDs clears the previous selection and typed reason.
+`refresh` emits the current request ID. The parent hides the panel while reloading the detail, so stale actions cannot be used during the read. A conflict or uncertain network/server failure requires this refresh because the decision may already have been saved. If a confirmed save is followed by a failed read, the page reports the saved decision and retries only the read. Invalid-input feedback preserves the selected decision and reason for correction. Authentication/access failures hide decision controls. Changing request IDs clears the previous selection and typed reason; late write responses cannot replace the newly opened request.
 
-Recorded outcomes replace the form, including when an existing decision accompanies a stale `SUBMITTED` status. Component tests use supplied state and emitted events; they are not evidence of live authentication, API integration or completion of KAN-16.
+Recorded outcomes replace the form, including when an existing decision accompanies a stale `SUBMITTED` status. Component tests cover the panel and parent page; browser tests in `tests/e2e/review-decision.spec.ts` cover saving and reloading with API response fixtures. They do not verify hosted login, database persistence or completion of KAN-16's organiser interface.
 
 Run the component tests from the repository root:
 

@@ -94,8 +94,9 @@ every request" as the eventual rule.
 
 **Current status:** The fallback described below is superseded by the shared detail handler.
 There is now one GET registration for both supported roles. Runtime authentication is
-connected as recorded on 15 September below. Team contract review, frontend integration
-and hosted-login verification remain pending.
+connected as recorded on 15 September below, along with the coordinator page's action and
+outcome display. Team contract review, organiser-page integration and verification of the
+complete workflow with hosted accounts remain pending.
 
 **Decision and rationale:** `docs/architecture/api-contract.md`'s proposed-routes table lists
 `GET /api/events/:id` under three different owners (Kai Jie/KAN-34 draft retrieval,
@@ -121,8 +122,8 @@ their own `GET /:id` handler.
 ## 11 September 2026 — Shared request-detail backend
 
 **Current status:** The shared response and access boundaries below remain in force.
-The 15 September entry supersedes the remaining backend-wiring gap recorded here;
-frontend integration and verification with real Supabase accounts remain pending.
+The 15 September entries supersede the backend-wiring and coordinator-page gaps recorded
+here; organiser-page integration and the complete real-account workflow remain pending.
 
 **Implementation and rationale:** Consolidate `GET /api/events/:id` into one handler for
 KAN-34 draft retrieval, KAN-33 coordinator detail and KAN-16 status/outcome retrieval.
@@ -243,16 +244,37 @@ invalid sessions, impersonation attempts and reassignment. The startup check con
 the running server requires login for each mounted event route. These checks do not
 verify hosted Supabase sign-in or its signing-key service.
 
-**Remaining integration:** The frontend still needs to use the shared action flags and
-keep saved outcomes visible when new decision actions are disabled. Hosted Supabase login
-and the complete browser workflow remain to be verified. Backend wiring alone does not
-complete the corresponding story acceptance scenarios.
+**Remaining integration at this stage:** The coordinator page's action and outcome display
+is addressed by the next entry. Organiser-page integration and verification of the complete
+workflow with hosted accounts remain pending. Backend wiring alone does not complete the
+corresponding story acceptance scenarios.
 
 **Affected stories:** KAN-25, KAN-33, KAN-34, KAN-6, KAN-36 and KAN-16.
 
 **Supersedes:** The earlier absence of an authentication-provider selection and the
 11 September runtime-wiring gap. The explicit-policy requirement and shared-detail
 contract remain in force; the assigned-coordinator rule supplies the runtime policy.
+
+## 15 September 2026 — Coordinator decision interface
+
+**Implementation:** The coordinator page now uses the shared `canMakeInitialDecision` flag
+instead of assuming permission. Recorded approval/rejection outcomes and reasons remain
+visible when another decision is unavailable. Successful saves reload the request's status
+and review; failed refreshes offer a read retry without submitting the decision again.
+Uncertain writes and conflicts require a refresh before retrying, and late responses from
+a previous request cannot replace the current page.
+
+**Verification:** Type checking, builds, 337 unit/component tests and nine Playwright
+checks passed. Component tests cover eligibility, saved outcomes, reasons, refresh failures
+and navigation during requests. The decision browser checks use response fixtures to
+exercise approval and rejection through a reload, including the mobile outcome display.
+These checks do not establish that the full workflow has passed against the hosted
+Supabase project.
+
+**Remaining integration:** Verify the coordinator workflow with mapped Supabase accounts
+and assigned test requests, then implement the organiser-facing status/outcome page for KAN-16.
+
+**Affected stories:** KAN-36, KAN-33 and the shared response used by KAN-16.
 
 ## Decision record template
 

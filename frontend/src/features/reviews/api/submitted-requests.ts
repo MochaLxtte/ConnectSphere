@@ -1,5 +1,5 @@
 import { getJson, postJson } from '../../../lib/api-client';
-import type { ReviewDecision, ReviewQueueItem, ReviewRequestDetail, ReviewSubmission } from '../types';
+import type { ReviewQueueItem, ReviewRequestDetail, ReviewSubmission, SavedReview } from '../types';
 
 /** KAN-33: coordinator review queue. */
 export async function fetchReviewQueue(signal?: AbortSignal): Promise<ReviewQueueItem[]> {
@@ -7,7 +7,7 @@ export async function fetchReviewQueue(signal?: AbortSignal): Promise<ReviewQueu
   return result.items;
 }
 
-/** KAN-33: full detail for one reviewable request. */
+/** KAN-33 / KAN-36: authorised detail, including requests with a recorded decision. */
 export function fetchReviewRequestDetail(
   eventRequestId: string,
   signal?: AbortSignal,
@@ -15,15 +15,7 @@ export function fetchReviewRequestDetail(
   return getJson<ReviewRequestDetail>(`/api/events/${eventRequestId}`, signal);
 }
 
-/** KAN-36: record an approval/rejection. Owned by Tristan's workstream; called from here. */
-export interface SavedReview {
-  reviewId: string;
-  eventRequestId: string;
-  reviewedBy: string;
-  decision: ReviewDecision;
-  reason: string | null;
-}
-
+/** KAN-36: record an approval/rejection. */
 export function submitReview(
   { eventRequestId, input }: ReviewSubmission,
   signal?: AbortSignal,

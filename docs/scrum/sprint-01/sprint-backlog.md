@@ -137,18 +137,19 @@ As an event coordinator, I want to view submitted requests I am permitted to rev
 - **KAN-33-AC6 (added during implementation, 11 September):** Given a malformed event request ID in the detail route, when it is requested, then the API rejects it with a validation error before any database lookup.
 
 The shared `GET /api/events/:id` handler now serves KAN-34/KAN-33/KAN-16. Its detail access
-rules are separate from queue membership; coordinator policy and live authentication remain
-open. The [API contract](../../architecture/api-contract.md) and
+rules are separate from queue membership. Runtime authentication and the Sprint 1
+assigned-coordinator policy are connected; full hosted-account acceptance remains pending.
+The [API contract](../../architecture/api-contract.md) and
 [dated implementation records](../../requirements/assumptions-and-questions.md) explain
 the current behaviour and retain the superseded queue/detail assumption and route fallback.
 
 | Local task | Proposed implementation work |
 | --- | --- |
-| S1-33-01 | Queue query implemented in `submitted-requests.ts`; shared detail query in `event-request-detail.ts`. Contract review and the production coordinator policy remain pending. |
-| S1-33-02 | Replace `frontend/src/features/reviews/pages/ReviewQueuePage.vue`; add a review detail component/page under the reviews feature (new file), including empty/error states. — Done: `ReviewQueuePage.vue` (list) and new `ReviewRequestPage.vue` (detail, mounts Tristan's `ReviewDecisionPanel.vue`), with component tests. `canReview` is currently hardcoded `true` on the detail page pending KAN-25 — see note below. |
+| S1-33-01 | Queue query implemented in `submitted-requests.ts`; shared detail query in `event-request-detail.ts`. Both use the Sprint 1 assigned-coordinator policy. Contract review and customer clarification about triage/delegation remain pending. |
+| S1-33-02 | Queue and detail pages implemented with empty/error states and component tests. On 15 September, `ReviewRequestPage.vue` was connected to the shared decision action flag and saved outcome, replacing its hardcoded permission. |
 | S1-33-03 | Shared backend detail, access checks and outcome refresh pass HTTP and isolated PostgreSQL tests. The browser queue error/retry check passes with response fixtures. Full S1-T18–S1-T20 coverage with live authentication and the agreed visibility policy remains pending. |
 
-**Known gap (11 September):** `ReviewRequestPage.vue` still passes `can-review="true"` to the decision panel. The next UI step must consume the shared action flags while keeping a recorded outcome visible when another decision is unavailable. Server enforcement is independent: the shared GET requires verified identity and ownership/visibility checks; the decision POST additionally requires coordinator identity and request-specific write permission. Live authentication remains part of KAN-25.
+**Integration update (15 September):** The hardcoded permission gap recorded on 11 September is resolved. The page uses `actions.canMakeInitialDecision`, keeps saved decisions and reasons visible, and refreshes after saving. Server enforcement remains independent of the interface. Browser tests use response fixtures; complete acceptance with hosted accounts remains pending.
 
 ### KAN-36 — Approve or reject requests
 
@@ -166,6 +167,12 @@ As an event coordinator, I want to record an approval or rejection for an eligib
 | S1-36-01 | Agree approval/rejection eligibility, explanation and conflict rules with Irfan; implement shared transition validation under `backend/src/modules/events/` (new files). |
 | S1-36-02 | Implement review recording and event-state change in one transaction; coordinate `event_reviews` schema changes through a new migration if required. |
 | S1-36-03 | Add review actions and result/error feedback to the review detail UI; implement S1-T21–S1-T24, including PostgreSQL transaction/conflict checks. |
+
+**Integration update (15 September):** The coordinator interface now uses the backend's
+decision flag, displays saved outcomes and reasons, and reloads the detail after recording
+a decision. Component and browser tests cover the interface, including failed refreshes
+and preventing repeat decisions. Manual acceptance with a mapped coordinator and an
+assigned Supabase test request remains to be completed.
 
 ### KAN-16 — View event-request status
 

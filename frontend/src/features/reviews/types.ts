@@ -1,9 +1,21 @@
 export type ReviewDecision = 'APPROVED' | 'REJECTED';
 
+export interface SavedReview {
+  reviewId: string;
+  eventRequestId: string;
+  reviewedBy: string;
+  decision: ReviewDecision;
+  reason: string | null;
+}
+
+export interface RecordedReview extends SavedReview {
+  createdAt: string;
+}
+
 export interface ReviewRequestSummary {
   id: string;
   status: string;
-  recordedDecision?: ReviewDecision | null;
+  review?: RecordedReview | null;
 }
 
 /** KAN-33 queue row: `GET /api/events` response item. */
@@ -15,7 +27,7 @@ export interface ReviewQueueItem {
   updatedAt: string;
 }
 
-/** KAN-33 detail: `GET /api/events/:id` response, matching backend EventRecord. */
+/** Shared `GET /api/events/:id` response, including the saved outcome and allowed actions. */
 export interface ReviewRequestDetail {
   id: string;
   organiserId: string;
@@ -33,6 +45,8 @@ export interface ReviewRequestDetail {
   registrationRequired: boolean | null;
   createdAt: string;
   updatedAt: string;
+  review: RecordedReview | null;
+  actions: { canEditDraft: boolean; canMakeInitialDecision: boolean };
 }
 
 /** The request ID selects the URL; only input belongs in the POST body. */

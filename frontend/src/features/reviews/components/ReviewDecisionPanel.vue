@@ -4,8 +4,8 @@ import type { ReviewDecision, ReviewFeedback, ReviewRequestSummary, ReviewSubmis
 
 const props = defineProps<{
   request: ReviewRequestSummary;
-  /** From the parent's verified access state; Express still enforces permission on every write. */
-  canReview?: boolean;
+  /** Backend write eligibility. Read access is established by the parent loading this request. */
+  canMakeInitialDecision?: boolean;
   feedback?: ReviewFeedback | null;
 }>();
 const emit = defineEmits<{
@@ -26,12 +26,12 @@ const accessError = computed(() => ['AUTHENTICATION_REQUIRED', 'REVIEW_FORBIDDEN
   .includes(errorCode.value ?? ''));
 const recordedDecision = computed<ReviewDecision | null>(() => {
   if (feedback.value?.state === 'saved') return feedback.value.decision;
-  if (props.request.recordedDecision) return props.request.recordedDecision;
+  if (props.request.review) return props.request.review.decision;
   return props.request.status === 'APPROVED' || props.request.status === 'REJECTED'
     ? props.request.status : null;
 });
 const needsRefresh = computed(() => errorCode.value !== null && errorCode.value !== 'INVALID_REVIEW_INPUT');
-const canSubmit = computed(() => props.canReview === true && !recordedDecision.value &&
+const canSubmit = computed(() => props.canMakeInitialDecision === true && !recordedDecision.value &&
   props.request.status === 'SUBMITTED' && !needsRefresh.value && !saving.value);
 const errorMessage = computed(() => {
   switch (errorCode.value) {
@@ -69,16 +69,19 @@ function submitDecision() {
   <section class="panel decision-panel" :aria-labelledby="`${id}-title`">
     <header>
       <p class="eyebrow">Initial review</p>
-      <h2 :id="`${id}-title`">Record a decision</h2>
-      <p class="decision-description">Approve this request to proceed to planning, or reject it.</p>
+      <h2 :id="`${id}-title`">{{ recordedDecision && !accessError ? 'Review outcome' : 'Record a decision' }}</h2>
+      <p v-if="!recordedDecision && !accessError" class="decision-description">Approve this request to proceed to planning, or reject it.</p>
     </header>
 
-    <p v-if="!canReview || accessError" class="decision-notice" :role="accessError ? 'alert' : 'status'">
-      {{ accessError ? errorMessage : 'You do not have permission to review this request.' }}
+    <p v-if="accessError" class="decision-notice" role="alert">
+      {{ errorMessage }}
     </p>
     <div v-else-if="recordedDecision" class="decision-outcome" :class="{ 'rejected-outcome': recordedDecision === 'REJECTED' }" role="status">
       <strong>{{ recordedDecision === 'APPROVED' ? 'Request approved' : 'Request rejected' }}</strong>
       <p>The decision has been recorded. Another initial decision cannot be submitted.</p>
+      <p v-if="request.review" class="recorded-reason">
+        <span class="recorded-reason-label">Reason:</span> {{ request.review.reason ?? 'No reason provided.' }}
+      </p>
     </div>
     <div v-else-if="needsRefresh" class="decision-feedback">
       <p class="decision-error" role="alert">{{ errorMessage }}</p>
@@ -90,6 +93,9 @@ function submitDecision() {
       {{ request.status === 'DRAFT'
         ? 'Draft requests cannot be approved or rejected.'
         : 'This request is not awaiting an initial review decision.' }}
+    </p>
+    <p v-else-if="canMakeInitialDecision !== true" class="decision-notice" role="status">
+      You do not have permission to record an initial decision for this request.
     </p>
     <form v-else :aria-busy="saving" @submit.prevent="submitDecision">
       <fieldset :disabled="saving" class="decision-fields">
@@ -157,6 +163,8 @@ textarea:focus-visible, input:focus-visible { outline: 3px solid #90a950; outlin
 .decision-outcome { border-left: 3px solid var(--green); background: #f0f5ee; padding: 16px; border-radius: 4px; }
 .decision-outcome strong { font-size: 16px; }
 .decision-outcome p { margin-top: 4px; }
+.recorded-reason { white-space: pre-wrap; overflow-wrap: anywhere; }
+.recorded-reason-label { font-weight: 600; }
 .rejected-outcome { border-left-color: #954537; background: #fcf1ee; }
 .decision-error { color: #8a332b; font-size: 14px; line-height: 1.6; margin-top: 16px; }
 .decision-feedback .decision-error { margin-top: 0; }

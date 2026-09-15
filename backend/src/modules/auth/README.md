@@ -14,6 +14,6 @@ Configure `SUPABASE_URL` on the backend and `VITE_SUPABASE_URL` plus `VITE_SUPAB
 
 Assignment compares `event_requests.coordinator_id` with the verified `app_users.id`, not the Supabase UUID. Null or different assignments deny coordinator access. The decision write rechecks assignment against the locked event row. This is the Sprint 1 team implementation assumption; customer clarification about unassigned triage and delegation remains open in [Q-02](../../../../docs/requirements/assumptions-and-questions.md). Until the KAN-29 assignment workflow is implemented, assign synthetic test requests through the Supabase dashboard after provisioning the mapped application profiles.
 
-The frontend still needs to consume the shared action flags and show saved outcomes independently of permission to make a new decision. Hosted Supabase login and the complete browser workflow remain to be verified.
+The coordinator review page consumes the shared decision action flag and displays saved outcomes independently of permission to make a new decision. It reloads the shared detail after saving. Organiser-page integration and verification of the complete workflow with hosted Supabase accounts remain pending.
 
 Always verify the caller on the server and enforce role and resource ownership from that verified identity, never from client input. Never serialize a database row containing `password_hash`.
