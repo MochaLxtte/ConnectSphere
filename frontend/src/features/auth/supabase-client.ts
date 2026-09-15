@@ -34,8 +34,8 @@ export async function getSupabaseAccessToken(email: string, password: string): P
     throw error ?? new Error('Unable to sign in. Please try again.');
   }
   const accessToken = data.session.access_token;
-  // persistSession is already false, but sign out explicitly so no in-memory client
-  // session lingers for the rest of the tab's lifetime.
-  await supabase.auth.signOut();
+  // Clear this temporary SDK session without revoking the user's other device sessions.
+  // The access token remains valid until expiry and is handed to Express for its cookie.
+  await supabase.auth.signOut({ scope: 'local' });
   return accessToken;
 }
