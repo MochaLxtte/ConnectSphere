@@ -10,6 +10,10 @@ Migration `004_add_supabase_user_id.sql` adds the nullable, unique UUID mapping 
 
 Configure `SUPABASE_URL` on the backend and `VITE_SUPABASE_URL` plus `VITE_SUPABASE_ANON_KEY` for the frontend. The optional backend-only `SUPABASE_JWT_SECRET` is needed only for legacy HS256 signing; otherwise the verifier uses the project's JWKS. Never put a signing secret in a `VITE_*` variable.
 
-Event routes still need `authenticateRequest` and the agreed coordinator visibility/decision policies passed to `createApp`. Authentication is mounted by the normal server; event routes are not yet mounted there. Coordinator policy and the frontend decision/outcome integration remain separate work.
+`server.ts` starts `createRuntimeApp` from `backend/src/runtime-app.ts`, which supplies the same Supabase session verifier to authentication and event routes. The normal server mounts event listing, shared detail, draft editing, submission and approval/rejection. Organisers retain access to their own requests; only the currently assigned coordinator can access a request through the coordinator queue, detail or review workflow. Coordinators cannot view drafts, and initial decisions still require `SUBMITTED` status with no recorded decision.
+
+Assignment compares `event_requests.coordinator_id` with the verified `app_users.id`, not the Supabase UUID. Null or different assignments deny coordinator access. The decision write rechecks assignment against the locked event row. This is the Sprint 1 team implementation assumption; customer clarification about unassigned triage and delegation remains open in [Q-02](../../../../docs/requirements/assumptions-and-questions.md). Until the KAN-29 assignment workflow is implemented, assign synthetic test requests through the Supabase dashboard after provisioning the mapped application profiles.
+
+The frontend still needs to consume the shared action flags and show saved outcomes independently of permission to make a new decision. Hosted Supabase login and the complete browser workflow remain to be verified.
 
 Always verify the caller on the server and enforce role and resource ownership from that verified identity, never from client input. Never serialize a database row containing `password_hash`.

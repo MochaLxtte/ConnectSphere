@@ -1,5 +1,21 @@
 import { expect, test } from '@playwright/test';
 
+test('KAN-25/KAN-36 running server requires login for event routes', async ({ request }) => {
+  // Exercise normal server.ts startup through the Vite proxy, without response fixtures.
+  const id = '10000000-0000-4000-8000-000000000099';
+  const responses = await Promise.all([
+    request.get('/api/events'),
+    request.get(`/api/events/${id}`),
+    request.patch(`/api/events/${id}`, { data: { name: 'Unauthenticated edit' } }),
+    request.post(`/api/events/${id}/submit`),
+    request.post(`/api/events/${id}/reviews`, { data: { decision: 'APPROVED' } }),
+  ]);
+  for (const response of responses) {
+    expect(response.status()).toBe(401);
+    expect((await response.json()).error.code).toBe('AUTHENTICATION_REQUIRED');
+  }
+});
+
 test('SCF-E2E-01 browser reaches the API and migrated database through the Vite proxy', async ({
   page,
 }) => {
