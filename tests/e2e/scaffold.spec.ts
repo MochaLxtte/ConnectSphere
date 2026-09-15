@@ -28,9 +28,9 @@ test('SCF-E2E-02 planned pages are navigable and explicitly unfinished', async (
   }
   await page.getByRole('link', { name: 'Sign in', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Welcome to ConnectSphere' })).toBeVisible();
-  await expect(
-    page.getByText('This is a scaffold. This feature is not implemented yet.'),
-  ).toBeVisible();
+  await expect(page.getByLabel('Email address')).toBeVisible();
+  await expect(page.getByLabel('Password', { exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Sign in', exact: true })).toBeEnabled();
 });
 
 test('SCF-E2E-03 database failure is visible and the check can recover', async ({ page }) => {

@@ -20,6 +20,7 @@ const legacyUrl = new URL(testUrl);
 legacyUrl.searchParams.set('options', `-c search_path=${legacySchema}`);
 const legacyPool = new pg.Pool({ connectionString: legacyUrl.toString() });
 const applicationTables = [
+  'app_user_identities',
   'app_users',
   'event_clarifications',
   'event_requests',
@@ -72,6 +73,7 @@ afterAll(async () => {
 test('SCF-DB-01 migrations persist schema, seeds preserve edits, and HTTP readiness reaches PostgreSQL', async () => {
   expect(await migrate(scopedUrl.toString())).toEqual([
     '001_initial_scaffold.sql', '002_restrict_data_api_access.sql',
+    '003_add_firebase_identities.sql', '004_add_supabase_user_id.sql',
   ]);
   expect(await migrate(scopedUrl.toString())).toEqual([]);
   await expectDataApiAccessBlocked(pool);
@@ -127,7 +129,10 @@ test('SCF-DB-02 upgrading the original schema preserves data and removes existin
     await legacyPool.query(`GRANT SELECT ON ALL TABLES IN SCHEMA "${legacySchema}" TO "${rolname}"`);
   }
 
-  expect(await migrate(legacyUrl.toString())).toEqual(['002_restrict_data_api_access.sql']);
+  expect(await migrate(legacyUrl.toString())).toEqual([
+    '002_restrict_data_api_access.sql', '003_add_firebase_identities.sql',
+    '004_add_supabase_user_id.sql',
+  ]);
   expect(await migrate(legacyUrl.toString())).toEqual([]);
   await expectDataApiAccessBlocked(legacyPool);
   const request = await legacyPool.query('SELECT name FROM event_requests');

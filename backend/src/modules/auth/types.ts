@@ -17,5 +17,5 @@ export interface UserSummary {
   role: UserRole;
 }
 
-/** Populated only after Firebase session verification and application-user mapping. */
+/** Populated only after Supabase token verification and application-user mapping. */
 export type AuthenticatedUser = UserSummary;
