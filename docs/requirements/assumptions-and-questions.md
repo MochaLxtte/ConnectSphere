@@ -96,8 +96,9 @@ every request" as the eventual rule.
 There is now one GET registration for both supported roles. Runtime authentication is
 connected as recorded on 15 September below, along with the coordinator page's action and
 outcome display. KAN-16's organiser list/detail pages are connected, and approval/rejection
-outcome refresh passed on 17 September (MAN-20260917-01). Team contract review and hosted
-non-final status, submission-to-status, unrelated-owner and signed-out checks remain pending.
+outcome refresh passed on 17 September (MAN-20260917-01). The signed-out detail-page check
+also passed (MAN-20260917-02). Team contract review and hosted
+non-final status, submission-to-status, unrelated-owner and signed-out list checks remain pending.
 
 **Decision and rationale:** `docs/architecture/api-contract.md`'s proposed-routes table lists
 `GET /api/events/:id` under three different owners (Kai Jie/KAN-34 draft retrieval,
@@ -125,8 +126,9 @@ their own `GET /:id` handler.
 **Current status:** The shared response and access boundaries below remain in force.
 The 15 September entries supersede the backend-wiring and coordinator-page gaps recorded
 here. Organiser list/detail integration is complete, and the hosted outcome checks recorded
-on 17 September passed. Non-final status, submission-to-status, unrelated-owner and
-signed-out hosted checks remain unrecorded.
+on 17 September passed. The signed-out detail-page check also passed (MAN-20260917-02).
+Non-final status, submission-to-status, unrelated-owner and
+signed-out list checks remain unrecorded.
 
 **Implementation and rationale:** Consolidate `GET /api/events/:id` into one handler for
 KAN-34 draft retrieval, KAN-33 coordinator detail and KAN-16 status/outcome retrieval.
@@ -326,6 +328,10 @@ time. See MAN-20260917-01 in the [test evidence record](../testing/test-evidence
 unrelated-owner reads and signed-out access remain unrecorded. Automated checks cover
 those boundaries separately. This does not close the open customer questions or mark
 KAN-16 Done; peer review, integration and remaining acceptance still need completion.
+
+**Follow-up:** Reopening the copied request URL after sign-out showed a sign-in prompt,
+with no request details or review reason displayed (MAN-20260917-02). This records the
+detail-page behaviour; it does not establish signed-out list access or token revocation.
 
 ## Decision record template
 
