@@ -19,8 +19,17 @@ The dev server runs at `http://127.0.0.1:5173` and fails clearly if that port is
 - Component and API contract tests for the connection checks and failure recovery.
 - Supabase sign-in, application session state and sign-out, backed by Express verification.
 - Coordinator review queue and detail, with approval/rejection controls and saved outcomes.
+- Organiser request list at `/events`, covering all owned statuses, refresh, empty/error states and session-expiry recovery.
 
-The organiser's event list and creation pages remain placeholders. KAN-16 needs the organiser list API extended beyond drafts as well as its status/outcome interface; shared detail reads already support the owner's submitted and decided requests. Express authenticates event API calls and enforces roles, ownership and the Sprint 1 coordinator assignment policy. Frontend navigation and action flags do not replace those checks.
+The organiser creation page remains a placeholder. KAN-16's organiser detail view is next; shared detail reads already support the owner's submitted and decided requests. Express authenticates event API calls and enforces roles, ownership and the Sprint 1 coordinator assignment policy. Frontend navigation and action flags do not replace those checks.
+
+## KAN-16 organiser request list
+
+`EventRequestsPage.vue` loads `GET /api/events?scope=all` through the feature's `api/event-requests.ts` wrapper. It preserves the API's latest-update order and shows names, readable status labels and update times in Asia/Singapore. Unnamed drafts have an explicit fallback title. Refresh retrieves current values; empty results and retryable failures have separate states.
+
+Signing out or changing accounts clears previous results and cancels pending reads. A 401 clears cached identity and offers sign-in, so the login page can show its form again. The page displays no decision controls or detail links in this step. Organiser detail navigation and review reasons will be added with the detail view.
+
+Component tests cover loading, all six labels, status refresh, access failures and stale responses. `tests/e2e/event-requests.spec.ts` covers desktop/mobile layout, refresh, retry and session-expiry navigation using API response fixtures. These checks do not replace hosted organiser acceptance.
 
 ## Team work areas
 

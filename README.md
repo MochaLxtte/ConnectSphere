@@ -2,7 +2,7 @@
 
 IS212 event planning and venue booking project, built with **Vue 3 + TypeScript, Express 5 + TypeScript, Supabase PostgreSQL and Supabase Auth**, organised as a monorepo with a modular backend.
 
-The application supports sign-in, an assigned coordinator's review queue, request details and approval/rejection. The backend also supports owned-draft editing and submission. The organiser's creation, draft and status pages remain placeholders; draft creation and clarification endpoints are not implemented. Venue, equipment, registration and notification workflows remain for later work. Database migrations, fictional seed data, automated checks, CI and team documentation support development.
+The application supports sign-in, an assigned coordinator's review queue, request details and approval/rejection. Organisers can list their requests across all statuses and refresh the displayed status. The backend also supports owned-draft editing and submission. Organiser creation, draft-editing and request-detail interfaces remain unfinished; draft creation and clarification endpoints are not implemented. Venue, equipment, registration and notification workflows remain for later work. Database migrations, fictional seed data, automated checks, CI and team documentation support development.
 
 ## Start here
 
@@ -113,7 +113,7 @@ npm run test:e2e
 
 The browser suite covers infrastructure, navigation, queue recovery and coordinator decisions using API response fixtures. PostgreSQL integration tests exercise persistence and access rules in an isolated database. GitHub Actions repeats the checks with its own PostgreSQL service and uploads coverage/browser evidence. See [testing guidance](docs/testing/README.md) and [test evidence](docs/testing/test-evidence.md) for the distinction between automated checks and hosted acceptance testing.
 
-Hosted approval and rejection checks passed, including the saved review row, outcome after reload and removal from the pending queue. See the [test evidence](docs/testing/test-evidence.md) for the dated results and remaining unauthorised-access and organiser-workflow checks. KAN-16 still requires the organiser interface and extending the organiser list API beyond drafts.
+Hosted approval and rejection checks passed, including the saved review row, outcome after reload and removal from the pending queue. See the [test evidence](docs/testing/test-evidence.md) for the dated results and remaining organiser-workflow checks. KAN-16's `/events` page uses `GET /api/events?scope=all` to show owned request names, readable statuses and Singapore-time updates. The organiser detail view and hosted list/detail acceptance remain unfinished.
 
 ## Join the repository
 

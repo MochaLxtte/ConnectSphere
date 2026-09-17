@@ -1,10 +1,11 @@
 import { expect, test } from '@playwright/test';
 
-test('KAN-25/KAN-36 running server requires login for event routes', async ({ request }) => {
+test('KAN-25/KAN-36/KAN-16 running server requires login for event routes', async ({ request }) => {
   // Exercise normal server.ts startup through the Vite proxy, without response fixtures.
   const id = '10000000-0000-4000-8000-000000000099';
   const responses = await Promise.all([
     request.get('/api/events'),
+    request.get('/api/events?scope=all'),
     request.get(`/api/events/${id}`),
     request.patch(`/api/events/${id}`, { data: { name: 'Unauthenticated edit' } }),
     request.post(`/api/events/${id}/submit`),
@@ -32,16 +33,17 @@ test('SCF-E2E-01 browser reaches the API and migrated database through the Vite 
   );
 });
 
-test('SCF-E2E-02 planned pages are navigable and explicitly unfinished', async ({ page }) => {
+test('SCF-E2E-02 navigation reaches organiser login guidance and the unfinished creation page', async ({ page }) => {
   await page.goto('/');
   const navigation = page.getByRole('navigation', { name: 'Main navigation' });
-  for (const name of ['Event requests', 'New event request']) {
-    await navigation.getByRole('link', { name, exact: true }).click();
-    await expect(page.getByRole('heading', { name, exact: true, level: 1 })).toBeVisible();
-    await expect(
-      page.getByText('This is a scaffold. This feature is not implemented yet.'),
-    ).toBeVisible();
-  }
+  await navigation.getByRole('link', { name: 'Event requests', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Event requests', exact: true, level: 1 })).toBeVisible();
+  await expect(page.getByText('Sign in to view your event requests.', { exact: true })).toBeVisible();
+  await expect(page.getByRole('list', { name: 'Your event requests' })).toHaveCount(0);
+
+  await navigation.getByRole('link', { name: 'New event request', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'New event request', exact: true, level: 1 })).toBeVisible();
+  await expect(page.getByText('This is a scaffold. This feature is not implemented yet.')).toBeVisible();
   await page.getByRole('link', { name: 'Sign in', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Welcome to ConnectSphere' })).toBeVisible();
   await expect(page.getByLabel('Email address')).toBeVisible();

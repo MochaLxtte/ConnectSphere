@@ -19,6 +19,11 @@ export interface SignedInUser {
 const state = reactive<{ user: SignedInUser | null; loading: boolean }>({ user: null, loading: true });
 export const authSession = readonly(state);
 
+/** Forget cached identity after the server reports that the session is no longer valid. */
+export function clearLocalSession(): void {
+  state.user = null;
+}
+
 export function roleLabel(role: UserRole): string {
   return {
     EVENT_ORGANISER: 'Event organiser',
