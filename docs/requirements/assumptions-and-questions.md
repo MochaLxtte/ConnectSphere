@@ -101,8 +101,9 @@ also passed (MAN-20260917-02), followed by Draft/Submitted detail statuses and t
 no-decision messages (MAN-20260917-03). A second organiser could not view the first
 organiser's request details or list entries (MAN-20260917-04). Signed-out list access
 also showed a sign-in prompt without request names or statuses (MAN-20260917-05).
-Draft/Submitted list labels and refresh, team contract review and submission-to-status
-checks remain pending; see [test evidence](../testing/test-evidence.md).
+The four list labels matched the recorded detail pages and Draft/Submitted detail
+refresh passed (MAN-20260917-06). Team contract review and submission-to-status checks
+remain pending; see [test evidence](../testing/test-evidence.md).
 
 **Decision and rationale:** `docs/architecture/api-contract.md`'s proposed-routes table lists
 `GET /api/events/:id` under three different owners (Kai Jie/KAN-34 draft retrieval,
@@ -133,7 +134,8 @@ here. Organiser list/detail integration is complete, and the hosted outcome chec
 on 17 September passed. Signed-out detail access, Draft/Submitted detail display and
 second-organiser list/detail isolation also passed (MAN-20260917-02/03/04).
 The signed-out list check passed in MAN-20260917-05.
-Remaining list/status/refresh and submission-to-status checks are
+List labels matched the four recorded detail statuses and Draft/Submitted detail
+refresh passed in MAN-20260917-06. The submission-to-status integration check remains
 tracked in the [test evidence](../testing/test-evidence.md).
 
 **Implementation and rationale:** Consolidate `GET /api/events/:id` into one handler for
@@ -353,6 +355,11 @@ owner parameter was captured. Remaining acceptance is tracked in the test eviden
 **Signed-out list follow-up:** Opening `/events` directly after signing out showed a
 sign-in prompt without request names or statuses (MAN-20260917-05). This records the
 browser result only; no HTTP response or previous-token replay was captured.
+
+**List display follow-up:** Event requests showed Draft, Submitted, Rejected and
+Approved for the four corresponding test requests, matching their detail pages
+(MAN-20260917-06). Draft/Submitted detail statuses and review messages also remained
+correct after refresh. The submission-to-status workflow remains in the [test evidence](../testing/test-evidence.md).
 
 ## Decision record template
 
