@@ -27,7 +27,7 @@ Malformed JSON returns 400 (`INVALID_JSON`), oversized JSON returns 413 (`PAYLOA
 
 ## Sprint 1 routes
 
-The normal server mounts Supabase authentication, event listing, shared detail, draft editing, submission and decision writing through `createRuntimeApp` in `backend/src/runtime-app.ts`. The coordinator review page consumes the shared detail, decision permissions and saved outcomes; the organiser detail page consumes the same response for read-only status and outcome display. The two routes marked planned below are not implemented. Verification of the complete organiser workflow with real Supabase accounts remains pending.
+The normal server mounts Supabase authentication, event listing, shared detail, draft editing, submission and decision writing through `createRuntimeApp` in `backend/src/runtime-app.ts`. The coordinator review page consumes the shared detail, decision permissions and saved outcomes; the organiser detail page consumes the same response for read-only status and outcome display. The two routes marked planned below are not implemented. Organiser approval/rejection display and refresh passed with a real account in MAN-20260917-01; verification of other workflow states, submission and unrelated/signed-out access remains pending.
 
 | Owner | Method / route | Purpose | State |
 | --- | --- | --- | --- |
@@ -48,7 +48,7 @@ Supabase Auth handles sign-in. Express verifies the access token and resolves `a
 
 ## Shared request detail: backend, coordinator and organiser pages connected
 
-**Status:** The shared backend handler for KAN-34, KAN-33 and KAN-16 uses Ryan's verified session and the Sprint 1 assigned-coordinator policy. The coordinator page uses its action flags and displays saved outcomes; the organiser page displays request details and saved outcomes without write controls. Hosted organiser list/detail acceptance remains pending. Assignment workflows, unassigned triage and delegation still need customer clarification under [Q-02](../requirements/assumptions-and-questions.md); the current policy is a team implementation assumption.
+**Status:** The shared backend handler for KAN-34, KAN-33 and KAN-16 uses Ryan's verified session and the Sprint 1 assigned-coordinator policy. The coordinator page uses its action flags and displays saved outcomes; the organiser page displays request details and saved outcomes without write controls. Organiser approval/rejection display and refresh passed in MAN-20260917-01; other hosted workflow-state and access checks remain pending. Assignment workflows, unassigned triage and delegation still need customer clarification under [Q-02](../requirements/assumptions-and-questions.md); the current policy is a team implementation assumption.
 
 ### One route for all three pages
 
@@ -138,7 +138,7 @@ Remaining integration work:
 
 1. Review the shared response with Kai Jie and Irfan. Use mapped test accounts and assigned synthetic requests while the KAN-29 assignment workflow is pending.
 2. Connect the organiser's draft-editing view to the shared response. KAN-16's `/events` status list and read-only `/events/:id` detail are connected, including navigation, review reasons and recorded times. The coordinator's decision controls and outcome display are connected.
-3. Complete hosted checks for unauthorised access and organiser outcome visibility. Approval and rejection, their saved review rows, outcomes after reload and queue removal have passed; see the dated [test evidence](../testing/test-evidence.md).
+3. Complete the remaining hosted workflow-state, submission and access checks. Coordinator approval/rejection, saved review rows and queue removal have passed; organiser approval/rejection display and refresh also passed in MAN-20260917-01. Unrelated-organiser and signed-out list/detail reads remain to be checked manually; see the dated [test evidence](../testing/test-evidence.md).
 
 **Verification, 11 September 2026:** Type checking and all 42 targeted backend tests passed: 31 shared-detail service/HTTP cases in `backend/test/events/event-request-detail.test.ts`, four queue-service cases and seven queue-HTTP cases. All 25 PostgreSQL tests passed, including the 11 new cases in `database/tests/events/event-request-detail.integration.test.ts`. These exercise ownership, coordinator visibility, state-dependent actions, the shared response and persisted approval/rejection outcomes through the composed GET and POST routes. They use fixture authentication and an isolated PostgreSQL test database; they do not verify live login or the hosted development project.
 
@@ -166,7 +166,7 @@ The organiser page at `/events` consumes `scope=all`, displays readable labels f
 stored status and formats update timestamps in Asia/Singapore. Refresh re-reads the list;
 account changes and unauthorised responses clear previously displayed results. Request titles
 link to `/events/:id` for the shared detail and recorded outcome. List/detail UI tests use
-API response fixtures; hosted organiser workflow acceptance remains pending.
+API response fixtures. MAN-20260917-01 separately records passed organiser outcome/refresh checks; other hosted workflow-state and access checks remain pending.
 
 The queue includes only `SUBMITTED`, `UNDER_REVIEW` and `CLARIFICATION_REQUESTED` requests
 that pass `canViewRequest`. This filter describes queue membership, not permission to

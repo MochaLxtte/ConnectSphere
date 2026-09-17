@@ -4,7 +4,9 @@ ConnectSphere uses one Git repository, one Vue frontend, one Express backend, Su
 
 ## C4 system context
 
-The context diagram describes the intended first release. Sign-in and coordinator review/decision pages are implemented, with backend support for draft editing/submission and shared details. Organiser pages, clarification, assignment and later event-planning workflows remain incomplete; the diagram does not imply completion of those capabilities.
+The context diagram describes the intended first release. Sign-in, coordinator review/decision pages and organiser status/detail pages are implemented, with backend support for draft editing/submission and shared details. Organiser creation/editing/submission interfaces, clarification, assignment and later event-planning workflows remain incomplete; the diagram does not imply completion of those capabilities.
+
+The organiser's approved outcome and rejected status/reason remained visible after refresh in the 17 September hosted check (MAN-20260917-01). Non-final statuses, submission-to-status refresh, unrelated-owner reads and signed-out access still need hosted checks; see [test evidence](../testing/test-evidence.md).
 
 ```mermaid
 flowchart LR
@@ -52,7 +54,7 @@ The browser obtains a Supabase access token through sign-in and exchanges it at 
 | Area          | Responsibility                                                        | Current state                                    |
 | ------------- | --------------------------------------------------------------------- | ------------------------------------------------ |
 | auth          | Identity, session lifecycle, role and event access policies           | Supabase sign-in, token verification, mapped profiles and sessions |
-| events        | Requests, drafts, assignment, review, status, significant changes     | Draft edit/submit APIs, shared detail, coordinator queue and atomic decisions; creation, clarification, assignment and organiser UI pending |
+| events        | Requests, drafts, assignment, review, status, significant changes     | Draft edit/submit APIs, shared detail, coordinator queue, atomic decisions and organiser status/detail pages; creation, clarification, assignment and organiser editing/submission UI pending |
 | venues        | Catalogue, suitability, availability, booking decisions and conflicts | Planned; add when taken into a sprint            |
 | equipment     | Requests, quantity availability, reservations                         | Planned                                          |
 | registrations | Attendee eligibility, registration and withdrawal                     | Planned                                          |

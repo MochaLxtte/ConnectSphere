@@ -95,8 +95,9 @@ every request" as the eventual rule.
 **Current status:** The fallback described below is superseded by the shared detail handler.
 There is now one GET registration for both supported roles. Runtime authentication is
 connected as recorded on 15 September below, along with the coordinator page's action and
-outcome display. Team contract review, organiser-page integration and verification of the
-complete workflow with hosted accounts remain pending.
+outcome display. KAN-16's organiser list/detail pages are connected, and approval/rejection
+outcome refresh passed on 17 September (MAN-20260917-01). Team contract review and hosted
+non-final status, submission-to-status, unrelated-owner and signed-out checks remain pending.
 
 **Decision and rationale:** `docs/architecture/api-contract.md`'s proposed-routes table lists
 `GET /api/events/:id` under three different owners (Kai Jie/KAN-34 draft retrieval,
@@ -123,7 +124,9 @@ their own `GET /:id` handler.
 
 **Current status:** The shared response and access boundaries below remain in force.
 The 15 September entries supersede the backend-wiring and coordinator-page gaps recorded
-here; organiser-page integration and the complete real-account workflow remain pending.
+here. Organiser list/detail integration is complete, and the hosted outcome checks recorded
+on 17 September passed. Non-final status, submission-to-status, unrelated-owner and
+signed-out hosted checks remain unrecorded.
 
 **Implementation and rationale:** Consolidate `GET /api/events/:id` into one handler for
 KAN-34 draft retrieval, KAN-33 coordinator detail and KAN-16 status/outcome retrieval.
@@ -304,6 +307,25 @@ pending-review queue. The [test evidence record](../testing/test-evidence.md) co
 acceptance results. The subsequent rejection check also passed; unauthorised-access and organiser-workflow checks remain open.
 KAN-16 still needs the organiser interface and an organiser list that includes submitted
 and decided requests. These results do not mark either story Done.
+
+## 17 September 2026 — Organiser outcome display and refresh
+
+**Tested by:** Tristan, using the local webpage and Supabase development project. The
+working branch was at `95cd43e`; the exact served build and check time were not captured.
+
+**Implementation:** KAN-16's organiser list includes all owned statuses through
+`GET /api/events?scope=all`. Linked read-only detail pages use the existing shared GET for
+status and saved review information; no additional detail handler or access policy was added.
+
+**Result:** The approved outcome remained after refresh. A rejected request opened from
+Event requests showed its rejected status and reason, both retained after refresh. The
+approved-request screenshot also showed `No reason provided.` and the recorded decision
+time. See MAN-20260917-01 in the [test evidence record](../testing/test-evidence.md).
+
+**Remaining checks:** Hosted non-final status display, submission-to-status refresh,
+unrelated-owner reads and signed-out access remain unrecorded. Automated checks cover
+those boundaries separately. This does not close the open customer questions or mark
+KAN-16 Done; peer review, integration and remaining acceptance still need completion.
 
 ## Decision record template
 

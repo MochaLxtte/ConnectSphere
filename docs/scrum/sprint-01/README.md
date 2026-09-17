@@ -34,7 +34,7 @@ Use the shared [Definition of Done](../definition-of-done.md), [release requirem
 | Repository baseline | Initial scaffold commit `db6930d`, 7 September 2026 at 02:58:37 +08:00; see the evidence register. |
 | Planning attendance | Names, meeting times and supporting meeting artifacts remain to be added. |
 | Detailed criteria and tasks | Drafts for team review in the sprint backlog. |
-| Execution and closure | The 15 September progress/evidence records cover authenticated coordinator decisions and a hosted approval/status check. KAN-16 organiser list/status work and full acceptance remain outstanding. Complete review results and retrospective findings at the respective meetings. |
+| Execution and closure | KAN-16 organiser list/detail pages are implemented. On 17 September, Tristan verified approved-outcome persistence and rejected list/detail status and reason after refresh (MAN-20260917-01). Hosted non-final status, submission-to-status, unrelated-owner and signed-out checks remain unrecorded. See [test evidence](../../testing/test-evidence.md); story acceptance, peer review and integration remain outstanding. Complete review results and retrospective findings at the respective meetings. |
 
 Record missing details as **To confirm** or **Not recorded**, and tests without a recorded run as **Not executed**. These statuses do not count as completion or as a failed test.
 
