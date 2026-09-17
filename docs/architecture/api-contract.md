@@ -36,7 +36,7 @@ The normal server mounts Supabase authentication, event listing, shared detail, 
 | Kai Jie / Irfan / Tristan, KAN-34 / KAN-33 / KAN-16 | `GET /api/events/:id` | Shared details, status and recorded decision | Implemented |
 | Kai Jie, KAN-34 | `PATCH /api/events/:id` | Update an owned draft | Implemented |
 | Kai Jie, KAN-6 | `POST /api/events/:id/submit` | Validate submission and transition atomically | Implemented |
-| Irfan / Kai Jie, KAN-33 / KAN-34 | `GET /api/events` | Assigned coordinator queue, or the organiser's own drafts; pagination pending | Implemented; organiser status listing pending |
+| Irfan / Kai Jie / Tristan, KAN-33 / KAN-34 / KAN-16 | `GET /api/events` | Assigned coordinator queue, or the organiser's own drafts; organiser `?scope=all` includes all owned statuses; pagination pending | Implemented; organiser interface pending |
 | Irfan, KAN-27 | `POST /api/events/:id/clarifications` | Request clarification and make it visible to the organiser | Planned |
 | Tristan, KAN-36 | `POST /api/events/:id/reviews` | Record an approval/rejection and update status atomically | Implemented |
 
@@ -140,14 +140,25 @@ Remaining integration work:
 
 **Verification, 11 September 2026:** Type checking and all 42 targeted backend tests passed: 31 shared-detail service/HTTP cases in `backend/test/events/event-request-detail.test.ts`, four queue-service cases and seven queue-HTTP cases. All 25 PostgreSQL tests passed, including the 11 new cases in `database/tests/events/event-request-detail.integration.test.ts`. These exercise ownership, coordinator visibility, state-dependent actions, the shared response and persisted approval/rejection outcomes through the composed GET and POST routes. They use fixture authentication and an isolated PostgreSQL test database; they do not verify live login or the hosted development project.
 
-## KAN-33 review queue: authentication connected
+## KAN-33 / KAN-34 / KAN-16 request lists: authentication connected
 
 For a coordinator, `GET /api/events` returns the review queue implemented in
 `submitted-requests-router.ts` and `submitted-requests.ts`. For an organiser, the same
-endpoint returns only their own drafts. It shares the router dependencies described above
+endpoint defaults to their own drafts. It shares the router dependencies described above
 but keeps its list query and status filter separate from the shared request-detail read.
-KAN-16 must extend organiser listing to include their submitted and decided requests;
-the shared detail already permits those owned requests.
+
+**KAN-16 list extension, 17 September:** An organiser can request
+`GET /api/events?scope=all` to retrieve their requests across all six stored statuses,
+including submitted and decided requests. `scope=drafts` explicitly selects the existing
+draft-only list; omitting `scope` preserves that behaviour. Scope is a single, case-sensitive
+value: empty, unknown or repeated values return `400 INVALID_EVENT_LIST_SCOPE`.
+Coordinators must omit `scope`; supplying it returns the same 400 and does not expand
+their review queue. Other roles remain forbidden and unauthenticated callers receive 401.
+
+Both organiser lists filter by the authenticated `app_users.id` in the database and order
+by `updated_at DESC`. A client-supplied `organiserId` or role cannot choose another owner.
+List items retain the five fields shown below; nullable draft names are returned as `null`.
+Review outcomes and reasons remain available through the existing shared detail endpoint.
 
 The queue includes only `SUBMITTED`, `UNDER_REVIEW` and `CLARIFICATION_REQUESTED` requests
 that pass `canViewRequest`. This filter describes queue membership, not permission to
@@ -169,6 +180,7 @@ not implemented. `GET /api/events/:id` uses the shared detail response documente
 | Response | Meaning |
 | --- | --- |
 | `200` | An object containing an `items` array, which may be empty. |
+| `400 INVALID_EVENT_LIST_SCOPE` | An organiser supplied an invalid/repeated scope, or a coordinator supplied any scope. |
 | `401 AUTHENTICATION_REQUIRED` | The authentication adapter reports absent or invalid credentials. |
 | `403 VIEW_FORBIDDEN` | The verified account is neither an event coordinator nor an event organiser. |
 | `500 INTERNAL_ERROR` | An unexpected verification or persistence failure occurred; details are not returned. |

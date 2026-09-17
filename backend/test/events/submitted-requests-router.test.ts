@@ -4,6 +4,7 @@ import { createApp } from '../../src/app.js';
 import type { HealthDatabase } from '../../src/db/pool.js';
 import {
   listOwnedDrafts,
+  listOwnedRequests,
   listReviewableRequests,
   type QueueActor,
 } from '../../src/modules/events/submitted-requests.js';
@@ -18,7 +19,7 @@ import { SubmissionValidationError } from '../../src/modules/events/submit-input
 vi.mock('../../src/modules/events/submitted-requests.js', async (importOriginal) => {
   const actual =
     await importOriginal<typeof import('../../src/modules/events/submitted-requests.js')>();
-  return { ...actual, listReviewableRequests: vi.fn(), listOwnedDrafts: vi.fn() };
+  return { ...actual, listReviewableRequests: vi.fn(), listOwnedDrafts: vi.fn(), listOwnedRequests: vi.fn() };
 });
 
 vi.mock('../../src/modules/events/update-draft.js', async (importOriginal) => {
@@ -38,6 +39,7 @@ const organiser: QueueActor = { id: '20000000-0000-4000-8000-000000000002', role
 const requestId = '10000000-0000-4000-8000-000000000001';
 const list = vi.mocked(listReviewableRequests);
 const ownedDrafts = vi.mocked(listOwnedDrafts);
+const ownedRequests = vi.mocked(listOwnedRequests);
 const updateDraft = vi.mocked(updateOwnedDraft);
 const submitRequest = vi.mocked(submitEventRequest);
 
@@ -57,6 +59,7 @@ function setup(actor: QueueActor | null = coordinator) {
 beforeEach(() => {
   list.mockReset();
   ownedDrafts.mockReset();
+  ownedRequests.mockReset();
   updateDraft.mockReset();
   submitRequest.mockReset();
 });
@@ -127,6 +130,90 @@ describe('KAN-34 GET /api/events (organiser\'s own drafts)', () => {
     const response = await request(app).get('/api/events');
     expect(response.status).toBe(200);
     expect(response.body).toEqual({ items: [] });
+  });
+});
+
+describe('KAN-16 GET /api/events?scope=all (organiser status list)', () => {
+  it('returns owned summaries using verified identity despite client-supplied owner and role fields', async () => {
+    const { app, submittedRequests } = setup(organiser);
+    const items = [{ id: requestId, name: 'Reviewed request', status: 'APPROVED' as const,
+      createdAt: '2026-09-07T00:00:00Z', updatedAt: '2026-09-17T00:00:00Z' }];
+    ownedRequests.mockResolvedValue(items);
+
+    const response = await request(app).get('/api/events')
+      .query({ scope: 'all', organiserId: coordinator.id, role: 'EVENT_COORDINATOR' });
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ items });
+    expect(response.headers['cache-control']).toBe('no-store');
+    expect(ownedRequests).toHaveBeenCalledExactlyOnceWith(submittedRequests, organiser);
+    expect(ownedDrafts).not.toHaveBeenCalled();
+    expect(list).not.toHaveBeenCalled();
+  });
+
+  it('accepts an explicit drafts scope for existing draft consumers', async () => {
+    const { app, submittedRequests } = setup(organiser);
+    ownedDrafts.mockResolvedValue([]);
+    const response = await request(app).get('/api/events?scope=drafts');
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ items: [] });
+    expect(ownedDrafts).toHaveBeenCalledExactlyOnceWith(submittedRequests, organiser);
+    expect(ownedRequests).not.toHaveBeenCalled();
+  });
+
+  it.each(['scope=', 'scope=approved', 'scope=ALL', 'scope=all&scope=drafts', 'scope=all&scope=all'])(
+    'rejects invalid or repeated scope before querying: %s',
+    async (query) => {
+      const { app } = setup(organiser);
+      const response = await request(app).get(`/api/events?${query}`);
+      expect(response.status).toBe(400);
+      expect(response.body.error.code).toBe('INVALID_EVENT_LIST_SCOPE');
+      expect(ownedRequests).not.toHaveBeenCalled();
+      expect(ownedDrafts).not.toHaveBeenCalled();
+      expect(list).not.toHaveBeenCalled();
+    },
+  );
+
+  it('requires login before processing an organiser list scope', async () => {
+    const { app } = setup(null);
+    const response = await request(app).get('/api/events?scope=all');
+    expect(response.status).toBe(401);
+    expect(response.body.error.code).toBe('AUTHENTICATION_REQUIRED');
+    expect(ownedRequests).not.toHaveBeenCalled();
+    expect(ownedDrafts).not.toHaveBeenCalled();
+    expect(list).not.toHaveBeenCalled();
+  });
+
+  it.each(['VENUE_STAFF', 'TECHNICAL_SUPPORT_STAFF', 'ATTENDEE'] as const)(
+    'does not grant organiser list access to %s',
+    async (role) => {
+      const { app } = setup({ ...organiser, role });
+      const response = await request(app).get('/api/events?scope=all');
+      expect(response.status).toBe(403);
+      expect(response.body.error.code).toBe('VIEW_FORBIDDEN');
+      expect(ownedRequests).not.toHaveBeenCalled();
+      expect(ownedDrafts).not.toHaveBeenCalled();
+      expect(list).not.toHaveBeenCalled();
+    },
+  );
+
+  it.each(['all', 'drafts'])('rejects organiser scope %s on the coordinator queue', async (scope) => {
+    const { app } = setup(coordinator);
+    const response = await request(app).get(`/api/events?scope=${scope}`);
+    expect(response.status).toBe(400);
+    expect(response.body.error.code).toBe('INVALID_EVENT_LIST_SCOPE');
+    expect(ownedRequests).not.toHaveBeenCalled();
+    expect(ownedDrafts).not.toHaveBeenCalled();
+    expect(list).not.toHaveBeenCalled();
+  });
+
+  it('reports a failed list read without exposing database details', async () => {
+    const { app, logger } = setup(organiser);
+    ownedRequests.mockRejectedValue(new Error('Internal database details'));
+    const response = await request(app).get('/api/events?scope=all');
+    expect(response.status).toBe(500);
+    expect(JSON.stringify(response.body)).not.toContain('Internal database details');
+    expect(logger.error).toHaveBeenCalledOnce();
   });
 });
 
