@@ -5,6 +5,7 @@ import {
 } from './event-request-detail.js';
 import {
   listOwnedDrafts,
+  listOwnedRequests,
   listReviewableRequests,
   type QueueActor,
   type SubmittedRequestQueryDependencies,
@@ -33,7 +34,7 @@ const unavailableRequest = {
   error: { code: 'EVENT_REQUEST_NOT_FOUND', message: 'The event request was not found.' },
 };
 
-/** Coordinator queue and one shared KAN-34/KAN-33/KAN-16 detail route, with explicit policies. */
+/** Role-scoped lists and one shared KAN-34/KAN-33/KAN-16 detail route, with explicit policies. */
 export function createSubmittedRequestsRouter(dependencies: SubmittedRequestsRouterDependencies) {
   const router = Router();
 
@@ -48,7 +49,16 @@ export function createSubmittedRequestsRouter(dependencies: SubmittedRequestsRou
         return;
       }
       if (actor.role === 'EVENT_ORGANISER') {
-        const items = await listOwnedDrafts(dependencies, actor);
+        const scope = request.query.scope;
+        if (scope !== undefined && scope !== 'drafts' && scope !== 'all') {
+          response.status(400).json({
+            error: { code: 'INVALID_EVENT_LIST_SCOPE', message: 'scope must be either drafts or all.' },
+          });
+          return;
+        }
+        const items = scope === 'all'
+          ? await listOwnedRequests(dependencies, actor)
+          : await listOwnedDrafts(dependencies, actor);
         response.status(200).json({ items });
         return;
       }
@@ -59,6 +69,12 @@ export function createSubmittedRequestsRouter(dependencies: SubmittedRequestsRou
         return;
       }
 
+      if (request.query.scope !== undefined) {
+        response.status(400).json({
+          error: { code: 'INVALID_EVENT_LIST_SCOPE', message: 'scope is only supported for organiser lists.' },
+        });
+        return;
+      }
       const items = await listReviewableRequests(dependencies, actor);
       response.status(200).json({ items });
     } catch (error) {

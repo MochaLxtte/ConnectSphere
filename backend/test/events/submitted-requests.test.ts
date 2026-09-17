@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import {
   listOwnedDrafts,
+  listOwnedRequests,
   listReviewableRequests,
   REVIEWABLE_STATUSES,
   type QueueActor,
@@ -106,5 +107,30 @@ describe('KAN-34 listOwnedDrafts', () => {
     const pool = fakePool([]);
     const items = await listOwnedDrafts({ pool }, organiser);
     expect(items).toEqual([]);
+  });
+});
+
+describe('KAN-16 listOwnedRequests', () => {
+  it.each(['EVENT_COORDINATOR', 'VENUE_STAFF', 'TECHNICAL_SUPPORT_STAFF', 'ATTENDEE'] as const)(
+    'does not query the database for the %s role',
+    async (role) => {
+      const pool = fakePool([baseRow]);
+      expect(await listOwnedRequests({ pool }, { ...organiser, role })).toEqual([]);
+      expect(pool.query).not.toHaveBeenCalled();
+    },
+  );
+
+  it('returns summaries without exposing ownership fields or full request details', async () => {
+    const rows = [
+      { ...baseRow, id: 'approved', status: 'APPROVED', organiserId: organiser.id },
+      { ...baseRow, id: 'draft', status: 'DRAFT', name: null, organiserId: organiser.id },
+    ];
+    const pool = fakePool(rows);
+    expect(await listOwnedRequests({ pool }, organiser)).toEqual([
+      { id: 'approved', name: baseRow.name, status: 'APPROVED',
+        createdAt: baseRow.createdAt, updatedAt: baseRow.updatedAt },
+      { id: 'draft', name: null, status: 'DRAFT',
+        createdAt: baseRow.createdAt, updatedAt: baseRow.updatedAt },
+    ]);
   });
 });

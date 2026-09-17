@@ -95,8 +95,15 @@ every request" as the eventual rule.
 **Current status:** The fallback described below is superseded by the shared detail handler.
 There is now one GET registration for both supported roles. Runtime authentication is
 connected as recorded on 15 September below, along with the coordinator page's action and
-outcome display. Team contract review, organiser-page integration and verification of the
-complete workflow with hosted accounts remain pending.
+outcome display. KAN-16's organiser list/detail pages are connected, and approval/rejection
+outcome refresh passed on 17 September (MAN-20260917-01). The signed-out detail-page check
+also passed (MAN-20260917-02), followed by Draft/Submitted detail statuses and their
+no-decision messages (MAN-20260917-03). A second organiser could not view the first
+organiser's request details or list entries (MAN-20260917-04). Signed-out list access
+also showed a sign-in prompt without request names or statuses (MAN-20260917-05).
+The four list labels matched the recorded detail pages and Draft/Submitted detail
+refresh passed (MAN-20260917-06). Team contract review and submission-to-status checks
+remain pending; see [test evidence](../testing/test-evidence.md).
 
 **Decision and rationale:** `docs/architecture/api-contract.md`'s proposed-routes table lists
 `GET /api/events/:id` under three different owners (Kai Jie/KAN-34 draft retrieval,
@@ -123,7 +130,13 @@ their own `GET /:id` handler.
 
 **Current status:** The shared response and access boundaries below remain in force.
 The 15 September entries supersede the backend-wiring and coordinator-page gaps recorded
-here; organiser-page integration and the complete real-account workflow remain pending.
+here. Organiser list/detail integration is complete, and the hosted outcome checks recorded
+on 17 September passed. Signed-out detail access, Draft/Submitted detail display and
+second-organiser list/detail isolation also passed (MAN-20260917-02/03/04).
+The signed-out list check passed in MAN-20260917-05.
+List labels matched the four recorded detail statuses and Draft/Submitted detail
+refresh passed in MAN-20260917-06. The submission-to-status integration check remains
+tracked in the [test evidence](../testing/test-evidence.md).
 
 **Implementation and rationale:** Consolidate `GET /api/events/:id` into one handler for
 KAN-34 draft retrieval, KAN-33 coordinator detail and KAN-16 status/outcome retrieval.
@@ -304,6 +317,49 @@ pending-review queue. The [test evidence record](../testing/test-evidence.md) co
 acceptance results. The subsequent rejection check also passed; unauthorised-access and organiser-workflow checks remain open.
 KAN-16 still needs the organiser interface and an organiser list that includes submitted
 and decided requests. These results do not mark either story Done.
+
+## 17 September 2026 — Organiser outcome display and refresh
+
+**Tested by:** Tristan, using the local webpage and Supabase development project. The
+working branch was at `95cd43e`; the exact served build and check time were not captured.
+
+**Implementation:** KAN-16's organiser list includes all owned statuses through
+`GET /api/events?scope=all`. Linked read-only detail pages use the existing shared GET for
+status and saved review information; no additional detail handler or access policy was added.
+
+**Result:** The approved outcome remained after refresh. A rejected request opened from
+Event requests showed its rejected status and reason, both retained after refresh. The
+approved-request screenshot also showed `No reason provided.` and the recorded decision
+time. See MAN-20260917-01 in the [test evidence record](../testing/test-evidence.md).
+
+**Remaining checks:** Hosted non-final status display, submission-to-status refresh,
+unrelated-owner reads and signed-out access remain unrecorded. Automated checks cover
+those boundaries separately. This does not close the open customer questions or mark
+KAN-16 Done; peer review, integration and remaining acceptance still need completion.
+
+**Follow-up:** Reopening the copied request URL after sign-out showed a sign-in prompt,
+with no request details or review reason displayed (MAN-20260917-02). This records the
+detail-page behaviour; it does not establish signed-out list access or token revocation.
+
+**Draft/Submitted follow-up:** The organiser detail page showed `Test Event Request 4`
+as Draft with the not-submitted message, and `Test Event Request 3` as Submitted with
+no approval or rejection recorded (MAN-20260917-03). List labels and refresh remain
+to be confirmed. The remaining submission and access checks are tracked in the
+[test evidence record](../testing/test-evidence.md); this does not close KAN-16.
+
+**Ownership follow-up:** `Test Event Organiser 2` could not view the first organiser's
+request through its URL, and the second account's Event requests page showed no requests
+(MAN-20260917-04). This records browser list/detail isolation; no HTTP response or forged
+owner parameter was captured. Remaining acceptance is tracked in the test evidence.
+
+**Signed-out list follow-up:** Opening `/events` directly after signing out showed a
+sign-in prompt without request names or statuses (MAN-20260917-05). This records the
+browser result only; no HTTP response or previous-token replay was captured.
+
+**List display follow-up:** Event requests showed Draft, Submitted, Rejected and
+Approved for the four corresponding test requests, matching their detail pages
+(MAN-20260917-06). Draft/Submitted detail statuses and review messages also remained
+correct after refresh. The submission-to-status workflow remains in the [test evidence](../testing/test-evidence.md).
 
 ## Decision record template
 

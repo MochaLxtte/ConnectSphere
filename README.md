@@ -2,7 +2,7 @@
 
 IS212 event planning and venue booking project, built with **Vue 3 + TypeScript, Express 5 + TypeScript, Supabase PostgreSQL and Supabase Auth**, organised as a monorepo with a modular backend.
 
-The application supports sign-in, an assigned coordinator's review queue, request details and approval/rejection. The backend also supports owned-draft editing and submission. The organiser's creation, draft and status pages remain placeholders; draft creation and clarification endpoints are not implemented. Venue, equipment, registration and notification workflows remain for later work. Database migrations, fictional seed data, automated checks, CI and team documentation support development.
+The application supports sign-in, an assigned coordinator's review queue, request details and approval/rejection. Organisers can list their requests across all statuses, open read-only details and refresh the status and recorded outcome. The backend also supports owned-draft editing and submission. Organiser creation and draft-editing interfaces remain unfinished; draft creation and clarification endpoints are not implemented. Venue, equipment, registration and notification workflows remain for later work. Database migrations, fictional seed data, automated checks, CI and team documentation support development.
 
 ## Start here
 
@@ -44,7 +44,7 @@ backend/src/modules/       Authentication, event services and HTTP routes
 backend/src/               HTTP application, configuration, database pool
 backend/test/              API and environment tests
 database/                  SQL migrations, seed and database integration tests
-tests/e2e/                 Browser checks and coordinator decision scenarios
+tests/e2e/                 Browser checks, organiser status and coordinator decisions
 docs/requirements/         20 core features, customer questions, traceability
 docs/architecture/         C4 views, ERD and implemented/proposed API contracts
 docs/testing/              Test plan, acceptance cases and evidence records
@@ -111,9 +111,9 @@ npx playwright install chromium
 npm run test:e2e
 ```
 
-The browser suite covers infrastructure, navigation, queue recovery and coordinator decisions using API response fixtures. PostgreSQL integration tests exercise persistence and access rules in an isolated database. GitHub Actions repeats the checks with its own PostgreSQL service and uploads coverage/browser evidence. See [testing guidance](docs/testing/README.md) and [test evidence](docs/testing/test-evidence.md) for the distinction between automated checks and hosted acceptance testing.
+The browser suite covers infrastructure, navigation, queue recovery, organiser request lists/details and coordinator decisions using API response fixtures. PostgreSQL integration tests exercise persistence and access rules in an isolated database. GitHub Actions repeats the checks with its own PostgreSQL service and uploads coverage/browser evidence. See [testing guidance](docs/testing/README.md) and [test evidence](docs/testing/test-evidence.md) for the distinction between automated checks and hosted acceptance testing.
 
-Hosted approval and rejection checks passed, including the saved review row, outcome after reload and removal from the pending queue. See the [test evidence](docs/testing/test-evidence.md) for the dated results and remaining unauthorised-access and organiser-workflow checks. KAN-16 still requires the organiser interface and extending the organiser list API beyond drafts.
+Hosted approval and rejection checks passed, including the saved review row, outcome after reload and removal from the pending queue. See the [test evidence](docs/testing/test-evidence.md) for the dated results and remaining organiser-workflow checks. KAN-16's `/events` page uses `GET /api/events?scope=all` to show owned request names, readable statuses and Singapore-time updates. Request titles link to `/events/:id`, which reads the existing shared detail API and displays the status, saved outcome, reason and recorded time. The organiser approval/rejection display and refresh checks passed in MAN-20260917-01. Reopening a request URL after sign-out also passed: the page showed a sign-in prompt without request details or the review reason (MAN-20260917-02). Draft and submitted detail pages also showed the expected statuses and review messages (MAN-20260917-03). A second organiser could not view the first organiser's request details or see their requests in the list (MAN-20260917-04). Opening `/events` directly after signing out showed a sign-in prompt without request names or statuses (MAN-20260917-05). The request list showed matching Draft, Submitted, Rejected and Approved labels, and Draft/Submitted detail statuses and review messages remained correct after refresh (MAN-20260917-06). The submission-to-status path remains to be checked in the test evidence.
 
 ## Join the repository
 

@@ -19,13 +19,13 @@ The normal server also mounts these business routes:
 | Method and path | Current behaviour |
 | --- | --- |
 | `POST /api/auth/login`, `GET /api/auth/me`, `POST /api/auth/logout` | Verify a Supabase token, establish/read/end the application session. |
-| `GET /api/events` | An organiser's own drafts, or the assigned coordinator's pending queue. |
+| `GET /api/events` | An organiser's own drafts, or the assigned coordinator's pending queue; organiser `?scope=all` includes all owned statuses. |
 | `GET /api/events/:id` | One shared detail response with status, recorded review and caller-specific actions. |
 | `PATCH /api/events/:id` | Validate and update an organiser's own draft. |
 | `POST /api/events/:id/submit` | Validate an owned draft and change it to `SUBMITTED`. |
 | `POST /api/events/:id/reviews` | Record an assigned coordinator's initial decision and matching status in one transaction. |
 
-Draft creation and clarification routes are not implemented. The organiser list currently returns drafts only; KAN-16 needs access to the organiser's submitted and decided requests in the list. The [API contract](../docs/architecture/api-contract.md) distinguishes current routes from planned ones and defines access/error responses.
+Draft creation and clarification routes are not implemented. KAN-16's organiser list uses `GET /api/events?scope=all`, and its read-only detail page uses the shared detail endpoint. Recorded browser checks cover status labels, outcome display and refresh, signed-out access and other-organiser isolation. The final submission-to-status check awaits KAN-6 frontend integration; see [test evidence](../docs/testing/test-evidence.md). The [API contract](../docs/architecture/api-contract.md) distinguishes current routes from planned ones and defines access/error responses.
 
 Unknown endpoints return a JSON `NOT_FOUND` error with HTTP 404. Malformed JSON returns `INVALID_JSON`/400, JSON bodies above 100kb return `PAYLOAD_TOO_LARGE`/413, and unexpected failures return `INTERNAL_ERROR`/500. Client responses omit stacks and database connection details. Helmet adds default security headers. The API intentionally has no permissive CORS policy; the frontend development proxy and a same-origin production reverse proxy can route `/api` requests.
 

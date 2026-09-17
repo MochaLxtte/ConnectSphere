@@ -27,16 +27,16 @@ Malformed JSON returns 400 (`INVALID_JSON`), oversized JSON returns 413 (`PAYLOA
 
 ## Sprint 1 routes
 
-The normal server mounts Supabase authentication, event listing, shared detail, draft editing, submission and decision writing through `createRuntimeApp` in `backend/src/runtime-app.ts`. The coordinator review page consumes the shared detail, decision permissions and saved outcomes. The two routes marked planned below are not implemented. Organiser-page integration and verification of the complete workflow with real Supabase accounts remain pending.
+The normal server mounts Supabase authentication, event listing, shared detail, draft editing, submission and decision writing through `createRuntimeApp` in `backend/src/runtime-app.ts`. The coordinator review page consumes the shared detail, decision permissions and saved outcomes; the organiser detail page consumes the same response for read-only status and outcome display. The two routes marked planned below are not implemented. Organiser approval/rejection display and refresh passed with a real account in MAN-20260917-01. The signed-out detail page showed a sign-in prompt without request details or the review reason in MAN-20260917-02; draft/submitted detail status and review messages also passed in MAN-20260917-03. Later manual results and the outstanding submission-to-status integration check are tracked in the test evidence.
 
 | Owner | Method / route | Purpose | State |
 | --- | --- | --- | --- |
 | Ryan, KAN-25 | `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me` | Establish, end and inspect authenticated identity | Implemented |
 | Ernest, KAN-31 / KAN-4 | `POST /api/events` | Save an incomplete draft for the authenticated organiser | Planned |
-| Kai Jie / Irfan / Tristan, KAN-34 / KAN-33 / KAN-16 | `GET /api/events/:id` | Shared details, status and recorded decision | Implemented |
+| Kai Jie / Irfan / Tristan, KAN-34 / KAN-33 / KAN-16 | `GET /api/events/:id` | Shared details, status and recorded decision | Implemented; coordinator and organiser detail pages connected |
 | Kai Jie, KAN-34 | `PATCH /api/events/:id` | Update an owned draft | Implemented |
 | Kai Jie, KAN-6 | `POST /api/events/:id/submit` | Validate submission and transition atomically | Implemented |
-| Irfan / Kai Jie, KAN-33 / KAN-34 | `GET /api/events` | Assigned coordinator queue, or the organiser's own drafts; pagination pending | Implemented; organiser status listing pending |
+| Irfan / Kai Jie / Tristan, KAN-33 / KAN-34 / KAN-16 | `GET /api/events` | Assigned coordinator queue, or the organiser's own drafts; organiser `?scope=all` includes all owned statuses; pagination pending | Implemented; organiser list page connected |
 | Irfan, KAN-27 | `POST /api/events/:id/clarifications` | Request clarification and make it visible to the organiser | Planned |
 | Tristan, KAN-36 | `POST /api/events/:id/reviews` | Record an approval/rejection and update status atomically | Implemented |
 
@@ -46,9 +46,9 @@ Never accept organiser identity, acting role, arbitrary status, or reviewer iden
 
 Supabase Auth handles sign-in. Express verifies the access token and resolves `app_users.supabase_user_id` to the application profile and trusted role. `POST /api/auth/login` accepts `{ "accessToken": "..." }` and sets the verified token in an HttpOnly session cookie; `GET /api/auth/me` returns the mapped profile, and `POST /api/auth/logout` clears the cookie. Accounts must be provisioned before login; an unmapped account receives `403 ACCOUNT_NOT_PROVISIONED`. See the [authentication workstream](../../backend/src/modules/auth/README.md) for configuration and identity mapping. When adopting a significant contract change, keep this document, the corresponding UI, service and integration tests consistent in the implementation PR.
 
-## Shared request detail: backend and coordinator page connected
+## Shared request detail: backend, coordinator and organiser pages connected
 
-**Status:** The shared backend handler for KAN-34, KAN-33 and KAN-16 uses Ryan's verified session and the Sprint 1 assigned-coordinator policy. The coordinator page uses its action flags and displays saved outcomes; organiser-page integration and full real-account workflow verification remain pending. Assignment workflows, unassigned triage and delegation still need customer clarification under [Q-02](../requirements/assumptions-and-questions.md); the current policy is a team implementation assumption.
+**Status:** The shared backend handler for KAN-34, KAN-33 and KAN-16 uses Ryan's verified session and the Sprint 1 assigned-coordinator policy. The coordinator page uses its action flags and displays saved outcomes; the organiser page displays request details and saved outcomes without write controls. Organiser approval/rejection display and refresh passed in MAN-20260917-01, followed by the signed-out detail-page check in MAN-20260917-02. Draft/submitted detail display passed in MAN-20260917-03. Second-organiser detail denial and list isolation passed in MAN-20260917-04. Signed-out list navigation showed a sign-in prompt without request names or statuses in MAN-20260917-05. Draft/Submitted/Rejected/Approved list labels matched the detail pages and Draft/Submitted detail refresh passed in MAN-20260917-06; submission-to-status remains in the test evidence. Assignment workflows, unassigned triage and delegation still need customer clarification under [Q-02](../requirements/assumptions-and-questions.md); the current policy is a team implementation assumption.
 
 ### One route for all three pages
 
@@ -96,6 +96,8 @@ These flags guide the UI. Each write endpoint must recheck authentication, permi
 
 `ReviewRequestPage` passes `actions.canMakeInitialDecision` to the decision panel. A false or missing flag prevents new decisions while a recorded outcome and its reason remain visible after an authorised detail read. Successful saves reload the shared detail to display the current status and review. A failed refresh reports that the decision was saved and offers a read retry; an uncertain write or conflict requires a refresh before another submission. Responses from a previously opened request cannot overwrite the current page.
 
+`EventRequestDetailPage` at `/events/:id` uses the same GET for the organiser's read-only view. It displays request fields, readable status and the recorded outcome, reason and `review.createdAt` in Asia/Singapore. Missing review rows produce explicit messages rather than an invented decision; reasons render as plain text. The page never exposes editing, submission or decision controls, even if an action flag is enabled. Refresh re-reads the request; sign-out, account changes, request navigation and failed reads clear previous data and ignore stale responses. A 401 clears local identity and offers sign-in, 403/404 show a generic unavailable/no-permission message, and network/server failures offer a read retry. This connection introduces no new backend handler or schema change.
+
 ### Access and responses
 
 | Caller / request | Detail access |
@@ -135,19 +137,36 @@ Check authentication and supported role before looking up the request. All detai
 Remaining integration work:
 
 1. Review the shared response with Kai Jie and Irfan. Use mapped test accounts and assigned synthetic requests while the KAN-29 assignment workflow is pending.
-2. Connect the organiser's draft and status pages to the shared response. Extend the organiser list API to include submitted and decided requests for KAN-16; its current draft-only result cannot populate that status list. The coordinator's decision controls and outcome display are connected.
-3. Complete hosted checks for unauthorised access and organiser outcome visibility. Approval and rejection, their saved review rows, outcomes after reload and queue removal have passed; see the dated [test evidence](../testing/test-evidence.md).
+2. Connect the organiser's draft-editing view to the shared response. KAN-16's `/events` status list and read-only `/events/:id` detail are connected, including navigation, review reasons and recorded times. The coordinator's decision controls and outcome display are connected.
+3. Run the submission-to-status integration check once the KAN-6 frontend is connected; this check is currently awaiting that integration. List labels matched the four recorded detail statuses and Draft/Submitted detail refresh passed in MAN-20260917-06. Draft/submitted detail status and review messages passed in MAN-20260917-03. Coordinator approval/rejection, saved review rows and queue removal have passed; organiser approval/rejection display and refresh also passed in MAN-20260917-01. The signed-out detail page showed a sign-in prompt without request details or the review reason in MAN-20260917-02. Second-organiser detail denial and list isolation passed in MAN-20260917-04. Signed-out list navigation also passed in MAN-20260917-05, showing a sign-in prompt without request names or statuses; see the dated [test evidence](../testing/test-evidence.md).
 
 **Verification, 11 September 2026:** Type checking and all 42 targeted backend tests passed: 31 shared-detail service/HTTP cases in `backend/test/events/event-request-detail.test.ts`, four queue-service cases and seven queue-HTTP cases. All 25 PostgreSQL tests passed, including the 11 new cases in `database/tests/events/event-request-detail.integration.test.ts`. These exercise ownership, coordinator visibility, state-dependent actions, the shared response and persisted approval/rejection outcomes through the composed GET and POST routes. They use fixture authentication and an isolated PostgreSQL test database; they do not verify live login or the hosted development project.
 
-## KAN-33 review queue: authentication connected
+## KAN-33 / KAN-34 / KAN-16 request lists: authentication connected
 
 For a coordinator, `GET /api/events` returns the review queue implemented in
 `submitted-requests-router.ts` and `submitted-requests.ts`. For an organiser, the same
-endpoint returns only their own drafts. It shares the router dependencies described above
+endpoint defaults to their own drafts. It shares the router dependencies described above
 but keeps its list query and status filter separate from the shared request-detail read.
-KAN-16 must extend organiser listing to include their submitted and decided requests;
-the shared detail already permits those owned requests.
+
+**KAN-16 list extension, 17 September:** An organiser can request
+`GET /api/events?scope=all` to retrieve their requests across all six stored statuses,
+including submitted and decided requests. `scope=drafts` explicitly selects the existing
+draft-only list; omitting `scope` preserves that behaviour. Scope is a single, case-sensitive
+value: empty, unknown or repeated values return `400 INVALID_EVENT_LIST_SCOPE`.
+Coordinators must omit `scope`; supplying it returns the same 400 and does not expand
+their review queue. Other roles remain forbidden and unauthenticated callers receive 401.
+
+Both organiser lists filter by the authenticated `app_users.id` in the database and order
+by `updated_at DESC`. A client-supplied `organiserId` or role cannot choose another owner.
+List items retain the five fields shown below; nullable draft names are returned as `null`.
+Review outcomes and reasons remain available through the existing shared detail endpoint.
+
+The organiser page at `/events` consumes `scope=all`, displays readable labels for each
+stored status and formats update timestamps in Asia/Singapore. Refresh re-reads the list;
+account changes and unauthorised responses clear previously displayed results. Request titles
+link to `/events/:id` for the shared detail and recorded outcome. List/detail UI tests use
+API response fixtures. MAN-20260917-01 separately records passed organiser outcome/refresh checks, and MAN-20260917-02 records the signed-out detail-page check. MAN-20260917-03 adds draft/submitted detail status and review-message checks. The test evidence records subsequent manual checks and the remaining submission-to-status integration check.
 
 The queue includes only `SUBMITTED`, `UNDER_REVIEW` and `CLARIFICATION_REQUESTED` requests
 that pass `canViewRequest`. This filter describes queue membership, not permission to
@@ -169,6 +188,7 @@ not implemented. `GET /api/events/:id` uses the shared detail response documente
 | Response | Meaning |
 | --- | --- |
 | `200` | An object containing an `items` array, which may be empty. |
+| `400 INVALID_EVENT_LIST_SCOPE` | An organiser supplied an invalid/repeated scope, or a coordinator supplied any scope. |
 | `401 AUTHENTICATION_REQUIRED` | The authentication adapter reports absent or invalid credentials. |
 | `403 VIEW_FORBIDDEN` | The verified account is neither an event coordinator nor an event organiser. |
 | `500 INTERNAL_ERROR` | An unexpected verification or persistence failure occurred; details are not returned. |

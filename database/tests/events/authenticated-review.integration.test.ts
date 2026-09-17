@@ -5,7 +5,7 @@ import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { createRuntimeApp } from '../../../backend/src/runtime-app.js';
 import type { UserRole } from '../../../backend/src/modules/auth/types.js';
-import type { EventStatus } from '../../../backend/src/modules/events/types.js';
+import { EVENT_STATUSES, type EventStatus } from '../../../backend/src/modules/events/types.js';
 import { migrate } from '../../migrate.js';
 
 const testUrl = process.env.TEST_DATABASE_URL;
@@ -110,11 +110,12 @@ async function readState(id: string) {
   return { event: event.rows[0], reviews: reviews.rows };
 }
 
-describe('KAN-25 / KAN-33 / KAN-36 authenticated assigned-coordinator workflow', () => {
+describe('KAN-16 / KAN-25 / KAN-33 / KAN-36 authenticated event workflow', () => {
   it('requires login on every mounted event endpoint', async () => {
     const id = randomUUID();
     const attempts = [
       request(app).get('/api/events'),
+      request(app).get('/api/events?scope=all'),
       request(app).get(`/api/events/${id}`),
       request(app).patch(`/api/events/${id}`).send({ name: 'Draft update' }),
       request(app).post(`/api/events/${id}/submit`).send({}),
@@ -148,6 +149,57 @@ describe('KAN-25 / KAN-33 / KAN-36 authenticated assigned-coordinator workflow',
     }
   });
 
+  it('KAN-16 lists every owned status newest first while preserving both draft-list forms', async () => {
+    const organiser = await provisionUser('EVENT_ORGANISER');
+    const otherOrganiser = await provisionUser('EVENT_ORGANISER');
+    const createdAt = '2026-09-01T00:00:00.000Z';
+    const owned = [];
+    for (const [index, status] of EVENT_STATUSES.entries()) {
+      const id = await createEvent(organiser.id, null, status);
+      await createEvent(otherOrganiser.id, null, status);
+      const name = status === 'DRAFT' ? null : `${status} request`;
+      const updatedAt = `2026-09-${String(10 + index).padStart(2, '0')}T00:00:00.000Z`;
+      await pool.query(
+        'UPDATE event_requests SET name = $1, created_at = $2, updated_at = $3 WHERE id = $4',
+        [name, createdAt, updatedAt, id],
+      );
+      owned.push({ id, name, status, createdAt, updatedAt });
+    }
+    const session = await signIn(organiser);
+
+    const all = await session.get('/api/events')
+      .query({ scope: 'all', organiserId: otherOrganiser.id });
+    expect(all.status).toBe(200);
+    expect(all.headers['cache-control']).toBe('no-store');
+    expect(all.body).toEqual({ items: [...owned].reverse() });
+    for (const path of ['/api/events', '/api/events?scope=drafts']) {
+      const drafts = await session.get(path);
+      expect(drafts.status).toBe(200);
+      expect(drafts.body).toEqual({ items: owned.filter(item => item.status === 'DRAFT') });
+    }
+  });
+
+  it('KAN-16 returns an empty list for an organiser with no requests', async () => {
+    const organiser = await provisionUser('EVENT_ORGANISER');
+    const otherOrganiser = await provisionUser('EVENT_ORGANISER');
+    await createEvent(otherOrganiser.id, null);
+    const session = await signIn(organiser);
+
+    const response = await session.get('/api/events?scope=all');
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ items: [] });
+  });
+
+  it.each(['VENUE_STAFF', 'TECHNICAL_SUPPORT_STAFF', 'ATTENDEE'] as const)(
+    'KAN-16 denies the all-status list to %s accounts',
+    async (role) => {
+      const session = await signIn(await provisionUser(role));
+      const response = await session.get('/api/events?scope=all');
+      expect(response.status).toBe(403);
+      expect(response.body.error.code).toBe('VIEW_FORBIDDEN');
+    },
+  );
+
   it('limits the coordinator queue to assigned pending requests and excludes drafts', async () => {
     const organiser = await provisionUser('EVENT_ORGANISER');
     const coordinator = await provisionUser('EVENT_COORDINATOR');
@@ -156,8 +208,14 @@ describe('KAN-25 / KAN-33 / KAN-36 authenticated assigned-coordinator workflow',
     await createEvent(organiser.id, otherCoordinator.id);
     await createEvent(organiser.id, null);
     await createEvent(organiser.id, coordinator.id, 'DRAFT');
+    await createEvent(organiser.id, coordinator.id, 'APPROVED');
     const session = await signIn(coordinator);
 
+    for (const scope of ['all', 'drafts', '']) {
+      const expanded = await session.get('/api/events').query({ scope });
+      expect(expanded.status).toBe(400);
+      expect(expanded.body.error.code).toBe('INVALID_EVENT_LIST_SCOPE');
+    }
     const queue = await session.get('/api/events');
     expect(queue.status).toBe(200);
     expect(queue.body.items.map((item: { id: string }) => item.id)).toEqual([assigned]);
@@ -175,6 +233,9 @@ describe('KAN-25 / KAN-33 / KAN-36 authenticated assigned-coordinator workflow',
       const reviewer = await signIn(coordinator);
       const owner = await signIn(organiser);
 
+      const pendingList = await owner.get('/api/events?scope=all');
+      expect(pendingList.status).toBe(200);
+      expect(pendingList.body.items).toEqual([expect.objectContaining({ id, status: 'SUBMITTED' })]);
       const saved = await reviewer.post(`/api/events/${id}/reviews`)
         .send({ decision, reason: '  Review completed.  ' });
       expect(saved.status).toBe(201);
@@ -195,6 +256,9 @@ describe('KAN-25 / KAN-33 / KAN-36 authenticated assigned-coordinator workflow',
           actions: { canEditDraft: false, canMakeInitialDecision: false },
         });
       }
+      const decidedList = await owner.get('/api/events?scope=all');
+      expect(decidedList.status).toBe(200);
+      expect(decidedList.body.items).toEqual([expect.objectContaining({ id, status: decision })]);
       expect((await reviewer.get('/api/events')).body.items).toEqual([]);
       const repeat = await reviewer.post(`/api/events/${id}/reviews`)
         .send({ decision: decision === 'APPROVED' ? 'REJECTED' : 'APPROVED' });
