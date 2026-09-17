@@ -99,9 +99,10 @@ outcome display. KAN-16's organiser list/detail pages are connected, and approva
 outcome refresh passed on 17 September (MAN-20260917-01). The signed-out detail-page check
 also passed (MAN-20260917-02), followed by Draft/Submitted detail statuses and their
 no-decision messages (MAN-20260917-03). A second organiser could not view the first
-organiser's request details or list entries (MAN-20260917-04). Draft/Submitted list labels
-and refresh remain to be confirmed. Team contract review, submission-to-status and
-signed-out list checks remain pending; see [test evidence](../testing/test-evidence.md).
+organiser's request details or list entries (MAN-20260917-04). Signed-out list access
+also showed a sign-in prompt without request names or statuses (MAN-20260917-05).
+Draft/Submitted list labels and refresh, team contract review and submission-to-status
+checks remain pending; see [test evidence](../testing/test-evidence.md).
 
 **Decision and rationale:** `docs/architecture/api-contract.md`'s proposed-routes table lists
 `GET /api/events/:id` under three different owners (Kai Jie/KAN-34 draft retrieval,
@@ -131,7 +132,8 @@ The 15 September entries supersede the backend-wiring and coordinator-page gaps 
 here. Organiser list/detail integration is complete, and the hosted outcome checks recorded
 on 17 September passed. Signed-out detail access, Draft/Submitted detail display and
 second-organiser list/detail isolation also passed (MAN-20260917-02/03/04).
-Remaining list/status/refresh, submission-to-status and signed-out list checks are
+The signed-out list check passed in MAN-20260917-05.
+Remaining list/status/refresh and submission-to-status checks are
 tracked in the [test evidence](../testing/test-evidence.md).
 
 **Implementation and rationale:** Consolidate `GET /api/events/:id` into one handler for
@@ -347,6 +349,10 @@ to be confirmed. The remaining submission and access checks are tracked in the
 request through its URL, and the second account's Event requests page showed no requests
 (MAN-20260917-04). This records browser list/detail isolation; no HTTP response or forged
 owner parameter was captured. Remaining acceptance is tracked in the test evidence.
+
+**Signed-out list follow-up:** Opening `/events` directly after signing out showed a
+sign-in prompt without request names or statuses (MAN-20260917-05). This records the
+browser result only; no HTTP response or previous-token replay was captured.
 
 ## Decision record template
 
