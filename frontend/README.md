@@ -22,7 +22,7 @@ The dev server runs at `http://127.0.0.1:5173` and fails clearly if that port is
 - Organiser request list at `/events`, covering all owned statuses, refresh, empty/error states and session-expiry recovery.
 - Read-only organiser details at `/events/:id`, showing the current status and any recorded decision, reason and time.
 
-The organiser creation page remains a placeholder. KAN-16's list and detail views are connected. Organiser approval/rejection display and refresh checks passed against Supabase in MAN-20260917-01; other workflow-state and access checks remain. Express authenticates event API calls and enforces roles, ownership and the Sprint 1 coordinator assignment policy. Frontend navigation and action flags do not replace those checks.
+The organiser creation page remains a placeholder. KAN-16's list and detail views are connected. Hosted organiser checks cover approval/rejection display and refresh, signed-out detail access, Draft/Submitted detail states and another organiser's denied detail access and empty list (MAN-20260917-01 through MAN-20260917-04). Remaining list/status/refresh, signed-out list and submission checks are tracked in [test evidence](../docs/testing/test-evidence.md). Express authenticates event API calls and enforces roles, ownership and the Sprint 1 coordinator assignment policy. Frontend navigation and action flags do not replace those checks.
 
 ## KAN-16 organiser request list and detail
 
@@ -32,7 +32,7 @@ The organiser creation page remains a placeholder. KAN-16's list and detail view
 
 Signing out or changing accounts clears previous results and cancels pending reads. The detail view also discards responses for a previously opened request. A 401 clears cached identity and offers sign-in, so the login page can show its form again. Failed reads hide previous request data. On the detail page, 403/404 responses show the same unavailable/no-permission message, while network/server failures offer Try again.
 
-Component tests cover loading, labels, status refresh, recorded and absent outcomes, access failures and stale responses. `tests/e2e/event-requests.spec.ts` and `tests/e2e/event-request-detail.spec.ts` cover desktop/mobile layout, list/detail navigation, reload, retry, denied access and session-expiry navigation using API response fixtures. These fixtures do not prove hosted authentication or persistence. The separate manual run MAN-20260917-01 verifies organiser approval/rejection display and refresh; other workflow-state and access checks remain in the test register.
+Component tests cover loading, labels, status refresh, recorded and absent outcomes, access failures and stale responses. `tests/e2e/event-requests.spec.ts` and `tests/e2e/event-request-detail.spec.ts` cover desktop/mobile layout, list/detail navigation, reload, retry, denied access and session-expiry navigation using API response fixtures. These fixtures do not prove hosted authentication or persistence. The [test register](../docs/testing/test-evidence.md) records the separate manual checks and remaining acceptance coverage.
 
 ## Team work areas
 

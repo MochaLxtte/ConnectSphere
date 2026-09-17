@@ -98,8 +98,9 @@ connected as recorded on 15 September below, along with the coordinator page's a
 outcome display. KAN-16's organiser list/detail pages are connected, and approval/rejection
 outcome refresh passed on 17 September (MAN-20260917-01). The signed-out detail-page check
 also passed (MAN-20260917-02), followed by Draft/Submitted detail statuses and their
-no-decision messages (MAN-20260917-03). Draft/Submitted list labels and refresh remain
-to be confirmed. Team contract review, submission-to-status, unrelated-owner and
+no-decision messages (MAN-20260917-03). A second organiser could not view the first
+organiser's request details or list entries (MAN-20260917-04). Draft/Submitted list labels
+and refresh remain to be confirmed. Team contract review, submission-to-status and
 signed-out list checks remain pending; see [test evidence](../testing/test-evidence.md).
 
 **Decision and rationale:** `docs/architecture/api-contract.md`'s proposed-routes table lists
@@ -128,9 +129,10 @@ their own `GET /:id` handler.
 **Current status:** The shared response and access boundaries below remain in force.
 The 15 September entries supersede the backend-wiring and coordinator-page gaps recorded
 here. Organiser list/detail integration is complete, and the hosted outcome checks recorded
-on 17 September passed. The signed-out detail-page check also passed (MAN-20260917-02).
-Non-final status, submission-to-status, unrelated-owner and
-signed-out list checks remain unrecorded.
+on 17 September passed. Signed-out detail access, Draft/Submitted detail display and
+second-organiser list/detail isolation also passed (MAN-20260917-02/03/04).
+Remaining list/status/refresh, submission-to-status and signed-out list checks are
+tracked in the [test evidence](../testing/test-evidence.md).
 
 **Implementation and rationale:** Consolidate `GET /api/events/:id` into one handler for
 KAN-34 draft retrieval, KAN-33 coordinator detail and KAN-16 status/outcome retrieval.
@@ -340,6 +342,11 @@ as Draft with the not-submitted message, and `Test Event Request 3` as Submitted
 no approval or rejection recorded (MAN-20260917-03). List labels and refresh remain
 to be confirmed. The remaining submission and access checks are tracked in the
 [test evidence record](../testing/test-evidence.md); this does not close KAN-16.
+
+**Ownership follow-up:** `Test Event Organiser 2` could not view the first organiser's
+request through its URL, and the second account's Event requests page showed no requests
+(MAN-20260917-04). This records browser list/detail isolation; no HTTP response or forged
+owner parameter was captured. Remaining acceptance is tracked in the test evidence.
 
 ## Decision record template
 
