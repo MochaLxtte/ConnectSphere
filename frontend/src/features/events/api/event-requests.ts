@@ -1,4 +1,12 @@
 import { getJson } from '../../../lib/api-client';
+import type { ReviewRequestDetail } from '../../reviews/types';
+
+/** Organiser and coordinator detail views share the same response contract. */
+export type EventRequestDetail = ReviewRequestDetail;
+
+export function fetchEventRequestDetail(id: string, signal?: AbortSignal): Promise<EventRequestDetail> {
+  return getJson<EventRequestDetail>(`/api/events/${encodeURIComponent(id)}`, signal);
+}
 
 /** KAN-16: summary from the organiser's ownership-scoped list. */
 export interface EventRequestListItem {

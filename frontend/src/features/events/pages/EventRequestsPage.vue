@@ -4,6 +4,7 @@ import AppIcon from '../../../components/AppIcon.vue';
 import { ApiError } from '../../../lib/api-client';
 import { authSession, clearLocalSession } from '../../auth/session.js';
 import { fetchEventRequests, type EventRequestListItem } from '../api/event-requests';
+import { eventStatusLabel, formatEventTime } from '../presentation';
 
 type LoadState =
   | { status: 'loading' }
@@ -12,22 +13,6 @@ type LoadState =
 
 const state = ref<LoadState>({ status: 'loading' });
 let controller: AbortController | undefined;
-const statusLabels = new Map([
-  ['DRAFT', 'Draft'],
-  ['SUBMITTED', 'Submitted'],
-  ['UNDER_REVIEW', 'Under review'],
-  ['CLARIFICATION_REQUESTED', 'Clarification requested'],
-  ['APPROVED', 'Approved'],
-  ['REJECTED', 'Rejected'],
-]);
-const updatedDate = new Intl.DateTimeFormat('en-SG', {
-  dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Singapore',
-});
-
-function formatUpdated(value: string): string {
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? 'Update time unavailable' : updatedDate.format(date);
-}
 
 function showSignIn() {
   controller?.abort();
@@ -107,11 +92,11 @@ onBeforeUnmount(() => controller?.abort());
     <ul v-else class="request-list" aria-label="Your event requests">
       <li v-for="item in state.items" :key="item.id" class="request-item">
         <div class="request-summary">
-          <h3>{{ item.name?.trim() || 'Untitled event request' }}</h3>
-          <p class="request-updated">Updated <time :datetime="item.updatedAt">{{ formatUpdated(item.updatedAt) }}</time></p>
+          <h3><RouterLink :to="`/events/${item.id}`">{{ item.name?.trim() || 'Untitled event request' }}</RouterLink></h3>
+          <p class="request-updated">Updated <time :datetime="item.updatedAt">{{ formatEventTime(item.updatedAt, 'Update time unavailable') }}</time></p>
         </div>
         <span class="request-status" :class="`request-status--${item.status.toLowerCase()}`">
-          {{ statusLabels.get(item.status) ?? 'Status unavailable' }}
+          {{ eventStatusLabel(item.status) }}
         </span>
       </li>
     </ul>
@@ -129,6 +114,7 @@ onBeforeUnmount(() => controller?.abort());
 .request-item { display: flex; align-items: center; justify-content: space-between; gap: 16px; border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
 .request-summary { min-width: 0; }
 .request-summary h3 { font-size: 15px; font-weight: 600; line-height: 1.5; overflow-wrap: anywhere; }
+.request-summary a { color: var(--green); text-decoration: underline; text-underline-offset: 3px; }
 .request-status { flex-shrink: 0; max-width: 100%; border-radius: 20px; padding: 6px 12px; background: #f2f3ed; color: #52614e; font-size: 12px; font-weight: 600; line-height: 1.5; }
 .request-status--submitted, .request-status--under_review { background: #edf2fa; color: #345579; }
 .request-status--clarification_requested { background: #fff3df; color: #805518; }

@@ -2,7 +2,7 @@
 
 IS212 event planning and venue booking project, built with **Vue 3 + TypeScript, Express 5 + TypeScript, Supabase PostgreSQL and Supabase Auth**, organised as a monorepo with a modular backend.
 
-The application supports sign-in, an assigned coordinator's review queue, request details and approval/rejection. Organisers can list their requests across all statuses and refresh the displayed status. The backend also supports owned-draft editing and submission. Organiser creation, draft-editing and request-detail interfaces remain unfinished; draft creation and clarification endpoints are not implemented. Venue, equipment, registration and notification workflows remain for later work. Database migrations, fictional seed data, automated checks, CI and team documentation support development.
+The application supports sign-in, an assigned coordinator's review queue, request details and approval/rejection. Organisers can list their requests across all statuses, open read-only details and refresh the status and recorded outcome. The backend also supports owned-draft editing and submission. Organiser creation and draft-editing interfaces remain unfinished; draft creation and clarification endpoints are not implemented. Venue, equipment, registration and notification workflows remain for later work. Database migrations, fictional seed data, automated checks, CI and team documentation support development.
 
 ## Start here
 
@@ -44,7 +44,7 @@ backend/src/modules/       Authentication, event services and HTTP routes
 backend/src/               HTTP application, configuration, database pool
 backend/test/              API and environment tests
 database/                  SQL migrations, seed and database integration tests
-tests/e2e/                 Browser checks and coordinator decision scenarios
+tests/e2e/                 Browser checks, organiser status and coordinator decisions
 docs/requirements/         20 core features, customer questions, traceability
 docs/architecture/         C4 views, ERD and implemented/proposed API contracts
 docs/testing/              Test plan, acceptance cases and evidence records
@@ -111,9 +111,9 @@ npx playwright install chromium
 npm run test:e2e
 ```
 
-The browser suite covers infrastructure, navigation, queue recovery and coordinator decisions using API response fixtures. PostgreSQL integration tests exercise persistence and access rules in an isolated database. GitHub Actions repeats the checks with its own PostgreSQL service and uploads coverage/browser evidence. See [testing guidance](docs/testing/README.md) and [test evidence](docs/testing/test-evidence.md) for the distinction between automated checks and hosted acceptance testing.
+The browser suite covers infrastructure, navigation, queue recovery, organiser request lists/details and coordinator decisions using API response fixtures. PostgreSQL integration tests exercise persistence and access rules in an isolated database. GitHub Actions repeats the checks with its own PostgreSQL service and uploads coverage/browser evidence. See [testing guidance](docs/testing/README.md) and [test evidence](docs/testing/test-evidence.md) for the distinction between automated checks and hosted acceptance testing.
 
-Hosted approval and rejection checks passed, including the saved review row, outcome after reload and removal from the pending queue. See the [test evidence](docs/testing/test-evidence.md) for the dated results and remaining organiser-workflow checks. KAN-16's `/events` page uses `GET /api/events?scope=all` to show owned request names, readable statuses and Singapore-time updates. The organiser detail view and hosted list/detail acceptance remain unfinished.
+Hosted approval and rejection checks passed, including the saved review row, outcome after reload and removal from the pending queue. See the [test evidence](docs/testing/test-evidence.md) for the dated results and remaining organiser-workflow checks. KAN-16's `/events` page uses `GET /api/events?scope=all` to show owned request names, readable statuses and Singapore-time updates. Request titles link to `/events/:id`, which reads the existing shared detail API and displays the status, saved outcome, reason and recorded time. Hosted organiser list/detail acceptance remains pending.
 
 ## Join the repository
 

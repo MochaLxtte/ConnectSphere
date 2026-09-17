@@ -64,8 +64,10 @@ test('KAN-16 organisers see all request statuses and refresh a changed outcome',
     await expect(rows.nth(index)).toContainText(index === 0 ? 'Untitled event request' : `Community event ${index + 1}`);
     await expect(rows.nth(index).locator('time')).toHaveAttribute('datetime', requests[index]!.updatedAt);
   }
-  // This commit is the list step; it must not offer links to an unfinished detail route.
-  await expect(list.getByRole('link')).toHaveCount(0);
+  await expect(list.getByRole('link')).toHaveCount(requests.length);
+  for (const [index, request] of requests.entries()) {
+    await expect(rows.nth(index).getByRole('link')).toHaveAttribute('href', `/events/${request.id}`);
+  }
   approved = true;
   await page.getByRole('button', { name: 'Refresh', exact: true }).click();
   const updatedRow = list.getByRole('listitem').filter({ hasText: 'Community event 2' });

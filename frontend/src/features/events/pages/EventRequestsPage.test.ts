@@ -83,8 +83,9 @@ describe('KAN-16 organiser event request list', () => {
     statuses.forEach(([, label], index) => {
       expect(rows[index]).toHaveTextContent(`Event ${index}`);
       expect(within(rows[index]!).getByText(label!)).toBeInTheDocument();
+      expect(within(rows[index]!).getByRole('link', { name: `Event ${index}` }))
+        .toHaveAttribute('href', `/events/${index}`);
     });
-    expect(within(list).queryByRole('link')).not.toBeInTheDocument();
     expect(within(list).queryByRole('button')).not.toBeInTheDocument();
     expect(screen.queryByRole('radio')).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Refresh' })).toBeEnabled();
