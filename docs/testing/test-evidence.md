@@ -2,6 +2,12 @@
 
 Record each relevant run with its commit, scope and result. Store concise report exports alongside this document and link the corresponding tests from the [traceability matrix](../requirements/traceability.csv). The [Sprint 1 acceptance test plan](../scrum/sprint-01/sprint-backlog.md#acceptance-test-plan) provides the initial scenario and acceptance-criterion IDs.
 
+## Current KAN-16 status, 17 September
+
+The recorded organiser list/detail, refresh and browser access checks passed in MAN-20260917-01 through MAN-20260917-06. The final submission-to-status check is **awaiting KAN-6 frontend integration**. Once the submission interface is connected, submit a draft through the application and verify that the list and detail show Submitted after refresh. This check does not block publishing the feature branch for review; story closure still requires the integrated check, peer review and passing CI.
+
+The dated entries below preserve the results and gaps at the time of each run. Later entries resolve some earlier gaps; they do not imply new automated runs.
+
 ## Run register
 
 The automated entries below preserve the results recorded for their implementation commits. Generated local reports are disposable; retain concise exports or link CI artifacts for the reviewed commit.
@@ -152,7 +158,7 @@ For manual cases, record preconditions, input values, expected and actual outcom
 - **List:** `/events` showed `Test Event Request 4` as `Draft`, `Test Event Request 3` as `Submitted`, `Test Event Request 2` as `Rejected` and `Test Event Request 1` as `Approved`.
 - **Refresh:** The Draft and Submitted detail pages retained their correct status and review message after each page was refreshed.
 - **Result:** The four list labels matched the detail-page statuses recorded in MAN-20260917-01/03, and Draft/Submitted detail refresh passed. This adds manual evidence for list/detail label consistency in KAN-16-AC1 / S1-T25.
-- **Boundary:** The list capture and refresh observation do not establish a new submission-to-status transition; that remains the outstanding check on the current KAN-16 manual checklist. No HTTP response or new database-row comparison was captured. No application code changed and no automated tests were rerun.
+- **Boundary:** The list capture and refresh observation do not establish a new submission-to-status transition; that remains the outstanding check on the current KAN-16 manual checklist and is awaiting KAN-6 frontend integration. No HTTP response or new database-row comparison was captured. No application code changed and no automated tests were rerun.
 
 ## Executable evidence map
 
@@ -180,7 +186,7 @@ For manual cases, record preconditions, input values, expected and actual outcom
 | 17 September 2026 / `e6896f3` manual follow-up | KAN-16 draft/submitted detail portions of S1-T25 | MAN-20260917-03 passed: both statuses and review messages shown correctly | List/refresh checks for these requests, other workflow states, submission-to-status and remaining access checks are not established by the captures. | Tristan |
 | 17 September 2026 / `f134288` manual follow-up | KAN-16 unrelated-organiser list/detail visibility; KAN-25 relationship access | MAN-20260917-04 passed: request details withheld and the other organiser's requests absent from the list | Direct API status/body and forged parameters were not captured manually. Draft/submitted list/refresh, signed-out list and submission-to-status checks remain pending. | Tristan |
 | 17 September 2026 / `f3e1930` manual follow-up | KAN-16 signed-out list visibility; KAN-25 sign-out UI | MAN-20260917-05 passed: direct `/events` navigation showed a sign-in prompt without request names or statuses | No HTTP response, token replay or expiry check captured. Draft/submitted list/refresh and submission-to-status checks remain pending. | Tristan |
-| 17 September 2026 / `09c858e` manual follow-up | KAN-16 list/detail labels and Draft/Submitted detail refresh | MAN-20260917-06 passed: four list labels matched the detail pages; Draft/Submitted status and review messages remained correct after refresh | The submission-to-status workflow remains pending. No new HTTP or database-row comparison. | Tristan |
+| 17 September 2026 / `09c858e` manual follow-up | KAN-16 list/detail labels and Draft/Submitted detail refresh | MAN-20260917-06 passed: four list labels matched the detail pages; Draft/Submitted status and review messages remained correct after refresh | The submission-to-status workflow is awaiting KAN-6 frontend integration. No new HTTP or database-row comparison. | Tristan |
 | To record at reviewed release | Statement/branch/function and acceptance-scenario metrics | Measured coverage report and agreed metric definitions to attach | Passing test counts are not a coverage percentage; explain exclusions against the release requirements. | Team to assign |
 
 Include normal, boundary, permission, conflict and failure scenarios where relevant. Explain any coverage shortfall against the course rubric, and distinguish scaffold checks from tests of completed business features.
