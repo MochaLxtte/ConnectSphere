@@ -19,6 +19,7 @@ The dev server runs at `http://127.0.0.1:5173` and fails clearly if that port is
 - Component and API contract tests for the connection checks and failure recovery.
 - Supabase sign-in, application session state and sign-out, backed by Express verification.
 - Coordinator review queue and detail, with approval/rejection controls and saved outcomes.
+- Coordinator-only review navigation and page access, with session-loading, signed-out and wrong-role states.
 - Organiser request list at `/events`, covering all owned statuses, refresh, empty/error states and session-expiry recovery.
 - Read-only organiser details at `/events/:id`, showing the current status and any recorded decision, reason and time.
 
@@ -66,6 +67,10 @@ The normal server mounts the queue, shared request-detail and decision-write han
 For production, serve `dist/` with a history fallback to `index.html` and route `/api/*` to the backend. The Vite proxy is development-only. The interface uses system-font fallbacks if the optional Google Fonts stylesheet is unavailable.
 
 ## KAN-36 decision panel
+
+`ReviewAccessPage.vue` protects both `/reviews` and `/reviews/:id`. It waits for session loading to finish and mounts the child page only for an event coordinator. Other users do not see review links in the sidebar or overview; direct navigation shows a sign-in or coordinator-only message. Account changes and sign-out unmount the previous child and cancel pending reads. A current API 401 clears the expired local session, and stale responses cannot restore a previous account's data. This page boundary preserves the shared backend's role-aware listing and detail contracts; organisers still use `/events` for their own requests.
+
+Component tests in `ReviewAccessPage.test.ts` and browser fixtures in `tests/e2e/review-access.spec.ts` cover these access and session transitions. The [test evidence](../docs/testing/test-evidence.md) records the review-queue defect and automated regression results under MAN-20260917-07 and AUTO-20260917-07/08. The hosted manual recheck remains pending.
 
 `src/features/reviews/components/ReviewDecisionPanel.vue` provides approval/rejection controls for a single event request. KAN-33's `ReviewRequestPage.vue` mounts it and supplies API calls and feedback; `ReviewQueuePage.vue` lists requests. The panel itself does not fetch requests, authenticate users or call the review endpoint.
 

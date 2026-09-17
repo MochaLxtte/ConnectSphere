@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 import AppIcon from '../../../components/AppIcon.vue';
+import { ApiError } from '../../../lib/api-client';
+import { clearLocalSession } from '../../auth/session.js';
 import { fetchReviewQueue } from '../api/submitted-requests';
 import type { ReviewQueueItem } from '../types';
 
@@ -22,6 +24,8 @@ async function load() {
     if (!current.signal.aborted) state.value = { status: 'ready', items };
   } catch (error) {
     if (!current.signal.aborted) {
+      // The parent access page unmounts this queue when the session expires.
+      if (error instanceof ApiError && error.status === 401) clearLocalSession();
       state.value = {
         status: 'error',
         message:

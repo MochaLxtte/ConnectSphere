@@ -36,10 +36,12 @@ async function handleSignOut(): Promise<void> {
         <RouterLink to="/events/new" exact-active-class="is-active" class="nav-link"
           ><AppIcon name="plus" />New event request</RouterLink
         >
-        <p class="nav-label">For coordinators</p>
-        <RouterLink to="/reviews" exact-active-class="is-active" class="nav-link"
-          ><AppIcon name="review" />Review queue</RouterLink
-        >
+        <template v-if="!authSession.loading && authSession.user?.role === 'EVENT_COORDINATOR'">
+          <p class="nav-label">For coordinators</p>
+          <RouterLink to="/reviews" exact-active-class="is-active" class="nav-link"
+            ><AppIcon name="review" />Review queue</RouterLink
+          >
+        </template>
       </nav>
 
       <div class="sidebar-note">

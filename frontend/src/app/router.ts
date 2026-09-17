@@ -4,6 +4,7 @@ import LoginPage from '../features/auth/pages/LoginPage.vue';
 import EventRequestsPage from '../features/events/pages/EventRequestsPage.vue';
 import EventRequestDetailPage from '../features/events/pages/EventRequestDetailPage.vue';
 import NewEventPage from '../features/events/pages/NewEventPage.vue';
+import ReviewAccessPage from '../features/reviews/pages/ReviewAccessPage.vue';
 import ReviewQueuePage from '../features/reviews/pages/ReviewQueuePage.vue';
 import ReviewRequestPage from '../features/reviews/pages/ReviewRequestPage.vue';
 import NotFoundPage from '../components/NotFoundPage.vue';
@@ -16,8 +17,13 @@ export const router = createRouter({
     { path: '/events', component: EventRequestsPage, meta: { title: 'Event requests' } },
     { path: '/events/new', component: NewEventPage, meta: { title: 'New event request' } },
     { path: '/events/:id', component: EventRequestDetailPage, meta: { title: 'Event request' } },
-    { path: '/reviews', component: ReviewQueuePage, meta: { title: 'Review queue' } },
-    { path: '/reviews/:id', component: ReviewRequestPage, meta: { title: 'Event request review' } },
+    {
+      path: '/reviews', component: ReviewAccessPage,
+      children: [
+        { path: '', component: ReviewQueuePage, meta: { title: 'Review queue' } },
+        { path: ':id', component: ReviewRequestPage, meta: { title: 'Event request review' } },
+      ],
+    },
     { path: '/:pathMatch(.*)*', component: NotFoundPage, meta: { title: 'Page not found' } },
   ],
   scrollBehavior: () => ({ top: 0 }),

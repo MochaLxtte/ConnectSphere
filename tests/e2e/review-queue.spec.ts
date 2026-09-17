@@ -3,6 +3,12 @@ import { expect, test } from '@playwright/test';
 test('KAN-33 review queue shows a service error and retries successfully', async ({ page }) => {
   // Browser-response fixtures exercise the page; live authentication is a separate integration.
   let available = false;
+  await page.route('**/api/auth/me', (route) => route.fulfill({ json: { user: {
+    id: '10000000-0000-4000-8000-000000000025',
+    email: 'coordinator@example.test',
+    displayName: 'Test coordinator',
+    role: 'EVENT_COORDINATOR',
+  } } }));
   await page.route('**/api/events', (route) => route.fulfill({
     status: available ? 200 : 503,
     contentType: 'application/json',
