@@ -97,8 +97,10 @@ There is now one GET registration for both supported roles. Runtime authenticati
 connected as recorded on 15 September below, along with the coordinator page's action and
 outcome display. KAN-16's organiser list/detail pages are connected, and approval/rejection
 outcome refresh passed on 17 September (MAN-20260917-01). The signed-out detail-page check
-also passed (MAN-20260917-02). Team contract review and hosted
-non-final status, submission-to-status, unrelated-owner and signed-out list checks remain pending.
+also passed (MAN-20260917-02), followed by Draft/Submitted detail statuses and their
+no-decision messages (MAN-20260917-03). Draft/Submitted list labels and refresh remain
+to be confirmed. Team contract review, submission-to-status, unrelated-owner and
+signed-out list checks remain pending; see [test evidence](../testing/test-evidence.md).
 
 **Decision and rationale:** `docs/architecture/api-contract.md`'s proposed-routes table lists
 `GET /api/events/:id` under three different owners (Kai Jie/KAN-34 draft retrieval,
@@ -332,6 +334,12 @@ KAN-16 Done; peer review, integration and remaining acceptance still need comple
 **Follow-up:** Reopening the copied request URL after sign-out showed a sign-in prompt,
 with no request details or review reason displayed (MAN-20260917-02). This records the
 detail-page behaviour; it does not establish signed-out list access or token revocation.
+
+**Draft/Submitted follow-up:** The organiser detail page showed `Test Event Request 4`
+as Draft with the not-submitted message, and `Test Event Request 3` as Submitted with
+no approval or rejection recorded (MAN-20260917-03). List labels and refresh remain
+to be confirmed. The remaining submission and access checks are tracked in the
+[test evidence record](../testing/test-evidence.md); this does not close KAN-16.
 
 ## Decision record template
 

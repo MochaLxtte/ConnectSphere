@@ -6,7 +6,7 @@ ConnectSphere uses one Git repository, one Vue frontend, one Express backend, Su
 
 The context diagram describes the intended first release. Sign-in, coordinator review/decision pages and organiser status/detail pages are implemented, with backend support for draft editing/submission and shared details. Organiser creation/editing/submission interfaces, clarification, assignment and later event-planning workflows remain incomplete; the diagram does not imply completion of those capabilities.
 
-The organiser's approved outcome and rejected status/reason remained visible after refresh in the 17 September hosted check (MAN-20260917-01). Reopening a request URL after sign-out showed a sign-in prompt without request details or the review reason (MAN-20260917-02). Non-final statuses, submission-to-status refresh, unrelated-owner reads and signed-out list access still need hosted checks; see [test evidence](../testing/test-evidence.md).
+The organiser's approved outcome and rejected status/reason remained visible after refresh in the 17 September hosted check (MAN-20260917-01). Reopening a request URL after sign-out showed a sign-in prompt without request details or the review reason (MAN-20260917-02). Draft and Submitted detail statuses and their no-decision messages also passed (MAN-20260917-03). Their list labels and refresh remain to be confirmed; submission-to-status, unrelated-owner and signed-out list checks remain in the [test evidence](../testing/test-evidence.md).
 
 ```mermaid
 flowchart LR
