@@ -66,7 +66,9 @@ test('KAN-16 organisers see all request statuses and refresh a changed outcome',
   }
   await expect(list.getByRole('link')).toHaveCount(requests.length);
   for (const [index, request] of requests.entries()) {
-    await expect(rows.nth(index).getByRole('link')).toHaveAttribute('href', `/events/${request.id}`);
+    // A draft links to its edit form; every other status links to the read-only detail view.
+    const expectedHref = request.status === 'DRAFT' ? `/events/${request.id}/edit` : `/events/${request.id}`;
+    await expect(rows.nth(index).getByRole('link')).toHaveAttribute('href', expectedHref);
   }
   approved = true;
   await page.getByRole('button', { name: 'Refresh', exact: true }).click();
