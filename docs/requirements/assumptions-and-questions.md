@@ -361,6 +361,63 @@ Approved for the four corresponding test requests, matching their detail pages
 (MAN-20260917-06). Draft/Submitted detail statuses and review messages also remained
 correct after refresh. The submission-to-status workflow remains in the [test evidence](../testing/test-evidence.md).
 
+## 19 September 2026 — Draft customer clarification for Q-03
+
+**Purpose:** This is not a decision. It packages the provisional KAN-6 assumption (13
+September 2026 entry above) into a concrete question so the next customer session can
+actually close Q-03, rather than leaving it open indefinitely behind a team-only default.
+
+**Proposed question for the customer:** "For an event request to move from Draft to
+Submitted, which of the following details must be filled in, and which are acceptable to
+leave blank until later (e.g. during coordinator review, clarification, or before
+approval)?"
+
+- Event name
+- Purpose
+- Start date/time
+- End date/time
+- Expected attendance
+- Venue requirements
+- Description
+- Accessibility needs
+- Equipment requirements
+- Whether registration is required
+
+**Current provisional default to present as the starting proposal (KAN-6, 13 September
+2026):** Mandatory — `name`, `purpose`, `startsAt`, `endsAt`, `expectedAttendance`,
+`venueRequirements`. May remain blank at submission — `description`, `accessibilityNeeds`,
+`equipmentRequirements`, `registrationRequired`.
+
+**Rationale to present alongside the proposal:** The six mandatory fields are the minimum a
+coordinator needs to judge feasibility — identity, justification, timing, scale and space.
+The four optional fields are either free-text detail or tied to questions Sprint 1 has not
+committed to answering (Q-08 venue suitability, Q-09 equipment tracking, Q-10 registration),
+and gaps in them can be closed later through the KAN-27 clarification-request flow instead
+of blocking submission outright.
+
+**Known risk to flag when presenting this default:** `accessibilityNeeds` is proposed as
+optional, but it is also the field most likely to affect venue suitability (Q-08). If
+venue-assignment logic ships before Q-08 is answered, an unset accessibility field could
+let an unsuitable venue be assigned without anyone having stated a need. Ask the customer
+directly whether accessibility needs should instead be mandatory, or whether "not stated"
+may be treated as "none."
+
+**Kind:** Draft clarification prepared for a customer discussion; does not close Q-03.
+Record the customer's actual answer as its own dated entry once received, and update Q-03's
+Status column in the table above from `Open` accordingly.
+
+**Source and date:** Kai Jie, 19 September 2026.
+
+**Affected story and acceptance-criterion IDs:** KAN-6-AC1, KAN-6-AC2, KAN-4-AC1,
+KAN-34-AC2.
+
+**Affected implementation and tests:** `backend/src/modules/events/submit-input.ts`,
+`backend/src/modules/events/submit-eligibility.ts`,
+`backend/test/events/submit-input.test.ts`.
+
+**Supersedes:** None — complements the 13 September 2026 KAN-6 entry; changes no code
+behavior on its own.
+
 ## Decision record template
 
 Copy this block when the team receives an answer or adopts an explicit implementation assumption. Keep superseded decisions so later changes remain explainable.
