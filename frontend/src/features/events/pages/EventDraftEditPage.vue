@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, reactive, ref, useId, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { ApiError } from '../../../lib/api-client';
 import { authSession, clearLocalSession } from '../../auth/session.js';
 import {
-  fetchEventRequestDetail, updateEventDraft,
+  fetchEventRequestDetail, submitEventRequest, updateEventDraft,
   type EventDraftUpdate, type EventRequestDetail,
 } from '../api/event-requests';
 import { fromSingaporeInputValue, toSingaporeInputValue } from '../presentation';
@@ -30,6 +30,7 @@ interface DraftForm {
 
 const id = useId();
 const route = useRoute();
+const router = useRouter();
 const requestId = computed(() => String(route.params.id ?? ''));
 const state = ref<LoadState>({ status: 'loading' });
 const form = reactive<DraftForm>({
@@ -39,6 +40,8 @@ const form = reactive<DraftForm>({
 const saving = ref(false);
 const saved = ref(false);
 const saveErrorMessage = ref<string | null>(null);
+const submitting = ref(false);
+const submitErrorMessage = ref<string | null>(null);
 let controller: AbortController | undefined;
 
 function populateForm(request: EventRequestDetail) {
@@ -117,26 +120,30 @@ function saveErrorText(error: unknown): string {
   }
 }
 
+function buildDraftUpdate(): EventDraftUpdate {
+  return {
+    name: emptyToNull(form.name),
+    purpose: emptyToNull(form.purpose),
+    description: emptyToNull(form.description),
+    startsAt: fromSingaporeInputValue(form.startsAt),
+    endsAt: fromSingaporeInputValue(form.endsAt),
+    expectedAttendance: parseAttendance(form.expectedAttendance),
+    venueRequirements: emptyToNull(form.venueRequirements),
+    accessibilityNeeds: emptyToNull(form.accessibilityNeeds),
+    equipmentRequirements: emptyToNull(form.equipmentRequirements),
+    registrationRequired: form.registrationRequired === '' ? null : form.registrationRequired === 'true',
+  };
+}
+
 async function save() {
-  if (state.value.status !== 'ready' || saving.value) return;
+  if (state.value.status !== 'ready' || saving.value || submitting.value) return;
   const current = state.value.request;
   saving.value = true;
   saved.value = false;
   saveErrorMessage.value = null;
+  submitErrorMessage.value = null;
   try {
-    const input: EventDraftUpdate = {
-      name: emptyToNull(form.name),
-      purpose: emptyToNull(form.purpose),
-      description: emptyToNull(form.description),
-      startsAt: fromSingaporeInputValue(form.startsAt),
-      endsAt: fromSingaporeInputValue(form.endsAt),
-      expectedAttendance: parseAttendance(form.expectedAttendance),
-      venueRequirements: emptyToNull(form.venueRequirements),
-      accessibilityNeeds: emptyToNull(form.accessibilityNeeds),
-      equipmentRequirements: emptyToNull(form.equipmentRequirements),
-      registrationRequired: form.registrationRequired === '' ? null : form.registrationRequired === 'true',
-    };
-    const updated = await updateEventDraft(current.id, input);
+    const updated = await updateEventDraft(current.id, buildDraftUpdate());
     populateForm(updated);
     state.value = updated.actions.canEditDraft
       ? { status: 'ready', request: updated } : { status: 'not-editable', request: updated };
@@ -150,6 +157,55 @@ async function save() {
     saveErrorMessage.value = saveErrorText(error);
   } finally {
     saving.value = false;
+  }
+}
+
+/** Submitting also persists the current form, so what gets reviewed matches what is on screen. */
+async function submitForReview() {
+  if (state.value.status !== 'ready' || saving.value || submitting.value) return;
+  const current = state.value.request;
+  submitting.value = true;
+  saved.value = false;
+  saveErrorMessage.value = null;
+  submitErrorMessage.value = null;
+
+  let updated: EventRequestDetail;
+  try {
+    updated = await updateEventDraft(current.id, buildDraftUpdate());
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 401) {
+      clearLocalSession();
+      showSignIn();
+      return;
+    }
+    saveErrorMessage.value = saveErrorText(error);
+    submitting.value = false;
+    return;
+  }
+  populateForm(updated);
+  if (!updated.actions.canEditDraft) {
+    // Another tab or session changed this request's state between load and submit.
+    state.value = { status: 'not-editable', request: updated };
+    submitting.value = false;
+    return;
+  }
+  state.value = { status: 'ready', request: updated };
+
+  try {
+    await submitEventRequest(updated.id);
+    await router.push(`/events/${updated.id}`);
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 401) {
+      clearLocalSession();
+      showSignIn();
+      return;
+    }
+    // The backend's own message is already safe to show and names the specific problem
+    // (e.g. which fields are missing), unlike the generic save-error mapping above.
+    submitErrorMessage.value = error instanceof ApiError
+      ? error.message : 'Your request could not be submitted. Please try again.';
+  } finally {
+    submitting.value = false;
   }
 }
 
@@ -188,8 +244,8 @@ onBeforeUnmount(() => controller?.abort());
     <RouterLink :to="`/events/${state.request.id}`" class="button button-secondary">View request</RouterLink>
   </div>
 
-  <form v-else class="panel edit-panel" :aria-busy="saving" @submit.prevent="save">
-    <fieldset :disabled="saving" class="draft-fields">
+  <form v-else class="panel edit-panel" :aria-busy="saving || submitting" @submit.prevent="save">
+    <fieldset :disabled="saving || submitting" class="draft-fields">
       <legend>Event details</legend>
 
       <label :for="`${id}-name`">Event name
@@ -232,13 +288,22 @@ onBeforeUnmount(() => controller?.abort());
     </fieldset>
 
     <p v-if="saveErrorMessage" class="save-error" role="alert">{{ saveErrorMessage }}</p>
+    <p v-if="submitErrorMessage" class="save-error" role="alert">{{ submitErrorMessage }}</p>
     <footer class="edit-actions">
-      <button type="submit" class="button button-primary" :disabled="saving">
+      <button type="submit" class="button button-primary" :disabled="saving || submitting">
         {{ saving ? 'Saving…' : 'Save draft' }}
       </button>
+      <button
+        type="button" class="button button-secondary" :disabled="saving || submitting"
+        @click="submitForReview"
+      >
+        {{ submitting ? 'Submitting…' : 'Submit for review' }}
+      </button>
       <p v-if="saving" role="status">Saving your draft. Please wait.</p>
+      <p v-else-if="submitting" role="status">Submitting your request for review. Please wait.</p>
       <p v-else-if="saved" role="status">Draft saved.</p>
     </footer>
+    <p class="field-hint submit-hint">Submitting also saves your current changes.</p>
   </form>
 </template>
 
@@ -260,6 +325,7 @@ onBeforeUnmount(() => controller?.abort());
 }
 .field-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 17px; }
 .field-hint { margin-top: -8px; font-size: 12px; color: #59685e; }
+.submit-hint { margin-top: 10px; }
 .save-error { color: #8a332b; font-size: 14px; line-height: 1.6; margin-top: 20px; }
 .edit-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 16px; margin-top: 24px; }
 .edit-actions p { color: #59685e; font-size: 13px; }

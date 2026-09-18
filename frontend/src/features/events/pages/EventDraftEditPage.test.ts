@@ -44,7 +44,9 @@ async function renderEditPage(id = 'a') {
   });
   await router.push(`/events/${id}/edit`);
   await router.isReady();
-  return { ...render(EventDraftEditPage, { global: { plugins: [router] } }), router };
+  // Mount through a real router-view so navigating away actually unmounts this page,
+  // instead of leaving it mounted and reacting to a route it no longer represents.
+  return { ...render({ template: '<router-view />' }, { global: { plugins: [router] } }), router };
 }
 
 beforeEach(() => {
@@ -189,5 +191,90 @@ describe('KAN-34 draft editing', () => {
     );
     expect(screen.queryByText('Sensitive server explanation.')).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Try again' })).not.toBeInTheDocument();
+  });
+});
+
+describe('KAN-6 submit for review from the draft editor', () => {
+  it('saves the current form, submits, and navigates to the read-only detail page', async () => {
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce(jsonResponse(draft))
+      .mockResolvedValueOnce(jsonResponse({ ...draft, venueRequirements: 'Hall B' }))
+      .mockResolvedValueOnce(jsonResponse({ id: 'a', organiserId: 'organiser-1', status: 'SUBMITTED' }));
+    vi.stubGlobal('fetch', fetchMock);
+    const { router } = await renderEditPage();
+    await screen.findByDisplayValue('Career fair');
+
+    await fireEvent.update(screen.getByLabelText('Venue requirements'), 'Hall B');
+    await fireEvent.click(screen.getByRole('button', { name: 'Submit for review' }));
+
+    await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(3));
+    const [patchPath, patchOptions] = fetchMock.mock.calls[1] as [string, RequestInit];
+    expect(patchPath).toBe('/api/events/a');
+    expect(patchOptions.method).toBe('PATCH');
+    expect(JSON.parse(patchOptions.body as string)).toMatchObject({ venueRequirements: 'Hall B' });
+    const [submitPath, submitOptions] = fetchMock.mock.calls[2] as [string, RequestInit];
+    expect(submitPath).toBe('/api/events/a/submit');
+    expect(submitOptions.method).toBe('POST');
+    await vi.waitFor(() => expect(router.currentRoute.value.fullPath).toBe('/events/a'));
+  });
+
+  it("shows the server's own missing-fields message and stays on the page without navigating", async () => {
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce(jsonResponse(draft))
+      .mockResolvedValueOnce(jsonResponse(draft))
+      .mockResolvedValueOnce(jsonResponse({
+        error: {
+          code: 'SUBMISSION_INCOMPLETE',
+          message: 'The following fields must be completed before submission: purpose.',
+          missingFields: ['purpose'],
+        },
+      }, 400));
+    vi.stubGlobal('fetch', fetchMock);
+    const { router } = await renderEditPage();
+    await screen.findByDisplayValue('Career fair');
+
+    await fireEvent.click(screen.getByRole('button', { name: 'Submit for review' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'The following fields must be completed before submission: purpose.',
+    );
+    expect(router.currentRoute.value.fullPath).toBe('/events/a/edit');
+    expect(screen.getByLabelText('Event name')).toBeInTheDocument();
+  });
+
+  it('never calls submit when persisting the current changes fails first', async () => {
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce(jsonResponse(draft))
+      .mockResolvedValueOnce(jsonResponse({
+        error: { code: 'DRAFT_NOT_EDITABLE', message: 'This event request is no longer a draft and cannot be edited.' },
+      }, 409));
+    vi.stubGlobal('fetch', fetchMock);
+    await renderEditPage();
+    await screen.findByDisplayValue('Career fair');
+
+    await fireEvent.click(screen.getByRole('button', { name: 'Submit for review' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'This request is no longer a draft and can no longer be edited here. Reload to see its current status.',
+    );
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it('clears identity and offers sign-in when submission fails with an expired session', async () => {
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce(jsonResponse(draft))
+      .mockResolvedValueOnce(jsonResponse(draft))
+      .mockResolvedValueOnce(jsonResponse({
+        error: { code: 'AUTHENTICATION_REQUIRED', message: 'Session expired.' },
+      }, 401));
+    vi.stubGlobal('fetch', fetchMock);
+    await renderEditPage();
+    await screen.findByDisplayValue('Career fair');
+
+    await fireEvent.click(screen.getByRole('button', { name: 'Submit for review' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('Sign in to edit this event request.');
+    expect(screen.getByRole('link', { name: 'Sign in' })).toHaveAttribute('href', '/login');
+    expect(session.user).toBeNull();
   });
 });
