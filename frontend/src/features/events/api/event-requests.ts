@@ -1,4 +1,4 @@
-import { getJson, patchJson } from '../../../lib/api-client';
+import { getJson, patchJson, postJson } from '../../../lib/api-client';
 import type { ReviewRequestDetail } from '../../reviews/types';
 
 /** Organiser and coordinator detail views share the same response contract. */
@@ -28,6 +28,17 @@ export function updateEventDraft(
   signal?: AbortSignal,
 ): Promise<EventRequestDetail> {
   return patchJson<EventRequestDetail>(`/api/events/${encodeURIComponent(id)}`, input, signal);
+}
+
+/** KAN-6: the plain event record returned by the submit endpoint (no `review`/`actions`). */
+export interface SubmittedEventRequest {
+  id: string;
+  organiserId: string;
+  status: string;
+}
+
+export function submitEventRequest(id: string, signal?: AbortSignal): Promise<SubmittedEventRequest> {
+  return postJson<SubmittedEventRequest>(`/api/events/${encodeURIComponent(id)}/submit`, {}, signal);
 }
 
 /** KAN-16: summary from the organiser's ownership-scoped list. */

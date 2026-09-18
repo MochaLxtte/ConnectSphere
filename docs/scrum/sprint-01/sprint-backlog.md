@@ -121,7 +121,7 @@ As an event organiser, I want to submit a complete draft for review so that a co
 | --- | --- |
 | S1-6-01 | Record agreed submission rules and allowed source/target states in `docs/architecture/api-contract.md`; add validation/transition functions under `backend/src/modules/events/` (new files). |
 | S1-6-02 | Implement the submit handler and atomic database update, including agreed repeat/concurrency behavior; coordinate the request shape with Irfan. |
-| S1-6-03 | Add submission and error feedback to the event form; implement S1-T14–S1-T17 against the real persistence path where required. |
+| S1-6-03 | Done, 19 September: `EventDraftEditPage.vue` (KAN-34's draft editor) gained a "Submit for review" action. It saves the current form via `PATCH /api/events/:id`, then calls `POST /api/events/:id/submit` and navigates to the read-only detail page on success; a submission error (e.g. incomplete required fields) shows the backend's own message and keeps the organiser on the form. 12 targeted frontend tests plus the full `npm run check` suite passed the same day; this is automated-fixture coverage only, not a hosted Supabase Auth browser walkthrough. S1-T14–S1-T17 hosted/PostgreSQL-integration coverage remains open. |
 
 ### KAN-33 — View submitted requests
 
