@@ -1,5 +1,18 @@
-import { getJson } from '../../../lib/api-client';
+import { getJson, postJson } from '../../../lib/api-client';
 import type { ReviewRequestDetail } from '../../reviews/types';
+import type { EventRequestDetail, SaveEventDraftInput } from '../types';
+
+/** Create event request or draft */
+export async function createEventRequest(
+  data: SaveEventDraftInput,
+  action: 'DRAFT' | 'SUBMIT' = 'DRAFT'
+): Promise<EventRequestDetail> {
+  const result = await postJson<{ request: EventRequestDetail }>('/api/events', {
+    action,
+    data,
+  });
+  return result.request;
+}
 
 /** Organiser and coordinator detail views share the same response contract. */
 export type EventRequestDetail = ReviewRequestDetail;

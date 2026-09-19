@@ -12,7 +12,7 @@ import {
 } from './submitted-requests.js';
 import { updateOwnedDraft, DraftRequestNotFoundError, type UpdateDraftDependencies } from './update-draft.js';
 import { DraftEligibilityError } from './draft-eligibility.js';
-import { DraftUpdateInputError } from './draft-update-input.js';
+import { DraftUpdateInputError, parseDraftUpdateInput } from './draft-update-input.js';
 import { submitEventRequest, SubmitRequestNotFoundError, type SubmitRequestDependencies } from './submit-request.js';
 import { SubmitEligibilityError } from './submit-eligibility.js';
 import { SubmissionValidationError } from './submit-input.js';
@@ -78,6 +78,101 @@ export function createSubmittedRequestsRouter(dependencies: SubmittedRequestsRou
       const items = await listReviewableRequests(dependencies, actor);
       response.status(200).json({ items });
     } catch (error) {
+      next(error);
+    }
+  });
+
+  router.post('/', async (request, response, next) => {
+    response.set('Cache-Control', 'no-store');
+    try {
+      const actor = await dependencies.authenticate(request);
+      if (!actor) {
+        response.status(401).json({
+          error: { code: 'AUTHENTICATION_REQUIRED', message: 'Sign in to create an event request.' },
+        });
+        return;
+      }
+
+      if (actor.role !== 'EVENT_ORGANISER') {
+        response.status(403).json({
+          error: { code: 'FORBIDDEN', message: 'Only Event Organisers can create event requests.' },
+        });
+        return;
+      }
+
+      const body = (request.body && typeof request.body === 'object') ? request.body : {};
+      const action = body.action === 'SUBMIT' ? 'SUBMITTED' : 'DRAFT';
+      const rawInput = body.data && typeof body.data === 'object' ? { ...body.data } : { ...body };
+      delete rawInput.action;
+
+      const parsedFields = Object.keys(rawInput).length > 0 ? parseDraftUpdateInput(rawInput) : {};
+
+      if (action === 'SUBMITTED') {
+        const required = ['name', 'purpose', 'startsAt', 'endsAt', 'expectedAttendance', 'venueRequirements'] as const;
+        for (const field of required) {
+          if (!parsedFields[field]) {
+            response.status(400).json({
+              error: { code: 'INVALID_INPUT', message: `Field '${field}' is required for submission.` },
+            });
+            return;
+          }
+        }
+      }
+
+      const result = await dependencies.pool.query(
+        `INSERT INTO event_requests (
+          organiser_id,
+          status,
+          name,
+          purpose,
+          description,
+          starts_at,
+          ends_at,
+          expected_attendance,
+          venue_requirements,
+          accessibility_needs,
+          equipment_requirements,
+          registration_required
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+        RETURNING
+          id,
+          organiser_id AS "organiserId",
+          coordinator_id AS "coordinatorId",
+          status,
+          name,
+          purpose,
+          description,
+          starts_at AS "startsAt",
+          ends_at AS "endsAt",
+          expected_attendance AS "expectedAttendance",
+          venue_requirements AS "venueRequirements",
+          accessibility_needs AS "accessibilityNeeds",
+          equipment_requirements AS "equipmentRequirements",
+          registration_required AS "registrationRequired",
+          created_at AS "createdAt",
+          updated_at AS "updatedAt"`,
+        [
+          actor.id,
+          action,
+          parsedFields.name ?? null,
+          parsedFields.purpose ?? null,
+          parsedFields.description ?? null,
+          parsedFields.startsAt ?? null,
+          parsedFields.endsAt ?? null,
+          parsedFields.expectedAttendance ?? null,
+          parsedFields.venueRequirements ?? null,
+          parsedFields.accessibilityNeeds ?? null,
+          parsedFields.equipmentRequirements ?? null,
+          parsedFields.registrationRequired ?? null,
+        ],
+      );
+
+      response.status(201).json({ request: result.rows[0] });
+    } catch (error) {
+      if (error instanceof DraftUpdateInputError) {
+        response.status(400).json({ error: { code: 'INVALID_INPUT', message: error.message } });
+        return;
+      }
       next(error);
     }
   });
