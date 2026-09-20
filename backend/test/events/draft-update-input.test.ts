@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseDraftUpdateInput, DraftUpdateInputError } from '../../src/modules/events/draft-update-input.js';
+import { parseDraftCreateInput, parseDraftUpdateInput, DraftUpdateInputError } from '../../src/modules/events/draft-update-input.js';
 
 describe('KAN-34 draft update input', () => {
   it('accepts a single valid field', () => {
@@ -83,4 +83,72 @@ describe('KAN-34 draft update input', () => {
       'registrationRequired must be true, false or null.',
     );
   });
+
+  it('accepts the registration settings together', () => {
+    const input = {
+      registrationRequired: true, registrationCapacity: 120,
+      registrationOpensAt: '2026-09-20T01:00:00.000Z', registrationClosesAt: '2026-09-30T15:59:00.000Z',
+    };
+    expect(parseDraftUpdateInput(input)).toEqual(input);
+  });
+
+  it.each(['registrationCapacity', 'registrationOpensAt', 'registrationClosesAt'])(
+    'accepts an explicit null for %s to clear it',
+    (field) => {
+      expect(parseDraftUpdateInput({ [field]: null })).toEqual({ [field]: null });
+    },
+  );
+
+  it('accepts a registration capacity of zero', () => {
+    expect(parseDraftUpdateInput({ registrationCapacity: 0 })).toEqual({ registrationCapacity: 0 });
+  });
+
+  it.each([-1, 1.5, '50', true, 2_147_483_648])(
+    'rejects an invalid registrationCapacity: %j',
+    (registrationCapacity) => {
+      expect(() => parseDraftUpdateInput({ registrationCapacity })).toThrow(
+        'registrationCapacity must be a non-negative whole number or null.',
+      );
+    },
+  );
+
+  it('rejects an expectedAttendance the database cannot store', () => {
+    expect(() => parseDraftUpdateInput({ expectedAttendance: 2_147_483_648 })).toThrow(
+      'expectedAttendance must be a non-negative whole number or null.',
+    );
+  });
+
+  it.each(['registrationOpensAt', 'registrationClosesAt'])('rejects an invalid %s', (field) => {
+    for (const value of ['not-a-date', '', 42, true]) {
+      expect(() => parseDraftUpdateInput({ [field]: value })).toThrow(
+        `${field} must be an ISO 8601 date-time string or null.`,
+      );
+    }
+  });
+});
+
+describe('CF-02 draft creation input', () => {
+  it.each([undefined, {}])('allows a new draft to start empty: %j', (body) => {
+    expect(parseDraftCreateInput(body)).toEqual({});
+  });
+
+  it('applies the draft update rules to supplied fields', () => {
+    expect(parseDraftCreateInput({ name: 'Career Fair', expectedAttendance: 250 })).toEqual({
+      name: 'Career Fair', expectedAttendance: 250,
+    });
+    expect(() => parseDraftCreateInput({ name: 42 })).toThrow('name must be text or null.');
+  });
+
+  it.each([null, [], 'name', 42, true])('rejects a non-object body: %j', (body) => {
+    expect(() => parseDraftCreateInput(body)).toThrow(DraftUpdateInputError);
+  });
+
+  it.each(['id', 'organiserId', 'coordinatorId', 'status', 'createdAt', 'updatedAt'])(
+    'rejects a caller-supplied %s field',
+    (field) => {
+      expect(() => parseDraftCreateInput({ name: 'Career Fair', [field]: 'forged' })).toThrow(
+        `Unsupported field: ${field}.`,
+      );
+    },
+  );
 });

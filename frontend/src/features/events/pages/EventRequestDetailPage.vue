@@ -3,8 +3,11 @@ import { computed, onBeforeUnmount, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { ApiError } from '../../../lib/api-client';
 import { authSession, clearLocalSession } from '../../auth/session.js';
-import { fetchEventRequestDetail, type EventRequestDetail } from '../api/event-requests';
+import {
+  fetchEventRequestDetail, submitRequest, SubmissionIncompleteError, type EventRequestDetail,
+} from '../api/event-requests';
 import { eventStatusLabel, formatEventTime } from '../presentation';
+import EventPlanningPanels from '../components/EventPlanningPanels.vue';
 
 type LoadState =
   | { status: 'loading' }
@@ -14,7 +17,14 @@ type LoadState =
 const route = useRoute();
 const requestId = computed(() => String(route.params.id ?? ''));
 const state = ref<LoadState>({ status: 'loading' });
+const submitting = ref(false);
+const submitError = ref('');
 let controller: AbortController | undefined;
+
+const submitFieldLabels = new Map([
+  ['name', 'Event name'], ['purpose', 'Purpose'], ['startsAt', 'Starts'], ['endsAt', 'Ends'],
+  ['expectedAttendance', 'Expected attendance'], ['venueRequirements', 'Venue requirements'],
+]);
 
 function showSignIn() {
   controller?.abort();
@@ -30,6 +40,8 @@ async function load() {
   controller = current;
   // Clear the previous request before rechecking access or switching accounts.
   state.value = { status: 'loading' };
+  submitting.value = false;
+  submitError.value = '';
   try {
     const request = await fetchEventRequestDetail(requestId.value, current.signal);
     if (!current.signal.aborted) state.value = { status: 'ready', request };
@@ -47,6 +59,43 @@ async function load() {
         ? 'This event request is unavailable or you do not have permission to view it.'
         : 'This event request could not be loaded. Please try again.',
     };
+  }
+}
+
+/** After a panel saves, update the status and outcome without unmounting the panels. */
+async function refreshQuietly() {
+  const current = controller;
+  try {
+    const request = await fetchEventRequestDetail(requestId.value, current?.signal);
+    if (!current?.signal.aborted && state.value.status === 'ready') state.value = { status: 'ready', request };
+  } catch {
+    if (!current?.signal.aborted) await load();
+  }
+}
+
+async function submitForReview() {
+  if (state.value.status !== 'ready' || submitting.value) return;
+  const current = controller;
+  submitting.value = true;
+  submitError.value = '';
+  try {
+    await submitRequest(state.value.request.id, current?.signal);
+    // Show the persisted status and actions rather than assuming them.
+    if (!current?.signal.aborted) await load();
+  } catch (error) {
+    if (current?.signal.aborted) return;
+    submitting.value = false;
+    if (error instanceof ApiError && error.status === 401) {
+      clearLocalSession();
+      showSignIn();
+    } else if (error instanceof SubmissionIncompleteError) {
+      const missing = error.missingFields.map((field) => submitFieldLabels.get(field) ?? field);
+      submitError.value = `Edit the draft to complete these details before submitting: ${missing.join(', ')}.`;
+    } else if (error instanceof ApiError && [404, 409].includes(error.status)) {
+      submitError.value = 'This request can no longer be submitted. Refresh to see its latest status.';
+    } else {
+      submitError.value = 'We could not confirm that the request was submitted. Refresh it before trying again.';
+    }
   }
 }
 
@@ -100,6 +149,13 @@ onBeforeUnmount(() => controller?.abort());
         <dt>Equipment requirements</dt><dd>{{ state.request.equipmentRequirements?.trim() || 'Not provided' }}</dd>
         <dt>Registration required</dt><dd>{{ state.request.registrationRequired == null ? 'Not provided' : state.request.registrationRequired ? 'Yes' : 'No' }}</dd>
       </dl>
+      <div v-if="state.request.status === 'DRAFT' && state.request.actions.canEditDraft" class="draft-actions">
+        <RouterLink :to="`/events/${state.request.id}/edit`" class="button button-secondary">Edit draft</RouterLink>
+        <button type="button" class="button button-primary" :disabled="submitting" @click="submitForReview">
+          {{ submitting ? 'Submitting…' : 'Submit for review' }}
+        </button>
+        <p v-if="submitError" class="draft-error" role="alert">{{ submitError }}</p>
+      </div>
     </section>
 
     <section class="panel detail-panel outcome-panel" aria-labelledby="review-outcome-heading">
@@ -112,6 +168,17 @@ onBeforeUnmount(() => controller?.abort());
       <p v-else class="outcome-message">{{ missingReviewMessage(state.request.status) }}</p>
     </section>
   </div>
+
+  <EventPlanningPanels
+    v-if="state.status === 'ready' && state.request.status !== 'DRAFT'"
+    :event-request-id="state.request.id"
+    :status="state.request.status"
+    :viewer-role="authSession.user?.role ?? 'EVENT_ORGANISER'"
+    :is-owner="true"
+    :starts-at="state.request.startsAt"
+    :ends-at="state.request.endsAt"
+    @changed="refreshQuietly"
+  />
 </template>
 
 <style scoped>
@@ -126,6 +193,10 @@ dt { color: #59685e; }
 dd { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
 .request-fields { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr); gap: 16px 20px; }
 .status-value { font-weight: 650; }
+.draft-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; border-top: 1px solid var(--border); margin-top: 24px; padding-top: 20px; }
+.draft-actions .button { font-size: 14px; padding: 11px 16px; }
+.draft-actions button:disabled { cursor: not-allowed; opacity: 0.6; }
+.draft-error { flex-basis: 100%; color: #8a332b; font-size: 14px; }
 .outcome-fields dt:not(:first-child) { margin-top: 20px; }
 .outcome-fields dd { margin-top: 6px; }
 .outcome-value { display: inline-block; border-radius: 20px; padding: 6px 12px; font-weight: 650; }

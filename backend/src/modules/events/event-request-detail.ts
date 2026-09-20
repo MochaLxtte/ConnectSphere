@@ -1,8 +1,9 @@
 import type { EventRecord } from './types.js';
+import type { DraftRegistrationFields } from './draft-update-input.js';
 import type { ReviewActor, ReviewPersistenceDependencies, SavedReview } from './review-decision.js';
 import type { SubmittedRequestQueryDependencies } from './submitted-requests.js';
 
-export interface EventRequestDetail extends EventRecord {
+export interface EventRequestDetail extends EventRecord, DraftRegistrationFields {
   review: (SavedReview & { createdAt: string }) | null;
   actions: { canEditDraft: boolean; canMakeInitialDecision: boolean };
 }
@@ -21,6 +22,9 @@ export class EventRequestNotFoundError extends Error {
 }
 
 type DetailRow = Omit<EventRecord, 'startsAt' | 'endsAt' | 'createdAt' | 'updatedAt'> & {
+  registrationCapacity: number | null;
+  registrationOpensAt: Date | string | null;
+  registrationClosesAt: Date | string | null;
   startsAt: Date | string | null;
   endsAt: Date | string | null;
   createdAt: Date | string;
@@ -50,6 +54,9 @@ export async function getEventRequestDetail(
         e.expected_attendance AS "expectedAttendance", e.venue_requirements AS "venueRequirements",
         e.accessibility_needs AS "accessibilityNeeds", e.equipment_requirements AS "equipmentRequirements",
         e.registration_required AS "registrationRequired",
+        e.registration_capacity AS "registrationCapacity",
+        e.registration_opens_at AS "registrationOpensAt",
+        e.registration_closes_at AS "registrationClosesAt",
         e.created_at AS "createdAt", e.updated_at AS "updatedAt",
         (SELECT json_build_object(
           'reviewId', r.id, 'eventRequestId', r.event_request_id, 'reviewedBy', r.reviewed_by,
@@ -72,13 +79,15 @@ export async function getEventRequestDetail(
 
     // Viewing permission never grants write permission. POST rechecks under its row lock.
     const canMakeInitialDecision = actor.role === 'EVENT_COORDINATOR'
-      && row.status === 'SUBMITTED' && row.review === null
+      && (row.status === 'SUBMITTED' || row.status === 'UNDER_REVIEW') && row.review === null
       && await canReviewRequest(actor, row, client);
 
     return {
       ...row,
       startsAt: row.startsAt === null ? null : iso(row.startsAt),
       endsAt: row.endsAt === null ? null : iso(row.endsAt),
+      registrationOpensAt: row.registrationOpensAt === null ? null : iso(row.registrationOpensAt),
+      registrationClosesAt: row.registrationClosesAt === null ? null : iso(row.registrationClosesAt),
       createdAt: iso(row.createdAt),
       updatedAt: iso(row.updatedAt),
       review: row.review === null ? null : { ...row.review, createdAt: iso(row.review.createdAt) },
