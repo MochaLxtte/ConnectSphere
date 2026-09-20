@@ -60,7 +60,17 @@ export async function getJson<T>(path: `/api/${string}`, signal?: AbortSignal): 
 }
 
 /** Keep calls same-origin; Vite proxies /api to Express during development. */
-export async function postJson<T>(
+export function postJson<T>(path: `/api/${string}`, body: unknown, signal?: AbortSignal): Promise<T> {
+  return sendJson<T>('POST', path, body, signal);
+}
+
+/** Keep calls same-origin; Vite proxies /api to Express during development. */
+export function patchJson<T>(path: `/api/${string}`, body: unknown, signal?: AbortSignal): Promise<T> {
+  return sendJson<T>('PATCH', path, body, signal);
+}
+
+async function sendJson<T>(
+  method: 'POST' | 'PATCH',
   path: `/api/${string}`,
   body: unknown,
   signal?: AbortSignal,
@@ -68,7 +78,7 @@ export async function postJson<T>(
   let response: Response;
   try {
     response = await fetch(path, {
-      method: 'POST',
+      method,
       headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
       signal,

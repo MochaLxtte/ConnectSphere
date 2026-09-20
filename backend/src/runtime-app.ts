@@ -28,5 +28,6 @@ export function createRuntimeApp({
     auth: { database: pool, supabaseAuth, isProduction },
     submittedRequests: events,
     reviews: events,
+    workspace: { pool, authenticate: events.authenticate },
   });
 }

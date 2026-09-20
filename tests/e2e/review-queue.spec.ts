@@ -9,6 +9,7 @@ test('KAN-33 review queue shows a service error and retries successfully', async
     displayName: 'Test coordinator',
     role: 'EVENT_COORDINATOR',
   } } }));
+  await page.route('**/api/notifications/unread-count', (route) => route.fulfill({ json: { unreadCount: 0 } }));
   await page.route('**/api/events', (route) => route.fulfill({
     status: available ? 200 : 503,
     contentType: 'application/json',

@@ -33,7 +33,7 @@ test('SCF-E2E-01 browser reaches the API and migrated database through the Vite 
   );
 });
 
-test('SCF-E2E-02 navigation reaches organiser login guidance and the unfinished creation page', async ({ page }) => {
+test('SCF-E2E-02 navigation reaches organiser login guidance and the creation page', async ({ page }) => {
   await page.goto('/');
   const navigation = page.getByRole('navigation', { name: 'Main navigation' });
   await navigation.getByRole('link', { name: 'Event requests', exact: true }).click();
@@ -43,8 +43,8 @@ test('SCF-E2E-02 navigation reaches organiser login guidance and the unfinished 
 
   await navigation.getByRole('link', { name: 'New event request', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'New event request', exact: true, level: 1 })).toBeVisible();
-  await expect(page.getByText('This is a scaffold. This feature is not implemented yet.')).toBeVisible();
-  await page.getByRole('link', { name: 'Sign in', exact: true }).click();
+  await expect(page.getByText('Sign in to create an event request.', { exact: true })).toBeVisible();
+  await page.getByRole('alert').getByRole('link', { name: 'Sign in', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Welcome to ConnectSphere' })).toBeVisible();
   await expect(page.getByLabel('Email address')).toBeVisible();
   await expect(page.getByLabel('Password', { exact: true })).toBeVisible();

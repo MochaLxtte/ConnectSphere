@@ -80,11 +80,13 @@ describe('KAN-16 organiser event request list', () => {
     const list = await screen.findByRole('list', { name: 'Your event requests' });
     const rows = within(list).getAllByRole('listitem');
     expect(rows).toHaveLength(6);
-    statuses.forEach(([, label], index) => {
+    statuses.forEach(([status, label], index) => {
       expect(rows[index]).toHaveTextContent(`Event ${index}`);
       expect(within(rows[index]!).getByText(label!)).toBeInTheDocument();
+      // A draft links to its edit form; every other status links to the read-only detail view.
+      const expectedHref = status === 'DRAFT' ? `/events/${index}/edit` : `/events/${index}`;
       expect(within(rows[index]!).getByRole('link', { name: `Event ${index}` }))
-        .toHaveAttribute('href', `/events/${index}`);
+        .toHaveAttribute('href', expectedHref);
     });
     expect(within(list).queryByRole('button')).not.toBeInTheDocument();
     expect(screen.queryByRole('radio')).not.toBeInTheDocument();

@@ -6,6 +6,9 @@ export const EVENT_STATUSES = [
   'CLARIFICATION_REQUESTED',
   'APPROVED',
   'REJECTED',
+  'CONFIRMED',
+  'CANCELLED',
+  'COMPLETED',
 ] as const;
 
 export type EventStatus = (typeof EVENT_STATUSES)[number];

@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { fulfilWorkspaceRead } from './workspace-fixtures.js';
 
 const requestId = '10000000-0000-4000-8000-000000000033';
 const coordinator = {
@@ -59,7 +60,9 @@ async function reviewFixtures(page: Page, initialUser: typeof coordinator | null
       await route.fulfill({ json: { items: [detail] } });
     } else if (request.method() === 'GET' && path === `/api/events/${requestId}`) {
       await route.fulfill({ json: detail });
-    } else {
+    } else if (request.method() === 'GET' && path === '/api/events/unassigned') {
+      await route.fulfill({ json: { items: [{ ...detail, organiserName: 'Test organiser' }] } });
+    } else if (!(await fulfilWorkspaceRead(route, request))) {
       unexpectedRequests.push(`${request.method()} ${path}`);
       await route.fulfill({ status: 501, json: {
         error: { code: 'UNEXPECTED_TEST_REQUEST', message: 'No response fixture was configured.' },
@@ -70,9 +73,9 @@ async function reviewFixtures(page: Page, initialUser: typeof coordinator | null
 }
 
 for (const scenario of [
-  { label: 'organiser', user: organiser, reviewLinks: 0 },
-  { label: 'signed-out visitor', user: null, reviewLinks: 0 },
-  { label: 'coordinator', user: coordinator, reviewLinks: 1 },
+  { label: 'organiser', user: organiser, reviewLinks: 0, organiserLinks: 1 },
+  { label: 'signed-out visitor', user: null, reviewLinks: 0, organiserLinks: 1 },
+  { label: 'coordinator', user: coordinator, reviewLinks: 1, organiserLinks: 0 },
 ]) {
   test(`KAN-25 dashboard review navigation matches ${scenario.label} access`, async ({ page }) => {
     const fixture = await reviewFixtures(page, scenario.user);
@@ -84,13 +87,15 @@ for (const scenario of [
       .getByRole('link', { name: 'Review queue', exact: true })).toHaveCount(scenario.reviewLinks);
     await expect(page.getByRole('link', { name: /Review event requests/ })).toHaveCount(scenario.reviewLinks);
     await expect(page.getByRole('navigation', { name: 'Main navigation' })
-      .getByRole('link', { name: 'Event requests', exact: true })).toBeVisible();
+      .getByRole('link', { name: 'Unassigned requests', exact: true })).toHaveCount(scenario.reviewLinks);
+    await expect(page.getByRole('navigation', { name: 'Main navigation' })
+      .getByRole('link', { name: 'Event requests', exact: true })).toHaveCount(scenario.organiserLinks);
     expect(fixture.eventCalls).toEqual([]);
     expect(fixture.unexpectedRequests).toEqual([]);
   });
 }
 
-for (const path of ['/reviews', `/reviews/${requestId}`]) {
+for (const path of ['/reviews', '/reviews/unassigned', `/reviews/${requestId}`]) {
   test(`KAN-25/KAN-33 organiser cannot open ${path} or load review data`, async ({ page }) => {
     const fixture = await reviewFixtures(page, organiser);
     await page.goto(path);
@@ -130,8 +135,13 @@ for (const path of ['/reviews', `/reviews/${requestId}`]) {
     await expect(page.getByText(detail.name, { exact: true })).toBeVisible();
     await expect(page.getByRole('navigation', { name: 'Main navigation' })
       .getByRole('link', { name: 'Review queue', exact: true })).toBeVisible();
-    expect(fixture.eventCalls).toHaveLength(1);
-    if (path !== '/reviews') await expect(page.getByRole('radio')).toHaveCount(2);
+    const expectedReads = path === '/reviews' ? ['GET /api/events']
+      : path === '/reviews/unassigned' ? ['GET /api/events/unassigned', 'GET /api/events/coordinators']
+        : [`GET /api/events/${requestId}`, `GET /api/events/${requestId}/assignments`,
+          'GET /api/events/coordinators', `GET /api/events/${requestId}/clarifications`,
+          `GET /api/events/${requestId}/history`];
+    await expect.poll(() => [...fixture.eventCalls].sort()).toEqual(expectedReads.sort());
+    if (path === `/reviews/${requestId}`) await expect(page.getByRole('radio')).toHaveCount(2);
 
     await page.getByRole('button', { name: 'Sign out', exact: true }).click();
     await expect(page.getByRole('heading', { name: 'Sign in required', level: 1 })).toBeVisible();
@@ -140,7 +150,7 @@ for (const path of ['/reviews', `/reviews/${requestId}`]) {
     await expect(page.getByRole('radio')).toHaveCount(0);
     await expect(page.getByRole('navigation', { name: 'Main navigation' })
       .getByRole('link', { name: 'Review queue', exact: true })).toHaveCount(0);
-    expect(fixture.eventCalls).toHaveLength(1);
+    expect([...fixture.eventCalls].sort()).toEqual(expectedReads.sort());
     expect(fixture.unexpectedRequests).toEqual([]);
   });
 }

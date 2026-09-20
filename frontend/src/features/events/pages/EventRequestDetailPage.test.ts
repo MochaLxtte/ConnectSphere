@@ -73,7 +73,7 @@ async function renderDetail(id = 'a') {
   });
   await router.push(`/events/${id}`);
   await router.isReady();
-  return { ...render(EventRequestDetailPage, { global: { plugins: [router] } }), router };
+  return { ...render(EventRequestDetailPage, { global: { plugins: [router], stubs: { EventPlanningPanels: true } } }), router };
 }
 
 beforeEach(() => {
@@ -292,5 +292,96 @@ describe('KAN-16 organiser event request details', () => {
     await resolveResponse(pending, jsonResponse(decidedDetail()));
     expect(screen.queryByText('Suitable event.')).not.toBeInTheDocument();
     expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  describe('CF-03/CF-07 draft actions', () => {
+    const draft: ReviewRequestDetail = {
+      ...detail, status: 'DRAFT', actions: { canEditDraft: true, canMakeInitialDecision: false },
+    };
+
+    it('offers editing and submission only for an editable draft', async () => {
+      vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonResponse(draft)));
+      await renderDetail();
+
+      expect(await screen.findByRole('link', { name: 'Edit draft' })).toHaveAttribute('href', '/events/a/edit');
+      expect(screen.getByRole('button', { name: 'Submit for review' })).toBeEnabled();
+    });
+
+    it('hides the draft actions when the server does not allow editing', async () => {
+      const readOnly = { ...draft, actions: { canEditDraft: false, canMakeInitialDecision: false } };
+      vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonResponse(readOnly)));
+      await renderDetail();
+      await screen.findByRole('heading', { name: 'Career fair' });
+
+      expect(screen.queryByRole('link', { name: 'Edit draft' })).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: 'Submit for review' })).not.toBeInTheDocument();
+    });
+
+    it('submits the draft once and then shows the persisted status', async () => {
+      const pending = deferredResponse();
+      const fetchMock = vi.fn()
+        .mockResolvedValueOnce(jsonResponse(draft))
+        .mockReturnValueOnce(pending.promise)
+        .mockResolvedValueOnce(jsonResponse(detail));
+      vi.stubGlobal('fetch', fetchMock);
+      await renderDetail();
+
+      await fireEvent.click(await screen.findByRole('button', { name: 'Submit for review' }));
+      const busy = screen.getByRole('button', { name: 'Submitting…' });
+      expect(busy).toBeDisabled();
+      await fireEvent.click(busy);
+      await resolveResponse(pending, jsonResponse({ ...draft, status: 'SUBMITTED' }));
+
+      await waitFor(() => expect(field('Status')).toHaveTextContent('Submitted'));
+      expect(fetchMock).toHaveBeenCalledTimes(3);
+      expect(fetchMock.mock.calls[1]?.[0]).toBe('/api/events/a/submit');
+      expect(fetchMock.mock.calls[1]?.[1]).toMatchObject({ method: 'POST' });
+      expect(screen.queryByRole('button', { name: 'Submit for review' })).not.toBeInTheDocument();
+    });
+
+    it('names the missing details and keeps the draft actions when submission is incomplete', async () => {
+      vi.stubGlobal('fetch', vi.fn()
+        .mockResolvedValueOnce(jsonResponse(draft))
+        .mockResolvedValueOnce(jsonResponse({
+          error: { code: 'SUBMISSION_INCOMPLETE', message: 'Incomplete.', missingFields: ['purpose', 'endsAt'] },
+        }, 400)));
+      await renderDetail();
+
+      await fireEvent.click(await screen.findByRole('button', { name: 'Submit for review' }));
+
+      expect(await screen.findByRole('alert')).toHaveTextContent(
+        'Edit the draft to complete these details before submitting: Purpose, Ends.',
+      );
+      expect(screen.getByRole('button', { name: 'Submit for review' })).toBeEnabled();
+      expect(screen.getByRole('link', { name: 'Edit draft' })).toBeInTheDocument();
+    });
+
+    it('asks for a refresh when the request can no longer be submitted', async () => {
+      vi.stubGlobal('fetch', vi.fn()
+        .mockResolvedValueOnce(jsonResponse(draft))
+        .mockResolvedValueOnce(jsonResponse({
+          error: { code: 'REQUEST_NOT_SUBMITTABLE', message: 'Not a draft.' },
+        }, 409)));
+      await renderDetail();
+
+      await fireEvent.click(await screen.findByRole('button', { name: 'Submit for review' }));
+
+      expect(await screen.findByRole('alert')).toHaveTextContent('This request can no longer be submitted.');
+    });
+
+    it('clears the session and offers sign-in when submission returns 401', async () => {
+      vi.stubGlobal('fetch', vi.fn()
+        .mockResolvedValueOnce(jsonResponse(draft))
+        .mockResolvedValueOnce(jsonResponse({
+          error: { code: 'AUTHENTICATION_REQUIRED', message: 'Sign in.' },
+        }, 401)));
+      await renderDetail();
+
+      await fireEvent.click(await screen.findByRole('button', { name: 'Submit for review' }));
+
+      expect(await screen.findByRole('link', { name: 'Sign in' })).toHaveAttribute('href', '/login');
+      expect(session.user).toBeNull();
+      expect(screen.queryByRole('heading', { name: 'Career fair' })).not.toBeInTheDocument();
+    });
   });
 });

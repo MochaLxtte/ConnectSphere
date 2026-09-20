@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { fulfilWorkspaceRead } from './workspace-fixtures.js';
 
 const user = {
   id: '10000000-0000-4000-8000-000000000031',
@@ -36,7 +37,7 @@ async function fixtureList(page: Page, respond: () => ListResponse) {
     } else if (request.method() === 'GET' && url.pathname === '/api/events' && url.search === '?scope=all') {
       const response = respond();
       await route.fulfill({ status: response.status ?? 200, json: response.body });
-    } else {
+    } else if (!(await fulfilWorkspaceRead(route, request))) {
       unexpectedRequests.push(`${request.method()} ${url.pathname}${url.search}`);
       await route.fulfill({ status: 501, json: {
         error: { code: 'UNEXPECTED_TEST_REQUEST', message: 'No response fixture was configured.' },
@@ -66,7 +67,9 @@ test('KAN-16 organisers see all request statuses and refresh a changed outcome',
   }
   await expect(list.getByRole('link')).toHaveCount(requests.length);
   for (const [index, request] of requests.entries()) {
-    await expect(rows.nth(index).getByRole('link')).toHaveAttribute('href', `/events/${request.id}`);
+    // A draft links to its edit form; every other status links to the read-only detail view.
+    const expectedHref = request.status === 'DRAFT' ? `/events/${request.id}/edit` : `/events/${request.id}`;
+    await expect(rows.nth(index).getByRole('link')).toHaveAttribute('href', expectedHref);
   }
   approved = true;
   await page.getByRole('button', { name: 'Refresh', exact: true }).click();

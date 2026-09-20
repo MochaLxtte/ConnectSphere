@@ -1,7 +1,9 @@
 import type { Pool } from 'pg';
 import type { AuthenticatedUser } from '../auth/types.js';
-import type { EventRecord, SaveEventDraftInput } from './types.js';
-import { parseDraftUpdateInput } from './draft-update-input.js';
+import type { EventRecord } from './types.js';
+import {
+  parseDraftUpdateInput, type DraftRegistrationFields, type DraftUpdateInput,
+} from './draft-update-input.js';
 import { assertCanEditDraft, DraftEligibilityError } from './draft-eligibility.js';
 
 export type DraftActor = Pick<AuthenticatedUser, 'id' | 'role'>;
@@ -26,16 +28,21 @@ export class DraftRequestNotFoundError extends Error {
   }
 }
 
-type DraftRow = Omit<EventRecord, 'startsAt' | 'endsAt' | 'createdAt' | 'updatedAt'> & {
-  startsAt: Date | string | null;
-  endsAt: Date | string | null;
+/** The flat event shape returned by draft writes, including the CF-18 registration settings. */
+export type DraftEventRecord = EventRecord & DraftRegistrationFields;
+
+type DraftDateField = 'startsAt' | 'endsAt' | 'registrationOpensAt' | 'registrationClosesAt';
+
+export type DraftRow = Omit<DraftEventRecord, DraftDateField | 'createdAt' | 'updatedAt'> & {
+  [field in DraftDateField]: Date | string | null;
+} & {
   createdAt: Date | string;
   updatedAt: Date | string;
 };
 
 const iso = (value: Date | string): string => new Date(value).toISOString();
 
-const columnByField: Record<keyof SaveEventDraftInput, string> = {
+export const draftColumnByField: Record<keyof DraftUpdateInput, string> = {
   name: 'name',
   purpose: 'purpose',
   description: 'description',
@@ -46,22 +53,29 @@ const columnByField: Record<keyof SaveEventDraftInput, string> = {
   accessibilityNeeds: 'accessibility_needs',
   equipmentRequirements: 'equipment_requirements',
   registrationRequired: 'registration_required',
+  registrationCapacity: 'registration_capacity',
+  registrationOpensAt: 'registration_opens_at',
+  registrationClosesAt: 'registration_closes_at',
 };
 
-const selectColumns = `
+export const draftSelectColumns = `
   id, organiser_id AS "organiserId", coordinator_id AS "coordinatorId", status,
   name, purpose, description, starts_at AS "startsAt", ends_at AS "endsAt",
   expected_attendance AS "expectedAttendance", venue_requirements AS "venueRequirements",
   accessibility_needs AS "accessibilityNeeds", equipment_requirements AS "equipmentRequirements",
   registration_required AS "registrationRequired",
+  registration_capacity AS "registrationCapacity",
+  registration_opens_at AS "registrationOpensAt", registration_closes_at AS "registrationClosesAt",
   created_at AS "createdAt", updated_at AS "updatedAt"
 `;
 
-function toEventRecord(row: DraftRow): EventRecord {
+export function toDraftEventRecord(row: DraftRow): DraftEventRecord {
   return {
     ...row,
     startsAt: row.startsAt === null ? null : iso(row.startsAt),
     endsAt: row.endsAt === null ? null : iso(row.endsAt),
+    registrationOpensAt: row.registrationOpensAt === null ? null : iso(row.registrationOpensAt),
+    registrationClosesAt: row.registrationClosesAt === null ? null : iso(row.registrationClosesAt),
     createdAt: iso(row.createdAt),
     updatedAt: iso(row.updatedAt),
   };
@@ -71,7 +85,7 @@ function toEventRecord(row: DraftRow): EventRecord {
 export async function updateOwnedDraft(
   { pool }: UpdateDraftDependencies,
   { eventRequestId, actor, input }: UpdateDraftCommand,
-): Promise<EventRecord> {
+): Promise<DraftEventRecord> {
   const changes = parseDraftUpdateInput(input);
   if (!actor || actor.role !== 'EVENT_ORGANISER') {
     throw new DraftEligibilityError(
@@ -100,20 +114,20 @@ export async function updateOwnedDraft(
       status: found.status,
     });
 
-    const fields = Object.keys(changes) as (keyof SaveEventDraftInput)[];
-    const setClauses = fields.map((field, index) => `${columnByField[field]} = $${index + 2}`);
+    const fields = Object.keys(changes) as (keyof DraftUpdateInput)[];
+    const setClauses = fields.map((field, index) => `${draftColumnByField[field]} = $${index + 2}`);
     const values = fields.map((field) => changes[field]);
 
     const updated = await client.query<DraftRow>(`
       UPDATE event_requests SET ${setClauses.join(', ')}, updated_at = now()
       WHERE id = $1
-      RETURNING ${selectColumns}
+      RETURNING ${draftSelectColumns}
     `, [eventRequestId, ...values]);
     const saved = updated.rows[0];
     if (!saved) throw new Error('The draft could not be updated.');
 
     await client.query('COMMIT');
-    return toEventRecord(saved);
+    return toDraftEventRecord(saved);
   } catch (error) {
     try {
       await client.query('ROLLBACK');

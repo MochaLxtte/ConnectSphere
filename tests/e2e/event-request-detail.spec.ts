@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { fulfilWorkspaceRead } from './workspace-fixtures.js';
 
 const requestId = '10000000-0000-4000-8000-000000000016';
 const coordinatorId = '10000000-0000-4000-8000-000000000025';
@@ -57,7 +58,7 @@ async function fixtureDetail(page: Page, detail: typeof requestDetail, responseS
           error: { code: 'EVENT_REQUEST_NOT_FOUND', message: 'The event request was not found.' },
         },
       });
-    } else {
+    } else if (!(await fulfilWorkspaceRead(route, request))) {
       unexpectedRequests.push(`${request.method()} ${url.pathname}${url.search}`);
       await route.fulfill({ status: 501, json: {
         error: { code: 'UNEXPECTED_TEST_REQUEST', message: 'No response fixture was configured.' },
@@ -68,7 +69,10 @@ async function fixtureDetail(page: Page, detail: typeof requestDetail, responseS
 }
 
 async function expectReadOnly(page: Page) {
-  const main = page.getByRole('main');
+  // The request details and review outcome stay read-only. Approved requests also show
+  // planning panels below them, which have their own component tests.
+  const main = (await page.locator('.detail-grid').count()) > 0
+    ? page.locator('.detail-grid') : page.getByRole('main');
   await expect(main.getByRole('radio')).toHaveCount(0);
   await expect(main.getByRole('textbox')).toHaveCount(0);
   await expect(main.getByRole('button', { name: /approve|reject|record|submit|save|edit/i })).toHaveCount(0);

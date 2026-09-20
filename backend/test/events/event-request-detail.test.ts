@@ -14,6 +14,7 @@ const baseRow = {
   status: 'SUBMITTED' as EventStatus, name: 'Sample request', purpose: null, description: null,
   startsAt: null, endsAt: null, expectedAttendance: 0, venueRequirements: null,
   accessibilityNeeds: null, equipmentRequirements: null, registrationRequired: false,
+  registrationCapacity: null, registrationOpensAt: null, registrationClosesAt: null,
   createdAt: new Date('2026-09-06T02:00:00Z'), updatedAt: new Date('2026-09-06T03:00:00Z'),
   review: null as EventRequestDetail['review'],
 };
@@ -65,9 +66,11 @@ describe('KAN-34/KAN-33/KAN-16 shared GET /api/events/:id', () => {
       const response = await request(app).get(`/api/events/${requestId}`);
       expect(response.status).toBe(200);
       expect(response.body.review).toEqual(review);
-      expect(response.body.actions).toEqual({ canEditDraft: false, canMakeInitialDecision: status === 'SUBMITTED' });
+      // A decision may follow directly or after the request was marked as under review.
+      const decidable = status === 'SUBMITTED' || status === 'UNDER_REVIEW';
+      expect(response.body.actions).toEqual({ canEditDraft: false, canMakeInitialDecision: decidable });
       expect(dependencies.canViewRequest).toHaveBeenCalledExactlyOnceWith(coordinator, row);
-      if (status === 'SUBMITTED') {
+      if (decidable) {
         expect(dependencies.canReviewRequest).toHaveBeenCalledExactlyOnceWith(coordinator, row, client);
       } else {
         expect(dependencies.canReviewRequest).not.toHaveBeenCalled();
