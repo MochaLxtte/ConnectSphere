@@ -30,6 +30,21 @@ const draft: EventRequestDetail = {
   review: null, actions: { canEditDraft: true, canMakeInitialDecision: false },
 };
 
+/**
+ * `PATCH /api/events/:id` and `POST /api/events/:id/submit` return this plain draft-record
+ * shape, never `actions`/`review` — real regression coverage must not mock those responses
+ * with the full detail fixture, since that hid the "reads .actions off a write response" bug.
+ */
+const draftRecord = {
+  id: 'a', organiserId: 'organiser-1', coordinatorId: null, status: 'DRAFT',
+  name: 'Career fair', purpose: 'Hiring', description: 'Annual fair',
+  startsAt: '2026-10-01T01:00:00.000Z', endsAt: '2026-10-01T09:00:00.000Z',
+  expectedAttendance: 200, venueRequirements: 'Hall A', accessibilityNeeds: 'Wheelchair access',
+  equipmentRequirements: 'Projector', registrationRequired: true,
+  registrationCapacity: null, registrationOpensAt: null, registrationClosesAt: null,
+  createdAt: '2026-09-07T00:00:00Z', updatedAt: '2026-09-17T17:30:00Z',
+};
+
 function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), { status });
 }
@@ -99,9 +114,12 @@ describe('KAN-34 draft editing', () => {
     expect(screen.queryByLabelText('Event name')).not.toBeInTheDocument();
   });
 
-  it('saves edited fields as a PATCH, converting Singapore local times back to UTC instants', async () => {
+  it('saves edited fields as a PATCH, then re-reads the shared detail to confirm it is still editable', async () => {
+    // Regression coverage for the "reads .actions off the PATCH response" bug: the PATCH
+    // fixture below is a plain draftRecord, exactly like the real endpoint, with no actions.
     const fetchMock = vi.fn()
       .mockResolvedValueOnce(jsonResponse(draft))
+      .mockResolvedValueOnce(jsonResponse({ ...draftRecord, name: 'Career fair 2026', accessibilityNeeds: null }))
       .mockResolvedValueOnce(jsonResponse({ ...draft, name: 'Career fair 2026', accessibilityNeeds: null }));
     vi.stubGlobal('fetch', fetchMock);
     await renderEditPage();
@@ -113,10 +131,10 @@ describe('KAN-34 draft editing', () => {
     await fireEvent.click(screen.getByRole('button', { name: 'Save draft' }));
 
     expect(await screen.findByText('Draft saved.')).toBeInTheDocument();
-    const [path, options] = fetchMock.mock.calls[1] as [string, RequestInit];
-    expect(path).toBe('/api/events/a');
-    expect(options.method).toBe('PATCH');
-    const body = JSON.parse(options.body as string);
+    const [patchPath, patchOptions] = fetchMock.mock.calls[1] as [string, RequestInit];
+    expect(patchPath).toBe('/api/events/a');
+    expect(patchOptions.method).toBe('PATCH');
+    const body = JSON.parse(patchOptions.body as string);
     expect(body).toMatchObject({
       name: 'Career fair 2026',
       accessibilityNeeds: null,
@@ -125,6 +143,7 @@ describe('KAN-34 draft editing', () => {
       expectedAttendance: 200,
       registrationRequired: true,
     });
+    expect(fetchMock.mock.calls[2]?.[0]).toBe('/api/events/a');
     expect(await screen.findByDisplayValue('Career fair 2026')).toBeInTheDocument();
   });
 
@@ -198,8 +217,9 @@ describe('KAN-6 submit for review from the draft editor', () => {
   it('saves the current form, submits, and navigates to the read-only detail page', async () => {
     const fetchMock = vi.fn()
       .mockResolvedValueOnce(jsonResponse(draft))
+      .mockResolvedValueOnce(jsonResponse({ ...draftRecord, venueRequirements: 'Hall B' }))
       .mockResolvedValueOnce(jsonResponse({ ...draft, venueRequirements: 'Hall B' }))
-      .mockResolvedValueOnce(jsonResponse({ id: 'a', organiserId: 'organiser-1', status: 'SUBMITTED' }));
+      .mockResolvedValueOnce(jsonResponse({ ...draftRecord, venueRequirements: 'Hall B', status: 'SUBMITTED' }));
     vi.stubGlobal('fetch', fetchMock);
     const { router } = await renderEditPage();
     await screen.findByDisplayValue('Career fair');
@@ -207,20 +227,22 @@ describe('KAN-6 submit for review from the draft editor', () => {
     await fireEvent.update(screen.getByLabelText('Venue requirements'), 'Hall B');
     await fireEvent.click(screen.getByRole('button', { name: 'Submit for review' }));
 
-    await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(3));
+    await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(4));
     const [patchPath, patchOptions] = fetchMock.mock.calls[1] as [string, RequestInit];
     expect(patchPath).toBe('/api/events/a');
     expect(patchOptions.method).toBe('PATCH');
     expect(JSON.parse(patchOptions.body as string)).toMatchObject({ venueRequirements: 'Hall B' });
-    const [submitPath, submitOptions] = fetchMock.mock.calls[2] as [string, RequestInit];
+    expect(fetchMock.mock.calls[2]?.[0]).toBe('/api/events/a');
+    const [submitPath, submitOptions] = fetchMock.mock.calls[3] as [string, RequestInit];
     expect(submitPath).toBe('/api/events/a/submit');
     expect(submitOptions.method).toBe('POST');
     await vi.waitFor(() => expect(router.currentRoute.value.fullPath).toBe('/events/a'));
   });
 
-  it("shows the server's own missing-fields message and stays on the page without navigating", async () => {
+  it('shows a friendly missing-fields message using the server-reported field names, without navigating', async () => {
     const fetchMock = vi.fn()
       .mockResolvedValueOnce(jsonResponse(draft))
+      .mockResolvedValueOnce(jsonResponse(draftRecord))
       .mockResolvedValueOnce(jsonResponse(draft))
       .mockResolvedValueOnce(jsonResponse({
         error: {
@@ -236,7 +258,7 @@ describe('KAN-6 submit for review from the draft editor', () => {
     await fireEvent.click(screen.getByRole('button', { name: 'Submit for review' }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      'The following fields must be completed before submission: purpose.',
+      'Complete these details before submitting: Purpose.',
     );
     expect(router.currentRoute.value.fullPath).toBe('/events/a/edit');
     expect(screen.getByLabelText('Event name')).toBeInTheDocument();
@@ -263,6 +285,7 @@ describe('KAN-6 submit for review from the draft editor', () => {
   it('clears identity and offers sign-in when submission fails with an expired session', async () => {
     const fetchMock = vi.fn()
       .mockResolvedValueOnce(jsonResponse(draft))
+      .mockResolvedValueOnce(jsonResponse(draftRecord))
       .mockResolvedValueOnce(jsonResponse(draft))
       .mockResolvedValueOnce(jsonResponse({
         error: { code: 'AUTHENTICATION_REQUIRED', message: 'Session expired.' },
