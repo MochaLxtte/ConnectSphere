@@ -38,7 +38,20 @@ Application tables remain in the `public` schema. The hardening migration enable
 
 A Git branch does not isolate a shared database. Agree schema changes with Arvin before applying them to the team's project. Use separate projects or the local test database for experiments that would disrupt other developers. Do not run destructive reset commands against the shared project.
 
-The schema covers application profiles, incomplete event drafts, coordinator linkage, clarification records, and review outcomes. It has no reservation or registration schema yet. Draft fields may be NULL; the submission service validates the required fields before moving an owned draft to `SUBMITTED`. The review service saves the review row and matching `APPROVED`/`REJECTED` status in one transaction, after checking the assigned coordinator and current state. The six statuses, single role per user, single proposed time interval, and text requirement fields remain design choices subject to the recorded open questions. Services update `updated_at` on writes and enforce roles, ownership and transitions; the schema alone does not do so.
+The schema covers application profiles, incomplete event drafts, coordinator linkage, clarification records, and review outcomes. Migration `005_core_feature_schema.sql` adds the tables for the remaining first-release features, ahead of their services:
+
+| Tables | Core features | Database-enforced rule |
+| ------ | ------------- | ---------------------- |
+| `event_status_history` | CF-06 | Trigger records every status change; set `app.actor_id` in the transaction to attribute it |
+| `coordinator_assignments` | CF-05 | One active assignment per request; `event_requests.coordinator_id` stays the current assignment |
+| `venues`, `venue_unavailability` | CF-08 to CF-11 | Unique names, positive capacity, valid intervals |
+| `venue_bookings` | CF-12 to CF-14 | An `APPROVED` booking cannot overlap another approved booking or a blocked period (`23P01`) |
+| `equipment_types`, `equipment_requests` | CF-15 to CF-17 | Overlapping `RESERVED` quantities cannot exceed the type's pooled quantity (`23P01`) |
+| `event_registrations` | CF-18 | One row per attendee and event; `REGISTERED` rows cannot exceed `event_requests.registration_capacity` (`23P01`) |
+| `event_change_requests` | CF-19 | Non-empty JSON object of proposed field changes with a reason |
+| `notifications` | CF-20 | In-app notifications with read state |
+
+It also allows the later `CONFIRMED`, `CANCELLED` and `COMPLETED` request statuses. Pending bookings not consuming availability, pooled equipment, half-open intervals and the extra statuses are provisional team assumptions for Q-04 and Q-06 to Q-13; revise them through new migrations once the customer answers. The hosted project's history also lists `003_add_supabase_auth.sql`, an earlier dashboard-era equivalent of migration 004 that the runner ignores. Draft fields may be NULL; the submission service validates the required fields before moving an owned draft to `SUBMITTED`. The review service saves the review row and matching `APPROVED`/`REJECTED` status in one transaction, after checking the assigned coordinator and current state. The six statuses, single role per user, single proposed time interval, and text requirement fields remain design choices subject to the recorded open questions. Services update `updated_at` on writes and enforce roles, ownership and transitions; the schema alone does not do so.
 
 Seeds contain fictional `.test` accounts with NULL password hashes, plus one incomplete draft. They cannot authenticate. Re-running seeding inserts missing examples without replacing existing data. Seeding is disabled for `NODE_ENV=production`; point it only at a development database. Ryan owns identity integration under KAN-25; Arvin owns schema evolution and representative integration fixtures under KAN-24.
 
