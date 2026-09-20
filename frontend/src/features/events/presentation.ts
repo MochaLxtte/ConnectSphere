@@ -5,6 +5,9 @@ const statusLabels = new Map([
   ['CLARIFICATION_REQUESTED', 'Clarification requested'],
   ['APPROVED', 'Approved'],
   ['REJECTED', 'Rejected'],
+  ['CONFIRMED', 'Confirmed'],
+  ['CANCELLED', 'Cancelled'],
+  ['COMPLETED', 'Completed'],
 ]);
 const eventDate = new Intl.DateTimeFormat('en-SG', {
   dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Singapore',

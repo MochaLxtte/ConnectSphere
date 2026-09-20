@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { fulfilWorkspaceRead } from './workspace-fixtures.js';
 
 const requestId = '10000000-0000-4000-8000-000000000036';
 const coordinatorId = '10000000-0000-4000-8000-000000000025';
@@ -65,7 +66,7 @@ for (const scenario of [
         submissions.push(request.postDataJSON());
         saved = true;
         await route.fulfill({ status: 201, json: savedReview });
-      } else {
+      } else if (!(await fulfilWorkspaceRead(route, request))) {
         // Fail closed: an unexpected request must never reach the configured database.
         unexpectedRequests.push(`${request.method()} ${path}`);
         await route.fulfill({ status: 501, json: {
@@ -117,7 +118,7 @@ test('KAN-36 a submitted request without the decision action has no decision con
         review: null,
         actions: { canEditDraft: false, canMakeInitialDecision: false },
       } });
-    } else {
+    } else if (!(await fulfilWorkspaceRead(route, request))) {
       unexpectedRequests.push(`${request.method()} ${path}`);
       await route.fulfill({ status: 501, json: {
         error: { code: 'UNEXPECTED_TEST_REQUEST', message: 'No response fixture was configured.' },
