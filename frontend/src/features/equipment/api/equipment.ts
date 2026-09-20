@@ -75,7 +75,8 @@ export function fetchEquipmentAvailability(
 export async function fetchAllEquipmentAvailability(
   from: string, to: string, signal?: AbortSignal,
 ): Promise<EquipmentAvailabilityItem[]> {
-  const result = await getJson<{ items: EquipmentAvailabilityItem[] }>(
+  // The route echoes the resolved window alongside the items; only the items are used here.
+  const result = await getJson<{ from: string; to: string; items: EquipmentAvailabilityItem[] }>(
     `/api/equipment/availability?${windowQuery(from, to)}`, signal,
   );
   return result.items;

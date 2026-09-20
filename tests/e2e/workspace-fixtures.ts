@@ -22,10 +22,18 @@ export async function fulfilWorkspaceRead(route: Route, request: Request): Promi
     } });
     return true;
   }
+  if (path === '/api/equipment/availability') {
+    // This route echoes the resolved window alongside the items; keep the fixture that shape.
+    const window = new URL(request.url()).searchParams;
+    await route.fulfill({ json: {
+      from: window.get('from') ?? '', to: window.get('to') ?? '', items: [],
+    } });
+    return true;
+  }
   const emptyList =
     /^\/api\/events\/[^/]+\/(assignments|clarifications|change-requests|history)$/.test(path) ||
     ['/api/events/coordinators', '/api/venue-bookings', '/api/equipment-requests', '/api/venues',
-      '/api/equipment', '/api/equipment/availability'].includes(path);
+      '/api/equipment'].includes(path);
   if (emptyList) {
     await route.fulfill({ json: { items: [] } });
     return true;
