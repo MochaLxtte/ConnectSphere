@@ -31,8 +31,9 @@ const recordedDecision = computed<ReviewDecision | null>(() => {
     ? props.request.status : null;
 });
 const needsRefresh = computed(() => errorCode.value !== null && errorCode.value !== 'INVALID_REVIEW_INPUT');
+const awaitingInitialDecision = computed(() => ['SUBMITTED', 'UNDER_REVIEW'].includes(props.request.status));
 const canSubmit = computed(() => props.canMakeInitialDecision === true && !recordedDecision.value &&
-  props.request.status === 'SUBMITTED' && !needsRefresh.value && !saving.value);
+  awaitingInitialDecision.value && !needsRefresh.value && !saving.value);
 const errorMessage = computed(() => {
   switch (errorCode.value) {
     case 'AUTHENTICATION_REQUIRED': return 'Sign in again to continue reviewing this request.';
@@ -89,7 +90,7 @@ function submitDecision() {
         Refresh request
       </button>
     </div>
-    <p v-else-if="request.status !== 'SUBMITTED'" class="decision-notice" role="status">
+    <p v-else-if="!awaitingInitialDecision" class="decision-notice" role="status">
       {{ request.status === 'DRAFT'
         ? 'Draft requests cannot be approved or rejected.'
         : 'This request is not awaiting an initial review decision.' }}

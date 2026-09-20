@@ -28,11 +28,15 @@ const user = {
   role: 'EVENT_COORDINATOR',
 };
 
-for (const scenario of [
+const decisions = [
   { decision: 'APPROVED', choice: 'Approve request', button: 'Record approval', outcome: 'Request approved' },
   { decision: 'REJECTED', choice: 'Reject request', button: 'Record rejection', outcome: 'Request rejected' },
-] as const) {
-  test(`KAN-36 ${scenario.decision.toLowerCase()} outcome and reason survive a browser reload`, async ({ page }, testInfo) => {
+] as const;
+const scenarios = ['SUBMITTED', 'UNDER_REVIEW'].flatMap((initialStatus) =>
+  decisions.map((decision) => ({ ...decision, initialStatus })));
+
+for (const scenario of scenarios) {
+  test(`KAN-36 ${scenario.initialStatus} to ${scenario.decision.toLowerCase()} outcome and reason survive a browser reload`, async ({ page }, testInfo) => {
     // All API responses are fixtures. This checks browser wiring, not live login or database persistence.
     const reason = scenario.decision === 'APPROVED'
       ? 'Suitable venue and programme.'
@@ -58,7 +62,7 @@ for (const scenario of [
         detailReads += 1;
         await route.fulfill({ json: {
           ...detail,
-          status: saved ? scenario.decision : 'SUBMITTED',
+          status: saved ? scenario.decision : scenario.initialStatus,
           review: saved ? { ...savedReview, createdAt: '2026-09-15T02:00:00.000Z' } : null,
           actions: { canEditDraft: false, canMakeInitialDecision: !saved },
         } });
@@ -77,6 +81,7 @@ for (const scenario of [
 
     await page.goto(`/reviews/${requestId}`);
     await expect(page.getByRole('heading', { name: detail.name, exact: true })).toBeVisible();
+    await expect(page.getByText(scenario.initialStatus, { exact: true })).toBeVisible();
     await page.getByRole('radio', { name: new RegExp(scenario.choice) }).check();
     await page.getByRole('textbox', { name: /Reason/ }).fill(`  ${reason}  `);
     await page.getByRole('button', { name: scenario.button, exact: true }).click();

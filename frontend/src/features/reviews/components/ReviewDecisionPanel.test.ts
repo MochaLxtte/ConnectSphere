@@ -52,6 +52,20 @@ describe('KAN-36 coordinator decision panel', () => {
     expect(view.emitted('submit')).toHaveLength(1);
   });
 
+  it.each(['APPROVED', 'REJECTED'] as const)('allows %s for an eligible request under review', async (decision) => {
+    const view = render(ReviewDecisionPanel, {
+      props: { request: { ...request, status: 'UNDER_REVIEW' }, canMakeInitialDecision: true },
+    });
+    await choose(decision);
+    await fireEvent.update(screen.getByRole('textbox', { name: /Reason/ }), '  Review completed.  ');
+    await fireEvent.click(screen.getByRole('button', { name: /^Record (approval|rejection)$/ }));
+
+    expect(view.emitted('submit')).toEqual([[{
+      eventRequestId: request.id, input: { decision, reason: 'Review completed.' },
+    }]]);
+    expect(screen.getByRole('button', { name: /Recording decision/ })).toBeDisabled();
+  });
+
   it('disables all decision fields while the parent is saving', () => {
     render(ReviewDecisionPanel, {
       props: { request, canMakeInitialDecision: true, feedback: { eventRequestId: request.id, state: 'saving' } },
@@ -81,6 +95,8 @@ describe('KAN-36 coordinator decision panel', () => {
     { status: 'REJECTED', outcome: 'Request rejected' },
     { status: 'SUBMITTED', review, outcome: 'Request approved' },
     { status: 'SUBMITTED', review: { ...review, decision: 'REJECTED' as const }, outcome: 'Request rejected' },
+    { status: 'UNDER_REVIEW', review, outcome: 'Request approved' },
+    { status: 'UNDER_REVIEW', review: { ...review, decision: 'REJECTED' as const }, outcome: 'Request rejected' },
   ])('prevents another decision for $status with $outcome', (state) => {
     const { outcome, ...savedRequest } = state;
     const view = render(ReviewDecisionPanel, {
@@ -102,8 +118,13 @@ describe('KAN-36 coordinator decision panel', () => {
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
   });
 
-  it.each([false, undefined])('requires explicit decision eligibility for an undecided request (%s)', (canMakeInitialDecision) => {
-    const view = render(ReviewDecisionPanel, { props: { request, canMakeInitialDecision } });
+  it.each([
+    { status: 'SUBMITTED', canMakeInitialDecision: false },
+    { status: 'SUBMITTED', canMakeInitialDecision: undefined },
+    { status: 'UNDER_REVIEW', canMakeInitialDecision: false },
+    { status: 'UNDER_REVIEW', canMakeInitialDecision: undefined },
+  ])('requires explicit eligibility for $status when the action is $canMakeInitialDecision', ({ status, canMakeInitialDecision }) => {
+    const view = render(ReviewDecisionPanel, { props: { request: { ...request, status }, canMakeInitialDecision } });
     expect(screen.getByRole('status')).toHaveTextContent('You do not have permission to record an initial decision');
     expect(screen.queryByRole('radio')).not.toBeInTheDocument();
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
@@ -143,7 +164,7 @@ describe('KAN-36 coordinator decision panel', () => {
     expect(screen.getByRole('status')).toHaveTextContent('Reason: No reason provided.');
   });
 
-  it.each(['DRAFT', 'UNDER_REVIEW', 'CLARIFICATION_REQUESTED', 'UNKNOWN_STATUS'])(
+  it.each(['DRAFT', 'CLARIFICATION_REQUESTED', 'UNKNOWN_STATUS'])(
     'does not offer initial decisions for %s requests', (status) => {
       const view = render(ReviewDecisionPanel, { props: { request: { ...request, status }, canMakeInitialDecision: true } });
       expect(screen.getByRole('status')).toHaveTextContent(
