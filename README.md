@@ -2,7 +2,9 @@
 
 IS212 event planning and venue booking project, built with **Vue 3 + TypeScript, Express 5 + TypeScript, Supabase PostgreSQL and Supabase Auth**, organised as a monorepo with a modular backend.
 
-The application supports sign-in, an assigned coordinator's review queue, request details and approval/rejection. Organisers can list their requests across all statuses, open read-only details and refresh the status and recorded outcome. The backend also supports owned-draft editing and submission. Organiser creation and draft-editing interfaces remain unfinished; draft creation and clarification endpoints are not implemented. Venue, equipment, registration and notification workflows remain for later work. Database migrations, fictional seed data, automated checks, CI and team documentation support development.
+The application supports sign-in, an assigned coordinator's review queue, request details and approval/rejection. Organisers can list their requests across all statuses, open read-only details and refresh the status and recorded outcome. The backend also supports owned-draft editing and submission.
+
+The `feat/KAN-24-core-feature-schema` branch adds the remaining first-release features: organiser request creation and draft editing in the browser, coordinator assignment, review start and clarification, confirmation, cancellation and completion with status history, change requests, the venue catalogue with availability, search, suitability and booking decisions, the equipment catalogue with pooled availability, requests and reservations, attendee registration, and in-app notifications. All of it is implemented with passing automated unit, component and PostgreSQL integration tests. None of it has been verified against hosted Supabase accounts or peer reviewed, its rules for the open customer questions are team implementation assumptions, and no story is Done. Venue Staff, Technical Support Staff and Attendee test accounts must be provisioned in Supabase Auth and linked through `app_users.supabase_user_id` before those roles can sign in. Database migrations, fictional seed data, automated checks, CI and team documentation support development.
 
 ## Start here
 
@@ -24,7 +26,7 @@ npm run db:migrate
 npm run db:seed
 ```
 
-When joining the team's existing Supabase project, confirm its schema with Arvin before applying migrations or changing seed data. Provision each login in Supabase Auth and link it to `app_users.supabase_user_id` with the correct application role. Seed profiles alone do not create login credentials. Then start the application:
+When joining the team's existing Supabase project, confirm its schema with Arvin before applying migrations or changing seed data. Provision each login in Supabase Auth and link it to `app_users.supabase_user_id` with the correct application role. Seed profiles alone do not create login credentials. Venue Staff, Technical Support Staff and Attendee test accounts need the same treatment before those roles can sign in and exercise the venue, equipment and registration pages. The seed also adds fictional venues and equipment types once migration 005 has run, so the catalogue pages have content. Then start the application:
 
 ```sh
 npm run dev
@@ -40,9 +42,9 @@ Never commit `.env` or place database passwords in frontend `VITE_*` variables. 
 
 ```text
 frontend/                  Vue application, navigation, API client, component tests
-backend/src/modules/       Authentication, event services and HTTP routes
+backend/src/modules/       Authentication, events, venues, equipment, registrations, notifications
 backend/src/               HTTP application, configuration, database pool
-backend/test/              API and environment tests
+backend/test/              API and environment tests, grouped by module
 database/                  SQL migrations, seed and database integration tests
 tests/e2e/                 Browser checks, organiser status and coordinator decisions
 docs/requirements/         20 core features, customer questions, traceability
