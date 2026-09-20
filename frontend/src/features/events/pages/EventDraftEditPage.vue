@@ -4,8 +4,8 @@ import { useRoute, useRouter } from 'vue-router';
 import { ApiError } from '../../../lib/api-client';
 import { authSession, clearLocalSession } from '../../auth/session.js';
 import {
-  fetchEventRequestDetail, submitEventRequest, updateEventDraft,
-  type EventDraftUpdate, type EventRequestDetail,
+  fetchEventRequestDetail, submitRequest, updateDraft, SubmissionIncompleteError,
+  type EventDraftInput, type EventRequestDetail,
 } from '../api/event-requests';
 import { fromSingaporeInputValue, toSingaporeInputValue } from '../presentation';
 
@@ -120,7 +120,7 @@ function saveErrorText(error: unknown): string {
   }
 }
 
-function buildDraftUpdate(): EventDraftUpdate {
+function buildDraftUpdate(): Partial<EventDraftInput> {
   return {
     name: emptyToNull(form.name),
     purpose: emptyToNull(form.purpose),
@@ -135,6 +135,27 @@ function buildDraftUpdate(): EventDraftUpdate {
   };
 }
 
+const submitFieldLabels = new Map([
+  ['name', 'Event name'], ['purpose', 'Purpose'], ['startsAt', 'Starts'], ['endsAt', 'Ends'],
+  ['expectedAttendance', 'Expected attendance'], ['venueRequirements', 'Venue requirements'],
+]);
+
+function submitErrorText(error: unknown): string {
+  if (error instanceof SubmissionIncompleteError) {
+    const missing = error.missingFields.map((field) => submitFieldLabels.get(field) ?? field);
+    return `Complete these details before submitting: ${missing.join(', ')}.`;
+  }
+  if (error instanceof ApiError && [404, 409].includes(error.status)) {
+    return 'This request can no longer be submitted. Reload to see its latest status.';
+  }
+  return 'Your request could not be submitted. Please try again.';
+}
+
+/**
+ * `PATCH /api/events/:id` returns a plain draft record, not the shared detail shape with
+ * `actions`/`review` — re-read the shared GET afterward instead of guessing editability
+ * from a response that was never going to carry it.
+ */
 async function save() {
   if (state.value.status !== 'ready' || saving.value || submitting.value) return;
   const current = state.value.request;
@@ -143,11 +164,12 @@ async function save() {
   saveErrorMessage.value = null;
   submitErrorMessage.value = null;
   try {
-    const updated = await updateEventDraft(current.id, buildDraftUpdate());
-    populateForm(updated);
-    state.value = updated.actions.canEditDraft
-      ? { status: 'ready', request: updated } : { status: 'not-editable', request: updated };
-    saved.value = updated.actions.canEditDraft;
+    await updateDraft(current.id, buildDraftUpdate());
+    const refreshed = await fetchEventRequestDetail(current.id);
+    populateForm(refreshed);
+    state.value = refreshed.actions.canEditDraft
+      ? { status: 'ready', request: refreshed } : { status: 'not-editable', request: refreshed };
+    saved.value = refreshed.actions.canEditDraft;
   } catch (error) {
     if (error instanceof ApiError && error.status === 401) {
       clearLocalSession();
@@ -169,9 +191,10 @@ async function submitForReview() {
   saveErrorMessage.value = null;
   submitErrorMessage.value = null;
 
-  let updated: EventRequestDetail;
+  let refreshed: EventRequestDetail;
   try {
-    updated = await updateEventDraft(current.id, buildDraftUpdate());
+    await updateDraft(current.id, buildDraftUpdate());
+    refreshed = await fetchEventRequestDetail(current.id);
   } catch (error) {
     if (error instanceof ApiError && error.status === 401) {
       clearLocalSession();
@@ -182,28 +205,25 @@ async function submitForReview() {
     submitting.value = false;
     return;
   }
-  populateForm(updated);
-  if (!updated.actions.canEditDraft) {
+  populateForm(refreshed);
+  if (!refreshed.actions.canEditDraft) {
     // Another tab or session changed this request's state between load and submit.
-    state.value = { status: 'not-editable', request: updated };
+    state.value = { status: 'not-editable', request: refreshed };
     submitting.value = false;
     return;
   }
-  state.value = { status: 'ready', request: updated };
+  state.value = { status: 'ready', request: refreshed };
 
   try {
-    await submitEventRequest(updated.id);
-    await router.push(`/events/${updated.id}`);
+    await submitRequest(refreshed.id);
+    await router.push(`/events/${refreshed.id}`);
   } catch (error) {
     if (error instanceof ApiError && error.status === 401) {
       clearLocalSession();
       showSignIn();
       return;
     }
-    // The backend's own message is already safe to show and names the specific problem
-    // (e.g. which fields are missing), unlike the generic save-error mapping above.
-    submitErrorMessage.value = error instanceof ApiError
-      ? error.message : 'Your request could not be submitted. Please try again.';
+    submitErrorMessage.value = submitErrorText(error);
   } finally {
     submitting.value = false;
   }
