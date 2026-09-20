@@ -1,8 +1,8 @@
 # Testing and evidence
 
-The suite covers application wiring and implemented Sprint 1 behaviour: authentication/session handling, draft editing and submission, scoped request retrieval, and approval/rejection validation, persistence and coordinator controls. Booking, equipment allocation, registration and other unfinished release features still need their own tests.
+The suite covers application wiring, authentication/session handling, request creation, draft editing and submission, scoped request retrieval, and approval/rejection validation, persistence and coordinator controls. The integrated release code also has tests for assignment, clarification, lifecycle and change requests, venue booking, equipment allocation, registration and notifications. Recorded automated results and hosted acceptance are separate; the presence of these suites does not close the release features or expand Sprint 1.
 
-Infrastructure database checks live in [database.integration.test.ts](../../database/tests/database.integration.test.ts); feature integration suites live in `database/tests/events/` and `database/tests/auth.integration.test.ts`. Browser checks live in `tests/e2e/`, including [review-decision.spec.ts](../../tests/e2e/review-decision.spec.ts). The [test evidence register](test-evidence.md) records actual runs, manual observations and remaining gaps.
+Infrastructure database checks live in [database.integration.test.ts](../../database/tests/database.integration.test.ts) and [core-schema.integration.test.ts](../../database/tests/core-schema.integration.test.ts); feature integration suites are grouped under `database/tests/` by module. Browser checks live in `tests/e2e/`, including [review-decision.spec.ts](../../tests/e2e/review-decision.spec.ts). The [test evidence register](test-evidence.md) records actual runs, manual observations and remaining gaps.
 
 Run commands from the repository root using the setup in the [main README](../../README.md):
 

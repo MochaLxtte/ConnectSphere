@@ -38,6 +38,8 @@ Use the shared [Definition of Done](../definition-of-done.md), [release requirem
 
 Record missing details as **To confirm** or **Not recorded**, and tests without a recorded run as **Not executed**. These statuses do not count as completion or as a failed test.
 
+**Current integration note, 20 September:** creation, draft saving/editing, submission and clarification interfaces are now integrated with the organiser status and coordinator review pages. The hosted submission-to-status acceptance check remains open. Assignment and later release features are also present in code; this work is outside the Sprint 1 window and does not change its ten-PBI, 32-point baseline, establish a completed review meeting or award Done points. See the current [test evidence](../../testing/test-evidence.md) and [backlog note](sprint-backlog.md) for the remaining acceptance and review boundaries.
+
 ## Project rubric coverage
 
 The project rubric covers the full release and the process across all sprints. Sprint 1 starts the evidence collection below; add results and follow-up as work progresses.
