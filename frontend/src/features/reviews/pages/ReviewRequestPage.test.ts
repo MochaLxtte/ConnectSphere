@@ -50,7 +50,7 @@ async function renderDetail(id = 'a') {
   });
   await router.push(`/reviews/${id}`);
   await router.isReady();
-  return { ...render(ReviewRequestPage, { global: { plugins: [router] } }), router };
+  return { ...render(ReviewRequestPage, { global: { plugins: [router], stubs: { EventPlanningPanels: true } } }), router };
 }
 
 async function chooseApproval() {

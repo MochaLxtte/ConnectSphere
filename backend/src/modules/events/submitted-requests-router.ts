@@ -10,6 +10,7 @@ import {
   type QueueActor,
   type SubmittedRequestQueryDependencies,
 } from './submitted-requests.js';
+import { createDraft, DraftCreateForbiddenError, type CreateDraftDependencies } from './create-draft.js';
 import { updateOwnedDraft, DraftRequestNotFoundError, type UpdateDraftDependencies } from './update-draft.js';
 import { DraftEligibilityError } from './draft-eligibility.js';
 import { DraftUpdateInputError } from './draft-update-input.js';
@@ -18,7 +19,8 @@ import { SubmitEligibilityError } from './submit-eligibility.js';
 import { SubmissionValidationError } from './submit-input.js';
 
 export interface SubmittedRequestsRouterDependencies
-  extends SubmittedRequestQueryDependencies, UpdateDraftDependencies, SubmitRequestDependencies {
+  extends SubmittedRequestQueryDependencies, CreateDraftDependencies, UpdateDraftDependencies,
+  SubmitRequestDependencies {
   pool: Pick<Pool, 'query' | 'connect'>;
   canReviewRequest: EventRequestDetailDependencies['canReviewRequest'];
   /**
@@ -78,6 +80,39 @@ export function createSubmittedRequestsRouter(dependencies: SubmittedRequestsRou
       const items = await listReviewableRequests(dependencies, actor);
       response.status(200).json({ items });
     } catch (error) {
+      next(error);
+    }
+  });
+
+  router.post('/', async (request, response, next) => {
+    response.set('Cache-Control', 'no-store');
+    try {
+      const actor = await dependencies.authenticate(request);
+      if (!actor) {
+        response.status(401).json({
+          error: { code: 'AUTHENTICATION_REQUIRED', message: 'Sign in to create an event request.' },
+        });
+        return;
+      }
+      if (actor.role !== 'EVENT_ORGANISER') {
+        response.status(403).json({
+          error: { code: 'DRAFT_CREATE_FORBIDDEN', message: 'Only event organisers can create an event request.' },
+        });
+        return;
+      }
+
+      // The owner is always the verified actor; the body can only carry draft fields.
+      const created = await createDraft(dependencies, { actor, input: request.body });
+      response.status(201).json(created);
+    } catch (error) {
+      if (error instanceof DraftUpdateInputError) {
+        response.status(400).json({ error: { code: 'INVALID_DRAFT_INPUT', message: error.message } });
+        return;
+      }
+      if (error instanceof DraftCreateForbiddenError) {
+        response.status(403).json({ error: { code: error.code, message: error.message } });
+        return;
+      }
       next(error);
     }
   });

@@ -2,6 +2,7 @@
 import { computed, onBeforeUnmount, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import ReviewDecisionPanel from '../components/ReviewDecisionPanel.vue';
+import EventPlanningPanels from '../../events/components/EventPlanningPanels.vue';
 import { fetchReviewRequestDetail, submitReview } from '../api/submitted-requests';
 import type { ReviewFeedback, ReviewRequestDetail, ReviewSubmission } from '../types';
 
@@ -36,6 +37,18 @@ async function load() {
         ? error.message
         : 'This event request could not be loaded. Please try again.',
     };
+  }
+}
+
+/** After a panel saves, update the status without unmounting the panels. */
+async function refreshQuietly() {
+  const current = controller;
+  try {
+    const detail = await fetchReviewRequestDetail(eventRequestId.value, current?.signal);
+    if (!current?.signal.aborted && state.value.status === 'ready') state.value = { status: 'ready', detail };
+  } catch {
+    // Handing a request to another coordinator removes access; show the unavailable message.
+    if (!current?.signal.aborted) await load();
   }
 }
 
@@ -119,6 +132,16 @@ onBeforeUnmount(() => {
       :feedback="feedback"
       @submit="handleSubmit"
       @refresh="handleRefresh"
+    />
+
+    <EventPlanningPanels
+      :event-request-id="state.detail.id"
+      :status="state.detail.status"
+      viewer-role="EVENT_COORDINATOR"
+      :is-owner="false"
+      :starts-at="state.detail.startsAt"
+      :ends-at="state.detail.endsAt"
+      @changed="refreshQuietly"
     />
   </template>
 </template>

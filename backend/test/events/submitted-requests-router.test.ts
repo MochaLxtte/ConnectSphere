@@ -224,6 +224,7 @@ describe('KAN-34 PATCH /api/events/:id (edit a draft)', () => {
       name: 'Updated name', purpose: null, description: null, startsAt: null, endsAt: null,
       expectedAttendance: null, venueRequirements: null, accessibilityNeeds: null,
       equipmentRequirements: null, registrationRequired: null,
+      registrationCapacity: null, registrationOpensAt: null, registrationClosesAt: null,
       createdAt: '2026-09-07T00:00:00Z', updatedAt: '2026-09-08T00:00:00Z' };
     updateDraft.mockResolvedValue(updated);
 

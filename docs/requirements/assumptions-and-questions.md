@@ -361,6 +361,144 @@ Approved for the four corresponding test requests, matching their detail pages
 (MAN-20260917-06). Draft/Submitted detail statuses and review messages also remained
 correct after refresh. The submission-to-status workflow remains in the [test evidence](../testing/test-evidence.md).
 
+## 19 September 2026 — Provisional rules for the remaining first-release features
+
+**Current status:** Every question below stays **Open**. This record documents the rules the
+team encoded on `feat/KAN-24-core-feature-schema` so the remaining first-release features
+could be built and tested; it does not answer any customer question and marks no story Done.
+
+**Kind:** Team implementation assumption (not a customer clarification).
+
+**Source and date:** Arvin, 19 September 2026.
+
+**Decision and rationale:** The branch implements CF-05 and CF-08 to CF-20 together with the
+outstanding parts of CF-02, CF-03, CF-04, CF-06 and CF-07. Each open question needed a working
+rule before the code could exist. The rules below are the ones the code's header comments and
+migration 005/006 comments state, and they are expected to change when the customer answers.
+
+- **Q-02 (coordinator visibility and assignment)** — `backend/src/modules/events/assignment.ts`.
+  Any Event Coordinator may see unassigned non-draft requests and the coordinator list, and may
+  assign such a request to themself or a colleague. Once a request is assigned, only the
+  currently assigned coordinator may hand it over. Drafts and closed requests (`REJECTED`,
+  `CANCELLED`, `COMPLETED`) cannot be assigned. A coordinator unrelated to an already-assigned
+  request receives the same 404 as a missing one. Across the venue, equipment and registration
+  modules, "related to the event" means the owning organiser or the currently assigned
+  coordinator (`isEventPlanner` in `backend/src/modules/equipment/equipment-requests.ts`).
+  `coordinator_assignments` records the history; `event_requests.coordinator_id` remains the
+  current assignment.
+- **Q-04 (states, transitions, actors, clarification and confirmation)** — migration 005,
+  `clarifications.ts` and `lifecycle.ts`. The status set becomes nine values: the six Sprint 1
+  statuses plus `CONFIRMED`, `CANCELLED` and `COMPLETED`. Provisional transitions are
+  `SUBMITTED → UNDER_REVIEW` (assigned coordinator starts the review),
+  `SUBMITTED | UNDER_REVIEW → CLARIFICATION_REQUESTED` (assigned coordinator asks a question),
+  `CLARIFICATION_REQUESTED → SUBMITTED` (the owner has answered every open question),
+  `APPROVED → CONFIRMED`, active `→ CANCELLED` and `CONFIRMED → COMPLETED`. Approval of the
+  request stays distinct from confirmation of a fully arranged event.
+- **Q-05 (post-submission edits)** — `change-requests.ts`. After approval the organiser cannot
+  edit the request directly; every draft field goes through a change request that the assigned
+  coordinator approves or rejects. Only one `PENDING` change request per event, and only while
+  the event is `APPROVED` or `CONFIRMED`. A proposed change may not clear a field that
+  submission requires.
+- **Q-06 (venue count and what consumes availability)** — migration 005. An event may hold
+  several bookings. Only `APPROVED` bookings consume availability; `PENDING` requests do not
+  hold the room. There are no tentative holds.
+- **Q-07 (timezone, boundaries, operating hours, blocked periods)** — migration 005,
+  `venues/suitability.ts` and `frontend/src/features/venues/presentation.ts`. Intervals are
+  half-open `[startsAt, endsAt)`, so back-to-back bookings do not overlap. Venue operating hours
+  are daily `opens_at`/`closes_at` times in Asia/Singapore, with a fixed UTC+8 offset because
+  Singapore has no daylight saving; NULL means unrestricted, and an overnight interval is
+  treated as outside operating hours. `venue_unavailability` rows are blocked periods that
+  appear on the availability calendar and block approval. No setup or turnaround time is
+  reserved around a booking.
+- **Q-08 (suitability and overrides)** — `venues/suitability.ts` and `venues/booking-service.ts`.
+  Suitability is assessed as five checks: `ACTIVE`, `CAPACITY` (venue capacity against expected
+  attendance), `ACCESSIBILITY` (the event's stated accessibility needs), `OPERATING_HOURS` and
+  `AVAILABILITY`. A failed check is a warning to the requester and Venue Staff, not a block: the
+  booking request is still recorded and Venue Staff decide. Layouts are catalogue data used for
+  search and recorded on the booking; they are not a pass/fail check.
+- **Q-09 (equipment granularity)** — migration 005/006 and `equipment/types.ts`. Equipment is
+  pooled by type with one `total_quantity`; individual items, locations, maintenance records and
+  substitutions are not modelled. Availability is the highest simultaneous `RESERVED` quantity
+  inside the window, not the sum of every overlapping reservation. Migration 006 corrects the
+  database guard to use that same peak calculation.
+- **Q-10 (discoverability, registration window, capacity, duplicates, withdrawal)** —
+  `registrations/registration-eligibility.ts`. An event is discoverable when its status is
+  `APPROVED` or `CONFIRMED` and `registration_required` is true. It is open when now falls
+  within `[registration_opens_at, registration_closes_at]` (a NULL bound is unbounded), the
+  event has not started, and the `REGISTERED` count is below `registration_capacity` (NULL means
+  unlimited). One row per attendee and event: withdrawing keeps the row and re-registering
+  reuses it. Withdrawal is allowed until the event starts.
+- **Q-11 (what survives a change)** — `change-requests.ts` and `cancelOpenArrangements` in
+  `events/workflow-support.ts`. Approving a change to the dates or expected attendance cancels
+  the event's open venue bookings (`PENDING`, `APPROVED`) and equipment requests (`REQUESTED`,
+  `RESERVED`), which must be re-requested, and returns a `CONFIRMED` event to `APPROVED`.
+  Decided rejections and earlier cancellations are left alone. Registrations are not cancelled.
+- **Q-12 (cancellation and completion authority)** — `lifecycle.ts`. Confirmation and completion
+  are the assigned coordinator's; confirmation needs at least one `APPROVED` venue booking and
+  no equipment request still awaiting a decision, and completion is only possible once the
+  event's end time has passed by the database clock. Either the owning organiser or the assigned
+  coordinator may cancel an active event with a required reason, which releases the same open
+  bookings and equipment requests. The schema has no cancellation-reason column, so the reason
+  travels only in the notifications, and it is sent to the organiser and coordinator only —
+  registered attendees are told the event is off without it.
+- **Q-13 (notifications)** — migration 005 and `notifications/notify.ts`. Delivery is in-app
+  only, with read state and no email, push or retry. Notifications are written through `notify()`
+  on the acting service's transaction client, so a notification exists only if the action it
+  describes committed. Recipients are de-duplicated and the acting user is left out of the list.
+  The existing draft submission and initial approval/rejection services were not changed to send
+  notifications.
+
+- **Q-14 (audit records)** — migration 005 and `events/workflow-support.ts`. Only event-request
+  status changes are audited, through the `event_status_history` trigger. A service attributes a
+  change by setting `app.actor_id` inside its transaction; an unattributed change still records a
+  row, with a null actor, rather than being lost. The history is readable by the owning organiser
+  and the assigned coordinator. No audit record is kept for venue, equipment, registration or
+  notification actions, no retention period is defined, and nothing is exposed to an
+  administrator role, because none exists. This is narrower than Q-14 asks and should be revisited
+  once the customer states which actions need auditing and who may inspect them.
+
+**Initial decision now allowed from `UNDER_REVIEW`:** `review-eligibility.ts` previously accepted
+an initial approval or rejection only from `SUBMITTED`. It now accepts `SUBMITTED` or
+`UNDER_REVIEW`. Without this, the new `POST /api/events/:id/start-review` transition would have
+trapped a request: marking it as under review would have made it permanently undecidable and
+forced the coordinator to raise a clarification purely to get back to `SUBMITTED`. The other
+guards are unchanged — the caller must still be the assigned coordinator, and a request with a
+recorded decision or in `APPROVED`/`REJECTED` still returns `REVIEW_ALREADY_DECIDED`. A pending
+clarification must still be answered first, which returns the request to `SUBMITTED`.
+
+**Affected story and acceptance-criterion IDs:** KAN-31/KAN-4 (draft creation), KAN-27
+(clarification), KAN-29 (coordinator assignment, still outside the Sprint 1 commitment) and the
+unlinked CF-08 to CF-20 features in [traceability.csv](traceability.csv). Interacts with
+KAN-36-AC1/AC2 through the widened initial-review state.
+
+**Affected implementation and tests:** `backend/src/app.ts`, `backend/src/runtime-app.ts`,
+`backend/src/modules/events/` (`create-draft.ts`, `assignment.ts`, `assignment-router.ts`,
+`clarifications.ts`, `clarification-router.ts`, `change-requests.ts`, `change-request-router.ts`,
+`lifecycle.ts`, `lifecycle-router.ts`, `workflow-support.ts`, `workflow-http.ts`,
+`review-eligibility.ts`, `event-request-detail.ts`), `backend/src/modules/venues/`,
+`backend/src/modules/equipment/`, `backend/src/modules/registrations/`,
+`backend/src/modules/notifications/`, `database/migrations/005_core_feature_schema.sql`,
+`database/migrations/006_equipment_peak_availability.sql`, `database/seed.ts`, and the
+frontend pages, panels and API clients under `frontend/src/features/` with
+`frontend/src/app/router.ts` and `frontend/src/components/AppShell.vue`. Tests are in
+`backend/test/events/`, `backend/test/venues/`, `backend/test/equipment/`,
+`backend/test/registrations/`, `backend/test/notifications/`, `database/tests/events/`,
+`database/tests/venues/`, `database/tests/equipment/`, `database/tests/registrations/`,
+`database/tests/notifications/`, `database/tests/core-schema.integration.test.ts` and the
+component tests beside each page and panel.
+
+**Verification:** Type checking, both builds, 737 unit/component tests, 212 PostgreSQL
+integration tests and 17 Playwright checks passed locally. The Playwright checks still cover
+only the Sprint 1 pages and use API response fixtures. Nothing here has been run against hosted
+Supabase accounts or peer reviewed, and Venue Staff, Technical Support Staff and Attendee
+accounts must be provisioned in Supabase Auth and linked through `app_users.supabase_user_id`
+before those roles can sign in at all. Record hosted results in the
+[test evidence](../testing/test-evidence.md) before claiming acceptance.
+
+**Supersedes:** The `SUBMITTED`-only initial-review state in the 15 September
+assigned-coordinator record, and the earlier statements that venue, equipment, registration and
+notification work was deferred. The assigned-coordinator access rule, the explicit-policy
+requirement and the shared-detail contract remain in force.
 ## 19 September 2026 — Draft customer clarification for Q-03
 
 **Purpose:** This is not a decision. It packages the provisional KAN-6 assumption (13

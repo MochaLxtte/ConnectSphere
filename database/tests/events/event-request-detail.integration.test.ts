@@ -97,7 +97,9 @@ describe('KAN-34 / KAN-33 / KAN-16 shared request detail with PostgreSQL', () =>
       name: null, purpose: null, description: null,
       startsAt: '2026-09-18T02:00:00.000Z', endsAt: '2026-09-18T04:00:00.000Z',
       expectedAttendance: 0, venueRequirements: null, accessibilityNeeds: null,
-      equipmentRequirements: null, registrationRequired: false, createdAt, updatedAt,
+      equipmentRequirements: null, registrationRequired: false,
+      registrationCapacity: null, registrationOpensAt: null, registrationClosesAt: null,
+      createdAt, updatedAt,
       review: null,
       actions: { canEditDraft: true, canMakeInitialDecision: false },
     });
@@ -156,15 +158,16 @@ describe('KAN-34 / KAN-33 / KAN-16 shared request detail with PostgreSQL', () =>
   });
 
   it.each(['UNDER_REVIEW', 'CLARIFICATION_REQUESTED'] as const)(
-    'keeps %s readable without offering an initial decision',
+    'keeps %s readable and offers the decision only once no clarification is pending',
     async (status) => {
       const id = await createEvent(status);
       for (const actor of [coordinator, organiser]) {
         const response = await request(appFor(actor)).get(`/api/events/${id}`);
         expect(response.status).toBe(200);
+        const canMakeInitialDecision = status === 'UNDER_REVIEW' && actor === coordinator;
         expect(response.body).toMatchObject({
           id, status, review: null,
-          actions: { canEditDraft: false, canMakeInitialDecision: false },
+          actions: { canEditDraft: false, canMakeInitialDecision },
         });
       }
     },

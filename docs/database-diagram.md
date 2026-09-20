@@ -1,0 +1,224 @@
+# ConnectSphere — Database Diagram
+
+Entity-relationship diagram generated from the Supabase `public` schema.
+
+> Utility tables `schema_migrations` and `scaffold_metadata` are omitted (no relationships).
+
+```mermaid
+erDiagram
+    app_users ||--o{ app_user_identities : "has"
+    app_users ||--o{ event_requests : "organises"
+    app_users ||--o{ event_requests : "coordinates"
+    app_users ||--o{ coordinator_assignments : "coordinator"
+    app_users ||--o{ coordinator_assignments : "assigned_by"
+    app_users ||--o{ equipment_requests : "requested_by"
+    app_users ||--o{ equipment_requests : "decided_by"
+    app_users ||--o{ event_change_requests : "requested_by"
+    app_users ||--o{ event_change_requests : "decided_by"
+    app_users ||--o{ event_clarifications : "requested_by"
+    app_users ||--o{ event_registrations : "attendee"
+    app_users ||--o{ event_reviews : "reviewed_by"
+    app_users ||--o{ event_status_history : "changed_by"
+    app_users ||--o{ notifications : "recipient"
+    app_users ||--o{ venue_bookings : "requested_by"
+    app_users ||--o{ venue_bookings : "decided_by"
+    app_users ||--o{ venue_unavailability : "created_by"
+
+    event_requests ||--o{ coordinator_assignments : "has"
+    event_requests ||--o{ equipment_requests : "has"
+    event_requests ||--o{ event_change_requests : "has"
+    event_requests ||--o{ event_clarifications : "has"
+    event_requests ||--o{ event_registrations : "has"
+    event_requests ||--o{ event_reviews : "has"
+    event_requests ||--o{ event_status_history : "has"
+    event_requests ||--o{ notifications : "about"
+    event_requests ||--o{ venue_bookings : "has"
+
+    equipment_types ||--o{ equipment_requests : "requested"
+    venues ||--o{ venue_bookings : "booked"
+    venues ||--o{ venue_unavailability : "has"
+
+    app_users {
+        uuid id PK
+        text email
+        text display_name
+        text role
+        text password_hash
+        uuid supabase_user_id
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    app_user_identities {
+        uuid id PK
+        uuid user_id FK
+        text firebase_uid
+        timestamptz created_at
+    }
+
+    event_requests {
+        uuid id PK
+        uuid organiser_id FK
+        uuid coordinator_id FK
+        text status
+        text name
+        text purpose
+        text description
+        timestamptz starts_at
+        timestamptz ends_at
+        integer expected_attendance
+        text venue_requirements
+        text accessibility_needs
+        text equipment_requirements
+        boolean registration_required
+        integer registration_capacity
+        timestamptz registration_opens_at
+        timestamptz registration_closes_at
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    coordinator_assignments {
+        uuid id PK
+        uuid event_request_id FK
+        uuid coordinator_id FK
+        uuid assigned_by FK
+        text note
+        timestamptz assigned_at
+        timestamptz unassigned_at
+    }
+
+    equipment_types {
+        uuid id PK
+        text name
+        text category
+        text description
+        integer total_quantity
+        boolean is_active
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    equipment_requests {
+        uuid id PK
+        uuid event_request_id FK
+        uuid equipment_type_id FK
+        uuid requested_by FK
+        integer quantity
+        text status
+        timestamptz starts_at
+        timestamptz ends_at
+        text notes
+        uuid decided_by FK
+        timestamptz decided_at
+        text decision_reason
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    event_change_requests {
+        uuid id PK
+        uuid event_request_id FK
+        uuid requested_by FK
+        text status
+        jsonb proposed_changes
+        text reason
+        uuid decided_by FK
+        timestamptz decided_at
+        text decision_reason
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    event_clarifications {
+        uuid id PK
+        uuid event_request_id FK
+        uuid requested_by FK
+        text message
+        text response
+        timestamptz created_at
+        timestamptz responded_at
+    }
+
+    event_registrations {
+        uuid id PK
+        uuid event_request_id FK
+        uuid attendee_id FK
+        text status
+        timestamptz registered_at
+        timestamptz withdrawn_at
+    }
+
+    event_reviews {
+        uuid id PK
+        uuid event_request_id FK
+        uuid reviewed_by FK
+        text decision
+        text reason
+        timestamptz created_at
+    }
+
+    event_status_history {
+        uuid id PK
+        uuid event_request_id FK
+        text from_status
+        text to_status
+        uuid changed_by FK
+        timestamptz created_at
+    }
+
+    notifications {
+        uuid id PK
+        uuid recipient_id FK
+        uuid event_request_id FK
+        text type
+        text title
+        text message
+        timestamptz read_at
+        timestamptz created_at
+    }
+
+    venues {
+        uuid id PK
+        text name
+        text description
+        text location
+        integer capacity
+        text_array layouts
+        text_array facilities
+        text_array accessibility_features
+        boolean wheelchair_accessible
+        time opens_at
+        time closes_at
+        boolean is_active
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    venue_bookings {
+        uuid id PK
+        uuid event_request_id FK
+        uuid venue_id FK
+        uuid requested_by FK
+        text status
+        timestamptz starts_at
+        timestamptz ends_at
+        text layout
+        text notes
+        uuid decided_by FK
+        timestamptz decided_at
+        text decision_reason
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    venue_unavailability {
+        uuid id PK
+        uuid venue_id FK
+        timestamptz starts_at
+        timestamptz ends_at
+        text reason
+        uuid created_by FK
+        timestamptz created_at
+    }
+```
