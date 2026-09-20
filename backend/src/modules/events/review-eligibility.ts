@@ -45,8 +45,9 @@ export function assertCanMakeInitialReview(context: InitialReviewContext): void 
     );
   }
 
-  // This initial slice supports SUBMITTED. Intermediate-state transitions still need agreement.
-  if (context.status !== 'SUBMITTED') {
+  // A coordinator may decide directly or after marking the request as under review.
+  // A pending clarification must be answered first, which returns the request to SUBMITTED.
+  if (context.status !== 'SUBMITTED' && context.status !== 'UNDER_REVIEW') {
     throw new ReviewEligibilityError(
       'REQUEST_NOT_REVIEWABLE',
       'This event request is not awaiting a supported initial review decision.',

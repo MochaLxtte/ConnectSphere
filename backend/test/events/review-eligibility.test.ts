@@ -60,12 +60,13 @@ describe('KAN-36 initial review eligibility', () => {
     expectDenied({ ...eligibleRequest, hasRecordedDecision: true }, 'REVIEW_ALREADY_DECIDED');
   });
 
-  it.each(['UNDER_REVIEW', 'CLARIFICATION_REQUESTED'] as const)(
-    'blocks %s until its initial-review transition is agreed',
-    (status) => {
-      expectDenied({ ...eligibleRequest, status }, 'REQUEST_NOT_REVIEWABLE');
-    },
-  );
+  it('allows a decision once the coordinator has marked the request as under review', () => {
+    expect(() => assertCanMakeInitialReview({ ...eligibleRequest, status: 'UNDER_REVIEW' })).not.toThrow();
+  });
+
+  it('blocks a decision while a clarification is still awaiting the organiser', () => {
+    expectDenied({ ...eligibleRequest, status: 'CLARIFICATION_REQUESTED' }, 'REQUEST_NOT_REVIEWABLE');
+  });
 
   it('provides a distinguishable error for the future HTTP handler', () => {
     expect(() =>
