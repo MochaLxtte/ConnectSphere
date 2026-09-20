@@ -448,6 +448,15 @@ migration 005/006 comments state, and they are expected to change when the custo
   The existing draft submission and initial approval/rejection services were not changed to send
   notifications.
 
+- **Q-14 (audit records)** — migration 005 and `events/workflow-support.ts`. Only event-request
+  status changes are audited, through the `event_status_history` trigger. A service attributes a
+  change by setting `app.actor_id` inside its transaction; an unattributed change still records a
+  row, with a null actor, rather than being lost. The history is readable by the owning organiser
+  and the assigned coordinator. No audit record is kept for venue, equipment, registration or
+  notification actions, no retention period is defined, and nothing is exposed to an
+  administrator role, because none exists. This is narrower than Q-14 asks and should be revisited
+  once the customer states which actions need auditing and who may inspect them.
+
 **Initial decision now allowed from `UNDER_REVIEW`:** `review-eligibility.ts` previously accepted
 an initial approval or rejection only from `SUBMITTED`. It now accepts `SUBMITTED` or
 `UNDER_REVIEW`. Without this, the new `POST /api/events/:id/start-review` transition would have
