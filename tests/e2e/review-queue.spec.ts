@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './browser-fixtures.js';
 
 test('KAN-33 review queue shows a service error and retries successfully', async ({ page }) => {
   // Browser-response fixtures exercise the page; live authentication is a separate integration.

@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './browser-fixtures.js';
 import { fulfilWorkspaceRead } from './workspace-fixtures.js';
 
 const requestId = '10000000-0000-4000-8000-000000000036';
@@ -88,16 +88,17 @@ for (const scenario of scenarios) {
 
     await expect.poll(() => detailReads).toBe(2);
     await expect(page.getByText(scenario.decision, { exact: true })).toBeVisible();
-    await expect(page.getByRole('status')).toContainText(scenario.outcome);
-    await expect(page.getByRole('status')).toContainText(reason);
+    const outcome = page.getByRole('region', { name: 'Review outcome', exact: true }).getByRole('status');
+    await expect(outcome).toContainText(scenario.outcome);
+    await expect(outcome).toContainText(reason);
     await expect(page.getByRole('radio')).toHaveCount(0);
     await expect(page.getByRole('button', { name: /^Record / })).toHaveCount(0);
     expect(submissions).toEqual([{ decision: scenario.decision, reason }]);
 
     await page.reload();
     await expect.poll(() => detailReads).toBe(3);
-    await expect(page.getByRole('status')).toContainText(scenario.outcome);
-    await expect(page.getByRole('status')).toContainText(reason);
+    await expect(outcome).toContainText(scenario.outcome);
+    await expect(outcome).toContainText(reason);
     await expect(page.getByRole('radio')).toHaveCount(0);
     await expect(page.getByRole('button', { name: /^Record / })).toHaveCount(0);
     expect(submissions).toHaveLength(1);

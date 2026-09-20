@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './browser-fixtures.js';
 
 test('KAN-25/KAN-36/KAN-16 running server requires login for event routes', async ({ request }) => {
   // Exercise normal server.ts startup through the Vite proxy, without response fixtures.
