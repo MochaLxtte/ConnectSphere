@@ -19,16 +19,22 @@ The dev server runs at `http://127.0.0.1:5173` and fails clearly if that port is
 - Component and API contract tests for the connection checks and failure recovery.
 - Supabase sign-in, application session state and sign-out, backed by Express verification.
 - Coordinator review queue and detail, with approval/rejection controls and saved outcomes.
+- Coordinator-only review navigation and page access, with session-loading, signed-out and wrong-role states.
 - Organiser request list at `/events`, covering all owned statuses, refresh, empty/error states and session-expiry recovery.
-- Read-only organiser details at `/events/:id`, showing the current status and any recorded decision, reason and time.
+- Organiser creation and draft saving at `/events/new`, with submission after a successful save.
+- Owned-draft editing and save-then-submit at `/events/:id/edit`.
+- Organiser details at `/events/:id`, showing status and recorded decision, draft edit/submit controls where permitted, and planning panels after submission.
+- Coordinator assignment, clarification, lifecycle and change-request panels; venue and equipment pages, attendee registration and an in-app notification inbox.
 
-The organiser creation page remains a placeholder. KAN-16's list and detail views are connected. Hosted organiser checks cover approval/rejection display and refresh, signed-out detail access, Draft/Submitted detail states and another organiser's denied detail access and empty list (MAN-20260917-01 through MAN-20260917-04). Opening `/events` directly after signing out showed a sign-in prompt without request names or statuses (MAN-20260917-05). The request list showed matching Draft, Submitted, Rejected and Approved labels, and Draft/Submitted detail statuses and review messages remained correct after refresh (MAN-20260917-06). The remaining submission-to-status check is tracked in [test evidence](../docs/testing/test-evidence.md). Express authenticates event API calls and enforces roles, ownership and the Sprint 1 coordinator assignment policy. Frontend navigation and action flags do not replace those checks.
+The creation, draft-editing and submission interfaces are integrated. Hosted organiser checks cover approval/rejection display and refresh, signed-out detail access, Draft/Submitted detail states and another organiser's denied detail access and empty list (MAN-20260917-01 through MAN-20260917-04). Opening `/events` directly after signing out showed a sign-in prompt without request names or statuses (MAN-20260917-05). The request list showed matching Draft, Submitted, Rejected and Approved labels, and Draft/Submitted detail statuses and review messages remained correct after refresh (MAN-20260917-06). The hosted submission-to-status check and acceptance of the newer planning features remain pending in [test evidence](../docs/testing/test-evidence.md). Express authenticates event API calls and enforces roles, ownership and current coordinator assignment. Frontend navigation and action flags do not replace those checks.
 
 ## KAN-16 organiser request list and detail
 
-`EventRequestsPage.vue` loads `GET /api/events?scope=all` through the feature's `api/event-requests.ts` wrapper. It preserves the API's latest-update order and shows names, readable status labels and update times in Asia/Singapore. Unnamed drafts have an explicit fallback title. Request titles link to `/events/:id`; the existing `/events/new` route still opens the creation placeholder. Refresh retrieves current values; empty results and retryable failures have separate states.
+`EventRequestsPage.vue` loads `GET /api/events?scope=all` through the feature's `api/event-requests.ts` wrapper. It preserves the API's latest-update order and shows names, readable status labels and update times in Asia/Singapore. Unnamed drafts have an explicit fallback title. Draft titles link to `/events/:id/edit`; other titles link to `/events/:id`. The `/events/new` route renders `EventRequestForm.vue` through `NewEventPage.vue`, creates a draft with `POST /api/events`, and updates that saved draft for later saves before submission. Refresh retrieves current values; empty results and retryable failures have separate states.
 
-`EventRequestDetailPage.vue` reads the existing `GET /api/events/:id` response, showing request fields, status and a saved outcome with its reason and recorded time. All times use Asia/Singapore. Reasons remain plain text with line breaks. Missing reviews are distinguished from drafts awaiting submission and decided requests whose review details are unavailable. The view offers Refresh and a link back to the list; it has no editing, submission or decision controls, even if an action flag is enabled. This step adds no backend handler or schema changes.
+The new-request form includes registration capacity and opening/closing times. The existing-draft editor currently exposes the earlier field set through `registrationRequired`; it does not expose those three registration settings.
+
+`EventRequestDetailPage.vue` reads `GET /api/events/:id`, showing request fields, status and a saved outcome with its reason and recorded time. All times use Asia/Singapore. Reasons remain plain text with line breaks. Missing reviews are distinguished from drafts awaiting submission and decided requests whose review details are unavailable. A draft with `actions.canEditDraft` exposes an Edit draft link and a Submit for review action; the editor saves the current form before submitting. Non-draft details mount `EventPlanningPanels.vue` for assignment, clarification, lifecycle and, where applicable, venue/equipment arrangements, change requests and attendees. Organisers cannot make coordinator approval/rejection decisions.
 
 Signing out or changing accounts clears previous results and cancels pending reads. The detail view also discards responses for a previously opened request. A 401 clears cached identity and offers sign-in, so the login page can show its form again. Failed reads hide previous request data. On the detail page, 403/404 responses show the same unavailable/no-permission message, while network/server failures offer Try again.
 
@@ -48,7 +54,7 @@ Component tests cover loading, labels, status refresh, recorded and absent outco
 
 Arvin supports cross-feature integration, end-to-end testing and resolving integration issues after database setup.
 
-Keep domain-specific components, API wrappers, and tests in their feature directory. Promote components to `src/components` only when they are shared. Place API transport behavior in `src/lib/api-client.ts`. Replace the relevant placeholder page as you implement each item; coordinate route changes in `src/app/router.ts`.
+Keep domain-specific components, API wrappers, and tests in their feature directory. Promote components to `src/components` only when they are shared. Place API transport behavior in `src/lib/api-client.ts` and coordinate route changes in `src/app/router.ts`.
 
 ## API contracts in use
 
@@ -67,6 +73,10 @@ For production, serve `dist/` with a history fallback to `index.html` and route 
 
 ## KAN-36 decision panel
 
+`ReviewAccessPage.vue` protects `/reviews`, `/reviews/unassigned` and `/reviews/:id`. It waits for session loading to finish and mounts the child page only for an event coordinator. Other users do not see review links in the sidebar or overview; direct navigation shows a sign-in or coordinator-only message. Account changes and sign-out unmount the previous child and cancel pending reads. A current API 401 clears the expired local session, and stale responses cannot restore a previous account's data. This page boundary preserves the shared backend's role-aware listing and detail contracts; organisers still use `/events` for their own requests.
+
+Component tests in `ReviewAccessPage.test.ts` and browser fixtures in `tests/e2e/review-access.spec.ts` cover these access and session transitions. The [test evidence](../docs/testing/test-evidence.md) records the review-queue defect and automated regression results under MAN-20260917-07 and AUTO-20260917-07/08. The organiser queue recheck passed on 18 September (MAN-20260918-01): after reload the Review queue link was absent, and direct `/reviews` navigation showed Coordinator access only without request data. This recheck did not cover `/reviews/:id` or the remaining role/session scenarios.
+
 `src/features/reviews/components/ReviewDecisionPanel.vue` provides approval/rejection controls for a single event request. KAN-33's `ReviewRequestPage.vue` mounts it and supplies API calls and feedback; `ReviewQueuePage.vue` lists requests. The panel itself does not fetch requests, authenticate users or call the review endpoint.
 
 The shared GET retains the flat event fields and adds `review` and `actions`. The page consumes these fields, enables decisions only when the backend allows them, and keeps a saved outcome and reason visible after decision actions become unavailable. It reloads the detail after a successful write.
@@ -75,7 +85,7 @@ Hosted approval and rejection checks passed, including outcome display after rel
 
 The parent page supplies:
 
-- `request`: the current request's `id`, `status` and nullable `review`, read from the server. The review includes the recorded decision and reason. Unknown statuses cannot be reviewed; the supported initial state is `SUBMITTED`.
+- `request`: the current request's `id`, `status` and nullable `review`, read from the server. The review includes the recorded decision and reason. Initial decisions require `SUBMITTED` or `UNDER_REVIEW`, no recorded review, and explicit `canMakeInitialDecision` permission from the server. Other statuses cannot be reviewed by this panel.
 - `canMakeInitialDecision`: the backend's action flag for this request. False or omitted prevents submission while leaving an existing outcome readable. Render the panel only after an authorised detail read; Express rechecks role, assignment and state when saving.
 - `feedback`: a `ReviewFeedback` value from `src/features/reviews/types.ts`, scoped to `eventRequestId`. Use `state: 'saving'`, `state: 'saved'` with the confirmed `decision`, or `state: 'error'` with the API error `code`.
 

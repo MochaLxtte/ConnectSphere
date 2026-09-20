@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
+import { ApiError } from '../../../lib/api-client';
+import { clearLocalSession } from '../../auth/session.js';
 import ReviewDecisionPanel from '../components/ReviewDecisionPanel.vue';
 import EventPlanningPanels from '../../events/components/EventPlanningPanels.vue';
 import { fetchReviewRequestDetail, submitReview } from '../api/submitted-requests';
@@ -28,6 +30,7 @@ async function load() {
     if (!current.signal.aborted) state.value = { status: 'ready', detail };
   } catch (error) {
     if (current.signal.aborted) return;
+    if (error instanceof ApiError && error.status === 401) clearLocalSession();
     const code = error && typeof error === 'object' && 'code' in error
       ? String((error as { code: unknown }).code) : 'REQUEST_FAILED';
     state.value = {
@@ -65,6 +68,7 @@ async function handleSubmit(submission: ReviewSubmission) {
     await load();
   } catch (error) {
     if (currentView !== viewVersion) return;
+    if (error instanceof ApiError && error.status === 401) clearLocalSession();
     const code = error && typeof error === 'object' && 'code' in error
       ? String((error as { code: unknown }).code) : 'REQUEST_FAILED';
     feedback.value = { eventRequestId: submission.eventRequestId, state: 'error', code };

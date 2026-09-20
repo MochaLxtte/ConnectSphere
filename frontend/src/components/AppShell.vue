@@ -4,10 +4,10 @@ import AppIcon from './AppIcon.vue';
 import NotificationBell from '../features/notifications/components/NotificationBell.vue';
 import { authSession, restoreSession, roleLabel, signOut } from '../features/auth/session.js';
 
-// Signed-out visitors keep the organiser and coordinator links; each page asks them to sign in.
+// Organiser entry points remain visible to visitors; coordinator links require a resolved session.
 const role = computed(() => authSession.user?.role ?? null);
 const showOrganiser = computed(() => role.value === null || role.value === 'EVENT_ORGANISER');
-const showCoordinator = computed(() => role.value === null || role.value === 'EVENT_COORDINATOR');
+const showCoordinator = computed(() => !authSession.loading && role.value === 'EVENT_COORDINATOR');
 
 onMounted(() => { void restoreSession().catch(() => undefined); });
 

@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from './browser-fixtures.js';
 import { fulfilWorkspaceRead } from './workspace-fixtures.js';
 
 const user = {

@@ -3,6 +3,7 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import AppIcon from '../../../components/AppIcon.vue';
 import HealthCheckCard from '../components/HealthCheckCard.vue';
 import { checkApi, checkDatabase } from '../api/health';
+import { authSession } from '../../auth/session.js';
 
 type CheckState = { status: 'pending' | 'success' | 'error'; message: string };
 const pending = (): CheckState => ({ status: 'pending', message: 'Checking the connection…' });
@@ -95,7 +96,7 @@ onBeforeUnmount(() => controller?.abort());
         <p>Create an event request and prepare the details before submitting.</p>
         <span class="small-label">Draft & submit</span></RouterLink
       >
-      <RouterLink to="/reviews" class="workflow-card"
+      <RouterLink v-if="!authSession.loading && authSession.user?.role === 'EVENT_COORDINATOR'" to="/reviews" class="workflow-card"
         ><span class="step-number">02 / COORDINATE</span
         ><span class="workflow-icon"><AppIcon name="review" :size="23" /></span>
         <h3>Review event requests<AppIcon name="arrow" :size="18" /></h3>

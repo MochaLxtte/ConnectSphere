@@ -2,7 +2,7 @@
 import { onBeforeUnmount, onMounted, reactive, ref } from 'vue';
 import AppIcon from '../../../components/AppIcon.vue';
 import { ApiError } from '../../../lib/api-client';
-import { authSession } from '../../auth/session';
+import { authSession, clearLocalSession } from '../../auth/session';
 import {
   assignCoordinator, fetchCoordinators, fetchUnassignedRequests,
   type CoordinatorOption, type UnassignedRequest,
@@ -37,6 +37,7 @@ async function load() {
     state.value = { status: 'ready', items, coordinators };
   } catch (error) {
     if (!current.signal.aborted) {
+      if (error instanceof ApiError && error.status === 401) clearLocalSession();
       state.value = {
         status: 'error',
         message: error instanceof Error ? error.message : 'Unassigned requests could not be loaded. Please try again.',
@@ -52,8 +53,10 @@ async function assign(item: UnassignedRequest) {
   busyId.value = item.id;
   rowError.value = null;
   saved.value = null;
+  const current = controller;
   try {
     await assignCoordinator(item.id, { coordinatorId });
+    if (current?.signal.aborted) return;
     const coordinator = state.value.coordinators.find((option) => option.id === coordinatorId);
     saved.value = {
       id: item.id, name: item.name ?? 'Untitled event request',
@@ -62,6 +65,8 @@ async function assign(item: UnassignedRequest) {
     };
     state.value = { ...state.value, items: state.value.items.filter((other) => other.id !== item.id) };
   } catch (error) {
+    if (current?.signal.aborted) return;
+    if (error instanceof ApiError && error.status === 401) clearLocalSession();
     const taken = error instanceof ApiError && error.status === 404;
     rowError.value = {
       id: item.id,

@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './browser-fixtures.js';
 
 test('KAN-25/KAN-36/KAN-16 running server requires login for event routes', async ({ request }) => {
   // Exercise normal server.ts startup through the Vite proxy, without response fixtures.
@@ -82,9 +82,12 @@ test('SCF-E2E-04 narrow screen supports navigation without horizontal overflow',
     true,
   );
   await page.screenshot({ path: testInfo.outputPath('mobile-overview.png'), fullPage: true });
+  await expect(page.getByRole('navigation', { name: 'Main navigation' })
+    .getByRole('link', { name: 'Review queue' })).toHaveCount(0);
   await page
     .getByRole('navigation', { name: 'Main navigation' })
-    .getByRole('link', { name: 'Review queue' })
+    .getByRole('link', { name: 'Event requests', exact: true })
     .click();
-  await expect(page.getByRole('heading', { name: 'Review queue', level: 1 })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Event requests', level: 1 })).toBeVisible();
+  await expect(page.getByText('Sign in to view your event requests.', { exact: true })).toBeVisible();
 });
