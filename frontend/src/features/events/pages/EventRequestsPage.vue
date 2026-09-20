@@ -92,7 +92,11 @@ onBeforeUnmount(() => controller?.abort());
     <ul v-else class="request-list" aria-label="Your event requests">
       <li v-for="item in state.items" :key="item.id" class="request-item">
         <div class="request-summary">
-          <h3><RouterLink :to="`/events/${item.id}`">{{ item.name?.trim() || 'Untitled event request' }}</RouterLink></h3>
+          <h3>
+            <RouterLink :to="item.status === 'DRAFT' ? `/events/${item.id}/edit` : `/events/${item.id}`">
+              {{ item.name?.trim() || 'Untitled event request' }}
+            </RouterLink>
+          </h3>
           <p class="request-updated">Updated <time :datetime="item.updatedAt">{{ formatEventTime(item.updatedAt, 'Update time unavailable') }}</time></p>
         </div>
         <span class="request-status" :class="`request-status--${item.status.toLowerCase()}`">

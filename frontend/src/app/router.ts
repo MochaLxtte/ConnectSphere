@@ -3,10 +3,10 @@ import DashboardPage from '../features/system/pages/DashboardPage.vue';
 import LoginPage from '../features/auth/pages/LoginPage.vue';
 import EventRequestsPage from '../features/events/pages/EventRequestsPage.vue';
 import EventRequestDetailPage from '../features/events/pages/EventRequestDetailPage.vue';
+import EventDraftEditPage from '../features/events/pages/EventDraftEditPage.vue';
 import NewEventPage from '../features/events/pages/NewEventPage.vue';
 import ReviewQueuePage from '../features/reviews/pages/ReviewQueuePage.vue';
 import ReviewRequestPage from '../features/reviews/pages/ReviewRequestPage.vue';
-import EditDraftPage from '../features/events/pages/EditDraftPage.vue';
 import UnassignedRequestsPage from '../features/reviews/pages/UnassignedRequestsPage.vue';
 import VenueCataloguePage from '../features/venues/pages/VenueCataloguePage.vue';
 import VenueDetailPage from '../features/venues/pages/VenueDetailPage.vue';
@@ -28,8 +28,8 @@ export const router = createRouter({
     { path: '/login', component: LoginPage, meta: { title: 'Sign in' } },
     { path: '/events', component: EventRequestsPage, meta: { title: 'Event requests' } },
     { path: '/events/new', component: NewEventPage, meta: { title: 'New event request' } },
+    { path: '/events/:id/edit', component: EventDraftEditPage, meta: { title: 'Edit draft' } },
     { path: '/events/:id', component: EventRequestDetailPage, meta: { title: 'Event request' } },
-    { path: '/events/:id/edit', component: EditDraftPage, meta: { title: 'Edit draft request' } },
     { path: '/reviews', component: ReviewQueuePage, meta: { title: 'Review queue' } },
     { path: '/reviews/unassigned', component: UnassignedRequestsPage, meta: { title: 'Unassigned requests' } },
     { path: '/reviews/:id', component: ReviewRequestPage, meta: { title: 'Event request review' } },
