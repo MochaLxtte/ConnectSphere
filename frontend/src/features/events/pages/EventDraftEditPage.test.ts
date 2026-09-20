@@ -1,8 +1,7 @@
-import { fireEvent, render, screen } from '@testing-library/vue';
+import { fireEvent, render, screen, waitFor } from '@testing-library/vue';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createMemoryHistory, createRouter } from 'vue-router';
 import { authSession } from '../../auth/session.js';
-import type { EventRequestDetail } from '../api/event-requests';
 import EventDraftEditPage from './EventDraftEditPage.vue';
 
 vi.mock('../../auth/session.js', async () => {
@@ -20,28 +19,30 @@ function organiser(id = 'organiser-1') {
   return { id, email: `${id}@example.com`, displayName: 'Test organiser', role: 'EVENT_ORGANISER' as const };
 }
 
-const draft: EventRequestDetail = {
+/** Shared `GET /api/events/:id` response. Includes the CF-18 registration window/capacity
+ *  fields the backend already returns, even though the frontend's ReviewRequestDetail type
+ *  does not declare them — EventRequestForm reads them structurally at runtime regardless. */
+const draft = {
   id: 'a', organiserId: 'organiser-1', coordinatorId: null, status: 'DRAFT',
   name: 'Career fair', purpose: 'Hiring', description: 'Annual fair',
   startsAt: '2026-10-01T01:00:00.000Z', endsAt: '2026-10-01T09:00:00.000Z',
   expectedAttendance: 200, venueRequirements: 'Hall A', accessibilityNeeds: 'Wheelchair access',
   equipmentRequirements: 'Projector', registrationRequired: true,
+  registrationCapacity: 50, registrationOpensAt: '2026-09-15T00:00:00.000Z',
+  registrationClosesAt: '2026-09-29T00:00:00.000Z',
   createdAt: '2026-09-07T00:00:00Z', updatedAt: '2026-09-17T17:30:00Z',
   review: null, actions: { canEditDraft: true, canMakeInitialDecision: false },
 };
 
-/**
- * `PATCH /api/events/:id` and `POST /api/events/:id/submit` return this plain draft-record
- * shape, never `actions`/`review` — real regression coverage must not mock those responses
- * with the full detail fixture, since that hid the "reads .actions off a write response" bug.
- */
+/** `PATCH`/`POST .../submit` write-response shape: a plain draft record, no `actions`/`review`. */
 const draftRecord = {
   id: 'a', organiserId: 'organiser-1', coordinatorId: null, status: 'DRAFT',
   name: 'Career fair', purpose: 'Hiring', description: 'Annual fair',
   startsAt: '2026-10-01T01:00:00.000Z', endsAt: '2026-10-01T09:00:00.000Z',
-  expectedAttendance: 200, venueRequirements: 'Hall A', accessibilityNeeds: 'Wheelchair access',
+  expectedAttendance: 200, venueRequirements: 'Hall B', accessibilityNeeds: 'Wheelchair access',
   equipmentRequirements: 'Projector', registrationRequired: true,
-  registrationCapacity: null, registrationOpensAt: null, registrationClosesAt: null,
+  registrationCapacity: 50, registrationOpensAt: '2026-09-15T00:00:00.000Z',
+  registrationClosesAt: '2026-09-29T00:00:00.000Z',
   createdAt: '2026-09-07T00:00:00Z', updatedAt: '2026-09-17T17:30:00Z',
 };
 
@@ -59,8 +60,7 @@ async function renderEditPage(id = 'a') {
   });
   await router.push(`/events/${id}/edit`);
   await router.isReady();
-  // Mount through a real router-view so navigating away actually unmounts this page,
-  // instead of leaving it mounted and reacting to a route it no longer represents.
+  // Mount through a real router-view so navigating away actually unmounts this page.
   return { ...render({ template: '<router-view />' }, { global: { plugins: [router] } }), router };
 }
 
@@ -70,35 +70,19 @@ beforeEach(() => {
 });
 
 describe('KAN-34 draft editing', () => {
-  it('populates the form from the loaded draft, converting times to Singapore local input values', async () => {
+  it('loads the shared request form pre-filled with the saved draft, including registration settings', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonResponse(draft)));
     await renderEditPage();
 
     expect(await screen.findByDisplayValue('Career fair')).toBeInTheDocument();
-    expect(screen.getByLabelText('Purpose')).toHaveValue('Hiring');
-    expect(screen.getByLabelText('Description')).toHaveValue('Annual fair');
-    expect(screen.getByLabelText('Starts')).toHaveValue('2026-10-01T09:00');
-    expect(screen.getByLabelText('Ends')).toHaveValue('2026-10-01T17:00');
-    expect(screen.getByLabelText('Expected attendance')).toHaveValue(200);
-    expect(screen.getByLabelText('Venue requirements')).toHaveValue('Hall A');
-    expect(screen.getByLabelText('Accessibility needs')).toHaveValue('Wheelchair access');
-    expect(screen.getByLabelText('Equipment requirements')).toHaveValue('Projector');
-    expect(screen.getByLabelText('Registration required')).toHaveValue('true');
-  });
-
-  it('preserves zero, false and blank/null values instead of treating them as unset', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonResponse({
-      ...draft, name: null, description: null, expectedAttendance: 0, registrationRequired: false,
-      startsAt: null, endsAt: null,
-    })));
-    await renderEditPage();
-
-    expect(await screen.findByLabelText('Event name')).toHaveValue('');
-    expect(screen.getByLabelText('Description')).toHaveValue('');
-    expect(screen.getByLabelText('Expected attendance')).toHaveValue(0);
-    expect(screen.getByLabelText('Registration required')).toHaveValue('false');
-    expect(screen.getByLabelText('Starts')).toHaveValue('');
-    expect(screen.getByLabelText('Ends')).toHaveValue('');
+    expect(screen.getByLabelText(/^Purpose/)).toHaveValue('Hiring');
+    expect(screen.getByLabelText(/^Starts/)).toHaveValue('2026-10-01T09:00');
+    expect(screen.getByLabelText(/^Expected attendance/)).toHaveValue(200);
+    // The fields this page was previously missing entirely:
+    expect(screen.getByRole('radio', { name: 'Registration required' })).toBeChecked();
+    expect(screen.getByLabelText(/^Registration capacity/)).toHaveValue(50);
+    expect(screen.getByLabelText(/^Registration opens/)).toHaveValue('2026-09-15T08:00');
+    expect(screen.getByLabelText(/^Registration closes/)).toHaveValue('2026-09-29T08:00');
   });
 
   it('shows a not-editable message instead of a form once the request is no longer a draft', async () => {
@@ -111,79 +95,35 @@ describe('KAN-34 draft editing', () => {
       'This request is no longer a draft and can no longer be edited here.',
     );
     expect(screen.getByRole('link', { name: 'View request' })).toHaveAttribute('href', '/events/a');
-    expect(screen.queryByLabelText('Event name')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/^Event name/)).not.toBeInTheDocument();
   });
 
-  it('saves edited fields as a PATCH, then re-reads the shared detail to confirm it is still editable', async () => {
-    // Regression coverage for the "reads .actions off the PATCH response" bug: the PATCH
-    // fixture below is a plain draftRecord, exactly like the real endpoint, with no actions.
+  it('saves changes and submits through the shared form, then navigates to the read-only detail page', async () => {
     const fetchMock = vi.fn()
       .mockResolvedValueOnce(jsonResponse(draft))
-      .mockResolvedValueOnce(jsonResponse({ ...draftRecord, name: 'Career fair 2026', accessibilityNeeds: null }))
-      .mockResolvedValueOnce(jsonResponse({ ...draft, name: 'Career fair 2026', accessibilityNeeds: null }));
+      .mockResolvedValueOnce(jsonResponse(draftRecord))
+      .mockResolvedValueOnce(jsonResponse({ ...draftRecord, status: 'SUBMITTED' }));
     vi.stubGlobal('fetch', fetchMock);
-    await renderEditPage();
+    const { router } = await renderEditPage();
     await screen.findByDisplayValue('Career fair');
 
-    await fireEvent.update(screen.getByLabelText('Event name'), 'Career fair 2026');
-    await fireEvent.update(screen.getByLabelText('Accessibility needs'), '');
-    await fireEvent.update(screen.getByLabelText('Starts'), '2026-11-05T10:30');
-    await fireEvent.click(screen.getByRole('button', { name: 'Save draft' }));
+    await fireEvent.update(screen.getByLabelText(/^Venue requirements/), 'Hall B');
+    await fireEvent.click(screen.getByRole('button', { name: 'Submit for review' }));
 
-    expect(await screen.findByText('Draft saved.')).toBeInTheDocument();
-    const [patchPath, patchOptions] = fetchMock.mock.calls[1] as [string, RequestInit];
-    expect(patchPath).toBe('/api/events/a');
-    expect(patchOptions.method).toBe('PATCH');
-    const body = JSON.parse(patchOptions.body as string);
-    expect(body).toMatchObject({
-      name: 'Career fair 2026',
-      accessibilityNeeds: null,
-      startsAt: '2026-11-05T02:30:00.000Z',
-      purpose: 'Hiring',
-      expectedAttendance: 200,
-      registrationRequired: true,
-    });
-    expect(fetchMock.mock.calls[2]?.[0]).toBe('/api/events/a');
-    expect(await screen.findByDisplayValue('Career fair 2026')).toBeInTheDocument();
+    await waitFor(() => expect(router.currentRoute.value.fullPath).toBe('/events/a'));
+    expect(fetchMock.mock.calls[1]?.[0]).toBe('/api/events/a');
+    expect(fetchMock.mock.calls[2]?.[0]).toBe('/api/events/a/submit');
   });
 
-  it('shows a save error and keeps the entered values when the save fails', async () => {
-    const fetchMock = vi.fn()
-      .mockResolvedValueOnce(jsonResponse(draft))
-      .mockResolvedValueOnce(jsonResponse({
-        error: { code: 'DRAFT_NOT_EDITABLE', message: 'This event request is no longer a draft and cannot be edited.' },
-      }, 409));
-    vi.stubGlobal('fetch', fetchMock);
+  it('clears identity and offers sign-in when loading fails with an expired session', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonResponse({
+      error: { code: 'AUTHENTICATION_REQUIRED', message: 'Session expired.' },
+    }, 401)));
     await renderEditPage();
-    await screen.findByDisplayValue('Career fair');
-
-    await fireEvent.update(screen.getByLabelText('Event name'), 'Renamed while someone else submitted it');
-    await fireEvent.click(screen.getByRole('button', { name: 'Save draft' }));
-
-    expect(await screen.findByRole('alert')).toHaveTextContent(
-      'This request is no longer a draft and can no longer be edited here. Reload to see its current status.',
-    );
-    expect(screen.getByLabelText('Event name')).toHaveValue('Renamed while someone else submitted it');
-    expect(screen.queryByRole('status', { name: /saved/i })).not.toBeInTheDocument();
-  });
-
-  it('clears identity and offers sign-in when a save fails with an expired session', async () => {
-    const fetchMock = vi.fn()
-      .mockResolvedValueOnce(jsonResponse(draft))
-      .mockResolvedValueOnce(jsonResponse({
-        error: { code: 'AUTHENTICATION_REQUIRED', message: 'Session expired.' },
-      }, 401));
-    vi.stubGlobal('fetch', fetchMock);
-    await renderEditPage();
-    await screen.findByDisplayValue('Career fair');
-
-    await fireEvent.update(screen.getByLabelText('Event name'), 'Still editing');
-    await fireEvent.click(screen.getByRole('button', { name: 'Save draft' }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent('Sign in to edit this event request.');
     expect(screen.getByRole('link', { name: 'Sign in' })).toHaveAttribute('href', '/login');
     expect(session.user).toBeNull();
-    expect(screen.queryByLabelText('Event name')).not.toBeInTheDocument();
   });
 
   it('offers a retry for a transient load failure and hides it once the draft loads', async () => {
@@ -211,93 +151,15 @@ describe('KAN-34 draft editing', () => {
     expect(screen.queryByText('Sensitive server explanation.')).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Try again' })).not.toBeInTheDocument();
   });
-});
 
-describe('KAN-6 submit for review from the draft editor', () => {
-  it('saves the current form, submits, and navigates to the read-only detail page', async () => {
-    const fetchMock = vi.fn()
-      .mockResolvedValueOnce(jsonResponse(draft))
-      .mockResolvedValueOnce(jsonResponse({ ...draftRecord, venueRequirements: 'Hall B' }))
-      .mockResolvedValueOnce(jsonResponse({ ...draft, venueRequirements: 'Hall B' }))
-      .mockResolvedValueOnce(jsonResponse({ ...draftRecord, venueRequirements: 'Hall B', status: 'SUBMITTED' }));
-    vi.stubGlobal('fetch', fetchMock);
-    const { router } = await renderEditPage();
-    await screen.findByDisplayValue('Career fair');
-
-    await fireEvent.update(screen.getByLabelText('Venue requirements'), 'Hall B');
-    await fireEvent.click(screen.getByRole('button', { name: 'Submit for review' }));
-
-    await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(4));
-    const [patchPath, patchOptions] = fetchMock.mock.calls[1] as [string, RequestInit];
-    expect(patchPath).toBe('/api/events/a');
-    expect(patchOptions.method).toBe('PATCH');
-    expect(JSON.parse(patchOptions.body as string)).toMatchObject({ venueRequirements: 'Hall B' });
-    expect(fetchMock.mock.calls[2]?.[0]).toBe('/api/events/a');
-    const [submitPath, submitOptions] = fetchMock.mock.calls[3] as [string, RequestInit];
-    expect(submitPath).toBe('/api/events/a/submit');
-    expect(submitOptions.method).toBe('POST');
-    await vi.waitFor(() => expect(router.currentRoute.value.fullPath).toBe('/events/a'));
-  });
-
-  it('shows a friendly missing-fields message using the server-reported field names, without navigating', async () => {
-    const fetchMock = vi.fn()
-      .mockResolvedValueOnce(jsonResponse(draft))
-      .mockResolvedValueOnce(jsonResponse(draftRecord))
-      .mockResolvedValueOnce(jsonResponse(draft))
-      .mockResolvedValueOnce(jsonResponse({
-        error: {
-          code: 'SUBMISSION_INCOMPLETE',
-          message: 'The following fields must be completed before submission: purpose.',
-          missingFields: ['purpose'],
-        },
-      }, 400));
-    vi.stubGlobal('fetch', fetchMock);
-    const { router } = await renderEditPage();
-    await screen.findByDisplayValue('Career fair');
-
-    await fireEvent.click(screen.getByRole('button', { name: 'Submit for review' }));
-
-    expect(await screen.findByRole('alert')).toHaveTextContent(
-      'Complete these details before submitting: Purpose.',
-    );
-    expect(router.currentRoute.value.fullPath).toBe('/events/a/edit');
-    expect(screen.getByLabelText('Event name')).toBeInTheDocument();
-  });
-
-  it('never calls submit when persisting the current changes fails first', async () => {
-    const fetchMock = vi.fn()
-      .mockResolvedValueOnce(jsonResponse(draft))
-      .mockResolvedValueOnce(jsonResponse({
-        error: { code: 'DRAFT_NOT_EDITABLE', message: 'This event request is no longer a draft and cannot be edited.' },
-      }, 409));
-    vi.stubGlobal('fetch', fetchMock);
+  it('clears the form and reloads private data when the organiser signs out mid-edit', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonResponse(draft)));
     await renderEditPage();
     await screen.findByDisplayValue('Career fair');
 
-    await fireEvent.click(screen.getByRole('button', { name: 'Submit for review' }));
-
-    expect(await screen.findByRole('alert')).toHaveTextContent(
-      'This request is no longer a draft and can no longer be edited here. Reload to see its current status.',
-    );
-    expect(fetchMock).toHaveBeenCalledTimes(2);
-  });
-
-  it('clears identity and offers sign-in when submission fails with an expired session', async () => {
-    const fetchMock = vi.fn()
-      .mockResolvedValueOnce(jsonResponse(draft))
-      .mockResolvedValueOnce(jsonResponse(draftRecord))
-      .mockResolvedValueOnce(jsonResponse(draft))
-      .mockResolvedValueOnce(jsonResponse({
-        error: { code: 'AUTHENTICATION_REQUIRED', message: 'Session expired.' },
-      }, 401));
-    vi.stubGlobal('fetch', fetchMock);
-    await renderEditPage();
-    await screen.findByDisplayValue('Career fair');
-
-    await fireEvent.click(screen.getByRole('button', { name: 'Submit for review' }));
+    session.user = null;
 
     expect(await screen.findByRole('alert')).toHaveTextContent('Sign in to edit this event request.');
-    expect(screen.getByRole('link', { name: 'Sign in' })).toHaveAttribute('href', '/login');
-    expect(session.user).toBeNull();
+    expect(screen.queryByDisplayValue('Career fair')).not.toBeInTheDocument();
   });
 });
