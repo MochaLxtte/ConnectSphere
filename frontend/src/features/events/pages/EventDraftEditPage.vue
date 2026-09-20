@@ -1,13 +1,10 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, reactive, ref, useId, watch } from 'vue';
+import { computed, onBeforeUnmount, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { ApiError } from '../../../lib/api-client';
 import { authSession, clearLocalSession } from '../../auth/session.js';
-import {
-  fetchEventRequestDetail, submitRequest, updateDraft, SubmissionIncompleteError,
-  type EventDraftInput, type EventRequestDetail,
-} from '../api/event-requests';
-import { fromSingaporeInputValue, toSingaporeInputValue } from '../presentation';
+import { fetchEventRequestDetail, type EventRequestDetail } from '../api/event-requests';
+import EventRequestForm from '../components/EventRequestForm.vue';
 
 type LoadState =
   | { status: 'loading' }
@@ -15,47 +12,11 @@ type LoadState =
   | { status: 'not-editable'; request: EventRequestDetail }
   | { status: 'ready'; request: EventRequestDetail };
 
-interface DraftForm {
-  name: string;
-  purpose: string;
-  description: string;
-  startsAt: string;
-  endsAt: string;
-  expectedAttendance: string;
-  venueRequirements: string;
-  accessibilityNeeds: string;
-  equipmentRequirements: string;
-  registrationRequired: '' | 'true' | 'false';
-}
-
-const id = useId();
 const route = useRoute();
 const router = useRouter();
 const requestId = computed(() => String(route.params.id ?? ''));
 const state = ref<LoadState>({ status: 'loading' });
-const form = reactive<DraftForm>({
-  name: '', purpose: '', description: '', startsAt: '', endsAt: '', expectedAttendance: '',
-  venueRequirements: '', accessibilityNeeds: '', equipmentRequirements: '', registrationRequired: '',
-});
-const saving = ref(false);
-const saved = ref(false);
-const saveErrorMessage = ref<string | null>(null);
-const submitting = ref(false);
-const submitErrorMessage = ref<string | null>(null);
 let controller: AbortController | undefined;
-
-function populateForm(request: EventRequestDetail) {
-  form.name = request.name ?? '';
-  form.purpose = request.purpose ?? '';
-  form.description = request.description ?? '';
-  form.startsAt = toSingaporeInputValue(request.startsAt);
-  form.endsAt = toSingaporeInputValue(request.endsAt);
-  form.expectedAttendance = request.expectedAttendance == null ? '' : String(request.expectedAttendance);
-  form.venueRequirements = request.venueRequirements ?? '';
-  form.accessibilityNeeds = request.accessibilityNeeds ?? '';
-  form.equipmentRequirements = request.equipmentRequirements ?? '';
-  form.registrationRequired = request.registrationRequired == null ? '' : request.registrationRequired ? 'true' : 'false';
-}
 
 function showSignIn() {
   controller?.abort();
@@ -69,14 +30,11 @@ async function load() {
   controller?.abort();
   const current = new AbortController();
   controller = current;
-  saved.value = false;
-  saveErrorMessage.value = null;
   // Clear the previous draft before rechecking access, editability or switching accounts.
   state.value = { status: 'loading' };
   try {
     const request = await fetchEventRequestDetail(requestId.value, current.signal);
     if (current.signal.aborted) return;
-    populateForm(request);
     state.value = request.actions.canEditDraft
       ? { status: 'ready', request } : { status: 'not-editable', request };
   } catch (error) {
@@ -96,137 +54,8 @@ async function load() {
   }
 }
 
-function emptyToNull(raw: string): string | null {
-  const trimmed = raw.trim();
-  return trimmed === '' ? null : trimmed;
-}
-
-function parseAttendance(raw: string): number | null {
-  const trimmed = raw.trim();
-  if (trimmed === '') return null;
-  const parsed = Number(trimmed);
-  return Number.isInteger(parsed) && parsed >= 0 ? parsed : null;
-}
-
-function saveErrorText(error: unknown): string {
-  const code = error instanceof ApiError ? error.code : null;
-  switch (code) {
-    case 'INVALID_DRAFT_UPDATE': return 'Check the highlighted fields and try again.';
-    case 'EVENT_REQUEST_NOT_FOUND': return 'This draft is unavailable or you do not have permission to edit it.';
-    case 'DRAFT_NOT_EDITABLE':
-      return 'This request is no longer a draft and can no longer be edited here. Reload to see its current status.';
-    case 'DRAFT_EDIT_FORBIDDEN': return 'You are not authorised to edit this draft.';
-    default: return 'Your changes could not be saved. Please try again.';
-  }
-}
-
-function buildDraftUpdate(): Partial<EventDraftInput> {
-  return {
-    name: emptyToNull(form.name),
-    purpose: emptyToNull(form.purpose),
-    description: emptyToNull(form.description),
-    startsAt: fromSingaporeInputValue(form.startsAt),
-    endsAt: fromSingaporeInputValue(form.endsAt),
-    expectedAttendance: parseAttendance(form.expectedAttendance),
-    venueRequirements: emptyToNull(form.venueRequirements),
-    accessibilityNeeds: emptyToNull(form.accessibilityNeeds),
-    equipmentRequirements: emptyToNull(form.equipmentRequirements),
-    registrationRequired: form.registrationRequired === '' ? null : form.registrationRequired === 'true',
-  };
-}
-
-const submitFieldLabels = new Map([
-  ['name', 'Event name'], ['purpose', 'Purpose'], ['startsAt', 'Starts'], ['endsAt', 'Ends'],
-  ['expectedAttendance', 'Expected attendance'], ['venueRequirements', 'Venue requirements'],
-]);
-
-function submitErrorText(error: unknown): string {
-  if (error instanceof SubmissionIncompleteError) {
-    const missing = error.missingFields.map((field) => submitFieldLabels.get(field) ?? field);
-    return `Complete these details before submitting: ${missing.join(', ')}.`;
-  }
-  if (error instanceof ApiError && [404, 409].includes(error.status)) {
-    return 'This request can no longer be submitted. Reload to see its latest status.';
-  }
-  return 'Your request could not be submitted. Please try again.';
-}
-
-/**
- * `PATCH /api/events/:id` returns a plain draft record, not the shared detail shape with
- * `actions`/`review` — re-read the shared GET afterward instead of guessing editability
- * from a response that was never going to carry it.
- */
-async function save() {
-  if (state.value.status !== 'ready' || saving.value || submitting.value) return;
-  const current = state.value.request;
-  saving.value = true;
-  saved.value = false;
-  saveErrorMessage.value = null;
-  submitErrorMessage.value = null;
-  try {
-    await updateDraft(current.id, buildDraftUpdate());
-    const refreshed = await fetchEventRequestDetail(current.id);
-    populateForm(refreshed);
-    state.value = refreshed.actions.canEditDraft
-      ? { status: 'ready', request: refreshed } : { status: 'not-editable', request: refreshed };
-    saved.value = refreshed.actions.canEditDraft;
-  } catch (error) {
-    if (error instanceof ApiError && error.status === 401) {
-      clearLocalSession();
-      showSignIn();
-      return;
-    }
-    saveErrorMessage.value = saveErrorText(error);
-  } finally {
-    saving.value = false;
-  }
-}
-
-/** Submitting also persists the current form, so what gets reviewed matches what is on screen. */
-async function submitForReview() {
-  if (state.value.status !== 'ready' || saving.value || submitting.value) return;
-  const current = state.value.request;
-  submitting.value = true;
-  saved.value = false;
-  saveErrorMessage.value = null;
-  submitErrorMessage.value = null;
-
-  let refreshed: EventRequestDetail;
-  try {
-    await updateDraft(current.id, buildDraftUpdate());
-    refreshed = await fetchEventRequestDetail(current.id);
-  } catch (error) {
-    if (error instanceof ApiError && error.status === 401) {
-      clearLocalSession();
-      showSignIn();
-      return;
-    }
-    saveErrorMessage.value = saveErrorText(error);
-    submitting.value = false;
-    return;
-  }
-  populateForm(refreshed);
-  if (!refreshed.actions.canEditDraft) {
-    // Another tab or session changed this request's state between load and submit.
-    state.value = { status: 'not-editable', request: refreshed };
-    submitting.value = false;
-    return;
-  }
-  state.value = { status: 'ready', request: refreshed };
-
-  try {
-    await submitRequest(refreshed.id);
-    await router.push(`/events/${refreshed.id}`);
-  } catch (error) {
-    if (error instanceof ApiError && error.status === 401) {
-      clearLocalSession();
-      showSignIn();
-      return;
-    }
-    submitErrorMessage.value = submitErrorText(error);
-  } finally {
-    submitting.value = false;
-  }
+async function onSubmitted(eventRequestId: string) {
+  await router.push(`/events/${eventRequestId}`);
 }
 
 watch(requestId, () => { void load(); }, { immediate: true });
@@ -264,67 +93,12 @@ onBeforeUnmount(() => controller?.abort());
     <RouterLink :to="`/events/${state.request.id}`" class="button button-secondary">View request</RouterLink>
   </div>
 
-  <form v-else class="panel edit-panel" :aria-busy="saving || submitting" @submit.prevent="save">
-    <fieldset :disabled="saving || submitting" class="draft-fields">
-      <legend>Event details</legend>
-
-      <label :for="`${id}-name`">Event name
-        <input :id="`${id}-name`" v-model="form.name" type="text" maxlength="200" />
-      </label>
-      <label :for="`${id}-purpose`">Purpose
-        <textarea :id="`${id}-purpose`" v-model="form.purpose" rows="2" />
-      </label>
-      <label :for="`${id}-description`">Description
-        <textarea :id="`${id}-description`" v-model="form.description" rows="3" />
-      </label>
-      <div class="field-row">
-        <label :for="`${id}-starts`">Starts
-          <input :id="`${id}-starts`" v-model="form.startsAt" type="datetime-local" />
-        </label>
-        <label :for="`${id}-ends`">Ends
-          <input :id="`${id}-ends`" v-model="form.endsAt" type="datetime-local" />
-        </label>
-      </div>
-      <p class="field-hint">Dates and times are in Singapore time.</p>
-      <label :for="`${id}-attendance`">Expected attendance
-        <input :id="`${id}-attendance`" v-model="form.expectedAttendance" type="number" min="0" step="1" />
-      </label>
-      <label :for="`${id}-venue`">Venue requirements
-        <textarea :id="`${id}-venue`" v-model="form.venueRequirements" rows="2" />
-      </label>
-      <label :for="`${id}-accessibility`">Accessibility needs
-        <textarea :id="`${id}-accessibility`" v-model="form.accessibilityNeeds" rows="2" />
-      </label>
-      <label :for="`${id}-equipment`">Equipment requirements
-        <textarea :id="`${id}-equipment`" v-model="form.equipmentRequirements" rows="2" />
-      </label>
-      <label :for="`${id}-registration`">Registration required
-        <select :id="`${id}-registration`" v-model="form.registrationRequired">
-          <option value="">Not decided yet</option>
-          <option value="true">Yes</option>
-          <option value="false">No</option>
-        </select>
-      </label>
-    </fieldset>
-
-    <p v-if="saveErrorMessage" class="save-error" role="alert">{{ saveErrorMessage }}</p>
-    <p v-if="submitErrorMessage" class="save-error" role="alert">{{ submitErrorMessage }}</p>
-    <footer class="edit-actions">
-      <button type="submit" class="button button-primary" :disabled="saving || submitting">
-        {{ saving ? 'Saving…' : 'Save draft' }}
-      </button>
-      <button
-        type="button" class="button button-secondary" :disabled="saving || submitting"
-        @click="submitForReview"
-      >
-        {{ submitting ? 'Submitting…' : 'Submit for review' }}
-      </button>
-      <p v-if="saving" role="status">Saving your draft. Please wait.</p>
-      <p v-else-if="submitting" role="status">Submitting your request for review. Please wait.</p>
-      <p v-else-if="saved" role="status">Draft saved.</p>
-    </footer>
-    <p class="field-hint submit-hint">Submitting also saves your current changes.</p>
-  </form>
+  <EventRequestForm
+    v-else
+    :request="state.request"
+    @submitted="onSubmitted"
+    @session-expired="showSignIn"
+  />
 </template>
 
 <style scoped>
@@ -332,26 +106,7 @@ onBeforeUnmount(() => controller?.abort());
 .back-link { color: var(--green); font-size: 14px; text-decoration: underline; text-underline-offset: 3px; }
 .edit-panel { padding: 24px; min-width: 0; }
 .edit-error .button, .edit-panel[role='alert'] .button { margin-top: 12px; }
-.draft-fields { border: 0; padding: 0; margin: 0; min-width: 0; display: grid; gap: 17px; }
-.draft-fields legend { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
-.draft-fields label { display: grid; gap: 7px; color: #52614e; font-size: 12px; font-weight: 600; }
-.draft-fields input, .draft-fields textarea, .draft-fields select {
-  width: 100%; border: 1px solid #dce3d6; border-radius: 6px; padding: 10px 11px;
-  color: #293a33; background: #fff; font: inherit; font-size: 14px;
-}
-.draft-fields textarea { resize: vertical; min-height: 60px; }
-.draft-fields input:focus-visible, .draft-fields textarea:focus-visible, .draft-fields select:focus-visible {
-  outline: 3px solid #90a950; outline-offset: 2px;
-}
-.field-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 17px; }
-.field-hint { margin-top: -8px; font-size: 12px; color: #59685e; }
-.submit-hint { margin-top: 10px; }
-.save-error { color: #8a332b; font-size: 14px; line-height: 1.6; margin-top: 20px; }
-.edit-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 16px; margin-top: 24px; }
-.edit-actions p { color: #59685e; font-size: 13px; }
-.draft-fields:disabled { opacity: 0.75; }
 @media (max-width: 600px) {
   .edit-panel { padding: 20px; }
-  .field-row { grid-template-columns: 1fr; }
 }
 </style>
