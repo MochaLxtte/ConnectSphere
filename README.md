@@ -60,7 +60,9 @@ See [architecture](docs/architecture/README.md) and the [API contract](docs/arch
 
 ## Team handoff
 
-Start with the [Sprint 1 plan](docs/scrum/sprint-01/README.md). The following workstreams were agreed at the planning meeting on 6 September 2026:
+Start with the [Sprint 2 plan](docs/scrum/sprint-02/README.md), [selected stories and acceptance plan](docs/scrum/sprint-02/sprint-backlog.md), and [product backlog](docs/requirements/product-backlog.md). Sprint 2 runs from 20 September to 3 October with **43 points: 35 new plus eight carried from Sprint 1**. Agree an owner and reviewer for each new story before parallel implementation. The nine new-story allocations remain open; Kai Jie retains KAN-6/KAN-34 and Irfan retains KAN-33. Read the [open policy and integration decisions](docs/scrum/sprint-02/planning.md#dependencies-and-open-decisions) before changing shared behaviour. Future stories KAN-60–KAN-67 are outside this commitment.
+
+The following **historical Sprint 1 workstreams** were agreed on 6 September 2026. They provide ownership context and do not assign the new Sprint 2 work:
 
 | Developer | Jira items              | Responsibilities                                                   |
 | --------- | ----------------------- | ------------------------------------------------------------------ |
@@ -73,7 +75,7 @@ Start with the [Sprint 1 plan](docs/scrum/sprint-01/README.md). The following wo
 
 After database setup, Arvin supports cross-feature integration, end-to-end testing and resolving integration issues with the feature owners.
 
-Read [CONTRIBUTING.md](CONTRIBUTING.md) before the first feature branch. Sprint 1 uses pre-provisioned Supabase accounts and assigned-coordinator access. Account administration, event field validation, assignment/delegation and later transitions still have [open customer questions](docs/requirements/assumptions-and-questions.md). Team assumptions remain distinct from customer clarifications.
+Read [CONTRIBUTING.md](CONTRIBUTING.md) before the first feature branch. The shared setup uses pre-provisioned Supabase accounts and assigned-coordinator access. Sprint 1 closed with 24 Done points and eight carried points; the [review](docs/scrum/sprint-01/review.md#review-defects-and-carry-over) records the carried defects. Existing code and later fixes still need verification against the selected criteria. Account administration, event field validation, assignment/delegation and later transitions have [open customer questions](docs/requirements/assumptions-and-questions.md). Team assumptions remain distinct from customer clarifications.
 
 ## Checks
 
@@ -130,7 +132,7 @@ Invite teammates and configure `main` to require PR review and the CI `verify` c
 
 ## Course deliverables
 
-The [submission checklist](docs/submission/checklist.md) maps the submission requirements to folders **1–7**, with project records and outstanding evidence. Keep working records in `docs/`; run `npm run submission:prepare` to assemble a fresh numbered snapshot in `dist/submission-.../`. Complete the checklist before creating the final ZIP. Sprint 1 records are in [docs/scrum/sprint-01](docs/scrum/sprint-01/README.md).
+The [submission checklist](docs/submission/checklist.md) maps the submission requirements to folders **1–7**, with project records and outstanding evidence. Keep working records in `docs/`; run `npm run submission:prepare` to assemble a fresh numbered snapshot in `dist/submission-.../`. Complete the checklist before creating the final ZIP. Both [Sprint 1 records](docs/scrum/sprint-01/README.md) and [Sprint 2 records](docs/scrum/sprint-02/README.md) are maintained in the repository.
 
 ## Project context
 

@@ -1,6 +1,6 @@
 # Contributing
 
-Read the [setup instructions](README.md), [release scope](docs/requirements/README.md), and [initial workstreams](docs/scrum/sprint-01/README.md) before starting. Several Sprint 1 features are implemented while other release work remains unfinished; consult the dated backlog and test evidence for current boundaries. Agree acceptance criteria and shared contracts before implementing a story.
+Read the [setup instructions](README.md), [Sprint 2 plan](docs/scrum/sprint-02/README.md), and [product backlog](docs/requirements/product-backlog.md) before starting. Sprint 2 includes 35 new points and eight carried points; future backlog stories are not automatically part of that commitment. Consult the dated backlog and test evidence for current boundaries, and agree ownership, acceptance criteria and shared contracts before implementing a story. The [Sprint 1 workstreams](docs/scrum/sprint-01/README.md) remain available as historical context.
 
 ## Working on a story
 

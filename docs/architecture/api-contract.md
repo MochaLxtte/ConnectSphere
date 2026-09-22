@@ -228,6 +228,8 @@ Request body:
 
 `decision` must be `APPROVED` or `REJECTED`. `reason` is optional, is trimmed, and becomes `null` when absent or blank. Other body fields are rejected. The event request ID must use UUID format. Initial decisions require `SUBMITTED` or, since 19 September, `UNDER_REVIEW` status with no existing review decision. A request in `CLARIFICATION_REQUESTED` must be answered first, which returns it to `SUBMITTED`.
 
+**Required correction, recorded 21 September:** The [customer rule](../requirements/assumptions-and-questions.md#21-september-2026--customer-rules-reconciled-with-the-backlog) requires a non-empty reason for event-request rejection. The current parser, persistence path and UI still allow an empty reason. The paragraph above describes existing behaviour, not compliance with that requirement. Refine KAN-36 and add the validation/UI regression work; approval may continue without a reason. No implementation change or new test pass is recorded here.
+
 | Response | Meaning |
 | --- | --- |
 | `201` | Returns `reviewId`, `eventRequestId`, `reviewedBy`, `decision` and `reason` after the review and matching event status commit together. |

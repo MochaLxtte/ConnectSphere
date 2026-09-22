@@ -1,14 +1,14 @@
 # Sprint 1 backlog and acceptance test plan
 
-**Sprint window: 6–19 September 2026, inclusive (Asia/Singapore).** At Sprint Planning on Sunday 6 September, the team committed to the nine user stories and separate KAN-24 infrastructure PBI listed below. The six developers share the workstreams, with one developer also serving as Scrum Master and another as Product Owner. Sprint Review is scheduled for Saturday 19 September, followed by Sprint 2 Planning on Sunday 20 September. Feature links map the backlog items to the project's core requirements.
+**Sprint window: 6–19 September 2026, inclusive (Asia/Singapore). Status: closed in Jira following the completed review.** At Sprint Planning on Sunday 6 September, the team committed to the nine user stories and separate KAN-24 infrastructure PBI listed below. Seven items closed Done for 24 points; KAN-6, KAN-33 and KAN-34 carried 8 points into Sprint 2. The current Jira snapshot corroborates these statuses, points and owners; exact meeting times and original tracker evidence remain to be retained. Feature links map the backlog items to the project's core requirements.
 
-Detailed story wording, acceptance criteria (AC), task splits, reviewers and tests below are **drafts for team review**. Story owners are assigned below; individual development capacity is still to be recorded. Local task IDs are documentation references for creating or linking Jira subtasks. Attach a dated Jira export with the full story titles and agreed criteria.
+The cards below retain the **local implementation criteria, task splits and historical test references**. The current Jira descriptions and 79 functional-story acceptance criteria have now been reviewed; they are not a verbatim match for these broader local criteria. Use the [current-version reconciliation](#current-jira-reconciliation--21-september) before treating the cards as the adopted Jira version. Story owners are assigned below; individual development capacity is still to be recorded. Local task IDs are documentation references for creating or linking Jira subtasks. Preserve the reviewed export with its capture metadata and the criteria version adopted at planning/review.
 
 Use [planning](planning.md) for the commitment and decisions, [estimation and capacity](estimation-and-capacity.md) for actual estimates and availability, and [daily progress](daily-progress.md) for dated changes. Assess completion against the team's adopted [definition of done](../definition-of-done.md), then record actual outcomes in the [review](review.md), [retrospective](retrospective.md) and [evidence index](evidence/README.md).
 
 ## Committed backlog
 
-The nine committed user stories, **including KAN-27**, total **27 story points**. **KAN-24 is a separate 5-point infrastructure PBI**, giving a **32-point Sprint 1 commitment across 10 PBIs**. KAN-33 and KAN-16 are the team's 2-point reference stories for relative estimation. KAN-24 covers shared database foundations; individual business implementations and their tests stay with the functional stories. Completion and velocity will be assessed at sprint close.
+The nine committed user stories, **including KAN-27**, total **27 story points**. **KAN-24 is a separate 5-point infrastructure PBI**, giving a **32-point Sprint 1 commitment across 10 PBIs**. KAN-33 and KAN-16 are the team's 2-point reference stories for relative estimation. KAN-24 covers shared database foundations; individual business implementations and their tests stay with the functional stories. The closure outcome is **24 Done + 8 unfinished = 32**; supporting tasks are not estimated again.
 
 | Jira item | Story slice | Owner | Proposed reviewer | Agreed points | Selection | Feature link |
 | --- | --- | --- | --- | ---: | --- | --- |
@@ -25,22 +25,63 @@ The nine committed user stories, **including KAN-27**, total **27 story points**
 
 **Implementation snapshot, 15 September:** Supabase login and server-side identity/access checks are connected. The backend supports owned-draft editing/submission and shared request detail. The coordinator queue/detail and approval/rejection interface are connected, including recorded outcomes and refresh. Tristan's hosted approval check changed a synthetic request from `SUBMITTED` to `APPROVED`. KAN-16 still needs the organiser list/status interface and an organiser list API covering submitted and decided requests; the current organiser list returns drafts only. Full story acceptance and review remain outstanding. This snapshot does not change the original commitment or mark any item Done.
 
-**Current integration note, 20 September, after the Sprint 1 window:** request creation, draft saving/editing, KAN-6 submission, KAN-16 list/detail, coordinator review and clarification are connected in the integrated code. Assignment and the later release workflows are also present, but their implementation does not add PBIs or points to Sprint 1. The hosted submission-to-status check, acceptance of the newer flows, peer review and remaining customer clarifications are still outstanding. Test rows below retain their recorded evidence; code integration alone does not turn an unrecorded acceptance scenario into a pass or establish delivery by 19 September.
+**Integration snapshot, 20 September, after the Sprint 1 window:** request creation, draft saving/editing, KAN-6 submission, KAN-16 list/detail, coordinator review and clarification were connected in the integrated code. Assignment and the later release workflows were also present, without adding PBIs or points to Sprint 1. This integration note initially left acceptance and review evidence unreconciled. The confirmed review date is 19 September; its outcomes are recorded in the closure table below. Earlier test rows retain their recorded scope, and the later integrated code alone does not establish delivery by 19 September.
 
-## Decisions needed to finalize implementation details
+## Closure and carry-over
+
+The [review record](review.md) contains the detailed demo outcomes, defects and Jira dispositions. This closure table supersedes earlier implementation snapshots and unfinished task descriptions below; those retain the sequence of work rather than establishing new completion dates.
+
+| Item | Owner | Points | Closure disposition | Review evidence / remaining work |
+| --- | --- | ---: | --- | --- |
+| KAN-25 | Ryan | 5 | Done in Jira | DEMO-01/08 passed. |
+| KAN-31 | Ernest | 3 | Done in Jira | Creation accepted; assist with shared-form regression work if needed. |
+| KAN-4 | Ernest | 3 | Done in Jira | Draft persistence accepted; registration editing defect carried under KAN-34. |
+| KAN-34 | Kai Jie | 3 | Carried to Sprint 2 | DEMO-03 passed basic editing; S1-DEF-01 registration fields remain incomplete. |
+| KAN-6 | Kai Jie | 3 | Carried to Sprint 2 | DEMO-04/05 passed tested paths; S1-DEF-03/04 require saved-draft and mandatory-field retests. |
+| KAN-33 | Irfan | 2 | Carried to Sprint 2 | S1-DEF-02: assigned approved requests need discoverable coordinator follow-up access. |
+| KAN-36 | Tristan | 3 | Done in Jira | DEMO-07/09 passed; support follow-up access regression checks. |
+| KAN-16 | Tristan | 2 | Done in Jira | DEMO-05/07 passed; recheck organiser status after carry-over fixes. |
+| KAN-27 | Irfan | 3 | Done in Jira | DEMO-10 passed. |
+| KAN-24 | Arvin | 5 | Done in Jira | DEMO-11 passed; retain setup and database test evidence. |
+
+Carry-over retains the original estimates: **KAN-6 (3) + KAN-33 (2) + KAN-34 (3) = 8**. [Sprint 2](../sprint-02/sprint-backlog.md) contains these items plus nine new items at 35 points, for **43 points across 12 PBIs**. KAN-29 was not committed in Sprint 1 and is newly selected for Sprint 2 at 3 points. No partial completion points were credited to the three carry-over items.
+
+Done dispositions record the team's Jira closure decision. Jira records KAN-16's resolution at **20 September, 23:06**, and the other six Done stories at **21 September, 00:26**; those timestamp fields do not specify a timezone. These later tracker updates are separate from the **19 September review and retrospective**. The adopted criteria version, original export and final board/CI evidence still need linking. Do not infer completion dates from commits or reconstruct daily burndown from the current snapshot.
+
+## Current Jira reconciliation — 21 September
+
+The reviewed current snapshot confirms **seven Done stories at 24 points and three In Review stories at eight points**, with the recorded owners and estimates unchanged. KAN-6 and KAN-34 remain assigned to Kai Jie; KAN-33 remains assigned to Irfan. Their Sprint 1 and Sprint 2 memberships preserve carry-over history. See the shared [Jira backlog audit](../../requirements/assumptions-and-questions.md#21-september-2026--jira-backlog-audit) for the pre-edit comparison and [applied refinements](../../requirements/assumptions-and-questions.md#21-september-2026--jira-updates-applied). The AC counts below describe the original reviewed export, before the dated additions.
+
+| Jira story | Pre-edit export AC count | Reconciliation still needed |
+| --- | ---: | --- |
+| KAN-25 | 7 | Cross-reference the five named roles and event-relationship permissions to local access criteria; retain sign-out/session checks as supporting implementation coverage. |
+| KAN-31 | 12 | Map each named event field, multiple-request creation and organiser-only creation to the broader local form criteria and tests. |
+| KAN-4 | 7 | Map saved values, Draft identification/listing, distinction from submitted requests and coordinator-queue exclusion to the retained draft tests. |
+| KAN-34 | 9 | Map draft discovery/opening/editing/save/reopen and unchanged Draft state; link the registration-controls carry-over defect. |
+| KAN-6 | 8 | Map submission feedback, retained details, Submitted state and reviewer availability; specify the confirmed field/conditional-validation rules and link both submission defects. |
+| KAN-33 | 7 | Map the listed submission fields, draft exclusion and protected access. Preserve the superseded local KAN-33-AC5 and later implementation checks as historical records; record post-approval navigation repair separately. |
+| KAN-36 | 10 | Map recorded decisions, status updates, organiser outcomes and access denials. Four mandatory-reason refinement checks are now in Jira, with KAN-60 linked for implementation; prior tests do not establish enforcement of a mandatory reason. |
+| KAN-16 | 9 | Map Draft, Submitted, clarification, Approved and Rejected labels, latest outcomes and unrelated-client isolation to the retained list/detail evidence. |
+| KAN-27 | 10 | Map clarification/amendment creation, message and organiser visibility, including that clarification neither approves nor rejects the event. Response/edit/resubmission behaviour still needs a separate decision. |
+| **Functional-story total** | **79** | Cross-reference the current Jira wording without renumbering local criterion or test IDs; record the version actually adopted. |
+| KAN-24 | 0 explicit criteria | The description covers database setup and a database diagram. Five setup/schema/security/integration/diagram checks were added to Jira on 21 September with existing evidence references. Cross-reference the three retained local criteria and record outstanding hosted/diagram evidence. |
+
+This review supplies the current descriptions, criteria, owners and status snapshot. It does not supply the original planning/closing board, a sprint report, daily burndown, or proof that the current wording was the version used on 6 or 19 September. Preserve the original reviewed export in the evidence collection with its actual capture time. The 32-point baseline, 24-point closure outcome and eight carried points remain unchanged; no new acceptance result follows from comparing descriptions.
+
+## Planning questions and implementation decisions
 
 - **Database hosting, decided 8 September:** use Supabase for PostgreSQL, with Express accessing it through the PostgreSQL driver. Follow the [technical decision](../../requirements/assumptions-and-questions.md#8-september-2026--hosted-postgresql) for verified TLS, Data API settings, ordered migrations and isolated test data. The ten-PBI, 32-point commitment is unchanged.
 - **Authentication and access, updated 15 September:** Supabase Auth is implemented, with verified server sessions mapped to `app_users`. Organisers access their own requests; coordinator reads and decisions use the Sprint 1 assigned-coordinator policy. Account administration and broader role/triage rules remain open under Q-01/Q-02 in [customer questions](../../requirements/assumptions-and-questions.md). A client-supplied role or organiser ID must not grant access.
-- **Draft versus submission:** settle the field list and validation rules through Q-03. No particular event field is declared mandatory for submission by this document. Agree which incomplete values may be stored as drafts.
+- **Draft versus submission, clarified 21 September:** event date and attendance are mandatory; inapplicable optional needs may be None / Not Required. Complete the field and conditional-registration validation table under Q-03 and agree which incomplete values may remain in drafts. Reconcile both new-request and saved-draft submission paths without changing earlier test results.
 - **Story boundaries:** KAN-31 owns starting a new request and the initial form; KAN-4 owns persisting incomplete work; KAN-34 owns retrieving and editing an existing draft. They share a form and persistence contract. Confirm these detailed boundaries so that tasks and delivered outcomes do not double-count the same work. Preserve the agreed estimates unless the team explicitly records a revision.
-- **Transitions and decisions:** resolve Q-04/Q-05 and record a permitted-transition table. The status constants in `backend/src/modules/events/types.ts` are provisional vocabulary. Clarification/resubmission behavior and whether rejection requires a reason remain unresolved.
-- **Coordinator assignment:** KAN-29 / CF-05 is **not committed Sprint 1 scope**. Sprint 1 uses manually assigned synthetic requests in Supabase: `coordinator_id` references the assigned coordinator's `app_users.id`. This fixture setup enables assigned-coordinator checks without claiming assignment/reassignment functionality is complete. Customer triage/delegation clarification remains open.
+- **Transitions and decisions, clarified 21 September:** event-request rejection requires a reason. Explicit Jira criteria and linked task KAN-60 now record this rule; verify UI/API enforcement and preserve the earlier optional-reason implementation record below. Clarification/resubmission, post-submission editing boundaries and final-confirmation prerequisites still need a permitted-transition table under Q-04/Q-05.
+- **Coordinator assignment:** KAN-29 / CF-05 was **not committed Sprint 1 scope**. Earlier test fixtures assigned `coordinator_id` to the coordinator's `app_users.id` directly; the integrated application now has manual assignment. The review permits coordinators to select themselves or a colleague. Sprint 2 KAN-29 adds automatic selection of an available coordinator; manual assignment alone does not satisfy it. Selection/availability rules, no-candidate handling and reassignment authority still need refinement in [Sprint 2 planning](../sprint-02/planning.md).
 
 Record decisions with their source, date and affected AC IDs before treating dependent criteria as ready. If a decision changes scope or estimates, preserve the original baseline and record the revision in planning and estimation.
 
 ## Story cards
 
-All path targets below are relative to the repository root. Existing files are starting points, not completed implementations; proposed new files are identified explicitly. Each task includes its relevant tests, code review and integration as part of the story effort.
+The following cards preserve the planned scope and dated implementation breakdown. The closure table above gives current story dispositions; an old task description is not a new claim that implementation is absent. All path targets are relative to the repository root. Each task includes its relevant tests, code review and integration as part of the story effort.
 
 ### KAN-25 — Authentication and authorization
 
@@ -157,7 +198,7 @@ the current behaviour and retain the superseded queue/detail assumption and rout
 
 As an event coordinator, I want to record an approval or rejection for an eligible request so that the organiser receives a clear review outcome.
 
-**Owner / proposed reviewer:** Tristan / Irfan. **Dependencies:** KAN-25/KAN-33; Q-02/Q-04; conditional assignment decision. A mandatory rejection reason is not assumed; record the team's/customer's decision before implementing that rule.
+**Owner / proposed reviewer:** Tristan / Irfan. **Dependencies:** KAN-25/KAN-33; Q-02/Q-04; conditional assignment decision. The 21 September clarification requires a rejection reason. The retained criteria and implementation notes below describe the earlier scope; add the explicit Jira rule and link any required correction and new verification without rewriting historical results.
 
 - **KAN-36-AC1:** Given an eligible request and an authorized reviewer, when the reviewer approves it, then the decision, reviewer identity and resulting state are recorded consistently according to the agreed transition policy.
 - **KAN-36-AC2:** Given an eligible request and an authorized reviewer, when the reviewer rejects it with any explanation required by the agreed policy, then the rejection and any supplied explanation are recorded consistently with the resulting state.
@@ -166,7 +207,7 @@ As an event coordinator, I want to record an approval or rejection for an eligib
 
 | Local task | Proposed implementation work |
 | --- | --- |
-| S1-36-01 | Implemented validation and initial-decision eligibility: assigned coordinator, `SUBMITTED`, no recorded decision; optional reason. Broader transition/triage rules remain documented questions. |
+| S1-36-01 | Historical implementation: validation and initial-decision eligibility used assigned coordinator, `SUBMITTED`, no recorded decision and an optional reason. The 21 September clarification requires a rejection reason; enforce and verify that rule as a linked correction. Broader transition/triage rules remain documented questions. |
 | S1-36-02 | Implemented review recording and matching status update in one transaction, with row locking, assignment recheck, rollback and competing-decision tests. |
 | S1-36-03 | Coordinator actions and result/error feedback are connected and tested. Organiser outcome integration and approval/rejection refresh checks passed in MAN-20260917-01. Finish the remaining hosted checks and review before story closure; see [test evidence](../../testing/test-evidence.md). |
 
@@ -226,7 +267,7 @@ As an event coordinator, I want to request clarification on an eligible event re
 
 **Proposed outcome, refined after the 8 September hosting decision:** team members can reproduce the Supabase PostgreSQL connection and schema setup, evolve a consistent schema and connect the application to the persistence foundations needed by the selected stories. After database setup, Arvin supports cross-feature integration, end-to-end testing and resolving integration issues with the relevant story owners. The complete business workflow is assessed under its functional stories; it is not an additional requirement for database setup to be Done.
 
-KAN-24 has existing scaffold material to inspect: the root setup instructions, `database/migrate.ts`, `database/seed.ts`, `database/migrations/`, `backend/src/db/pool.ts` and `database/tests/database.integration.test.ts`. Retain `001_initial_scaffold.sql` unchanged once applied and review the additional security migration before applying it. `compose.yaml` supports an optional isolated test database; it is not the hosted development setup. Completion requires verification against the adopted criteria, including the actual Supabase project configuration. The following criteria are **drafts for team review**:
+KAN-24 has existing scaffold material to inspect: the root setup instructions, `database/migrate.ts`, `database/seed.ts`, `database/migrations/`, `backend/src/db/pool.ts` and `database/tests/database.integration.test.ts`. Retain `001_initial_scaffold.sql` unchanged once applied and review the additional security migration before applying it. `compose.yaml` supports an optional isolated test database; it is not the hosted development setup. Completion requires verification against the adopted criteria, including the actual Supabase project configuration. The following are the retained local infrastructure criteria. Five related setup/schema/security/integration/diagram checks were added to Jira on 21 September; cross-reference their evidence without changing historical acceptance dates:
 
 - **KAN-24-AC1:** Given a clean local checkout, an authorised Supabase development project and documented prerequisites, when the hosted connection, database migration and seed instructions are followed, then the API connects over verified TLS to the expected migrated schema and a teammate can reproduce the setup from the committed instructions.
 - **KAN-24-AC2:** Given the adopted Sprint 1 data contracts, when the reviewed migrations and synthetic fixtures are applied in the agreed order and rerun as documented, then required relationships/constraints and database access boundaries exist, fixtures support the agreed access scenarios, and rerunning setup does not overwrite existing event data unexpectedly. Verify that the Supabase Data API is disabled and application tables have the reviewed RLS/privilege protections; Express business permissions are assessed under the functional stories.
@@ -284,10 +325,24 @@ This plan records scenario coverage, not story completion. **Partial** means onl
 | S1-T32 | KAN-24-AC2 | PostgreSQL integration | Inspect adopted schema constraints, RLS/privilege protections, disabled Data API setting and access fixtures; rerun migrations/seeds with existing synthetic event data and verify the documented non-destructive behavior. | Partial; Data API setting evidenced indirectly | [MAN-20260920-02: all 17 `public` tables report RLS enabled with no policies and no `anon`/`authenticated`/`service_role` privileges; a publishable-key call to `/rest/v1/app_users` returned 503 `PGRST002`, consistent with the Data API being disabled but not a check of the project setting itself. Reruns are non-destructive: `db:migrate` reports up to date and `db:seed` uses `ON CONFLICT DO NOTHING`, verified in `database.integration.test.ts` SCF-DB-01/02](../../testing/test-evidence.md) |
 | S1-T33 | KAN-24-AC3 | PostgreSQL integration | Verify application connectivity and representative synthetic record persistence/retrieval under the agreed schema; link actual commands and results. Full business-workflow tests remain mapped to their functional stories. | Passed (isolated) | [AUTO-20260920-01: `npm run test:integration` against local PostgreSQL 17, 212 tests in 18 files, including `core-schema.integration.test.ts` CORE-DB-01 to 06 for status history, booking conflicts, equipment pooling, registration capacity and assignment uniqueness](../../testing/test-evidence.md) |
 
-## Updating the backlog during and after the sprint
+## Review acceptance reconciliation
 
-Keep the agreed **32-point baseline** intact: nine user stories at 27 points plus KAN-24 at 5 points. Record the adopted AC. During the sprint, keep Jira and this document aligned when scope changes, and link the dated decision in [daily progress](daily-progress.md). Record actual task hours where the team tracks them, separately from story points.
+The original test rows retain their recorded execution scope. The completed review adds the following observations without claiming every subcase or a new automated run. Detailed results are in [MAN-S1-REVIEW-01](../../testing/test-evidence.md).
 
-At review, assess every committed PBI against its adopted AC and definition of done, linking PRs, commits, tests and demonstration evidence. Carry incomplete PBIs back to the product backlog with the unfinished criteria and reason. A partially completed PBI does not earn its full points. Explicitly record the outcome of KAN-24.
+| Existing scenarios | Review addition | Qualification / follow-up |
+| --- | --- | --- |
+| S1-T01–T04, T10, T13, T16, T20, T23, T27 | DEMO-01/08 passed the demonstrated authentication/access paths. | Exact actor/endpoint combinations and captures remain to be linked; do not extend the result to unshown subcases. |
+| S1-T05–T09, T11–T12 | KAN-31/KAN-4 closed Done; DEMO-03 basic editing passed. | DEMO-02 found S1-DEF-01 in registration-dependent fields; KAN-34 carries over. |
+| S1-T14–T15, T26 | DEMO-04/05 passed one validation and submission/status path. | S1-DEF-03/04 remain: reproduce reopened-draft submission and invalid-field bypasses. KAN-6 carries over while KAN-16 is Done for the demonstrated status slice. |
+| S1-T18–T19 | DEMO-06 exposed coordinator follow-up access after approval. | Pending-queue exclusion is expected; a usable approved-request list/navigation path is missing. KAN-33 carries over. |
+| S1-T21–T22, T24–T26 | DEMO-07/09 passed outcomes and repeated/conflicting-decision refusal. | Earlier concurrency/rollback tests remain separate; the review did not establish a new concurrent-write run. |
+| S1-T28–T30 | DEMO-10 passed; KAN-27 closed Done. | Link the exact clarification demonstration; do not infer every negative API case from the walkthrough. |
+| S1-T31–T33 | DEMO-11 passed; KAN-24 closed Done. | Retain prior automated/setup records and add the reviewed configuration captures. |
 
-The [20-feature release scope](../../requirements/README.md) remains broader than this sprint. CF-05 is the conditional assignment dependency; CF-07 is covered here only for draft editing. CF-08–CF-20 and the rest of CF-07 remain release work unless explicitly planned later. Partial Sprint 1 slices of CF-01–CF-04 and CF-06 must not be reported as complete release features without verifying their full agreed scope.
+## Maintaining the closed backlog
+
+Keep the agreed **32-point baseline** intact: nine user stories at 27 points plus KAN-24 at 5 points. Attach the final Jira export and adopted AC version when available. Record actual task hours only where tracked, separately from story points; leave missing daily observations unrecorded.
+
+The review closed seven PBIs at **24 points**, including KAN-24's five points. KAN-6, KAN-33 and KAN-34 contribute no completed points in Sprint 1 and carry their original eight points into Sprint 2. Link the final board, reviewed build and demonstration evidence to the closure table above.
+
+The [20-feature release scope](../../requirements/README.md) remains broader than this sprint. Sprint 2 selects KAN-29 for assignment and the venue stories mapped there; it also continues the three unfinished Sprint 1 stories. Draft editing covers only part of CF-07. Completed Sprint 1 slices must not be reported as complete release features without verifying their full agreed scope.

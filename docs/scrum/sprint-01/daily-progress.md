@@ -2,9 +2,11 @@
 
 Sprint: **6–19 September 2026, Asia/Singapore**. Record daily progress, decisions and burndown observations here, with supporting Jira exports and screenshots in the [evidence register](evidence/README.md). Blank values are awaiting an observation; they do not represent zero.
 
+**Closeout update, prepared 21 September:** the Sprint 1 review is complete, Sprint 1 is closed in Jira and Sprint 2 is initialized. The dated development log and missing daily observations below are preserved. The later review summary is recorded separately; it does not establish attendance, daily Done points or an end-of-day burndown observation.
+
 ## Cadence
 
-The team plans **two standups per week**; exact days, times and location remain to be recorded. Development working days and hours remain to be confirmed. Members are available on Saturdays and Sundays for review and planning. This meeting cadence does not establish attendance on any date.
+The original Sprint 1 plan was **two standups per week**; actual days, times and location remain to be recorded. Development working days and hours remain unrecorded. Members are available on Saturdays and Sundays for review and planning. Sprint 2's agreed cadence is **three Daily Scrums per week, on Saturday, Tuesday and Thursday**. Neither plan establishes attendance on a particular date.
 
 Record actual standup participants and outcomes when each meeting occurs. Development updates may be recorded between meetings without implying a standup took place. Mark agreed non-working days as `Non-working day`; leave missing observations blank.
 
@@ -39,7 +41,10 @@ KAN-24 retains its 5-point estimate, and the sprint retains its original ten PBI
 
 | ID | Raised on | Observed blocker and affected stories | Impact on goal | Action/assistance needed | Owner | Follow-up date | Resolved on and evidence |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| To assign when raised | | | | | | | |
+| S1-DEF-01 | Sprint review; summary recorded 21 September | Registration changed from no to yes in a draft without capacity/date fields appearing; KAN-34 | Draft cannot be completed reliably for registration | Reproduce the saved-draft edit path and verify field visibility/persistence | Sprint 2 owner to select | To agree | Open; [review defects](review.md#review-defects-and-carry-over) |
+| S1-DEF-02 | Sprint review; summary recorded 21 September | Approved request disappeared from the coordinator view; KAN-33 | Later final confirmation is inaccessible through that view | Restore a discoverable route to eligible approved requests and verify access | Sprint 2 owner to select | To agree | Open; [review defects](review.md#review-defects-and-carry-over) |
+| S1-DEF-03 | Sprint review; summary recorded 21 September | Submitting a saved draft reported as not implemented; KAN-6 | Saved requests may not reach review | Reconcile the reported path with the successful submission demonstrations, then fix and retest | Sprint 2 owner to select | To agree | Open; exact reproduction pending |
+| S1-DEF-04 | Sprint review; summary recorded 21 September | Some submissions with missing required fields were accepted; KAN-6 | Incomplete data may enter the review workflow | Identify missing fields and affected paths; agree and test submission validation | Sprint 2 owner to select | To agree | Open; exact reproduction pending |
 
 Add impediments as they arise, linking each one to the affected work and its resolution.
 
@@ -49,9 +54,17 @@ Record agreed scope changes with their reasons and participants, retaining the o
 
 | Change ID/date | Added/removed/changed item | Old scope or estimate | New scope or estimate | Why and impact on goal | Participants in decision | Point effect and evidence |
 | --- | --- | --- | --- | --- | --- | --- |
-| To record if a change occurs | | | | | | |
+| S1-CLOSE-01; recorded 21 September, exact decision time pending | KAN-6, KAN-33 and KAN-34 carry to Sprint 2 | Sprint 1 commitment: 3 + 2 + 3 = 8 original SP | Unfinished work carried forward at the same 8 points in Sprint 2's 43-point baseline | Resolve the review defects in submission, draft editing and coordinator access | Not recorded | Preserve Sprint 1's 10-PBI/32-SP baseline and count no partial Done points. This closeout disposition is not an observed mid-sprint removal or a daily burndown drop. Closing Jira export pending. |
 
 Keep accepted estimates stable during the sprint. If the team agrees an estimate revision for an unfinished PBI, retain both values, the signed difference (`new − old`) and the reason. Record this difference separately from added or removed items, so it is counted once. Do not resize completed work. Apply the convention in [estimation and capacity](estimation-and-capacity.md): KAN-24 has its own 5-point estimate, and supporting subtasks add no points.
+
+## Review and handoff summary — prepared 21 September
+
+The review and retrospective took place on 19 September; meeting times and attendance are not recorded. Sprint 2 planning took place on 20 September. DEMO-01, DEMO-03, DEMO-04, DEMO-05, DEMO-07, DEMO-08, DEMO-09, DEMO-10 and DEMO-11 passed. DEMO-02 exposed the draft registration-field issue and DEMO-06 exposed the approved-request navigation issue. Saved-draft submission and required-field validation were also raised as problems. Successful DEMO-04/05 observations remain recorded alongside those reports until their exact paths and data are reproduced. See [MAN-S1-REVIEW-01](../../testing/test-evidence.md) and the [review](review.md).
+
+Tristan merged all team branches into `main`. Sprint 1 has been closed in Jira and Sprint 2 initialized with KAN-6, KAN-33 and KAN-34 carried over at 8 points. KAN-25, KAN-31, KAN-4, KAN-27, KAN-36, KAN-16 and KAN-24 are Done: **24 points at closure**, including 5 infrastructure points. The original commitment reconciles as **32 = 24 Done + 8 carried forward**. The [Jira audit](../../requirements/assumptions-and-questions.md#21-september-2026--jira-backlog-audit) records resolution updates on 20–21 September. Individual acceptance times and the 19 September daily snapshot remain unrecorded. The review findings do not replace earlier dated passing checks; they add scenarios and gaps to follow up.
+
+Sprint 2 focuses on the venue catalogue, venue calendar and coordinator assignment. The agreed baseline is **43 points: 35 points across nine new stories plus 8 carryover points**. New-story owners remain unassigned; Kai Jie retains KAN-6/KAN-34 and Irfan retains KAN-33. Tristan is responsible for the retrospective writeup. The planned sprint runs 20 September–3 October, with review on Saturday 3 October and Sprint 3 planning/start on Sunday 4 October. Daily Scrums will be held on Saturday, Tuesday and Thursday; exact times remain to record.
 
 ## Burndown data
 
@@ -66,6 +79,8 @@ At each chosen observation time:
 - Reconcile the result with the board. A scope reduction can lower the remaining line without delivering work, so the scope-change log must accompany the chart.
 
 The table uses the planning baseline and end-of-day observations. Agree a consistent snapshot time and link each entry to the board or export. Leave missing observations blank.
+
+**Closeout evidence gap:** actual daily burndown values and the closing chart are not available. The confirmed closure outcome of 24 Done points and 8 carried forward does not establish the 19 September remaining-work value or earlier daily progress. Recover data from dated Jira history if available, retaining the actual export time and any gaps.
 
 | Observation | Cumulative points added | Cumulative unfinished points removed | Cumulative net estimate changes | Cumulative Done points | Remaining points | Board/export evidence |
 | --- | --- | --- | --- | --- | --- | --- |

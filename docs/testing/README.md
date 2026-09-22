@@ -26,7 +26,11 @@ KAN-25 uses Supabase Auth. Express verifies the session and maps the Supabase id
 
 [test-cases.csv](test-cases.csv) indexes scenario outlines for all 20 release features. Rows with linked partial evidence do not establish full feature acceptance; remaining outlines must be refined into concrete preconditions, actions, expected outcomes and acceptance-criterion links. Questions such as interval boundaries and registration eligibility must reference a recorded decision.
 
+Use the [product backlog](../requirements/product-backlog.md) for future-story scope and dependencies. KAN-65 reassignment, KAN-66 planning edits and KAN-67 registration viewing require their own acceptance evidence. Historical KAN-34 draft-edit results do not accept KAN-66; retained draft evidence belongs to TC-03 and its original result entries.
+
 Sprint 1 has [33 proposed acceptance scenarios](../scrum/sprint-01/sprint-backlog.md#acceptance-test-plan), each linked to a specific acceptance criterion. Review these alongside the story cards, then link the implemented tests and actual results in the [test evidence record](test-evidence.md). The release-wide CSV remains the coverage index for all 20 core features.
+
+Sprint 2 has a [criterion-linked acceptance plan](../scrum/sprint-02/sprint-backlog.md#acceptance-test-plan) covering the nine new Jira stories and three carried stories. New-story criteria use `KAN-<number>-AC<number>` labels; proposed robustness and policy checks are identified separately. The plan is not an executed test report. Keep actual results linked to their tested build and retain failed/retested paths from the Sprint 1 review.
 
 Choose the test level for the behavior being verified:
 

@@ -1,64 +1,66 @@
 # Sprint 1 retrospective
 
-Sprint: **6–19 September 2026**, inclusive, Asia/Singapore. **Status: planned; date and time to confirm.** Use this agenda to reflect on the sprint and record the team's agreed improvements.
+Sprint: **6–19 September 2026**, inclusive, Asia/Singapore. **Retrospective held: 19 September. Writeup prepared: 21 September. Owner: Tristan.** Sprint 1 review is complete and the sprint is closed in Jira. This writeup draws together the review observations and proposed process improvements for Sprint 2. Attendance, participant discussion, voting and agreed root causes have not been recorded.
 
 | Meeting detail | Record |
 | --- | --- |
-| Proposed date | Saturday 19 September 2026, after the review; date/time to confirm |
-| Actual date and start/end time | [Record with timezone] |
-| Facilitator and note taker | [Names] |
-| Attendees and absences | [Actual names and roles] |
-| Meeting evidence | [Link E14 in the evidence register; recording optional for Sprint 1] |
-| Input evidence | [Review outcome, burndown, task history, impediments, PR/test records] |
+| Actual retrospective date | Saturday 19 September 2026 |
+| Start/end time and timezone | Times not recorded; Asia/Singapore |
+| Facilitator and note taker | Not recorded; Tristan owns this writeup |
+| Scrum roles | Arvin is Scrum Master and Irfan is Product Owner; both also work as developers. These roles do not establish who attended or facilitated this meeting. |
+| Attendees and absences | Not recorded |
+| Review timing | Review also held on 19 September; exact meeting times not recorded |
+| Meeting evidence | Original notes or Zoom transcript not available in this record; no recording linked |
+| Input evidence | [Review results and defects](review.md), [historical progress and missing burndown observations](daily-progress.md), [test evidence](../../testing/test-evidence.md), and the agreed Sprint 2 handoff |
 
-## Facilitation plan
+## Outcome and observations
 
-Suggested duration: 45 minutes. Open with the sprint goal and outcome (5 minutes); collect observations and give everyone a turn (10 minutes); group topics and select one or two to address (10 minutes); examine their causes (10 minutes); agree measurable actions (10 minutes). Invite all six developers, including the two who also serve as Scrum Master and Product Owner. The team is available on weekends for review and planning; confirm the retrospective slot separately.
+The original commitment was **10 PBIs and 32 points**. Seven PBIs are Done at closure: KAN-25, KAN-31, KAN-4, KAN-27, KAN-36, KAN-16 and KAN-24. Their **24 points** comprise 19 business-story points and 5 infrastructure points. KAN-6, KAN-33 and KAN-34 carry forward at **8 points**. Exact completion timestamps remain to attach, so the closure outcome does not establish how much was Done by the original 19 September boundary.
 
-Discuss planning and estimation, collaboration across the six workstreams, daily coordination, integration, quality and feedback. Ground observations in specific events and artifacts, and record different views without assigning blame.
+| What we observed | Evidence and effect | What to take into Sprint 2 |
+| --- | --- | --- |
+| Much of the demonstrated workflow worked | DEMO-01, DEMO-03, DEMO-04, DEMO-05, DEMO-07, DEMO-08, DEMO-09, DEMO-10 and DEMO-11 passed. Earlier dated manual checks also covered status persistence and access restrictions. | Preserve the passing paths as regression scenarios while fixing the remaining cases. |
+| Follow-up integration brought the branches together | After the 19 September retrospective, Tristan merged all team branches into `main`; [PR #12](https://github.com/MochaLxtte/ConnectSphere/pull/12) produced `db2c9db` on 20 September. This later update is separate from the review; the exact demo build remains to record. | Continue integrating shared work and retain a reproducible build for review. A merge alone does not describe the tested behavior. |
+| Draft editing needs another pass | In DEMO-02, changing registration from no to yes in a saved draft did not expose the capacity/date fields. KAN-34 carries forward. | Include changes to conditional fields after save and reload in the acceptance walkthrough. |
+| A later workflow stage became inaccessible | In DEMO-06, approval removed the request from the coordinator view, leaving no accessible path to final confirmation. KAN-33 carries forward. | Walk through how the responsible actor finds the request again after each status transition. Approval and final confirmation are separate stages. |
+| Submission observations need to be reconciled | DEMO-04/05 worked, but saved-draft submission was also reported as not implemented and some submissions with missing required fields were accepted. KAN-6 carries forward. | Retain both observations and reproduce the exact routes, request states, input fields and tested build before concluding which behavior failed. |
+| Closure evidence is incomplete | The Done/carryover totals and later Jira resolution updates are recorded. The closing board/report, actual acceptance times, daily burndown and meeting attendance are still missing. | Capture observations as work happens. Keep unknown daily values blank and distinguish tracker updates, record preparation and actual meeting/acceptance times. |
 
-## Observations
+The remaining draft, submission and coordinator-navigation cases interrupt the integrated goal path and explain the carryover. The [review defect register](review.md#review-defects-and-carry-over) tracks S1-DEF-01 through S1-DEF-04.
 
-| Category | Specific observation and date | Supporting evidence | Effect on the sprint | Team interpretation / alternative view |
+## Lessons to discuss
+
+The review suggests that we should test how a request moves across saved drafts, conditional form fields and later statuses, in addition to demonstrating individual features. This is a proposed lesson from the observed gaps; it is not a recorded team agreement about why they occurred.
+
+| Topic | Possible explanation to examine | Evidence still needed |
+| --- | --- | --- |
+| Draft registration and submission | The saved-draft path may behave differently from the creation path, or the demonstrations may have used different data or builds. | Exact DEMO-02/04/05 routes, request states, field values and build; repeatable saved-draft cases. |
+| Approved-request access | Queue eligibility and later navigation may not support the same lifecycle stages. Historical direct-detail checks and the review navigation issue need to be considered separately. | Steps from approval to final confirmation for the assigned coordinator, including refresh and navigation. |
+| Required-field validation | Client/server checks or the agreed field rules may differ across submission paths. | The exact missing fields, expected rules, API response and persisted state for each reproduction. |
+| Estimation and capacity | Shared workflow checks and evidence collection may need more explicit allowance in planning. | Actual development availability and task history; missing hours cannot be inferred from story points. |
+
+No root cause, vote or consensus has been recorded. Keep alternative explanations open until reproduction and discussion provide evidence.
+
+## Agreed handoff and coordination
+
+| Action or decision | Owner | Timing and follow-up | Status |
+| --- | --- | --- | --- |
+| Prepare the Sprint 1 retrospective writeup | Tristan | Prepared 21 September; team review date to record | Writeup prepared; discussion and agreement of proposed improvements pending |
+| Select Sprint 2 stories | Each of Ryan, Ernest, Kai Jie, Irfan, Tristan and Arvin | At Sprint 2 planning; record selections in the backlog | Owners not yet selected |
+| Hold Daily Scrums three times per week | Team; facilitator to record | Saturday, Tuesday and Thursday during Sprint 2; exact times to agree | Current cadence recorded; attendance to record for each actual meeting |
+| Continue the two-week review/planning cycle | Team | Saturday review at the end of the fortnight; next planning and sprint start on Sunday | Sprint 2 planned 20 September–3 October; review 3 October; Sprint 3 planning 4 October |
+
+Sprint 1's earlier plan was two standups per week. The three-times-weekly cadence is the Sprint 2 arrangement and does not establish that those meetings occurred during Sprint 1.
+
+Sprint 2's baseline is **43 points: nine new stories at 35 points plus 8 carryover points**. The approximate six-point target per member applies to the new work; check the additional carryover, integration and testing load when stories are selected. The venue catalogue, venue calendar and coordinator assignment form the Sprint 2 goal.
+
+## Proposed improvements for team agreement
+
+The following are proposals, with owners and dates to be agreed. They are not yet commitments made at a retrospective.
+
+| Action ID | Proposed change | Proposed verification | Owner / target date | Outcome |
 | --- | --- | --- | --- | --- |
-| Went well | [Team observation] | [Link] | [Observed effect] | [Record] |
-| Challenge | [Team observation] | [Link] | [Observed effect] | [Record] |
-| Lesson or surprise | [Team observation] | [Link] | [Observed effect] | [Record] |
+| S1-RETRO-01 | Add a shared acceptance walkthrough covering an incomplete saved draft, registration changing from no to yes, save/reload, valid submission and rejection of missing required fields. Reproduce S1-DEF-01/03/04 and keep the successful DEMO-04/05 paths. | Record the build, account role, route, input fields, expected/actual result and persisted status for each case before closing KAN-6/KAN-34. | To agree; proposed before carryover acceptance | Pending agreement and execution |
+| S1-RETRO-02 | Check that the responsible actor can still find a request after each relevant transition, starting with approval and the route to final confirmation. | Record the assigned coordinator's approval-to-later-access walkthrough, refresh behavior and denied-access cases before closing KAN-33. | To agree; proposed before carryover acceptance | Pending agreement and execution |
 
-Prompts to use only where relevant:
-
-- Which estimate differed from actual effort or complexity, and what evidence explains the difference?
-- Did daily coordination reveal blockers in time? How long did actual blockers remain unresolved?
-- Did authentication, event fields/status rules, migrations or UI/API integration create dependencies? Which agreements helped or were missing?
-- Were stories small enough to finish and demonstrate? Did the sprint goal guide scope changes?
-- What did reviews and tests detect before merge? Which defect or integration issue escaped, if any?
-- Did task history and PR participation show a sustainable distribution of work? Let members describe their own experience.
-- Which stakeholder clarification or review feedback should change refinement or collaboration next sprint?
-
-## Select a cause to address
-
-| Selected topic | How selected / participants | Evidence and observed sequence | Cause hypothesis | Evidence supporting or challenging the hypothesis | Agreed lesson |
-| --- | --- | --- | --- | --- | --- |
-| [Actual topic] | [Vote or other actual method] | [Link facts] | [Team hypothesis] | [Record uncertainty and avoid assuming a cause] | [Record] |
-
-Use the evidence to distinguish observations from possible causes. Follow a short chain of why-questions until the team identifies a change within its control.
-
-## Commit to one or two improvements
-
-Agree one or two actions with a named owner, a concrete change, a target date and a way to verify the result during Sprint 2. Remove unused rows.
-
-| Action ID | Start, stop or continue | Specific agreed action and reason | Named owner | Target date | Measure / evidence of success | Sprint 2 follow-up date and reviewer | Actual outcome |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| S1-RETRO-01 | [Choose] | [Action linked to selected cause] | [Name] | [Date] | [Observable measure and evidence source] | [Date / name] | [Pending follow-up] |
-| S1-RETRO-02 | [Choose if needed] | [Action linked to selected cause] | [Name] | [Date] | [Observable measure and evidence source] | [Date / name] | [Pending follow-up] |
-
-Ideas deferred to refinement or a later retrospective: [Record ideas, reasons and follow-up].
-
-## Close and follow through
-
-- [ ] Check that all members had an opportunity to contribute and that disagreements are represented fairly.
-- [ ] Record the selected cause, actual decisions and one or two agreed actions with named owners.
-- [ ] Add agreed actions to the team's tracking tool and link them above.
-- [ ] Preserve the actual meeting notes and optional recording link in the [evidence register](evidence/README.md).
-- [ ] At Sprint 2 Planning on Sunday 20 September, allow capacity for agreed actions and set their follow-up dates.
-- [ ] At the agreed follow-up, record evidence, effectiveness and the decision to continue, revise or stop the change. Preserve the original action alongside any revision.
+Complete this record with the discussion and any actions agreed on 19 September. If the team agrees additional improvements later, record that follow-up date, participants, owners and success measures separately. Link accepted actions from the Sprint 2 backlog and review their outcome at the next retrospective. Retain original notes and any recording link in [E14](evidence/README.md); do not replace missing meeting evidence with this writeup.

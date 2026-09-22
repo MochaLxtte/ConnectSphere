@@ -4,19 +4,19 @@ These items are unresolved unless a dated decision is added. The proposed defaul
 
 | ID   | Decision needed                                                                                                                       | Why it matters                                                     | Status |
 | ---- | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ | ------ |
-| Q-01 | How are accounts created, roles assigned, and organisation membership established?                                                    | Avoid giving users a way to grant themselves staff access.         | Open   |
-| Q-02 | Who may see unassigned events, assign or reassign coordinators, and access another coordinator's events?                              | Role alone is insufficient for authorization.                      | Open   |
-| Q-03 | Which fields are mandatory for submission, and what may remain incomplete in a draft?                                                 | Draft and submission validation differ.                            | Open   |
-| Q-04 | What are the event states, allowed transitions and actors, clarification/resubmission behavior, and confirmation prerequisites?       | Status changes must match real actions.                            | Open   |
-| Q-05 | Which post-submission fields may be edited directly, and which require a reviewed change request?                                     | Prevent silent changes to approved arrangements.                   | Open   |
-| Q-06 | How many venues may an event use? Do pending requests or tentative holds consume availability?                                        | Determines the booking model and conflict policy.                  | Open   |
-| Q-07 | What timezone, interval boundary, setup/turnaround, operating-hour and blocked-period rules apply?                                    | Adjacent bookings can otherwise produce inconsistent availability. | Open   |
-| Q-08 | How do layouts, capacity, accessibility and required facilities affect suitability? Are overrides permitted?                          | An available room may still be unsuitable.                         | Open   |
-| Q-09 | Is equipment pooled by type or tracked individually? How do location, maintenance and substitutions work?                             | Determines availability and reservation granularity.               | Open   |
-| Q-10 | What makes an event discoverable and open for registration? What capacity, duplicate, withdrawal and registration-period rules apply? | Registration must remain consistent with event arrangements.       | Open   |
-| Q-11 | After a date, attendance, venue or equipment change, which reservations and registrations are retained, released or reapproved?       | Changes must not leave stale commitments.                          | Open   |
-| Q-12 | Who may cancel or complete an event, and what resources must cancellation release?                                                    | Event lifecycle affects other core features.                       | Open   |
-| Q-13 | Which actions notify which users, using which channel? Is read status or delivery retry required?                                     | Avoid missing recipients or exposing unrelated event details.      | Open   |
+| Q-01 | How are accounts created, roles assigned, and organisation membership established?                                                    | Avoid giving users a way to grant themselves staff access.         | Precreated internal test accounts are sufficient for the first release; self-service staff account creation is not required. Multi-role accounts remain unanswered. |
+| Q-02 | Who may see unassigned events, assign or reassign coordinators, and access another coordinator's events?                              | Role alone is insufficient for authorization.                      | Availability may be preconfigured. Fewest-active-events selection is agreed; counted statuses, fallback and reassignment boundaries remain open. |
+| Q-03 | Which fields are mandatory for submission, and what may remain incomplete in a draft?                                                 | Draft and submission validation differ.                            | Event date and attendance are mandatory; optional needs may be None / Not Required. Complete the field and conditional-registration validation table. |
+| Q-04 | What are the event states, allowed transitions and actors, clarification/resubmission behavior, and confirmation prerequisites?       | Status changes must match real actions.                            | Event-request rejection requires a reason. Final confirmation, clarification/resubmission and detailed transitions still need explicit criteria. |
+| Q-05 | Which post-submission fields may be edited directly, and which require a reviewed change request?                                     | Prevent silent changes to approved arrangements.                   | Organiser edits before approval are permitted, but must be reconciled with coordinator-only later event editing. Major changes to confirmed arrangements require cancellation and a new request. |
+| Q-06 | How many venues may an event use? Do pending requests or tentative holds consume availability?                                        | Determines the booking model and conflict policy.                  | Multi-session events are outside this release. Booking submission must be blocked for an already reserved period; tentative-hold and pending-request treatment remain open. |
+| Q-07 | What timezone, interval boundary, setup/turnaround, operating-hour and blocked-period rules apply?                                    | Adjacent bookings can otherwise produce inconsistent availability. | No turnover period is required. Document interval boundaries and the Singapore-time convention; clarify new blocks overlapping existing bookings. |
+| Q-08 | How are event facilities, layout and accessibility needs matched, and what happens after an unsuitable result?                        | An available room may still be unsuitable.                         | Required checks recorded in KAN-52; matching, missing inputs and booking follow-up still to clarify. |
+| Q-09 | Is equipment pooled by type or tracked individually? How do location, maintenance and substitutions work?                             | Determines availability and reservation granularity.               | Quantity-based availability is required; equipment location need not restrict use. Exact pooling, maintenance and substitution rules remain to refine. |
+| Q-10 | What makes an event discoverable and open for registration? What capacity, duplicate, withdrawal and registration-period rules apply? | Registration must remain consistent with event arrangements.       | Registration is individual; remaining eligibility, capacity and period rules need explicit criteria. |
+| Q-11 | After a date, attendance, venue or equipment change, which reservations and registrations are retained, released or reapproved?       | Changes must not leave stale commitments.                          | Major changes affecting confirmed arrangements require cancellation and a new request; define effects on each reservation and registration. |
+| Q-12 | Who may cancel or complete an event, and what resources must cancellation release?                                                    | Event lifecycle affects other core features.                       | Equipment reservations release automatically on cancellation/completion; authorised technical staff may also adjust them. Actors, transitions and other resource effects remain to specify. |
+| Q-13 | Which actions notify which users, using which channel? Is read status or delivery retry required?                                     | Avoid missing recipients or exposing unrelated event details.      | Notification channels are an implementation choice; reconcile email promises with the chosen delivery scope. Recipients and delivery behaviour remain to specify. |
 | Q-14 | Which important actions need audit records, who may inspect them, and what information must be retained?                              | Auditability is requested without a detailed policy.               | Open   |
 
 ## 8 September 2026 — Hosted PostgreSQL
@@ -555,6 +555,192 @@ KAN-34-AC2.
 
 **Supersedes:** None — complements the 13 September 2026 KAN-6 entry; changes no code
 behavior on its own.
+
+## 21 September 2026 — Review closure and Sprint 2 planning record
+
+**Team decisions:**
+
+- Venue availability calendars are for **Event Coordinators, Venue Staff and Technical Support Staff**. The application role names are `EVENT_COORDINATOR`, `VENUE_STAFF` and `TECHNICAL_SUPPORT_STAFF`. KAN-51 must enforce this access in the API and interface. The detail visible in booking labels still needs agreement; calendar access alone does not grant unrestricted event-request access.
+- Coordinators may assign requests to themselves or to another coordinator. This establishes permitted assignment targets, but does not settle who may reassign a request already owned by another coordinator. KAN-29 also requires **automatic assignment** when an organiser submits a request; existing manual assignment is only part of the workflow.
+- Sprint 1 closed in Jira with seven Done items worth **24 points** and KAN-6, KAN-33 and KAN-34 carried over at their original **8 points**. Its original ten-item, 32-point commitment is unchanged.
+- Sprint 2 contains nine new stories worth **35 points**, plus the three carry-over stories, for **43 points across 12 PBIs**. The roughly six-point allocation target per developer applies to the new work; owners must also account for carry-over and integration effort.
+
+**Implementation gaps at this checkpoint:** The venue calendar route accepts any authenticated role, with booking labels restricted to coordinators and venue staff. It needs alignment with the three-role decision above. Submission does not automatically select a coordinator. Availability, selection/tie-break and fallback were still open at this checkpoint; the later KAN-29 revision below settles selection. The current manual handover restriction remains an implementation assumption until Q-02 is fully resolved.
+
+**Review follow-up:** Registration-dependent draft fields, coordinator navigation after approval, saved-draft submission and mandatory-field validation remain tracked as [S1-DEF-01–04](../scrum/sprint-01/review.md#review-defects-and-carry-over). Some demonstrated validation/submission paths passed while other paths failed; reproduce the exact affected paths before claiming a fix. Q-03's customer clarification remains open.
+
+**Record details:** Prepared 21 September after the completed team review and Sprint 2 planning. Exact meeting times and attendance were not recorded. These are team decisions, not a claim of separate customer approval. See the [Sprint 1 review](../scrum/sprint-01/review.md) and [Sprint 2 planning](../scrum/sprint-02/planning.md).
+
+**Supersedes:** Earlier open wording about whether coordinators may select themselves or a colleague, and any assumption that all authenticated roles should have venue calendar access. Earlier dated implementation and test records remain historical evidence; this documentation update does not change code or establish new test results.
+
+## 21 September 2026 — Sprint 2 criteria alignment
+
+**Version note:** This entry records the earlier detailed planning version. The Jira backlog audit later on this page identifies shorter current Jira cards and the remaining reconciliation; its 93 planning criteria must not be described as a verbatim current Jira snapshot.
+
+The initial alignment recorded nine Jira user stories and 99 acceptance criteria, labelled `KAN-<number>-AC<number>` for repository traceability, replacing the earlier proposed criteria. The later KAN-29/KAN-51 revision below supersedes those two cards; the [current backlog](../scrum/sprint-02/sprint-backlog.md) now has 93 criteria. Technical tasks, extra robustness checks and unresolved policy questions remain separate; the 35 new points and eight carry-over points are unchanged. Current Sprint 1 Jira wording still needs reconciliation with its historical story cards.
+
+KAN-52 already requires checks for capacity, required facilities, applicable accessibility and layouts, and date/time availability, using current event and venue information. It also requires a useful explanation of failure. Q-08 now concerns how the event needs are represented and matched, what missing information means, and whether an unsuitable result prevents submitting a request for assessment. It does not reopen whether the named checks belong in the story.
+
+KAN-8 requires staff to be able to provide rejection information or a reason. Whether a non-empty reason is mandatory remains to be agreed. KAN-53 requires relevant event timing and venue requirements to reach the booking/staff-review workflow; the representation and snapshot-versus-current-data behaviour need to be specified.
+
+At initial alignment, the three-role calendar decision and self/other-coordinator assignment decision were separate meeting refinements. The revised KAN-51 below now includes all three roles explicitly; manual reassignment remains a separate refinement. The [Jira refinement register](../scrum/sprint-02/planning.md#jira-refinements-to-record) also tracks automatic-assignment fallback, time boundaries, operational blocks and the four carried defects.
+
+**Effect:** Requirement documentation and planned traceability updated. No implementation, executed-test result, point estimate or Jira issue was changed by this record.
+
+## 21 September 2026 — KAN-29 and KAN-51 revision
+
+**Version note:** These two revised cards still match the current Jira wording. The customer-rule reconciliation below now permits preconfigured availability, and the backlog audit distinguishes the other cards' planning and Jira versions.
+
+**KAN-29:** The current story has seven acceptance criteria. On successful submission, filter to available Event Coordinators, choose the coordinator with the **fewest active events**, and break ties using a **consistent ID/order**. Retain one assignment on the correct event, assigned-coordinator visibility, no manual administrator action for initial assignment, no automatic approval/rejection and persistence until reassignment.
+
+The availability source, event statuses counted as active and no-available-coordinator outcome remain to be defined. The implementation must document its stable tie-break order and preserve consistent counts/ownership under concurrent submissions. Manual self/other assignment and handover authority remain separate from this initial-assignment rule.
+
+**KAN-51:** The revised user story explicitly names Event Coordinators, Venue Staff and Technical Support Staff as authorised internal users. Its six criteria cover relevant dates/times, confirmed booking unavailability, recorded unavailability, distinguishable available/unavailable periods, correct venue association and denied unauthorised access. The role extension is no longer an outstanding wording change. Role-specific booking labels/details and separate search/booking permissions remain to be settled.
+
+**Traceability:** The current cards use `KAN-29-AC1`–`KAN-29-AC7` and `KAN-51-AC1`–`KAN-51-AC6`, in the order of their revised criteria. Their planned cases and CSV mappings have been updated together. Previous labels for those two cards are superseded; no executed Sprint 2 result depends on them. The other seven new story cards are unchanged. There are **93 current criteria across nine new stories**, plus the separately recorded assignment rule.
+
+**Scope and implementation:** The baseline remains 12 PBIs and **43 points**. This is a documentation revision; automatic assignment and calendar access changes still need implementation and verification. No application or Jira changes, new test results or acceptance outcomes are recorded here.
+
+## 21 September 2026 — Customer rules reconciled with the backlog
+
+The customer discussions on 25 August and 9 September establish the rules below. This record resolves the matching open questions above. Earlier implementation assumptions and test observations retain their original dates; recording a requirement does not establish that the implementation already satisfies it.
+
+| Area | Rule and scope | Remaining refinement |
+| --- | --- | --- |
+| Event-request rejection | KAN-36 must require a rejection reason, at least a short explanation. Approval does not require a reason under this clarification. | Add explicit Jira criteria and a linked correction if the UI or API still accepts an empty rejection reason. Retain the original Sprint 1 acceptance record and record this reconciliation separately. |
+| Submission validation | Event date and attendance are mandatory. Inapplicable accessibility, equipment, registration and special needs may be recorded as None / Not Required. | KAN-6 needs a complete field checklist, valid timing/attendance rules and conditional registration rules. Link S1-DEF-03/04 and verify both new-request and saved-draft paths. |
+| Coordinator assignment | Availability may be treated as already marked. KAN-29 can use preconfigured availability without adding an availability-management interface. Selection rules may be team assumptions; retain the agreed fewest-active-events rule and consistent ID/order. | Define active-event statuses, the stored availability field and no-candidate behaviour. Manual reassignment remains a separate permission decision. |
+| Venue booking conflicts | A request for a period already reserved for another event must be blocked at submission, not only at final booking approval. | Add this behaviour to KAN-53/KAN-54 with no persisted conflicting request and useful feedback. Define which tentative/pending states consume availability. |
+| Operational blocks | An existing reservation must not be silently displaced by a later operation. The answer about a new operational block repeats the booking-submission wording without specifying which operation is refused. | Obtain an explicit block-over-existing-booking rule for KAN-55. Do not infer automatic cancellation or displacement from that answer. |
+| Equipment | Quantities and overlapping reservations must affect availability. Venue and equipment arrangements may proceed independently. Cancelled or completed events release equipment reservations automatically, and authorised technical staff may make manual adjustments. Equipment location need not restrict allocation. | KAN-26 must support planning-stage arrangements and resource release. Define the exact eligible event states, quantity integrity and manual-change permissions. |
+| Post-submission changes | Organisers may edit submitted requests before approval. Another answer restricts general event editing to coordinators. Major changes affecting confirmed arrangements, such as changed attendance or duration, require cancellation and a new request. | Resolve the lifecycle/field boundary explicitly in KAN-15 or a linked story. KAN-34's draft editing does not cover this path. |
+| Release boundaries | Precreated internal accounts and a placeholder venue catalogue are sufficient. Sample venue/equipment lists and layouts may be defined by the team. Multi-session events and turnover buffers are not required. Registrations are individual. Notification channels are an implementation choice. | Keep the selected KAN-50 maintenance story unless the team deliberately replans. Reconcile email promises in later stories with the chosen notification channel. Do not infer a timezone requirement from an illustrative example. |
+| Technical staffing and account roles | Earlier discussion excludes staffing logistics, while another answer mentions automatic staff assignment. Multiple roles for one person remain unanswered. | Resolve KAN-23's scope before implementation; do not introduce specialist staff scheduling or multi-role accounts as settled requirements. |
+
+**Effect:** Requirements and refinement records only. No Jira status, story estimate, application behaviour or executed test result changed in this review. The Sprint 1 closure remains 24 Done points and eight carried points; Sprint 2 remains 43 points until an explicit scope change is agreed.
+
+## 21 September 2026 — Jira backlog audit
+
+The pre-edit Jira export reviewed on 21 September contains **43 issues: 30 stories and 13 subtasks**, with unique issue keys. Sprint 1 has ten stories at 32 points, seven Done at 24 points and three carried stories at eight points. Sprint 2 has nine new stories at 35 points plus those eight carried points. KAN-6 and KAN-34 remain assigned to Kai Jie; KAN-33 remains assigned to Irfan. All nine new Sprint 2 stories are unassigned. The two Sprint fields preserve sprint-membership history and should not be removed from carried items.
+
+The review and retrospective took place on **19 September**. Jira records KAN-16's resolution as **20 September, 23:06**, and the other six completed stories as **21 September, 00:26**. The timestamp fields do not state a timezone. Record these as later tracker updates; do not change meeting dates or reconstruct daily completion times from them. The snapshot is not a start/close board capture, sprint report or daily burndown.
+
+### Jira changes identified in the pre-edit audit
+
+| Item | Change or decision needed |
+| --- | --- |
+| KAN-36 | Add mandatory rejection-reason criteria: blank/whitespace reasons are refused; the saved reason belongs to the correct decision and is visible to the relevant organiser. Check implementation and create/link corrective work without rewriting Sprint 1's historical evidence. |
+| KAN-6 | Replace undefined submission rules with a field/conditional-validation checklist and link the two carried submission defects. |
+| KAN-53 / KAN-54 | Explicitly reject submission when an already reserved period conflicts, with useful feedback and no created request. Continue checking at approval to cover stale availability and concurrent requests. |
+| KAN-10 | Replace the copied organiser status-view description with the actual event-completion story. Specify the authorised actor, allowed prior states, recorded transition and resulting resource effects. |
+| KAN-26 | Remove an unintended dependency on final event/venue confirmation. Specify planning-stage equipment reservations, quantity/conflict protection, automatic release on cancellation/completion and authorised manual adjustments. |
+| KAN-21 / KAN-55 | Resolve the duplicated operational venue-block scope. Keep one authoritative story, transfer any agreed mandatory-reason requirement, and link the other as duplicate/superseded. Do not count both estimates for the same delivery. |
+| KAN-29 | Record preconfigured availability, active-event statuses, deterministic ordering and no-candidate behaviour. Retain the agreed automatic-selection rule. |
+| KAN-24 | Add verifiable database/setup/diagram criteria. The current description is one sentence; the repository's detailed infrastructure checks are not yet adopted Jira criteria. Link existing evidence without inventing a new historical acceptance date. |
+| KAN-23 | Resolve whether staff assignment belongs in this release, estimate before selection, and clarify why assigning a staff member currently marks the support request Completed. Assignment and completed work should not be conflated without an explicit rule. |
+| KAN-15 / release workflow | Specify post-submission editing and change-request review outcomes. Map final event confirmation, cancellation and equipment-request/review behaviour to existing Jira items or refine missing stories. These workflows are not covered merely by KAN-16 status display or KAN-36 initial approval. Add future scope through planning, not automatically to Sprint 2. |
+| Sprint 2 ownership and evidence | Assign the nine new stories and balance the full 43 points, including carry-over. KAN-42 integration testing and KAN-43 code review remain In Progress under KAN-33; close them only when the corresponding work and evidence are complete. |
+
+Jira's Highest/High/Medium/Lowest priority field and the team's Must/Supporting selection classification are different fields of meaning. Keep them distinct or document an explicit mapping.
+
+### Criteria versions to reconcile
+
+The counts below describe the pre-edit export. The live refinements recorded later on 21 September are listed in the next section; these counts are not a current live-Jira count.
+
+Sprint 1's nine functional stories contained **79 Jira acceptance criteria in the pre-edit export**. Its existing repository cards use broader implementation criteria and historical test IDs. Cross-reference the versions without renumbering existing evidence or claiming that the later wording was the exact version used at planning or review. KAN-24 had no explicit criteria in that export; five checks were subsequently added as recorded below.
+
+For Sprint 2, the pre-edit export had **77 criteria**, while the detailed planning cards retain **93**. KAN-29, KAN-50 and KAN-51 matched. Keep the existing repository criterion IDs; they identify the detailed planning version rather than a verbatim copy of each later Jira refinement.
+
+| Story | Jira / detailed planning criteria | Difference to resolve |
+| --- | ---: | --- |
+| KAN-12 | 10 / 13 | Explicitly changing/clearing filters and clear venue identification are absent from the shorter wording; excluding failed-filter results is partly implied. |
+| KAN-52 | 7 / 9 | Preserve checks that suitable venues are not falsely rejected and that current event/venue information is used. |
+| KAN-53 | 7 / 11 | Preserve correct venue linkage, explicit creation/submission and pending-versus-decided state. Add the customer-required submission conflict rule. |
+| KAN-8 | 8 / 11 | Preserve opening the request with timing/requirements, linking the decision to the correct booking request, and ensuring rejection does not confirm a booking. |
+| KAN-54 | 7 / 9 | Preserve different-venue non-conflict and current-information checks. Add the submission conflict rule alongside confirmation protection. |
+| KAN-55 | 11 / 13 | Date/time bullets were consolidated; explicit reason entry is missing. Reconcile mandatory reasons with KAN-21 and settle overlapping-block behaviour. |
+
+Some differences consolidate wording rather than remove behaviour. Agree concise Jira criteria and retain detailed examples as test cases where appropriate; criterion counts are not a measure of delivered scope. No extra story points or acceptance outcomes are implied by this audit.
+
+## 21 September 2026 — Jira updates applied
+
+The live backlog now records the customer-rule corrections and release gaps identified above. Sprint 1 remains **32 committed, 24 Done and 8 carried points**. Sprint 2 remains **12 PBIs / 43 points**, with 35 points To Do, eight In Review and zero Done at this inspection. Existing assignees, estimates and sprint history were retained. This is backlog refinement, not an implementation or test run.
+
+### Carry-over and corrective work
+
+| Jira work item | Parent / relation | Recorded work |
+| --- | --- | --- |
+| [KAN-56](https://smu-g7-grp1.atlassian.net/browse/KAN-56) | Subtask of KAN-33; S1-DEF-02 | Restore authorised coordinator navigation to decided requests, retain saved outcomes and test access/initial-review regressions. Final event confirmation is a separate workflow. |
+| [KAN-57](https://smu-g7-grp1.atlassian.net/browse/KAN-57) | Subtask of KAN-34; S1-DEF-01 | Repair registration-dependent fields when reopening a draft; test both toggle directions, persistence and conditional validation. |
+| [KAN-58](https://smu-g7-grp1.atlassian.net/browse/KAN-58) | Subtask of KAN-6; S1-DEF-03 | Enable and verify saved-draft submission alongside the new-request path. |
+| [KAN-59](https://smu-g7-grp1.atlassian.net/browse/KAN-59) | Subtask of KAN-6; S1-DEF-04 | Reject incomplete submissions with field feedback and retain draft data. |
+| [KAN-60](https://smu-g7-grp1.atlassian.net/browse/KAN-60) | Task related to KAN-36 | Enforce a nonblank event-rejection reason in the UI/API, persist it for the organiser and verify invalid attempts have no side effects. |
+
+KAN-56–KAN-59 are To Do, unestimated subtasks included in the carried parent estimates, with individual subtask assignees still to select. KAN-60 is an unestimated future-backlog task outside Sprint 2. KAN-36 remains Done for its historical Sprint 1 slice; its new mandatory-reason criteria and linked correction do not rewrite previous results.
+
+### Existing cards refined
+
+- **KAN-6, KAN-33 and KAN-34:** added the reported carry-over paths and regression expectations. KAN-6 now explicitly requires event date and attendance, allows None / Not Required for inapplicable optional needs, and records the remaining field/conditional rules to agree.
+- **KAN-29:** recorded preconfigured availability, the existing fewest-active-events/tie-break rule and the manual self/other assignment decision. Stored availability, counted states, no-candidate behaviour and handover authority remain open.
+- **KAN-12, KAN-52, KAN-53, KAN-8, KAN-54 and KAN-55:** added the meaningful correctness checks missing from the shorter descriptions. Submission-time booking conflict protection, approval-time rechecking and mandatory operational-block reasons are explicit. Pending holds, interval boundaries, suitable-event rules, booking-review permissions and blocks overlapping existing bookings still need decisions.
+- **KAN-21:** initially marked superseded and linked as a duplicate of KAN-55. Its old two-point estimate was still counted in the first inspection's raw future-backlog total. It was subsequently archived in the scope consolidation below; the history remains available.
+- **KAN-10:** replaced the copied organiser-status description with event completion, recorded transition, persistence and equipment release. Exact eligibility remains proposed.
+- **KAN-26:** removed a blanket final-confirmation prerequisite and added planning-stage reservations, quantities/conflicts, independent venue/equipment arrangements, automatic release and authorised manual adjustments.
+- **KAN-15:** recorded change-request review, notifications, the pre-approval editing ambiguity and cancellation/new-request handling for major changes affecting confirmed arrangements.
+- **KAN-23:** marked staffing scope and the old assignment-to-Completed rule as unresolved before selection; no estimate invented.
+- **KAN-19:** replaced an email-only promise with the release's chosen notification channel. This optional story was subsequently archived in the scope consolidation below.
+- **KAN-24:** added five verifiable setup/schema/security/integration/diagram criteria and references to the existing 20 September evidence. Hosted Data API-setting verification and criterion-to-evidence cross-references remain to complete.
+
+KAN-50 and KAN-51 already matched their current story wording. KAN-9 already addresses requested quantities, overlapping reservations and independence from venue confirmation; KAN-18 excludes operationally unavailable equipment. Those four descriptions required no change in this pass.
+
+### Future release stories created
+
+| Jira story | Release coverage | Refinement still needed |
+| --- | --- | --- |
+| [KAN-61](https://smu-g7-grp1.atlassian.net/browse/KAN-61) — Confirm Event After Planning Arrangements | CF-06; distinguish final confirmation from KAN-36 initial approval | Eligible states, readiness checklist, optional arrangements and notification/registration effects |
+| [KAN-62](https://smu-g7-grp1.atlassian.net/browse/KAN-62) — Cancel Event and Release Its Arrangements | CF-06/CF-19 with equipment and booking effects | Actors/states, reason policy, booking release and registration/notification handling |
+| [KAN-63](https://smu-g7-grp1.atlassian.net/browse/KAN-63) — Submit and Review Event Equipment Requests | CF-15, connected to KAN-9 and KAN-26 | Request/review states, partial fulfilment, edit rights and reservation timing |
+| [KAN-64](https://smu-g7-grp1.atlassian.net/browse/KAN-64) — Notify Relevant Users About Event Workflow Updates | CF-20, reusing notification work already described in other stories | Trigger/recipient/channel matrix, retries, duplicate handling and reuse of existing implementation |
+
+These stories are To Do, unassigned and unestimated in the future backlog. Their criteria are proposals for refinement before sprint selection. They do not add to the 43-point Sprint 2 commitment. Review existing code and overlapping stories before estimating remaining work.
+
+### Sprint settings and remaining team work
+
+The live Sprint 2 goal now covers automatic coordinator assignment, a maintained venue catalogue and the connected booking/decision workflow. Jira starts the sprint at **20 September 00:00** and ends it at **4 October 00:00**, the boundary after the inclusive 3 October final day. The planned review remains Saturday 3 October; its actual meeting time is not recorded. Automatic sprint completion remains disabled.
+
+The nine new Sprint 2 stories still need named owners/reviewers and a capacity check. Kai Jie retains KAN-6/KAN-34 and Irfan retains KAN-33. KAN-42 and KAN-43 remain In Progress pending actual integration-test and code-review evidence. Retain the **93 repository planning criterion IDs** and existing test references; the six shorter Jira cards now include their missing checks as dated refinements. A fresh portable export, a detailed criterion cross-reference, unresolved policy decisions and original meeting/board evidence remain to collect.
+
+## 21 September 2026 — release backlog consolidated
+
+The [product backlog](product-backlog.md) now maps all 20 core features to retained stories and records future acceptance criteria and dependencies. Existing venue stories KAN-50–KAN-55 already cover the venue gaps; no parallel venue stories were created. Reassignment, ordinary planning edits and manager registration visibility needed explicit coverage:
+
+| New Jira story | Scope and boundary | Live state |
+| --- | --- | --- |
+| [KAN-65](https://smu-g7-grp1.atlassian.net/browse/KAN-65) — Reassign Event Coordinator | Handover of an existing event, one current coordinator, updated relationship-based access and retained event information. Linked to KAN-29 automatic initial assignment. | To Do, unassigned, unestimated; no sprint |
+| [KAN-66](https://smu-g7-grp1.atlassian.net/browse/KAN-66) — Update Event Information During Planning | Ordinary permitted edits by role, relationship and stage; significant changes use KAN-15. Linked to KAN-15. | To Do, unassigned, unestimated; no sprint |
+| [KAN-67](https://smu-g7-grp1.atlassian.net/browse/KAN-67) — View Event Registrations | Relevant organiser/coordinator sees correct event registrations, counts and active/withdrawn states, with protected personal fields. Linked to KAN-14 and KAN-17. | To Do, unassigned, unestimated; no sprint |
+
+### Existing scope retained and clarified
+
+- **KAN-14:** adds relevant attendee event information, registration enabled/window/capacity checks, own saved status, duplicate prevention and access checks. Core registration has no waiting-list dependency.
+- **KAN-17:** records confirmation, persistent withdrawal status, capacity released once, access controls and failure consistency. Withdrawal timing and re-registration rules remain open.
+- **KAN-15 — Submit and Review Event Change Requests:** one story now covers submission, coordinator comparison/assessment, saved outcomes, permitted application of accepted changes and resource reconsideration. KAN-66 owns ordinary edits. Major changes affecting confirmed arrangements use cancellation plus a new request.
+- **KAN-61:** confirmation readiness covers required venue/equipment arrangements and applicable Not Required equipment. Optional human staffing is not a prerequisite.
+- **KAN-62, KAN-63 and KAN-64:** their descriptions were found blank during the follow-up inspection. Full stories, criteria and open decisions were saved and verified. They cover cancellation/resource release, coordinator equipment requests with Technical Support Staff review/update, and request/planning/registration notification groups respectively. Additional duplicate review or notification stories were unnecessary.
+
+The existing estimates on older stories remain unchanged and require review against refined scope before future selection. New criteria are working requirements, not evidence of completed implementation or acceptance. Handover authority, editing boundaries, registration disclosure, lifecycle/readiness rules and the notification trigger/recipient/channel matrix remain to settle.
+
+### Archived scope
+
+KAN-21 was archived as a duplicate of KAN-55 after retaining its mandatory-reason and operational-block requirements in KAN-55. KAN-19 waiting lists, KAN-22 human technical-support requests and KAN-23 human staff assignment were archived as optional scope outside the selected core release. This scope choice does not claim that the customer prohibited these extras. Required equipment technical requirements and Technical Support Staff review remain in KAN-63.
+
+All four cards had no child items or sprint membership when checked. Each now displays an archived notice and Restore action; their history was preserved. The [archived-item register](product-backlog.md#archived-backlog-items) records the rationale. Sprint 1 remains 32 committed / 24 Done / eight carried points, and Sprint 2 remains 12 PBIs / 43 points. No statuses were changed to Done by this cleanup.
+
+### Repository and test alignment
+
+The requirements map, traceability matrix, future test outlines, Sprint 2 references and submission checklist now point to the consolidated backlog. TC-07 plans KAN-66 ordinary planning edits and the KAN-15 boundary; old KAN-34 draft-edit evidence remains under TC-03 and its original result entries. KAN-65/KAN-66/KAN-67 have no new executed acceptance results.
+
+The [portable Jira snapshot](../submission/1/jira-backlog-2026-09-21.csv), exported at 03:59 +08:00 on 21 September, retains all 51 active/non-archived records, including Done items: 33 stories, one task and 17 subtasks. Complete descriptions/criteria and relevant planning fields are preserved; [export metadata](../submission/1/README.md) explains field selection and limits. The live future backlog has 15 items: seven older estimates totalling 26 points and eight unestimated items. Sprint 2 remains 35 points To Do, eight In Review and zero Done. The snapshot is current refinement evidence, not a historical closing board or a new acceptance result. Final submission needs a refreshed snapshot and the remaining original meeting/board evidence.
 
 ## Decision record template
 

@@ -1,12 +1,12 @@
 # Sprint 1 estimation and capacity
 
-Sprint window: **6–19 September 2026 inclusive**, Asia/Singapore. Planning occurred on **Sunday 6 September**; review is scheduled for **Saturday 19 September**, and Sprint 2 planning for **Sunday 20 September**. Exact times remain to be confirmed in [planning](planning.md).
+Sprint window: **6–19 September 2026 inclusive**, Asia/Singapore. Planning occurred on **Sunday 6 September**, review and retrospective on **Saturday 19 September**, and Sprint 2 planning on **Sunday 20 September**. As recorded on 21 September, Sprint 1 is closed in Jira and Sprint 2 is initialized. Exact meeting times and attendance remain to be recorded in [planning](planning.md).
 
-**Status: agreed 32-SP baseline; capacity details and supporting records to complete.** At Sprint Planning on 6 September, the team selected nine user stories totalling **27 SP**, including KAN-27, and **KAN-24 as a separate 5-SP infrastructure backlog item**. The sprint commitment is **10 items and 32 SP**. Estimates used relative sizing with KAN-33 and KAN-16 as 2-point anchors.
+**Status: 32-SP baseline preserved; sprint closed with 7 Done PBIs / 24 SP and 3 carried PBIs / 8 SP.** At Sprint Planning on 6 September, the team selected nine user stories totalling **27 SP**, including KAN-27, and **KAN-24 as a separate 5-SP infrastructure backlog item**. The sprint commitment is **10 items and 32 SP**. Estimates used relative sizing with KAN-33 and KAN-16 as 2-point anchors. Historical capacity details and supporting records remain incomplete.
 
 The [8 September decision to use Supabase for database hosting](../../requirements/assumptions-and-questions.md#8-september-2026--hosted-postgresql) does not change these estimates. KAN-24 retains 5 SP; hosted setup and verification remain part of its database-foundation work. Authentication was still open at the hosting decision; Supabase Auth is now implemented under KAN-25. The original estimates remain unchanged.
 
-This record documents the estimation method, comparative rationale, capacity calculation, scope decision and eventual velocity. The companion [sprint backlog](sprint-backlog.md) holds scope and acceptance criteria; [daily progress](daily-progress.md) records changes and completion evidence.
+This record documents the estimation method, comparative rationale, capacity calculation, scope decision and velocity reconciliation. The original rationale and historical notes below remain as recorded; their open questions are not evidence of current completion. The companion [sprint backlog](sprint-backlog.md) holds scope and acceptance criteria; [daily progress](daily-progress.md) records changes and completion evidence.
 
 ## Agreed estimation method
 
@@ -85,7 +85,7 @@ The estimates were agreed during Sprint Planning on **6 September**. Add the par
 
 ## Capacity for 6–19 September
 
-The team has **six developers: Ryan, Ernest, Kai Jie, Irfan, Tristan and Arvin**. One also serves as Scrum Master and another as Product Owner; these two role holders remain to be confirmed. Members are available on Saturday/Sunday for the agreed review and planning events. Record development hours separately, taking other coursework, employment, leave and realistic working slots across the **14 calendar days** into account.
+The team has **six developers: Ryan, Ernest, Kai Jie, Irfan, Tristan and Arvin**. Arvin also serves as Scrum Master and Irfan as Product Owner. Members are available on Saturday/Sunday for the agreed review and planning events. Record development hours separately, taking other coursework, employment, leave and realistic working slots across the **14 calendar days** into account.
 
 Use one consistent calculation per member:
 
@@ -109,13 +109,13 @@ Code review, integration, testing, fixing defects and maintaining required evide
 | --- | --- |
 | Event availability | Saturday/Sunday for agreed review/planning events; exact durations to confirm |
 | Development availability confirmed by each member, with date | Pending |
-| Scrum Master / Product Owner duties within the six developers' availability | Role-holder names and time allowance pending; count these duties once |
+| Scrum Master / Product Owner duties within the six developers' availability | Arvin (Scrum Master) and Irfan (Product Owner); time allowance pending. Count these duties once. |
 | Integration/testing/review arrangements and contingency within usable hours | Pending |
 | Support needed for database, authorization or another shared dependency | Pending |
 | Task-level workload check against the available hours, if used | Pending |
 | What makes the selected scope feasible for this team's experience and availability | Pending |
 
-As this is Sprint 1, there is **no measured sprint velocity yet**. The 32-SP commitment is the team's initial forecast and should be checked against tasks, availability and dependencies. Story points measure relative size; any task-hour estimates are a separate planning aid.
+At planning there was **no measured sprint velocity**. The 32-SP commitment was the team's initial forecast. The accepted closure outcome is **24 SP**, while supporting exports and exact item completion timestamps remain to attach. Story points measure relative size; any task-hour estimates are a separate planning aid. Missing capacity hours remain pending rather than being reconstructed from delivered work.
 
 ## Scope and commitment decision
 
@@ -125,7 +125,7 @@ The team agreed **10 backlog items at 32 SP: nine business stories at 27 SP, inc
 | --- | ---: | --- |
 | Nine agreed business stories | 27 SP | Agreed at planning; KAN-27 is included. |
 | KAN-24, separate infrastructure backlog item | 5 SP | Agreed at planning; detailed acceptance criteria remain for review. |
-| **Accepted Sprint 1 baseline, 10 items** | **32 SP** | **Agreed on 6 September; capacity details to complete. Completion will be assessed at sprint close.** |
+| **Accepted Sprint 1 baseline, 10 items** | **32 SP** | **Agreed on 6 September; historical capacity details incomplete. Closed with 24 SP Done and 8 SP carried forward.** |
 
 KAN-27 is committed Sprint 1 work. Any later deferral is a dated change to the agreed sprint scope and must preserve traceability to the release requirement.
 
@@ -142,22 +142,37 @@ Preserve the first accepted backlog and estimates. Record additions, removals, s
 
 ## Completion, velocity and interpretation
 
-At sprint close, count an item only when its full agreed acceptance criteria and definition of done are met, with evidence in the [review](review.md). Do not award partial points for a half-finished story, merged placeholder or passing scaffold check. Return unfinished work to the product backlog and record the next decision; it is not automatically committed to Sprint 2.
+Count an item only when its full agreed acceptance criteria and definition of done are met, with evidence in the [review](review.md). Do not award partial points for a half-finished story, merged placeholder or passing scaffold check. The closeout decision explicitly carries KAN-6, KAN-33 and KAN-34 into Sprint 2 at their original estimates, totalling 8 SP. The seven remaining PBIs are Done.
+
+The figures below describe **the outcome recorded at sprint closure**. The review took place on 19 September; individual Jira completion timestamps remain to attach. The later 20 September integration is a separate event and does not supply missing daily completion records. Retain the recorded 24-point closure velocity alongside those evidence gaps.
 
 | Metric | Definition | Sprint 1 actual |
 | --- | --- | --- |
 | Original commitment, P0 | Sum of agreed SP in the first accepted sprint baseline. Keep the business-story and infrastructure components visible. | **32 SP: 27 business-story SP + 5 infrastructure SP** |
-| Scope movement | Dated additions, removals and estimate changes, each shown separately in the same unit. | Pending |
-| Latest agreed scope, Pclose | Original baseline adjusted by the logged scope movements at close. | Pending |
-| Completed original commitment, D0 | Sum of original baseline estimates for baseline PBIs fully Done by close, including KAN-24 if Done; show splits and mappings explicitly. Removed or unfinished original scope is not completed commitment. | Pending |
-| Original commitment completed | D0 / P0 × 100%, only when P0 is known and nonzero. State the denominator. | Pending |
-| Completed agreed scope, Dclose | SP for whole Done items in the agreed sprint scope, including accepted additions. Explain estimate changes and the counting basis. | Pending |
-| Latest scope completed | Dclose / Pclose × 100%, only when Pclose is known and nonzero. Show this separately from original commitment completion. | Pending |
-| Business-story velocity | SP of fully Done business stories accepted into Sprint 1, counted once. Report separately from infrastructure so the delivered customer behavior is visible. | Pending — measured after close |
-| Infrastructure points completed | KAN-24's 5 SP only if the whole accepted infrastructure item meets its definition of done; no extra points for its subtasks. | Pending — measured after close |
-| **Actual combined Sprint 1 velocity** | **Total SP of fully Done accepted backlog items, counted once: business-story velocity + completed infrastructure points. Normally Dclose; explain any reconciliation with scope changes. Compare it with the combined 32-SP baseline, not the 27-SP story-only denominator.** | **Pending — measured after close** |
-| Unfinished work | IDs, remaining acceptance criteria, blockers and backlog disposition; no partial-SP credit. | Pending |
+| Scope movement | Dated additions, removals and estimate changes, each shown separately in the same unit. | No change to the 32-SP Sprint 1 baseline recorded; 8 SP carried forward at closure, without treating that disposition as completed work or a mid-sprint removal |
+| Latest agreed scope, Pclose | Original baseline adjusted by the logged scope movements at close. | 32 SP on the recorded scope; closing export to attach |
+| Completed original commitment, D0 | Sum of original baseline estimates for baseline PBIs fully Done by close, including KAN-24 if Done; show splits and mappings explicitly. Removed or unfinished original scope is not completed commitment. | 24 SP across seven original PBIs |
+| Original commitment completed | D0 / P0 × 100%, only when P0 is known and nonzero. State the denominator. | 24 / 32 = 75% at closure |
+| Completed agreed scope, Dclose | SP for whole Done items in the agreed sprint scope, including accepted additions. Explain estimate changes and the counting basis. | 24 SP; original estimates retained, no additions counted |
+| Latest scope completed | Dclose / Pclose × 100%, only when Pclose is known and nonzero. Show this separately from original commitment completion. | 24 / 32 = 75% at closure |
+| Business-story velocity | SP of fully Done business stories accepted into Sprint 1, counted once. Report separately from infrastructure so the delivered customer behavior is visible. | 19 SP: KAN-25 (5), KAN-31 (3), KAN-4 (3), KAN-27 (3), KAN-36 (3), KAN-16 (2) |
+| Infrastructure points completed | KAN-24's 5 SP only if the whole accepted infrastructure item meets its definition of done; no extra points for its subtasks. | 5 SP: KAN-24 Done |
+| **Actual combined Sprint 1 velocity at closure** | **Total SP of fully Done accepted backlog items, counted once: business-story velocity + completed infrastructure points. Normally Dclose; explain any reconciliation with scope changes. Compare it with the combined 32-SP baseline, not the 27-SP story-only denominator.** | **24 SP = 19 business-story SP + 5 infrastructure SP; item completion timestamps and closing report to attach** |
+| Unfinished work | IDs, remaining acceptance criteria, blockers and backlog disposition; no partial-SP credit. | KAN-6 (3 SP), KAN-33 (2 SP), KAN-34 (3 SP) carry to Sprint 2; 8 original SP. See review findings. |
 
 For progress reporting, show the starting baseline, scope changes and dated completion records. Annotate removals separately from completed work. Leave unrecorded results as `Pending`; enter zero when supported by the board or completion record.
 
 Use the observed Sprint 1 velocity, capacity differences, carryover and dependency issues in the [retrospective](retrospective.md) to inform Sprint 2. Keep the treatment of infrastructure and the relative scale consistent across sprints, reporting business-story and combined totals transparently. One sprint is an initial observation, not a stable delivery rate. Link the actual notes, backlog snapshots and calculations through the [evidence index](evidence/README.md).
+
+## Closeout and Sprint 2 planning implications — 21 September
+
+| Carryover | Original SP | Remaining work identified at review |
+| --- | ---: | --- |
+| KAN-6 | 3 | Reproduce saved-draft submission and reject missing required fields; reconcile the successful DEMO-04/05 observations with later reports. |
+| KAN-33 | 2 | Keep approved requests reachable by the appropriate coordinator so the later confirmation path is accessible. |
+| KAN-34 | 3 | Show and preserve capacity/date fields when registration changes from no to yes in an existing draft. |
+| **Total original carryover** | **8** | **No partial points awarded in Sprint 1. These estimates are retained in the agreed Sprint 2 baseline.** |
+
+The seven Done PBIs account for 24 original points, so **32 committed = 24 Done + 8 carried forward**. Attach the closing Jira report, acceptance evidence and completion timestamps. The 24 points describe the accepted outcome at closure; daily completion dates and burndown remain unrecorded.
+
+Sprint 2 has nine new stories totalling **35 SP**, plus the unchanged **8 SP** of carryover, giving an agreed **43-SP baseline**. The approximate **6-SP-per-member** selection target relates to the 35 new points across Ryan, Ernest, Kai Jie, Irfan, Tristan and Arvin. It is neither a capacity measurement nor a target that includes the carryover. Owners are still to be selected; account for carried work, review fixes, integration and testing before finalizing each member's load. See [Sprint 2 estimation and capacity](../sprint-02/estimation-and-capacity.md).
