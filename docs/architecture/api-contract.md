@@ -244,7 +244,7 @@ Request body:
 
 The existing malformed-JSON and payload-size responses also apply. Responses from the review handler use `Cache-Control: no-store`. HTTP tests cover validation, role checks, error mapping and unavailable integration; database tests additionally exercise the mounted handler with real PostgreSQL and fixture authentication.
 
-## First-release routes (CF-02, CF-03 and CF-05 to CF-20)
+## First-release routes (CF-02 to CF-07)
 
 **Status, 19 September 2026:** The routes in this section are implemented on `feat/KAN-24-core-feature-schema` and mounted by `createRuntimeApp` through the `workspace` dependencies (`pool` plus the same `authenticateRequest` session verifier as the Sprint 1 routes). Unit, component and PostgreSQL integration tests pass locally with fixture or locally signed identities. They have **not** been verified against hosted Supabase accounts, have not been peer reviewed, and do not mark any story Done. The business rules are team implementation assumptions for Q-02 and Q-04 to Q-13, recorded in the [19 September decision record](../requirements/assumptions-and-questions.md); the customer questions stay open. Venue Staff, Technical Support Staff and Attendee accounts must be provisioned in Supabase Auth and linked through `app_users.supabase_user_id` before those roles can sign in.
 
@@ -296,100 +296,6 @@ Mount order matters: `app.ts` registers the assignment, clarification, change-re
 
 The schema has no cancellation-reason column; the reason travels only in the notifications.
 
-### Events: change requests (CF-19) — `change-request-router.ts`
-
-| Method / route | Roles | Success | Errors |
-| --- | --- | --- | --- |
-| `GET /api/events/:id/change-requests` | EO owner, assigned EC | `200` items: `id`, `eventRequestId`, `requestedById`, `requestedByName`, `status`, `proposedChanges`, `reason`, `decidedById`, `decidedByName`, `decidedAt`, `decisionReason`, `createdAt`, `updatedAt`, newest first | `400 INVALID_EVENT_REQUEST_ID`; `403 ACTION_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND` |
-| `POST /api/events/:id/change-requests` | EO owner | `201` `{ changeRequestId, eventRequestId, status: "PENDING" }`. Body `{ proposedChanges, reason }`; `proposedChanges` follows the draft-field rules and may not clear a mandatory submission field. Event must be `APPROVED` or `CONFIRMED` with no other `PENDING` change; notifies the assigned coordinator | `400 INVALID_EVENT_REQUEST_ID`, `INVALID_INPUT`, `INVALID_CHANGE_REQUEST_INPUT`; `403 ACTION_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND`; `409 CHANGE_REQUEST_NOT_ALLOWED`, `CHANGE_REQUEST_ALREADY_PENDING` |
-| `POST /api/events/:id/change-requests/:changeId/withdraw` | EO owner | `200` `{ changeRequestId, eventRequestId, status: "WITHDRAWN" }` | `400 INVALID_EVENT_REQUEST_ID`, `INVALID_CHANGE_REQUEST_ID`; `403 ACTION_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND`, `CHANGE_REQUEST_NOT_FOUND`; `409 CHANGE_REQUEST_NOT_PENDING` |
-| `POST /api/events/:id/change-requests/:changeId/decision` | Assigned EC | `200` `{ changeRequestId, eventRequestId, status, eventStatus, cancelledVenueBookings, cancelledEquipmentRequests }`. Body `{ decision: "APPROVED" \| "REJECTED", reason? }`. Approval revalidates and applies the stored changes; a change to the dates or expected attendance cancels open bookings/equipment requests and returns a `CONFIRMED` event to `APPROVED`; notifies the organiser | `400 INVALID_EVENT_REQUEST_ID`, `INVALID_CHANGE_REQUEST_ID`, `INVALID_INPUT`, `INVALID_CHANGE_REQUEST_INPUT`; `403 ACTION_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND`, `CHANGE_REQUEST_NOT_FOUND`; `409 CHANGE_REQUEST_NOT_PENDING`, `CHANGE_REQUEST_NOT_ALLOWED`, `CHANGE_REQUEST_NOT_APPLICABLE` |
-
-### Venues (CF-08 to CF-11) — `backend/src/modules/venues/venues-router.ts`
-
-Venue record: `id`, `name`, `description`, `location`, `capacity`, `layouts[]`, `facilities[]`, `accessibilityFeatures[]`, `wheelchairAccessible`, `opensAt`, `closesAt` (`"HH:MM"` Asia/Singapore or null), `isActive`, `createdAt`, `updatedAt`. Inactive venues are visible to Venue Staff only and look missing to everyone else.
-
-| Method / route | Roles | Success | Errors |
-| --- | --- | --- | --- |
-| `GET /api/venues` | Any signed-in role | `200` items ordered by name. Optional single-valued filters: `q`, `minCapacity`, `facilities`, `accessibilityFeatures` (comma-separated, all must match), `wheelchairAccessible`, `layout`, `availableFrom` + `availableTo` (excludes venues with an overlapping `APPROVED` booking or blocked period) | `400 INVALID_VENUE_FILTER` |
-| `POST /api/venues` | VS | `201` venue record. `name` and `capacity` required | `400 INVALID_VENUE_INPUT`; `403 VENUE_FORBIDDEN`; `409 VENUE_NAME_TAKEN` |
-| `GET /api/venues/:id` | Any signed-in role | `200` venue record | `400 INVALID_VENUE_ID`; `404 VENUE_NOT_FOUND` |
-| `PATCH /api/venues/:id` | VS | `200` venue record; omission leaves a field unchanged, null clears a nullable field | `400 INVALID_VENUE_ID`, `INVALID_VENUE_INPUT`; `403 VENUE_FORBIDDEN`; `404 VENUE_NOT_FOUND`; `409 VENUE_NAME_TAKEN` |
-| `GET /api/venues/:id/availability?from=&to=` | Any signed-in role | `200` `{ venueId, from, to, timezone: "Asia/Singapore", operatingHours, busy[] }`; window at most 92 days. `busy` items are `kind` (`BOOKING` \| `BLOCKED`), `startsAt`, `endsAt`; VS and EC additionally receive `id` and `eventName` or `reason` | `400 INVALID_VENUE_ID`, `INVALID_AVAILABILITY_RANGE`; `404 VENUE_NOT_FOUND` |
-| `GET /api/venues/:id/suitability?eventRequestId=` | EO owner, assigned EC | `200` `{ venueId, eventRequestId, suitable, checks[] }`; each check is `code` (`ACTIVE`, `CAPACITY`, `ACCESSIBILITY`, `OPERATING_HOURS`, `AVAILABILITY`), `passed`, `message` | `400 INVALID_VENUE_ID`, `INVALID_EVENT_REQUEST_ID`; `403 VENUE_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND`, `VENUE_NOT_FOUND` |
-| `POST /api/venues/:id/unavailability` | VS | `201` `{ id, venueId, startsAt, endsAt, reason }`. Body `{ startsAt, endsAt, reason? }` | `400 INVALID_VENUE_ID`, `INVALID_UNAVAILABILITY_INPUT`; `403 VENUE_FORBIDDEN`; `404 VENUE_NOT_FOUND`; `409 VENUE_BLOCK_CONFLICT` (with `conflicts[]` of approved bookings) |
-| `DELETE /api/venues/:id/unavailability/:blockId` | VS | `200` `{ deleted: true, id }` | `400 INVALID_VENUE_ID`, `INVALID_VENUE_UNAVAILABILITY_ID`; `403 VENUE_FORBIDDEN`; `404 VENUE_UNAVAILABILITY_NOT_FOUND` |
-
-### Venue bookings (CF-12 to CF-14) — `backend/src/modules/venues/venue-bookings-router.ts`
-
-Booking record: `id`, `eventRequestId`, `venueId`, `venueName`, `requestedBy`, `status` (`PENDING`, `APPROVED`, `REJECTED`, `CANCELLED`), `startsAt`, `endsAt`, `layout`, `notes`, `decidedBy`, `decidedAt`, `decisionReason`, `createdAt`, `updatedAt`.
-
-| Method / route | Roles | Success | Errors |
-| --- | --- | --- | --- |
-| `GET /api/venue-bookings?eventRequestId=` | EO owner, assigned EC | `200` booking records of one event, newest first | `400 INVALID_VENUE_BOOKING_QUERY`; `403 VENUE_BOOKING_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND` |
-| `GET /api/venue-bookings?status=` | VS | `200` decision queue (default `PENDING`): booking record plus `eventName`, `organiserName`, `expectedAttendance`, `suitability`, and `conflicts[]` (other `PENDING`/`APPROVED` bookings of the venue that overlap) | `400 INVALID_VENUE_BOOKING_QUERY` |
-| `POST /api/venue-bookings` | EO owner, assigned EC | `201` booking record plus `suitability` and `warnings[]` (failed checks; the request is still recorded). Body `{ eventRequestId, venueId, startsAt?, endsAt?, layout?, notes? }`; both times or neither (defaults to the event's interval). Event must be `APPROVED` or `CONFIRMED`; notifies all Venue Staff | `400 INVALID_VENUE_BOOKING_INPUT`; `403 VENUE_BOOKING_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND`, `VENUE_NOT_FOUND`; `409 EVENT_NOT_BOOKABLE`, `VENUE_INACTIVE`, `VENUE_BOOKING_DUPLICATE` |
-| `POST /api/venue-bookings/:id/cancel` | The requester, EO owner or assigned EC | `200` booking record with `CANCELLED`; from `PENDING` or `APPROVED`; notifies the requester/organiser, and Venue Staff when an approved booking is released | `400 INVALID_VENUE_BOOKING_ID`; `403 VENUE_BOOKING_FORBIDDEN`; `404 VENUE_BOOKING_NOT_FOUND`; `409 VENUE_BOOKING_NOT_CANCELLABLE` |
-| `POST /api/venue-bookings/:id/decision` | VS | `200` booking record. Body `{ decision: "APPROVED" \| "REJECTED", reason? }`; a rejection needs a reason. Notifies the requester and organiser | `400 INVALID_VENUE_BOOKING_ID`, `INVALID_VENUE_BOOKING_INPUT`; `403 VENUE_BOOKING_FORBIDDEN`; `404 VENUE_BOOKING_NOT_FOUND`; `409 VENUE_BOOKING_NOT_PENDING`, `EVENT_NOT_BOOKABLE`, `VENUE_BOOKING_CONFLICT`, `VENUE_UNAVAILABLE` (both with `conflicts[]`) |
-
-The `venue_bookings_conflict` trigger locks the venue row and is the final guard: an approval that overlaps another approved booking or a blocked period fails with `23P01`, which the service maps to the two 409 conflict codes.
-
-### Equipment catalogue and availability (CF-15, CF-16) — `backend/src/modules/equipment/equipment-router.ts`
-
-Equipment type: `id`, `name`, `category`, `description`, `totalQuantity`, `isActive`, `createdAt`, `updatedAt`. Inactive types are visible to Technical Support Staff only.
-
-| Method / route | Roles | Success | Errors |
-| --- | --- | --- | --- |
-| `GET /api/equipment?q=&category=` | Any signed-in role | `200` items ordered by name | `400 INVALID_EQUIPMENT_LIST_FILTER` |
-| `GET /api/equipment/availability?from=&to=` | Any signed-in role | `200` `{ from, to, items[] }`; each active type with `equipmentTypeId`, `name`, `category`, `totalQuantity`, `reservedPeak`, `available` | `400 INVALID_AVAILABILITY_WINDOW` |
-| `GET /api/equipment/:id` | Any signed-in role | `200` equipment type | `400 INVALID_EQUIPMENT_ID`; `404 EQUIPMENT_NOT_FOUND` |
-| `GET /api/equipment/:id/availability?from=&to=` | Any signed-in role | `200` `{ equipmentTypeId, from, to, totalQuantity, reservedPeak, available }` | `400 INVALID_EQUIPMENT_ID`, `INVALID_AVAILABILITY_WINDOW`; `404 EQUIPMENT_NOT_FOUND` |
-| `POST /api/equipment` | TS | `201` equipment type; `name` and `totalQuantity` required | `400 INVALID_EQUIPMENT_INPUT`; `403 EQUIPMENT_FORBIDDEN`; `409 EQUIPMENT_NAME_TAKEN` |
-| `PATCH /api/equipment/:id` | TS | `200` equipment type | `400 INVALID_EQUIPMENT_ID`, `INVALID_EQUIPMENT_INPUT`; `403 EQUIPMENT_FORBIDDEN`; `404 EQUIPMENT_NOT_FOUND`; `409 EQUIPMENT_NAME_TAKEN`, `EQUIPMENT_QUANTITY_IN_USE` (with `reservedPeak`) |
-
-`reservedPeak` is the highest simultaneous `RESERVED` quantity inside the window, not the sum of every overlapping reservation. Migration 006 makes the database overbooking trigger use the same peak calculation.
-
-### Equipment requests and reservation (CF-15, CF-17) — `backend/src/modules/equipment/equipment-requests-router.ts`
-
-Request record: `id`, `eventRequestId`, `equipmentTypeId`, `equipmentName`, `equipmentCategory`, `requestedBy`, `quantity`, `status` (`REQUESTED`, `RESERVED`, `REJECTED`, `CANCELLED`), `startsAt`, `endsAt`, `notes`, `decidedBy`, `decidedAt`, `decisionReason`, `createdAt`, `updatedAt`.
-
-| Method / route | Roles | Success | Errors |
-| --- | --- | --- | --- |
-| `GET /api/equipment-requests?eventRequestId=&status=` | EO owner, assigned EC (`eventRequestId` required) | `200` request records of one event | `400 INVALID_EQUIPMENT_REQUEST_FILTER`; `403 EQUIPMENT_REQUEST_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND` |
-| `GET /api/equipment-requests?status=&eventRequestId=` | TS | `200` decision queue (`REQUESTED` unless a status or event is chosen): request record plus `eventName`, `organiserName`, `requesterName`, `totalQuantity`, `reservedPeak`, `available` | `400 INVALID_EQUIPMENT_REQUEST_FILTER` |
-| `POST /api/equipment-requests` | EO owner, assigned EC | `201` request record. Body `{ eventRequestId, equipmentTypeId, quantity, startsAt?, endsAt?, notes? }`; missing times default to the event's schedule. Event must be `APPROVED` or `CONFIRMED`; notifies Technical Support Staff | `400 INVALID_EQUIPMENT_REQUEST_INPUT`; `403 EQUIPMENT_REQUEST_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND`, `EQUIPMENT_NOT_FOUND`; `409 EVENT_NOT_ELIGIBLE_FOR_EQUIPMENT`, `EQUIPMENT_TYPE_INACTIVE`, `EVENT_SCHEDULE_REQUIRED`, `EQUIPMENT_QUANTITY_EXCEEDS_POOL` (with `totalQuantity`) |
-| `PATCH /api/equipment-requests/:id` | The requester only, while `REQUESTED` | `200` request record; `quantity`, `startsAt`, `endsAt`, `notes` | `400 INVALID_EQUIPMENT_REQUEST_ID`, `INVALID_EQUIPMENT_REQUEST_INPUT`; `403 EQUIPMENT_REQUEST_FORBIDDEN` (role, or a related planner who is not the requester); `404 EQUIPMENT_REQUEST_NOT_FOUND`; `409 EQUIPMENT_REQUEST_NOT_PENDING`, `EQUIPMENT_QUANTITY_EXCEEDS_POOL` |
-| `POST /api/equipment-requests/:id/cancel` | The requester only | `200` request record with `CANCELLED`; from `REQUESTED` or `RESERVED`; releasing a reservation notifies the staff member who reserved it | `400 INVALID_EQUIPMENT_REQUEST_ID`; `403 EQUIPMENT_REQUEST_FORBIDDEN`; `404 EQUIPMENT_REQUEST_NOT_FOUND`; `409 EQUIPMENT_REQUEST_NOT_CANCELLABLE` |
-| `POST /api/equipment-requests/:id/decision` | TS | `200` request record. Body `{ decision: "RESERVED" \| "REJECTED", reason? }`; a rejection needs a reason. Notifies the requester and organiser | `400 INVALID_EQUIPMENT_REQUEST_ID`, `INVALID_EQUIPMENT_DECISION_INPUT`; `403 EQUIPMENT_REQUEST_FORBIDDEN`; `404 EQUIPMENT_REQUEST_NOT_FOUND`; `409 EQUIPMENT_REQUEST_NOT_PENDING`, `EVENT_NOT_ELIGIBLE_FOR_EQUIPMENT`, `EQUIPMENT_UNAVAILABLE` (with `available`) |
-
-### Registrations (CF-18) — `backend/src/modules/registrations/router.ts`
-
-An event is discoverable when its status is `APPROVED` or `CONFIRMED` and `registrationRequired` is true. Missing, non-discoverable and unrelated events all return `404 EVENT_NOT_FOUND`. The public event shape exposes `id`, `name`, `purpose`, `description`, `startsAt`, `endsAt`, `venue` (`name`, `location` of the earliest approved booking, or null), `registrationCapacity`, `registeredCount`, `spotsLeft`, `registrationOpensAt`, `registrationClosesAt`, `isOpen`, `closedReason` (`NOT_DISCOVERABLE`, `NOT_OPEN_YET`, `REGISTRATION_ENDED`, `EVENT_STARTED`, `FULL`) and `myRegistrationStatus`; it never includes organiser/coordinator IDs, internal requirements or review data.
-
-| Method / route | Roles | Success | Errors |
-| --- | --- | --- | --- |
-| `GET /api/registrations/events` | Any signed-in role | `200` discoverable events, soonest first (at most 200) | — |
-| `GET /api/registrations/events/:id` | Any signed-in role | `200` one public event | `400 INVALID_EVENT_ID`; `404 EVENT_NOT_FOUND` |
-| `GET /api/registrations/mine` | Any signed-in role (own rows only) | `200` items: `registrationId`, `eventRequestId`, `status`, `registeredAt`, `withdrawnAt`, `event` (`id`, `name`, `status`, `startsAt`, `endsAt`, `venue`, `canWithdraw`), newest first | — |
-| `POST /api/registrations/events/:id/register` | AT | `201` `{ registrationId, eventRequestId, status: "REGISTERED", registeredAt, withdrawnAt }`; re-registering reuses the withdrawn row; notifies the attendee and the organiser | `400 INVALID_EVENT_ID`; `403 REGISTRATION_FORBIDDEN`; `404 EVENT_NOT_FOUND`; `409 ALREADY_REGISTERED`, `REGISTRATION_CLOSED`, `REGISTRATION_FULL` (with `reason`) |
-| `POST /api/registrations/events/:id/withdraw` | AT | `200` same shape with `WITHDRAWN`; allowed until the event starts; notifies the attendee and the organiser | `400 INVALID_EVENT_ID`; `403 REGISTRATION_FORBIDDEN`; `404 EVENT_NOT_FOUND`; `409 NOT_REGISTERED`, `WITHDRAWAL_CLOSED` |
-| `GET /api/registrations/events/:id/attendees` | EO owner, assigned EC | `200` `{ eventRequestId, counts: { registered, withdrawn, capacity, spotsLeft }, items[] }`; items are `registrationId`, `displayName`, `email`, `status`, `registeredAt`, `withdrawnAt` | `400 INVALID_EVENT_ID`; `404 EVENT_NOT_FOUND` (also for every other role) |
-
-The `event_registrations_capacity` trigger and the one-row-per-attendee unique constraint remain the final guards under concurrency; the service maps them to `REGISTRATION_FULL` and `ALREADY_REGISTERED`.
-
-### Notifications (CF-20) — `backend/src/modules/notifications/router.ts`
-
-Every route acts only on the verified caller's own rows; another user's notification is indistinguishable from a missing one. Notification item: `id`, `type`, `title`, `message`, `eventRequestId`, `readAt`, `createdAt`. Delivery is in-app only; there is no email, push or retry.
-
-| Method / route | Roles | Success | Errors |
-| --- | --- | --- | --- |
-| `GET /api/notifications?unread=&limit=&before=` | Any signed-in role | `200` `{ items, unreadCount, nextCursor }`; newest first, `limit` 1–100 (default 30), `before` is the opaque `nextCursor` of the previous page | `400 INVALID_NOTIFICATION_QUERY` |
-| `GET /api/notifications/unread-count` | Any signed-in role | `200` `{ unreadCount }` | — |
-| `POST /api/notifications/read-all` | Any signed-in role | `200` `{ updated, unreadCount }` | — |
-| `POST /api/notifications/:id/read` | Any signed-in role | `200` `{ notification, unreadCount }`; idempotent, the first read time is kept | `400 INVALID_NOTIFICATION_ID`; `404 NOTIFICATION_NOT_FOUND` |
-
-Services create notifications through `notify()` in `backend/src/modules/notifications/notify.ts`, passing their transaction client. Current `type` values include `COORDINATOR_ASSIGNED`, `COORDINATOR_UNASSIGNED`, `COORDINATOR_CHANGED`, `REVIEW_STARTED`, `CLARIFICATION_REQUESTED`, `CLARIFICATION_ANSWERED`, `CHANGE_REQUEST_SUBMITTED`, `CHANGE_REQUEST_WITHDRAWN`, `CHANGE_REQUEST_APPROVED`, `CHANGE_REQUEST_REJECTED`, `EVENT_CONFIRMED`, `EVENT_CANCELLED`, `EVENT_COMPLETED`, `VENUE_BOOKING_REQUESTED`, `VENUE_BOOKING_APPROVED`, `VENUE_BOOKING_REJECTED`, `VENUE_BOOKING_CANCELLED`, `EQUIPMENT_REQUEST_CREATED`, `EQUIPMENT_REQUEST_RESERVED`, `EQUIPMENT_REQUEST_REJECTED`, `EQUIPMENT_REQUEST_CANCELLED`, `REGISTRATION_CONFIRMED`, `REGISTRATION_WITHDRAWN`, `ATTENDEE_REGISTERED` and `ATTENDEE_WITHDREW`. The existing draft submission and initial approval/rejection services were not changed to send notifications.
-
 ### Frontend routes
 
 Client navigation is not access control; every page relies on the API responses above. `AppShell.vue` shows organiser links to signed-out visitors and filters the sidebar by the signed-in role. Review and unassigned-queue links require a resolved event-coordinator session; direct review navigation is also protected by `ReviewAccessPage.vue`.
@@ -400,14 +306,9 @@ Client navigation is not access control; every page relies on the API responses 
 | `/events/:id`, `/events/:id/edit` | Organiser detail with the planning panels; draft editing | Linked from the list |
 | `/reviews`, `/reviews/unassigned` | Review queue; unassigned requests | EC after session resolution |
 | `/reviews/:id` | Coordinator review with the planning panels | Linked from the queue |
-| `/venue-bookings` | Venue booking decision queue | VS |
-| `/equipment/requests` | Equipment request decision queue | TS |
-| `/venues`, `/venues/:id`; `/venues/new`, `/venues/:id/edit` | Venue catalogue, detail and availability; venue form | Every signed-in role (forms linked for VS) |
-| `/equipment`; `/equipment/new`, `/equipment/:id/edit` | Equipment catalogue; equipment form | Every signed-in role (forms linked for TS) |
-| `/browse`, `/browse/:id` | Discoverable events and registration | Every signed-in role |
-| `/registrations` | My registrations | AT |
-| `/notifications` | Notification inbox; the top bar shows an unread-count bell for every signed-in user | Top bar |
 
-`EventPlanningPanels.vue` adds the assignment, clarification and lifecycle panels to both detail pages, and the venue-booking, equipment-request, change-request and attendee-list panels once the request is `APPROVED`, `CONFIRMED`, `COMPLETED` or `CANCELLED`.
+`EventPlanningPanels.vue` adds the assignment, clarification and lifecycle panels to both detail pages.
 
-**Verification, 19 September 2026:** Backend unit and HTTP-boundary tests live under `backend/test/events/` (`create-draft*.test.ts`, `workflow-support.test.ts`, `workflow-routers.test.ts`), `backend/test/venues/`, `backend/test/equipment/`, `backend/test/registrations/` and `backend/test/notifications/`. PostgreSQL integration tests live under `database/tests/events/` (`create-draft`, `assignment`, `clarifications`, `change-requests`, `lifecycle`), `database/tests/venues/`, `database/tests/equipment/`, `database/tests/registrations/`, `database/tests/notifications/` and `database/tests/core-schema.integration.test.ts`. Component tests sit beside each page and panel under `frontend/src/features/`. They use fixture authentication, API response fixtures or an isolated PostgreSQL test database. No Playwright check or hosted manual check covers these routes yet; record those results in the [test evidence](../testing/test-evidence.md) before claiming acceptance.
+**Scope, 26 September 2026:** the venue, equipment, registration, notification and change-request routes recorded here earlier were removed before Sprint 2 so the team builds those stories itself; see the Sprint 2 backlog. Their tables remain in migration 005.
+
+**Verification:** Backend unit and HTTP-boundary tests live under `backend/test/events/` (`create-draft*.test.ts`, `workflow-support.test.ts`, `workflow-routers.test.ts`). PostgreSQL integration tests live under `database/tests/events/` (`create-draft`, `assignment`, `clarifications`, `lifecycle`) and `database/tests/core-schema.integration.test.ts`. Component tests sit beside each page and panel under `frontend/src/features/`. They use fixture authentication, API response fixtures or an isolated PostgreSQL test database. No Playwright check or hosted manual check covers these routes yet; record those results in the [test evidence](../testing/test-evidence.md) before claiming acceptance.

@@ -363,6 +363,13 @@ correct after refresh. The submission-to-status workflow remains in the [test ev
 
 ## 19 September 2026 — Provisional rules for the remaining first-release features
 
+**Superseded in part, 26 September 2026:** the venue, equipment, registration, notification and
+change-request services this record described were removed before Sprint 2 so the team implements
+those stories itself. The rules below for Q-06 to Q-11 and Q-13 therefore describe code that no longer
+exists and bind nothing; they are kept as the reasoning a future implementation can accept or reject.
+The rules for Q-02 (assignment), Q-04 (transitions), Q-12 (cancellation) and Q-14 (status audit) remain
+in force, because those services are still present. Every customer question stays **Open**.
+
 **Current status:** Every question below stays **Open**. This record documents the rules the
 team encoded on `feat/KAN-24-core-feature-schema` so the remaining first-release features
 could be built and tested; it does not answer any customer question and marks no story Done.

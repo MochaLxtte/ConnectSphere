@@ -4,7 +4,7 @@ IS212 event planning and venue booking project, built with **Vue 3 + TypeScript,
 
 The application supports sign-in, an assigned coordinator's review queue, request details and approval/rejection. Organisers can create and save drafts, edit and submit them, list their requests across all statuses, and refresh the status and recorded outcome. Draft rows open the editor; other rows open request details and the available planning actions.
 
-The integrated code also includes coordinator assignment, review start and clarification, confirmation, cancellation and completion with status history, change requests, the venue catalogue with availability, search, suitability and booking decisions, the equipment catalogue with pooled availability, requests and reservations, attendee registration, and in-app notifications. Automated results are recorded against their source commits in the [test evidence](docs/testing/test-evidence.md). Hosted acceptance of these additions and the submission-to-status workflow remains pending; peer review and open customer questions also remain to be resolved before story closure. The implementation does not expand the original Sprint 1 commitment. Venue Staff, Technical Support Staff and Attendee test accounts must be provisioned in Supabase Auth and linked through `app_users.supabase_user_id` before those roles can sign in. Database migrations, fictional seed data, automated checks, CI and team documentation support development.
+The integrated code also includes coordinator assignment, review start and clarification, and confirmation, cancellation and completion with status history. Automated results are recorded against their source commits in the [test evidence](docs/testing/test-evidence.md). Hosted acceptance, peer review and the open customer questions remain outstanding before story closure. The venue, equipment, registration, notification and change-request workflows are **not** implemented: migration 005 supplies their tables and integrity guards, and Sprint 2 builds the venue stories. Database migrations, fictional seed data, automated checks, CI and team documentation support development.
 
 ## Start here
 
@@ -26,7 +26,7 @@ npm run db:migrate
 npm run db:seed
 ```
 
-When joining the team's existing Supabase project, confirm its schema with Arvin before applying migrations or changing seed data. Provision each login in Supabase Auth and link it to `app_users.supabase_user_id` with the correct application role. Seed profiles alone do not create login credentials. Venue Staff, Technical Support Staff and Attendee test accounts need the same treatment before those roles can sign in and exercise the venue, equipment and registration pages. The seed also adds fictional venues and equipment types once migration 005 has run, so the catalogue pages have content. Then start the application:
+When joining the team's existing Supabase project, confirm its schema with Arvin before applying migrations or changing seed data. Provision each login in Supabase Auth and link it to `app_users.supabase_user_id` with the correct application role. Seed profiles alone do not create login credentials. The seed also adds fictional venues and equipment types once migration 005 has run, ready for the Sprint 2 venue stories. Then start the application:
 
 ```sh
 npm run dev
@@ -42,7 +42,7 @@ Never commit `.env` or place database passwords in frontend `VITE_*` variables. 
 
 ```text
 frontend/                  Vue application, navigation, API client, component tests
-backend/src/modules/       Authentication, events, venues, equipment, registrations, notifications
+backend/src/modules/       Authentication, event services and HTTP routes
 backend/src/               HTTP application, configuration, database pool
 backend/test/              API and environment tests, grouped by module
 database/                  SQL migrations, seed and database integration tests

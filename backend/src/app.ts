@@ -9,13 +9,8 @@ import {
 } from './modules/events/submitted-requests-router.js';
 import { createAssignmentRouter } from './modules/events/assignment-router.js';
 import { createClarificationRouter } from './modules/events/clarification-router.js';
-import { createChangeRequestRouter } from './modules/events/change-request-router.js';
 import { createLifecycleRouter } from './modules/events/lifecycle-router.js';
 import type { WorkflowRouterDependencies } from './modules/events/workflow-http.js';
-import { createVenuesRouter, createVenueBookingsRouter } from './modules/venues/index.js';
-import { createEquipmentRouter, createEquipmentRequestsRouter } from './modules/equipment/index.js';
-import { createRegistrationsRouter } from './modules/registrations/router.js';
-import { createNotificationsRouter } from './modules/notifications/router.js';
 
 export interface AppDependencies {
   database: HealthDatabase;
@@ -23,7 +18,7 @@ export interface AppDependencies {
   reviews?: ReviewRouterDependencies;
   submittedRequests?: SubmittedRequestsRouterDependencies;
   auth?: AuthRouterDependencies;
-  /** Verified identity and pool shared by the workflow, venue, equipment, registration and notification routes. */
+  /** Verified identity and pool shared by the coordinator workflow routes. */
   workspace?: WorkflowRouterDependencies;
 }
 
@@ -70,14 +65,7 @@ export function createApp({
     // Mounted before the shared detail route so /unassigned and /coordinators are not read as IDs.
     app.use('/api/events', createAssignmentRouter(workspace));
     app.use('/api/events', createClarificationRouter(workspace));
-    app.use('/api/events', createChangeRequestRouter(workspace));
     app.use('/api/events', createLifecycleRouter(workspace));
-    app.use('/api/venues', createVenuesRouter(workspace));
-    app.use('/api/venue-bookings', createVenueBookingsRouter(workspace));
-    app.use('/api/equipment', createEquipmentRouter(workspace));
-    app.use('/api/equipment-requests', createEquipmentRequestsRouter(workspace));
-    app.use('/api/registrations', createRegistrationsRouter(workspace));
-    app.use('/api/notifications', createNotificationsRouter(workspace));
   }
 
   // Queue/detail reads require verified identity and explicit visibility/decision policies.

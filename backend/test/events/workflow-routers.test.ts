@@ -1,32 +1,18 @@
 import express, { type ErrorRequestHandler } from 'express';
 import request from 'supertest';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { assignCoordinator, listCoordinators, listUnassignedRequests } from '../../src/modules/events/assignment.js';
+import {
+  assignCoordinator, listAssignments, listCoordinators, listUnassignedRequests,
+} from '../../src/modules/events/assignment.js';
 import { createAssignmentRouter } from '../../src/modules/events/assignment-router.js';
-import { decideChangeRequest } from '../../src/modules/events/change-requests.js';
-import { createChangeRequestRouter } from '../../src/modules/events/change-request-router.js';
-import { requestClarification, respondToClarification } from '../../src/modules/events/clarifications.js';
-import { createClarificationRouter } from '../../src/modules/events/clarification-router.js';
-import { cancelEvent, listStatusHistory } from '../../src/modules/events/lifecycle.js';
-import { createLifecycleRouter } from '../../src/modules/events/lifecycle-router.js';
 import type { WorkflowRouterDependencies } from '../../src/modules/events/workflow-http.js';
 import { WorkflowError, type WorkflowActor } from '../../src/modules/events/workflow-support.js';
 
 vi.mock('../../src/modules/events/assignment.js', () => ({
   assignCoordinator: vi.fn(), listAssignments: vi.fn(), listCoordinators: vi.fn(), listUnassignedRequests: vi.fn(),
 }));
-vi.mock('../../src/modules/events/clarifications.js', () => ({
-  listClarifications: vi.fn(), requestClarification: vi.fn(), respondToClarification: vi.fn(), startReview: vi.fn(),
-}));
-vi.mock('../../src/modules/events/change-requests.js', () => ({
-  createChangeRequest: vi.fn(), decideChangeRequest: vi.fn(), listChangeRequests: vi.fn(), withdrawChangeRequest: vi.fn(),
-}));
-vi.mock('../../src/modules/events/lifecycle.js', () => ({
-  cancelEvent: vi.fn(), completeEvent: vi.fn(), confirmEvent: vi.fn(), listStatusHistory: vi.fn(),
-}));
 
 const eventId = '10000000-0000-4000-8000-000000000001';
-const otherId = '40000000-0000-4000-8000-000000000001';
 const coordinator: WorkflowActor = { id: '20000000-0000-4000-8000-000000000001', role: 'EVENT_COORDINATOR' };
 const organiser: WorkflowActor = { id: '30000000-0000-4000-8000-000000000001', role: 'EVENT_ORGANISER' };
 
@@ -40,11 +26,8 @@ function setup(actor: WorkflowActor | null) {
   };
   const app = express();
   app.use(express.json());
-  // Same order the lead must use: the assignment router precedes any GET /:id handler.
+  // Same order the runtime uses: the assignment router precedes any GET /:id handler.
   app.use('/api/events', createAssignmentRouter(dependencies));
-  app.use('/api/events', createClarificationRouter(dependencies));
-  app.use('/api/events', createChangeRequestRouter(dependencies));
-  app.use('/api/events', createLifecycleRouter(dependencies));
   app.get('/api/events/:id', (_request, response) => { response.status(200).json({ detail: true }); });
   const handleError: ErrorRequestHandler = (_error, _request, response, _next) => {
     response.status(500).json({ error: { code: 'INTERNAL_ERROR', message: 'An unexpected error occurred.' } });
@@ -58,16 +41,9 @@ beforeEach(() => { vi.resetAllMocks(); });
 const routes = [
   ['get', '/unassigned'], ['get', '/coordinators'],
   ['put', `/${eventId}/coordinator`], ['get', `/${eventId}/assignments`],
-  ['post', `/${eventId}/start-review`], ['get', `/${eventId}/clarifications`],
-  ['post', `/${eventId}/clarifications`], ['post', `/${eventId}/clarifications/${otherId}/response`],
-  ['get', `/${eventId}/change-requests`], ['post', `/${eventId}/change-requests`],
-  ['post', `/${eventId}/change-requests/${otherId}/withdraw`],
-  ['post', `/${eventId}/change-requests/${otherId}/decision`],
-  ['post', `/${eventId}/confirm`], ['post', `/${eventId}/cancel`], ['post', `/${eventId}/complete`],
-  ['get', `/${eventId}/history`],
 ] as const;
 
-describe('workflow routers HTTP boundary', () => {
+describe('KAN-29 assignment router HTTP boundary', () => {
   it.each(routes)('%s %s requires verified authentication', async (method, path) => {
     const { app } = setup(null);
     const response = await request(app)[method](`/api/events${path}`)
@@ -97,68 +73,53 @@ describe('workflow routers HTTP boundary', () => {
     expect((await request(app).get(`/api/events/${eventId}`)).body).toEqual({ detail: true });
   });
 
-  it.each([
-    ['put', '/not-a-uuid/coordinator', 'INVALID_EVENT_REQUEST_ID', coordinator],
-    ['post', '/not-a-uuid/cancel', 'INVALID_EVENT_REQUEST_ID', organiser],
-    ['post', `/${eventId}/clarifications/nope/response`, 'INVALID_CLARIFICATION_ID', organiser],
-    ['post', `/${eventId}/change-requests/nope/decision`, 'INVALID_CHANGE_REQUEST_ID', coordinator],
-    ['post', `/${eventId}/change-requests/nope/withdraw`, 'INVALID_CHANGE_REQUEST_ID', organiser],
-  ] as const)('%s %s validates UUID parameters before persistence', async (method, path, code, actor) => {
-    const { app } = setup(actor);
-    const response = await request(app)[method](`/api/events${path}`).send({});
+  it('validates the event ID before reaching persistence', async () => {
+    const { app } = setup(coordinator);
+    const response = await request(app).put('/api/events/not-a-uuid/coordinator').send({});
     expect(response.status).toBe(400);
-    expect(response.body.error.code).toBe(code);
+    expect(response.body.error.code).toBe('INVALID_EVENT_REQUEST_ID');
     expect(assignCoordinator).not.toHaveBeenCalled();
-    expect(cancelEvent).not.toHaveBeenCalled();
   });
 
-  it('only lets coordinators assign and only organisers answer clarifications', async () => {
+  it('only lets coordinators assign', async () => {
     const asOrganiser = setup(organiser).app;
     expect((await request(asOrganiser).put(`/api/events/${eventId}/coordinator`)
       .send({ coordinatorId: coordinator.id })).status).toBe(403);
     expect((await request(asOrganiser).get('/api/events/unassigned')).status).toBe(403);
-    expect((await request(asOrganiser).post(`/api/events/${eventId}/confirm`)).status).toBe(403);
-    const asCoordinator = setup(coordinator).app;
-    expect((await request(asCoordinator).post(`/api/events/${eventId}/clarifications/${otherId}/response`)
-      .send({ response: 'x' })).status).toBe(403);
-    expect((await request(asCoordinator).post(`/api/events/${eventId}/change-requests`)
-      .send({ proposedChanges: { name: 'x' }, reason: 'y' })).status).toBe(403);
     expect(assignCoordinator).not.toHaveBeenCalled();
-    expect(respondToClarification).not.toHaveBeenCalled();
   });
 
   it('passes verified identity, never client-supplied identity, to the service', async () => {
     const { app, dependencies } = setup(coordinator);
-    vi.mocked(requestClarification).mockResolvedValue({
-      clarificationId: otherId, eventRequestId: eventId, status: 'CLARIFICATION_REQUESTED',
-    });
-    const response = await request(app).post(`/api/events/${eventId}/clarifications`)
-      .set('X-User-Id', organiser.id).send({ message: 'Which hall?' });
-    expect(response.status).toBe(201);
-    expect(response.body.status).toBe('CLARIFICATION_REQUESTED');
-    expect(requestClarification).toHaveBeenCalledExactlyOnceWith(dependencies, {
-      eventRequestId: eventId, actor: coordinator, input: { message: 'Which hall?' },
+    vi.mocked(assignCoordinator).mockResolvedValue({
+      eventRequestId: eventId, coordinatorId: coordinator.id, assignedBy: coordinator.id,
+    } as unknown as Awaited<ReturnType<typeof assignCoordinator>>);
+    const response = await request(app).put(`/api/events/${eventId}/coordinator`)
+      .set('X-User-Id', organiser.id).send({ coordinatorId: coordinator.id });
+    expect(response.status).toBe(200);
+    expect(assignCoordinator).toHaveBeenCalledExactlyOnceWith(dependencies, {
+      eventRequestId: eventId, actor: coordinator, input: { coordinatorId: coordinator.id },
     });
   });
 
   it.each([
-    ['INVALID_INPUT', 'INVALID_CHANGE_REQUEST_INPUT', 400],
+    ['INVALID_INPUT', 'INVALID_ASSIGNMENT_INPUT', 400],
     ['NOT_FOUND', 'EVENT_REQUEST_NOT_FOUND', 404],
     ['FORBIDDEN', 'ACTION_FORBIDDEN', 403],
-    ['CONFLICT', 'CHANGE_REQUEST_NOT_PENDING', 409],
+    ['CONFLICT', 'EVENT_NOT_ASSIGNABLE', 409],
   ] as const)('maps a %s service error to its status', async (kind, code, status) => {
     const { app } = setup(coordinator);
-    vi.mocked(decideChangeRequest).mockRejectedValue(new WorkflowError(kind, code, 'Explained.'));
-    const response = await request(app).post(`/api/events/${eventId}/change-requests/${otherId}/decision`)
-      .send({ decision: 'APPROVED' });
+    vi.mocked(assignCoordinator).mockRejectedValue(new WorkflowError(kind, code, 'Explained.'));
+    const response = await request(app).put(`/api/events/${eventId}/coordinator`)
+      .send({ coordinatorId: coordinator.id });
     expect(response.status).toBe(status);
     expect(response.body).toEqual({ error: { code, message: 'Explained.' } });
   });
 
   it('hands unexpected failures to the application error handler without details', async () => {
-    const { app } = setup(organiser);
-    vi.mocked(listStatusHistory).mockRejectedValue(new Error('connection string postgres://secret'));
-    const response = await request(app).get(`/api/events/${eventId}/history`);
+    const { app } = setup(coordinator);
+    vi.mocked(listAssignments).mockRejectedValue(new Error('connection string postgres://secret'));
+    const response = await request(app).get(`/api/events/${eventId}/assignments`);
     expect(response.status).toBe(500);
     expect(JSON.stringify(response.body)).not.toContain('secret');
   });

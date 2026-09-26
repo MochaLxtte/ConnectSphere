@@ -42,7 +42,7 @@ Application tables remain in the `public` schema. The hardening migration enable
 
 A Git branch does not isolate a shared database. Agree schema changes with Arvin before applying them to the team's project. Use separate projects or the local test database for experiments that would disrupt other developers. Do not run destructive reset commands against the shared project.
 
-The schema covers application profiles, incomplete event drafts, coordinator linkage, clarification records, and review outcomes. Migration `005_core_feature_schema.sql` adds the tables for the remaining first-release features, ahead of their services:
+The schema covers application profiles, incomplete event drafts, coordinator linkage, clarification records, and review outcomes. Migration `005_core_feature_schema.sql` adds the tables for the remaining first-release features. As of 26 September 2026 only the coordinator-assignment, clarification and lifecycle services use them; the venue, equipment, registration, notification and change-request services were removed so the team builds those stories itself. The tables and their integrity guards stay, because both migrations are already applied to the shared project:
 
 | Tables | Core features | Database-enforced rule |
 | ------ | ------------- | ---------------------- |
