@@ -1,9 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { parseAssignmentInput } from '../../src/modules/events/assignment.js';
 import {
-  affectsArrangements, parseChangeDecisionInput, parseChangeRequestInput,
-} from '../../src/modules/events/change-requests.js';
-import {
   othersThan, parseObjectBody, relationTo, requiredText, requireRelation,
   type LockedEventRequest, type WorkflowActor,
 } from '../../src/modules/events/workflow-support.js';
@@ -64,41 +61,4 @@ describe('workflow input parsing', () => {
     }
   });
 
-  it('validates proposed changes with the draft rules and keeps mandatory fields filled', () => {
-    expect(parseChangeRequestInput({
-      proposedChanges: { expectedAttendance: 120, description: null }, reason: ' More sign-ups. ',
-    })).toEqual({ proposedChanges: { expectedAttendance: 120, description: null }, reason: 'More sign-ups.' });
-
-    for (const body of [
-      { proposedChanges: {}, reason: 'r' },
-      { proposedChanges: { status: 'CONFIRMED' }, reason: 'r' },
-      { proposedChanges: { organiserId: organiser.id }, reason: 'r' },
-      { proposedChanges: { expectedAttendance: -1 }, reason: 'r' },
-      { proposedChanges: { startsAt: 'tomorrow' }, reason: 'r' },
-      { proposedChanges: { name: null }, reason: 'r' },
-      { proposedChanges: { name: '  ' }, reason: 'r' },
-      { proposedChanges: { endsAt: null }, reason: 'r' },
-      { proposedChanges: { name: 'New' }, reason: ' ' },
-      { proposedChanges: { name: 'New' } },
-      { proposedChanges: ['name'], reason: 'r' },
-    ]) {
-      expect(() => parseChangeRequestInput(body))
-        .toThrowError(expect.objectContaining({ kind: 'INVALID_INPUT' }));
-    }
-  });
-
-  it('parses a change decision', () => {
-    expect(parseChangeDecisionInput({ decision: 'REJECTED', reason: ' Clash. ' }))
-      .toEqual({ decision: 'REJECTED', reason: 'Clash.' });
-    expect(parseChangeDecisionInput({ decision: 'APPROVED' })).toEqual({ decision: 'APPROVED', reason: null });
-    expect(() => parseChangeDecisionInput({ decision: 'WITHDRAWN' })).toThrow(/APPROVED or REJECTED/);
-  });
-
-  it('flags only real changes to dates or attendance as affecting arrangements', () => {
-    expect(affectsArrangements(event, { name: 'Renamed', expectedAttendance: 80 })).toBe(false);
-    expect(affectsArrangements(event, { startsAt: '2026-10-01T10:00:00+08:00' })).toBe(false);
-    expect(affectsArrangements(event, { startsAt: '2026-10-01T03:00:00Z' })).toBe(true);
-    expect(affectsArrangements(event, { endsAt: '2026-10-01T07:00:00Z' })).toBe(true);
-    expect(affectsArrangements(event, { expectedAttendance: 81 })).toBe(true);
-  });
 });

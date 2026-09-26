@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue';
 import AppIcon from './AppIcon.vue';
-import NotificationBell from '../features/notifications/components/NotificationBell.vue';
 import { authSession, restoreSession, roleLabel, signOut } from '../features/auth/session.js';
 
 // Organiser entry points remain visible to visitors; coordinator links require a resolved session.
@@ -53,40 +52,12 @@ async function handleSignOut(): Promise<void> {
             ><AppIcon name="user" />Unassigned requests</RouterLink
           >
         </template>
-        <template v-if="role === 'VENUE_STAFF'">
-          <p class="nav-label">For venue staff</p>
-          <RouterLink to="/venue-bookings" exact-active-class="is-active" class="nav-link"
-            ><AppIcon name="review" />Booking requests</RouterLink
-          >
-        </template>
-        <template v-if="role === 'TECHNICAL_SUPPORT_STAFF'">
-          <p class="nav-label">For technical support</p>
-          <RouterLink to="/equipment/requests" exact-active-class="is-active" class="nav-link"
-            ><AppIcon name="review" />Equipment requests</RouterLink
-          >
-        </template>
-        <template v-if="role">
-          <p class="nav-label">Resources</p>
-          <RouterLink to="/venues" exact-active-class="is-active" class="nav-link"
-            ><AppIcon name="server" />Venues</RouterLink
-          >
-          <RouterLink to="/equipment" exact-active-class="is-active" class="nav-link"
-            ><AppIcon name="database" />Equipment</RouterLink
-          >
-          <p class="nav-label">Events</p>
-          <RouterLink to="/browse" exact-active-class="is-active" class="nav-link"
-            ><AppIcon name="calendar" />Browse events</RouterLink
-          >
-          <RouterLink v-if="role === 'ATTENDEE'" to="/registrations" exact-active-class="is-active" class="nav-link"
-            ><AppIcon name="check" />My registrations</RouterLink
-          >
-        </template>
       </nav>
 
       <div class="sidebar-note">
         <AppIcon name="leaf" />
         <p>Event planning workspace</p>
-        <span>For organisers, coordinators, staff and attendees.</span>
+        <span>For organisers and coordinators.</span>
       </div>
       <div class="sidebar-footer">
         <span class="tiny-dot"></span>Development scaffold<span>v0.1</span>
@@ -99,7 +70,6 @@ async function handleSignOut(): Promise<void> {
           Workspace <span>/</span> <strong>{{ $route.meta.title || 'Overview' }}</strong>
         </div>
         <div v-if="authSession.user" class="account-summary">
-          <NotificationBell />
           <span><strong>{{ authSession.user.displayName }}</strong><small>{{ roleLabel(authSession.user.role) }}</small></span>
           <button class="sign-out-button" type="button" @click="handleSignOut">Sign out</button>
         </div>
