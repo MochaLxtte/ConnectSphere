@@ -24,6 +24,7 @@ const pool = new pg.Pool({
 });
 const organiser: SubmitActor = { id: randomUUID(), role: 'EVENT_ORGANISER' };
 const otherOrganiser: SubmitActor = { id: randomUUID(), role: 'EVENT_ORGANISER' };
+const coordinator: SubmitActor = { id: randomUUID(), role: 'EVENT_COORDINATOR' };
 const originalUpdatedAt = new Date('2026-09-01T00:00:00.000Z');
 
 const dependencies = { pool };
@@ -38,12 +39,13 @@ beforeAll(async () => {
   await admin.connect();
   await admin.query(`CREATE SCHEMA "${schema}"`);
   await migrate(scopedUrl.toString());
-  for (const actor of [organiser, otherOrganiser]) {
+  for (const actor of [organiser, otherOrganiser, coordinator]) {
     await pool.query(
       'INSERT INTO app_users (id, email, display_name, role) VALUES ($1, $2, $3, $4)',
       [actor.id, `${actor.id}@example.test`, actor.role, actor.role],
     );
   }
+  await pool.query('UPDATE app_users SET coordinator_available = true WHERE id = $1', [coordinator.id]);
 });
 
 afterAll(async () => {
@@ -82,6 +84,7 @@ describe('KAN-6 submission persistence', () => {
     const submitted = await submitEventRequest(dependencies, { eventRequestId, actor: organiser });
 
     expect(submitted.status).toBe('SUBMITTED');
+    expect(submitted.coordinatorId).toBe(coordinator.id);
     expect(submitted.name).toBe('Career Fair');
     const state = await readState(eventRequestId);
     expect(state.status).toBe('SUBMITTED');
@@ -172,7 +175,7 @@ describe('KAN-6 submission persistence', () => {
         pool,
         canViewRequest: () => true,
         canReviewRequest: () => false,
-        authenticate: async () => ({ id: randomUUID(), role: 'EVENT_COORDINATOR' as const }),
+        authenticate: async () => coordinator,
       },
     });
     const queueResponse = await request(coordinatorApp).get('/api/events');

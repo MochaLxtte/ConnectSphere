@@ -3,6 +3,7 @@ import type { AuthenticatedUser } from '../auth/types.js';
 import type { EventRecord } from './types.js';
 import { assertReadyForSubmission } from './submit-input.js';
 import { assertCanSubmit, SubmitEligibilityError } from './submit-eligibility.js';
+import { assignInitialCoordinator } from './automatic-assignment.js';
 
 export type SubmitActor = Pick<AuthenticatedUser, 'id' | 'role'>;
 
@@ -53,7 +54,7 @@ function toEventRecord(row: EventRow): EventRecord {
   };
 }
 
-/** Transition an owned, complete draft to SUBMITTED, using the existing schema. */
+/** Submit and allocate an owned, complete draft in one transaction (KAN-6 / KAN-29). */
 export async function submitEventRequest(
   { pool }: SubmitRequestDependencies,
   { eventRequestId, actor }: SubmitCommand,
@@ -69,6 +70,7 @@ export async function submitEventRequest(
   let releaseError: Error | undefined;
   try {
     await client.query('BEGIN ISOLATION LEVEL READ COMMITTED');
+    await client.query("SELECT set_config('app.actor_id', $1, true)", [actor.id]);
 
     // Competing submissions or a concurrent edit must wait here, then see the latest committed state.
     const requests = await client.query<EventRow>(`
@@ -85,11 +87,13 @@ export async function submitEventRequest(
     });
     assertReadyForSubmission(toEventRecord(found));
 
+    const coordinatorId = await assignInitialCoordinator(client, { id: found.id, coordinatorId: found.coordinatorId });
+
     const updated = await client.query<EventRow>(`
-      UPDATE event_requests SET status = 'SUBMITTED', updated_at = now()
+      UPDATE event_requests SET status = 'SUBMITTED', coordinator_id = $2, updated_at = now()
       WHERE id = $1
       RETURNING ${selectColumns}
-    `, [eventRequestId]);
+    `, [eventRequestId, coordinatorId]);
     const saved = updated.rows[0];
     if (!saved) throw new Error('The event request could not be submitted.');
 

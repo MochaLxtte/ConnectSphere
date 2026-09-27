@@ -15,6 +15,7 @@ import { DraftUpdateInputError } from '../../src/modules/events/draft-update-inp
 import { submitEventRequest, SubmitRequestNotFoundError } from '../../src/modules/events/submit-request.js';
 import { SubmitEligibilityError } from '../../src/modules/events/submit-eligibility.js';
 import { SubmissionValidationError } from '../../src/modules/events/submit-input.js';
+import { AutomaticAssignmentError } from '../../src/modules/events/automatic-assignment.js';
 
 vi.mock('../../src/modules/events/submitted-requests.js', async (importOriginal) => {
   const actual =
@@ -309,7 +310,7 @@ describe('KAN-34 PATCH /api/events/:id (edit a draft)', () => {
 describe('KAN-6 POST /api/events/:id/submit', () => {
   it('submits a ready draft', async () => {
     const { app, submittedRequests } = setup(organiser);
-    const submitted = { id: requestId, organiserId: organiser.id, coordinatorId: null, status: 'SUBMITTED' as const,
+    const submitted = { id: requestId, organiserId: organiser.id, coordinatorId: coordinator.id, status: 'SUBMITTED' as const,
       name: 'Career Fair', purpose: 'Recruitment', description: null,
       startsAt: '2026-10-01T09:00:00.000Z', endsAt: '2026-10-01T17:00:00.000Z',
       expectedAttendance: 250, venueRequirements: 'Hall A', accessibilityNeeds: null,
@@ -393,5 +394,15 @@ describe('KAN-6 POST /api/events/:id/submit', () => {
     const response = await request(app).post(`/api/events/${requestId}/submit`);
     expect(response.status).toBe(409);
     expect(response.body.error.code).toBe('REQUEST_NOT_SUBMITTABLE');
+  });
+
+  it('KAN-29 reports unavailable capacity as a retryable assignment conflict', async () => {
+    const { app } = setup(organiser);
+    const message = 'No event coordinator is currently available. Your request is still a draft. Please try again later.';
+    submitRequest.mockRejectedValue(new AutomaticAssignmentError('NO_AVAILABLE_COORDINATOR', message));
+    const response = await request(app).post(`/api/events/${requestId}/submit`);
+    expect(response.status).toBe(409);
+    expect(response.body).toEqual({ error: { code: 'NO_AVAILABLE_COORDINATOR', message } });
+    expect(response.headers['cache-control']).toBe('no-store');
   });
 });

@@ -348,6 +348,9 @@ describe('KAN-16 / KAN-25 / KAN-33 / KAN-36 authenticated event workflow', () =>
   it('preserves organiser ownership for draft editing and submission', async () => {
     const organiser = await provisionUser('EVENT_ORGANISER');
     const otherOrganiser = await provisionUser('EVENT_ORGANISER');
+    const coordinator = await provisionUser('EVENT_COORDINATOR');
+    // KAN-29 requires an explicitly available profile; other fixture accounts stay opted out.
+    await pool.query('UPDATE app_users SET coordinator_available = true WHERE id = $1', [coordinator.id]);
     const id = await createEvent(organiser.id, null, 'DRAFT');
     const otherId = await createEvent(otherOrganiser.id, null, 'DRAFT');
     const session = await signIn(organiser);
@@ -360,8 +363,16 @@ describe('KAN-16 / KAN-25 / KAN-33 / KAN-36 authenticated event workflow', () =>
       expectedAttendance: 20, venueRequirements: 'Workshop room',
     });
     expect(changed.status).toBe(200);
-    expect((await session.post(`/api/events/${id}/submit`).send({})).status).toBe(200);
-    expect((await readState(id)).event.status).toBe('SUBMITTED');
+    const submitted = await session.post(`/api/events/${id}/submit`).send({});
+    expect(submitted.status).toBe(200);
+    expect(submitted.body).toMatchObject({ id, organiserId: organiser.id, coordinatorId: coordinator.id, status: 'SUBMITTED' });
+    expect(submitted.body.coordinatorId).not.toBe(coordinator.supabaseUserId);
+    const submittedState = await readState(id);
+    expect(submittedState.event).toMatchObject({ status: 'SUBMITTED', coordinator_id: coordinator.id });
+    expect(submittedState.reviews).toEqual([]);
+    const reviewer = await signIn(coordinator);
+    expect((await reviewer.get('/api/events')).body.items.map((item: { id: string }) => item.id)).toEqual([id]);
+    expect((await reviewer.get(`/api/events/${id}`)).body.actions.canMakeInitialDecision).toBe(true);
 
     const before = await readState(otherId);
     expect((await session.get(`/api/events/${otherId}`)).status).toBe(404);

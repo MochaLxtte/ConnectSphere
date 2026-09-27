@@ -1,6 +1,7 @@
 import type { UserRole } from '../auth/types.js';
 import { notify, type NotificationInput } from '../notifications/notify.js';
 import type { EventStatus } from './types.js';
+import { lockCoordinators } from './automatic-assignment.js';
 import {
   eventLabel, inActorTransaction, iso, isoOrNull, lockEventRequest, optionalText, othersThan,
   parseObjectBody, readEventRequest, requestNotFound, requireRelation, UUID_PATTERN, WorkflowError,
@@ -39,8 +40,9 @@ export interface AssignmentRecord {
   id: string;
   coordinatorId: string;
   coordinatorName: string;
-  assignedById: string;
-  assignedByName: string;
+  assignmentMethod: 'AUTOMATIC' | 'MANUAL';
+  assignedById: string | null;
+  assignedByName: string | null;
   note: string | null;
   assignedAt: string;
   unassignedAt: string | null;
@@ -130,6 +132,7 @@ export async function assignCoordinator(
       throw new WorkflowError('CONFLICT', 'COORDINATOR_ALREADY_ASSIGNED', 'This coordinator is already assigned to the request.');
     }
 
+    await lockCoordinators(client);
     const targets = await client.query<{ role: UserRole; displayName: string }>(
       'SELECT role, display_name AS "displayName" FROM app_users WHERE id = $1',
       [input.coordinatorId],
@@ -204,11 +207,12 @@ export async function listAssignments(
     assignedAt: Date; unassignedAt: Date | null;
   }>(
     `SELECT a.id, a.coordinator_id AS "coordinatorId", c.display_name AS "coordinatorName",
+            a.assignment_method AS "assignmentMethod",
             a.assigned_by AS "assignedById", b.display_name AS "assignedByName", a.note,
             a.assigned_at AS "assignedAt", a.unassigned_at AS "unassignedAt"
      FROM coordinator_assignments a
      JOIN app_users c ON c.id = a.coordinator_id
-     JOIN app_users b ON b.id = a.assigned_by
+     LEFT JOIN app_users b ON b.id = a.assigned_by
      WHERE a.event_request_id = $1
      ORDER BY a.assigned_at DESC, a.id`,
     [event.id],
