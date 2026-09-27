@@ -2,6 +2,32 @@
 
 Record each relevant run with its commit, scope and result. Store concise report exports alongside this document and link the corresponding tests from the [traceability matrix](../requirements/traceability.csv). The [Sprint 1 acceptance test plan](../scrum/sprint-01/sprint-backlog.md#acceptance-test-plan) provides the initial scenario and acceptance-criterion IDs.
 
+## 28 September: KAN-29 automatic assignment
+
+**AUTO-20260928-01 — local automated run.** Checked on 28 September 2026, approximately 04:32–04:35 Asia/Singapore, against the implementation committed through `45e53bd` on `codex/KAN-29-automatic-coordinator-assignment`. Baseline `main` was updated from GitHub to `dff42ed` before work began. Schema commit: `8ef8930`; backend: `e67cd9b`; frontend: `45e53bd`.
+
+| Command / environment | Actual result |
+| --- | --- |
+| `npm.cmd run check`; Node 24.21.0 on Windows | Passed: tool/backend/frontend type checks, 196 frontend component tests, 373 backend unit/HTTP tests and both production builds. |
+| `npm.cmd run test:integration`; PostgreSQL 17 in local Docker, dedicated `connectsphere_test` database and isolated test schemas | Passed on the final run: 145 tests across 13 suites, including 29 new automatic-assignment cases. |
+| `npm.cmd run db:migrate`, `npm.cmd run db:seed`, `npm.cmd run test:e2e`; explicit local `DATABASE_URL` and `MIGRATION_DATABASE_URL`, fresh local Express/Vite servers, Chromium | Local test-database preparation passed; all 32 browser regressions passed. The browser suite uses API/session fixtures for feature flows and live local API/database smoke checks; it is not a hosted KAN-29 login-to-assignment test. |
+
+The first full integration run returned one failure out of 145: the older authenticated submission fixture had no available coordinator and correctly received `409` instead of its expected `200`. The fixture now provisions and opts in a mapped coordinator. Its ownership denials remain, and it additionally checks the returned application ID, persisted assignment, absence of a review decision and selected-coordinator access. Its 15-test suite and then the full 145-test integration run passed.
+
+Coverage of **KAN-29-AC1–AC7 / S2-T01 / local portions of S2-T02**:
+
+- Available-only selection, unequal workloads, stable UUID ties and every counted/excluded request state.
+- One automatic assignment on the correct request, null manual actor, organiser-attributed submission history, and no approval/rejection side effect.
+- Real request-scoped API policy, mapped authenticated organiser/coordinator access and unchanged unauthorised requests.
+- No candidates, no available candidates, incomplete submissions, preassigned drafts, repeated submission and injected write failure preserve the original data.
+- Forced overlapping submissions of the same and different requests, plus a real manual handover competing with automatic selection, retain one current assignment and count the workload committed by the earlier allocation.
+- Automatic history remains readable after manual handover; changing availability does not reassign existing requests.
+- Component tests preserve draft editing/saving/retry for both allocation conflicts and display automatic history without inventing a human assigner.
+
+Implementation and test entry points: [automatic assignment](../../backend/src/modules/events/automatic-assignment.ts), [29 database cases](../../database/tests/events/automatic-assignment.integration.test.ts), [authenticated workflow](../../database/tests/events/authenticated-review.integration.test.ts), [assignment panel tests](../../frontend/src/features/events/components/AssignmentPanel.test.ts), [form tests](../../frontend/src/features/events/components/EventRequestForm.test.ts) and [detail tests](../../frontend/src/features/events/pages/EventRequestDetailPage.test.ts).
+
+**Remaining:** migration 007 and coordinator availability setup in shared Supabase, [hosted manual cases K29-M01–M10](kan29-manual-checks.md), peer review, GitHub CI and review of the documented implementation defaults. No shared Supabase schema/data changes or live Jira transitions were made. S2-T23's venue workflow and future KAN-65 acceptance remain pending. Local passes do not mark KAN-29 Done or change the 43-point sprint baseline. Generated test reports remain ignored local artifacts.
+
 ## Sprint 1 closure and Sprint 2 follow-up, recorded 21 September
 
 The Sprint 1 review held on **19 September** is recorded as **MAN-S1-REVIEW-01** below and in the [review run sheet](../scrum/sprint-01/review.md). DEMO-01, 03, 04, 05, 07, 08, 09, 10 and 11 passed their demonstrated paths. DEMO-02 exposed a draft registration-fields defect; DEMO-06 exposed missing coordinator navigation to approved requests. Additional saved-draft submission and mandatory-field validation failures remain to be reproduced against the exact entry paths, despite other submission/validation demonstrations passing.

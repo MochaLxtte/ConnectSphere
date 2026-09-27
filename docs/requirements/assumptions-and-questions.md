@@ -762,3 +762,20 @@ Affected story and acceptance-criterion IDs:
 Affected implementation and tests:
 Supersedes, if any:
 ```
+
+## 28 September 2026 — KAN-29 implementation choices
+
+Tristan is implementing automatic initial assignment in Sprint 2. The agreed selection rule remains available coordinators first, then fewest active events, then a consistent identifier order. The following defaults make that rule executable on this branch; they remain implementation choices for team review, not an additional customer clarification or a recorded meeting decision.
+
+| Topic | Implementation choice |
+| --- | --- |
+| Availability | `app_users.coordinator_available`, non-null boolean defaulting to `false`. Configure it in Supabase for provisioned Event Coordinator accounts. Fictional seeds and new profiles remain unavailable until deliberately enabled. No availability-management UI. |
+| Active workload | Count assigned requests in `SUBMITTED`, `UNDER_REVIEW`, `CLARIFICATION_REQUESTED`, `APPROVED` and `CONFIRMED`. Exclude `DRAFT`, `REJECTED`, `CANCELLED` and `COMPLETED`. Count requests, not assignment-history rows or event duration. |
+| Tie break | Lowest application-user UUID using PostgreSQL UUID ascending order. |
+| No eligible coordinator | HTTP `409 NO_AVAILABLE_COORDINATOR`. Submission rolls back; the saved request remains an editable draft with a retry message and no new assignment. |
+| Atomicity and concurrency | Submit, coordinator linkage, automatic assignment history and submission status history commit together. Automatic and manual assignment writers lock the event first and coordinator rows in UUID order; automatic selection counts workload in a fresh statement after waiting. |
+| Existing assignment on a draft | HTTP `409 DRAFT_ALREADY_ASSIGNED`; preserve the existing data for reconciliation. Retried submissions of an already-submitted request keep the existing `REQUEST_NOT_SUBMITTABLE` response. Neither case silently reallocates an event. |
+| History | Migration 007 records `AUTOMATIC` with no human assigner; existing and later manual rows remain `MANUAL` with their actual actor. The organiser remains the actor for the submission status change. |
+| Scope | Existing manual handover permissions stay unchanged. KAN-65 reassignment acceptance and venue workflows are separate; no removed feature is restored by KAN-29. |
+
+Migration 007 is checked in for reproducible local/CI databases. Applying it and configuring eligible accounts in the shared Supabase project require the normal schema coordination with Arvin. No hosted schema change, Jira transition, peer acceptance or hosted manual pass is implied. See the [manual test guide](../testing/kan29-manual-checks.md).

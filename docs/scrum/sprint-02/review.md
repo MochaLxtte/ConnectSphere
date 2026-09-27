@@ -17,6 +17,8 @@ Before the review, record the reviewed commit/build and environment, prepare syn
 | Final board and burndown export | To capture at closure |
 | Meeting/feedback evidence | To capture at the actual review |
 
+KAN-29 preparation now has [local automated evidence, AUTO-20260928-01](../../testing/test-evidence.md#28-september-kan-29-automatic-assignment) and a [manual check guide](../../testing/kan29-manual-checks.md). This is not a completed review or hosted acceptance result. Coordinate migration 007 with Arvin, confirm provisioned-coordinator availability and record policy acceptance before the demo. Controlled load/no-eligible tests must use an isolated project or a coordinated window. Venue services/UI/tests were removed from `main` on 26 September; the venue demos remain planned scenarios requiring implementation, not available features inferred from the original inspection.
+
 ## Demo run sheet
 
 All results below are **Not executed**. Agree demonstrators and exact fixtures before the meeting.
@@ -24,7 +26,7 @@ All results below are **Not executed**. Agree demonstrators and exact fixtures b
 | Demo | Scenario | Stories / test references | Actual result / evidence |
 | --- | --- | --- | --- |
 | S2-DEMO-01 | Reopen an existing draft, enable registration, fill capacity/window, save/reload; reject invalid required fields, then submit valid values | KAN-34, KAN-6; S2-T19/T21/T22 | Not executed |
-| S2-DEMO-02 | Submit with unequal coordinator loads, then tied loads: only available coordinators qualify, the fewest active events wins, and ties follow a consistent ID/order. Show no-eligible handling once agreed, and the separate permitted manual self/other assignment. | KAN-29 and assignment rule; S2-T01/T02 | Not executed |
+| S2-DEMO-02 | After policy review, submit with unequal then tied loads: only opted-in coordinators qualify, lowest active count wins, then UUID ascending. Show automatic history, assigned access and no automatic review decision. Demonstrate no-eligible 409 preserving an editable draft and retry, then retained manual handover separately. | KAN-29 / Tristan; S2-T01/T02; manual K29-M01–M10 | Not executed; local automation is separate evidence |
 | S2-DEMO-03 | Authorized coordinator can rediscover/reopen an approved event through the supported UI path to later work | KAN-33; S2-T20 | Not executed |
 | S2-DEMO-04 | Venue Staff maintain a catalogue entry; coordinator searches combined requirements and inspects suitability | KAN-50, KAN-12, KAN-52; S2-T03/T04/T07–T10 | Not executed |
 | S2-DEMO-05 | Internal calendar access works for Event Coordinator, Venue Staff and Technical Support Staff, with denied organizer/attendee/signed-out paths | KAN-51; S2-T05/T06 | Not executed |
@@ -36,7 +38,7 @@ All results below are **Not executed**. Agree demonstrators and exact fixtures b
 
 | Story | Origin | Baseline points | Acceptance outcome | Remaining criteria / evidence / follow-up |
 | --- | --- | ---: | --- | --- |
-| KAN-29 | New | 3 | Not assessed | |
+| KAN-29 | New | 3 | Not assessed | Tristan's branch implementation has local automated coverage. Policy acceptance, shared rollout, hosted checks, peer review and CI remain pending. |
 | KAN-50 | New | 5 | Not assessed | |
 | KAN-51 | New | 5 | Not assessed | |
 | KAN-12 | New | 5 | Not assessed | |

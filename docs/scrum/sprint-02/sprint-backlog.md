@@ -1,6 +1,6 @@
 # Sprint 2 backlog and acceptance test plan
 
-The confirmed baseline is **12 PBIs and 43 points: nine new stories at 35 points plus three carried stories at their original 8 points**. New-story owners and reviewers remain to be agreed. Existing code is available across these areas; implementation presence, a merge and an existing test file do not establish Sprint 2 acceptance.
+The confirmed baseline is **12 PBIs and 43 points: nine new stories at 35 points plus three carried stories at their original 8 points**. Tristan owns KAN-29 (3 points) in this repository plan as of 28 September; the other eight new-story owners and all reviewers remain pending. No live Jira assignment change or recheck is claimed. Implementation presence, a merge and an existing test file do not establish Sprint 2 acceptance.
 
 The nine new story cards retain the detailed planning version and stable `KAN-<story>-AC<number>` references. The pre-edit export contained **77 criteria**, compared with **93 planning criteria** below. The missing correctness checks in six shorter cards and the customer-rule refinements were added to live Jira on 21 September. Preserve these repository IDs and historical test references; use the [applied-change record](../../requirements/assumptions-and-questions.md#21-september-2026--jira-updates-applied) for the current Jira work and remaining decisions. Customer rules and meeting refinements are recorded separately; technical tasks and additional robustness checks remain proposed delivery work.
 
@@ -8,15 +8,15 @@ The nine new story cards retain the detailed planning version and stable `KAN-<s
 
 | Jira item | Story | Priority / origin | Points | Sprint 2 owner / reviewer | Acceptance position |
 | --- | --- | --- | ---: | --- | --- |
-| KAN-29 | Automatically Assign Event Coordinator | Must / new | 3 | To agree / To agree | Available coordinator with fewest active events, then consistent ID/order; automatic implementation and remaining definitions need work |
-| KAN-50 | Maintain Venue Catalogue | Must / new | 5 | To agree / To agree | Existing implementation to inspect and validate |
-| KAN-51 | View Venue Availability Calendar | Must / new | 5 | To agree / To agree | Three internal roles specified; align existing API/UI access and verify |
-| KAN-12 | Search and Filter Venues | Must / new | 5 | To agree / To agree | Existing implementation to inspect and validate |
-| KAN-52 | Check Venue Suitability | Must / new | 3 | To agree / To agree | Existing implementation and warning policy to inspect |
-| KAN-53 | Submit Venue Booking Request | Must / new | 3 | To agree / To agree | Existing implementation and eligible event states to inspect |
-| KAN-8 | Approve or Reject Venue Booking Request | Must / new | 3 | To agree / To agree | Existing implementation to inspect and validate |
-| KAN-54 | Detect Venue Booking Conflicts | Must / new | 5 | To agree / To agree | Existing overlap/concurrency protection to validate |
-| KAN-55 | Block Venue for Operational Unavailability | Supporting / new | 3 | To agree / To agree | Existing block/unblock implementation to inspect and validate |
+| KAN-29 | Automatically Assign Event Coordinator | Must / new | 3 | Tristan / To agree | Branch implementation and local automated checks; policy acceptance, hosted rollout/manual checks, CI and peer review pending |
+| KAN-50 | Maintain Venue Catalogue | Must / new | 5 | To agree / To agree | Tables retained; services/UI to implement and validate after the 26 September removal |
+| KAN-51 | View Venue Availability Calendar | Must / new | 5 | To agree / To agree | Three internal roles specified; services/UI to implement and verify |
+| KAN-12 | Search and Filter Venues | Must / new | 5 | To agree / To agree | Services/UI to implement and validate |
+| KAN-52 | Check Venue Suitability | Must / new | 3 | To agree / To agree | Matching and warning policy to agree; services/UI to implement |
+| KAN-53 | Submit Venue Booking Request | Must / new | 3 | To agree / To agree | Eligible event states to agree; services/UI to implement |
+| KAN-8 | Approve or Reject Venue Booking Request | Must / new | 3 | To agree / To agree | Services/UI to implement and validate |
+| KAN-54 | Detect Venue Booking Conflicts | Must / new | 5 | To agree / To agree | Database integrity guards retained; service/UI conflict handling and integrated validation pending |
+| KAN-55 | Block Venue for Operational Unavailability | Supporting / new | 3 | To agree / To agree | Tables retained; service/UI block workflow to implement and validate |
 | KAN-6 | Submit Event Request | Carry-over | 3 | Kai Jie / To agree | KAN-58 / S1-DEF-03 and KAN-59 / S1-DEF-04 require reproduction, repair and regression evidence |
 | KAN-33 | View Submitted Event Request | Carry-over | 2 | Irfan / To agree | KAN-56 / S1-DEF-02 requires reproduction, navigation repair and regression evidence |
 | KAN-34 | Resume/Edit Draft Event Request | Carry-over | 3 | Kai Jie / To agree | KAN-57 / S1-DEF-01 requires reproduction, form consistency and regression evidence |
@@ -26,7 +26,9 @@ The four corrective subtasks are included in their parents' retained estimates. 
 
 ## Story cards
 
-The acceptance criteria below are the detailed planning criteria for the nine new stories. New-story owners and reviewers remain to be agreed. The current Jira snapshot retains Kai Jie on KAN-6/KAN-34 and Irfan on KAN-33. Proposed implementation work does not add points.
+The acceptance criteria below are the detailed planning criteria for the nine new stories. Tristan has taken up KAN-29; other new-story owners and reviewers remain to be agreed. The 21 September Jira snapshot retains Kai Jie on KAN-6/KAN-34 and Irfan on KAN-33. Proposed implementation work does not add points.
+
+**Historical venue implementation references:** the venue task rows and robustness notes below preserve the 21 September planning inspection. `main` commit `dff42ed` removed those services, UI and tests on 26 September; their named files are historical references, not current implementation or test evidence. Migration tables and integrity guards remain. Rework those tasks against the retained schema when implementing the venue stories; the 93 acceptance criteria remain unchanged.
 
 **Customer-rule refinements:** Coordinator availability may be preconfigured. No turnover buffer is required. Venue-booking submission must be refused for an already reserved period, in addition to approval-time conflict protection. Submission validation must require event date and attendance while allowing None / Not Required for inapplicable optional needs. These rules are now recorded in the affected Jira cards. Retain the [remaining questions](planning.md#dependencies-and-open-decisions), including pending/tentative reservations and new operational blocks over existing bookings.
 
@@ -34,7 +36,7 @@ The acceptance criteria below are the detailed planning criteria for the nine ne
 
 As an Event Organiser, I want my submitted event request to be automatically assigned to an available Event Coordinator so that there is a clear internal staff member responsible for coordinating my event.
 
-**Owner / proposed reviewer:** To agree / To agree.
+**Owner / proposed reviewer:** Tristan / To agree. Repository allocation recorded 28 September; live Jira assignment not changed or verified here.
 
 **Acceptance criteria (planning version)**
 
@@ -50,13 +52,15 @@ Ensure that:
 
 **Assignment rule:** Filter to available Event Coordinators → assign the coordinator with the fewest active events → if tied, choose the first by a consistent ID/order.
 
-The selection rule is agreed and availability may be preconfigured. Define the stored availability field, which event statuses count as active and the outcome when no coordinator is available. No availability-management UI is required. Use one documented, repeatable tie-break order in implementation and tests.
+The selection rule is agreed and availability may be preconfigured. On 28 September the branch implements `app_users.coordinator_available` with default `false` and explicit opt-in for provisioned coordinators. Active workload counts `SUBMITTED`, `UNDER_REVIEW`, `CLARIFICATION_REQUESTED`, `APPROVED` and `CONFIRMED`; the lowest count wins, then ascending application-profile UUID. No eligible coordinator returns `409 NO_AVAILABLE_COORDINATOR` with the saved draft unchanged and editable for retry. No availability-management UI is added. These detailed choices await team/customer acceptance; they are not newly recorded meeting decisions.
+
+Submission and one automatic assignment commit together without a review decision. Automatic history uses `assignmentMethod: 'AUTOMATIC'` and null assigning-actor fields. A preassigned draft returns `409 DRAFT_ALREADY_ASSIGNED` without replacing its existing data; repeated submission cannot allocate again. Migration 007 has not been applied to shared Supabase by this implementation; coordinate schema/history reconciliation and real-coordinator opt-in with Arvin. Follow the [manual checks](../../testing/kan29-manual-checks.md) after setup.
 
 **Meeting refinement:** Event Coordinators may assign a request to themselves or another coordinator. This manual option complements the automatic initial assignment; authority to hand over an already-assigned event remains to be clarified.
 
 | Local task | Proposed technical work |
 | --- | --- |
-| S2-29-01 | Define the availability source, active-event statuses and no-eligible outcome; implement available-only selection by lowest active-event count and a consistent ID/order tie-break. Inspect the [submission transition](../../../backend/src/modules/events/submit-request.ts), [manual assignment service](../../../backend/src/modules/events/assignment.ts) and [assignment router](../../../backend/src/modules/events/assignment-router.ts); preserve assignment history/access consistency and resolve separate handover permissions. Extend the [assignment integration tests](../../../database/tests/events/assignment.integration.test.ts) with unequal loads, tied loads and unavailable candidates, then run S2-T01/T02 and the integrated submission path. Existing manual assignment is not automatic-assignment evidence. |
+| S2-29-01 | Implemented locally: [automatic selection](../../../backend/src/modules/events/automatic-assignment.ts), [submission transaction](../../../backend/src/modules/events/submit-request.ts), [migration 007](../../../database/migrations/007_automatic_coordinator_assignment.sql), UI allocation-error recovery and automatic-history display. [Automatic-assignment tests](../../../database/tests/events/automatic-assignment.integration.test.ts), [submission tests](../../../database/tests/events/submit-request.integration.test.ts) and [manual-assignment regression](../../../database/tests/events/assignment.integration.test.ts) passed 29 + 12 + 10 targeted PostgreSQL checks. See [AUTO-20260928-01](../../testing/test-evidence.md#28-september-kan-29-automatic-assignment). S2-T01/T02 hosted checks, policy acceptance, CI and peer review remain pending; S2-T23 is not executed. Existing manual handover permissions are preserved, not settled by this story. |
 
 ### KAN-50 — Maintain Venue Catalogue
 
@@ -88,7 +92,7 @@ Ensure that:
 
 | Local task | Proposed technical work |
 | --- | --- |
-| S2-50-01 | Inspect [venue input](../../../backend/src/modules/venues/venue-input.ts), [venue service](../../../backend/src/modules/venues/venue-service.ts) and [venue form](../../../frontend/src/features/venues/pages/VenueFormPage.vue); verify viewing and updating the listed venue attributes, multiple layouts, persistence, authorization and propagation to search/suitability. Reuse [catalogue integration tests](../../../database/tests/venues/venue-catalogue.integration.test.ts) for S2-T03/T04. Venue creation, deletion and inactivation are not explicit criteria for this story; refine any requested extension separately. |
+| S2-50-01 | Inspect `backend/src/modules/venues/venue-input.ts` (historical), `backend/src/modules/venues/venue-service.ts` (historical) and `frontend/src/features/venues/pages/VenueFormPage.vue` (historical); verify viewing and updating the listed venue attributes, multiple layouts, persistence, authorization and propagation to search/suitability. Reuse `database/tests/venues/venue-catalogue.integration.test.ts` (historical) for S2-T03/T04. Venue creation, deletion and inactivation are not explicit criteria for this story; refine any requested extension separately. |
 
 ### KAN-51 — View Venue Availability Calendar
 
@@ -109,7 +113,7 @@ The three internal roles are now explicit in the story. Permitted event labels a
 
 | Local task | Proposed technical work |
 | --- | --- |
-| S2-51-01 | Reconcile [availability API access](../../../backend/src/modules/venues/venues-router.ts), [calendar projection](../../../backend/src/modules/venues/venue-service.ts) and [venue detail UI](../../../frontend/src/features/venues/pages/VenueDetailPage.vue). The current API admits authenticated roles beyond the agreed internal group; Technical Support Staff currently receive generic busy details. Replace outdated role expectations in [HTTP tests](../../../backend/test/venues/venues-router.test.ts) and [calendar integration tests](../../../database/tests/venues/venue-catalogue.integration.test.ts), and add the `TECHNICAL_SUPPORT_STAFF` case. Run S2-T05/T06. |
+| S2-51-01 | Reconcile `backend/src/modules/venues/venues-router.ts` (historical), `backend/src/modules/venues/venue-service.ts` (historical) and `frontend/src/features/venues/pages/VenueDetailPage.vue` (historical). The current API admits authenticated roles beyond the agreed internal group; Technical Support Staff currently receive generic busy details. Replace outdated role expectations in `backend/test/venues/venues-router.test.ts` (historical) and `database/tests/venues/venue-catalogue.integration.test.ts` (historical), and add the `TECHNICAL_SUPPORT_STAFF` case. Run S2-T05/T06. |
 
 ### KAN-12 — Search and Filter Venues
 
@@ -140,7 +144,7 @@ Ensure that:
 
 | Local task | Proposed technical work |
 | --- | --- |
-| S2-12-01 | Inspect the [catalogue UI](../../../frontend/src/features/venues/pages/VenueCataloguePage.vue), input parsing and database filters against all seven listed criteria, including expected attendance and location. Reconcile the current all-authenticated catalogue query with the protected venue-planning access requirement. Agree whether event values prefill the search or are entered manually; verify authorization, current catalogue values, combined filters and clear/change behavior with S2-T07/T08 and [catalogue tests](../../../database/tests/venues/venue-catalogue.integration.test.ts). |
+| S2-12-01 | Inspect the `frontend/src/features/venues/pages/VenueCataloguePage.vue` (historical), input parsing and database filters against all seven listed criteria, including expected attendance and location. Reconcile the current all-authenticated catalogue query with the protected venue-planning access requirement. Agree whether event values prefill the search or are entered manually; verify authorization, current catalogue values, combined filters and clear/change behavior with S2-T07/T08 and `database/tests/venues/venue-catalogue.integration.test.ts` (historical). |
 
 ### KAN-52 — Check Venue Suitability
 
@@ -164,7 +168,7 @@ Ensure that:
 
 | Local task | Proposed technical work |
 | --- | --- |
-| S2-52-01 | Inspect [suitability rules](../../../backend/src/modules/venues/suitability.ts), [event access](../../../backend/src/modules/venues/event-access.ts) and [booking panel](../../../frontend/src/features/venues/components/VenueBookingPanel.vue). Add the missing facility and room-layout comparisons, and match applicable accessibility requirements rather than treating any accessibility provision as sufficient. Verify capacity and availability checks; resolve structured requirement matching and whether an unsuitable result warns or blocks later actions. Run S2-T09/T10 using [suitability unit tests](../../../backend/test/venues/suitability.test.ts) and catalogue integration coverage as starting points. |
+| S2-52-01 | Inspect `backend/src/modules/venues/suitability.ts` (historical), `backend/src/modules/venues/event-access.ts` (historical) and `frontend/src/features/venues/components/VenueBookingPanel.vue` (historical). Add the missing facility and room-layout comparisons, and match applicable accessibility requirements rather than treating any accessibility provision as sufficient. Verify capacity and availability checks; resolve structured requirement matching and whether an unsuitable result warns or blocks later actions. Run S2-T09/T10 using `backend/test/venues/suitability.test.ts` (historical) and catalogue integration coverage as starting points. |
 
 ### KAN-53 — Submit Venue Booking Request
 
@@ -193,7 +197,7 @@ Ensure that:
 
 | Local task | Proposed technical work |
 | --- | --- |
-| S2-53-01 | Inspect [booking service](../../../backend/src/modules/venues/booking-service.ts), [booking input](../../../backend/src/modules/venues/booking-input.ts) and the booking panel. Trace relevant event venue requirements and accessibility needs through the request and staff review view, alongside the existing layout/notes; agree whether staff assess a submitted snapshot or the latest event requirements. Confirm eligible event states and close integration gaps. Run S2-T11/T12 with [booking HTTP tests](../../../backend/test/venues/venue-bookings-router.test.ts) and [booking persistence tests](../../../database/tests/venues/venue-bookings.integration.test.ts). |
+| S2-53-01 | Inspect `backend/src/modules/venues/booking-service.ts` (historical), `backend/src/modules/venues/booking-input.ts` (historical) and the booking panel. Trace relevant event venue requirements and accessibility needs through the request and staff review view, alongside the existing layout/notes; agree whether staff assess a submitted snapshot or the latest event requirements. Confirm eligible event states and close integration gaps. Run S2-T11/T12 with `backend/test/venues/venue-bookings-router.test.ts` (historical) and `database/tests/venues/venue-bookings.integration.test.ts` (historical). |
 
 ### KAN-8 — Approve or Reject Venue Booking Request
 
@@ -222,7 +226,7 @@ Ensure that:
 
 | Local task | Proposed technical work |
 | --- | --- |
-| S2-8-01 | Inspect [staff queue UI](../../../frontend/src/features/venues/pages/VenueBookingQueuePage.vue) and [booking decision service](../../../backend/src/modules/venues/booking-service.ts); verify the ability to provide relevant information or a reason on rejection, staff review access and event/coordinator visibility. Whether a non-empty rejection reason is mandatory remains a refinement question. Run S2-T13/T14, then calendar/conflict regression, using booking HTTP and persistence tests. |
+| S2-8-01 | Inspect `frontend/src/features/venues/pages/VenueBookingQueuePage.vue` (historical) and `backend/src/modules/venues/booking-service.ts` (historical); verify the ability to provide relevant information or a reason on rejection, staff review access and event/coordinator visibility. Whether a non-empty rejection reason is mandatory remains a refinement question. Run S2-T13/T14, then calendar/conflict regression, using booking HTTP and persistence tests. |
 
 ### KAN-54 — Detect Venue Booking Conflicts
 
@@ -252,7 +256,7 @@ Ensure that:
 
 | Local task | Proposed technical work |
 | --- | --- |
-| S2-54-01 | Inspect [booking service](../../../backend/src/modules/venues/booking-service.ts), related [database migrations](../../../database/migrations/) and existing overlap/transaction coverage. Agree the interval and status policy, then run S2-T15/T16 against PostgreSQL and through the UI. [Booking integration tests](../../../database/tests/venues/venue-bookings.integration.test.ts) already contain simultaneous-approval scenarios; results for the reviewed build still need to be recorded. |
+| S2-54-01 | Inspect `backend/src/modules/venues/booking-service.ts` (historical), related [database migrations](../../../database/migrations/) and existing overlap/transaction coverage. Agree the interval and status policy, then run S2-T15/T16 against PostgreSQL and through the UI. `database/tests/venues/venue-bookings.integration.test.ts` (historical) already contain simultaneous-approval scenarios; results for the reviewed build still need to be recorded. |
 
 ### KAN-55 — Block Venue for Operational Unavailability
 
@@ -283,7 +287,7 @@ Ensure that:
 
 | Local task | Proposed technical work |
 | --- | --- |
-| S2-55-01 | Inspect block/unblock operations in [venue service](../../../backend/src/modules/venues/venue-service.ts) and the venue detail UI; confirm conflict/removal policy and run S2-T17/T18. Reuse catalogue integration tests, including block-versus-booking conflict cases. |
+| S2-55-01 | Inspect block/unblock operations in `backend/src/modules/venues/venue-service.ts` (historical) and the venue detail UI; confirm conflict/removal policy and run S2-T17/T18. Reuse catalogue integration tests, including block-versus-booking conflict cases. |
 
 ## Proposed additional robustness checks
 
@@ -291,7 +295,7 @@ These checks support implementation quality and need refinement where behavior i
 
 | Story | Proposed check or unresolved policy |
 | --- | --- |
-| KAN-29 | Define the availability source, active-event statuses and no-eligible behavior. Verify the agreed lowest-active-count selection and consistent ID/order tie-break with retries, write failures and concurrent submissions. Verify reassignment authorization under the separate meeting refinement. |
+| KAN-29 | Local automation covers the implemented opt-in availability, active statuses, UUID tie-break, no-eligible rollback, retries, write failures and concurrent submissions. Accept the detailed policy and complete hosted verification. Existing manual handover is regression checked without adopting a new handover policy; KAN-65 refinement stays separate. |
 | KAN-50 | Invalid capacity/operating values, duplicate venue naming and failed-save recovery. Creation, deletion and inactivation require separate scope clarification if requested. |
 | KAN-51 | Interval endpoints, Singapore-time conversion, pending-request display, role-specific labels and loading/error recovery. Confirm how the Jira term confirmed booking maps to the implemented booking status. |
 | KAN-12 | Invalid or incomplete filters, empty results, exact capacity/time boundaries and stale-result recovery. Define how expected attendance differs from a venue-capacity filter and how selected filters combine. |
@@ -314,14 +318,14 @@ The [Sprint 1 review defect register](../sprint-01/review.md#review-defects-and-
 
 ## Acceptance test plan
 
-All cases below are **Not executed for Sprint 2**. Criterion IDs refer to the planning version above; current Jira wording requires reconciliation. Separately identified customer refinements supplement those references. Existing test files are implementation references, not fresh results. Retain the actual build/commit, role, synthetic data, environment, steps, expected/actual outcome and artifact for each executed case. Fixture tests and isolated database runs do not replace hosted authentication/UI acceptance.
+S2-T01/T02 have local automated coverage recorded in [AUTO-20260928-01](../../testing/test-evidence.md#28-september-kan-29-automatic-assignment); their hosted portions and policy acceptance remain pending. Other cases below, including the integrated S2-T23, remain **Not executed** in this record. Criterion IDs refer to the unchanged planning version; current Jira wording requires reconciliation. Separately identified customer refinements supplement those references. Retain the actual build/commit, role, synthetic data, environment, steps, expected/actual outcome and artifact for each executed case. Fixture tests and isolated database runs do not replace hosted authentication/UI acceptance.
 
 Criterion ranges include every numbered criterion between their endpoints. A broad test case needs evidence for each listed observation; one successful step does not establish the entire case or story as passed.
 
 | Case | Criteria / refinement | Verification layer | Proposed scenario and expected observation | Status |
 | --- | --- | --- | --- | --- |
-| S2-T01 | KAN-29-AC1–KAN-29-AC7; assignment rule | Service + database + hosted UI | Submit a valid request with available/unavailable candidates at unequal loads: select the available coordinator with the fewest active events, even if an unavailable coordinator has fewer. Repeat with tied eligible loads and verify the documented consistent ID/order wins. Verify one coordinator on the correct event, assigned-coordinator access, no administrator action, unchanged review outcome and persistence until reassignment. | Not executed |
-| S2-T02 | KAN-29-AC2, KAN-29-AC7; assignment rule and manual-assignment meeting refinement | Database concurrency + API authorization + UI | Verify one current assignment before/after permitted reassignment; exercise self/other assignment and denied handover according to the refined authority policy. Proposed robustness: no eligible coordinator, retries, write failures and simultaneous submissions follow explicitly agreed behavior, with consistent workload counts and no duplicate active assignment. | Not executed |
+| S2-T01 | KAN-29-AC1–KAN-29-AC7; assignment rule | Service + database + hosted UI | Submit a valid request with available/unavailable candidates at unequal loads: select the available coordinator with the fewest active events, even if an unavailable coordinator has fewer. Repeat with tied eligible loads and verify the documented consistent ID/order wins. Verify one coordinator on the correct event, assigned-coordinator access, no administrator action, unchanged review outcome and persistence until reassignment. | Local automation covered; hosted checks and policy acceptance pending (AUTO-20260928-01) |
+| S2-T02 | KAN-29-AC2, KAN-29-AC7; assignment rule and manual-assignment meeting refinement | Database concurrency + API authorization + UI | Verify one current assignment before/after permitted reassignment; exercise self/other assignment and denied handover according to the refined authority policy. Proposed robustness: no eligible coordinator, retries, write failures and simultaneous submissions follow explicitly agreed behavior, with consistent workload counts and no duplicate active assignment. | Local automation covered; hosted checks and policy acceptance pending (AUTO-20260928-01) |
 | S2-T03 | KAN-50-AC1–KAN-50-AC13 | Database + Venue Staff UI + search/suitability integration | View the catalogue/current venue; update location, capacity, facilities, accessibility, multiple supported layouts and operating information. Save and reopen; verify the right venue retains all values/layouts and search/suitability uses the changes. | Not executed |
 | S2-T04 | KAN-50-AC14; proposed validation/failure checks | Input/API + database + UI | Non-maintainer roles cannot modify catalogue information through UI or direct API. Proposed robustness: invalid capacity/hours, duplicate names and save failures produce useful feedback without an unintended stored change. | Not executed |
 | S2-T05 | KAN-51-AC1, KAN-51-AC6 | API + hosted sessions/UI | Check all five roles and signed-out access via navigation, direct URL and API; only Event Coordinators, Venue Staff and Technical Support Staff obtain the calendar. Check label/detail visibility after the separate internal-data policy is agreed. | Not executed |

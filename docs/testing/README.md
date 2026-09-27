@@ -1,8 +1,10 @@
 # Testing and evidence
 
-The suite covers application wiring, authentication/session handling, request creation, draft editing and submission, scoped request retrieval, and approval/rejection validation, persistence and coordinator controls. The integrated release code also has tests for assignment, clarification, lifecycle and change requests, venue booking, equipment allocation, registration and notifications. Recorded automated results and hosted acceptance are separate; the presence of these suites does not close the release features or expand Sprint 1.
+The suite covers application wiring, authentication/session handling, request creation, draft editing and submission, scoped request retrieval, approval/rejection, assignment, clarification and lifecycle transitions. KAN-29 adds automatic allocation, workload balancing, rollback and concurrent allocation checks. The broader venue, equipment, registration, change-request and notification feature suites recorded in older evidence were removed with the 26 September scope correction; retained schema tests do not establish those features. Recorded automated results and hosted acceptance are separate.
 
 Infrastructure database checks live in [database.integration.test.ts](../../database/tests/database.integration.test.ts) and [core-schema.integration.test.ts](../../database/tests/core-schema.integration.test.ts); feature integration suites are grouped under `database/tests/` by module. Browser checks live in `tests/e2e/`, including [review-decision.spec.ts](../../tests/e2e/review-decision.spec.ts). The [test evidence register](test-evidence.md) records actual runs, manual observations and remaining gaps.
+
+For KAN-29, use the [automatic-assignment integration tests](../../database/tests/events/automatic-assignment.integration.test.ts) and [manual checks](kan29-manual-checks.md). Prepare migration 007 and explicitly available, provisioned coordinator profiles before hosted testing. Manual checks remain pending until their actual results are recorded.
 
 Run commands from the repository root using the setup in the [main README](../../README.md):
 

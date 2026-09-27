@@ -6,7 +6,7 @@ The selected nine new stories total **35 points**. The estimates and priorities 
 
 | Story | Priority | New points | Proposed comparative rationale |
 | --- | --- | ---: | --- |
-| KAN-29 — Automatically Assign Event Coordinator | Must | 3 | Assignment uses preconfigured availability, fewest active events and a consistent ID/order. Defining the stored field, active statuses and no-eligible outcome, plus concurrent selection, remains implementation work. |
+| KAN-29 — Automatically Assign Event Coordinator | Must | 3 | Assignment uses preconfigured availability, fewest active events and a consistent ID/order. The branch now defines the field, active statuses, no-eligible outcome and concurrent selection; policy acceptance and hosted verification remain. Original estimate unchanged. |
 | KAN-50 — Maintain Venue Catalogue | Must | 5 | Staff maintenance of several related attributes, validation, persistence, access control and catalogue/detail integration. |
 | KAN-51 — View Venue Availability Calendar | Must | 5 | Time-window presentation from bookings and operational blocks, internal-role access and refresh consistency. |
 | KAN-12 — Search and Filter Venues | Must | 5 | Combined event-requirement filters, availability queries, boundary validation and useful empty states. |
@@ -40,7 +40,7 @@ The target of roughly **six points per member** describes the 35 new points acro
 | Ernest | Not recorded | To agree | To agree | Not recorded |
 | Kai Jie | Not recorded | KAN-6 / KAN-34 retained in Jira; integration allocation to agree | To agree | Not recorded |
 | Irfan | Not recorded | KAN-33 retained in Jira; integration allocation to agree | To agree | Not recorded |
-| Tristan | Not recorded | To agree | To agree | Not recorded |
+| Tristan | Not recorded | To agree | KAN-29, 3 points; taken up 28 September | Not recorded |
 | Arvin | Not recorded | To agree | To agree | Not recorded |
 
 Record leave, coursework deadlines, working days, coordination, test execution and Scrum role responsibilities before judging feasibility. Arvin is Scrum Master and Irfan is Product Owner; both also develop, so include time for these duties within their availability. Points indicate relative scope; availability is recorded in hours separately. Sprint 1 closed with seven PBIs Done and 24 accepted points, leaving these three stories at 8 points. This is one observed sprint, not a stable capacity forecast; the 43-point Sprint 2 baseline exceeds that observed outcome and needs an explicit feasibility check.
@@ -51,11 +51,13 @@ Record leave, coursework deadlines, working days, coordination, test execution a
 | --- | --- |
 | Estimation date/time, participants and method | Not recorded |
 | Reference stories and differing estimates | To record; Sprint 1 used KAN-33/KAN-16 as two-point references, but no Sprint 2 method is assumed |
-| Questions affecting estimates | Availability/active-event definitions and assignment fallback, calendar detail visibility, suitability matching, concurrency, operational-block behavior and defect reproduction; assignment ordering and the three calendar roles are settled |
+| Questions affecting estimates | Team/customer acceptance of KAN-29's implemented availability/active-status/fallback choices; calendar detail visibility, suitability matching, concurrency, operational-block behavior and defect reproduction. Assignment ordering and the three calendar roles are settled. |
 | Final carry-over estimate decision | Original 8 points retained: KAN-6 at 3, KAN-33 at 2 and KAN-34 at 3 |
 | Final Sprint 2 point baseline | Confirmed: 43 points across 12 PBIs |
-| Ownership and reviewers | Carry-over owners retained: Kai Jie (KAN-6/KAN-34), Irfan (KAN-33). Nine new-story owners and reviewers to agree. |
+| Ownership and reviewers | Carry-over owners in the 21 September snapshot: Kai Jie (KAN-6/KAN-34), Irfan (KAN-33). Tristan now owns KAN-29 in the repository plan; the other eight new-story owners and all reviewers remain to agree. No live Jira assignment change or verification is claimed. |
 | Capacity decision and scope trade-offs | To record after availability and carry-over work are understood |
 | Actual accepted points / unfinished points | Not yet assessed; complete at [review](review.md) |
 
 At review, calculate accepted points only for stories meeting the Definition of Done. Show new work and carry-over separately, with the actual baseline and any dated changes. Partial implementation and successful individual test cases do not earn partial story points.
+
+**28 September allocation update:** KAN-29's three points are assigned to Tristan in this plan. Local automated evidence is [AUTO-20260928-01](../../testing/test-evidence.md#28-september-kan-29-automatic-assignment); it does not award Done points, establish actual development hours or alter the 43-point commitment. Hosted acceptance, peer review and CI remain pending. The prior venue implementation was removed from `main` on 26 September; its historical presence must not be treated as reduced remaining work without a fresh implementation assessment.

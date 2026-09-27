@@ -63,6 +63,20 @@ Create test login accounts in Supabase Auth, then link each UUID to its applicat
 
 Hosted approval checks verified the `APPROVED` request status and matching review row with the assigned coordinator's application ID. See the [test evidence](../docs/testing/test-evidence.md) for the dated results and remaining hosted acceptance checks.
 
+## KAN-29 automatic assignment setup
+
+The branch implementation requires [007_automatic_coordinator_assignment.sql](migrations/007_automatic_coordinator_assignment.sql). That file is the authoritative schema change; do not duplicate its SQL or alter an earlier applied migration. **This implementation has not applied migration 007 to the shared Supabase project.** Coordinate with Arvin, reconcile the dashboard schema with `schema_migrations`, and apply the new migration through the existing migration process before running this branch against that project. Local and CI test databases apply the same numbered migrations.
+
+Migration 007 adds `app_users.coordinator_available` with a non-null default of `false`. Existing profiles and newly inserted profiles start opted out. Once the migration is present, use the Table Editor to set the flag to `true` only for `EVENT_COORDINATOR` profiles whose Supabase Auth login and `supabase_user_id` mapping are already provisioned and whose staff member is ready to receive requests. Keep fictional seed profiles opted out; running the seed is not coordinator provisioning. Availability is an explicit assignment setting, not a check of whether the person is currently signed in. Changing it to `false` excludes future automatic allocations; it does not remove existing assignments or revoke their access.
+
+On valid draft submission the service selects an available coordinator with the fewest assigned requests in `SUBMITTED`, `UNDER_REVIEW`, `CLARIFICATION_REQUESTED`, `APPROVED` or `CONFIRMED`. Drafts, rejected, cancelled and completed requests do not count. Equal workloads use ascending `app_users.id` UUID order. The request's status, coordinator and automatic assignment-history row commit together. Concurrent automatic and manual assignment writes coordinate through the same coordinator-row locks.
+
+The migration also records `coordinator_assignments.assignment_method`: existing rows remain `MANUAL` with their original `assigned_by`; automatic rows use `AUTOMATIC` with a null actor. The constraint requires the corresponding method/actor pairing. The existing single-active-assignment constraint remains in place. Automatic submission does not create an approval/rejection record.
+
+If no coordinator is available, submission returns `409 NO_AVAILABLE_COORDINATOR` and the transaction leaves the saved draft unchanged, with no new assignment. The organiser can edit, save and retry once availability is configured. A draft with an existing `coordinator_id` or active assignment-history row instead returns `409 DRAFT_ALREADY_ASSIGNED`, preserving that data for investigation rather than replacing it. Old submitted requests are not backfilled or reassigned by this change; the existing manual assignment and handover workflow remains available under its existing permissions.
+
+Use the [manual check guide](../docs/testing/kan29-manual-checks.md) for hosted verification. Tests that alter all coordinator availability flags or construct controlled workloads belong in an isolated project, or in a coordinated test window with the original settings recorded and restored. A feature branch does not isolate Supabase data.
+
 ## Optional local PostgreSQL and integration tests
 
 With Docker Desktop's Linux engine running, start the optional PostgreSQL 17 service and create a separate test database once:

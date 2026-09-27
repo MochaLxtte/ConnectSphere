@@ -27,7 +27,7 @@ Malformed JSON returns 400 (`INVALID_JSON`), oversized JSON returns 413 (`PAYLOA
 
 ## Sprint 1 routes
 
-The normal server mounts Supabase authentication, event listing, draft creation, shared detail, draft editing, submission and decision writing through `createRuntimeApp` in `backend/src/runtime-app.ts`. The coordinator review page consumes the shared detail, decision permissions and saved outcomes; the organiser detail page consumes the same response for status, outcome and permitted draft actions, with planning panels after submission. Draft creation and clarification were added on 19 September with the [first-release routes](#first-release-routes-cf-02-cf-03-and-cf-05-to-cf-20) below; "Implemented" in this table means the handler is mounted; actual test runs and hosted acceptance are recorded separately in the [test evidence](../testing/test-evidence.md). Organiser approval/rejection display and refresh passed with a real account in MAN-20260917-01. The signed-out detail page showed a sign-in prompt without request details or the review reason in MAN-20260917-02; draft/submitted detail status and review messages also passed in MAN-20260917-03. Later manual results and the outstanding submission-to-status integration check are tracked in the test evidence.
+The normal server mounts Supabase authentication, event listing, draft creation, shared detail, draft editing, submission and decision writing through `createRuntimeApp` in `backend/src/runtime-app.ts`. The coordinator review page consumes the shared detail, decision permissions and saved outcomes; the organiser detail page consumes the same response for status, outcome and permitted draft actions, with planning panels after submission. Draft creation and clarification were added on 19 September with the [first-release routes](#first-release-routes-cf-02-to-cf-07) below; "Implemented" in this table means the handler is mounted; actual test runs and hosted acceptance are recorded separately in the [test evidence](../testing/test-evidence.md). Organiser approval/rejection display and refresh passed with a real account in MAN-20260917-01. The signed-out detail page showed a sign-in prompt without request details or the review reason in MAN-20260917-02; draft/submitted detail status and review messages also passed in MAN-20260917-03. Later manual results and the outstanding submission-to-status integration check are tracked in the test evidence.
 
 | Owner | Method / route | Purpose | State |
 | --- | --- | --- | --- |
@@ -35,7 +35,7 @@ The normal server mounts Supabase authentication, event listing, draft creation,
 | Ernest, KAN-31 / KAN-4 | `POST /api/events` | Save an incomplete draft for the authenticated organiser | Implemented 19 September; hosted acceptance outstanding |
 | Kai Jie / Irfan / Tristan, KAN-34 / KAN-33 / KAN-16 | `GET /api/events/:id` | Shared details, status and recorded decision | Implemented; coordinator and organiser detail pages connected |
 | Kai Jie, KAN-34 | `PATCH /api/events/:id` | Update an owned draft | Implemented |
-| Kai Jie, KAN-6 | `POST /api/events/:id/submit` | Validate submission and transition atomically | Implemented |
+| Kai Jie / Tristan, KAN-6 / KAN-29 | `POST /api/events/:id/submit` | Validate and atomically submit with an automatically selected coordinator | Implemented on this branch; migration 007 and hosted verification required |
 | Irfan / Kai Jie / Tristan, KAN-33 / KAN-34 / KAN-16 | `GET /api/events` | Assigned coordinator queue, or the organiser's own drafts; organiser `?scope=all` includes all owned statuses; pagination pending | Implemented; organiser list page connected |
 | Irfan, KAN-27 | `POST /api/events/:id/clarifications` | Request clarification and make it visible to the organiser | Implemented 19 September; hosted acceptance outstanding |
 | Tristan, KAN-36 | `POST /api/events/:id/reviews` | Record an approval/rejection and update status atomically | Implemented |
@@ -45,6 +45,31 @@ Use camelCase in JSON and snake_case in SQL. IDs are UUID strings. Dates over HT
 Never accept organiser identity, acting role, arbitrary status, or reviewer identity from an untrusted request body. Derive them from the authenticated session and service action. Filter in repositories as well as enforcing service access rules. Sprint 1 uses assigned-coordinator access as a team implementation assumption; customer clarification about unassigned triage and delegation remains open under [Q-02](../requirements/assumptions-and-questions.md). Client navigation is not access control.
 
 Supabase Auth handles sign-in. Express verifies the access token and resolves `app_users.supabase_user_id` to the application profile and trusted role. `POST /api/auth/login` accepts `{ "accessToken": "..." }` and sets the verified token in an HttpOnly session cookie; `GET /api/auth/me` returns the mapped profile, and `POST /api/auth/logout` clears the cookie. Accounts must be provisioned before login; an unmapped account receives `403 ACCOUNT_NOT_PROVISIONED`. See the [authentication workstream](../../backend/src/modules/auth/README.md) for configuration and identity mapping. When adopting a significant contract change, keep this document, the corresponding UI, service and integration tests consistent in the implementation PR.
+
+## KAN-29 automatic assignment on submission
+
+**Branch implementation, 28 September 2026:** `POST /api/events/:id/submit` retains its owned-draft, completeness and verified-organiser checks. It now allocates one coordinator as part of the submission transaction. This is not a hosted acceptance record: migration [007](../../database/migrations/007_automatic_coordinator_assignment.sql) has not been applied to the shared Supabase project by this work. Coordinate its rollout with Arvin through the [database setup](../../database/README.md#kan-29-automatic-assignment-setup).
+
+An eligible candidate has application role `EVENT_COORDINATOR` and `app_users.coordinator_available = true`. The new availability flag defaults to `false`; opt in only provisioned coordinator profiles that are ready for work. Fictional seed accounts remain opted out. Selection counts requests in `SUBMITTED`, `UNDER_REVIEW`, `CLARIFICATION_REQUESTED`, `APPROVED` and `CONFIRMED`, chooses the smallest count, and breaks ties using ascending `app_users.id` UUID order. Availability is independent of current login state and does not revoke existing assignments when turned off.
+
+Submission locks the event, then coordinates with other automatic and manual allocations through consistently ordered coordinator-row locks. It counts committed workload after acquiring those locks. The `SUBMITTED` status, `event_requests.coordinator_id` and one `AUTOMATIC` assignment-history row commit together. Failure rolls all three changes back. No approval/rejection record is created. Changing assignment or availability later does not cause a submitted request to be automatically reallocated.
+
+| Response | Meaning |
+| --- | --- |
+| `200` | Existing flat `EventRecord` response, now with `status: "SUBMITTED"` and the selected non-null `coordinatorId`. |
+| `400 INVALID_EVENT_REQUEST_ID` | The route ID is not a UUID. |
+| `400 SUBMISSION_INCOMPLETE` | Required submission data is missing/invalid; the error also supplies `missingFields`. No allocation occurs. |
+| `401 AUTHENTICATION_REQUIRED` | No verified session. |
+| `403 SUBMIT_FORBIDDEN` | The verified caller is not an event organiser. |
+| `404 EVENT_REQUEST_NOT_FOUND` | The request is missing or belongs to another organiser; no assignment details are revealed. |
+| `409 REQUEST_NOT_SUBMITTABLE` | The owned request is no longer a draft, including repeated submission. Status, coordinator and history stay unchanged. |
+| `409 NO_AVAILABLE_COORDINATOR` | No opted-in coordinator is available. The saved request remains an editable draft with no new assignment. |
+| `409 DRAFT_ALREADY_ASSIGNED` | The draft already has a coordinator or active assignment-history row. Preserve the existing data and investigate it before submission; automatic selection does not overwrite it. |
+| `500 INTERNAL_ERROR` | An unexpected failure; the submission transaction is rolled back. |
+
+`NO_AVAILABLE_COORDINATOR` uses the message: "No event coordinator is currently available. Your request is still a draft. Please try again later." The create/edit form and saved-draft detail page show this explanation, retain draft editing and allow retry. `DRAFT_ALREADY_ASSIGNED` displays its specific explanation and retains editing; the existing assignment must be checked before submission can succeed. The form saves draft changes before calling submit, so a rolled-back submission does not undo an earlier successful draft save. Clients cannot choose the coordinator through submission input.
+
+The [manual check guide](../testing/kan29-manual-checks.md) covers account access, workload selection, recovery and retained manual handover. Previously submitted requests are not backfilled. Manual assignment remains a separate operation with its existing target list and permissions; the automatic availability flag does not restrict manual targets.
 
 ## Shared request detail: backend, coordinator and organiser pages connected
 
@@ -274,7 +299,9 @@ Mount order matters: `app.ts` registers the assignment, clarification, change-re
 | `GET /api/events/unassigned` | EC | `200` items: `id`, `name`, `status`, `organiserName`, `startsAt`, `endsAt`, `expectedAttendance`, `updatedAt`; unassigned requests excluding `DRAFT`, `REJECTED`, `CANCELLED`, `COMPLETED`, oldest update first | `403 ACTION_FORBIDDEN` |
 | `GET /api/events/coordinators` | EC | `200` items: `id`, `displayName`, `email` of every Event Coordinator | `403 ACTION_FORBIDDEN` |
 | `PUT /api/events/:id/coordinator` | EC (any coordinator when unassigned; otherwise only the currently assigned coordinator) | `200` `eventRequestId`, `assignmentId`, `coordinatorId`, `previousCoordinatorId`. Body `{ coordinatorId, note? }`. Updates `event_requests.coordinator_id` and the assignment history together; notifies the new coordinator, the previous coordinator and the organiser | `400 INVALID_EVENT_REQUEST_ID`, `INVALID_INPUT`, `INVALID_ASSIGNMENT_INPUT`, `INVALID_COORDINATOR`; `403 ACTION_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND` (missing, draft, or assigned to another coordinator); `409 ASSIGNMENT_NOT_ALLOWED`, `COORDINATOR_ALREADY_ASSIGNED` |
-| `GET /api/events/:id/assignments` | EO owner, assigned EC, or any EC while the non-draft request is unassigned | `200` items: `id`, `coordinatorId`, `coordinatorName`, `assignedById`, `assignedByName`, `note`, `assignedAt`, `unassignedAt`, newest first | `400 INVALID_EVENT_REQUEST_ID`; `403 ACTION_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND` |
+| `GET /api/events/:id/assignments` | EO owner, assigned EC, or any EC while the non-draft request is unassigned | `200` items: `id`, `coordinatorId`, `coordinatorName`, `assignmentMethod`, `assignedById`, `assignedByName`, `note`, `assignedAt`, `unassignedAt`, newest first | `400 INVALID_EVENT_REQUEST_ID`; `403 ACTION_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND` |
+
+With migration 007, `assignmentMethod` is `AUTOMATIC` or `MANUAL`. Automatic records have null `assignedById` and `assignedByName`; the UI displays "Assigned automatically on ..." rather than attributing the choice to the organiser or coordinator. Manual records retain their acting staff member and existing display. Existing history defaults to `MANUAL`; the migration does not rewrite its actor or change the current coordinator. The owning organiser sees the history read-only, while the currently assigned coordinator retains the existing handover controls.
 
 ### Events: review start and clarification (CF-04, KAN-27) — `clarification-router.ts`
 

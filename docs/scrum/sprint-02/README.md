@@ -8,7 +8,7 @@ Enable submitted requests to reach an assigned coordinator, and enable coordinat
 
 Sprint 2 has been initialized in Jira. The confirmed baseline is **12 PBIs and 43 points**: **nine new stories worth 35 points**, plus unfinished Sprint 1 stories KAN-6, KAN-33 and KAN-34 retaining their original **8 points**. The approximately six-point target per member refers to the **35 new points** only.
 
-Tristan merged the team branches into `main`, and Sprint 1 was closed in Jira. Existing venue and manual-assignment implementation is available for inspection. Merge status and existing code do not establish acceptance of the new Sprint 2 stories. In particular, manual assignment does not satisfy KAN-29's automatic-assignment requirement.
+Tristan merged the team branches into `main`, and Sprint 1 was closed in Jira. The venue services, UI and their tests described in the original planning inspection were removed from `main` on 26 September (`dff42ed`); their migration tables remain. Those earlier inspection notes are historical planning context. Manual assignment remains implemented; on 28 September Tristan added KAN-29 automatic initial assignment on a feature branch. Neither implementation presence nor a merge establishes acceptance of a Sprint 2 story.
 
 ## Sprint records
 
@@ -33,19 +33,21 @@ Use the shared [Definition of Done](../definition-of-done.md), [requirements](..
 | Carry-over | KAN-6, KAN-33 and KAN-34 retain 3, 2 and 3 points respectively; 8 points included in the 43-point baseline |
 | Calendar access decision | Internal users: Event Coordinators, Venue Staff and Technical Support Staff |
 | Manual assignment decision | Coordinators may assign a request to themselves or another coordinator; handover authority for an already-assigned request still needs clarification |
-| Automatic assignment | Use preconfigured availability, select the available coordinator with the fewest active events and break ties by consistent ID/order. Define the stored field, active-event statuses and the no-eligible outcome. |
-| Team and allocation | Ryan, Ernest, Kai Jie, Irfan, Tristan and Arvin. Current Jira assignees: Kai Jie for KAN-6/KAN-34 and Irfan for KAN-33. Nine new-story owners and all review responsibilities remain to agree. |
+| Automatic assignment | Branch choices implemented 28 September: `coordinator_available` defaults false with explicit opt-in; count `SUBMITTED`, `UNDER_REVIEW`, `CLARIFICATION_REQUESTED`, `APPROVED`, `CONFIRMED`; choose least load then ascending profile UUID. No eligible coordinator returns 409 with the draft unchanged. Team/customer acceptance of these details remains pending. |
+| Team and allocation | Ryan, Ernest, Kai Jie, Irfan, Tristan and Arvin. Tristan owns KAN-29 (3 points) in the repository plan; no Jira assignee change or live recheck is claimed. The 21 September Jira snapshot retains Kai Jie for KAN-6/KAN-34 and Irfan for KAN-33. Other eight new-story owners and all review responsibilities remain to agree. |
 | Capacity and Scrum roles | Arvin is Scrum Master and Irfan is Product Owner; both also work as developers. Individual development hours and time for Scrum responsibilities remain to be recorded. |
-| Acceptance criteria and refinements | The backlog retains 93 detailed planning criteria. The pre-edit export had 77. Six shorter Jira cards now include the missing checks as dated refinements; KAN-29/KAN-50/KAN-51 already matched. Customer rules add submission conflict protection, minimum event-submission fields and preconfigured availability. Existing criterion IDs remain stable; no Sprint 2 test runs or review outcomes are recorded. |
+| Acceptance criteria and refinements | The backlog retains 93 detailed planning criteria. The pre-edit export had 77. Six shorter Jira cards now include the missing checks as dated refinements; KAN-29/KAN-50/KAN-51 already matched. Customer rules add submission conflict protection, minimum event-submission fields and preconfigured availability. Existing criterion IDs remain stable. KAN-29 local automation is recorded in AUTO-20260928-01; hosted checks and Sprint 2 review outcomes remain pending. |
 
 The carry-over work targets four reported paths in the [Sprint 1 defect record](../sprint-01/review.md#review-defects-and-carry-over): registration fields after enabling registration on an existing draft, coordinator navigation after approval, saved-draft submission, and mandatory-field validation. Preserve the successful Sprint 1 demo observations while reproducing these paths separately.
 
 The [21 September Jira update](../../requirements/assumptions-and-questions.md#21-september-2026--jira-updates-applied) links KAN-56–KAN-59 to the carried stories and KAN-60 to the event-rejection correction. The [product backlog](../../requirements/product-backlog.md) covers future release work including KAN-61–KAN-67. KAN-60–KAN-67 remain unestimated outside this sprint; archiving KAN-19/KAN-21/KAN-22/KAN-23 does not change the 43-point commitment.
 
+**KAN-29 handoff, 28 September:** automatic selection, atomic submission/history and recoverable allocation errors are implemented locally. The targeted PostgreSQL run passed 29 new automatic-assignment, 12 submission and 10 existing manual-assignment tests; see [AUTO-20260928-01](../../testing/test-evidence.md#28-september-kan-29-automatic-assignment) for the exact environment and limits. Coordinate migration 007 and provisioned-coordinator opt-in with Arvin before hosted testing, then follow the [manual guide](../../testing/kan29-manual-checks.md). Shared Supabase rollout, hosted acceptance, CI and peer review are not completed by this record. KAN-29 remains unaccepted and the baseline stays 43 points.
+
 ## Next actions
 
 1. Record available development hours and meeting details before judging the feasibility of the 43-point baseline.
 2. Agree story owners/reviewers and reserve time for carry-over, integration, review and evidence capture.
-3. Resolve automatic-assignment and venue-policy questions, record the remaining decisions in Jira, and agree the technical tasks and shared contracts.
+3. Review the implemented automatic-assignment choices, resolve remaining venue/handover policy questions, and record accepted decisions and allocation in Jira.
 4. Reproduce the four carry-over defects and inspect existing implementation against the new story criteria.
 5. Capture the actual Jira baseline, meeting records and executed acceptance evidence as they become available.

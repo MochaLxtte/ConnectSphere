@@ -6,6 +6,8 @@ The application supports sign-in, an assigned coordinator's review queue, reques
 
 The integrated code also includes coordinator assignment, review start and clarification, and confirmation, cancellation and completion with status history. Automated results are recorded against their source commits in the [test evidence](docs/testing/test-evidence.md). Hosted acceptance, peer review and the open customer questions remain outstanding before story closure. The venue, equipment, registration, notification and change-request workflows are **not** implemented: migration 005 supplies their tables and integrity guards, and Sprint 2 builds the venue stories. Database migrations, fictional seed data, automated checks, CI and team documentation support development.
 
+KAN-29 on this branch automatically assigns an available coordinator when an organiser submits a valid draft. It chooses the smallest active workload, then the lowest application-profile UUID for a tie. Assignment and submission commit together; a missing available coordinator leaves the request as an editable draft. This implementation has not been applied to the shared Supabase project or accepted through hosted testing. Follow the [KAN-29 manual checks](docs/testing/kan29-manual-checks.md) after the setup below.
+
 ## Start here
 
 Prerequisites: [Node.js 24 LTS](https://nodejs.org/en/download), npm bundled with Node, Git, and access to the team's Supabase development project. Docker is optional for isolated local database testing.
@@ -26,7 +28,9 @@ npm run db:migrate
 npm run db:seed
 ```
 
-When joining the team's existing Supabase project, confirm its schema with Arvin before applying migrations or changing seed data. Provision each login in Supabase Auth and link it to `app_users.supabase_user_id` with the correct application role. Seed profiles alone do not create login credentials. The seed also adds fictional venues and equipment types once migration 005 has run, ready for the Sprint 2 venue stories. Then start the application:
+When joining the team's existing Supabase project, confirm its schema with Arvin before applying migrations or changing seed data. Provision each login in Supabase Auth and link it to `app_users.supabase_user_id` with the correct application role. Seed profiles alone do not create login credentials. The seed also adds fictional venues and equipment types once migration 005 has run, ready for the Sprint 2 venue stories.
+
+**KAN-29 setup:** coordinate migration [007](database/migrations/007_automatic_coordinator_assignment.sql) with Arvin after reconciling the shared schema and migration history. It has not been applied to Supabase as part of this implementation. Its new `app_users.coordinator_available` flag defaults to `false` for existing and new profiles. In the dashboard, opt in only provisioned `EVENT_COORDINATOR` profiles that are ready to receive requests. Do not enable fictional seed profiles. At least one eligible coordinator is needed for successful submission; the [database guide](database/README.md#kan-29-automatic-assignment-setup) explains the policy and rollout. Then start the application:
 
 ```sh
 npm run dev
@@ -60,7 +64,7 @@ See [architecture](docs/architecture/README.md) and the [API contract](docs/arch
 
 ## Team handoff
 
-Start with the [Sprint 2 plan](docs/scrum/sprint-02/README.md), [selected stories and acceptance plan](docs/scrum/sprint-02/sprint-backlog.md), and [product backlog](docs/requirements/product-backlog.md). Sprint 2 runs from 20 September to 3 October with **43 points: 35 new plus eight carried from Sprint 1**. Agree an owner and reviewer for each new story before parallel implementation. The nine new-story allocations remain open; Kai Jie retains KAN-6/KAN-34 and Irfan retains KAN-33. Read the [open policy and integration decisions](docs/scrum/sprint-02/planning.md#dependencies-and-open-decisions) before changing shared behaviour. Future stories KAN-60–KAN-67 are outside this commitment.
+Start with the [Sprint 2 plan](docs/scrum/sprint-02/README.md), [selected stories and acceptance plan](docs/scrum/sprint-02/sprint-backlog.md), and [product backlog](docs/requirements/product-backlog.md). Sprint 2 runs from 20 September to 3 October with **43 points: 35 new plus eight carried from Sprint 1**. Agree an owner and reviewer for each new story before parallel implementation. Tristan is implementing KAN-29; the other eight new-story allocations and reviewers remain to be agreed. Kai Jie retains KAN-6/KAN-34 and Irfan retains KAN-33. Read the [open policy and integration decisions](docs/scrum/sprint-02/planning.md#dependencies-and-open-decisions) before changing shared behaviour. Future stories KAN-60–KAN-67 are outside this commitment.
 
 The following **historical Sprint 1 workstreams** were agreed on 6 September 2026. They provide ownership context and do not assign the new Sprint 2 work:
 
