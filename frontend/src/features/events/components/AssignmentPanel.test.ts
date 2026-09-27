@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/vue';
 import { describe, expect, it } from 'vitest';
 import AssignmentPanel from './AssignmentPanel.vue';
+import type { AssignmentRecord } from '../api/assignments';
 import { apiError, stubApi } from './test-api';
 
 const eventRequestId = 'event-one';
@@ -9,8 +10,9 @@ const coordinators = { body: { items: [
   { id: 'casey', displayName: 'Casey', email: 'casey@example.test' },
   { id: 'blair', displayName: 'Blair', email: 'blair@example.test' },
 ] } };
-const active = {
+const active: AssignmentRecord = {
   id: 'a1', coordinatorId: 'casey', coordinatorName: 'Casey', assignedById: 'casey', assignedByName: 'Casey',
+  assignmentMethod: 'MANUAL',
   note: 'Picked up from the queue.', assignedAt: '2026-09-15T02:00:00.000Z', unassignedAt: null,
 };
 
@@ -30,6 +32,7 @@ describe('CF-05 assignment panel', () => {
     const view = renderPanel();
 
     expect(await screen.findByText('Picked up from the queue.')).toBeInTheDocument();
+    expect(screen.getByText(/Assigned by Casey on/)).toBeInTheDocument();
     const select = await screen.findByRole('combobox', { name: 'Hand over to' });
     await waitFor(() => expect(screen.getByRole('option', { name: /Blair/ })).toBeInTheDocument());
     // The current coordinator is not offered as a target.
@@ -88,6 +91,33 @@ describe('CF-05 assignment panel', () => {
     expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
     expect(api.calls.map((call) => call.key)).toEqual([`GET ${base}/assignments`]);
   });
+
+  it.each(['EVENT_ORGANISER', 'EVENT_COORDINATOR'])(
+    'KAN-29 shows the automatic coordinator and history to %s without inventing a staff assigner',
+    async (viewerRole) => {
+      const automatic: AssignmentRecord = {
+        ...active, assignmentMethod: 'AUTOMATIC', assignedById: null, assignedByName: null, note: null,
+      };
+      const api = stubApi({
+        [`GET ${base}/assignments`]: { body: { items: [automatic] } },
+        'GET /api/events/coordinators': coordinators,
+      });
+      renderPanel({ viewerRole, isOwner: viewerRole === 'EVENT_ORGANISER' });
+
+      expect(await screen.findByText(/is coordinating this request/)).toHaveTextContent('Casey is coordinating this request');
+      expect(screen.getByText(/Assigned automatically on/)).toHaveTextContent(/15 Sept? 2026/);
+      expect(screen.getByText('Current')).toBeInTheDocument();
+      expect(screen.queryByText(/Assigned by/)).not.toBeInTheDocument();
+      if (viewerRole === 'EVENT_ORGANISER') {
+        expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
+        expect(screen.queryByRole('button', { name: /assign coordinator/i })).not.toBeInTheDocument();
+        expect(api.calls.map((call) => call.key)).toEqual([`GET ${base}/assignments`]);
+      } else {
+        expect(await screen.findByRole('combobox', { name: 'Hand over to' })).toBeInTheDocument();
+      }
+      expect(api.writes()).toEqual([]);
+    },
+  );
 
   it('offers a retry when the history cannot be loaded', async () => {
     const api = stubApi({

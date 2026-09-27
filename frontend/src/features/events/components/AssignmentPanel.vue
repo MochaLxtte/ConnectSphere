@@ -104,7 +104,9 @@ async function submit() {
               </span>
             </div>
             <p class="panel-meta">
-              Assigned by {{ item.assignedByName }} on {{ formatEventTime(item.assignedAt) }}<template v-if="item.unassignedAt">,
+              <template v-if="item.assignmentMethod === 'AUTOMATIC'">Assigned automatically</template>
+              <template v-else>Assigned by {{ item.assignedByName }}</template>
+              on {{ formatEventTime(item.assignedAt) }}<template v-if="item.unassignedAt">,
               until {{ formatEventTime(item.unassignedAt) }}</template>
             </p>
             <p v-if="item.note">{{ item.note }}</p>

@@ -213,7 +213,10 @@ function showFailure(error: unknown, draftSaved: boolean) {
     void focusFirstError();
     return;
   }
-  if (error instanceof ApiError && (error.status === 404 || error.status === 409)) {
+  if (error instanceof ApiError && error.status === 409 &&
+      ['NO_AVAILABLE_COORDINATOR', 'DRAFT_ALREADY_ASSIGNED'].includes(error.code)) {
+    formError.value = error.message;
+  } else if (error instanceof ApiError && (error.status === 404 || error.status === 409)) {
     locked.value = true;
     formError.value = 'This request is no longer an editable draft, so your changes were not saved.';
   } else if (error instanceof ApiError && error.status === 403) {

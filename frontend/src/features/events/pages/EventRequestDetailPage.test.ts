@@ -369,6 +369,34 @@ describe('KAN-16 organiser event request details', () => {
       expect(await screen.findByRole('alert')).toHaveTextContent('This request can no longer be submitted.');
     });
 
+    it.each([
+      ['NO_AVAILABLE_COORDINATOR', 'No event coordinator is currently available. Your request is still a draft. Please try again later.'],
+      ['DRAFT_ALREADY_ASSIGNED', 'This draft already has a coordinator assignment. Ask the team to check its assignment before submitting.'],
+    ])('KAN-29 keeps draft editing and retry after %s', async (code, message) => {
+      const fetchMock = vi.fn()
+        .mockResolvedValueOnce(jsonResponse(draft))
+        .mockResolvedValueOnce(jsonResponse({ error: { code, message } }, 409))
+        .mockResolvedValueOnce(jsonResponse(detail))
+        .mockResolvedValueOnce(jsonResponse(detail));
+      vi.stubGlobal('fetch', fetchMock);
+      await renderDetail();
+      await fireEvent.click(await screen.findByRole('button', { name: 'Submit for review' }));
+
+      expect(await screen.findByRole('alert')).toHaveTextContent(message);
+      expect(field('Status')).toHaveTextContent('Draft');
+      expect(screen.getByRole('link', { name: 'Edit draft' })).toHaveAttribute('href', '/events/a/edit');
+      expect(screen.getByRole('button', { name: 'Submit for review' })).toBeEnabled();
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+
+      await fireEvent.click(screen.getByRole('button', { name: 'Submit for review' }));
+      await waitFor(() => expect(field('Status')).toHaveTextContent('Submitted'));
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+      expect(fetchMock.mock.calls.map((call) => [call[0], (call[1] as RequestInit).method])).toEqual([
+        ['/api/events/a', undefined], ['/api/events/a/submit', 'POST'],
+        ['/api/events/a/submit', 'POST'], ['/api/events/a', undefined],
+      ]);
+    });
+
     it('clears the session and offers sign-in when submission returns 401', async () => {
       vi.stubGlobal('fetch', vi.fn()
         .mockResolvedValueOnce(jsonResponse(draft))

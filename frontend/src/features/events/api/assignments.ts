@@ -22,8 +22,9 @@ export interface AssignmentRecord {
   id: string;
   coordinatorId: string;
   coordinatorName: string;
-  assignedById: string;
-  assignedByName: string;
+  assignmentMethod: 'AUTOMATIC' | 'MANUAL';
+  assignedById: string | null;
+  assignedByName: string | null;
   note: string | null;
   assignedAt: string;
   unassignedAt: string | null;
