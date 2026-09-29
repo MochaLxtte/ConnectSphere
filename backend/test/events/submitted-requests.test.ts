@@ -1,5 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import {
+  FOLLOW_UP_STATUSES,
+  listFollowUpRequests,
   listOwnedDrafts,
   listOwnedRequests,
   listReviewableRequests,
@@ -74,6 +76,62 @@ describe('KAN-33 listReviewableRequests', () => {
     const pool = fakePool([]);
     const items = await listReviewableRequests({ pool, canViewRequest: () => true }, coordinator);
     expect(items).toEqual([]);
+  });
+});
+
+describe('KAN-33 / KAN-56 listFollowUpRequests (S1-DEF-02 decided-request access)', () => {
+  it('never queries the database for a non-coordinator actor', async () => {
+    const pool = fakePool([baseRow]);
+    const canViewRequest = vi.fn();
+    const items = await listFollowUpRequests({ pool, canViewRequest }, organiser);
+    expect(items).toEqual([]);
+    expect(pool.query).not.toHaveBeenCalled();
+    expect(canViewRequest).not.toHaveBeenCalled();
+  });
+
+  it('queries only decided/follow-up statuses, most recently changed first', async () => {
+    const pool = fakePool([]);
+    await listFollowUpRequests({ pool, canViewRequest: () => true }, coordinator);
+    expect(pool.query).toHaveBeenCalledExactlyOnceWith(
+      expect.stringMatching(/status = ANY\(\$1\) ORDER BY updated_at DESC/),
+      [FOLLOW_UP_STATUSES],
+    );
+  });
+
+  it('never overlaps the pending queue and never includes drafts', () => {
+    const followUp: readonly string[] = FOLLOW_UP_STATUSES;
+    expect(followUp).not.toContain('DRAFT');
+    expect(REVIEWABLE_STATUSES.filter((status) => followUp.includes(status))).toEqual([]);
+    expect(followUp).toEqual(expect.arrayContaining(['APPROVED', 'REJECTED']));
+  });
+
+  it('returns only requests the assignment policy allows, without ownership fields', async () => {
+    const assigned = { ...baseRow, id: 'a', status: 'APPROVED' as const, coordinatorId: coordinator.id };
+    const otherCoordinator = { ...baseRow, id: 'b', status: 'REJECTED' as const, coordinatorId: 'someone-else' };
+    const unassigned = { ...baseRow, id: 'c', status: 'APPROVED' as const, coordinatorId: null };
+    const pool = fakePool([assigned, otherCoordinator, unassigned]);
+    const canViewRequest = vi.fn(
+      (_actor: QueueActor, request: ReviewableRequest) => request.coordinatorId === coordinator.id,
+    );
+
+    const items = await listFollowUpRequests({ pool, canViewRequest }, coordinator);
+
+    expect(items).toEqual([
+      { id: 'a', name: assigned.name, status: 'APPROVED',
+        createdAt: assigned.createdAt, updatedAt: assigned.updatedAt },
+    ]);
+    expect(canViewRequest).toHaveBeenCalledTimes(3);
+  });
+
+  it('returns an empty list when the coordinator has no decided requests', async () => {
+    const items = await listFollowUpRequests({ pool: fakePool([]), canViewRequest: () => true }, coordinator);
+    expect(items).toEqual([]);
+  });
+
+  it('propagates a policy failure instead of returning a partial list', async () => {
+    const pool = fakePool([{ ...baseRow, status: 'APPROVED' as const }]);
+    const canViewRequest = vi.fn().mockRejectedValue(new Error('policy unavailable'));
+    await expect(listFollowUpRequests({ pool, canViewRequest }, coordinator)).rejects.toThrow('policy unavailable');
   });
 });
 

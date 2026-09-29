@@ -267,6 +267,51 @@ describe('KAN-16 / KAN-25 / KAN-33 / KAN-36 authenticated event workflow', () =>
     },
   );
 
+  it.each(['APPROVED', 'REJECTED'] as const)(
+    'KAN-56 / S1-DEF-02 keeps a %s request reachable through the coordinator history after it leaves the queue',
+    async (decision) => {
+      const organiser = await provisionUser('EVENT_ORGANISER');
+      const coordinator = await provisionUser('EVENT_COORDINATOR');
+      const otherCoordinator = await provisionUser('EVENT_COORDINATOR');
+      const id = await createEvent(organiser.id, coordinator.id);
+      const elsewhere = await createEvent(organiser.id, otherCoordinator.id, 'APPROVED');
+      const unassigned = await createEvent(organiser.id, null, 'REJECTED');
+      await createEvent(organiser.id, coordinator.id, 'DRAFT');
+      const reviewer = await signIn(coordinator);
+
+      expect((await reviewer.get('/api/events?scope=history')).body).toEqual({ items: [] });
+      expect((await reviewer.post(`/api/events/${id}/reviews`).send({ decision })).status).toBe(201);
+
+      expect((await reviewer.get('/api/events')).body.items).toEqual([]);
+      const history = await reviewer.get('/api/events?scope=history');
+      expect(history.status).toBe(200);
+      expect(history.headers['cache-control']).toBe('no-store');
+      expect(history.body.items).toEqual([expect.objectContaining({ id, status: decision })]);
+      expect(history.body.items[0]).not.toHaveProperty('organiserId');
+
+      const reopened = await reviewer.get(`/api/events/${id}`);
+      expect(reopened.status).toBe(200);
+      expect(reopened.body).toMatchObject({
+        id, status: decision, review: { decision },
+        actions: { canEditDraft: false, canMakeInitialDecision: false },
+      });
+      const stateBefore = await readState(id);
+      expect((await reviewer.post(`/api/events/${id}/reviews`).send({ decision })).status).toBe(409);
+      expect(await readState(id)).toEqual(stateBefore);
+
+      const outsider = await signIn(otherCoordinator);
+      const outsiderHistory = await outsider.get('/api/events?scope=history');
+      expect(outsiderHistory.body.items.map((item: { id: string }) => item.id)).toEqual([elsewhere]);
+      expect((await outsider.get(`/api/events/${id}`)).status).toBe(404);
+      expect(outsiderHistory.body.items.map((item: { id: string }) => item.id)).not.toContain(unassigned);
+
+      const owner = await signIn(organiser);
+      const organiserHistory = await owner.get('/api/events?scope=history');
+      expect(organiserHistory.status).toBe(400);
+      expect(organiserHistory.body.error.code).toBe('INVALID_EVENT_LIST_SCOPE');
+    },
+  );
+
   it('hides requests assigned elsewhere and unassigned requests without recording a decision', async () => {
     const organiser = await provisionUser('EVENT_ORGANISER');
     const coordinator = await provisionUser('EVENT_COORDINATOR');

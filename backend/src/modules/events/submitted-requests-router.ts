@@ -4,6 +4,7 @@ import {
   getEventRequestDetail, EventRequestNotFoundError, type EventRequestDetailDependencies,
 } from './event-request-detail.js';
 import {
+  listFollowUpRequests,
   listOwnedDrafts,
   listOwnedRequests,
   listReviewableRequests,
@@ -71,13 +72,16 @@ export function createSubmittedRequestsRouter(dependencies: SubmittedRequestsRou
         return;
       }
 
-      if (request.query.scope !== undefined) {
+      const scope = request.query.scope;
+      if (scope !== undefined && scope !== 'history') {
         response.status(400).json({
-          error: { code: 'INVALID_EVENT_LIST_SCOPE', message: 'scope is only supported for organiser lists.' },
+          error: { code: 'INVALID_EVENT_LIST_SCOPE', message: 'Coordinators may only request scope=history.' },
         });
         return;
       }
-      const items = await listReviewableRequests(dependencies, actor);
+      const items = scope === 'history'
+        ? await listFollowUpRequests(dependencies, actor)
+        : await listReviewableRequests(dependencies, actor);
       response.status(200).json({ items });
     } catch (error) {
       next(error);
