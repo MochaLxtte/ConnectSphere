@@ -32,6 +32,15 @@ function content(path: string, name = detail.name) {
     : { ...detail, name };
 }
 
+/** `/reviews` loads the pending queue and the KAN-56 decided history; detail pages load once. */
+function readsFor(path: string) {
+  return path === '/reviews' ? 2 : 1;
+}
+
+function respond(path: string, url: unknown, name = detail.name) {
+  return jsonResponse(String(url).includes('scope=history') ? { items: [] } : content(path, name));
+}
+
 function deferredResponse() {
   let resolve!: (response: Response) => void;
   const promise = new Promise<Response>((fulfil) => { resolve = fulfil; });
@@ -91,7 +100,7 @@ describe('KAN-25/KAN-33/KAN-36 coordinator page access', () => {
     it(`waits for session restoration before allowing a coordinator at ${path}`, async () => {
       session.user = user();
       session.loading = true;
-      const fetchMock = vi.fn().mockImplementation(async () => jsonResponse(content(path)));
+      const fetchMock = vi.fn().mockImplementation(async (url: unknown) => respond(path, url));
       vi.stubGlobal('fetch', fetchMock);
       await openReview(path);
 
@@ -99,12 +108,12 @@ describe('KAN-25/KAN-33/KAN-36 coordinator page access', () => {
       expect(fetchMock).not.toHaveBeenCalled();
       session.loading = false;
       expect(await screen.findByText(detail.name)).toBeInTheDocument();
-      expect(fetchMock).toHaveBeenCalledTimes(1);
+      expect(fetchMock).toHaveBeenCalledTimes(readsFor(path));
     });
 
     it(`removes loaded data on sign-out at ${path}`, async () => {
       session.user = user();
-      const fetchMock = vi.fn().mockImplementation(async () => jsonResponse(content(path)));
+      const fetchMock = vi.fn().mockImplementation(async (url: unknown) => respond(path, url));
       vi.stubGlobal('fetch', fetchMock);
       await openReview(path);
       await screen.findByText(detail.name);
@@ -113,26 +122,33 @@ describe('KAN-25/KAN-33/KAN-36 coordinator page access', () => {
       await screen.findByRole('heading', { name: 'Sign in required' });
       expect(screen.queryByText(detail.name)).not.toBeInTheDocument();
       expect(screen.queryByRole('radio')).not.toBeInTheDocument();
-      expect(fetchMock).toHaveBeenCalledTimes(1);
+      expect(fetchMock).toHaveBeenCalledTimes(readsFor(path));
     });
 
     it(`discards the old coordinator's pending read when the account changes at ${path}`, async () => {
       session.user = user();
-      const oldRead = deferredResponse();
-      const newRead = deferredResponse();
-      const fetchMock = vi.fn().mockReturnValueOnce(oldRead.promise).mockReturnValueOnce(newRead.promise);
+      const reads = readsFor(path);
+      const oldReads = Array.from({ length: reads }, deferredResponse);
+      const newReads = Array.from({ length: reads }, deferredResponse);
+      const responses = [...oldReads, ...newReads];
+      const fetchMock = vi.fn();
+      fetchMock.mockImplementation(() => responses[fetchMock.mock.calls.length - 1]!.promise);
       vi.stubGlobal('fetch', fetchMock);
       await openReview(path);
       const oldSignal = (fetchMock.mock.calls[0]![1] as RequestInit).signal!;
 
       session.user = user('EVENT_COORDINATOR', 'coordinator-2');
-      await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
+      await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2 * reads));
       expect(oldSignal.aborted).toBe(true);
-      await settle(newRead, jsonResponse(content(path, 'New coordinator request')));
+      for (const [index, read] of newReads.entries()) {
+        await settle(read, respond(path, fetchMock.mock.calls[reads + index]![0], 'New coordinator request'));
+      }
       expect(await screen.findByText('New coordinator request')).toBeInTheDocument();
 
       // A late failure for the previous account must not sign out the new account.
-      await settle(oldRead, jsonResponse({ error: { code: 'AUTHENTICATION_REQUIRED', message: 'Expired' } }, 401));
+      for (const read of oldReads) {
+        await settle(read, jsonResponse({ error: { code: 'AUTHENTICATION_REQUIRED', message: 'Expired' } }, 401));
+      }
       expect(session.user?.id).toBe('coordinator-2');
       expect(screen.getByText('New coordinator request')).toBeInTheDocument();
       expect(screen.queryByText(detail.name)).not.toBeInTheDocument();
@@ -152,7 +168,7 @@ describe('KAN-25/KAN-33/KAN-36 coordinator page access', () => {
       await settle(pending, jsonResponse(content(path)));
       expect(screen.queryByText(detail.name)).not.toBeInTheDocument();
       expect(screen.queryByRole('radio')).not.toBeInTheDocument();
-      expect(fetchMock).toHaveBeenCalledTimes(1);
+      expect(fetchMock).toHaveBeenCalledTimes(readsFor(path));
     });
 
     it(`returns to sign-in when the active read reports an expired session at ${path}`, async () => {

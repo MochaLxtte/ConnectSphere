@@ -7,6 +7,12 @@ export async function fetchReviewQueue(signal?: AbortSignal): Promise<ReviewQueu
   return result.items;
 }
 
+/** KAN-33 / KAN-56: assigned requests that have left the queue after a decision. */
+export async function fetchDecidedRequests(signal?: AbortSignal): Promise<ReviewQueueItem[]> {
+  const result = await getJson<{ items: ReviewQueueItem[] }>('/api/events?scope=history', signal);
+  return result.items;
+}
+
 /** KAN-33 / KAN-36: authorised detail, including requests with a recorded decision. */
 export function fetchReviewRequestDetail(
   eventRequestId: string,

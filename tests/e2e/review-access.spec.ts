@@ -43,8 +43,8 @@ async function reviewFixtures(page: Page, initialUser: typeof coordinator | null
   // session lifecycle behaviour, not hosted login or database authorisation.
   await page.route((url) => url.pathname.startsWith('/api/'), async (route) => {
     const request = route.request();
-    const path = new URL(request.url()).pathname;
-    if (path.startsWith('/api/events')) eventCalls.push(`${request.method()} ${path}`);
+    const { pathname: path, search } = new URL(request.url());
+    if (path.startsWith('/api/events')) eventCalls.push(`${request.method()} ${path}${search}`);
     if (request.method() === 'GET' && path === '/api/auth/me') {
       await route.fulfill({ status: user ? 200 : 401, json: user ? { user } : {
         error: { code: 'AUTHENTICATION_REQUIRED', message: 'Sign in required.' },
@@ -57,7 +57,8 @@ async function reviewFixtures(page: Page, initialUser: typeof coordinator | null
       user = null;
       await route.fulfill({ status: 204 });
     } else if (request.method() === 'GET' && path === '/api/events') {
-      await route.fulfill({ json: { items: [detail] } });
+      // KAN-56: the decided-request history is empty in these access fixtures.
+      await route.fulfill({ json: { items: search === '?scope=history' ? [] : [detail] } });
     } else if (request.method() === 'GET' && path === `/api/events/${requestId}`) {
       await route.fulfill({ json: detail });
     } else if (request.method() === 'GET' && path === '/api/events/unassigned') {
@@ -135,7 +136,7 @@ for (const path of ['/reviews', '/reviews/unassigned', `/reviews/${requestId}`])
     await expect(page.getByText(detail.name, { exact: true })).toBeVisible();
     await expect(page.getByRole('navigation', { name: 'Main navigation' })
       .getByRole('link', { name: 'Review queue', exact: true })).toBeVisible();
-    const expectedReads = path === '/reviews' ? ['GET /api/events']
+    const expectedReads = path === '/reviews' ? ['GET /api/events', 'GET /api/events?scope=history']
       : path === '/reviews/unassigned' ? ['GET /api/events/unassigned', 'GET /api/events/coordinators']
         : [`GET /api/events/${requestId}`, `GET /api/events/${requestId}/assignments`,
           'GET /api/events/coordinators', `GET /api/events/${requestId}/clarifications`,
@@ -174,6 +175,7 @@ test('KAN-25/KAN-33 review queue waits for a verified coordinator session', asyn
   await expect(page.getByText(detail.name, { exact: true })).toBeVisible();
   await expect(page.getByRole('navigation', { name: 'Main navigation' })
     .getByRole('link', { name: 'Review queue', exact: true })).toBeVisible();
-  expect(fixture.eventCalls).toEqual(['GET /api/events']);
+  await expect.poll(() => [...fixture.eventCalls].sort())
+    .toEqual(['GET /api/events', 'GET /api/events?scope=history']);
   expect(fixture.unexpectedRequests).toEqual([]);
 });
