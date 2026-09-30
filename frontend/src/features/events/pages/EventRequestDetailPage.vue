@@ -175,11 +175,10 @@ onBeforeUnmount(() => controller?.abort());
   <EventPlanningPanels
     v-if="state.status === 'ready' && state.request.status !== 'DRAFT'"
     :event-request-id="state.request.id"
+    :current-coordinator-id="state.request.coordinatorId"
     :status="state.request.status"
     :viewer-role="authSession.user?.role ?? 'EVENT_ORGANISER'"
     :is-owner="true"
-    :starts-at="state.request.startsAt"
-    :ends-at="state.request.endsAt"
     @changed="refreshQuietly"
   />
 </template>

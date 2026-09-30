@@ -138,10 +138,14 @@ for (const path of ['/reviews', '/reviews/unassigned', `/reviews/${requestId}`])
     const expectedReads = path === '/reviews' ? ['GET /api/events']
       : path === '/reviews/unassigned' ? ['GET /api/events/unassigned', 'GET /api/events/coordinators']
         : [`GET /api/events/${requestId}`, `GET /api/events/${requestId}/assignments`,
-          'GET /api/events/coordinators', `GET /api/events/${requestId}/clarifications`,
+          `GET /api/events/${requestId}/clarifications`,
           `GET /api/events/${requestId}/history`];
     await expect.poll(() => [...fixture.eventCalls].sort()).toEqual(expectedReads.sort());
-    if (path === `/reviews/${requestId}`) await expect(page.getByRole('radio')).toHaveCount(2);
+    if (path === `/reviews/${requestId}`) {
+      await expect(page.getByRole('radio')).toHaveCount(2);
+      await expect(page.getByRole('combobox', { name: 'Hand over to' })).toHaveCount(0);
+      await expect(page.getByRole('button', { name: /^(Confirm event|Cancel event|Mark completed)$/i })).toHaveCount(0);
+    }
 
     await page.getByRole('button', { name: 'Sign out', exact: true }).click();
     await expect(page.getByRole('heading', { name: 'Sign in required', level: 1 })).toBeVisible();

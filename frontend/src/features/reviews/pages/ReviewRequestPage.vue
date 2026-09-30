@@ -50,7 +50,7 @@ async function refreshQuietly() {
     const detail = await fetchReviewRequestDetail(eventRequestId.value, current?.signal);
     if (!current?.signal.aborted && state.value.status === 'ready') state.value = { status: 'ready', detail };
   } catch {
-    // Handing a request to another coordinator removes access; show the unavailable message.
+    // Refresh failures may reflect expired access; show the current unavailable message.
     if (!current?.signal.aborted) await load();
   }
 }
@@ -140,11 +140,10 @@ onBeforeUnmount(() => {
 
     <EventPlanningPanels
       :event-request-id="state.detail.id"
+      :current-coordinator-id="state.detail.coordinatorId"
       :status="state.detail.status"
       viewer-role="EVENT_COORDINATOR"
       :is-owner="false"
-      :starts-at="state.detail.startsAt"
-      :ends-at="state.detail.endsAt"
       @changed="refreshQuietly"
     />
   </template>
