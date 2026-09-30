@@ -25,6 +25,10 @@ Asynchronous update, not a Daily Scrum: Jira criteria were refined, KAN-56–KAN
 
 Later backlog refinement on the same date added KAN-65 reassignment, KAN-66 ordinary planning edits and KAN-67 registration viewing as unestimated future stories. Existing registration, change-review, equipment and notification criteria were consolidated. KAN-21 was archived as a duplicate, and optional KAN-19/KAN-22/KAN-23 were archived with history retained. The sprint commitment remains unchanged. See the [product backlog](../../requirements/product-backlog.md) for scope and the archive register; this is documentation/backlog work, not a feature completion or test result.
 
+### 1 October re-verification: S1-DEF-01 and S1-DEF-03 fixed
+
+Asynchronous update, not a Daily Scrum: re-checked the two Sprint 1 carry-over defects assigned to Kai Jie against current `main` (`dff42ed`, after the 26 September KAN-24 revert). Both S1-DEF-01 (KAN-57, registration fields on a reopened draft) and S1-DEF-03 (KAN-58, submitting from the saved-draft edit path) are already fixed — merged as PR #17/#18 on 20 September, before this daily log existed. `npm run check` passes on current main (typecheck, 190 frontend + 372 backend tests, both builds); the two affected test files (23 tests) also pass in isolation. This is automated-fixture coverage only, not the hosted S2-T19/S2-T21 walkthrough. See the [dated record](../../requirements/assumptions-and-questions.md#1-october-2026--s1-def-01-and-s1-def-03-repaired-and-re-verified) and updated rows in [traceability.csv](../../requirements/traceability.csv) and [test-evidence.md](../../testing/test-evidence.md). S1-DEF-02 (KAN-33, Irfan) and S1-DEF-04 (KAN-6 validation, Kai Jie) are untouched by this update and remain open.
+
 ## Impediments and adaptations
 
 | Reference | Current planning position | Next inspection | Action owner / resolution |
