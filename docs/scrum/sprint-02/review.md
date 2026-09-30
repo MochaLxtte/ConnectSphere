@@ -17,7 +17,7 @@ Before the review, record the reviewed commit/build and environment, prepare syn
 | Final board and burndown export | To capture at closure |
 | Meeting/feedback evidence | To capture at the actual review |
 
-KAN-29 preparation now has [local automated evidence, AUTO-20260928-01](../../testing/test-evidence.md#28-september-kan-29-automatic-assignment) and a [manual check guide](../../testing/kan29-manual-checks.md). This is not a completed review or hosted acceptance result. Coordinate migration 007 with Arvin, confirm provisioned-coordinator availability and record policy acceptance before the demo. Controlled load/no-eligible tests must use an isolated project or a coordinated window. Venue services/UI/tests were removed from `main` on 26 September; the venue demos remain planned scenarios requiring implementation, not available features inferred from the original inspection.
+KAN-29 preparation now has [local automated evidence, AUTO-20260928-01](../../testing/test-evidence.md#28-september-kan-29-automatic-assignment) and a [manual check guide](../../testing/kan29-manual-checks.md). This is not a completed review or hosted acceptance result. Coordinate migration 006 with Arvin, confirm provisioned-coordinator availability and record policy acceptance before the demo. Controlled load/no-eligible tests must use an isolated project or a coordinated window. Venue services/UI/tests were removed from `main` on 26 September; the venue demos remain planned scenarios requiring implementation, not available features inferred from the original inspection.
 
 ## Demo run sheet
 

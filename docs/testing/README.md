@@ -4,7 +4,7 @@ The suite covers application wiring, authentication/session handling, request cr
 
 Infrastructure database checks live in [database.integration.test.ts](../../database/tests/database.integration.test.ts) and [core-schema.integration.test.ts](../../database/tests/core-schema.integration.test.ts); feature integration suites are grouped under `database/tests/` by module. Browser checks live in `tests/e2e/`, including [review-decision.spec.ts](../../tests/e2e/review-decision.spec.ts). The [test evidence register](test-evidence.md) records actual runs, manual observations and remaining gaps.
 
-For KAN-29, use the [automatic-assignment integration tests](../../database/tests/events/automatic-assignment.integration.test.ts) and [manual checks](kan29-manual-checks.md). Prepare migration 007 and explicitly available, provisioned coordinator profiles before hosted testing. Manual checks remain pending until their actual results are recorded.
+For KAN-29, use the [automatic-assignment integration tests](../../database/tests/events/automatic-assignment.integration.test.ts) and [manual checks](kan29-manual-checks.md). Prepare migration 006 and explicitly available, provisioned coordinator profiles before hosted testing. Manual checks remain pending until their actual results are recorded.
 
 Run commands from the repository root using the setup in the [main README](../../README.md):
 

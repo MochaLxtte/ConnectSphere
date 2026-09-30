@@ -1,6 +1,6 @@
 # ConnectSphere — Database Diagram
 
-Entity-relationship diagram generated from the Supabase `public` schema.
+Entity-relationship diagram generated from the Supabase `public` schema. The existing `app_user_identities` table is an unused legacy Firebase artifact, not an active authentication dependency. Its creation migration was retired on 30 September; new databases omit it, while existing data is preserved. This hosted-schema snapshot predates KAN-29 migration 006; see the [current schema changes](../database/migrations/006_automatic_coordinator_assignment.sql) for coordinator availability and assignment provenance.
 
 > Utility tables `schema_migrations` and `scaffold_metadata` are omitted (no relationships).
 

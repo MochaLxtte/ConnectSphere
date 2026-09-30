@@ -22,7 +22,7 @@ export async function seed(connectionString: string): Promise<void> {
       ('20000000-0000-4000-8000-000000000001', '10000000-0000-4000-8000-000000000001',
       'Sample planning workshop', 'Incomplete draft for local development. No customer data.')
       ON CONFLICT DO NOTHING`);
-    // Catalogue tables arrive with migration 005; an older schema keeps its original seed.
+    // Catalogue tables arrive with migration 004; an older schema keeps its original seed.
     const catalogue = await client.query<{ ready: boolean }>(
       "SELECT to_regclass('venues') IS NOT NULL AS ready",
     );

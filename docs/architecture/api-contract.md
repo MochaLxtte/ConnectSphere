@@ -35,7 +35,7 @@ The normal server mounts Supabase authentication, event listing, draft creation,
 | Ernest, KAN-31 / KAN-4 | `POST /api/events` | Save an incomplete draft for the authenticated organiser | Implemented 19 September; hosted acceptance outstanding |
 | Kai Jie / Irfan / Tristan, KAN-34 / KAN-33 / KAN-16 | `GET /api/events/:id` | Shared details, status and recorded decision | Implemented; coordinator and organiser detail pages connected |
 | Kai Jie, KAN-34 | `PATCH /api/events/:id` | Update an owned draft | Implemented |
-| Kai Jie / Tristan, KAN-6 / KAN-29 | `POST /api/events/:id/submit` | Validate and atomically submit with an automatically selected coordinator | Implemented on this branch; migration 007 and hosted verification required |
+| Kai Jie / Tristan, KAN-6 / KAN-29 | `POST /api/events/:id/submit` | Validate and atomically submit with an automatically selected coordinator | Implemented on this branch; migration 006 and hosted verification required |
 | Irfan / Kai Jie / Tristan, KAN-33 / KAN-34 / KAN-16 | `GET /api/events` | Assigned coordinator queue, or the organiser's own drafts; organiser `?scope=all` includes all owned statuses; pagination pending | Implemented; organiser list page connected |
 | Irfan, KAN-27 | `POST /api/events/:id/clarifications` | Request clarification and make it visible to the organiser | Implemented 19 September; hosted acceptance outstanding |
 | Tristan, KAN-36 | `POST /api/events/:id/reviews` | Record an approval/rejection and update status atomically | Implemented |
@@ -48,7 +48,7 @@ Supabase Auth handles sign-in. Express verifies the access token and resolves `a
 
 ## KAN-29 automatic assignment on submission
 
-**Branch implementation, 28 September 2026:** `POST /api/events/:id/submit` retains its owned-draft, completeness and verified-organiser checks. It now allocates one coordinator as part of the submission transaction. This is not a hosted acceptance record: migration [007](../../database/migrations/007_automatic_coordinator_assignment.sql) has not been applied to the shared Supabase project by this work. Coordinate its rollout with Arvin through the [database setup](../../database/README.md#kan-29-automatic-assignment-setup).
+**Branch implementation, 28 September 2026:** `POST /api/events/:id/submit` retains its owned-draft, completeness and verified-organiser checks. It now allocates one coordinator as part of the submission transaction. This is not a hosted acceptance record: migration [006](../../database/migrations/006_automatic_coordinator_assignment.sql) has not been applied to the shared Supabase project by this work. Coordinate its rollout with Arvin through the [database setup](../../database/README.md#kan-29-automatic-assignment-setup).
 
 An eligible candidate has application role `EVENT_COORDINATOR` and `app_users.coordinator_available = true`. The new availability flag defaults to `false`; opt in only provisioned coordinator profiles that are ready for work. Fictional seed accounts remain opted out. Selection counts requests in `SUBMITTED`, `UNDER_REVIEW`, `CLARIFICATION_REQUESTED`, `APPROVED` and `CONFIRMED`, chooses the smallest count, and breaks ties using ascending `app_users.id` UUID order. Availability is independent of current login state and does not revoke existing assignments when turned off.
 
@@ -184,7 +184,7 @@ but keeps its list query and status filter separate from the shared request-deta
 
 **KAN-16 list extension, 17 September:** An organiser can request
 `GET /api/events?scope=all` to retrieve their requests across all stored statuses
-(six at the time; nine since migration 005), including submitted and decided requests. `scope=drafts` explicitly selects the existing
+(six at the time; nine since migration 004), including submitted and decided requests. `scope=drafts` explicitly selects the existing
 draft-only list; omitting `scope` preserves that behaviour. Scope is a single, case-sensitive
 value: empty, unknown or repeated values return `400 INVALID_EVENT_LIST_SCOPE`.
 Coordinators must omit `scope`; supplying it returns the same 400 and does not expand
@@ -301,7 +301,7 @@ Mount order matters: `app.ts` registers the assignment, clarification and status
 | `PUT /api/events/:id/coordinator` | EC, unassigned request in one of the four queue statuses above | `200` `eventRequestId`, `assignmentId`, `coordinatorId`, `previousCoordinatorId`. Body `{ coordinatorId, note? }`. Sets the initial `event_requests.coordinator_id` and assignment history together; `previousCoordinatorId` is null. Does not replace existing assignment or generate notifications | `400 INVALID_EVENT_REQUEST_ID`, `INVALID_INPUT`, `INVALID_ASSIGNMENT_INPUT`, `INVALID_COORDINATOR`; `403 ACTION_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND` (missing, draft, or assigned to another coordinator); `409 ASSIGNMENT_NOT_ALLOWED`, `COORDINATOR_ALREADY_ASSIGNED`, `REASSIGNMENT_NOT_AVAILABLE`, `ASSIGNMENT_HISTORY_CONFLICT` |
 | `GET /api/events/:id/assignments` | EO owner, assigned EC, or any EC while the non-draft request is unassigned | `200` items: `id`, `coordinatorId`, `coordinatorName`, `assignmentMethod`, `assignedById`, `assignedByName`, `note`, `assignedAt`, `unassignedAt`, newest first | `400 INVALID_EVENT_REQUEST_ID`; `403 ACTION_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND` |
 
-With migration 007, `assignmentMethod` is `AUTOMATIC` or `MANUAL`. Automatic records have null `assignedById` and `assignedByName`; the UI displays "Assigned automatically on ..." rather than attributing the choice to the organiser or coordinator. Manual records retain their acting staff member and existing display. Existing history defaults to `MANUAL`; the migration does not rewrite its actor or change the current coordinator. The owning organiser sees the history read-only, and assigned coordinators can read it. Assignment controls appear only for initial assignment of unassigned requests; the API also refuses replacement.
+With migration 006, `assignmentMethod` is `AUTOMATIC` or `MANUAL`. Automatic records have null `assignedById` and `assignedByName`; the UI displays "Assigned automatically on ..." rather than attributing the choice to the organiser or coordinator. Manual records retain their acting staff member and existing display. Existing history defaults to `MANUAL`; the migration does not rewrite its actor or change the current coordinator. The owning organiser sees the history read-only, and assigned coordinators can read it. Assignment controls appear only for initial assignment of unassigned requests; the API also refuses replacement.
 
 ### Events: review start and clarification (CF-04, KAN-27) — `clarification-router.ts`
 
@@ -333,6 +333,6 @@ Client navigation is not access control; every page relies on the API responses 
 
 `EventPlanningPanels.vue` adds the assignment, clarification and read-only status-history panels to both detail pages.
 
-**Earlier scope correction, 26 September 2026:** the venue, equipment, registration, notification and change-request routes recorded here earlier were removed before Sprint 2 so the team builds those stories itself; see the Sprint 2 backlog. Their tables remain in migration 005.
+**Earlier scope correction, 26 September 2026:** the venue, equipment, registration, notification and change-request routes recorded here earlier were removed before Sprint 2 so the team builds those stories itself; see the Sprint 2 backlog. Their tables remain in migration 004.
 
 **Verification:** Backend unit and HTTP-boundary tests live under `backend/test/events/` (`create-draft*.test.ts`, `workflow-support.test.ts`, `workflow-routers.test.ts`). PostgreSQL integration tests live under `database/tests/events/` (`create-draft`, `assignment`, `clarifications`, `status-history`) and `database/tests/core-schema.integration.test.ts`. Component tests sit beside each page and panel under `frontend/src/features/`. They use fixture authentication, API response fixtures or an isolated PostgreSQL test database. No Playwright check or hosted manual check covers these routes yet; record those results in the [test evidence](../testing/test-evidence.md) before claiming acceptance.

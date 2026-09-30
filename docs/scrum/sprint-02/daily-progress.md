@@ -39,6 +39,10 @@ Asynchronous development update, not a Daily Scrum: audited mounted routes, Vue 
 
 The [scope audit](../../requirements/README.md#30-september-sprint-scope-audit) records boundaries; [test evidence](../../testing/test-evidence.md#30-september-sprint-scope-correction) records actual validation. Earlier dated test results remain historical. Next: peer review and hosted checks of the scoped build, then integrate the separate KAN-33 decided-request navigation work.
 
+### 30 September Firebase migration retirement
+
+Retired the unused Firebase setup file from the active migration sequence. Fresh databases use Supabase authentication without creating its legacy identity table; existing tables, data and migration records remain untouched. The runner retains checksum validation for an already-recorded Firebase 003. Renumbered active files to 001-006 without changing their SQL; historical filename aliases prevent rerunning existing changes. This resolves the pending-file collision found during read-only inspection of shared Supabase without modifying hosted history or claiming that KAN-29 migration 006 (formerly 007) has been applied. The 43-point baseline and acceptance records are unchanged. Local checks passed: 602 unit/component tests, 150 integration tests and type checks/builds ([AUTO-20260930-MIGRATION-01](../../testing/test-evidence.md#30-september-firebase-migration-retirement)). See the [retirement decision](../../requirements/assumptions-and-questions.md#30-september-2026---firebase-migration-retirement).
+
 ## Impediments and adaptations
 
 | Reference | Current planning position | Next inspection | Action owner / resolution |
