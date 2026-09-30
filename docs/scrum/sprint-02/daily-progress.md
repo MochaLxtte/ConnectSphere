@@ -33,12 +33,18 @@ Targeted local PostgreSQL checks passed: 29 automatic-assignment, 12 submission 
 
 Next: coordinate schema/history reconciliation and migration 007 with Arvin, enable availability only for provisioned coordinators, review the implementation choices with the team/customer and execute the [manual checks](../../testing/kan29-manual-checks.md). Select a peer reviewer and record CI for the published branch. Venue services/UI/tests were removed from `main` on 26 September (`dff42ed`); earlier venue implementation observations are historical planning context, not current feature availability.
 
+### 30 September repository scope correction
+
+Asynchronous development update, not a Daily Scrum: audited mounted routes, Vue controls, services, seed behavior, tests and documentation against the Sprint 1/2 commitments. Removed later lifecycle actions, coordinator handover and notification writes. Kept initial manual assignment of unassigned requests, automatic assignment, clarification and read-only status history. Preserved all applied migrations, historical database objects and existing data. No shared Supabase change, live Jira transition, new Done points or burndown observation is recorded. Local validation passed: 602 unit/component tests, 141 PostgreSQL integration tests, 32 browser tests and type checks/builds; see [AUTO-20260930-SCOPE-01](../../testing/test-evidence.md#30-september-sprint-scope-correction).
+
+The [scope audit](../../requirements/README.md#30-september-sprint-scope-audit) records boundaries; [test evidence](../../testing/test-evidence.md#30-september-sprint-scope-correction) records actual validation. Earlier dated test results remain historical. Next: peer review and hosted checks of the scoped build, then integrate the separate KAN-33 decided-request navigation work.
+
 ## Impediments and adaptations
 
 | Reference | Current planning position | Next inspection | Action owner / resolution |
 | --- | --- | --- | --- |
 | Scope baseline | 35 new + 8 retained carry-over points = 43; Tristan takes KAN-29 (3) in this plan. Other eight new owners, reviewers and capacity remain pending. The 21 September Jira snapshot retains Kai Jie on KAN-6/KAN-34 and Irfan on KAN-33. | Allocate total work, including repair, integration and review; align Jira after confirming allocation | To agree |
-| S2-Q01/02 | KAN-29 availability field, active statuses, UUID ordering and no-eligible failure are implemented as dated branch choices; team/customer acceptance and hosted rollout remain pending. No new handover policy adopted. | Review documented definitions, then coordinate migration/availability and manual checks | Tristan implementation; Arvin schema coordination; reviewer to agree |
+| S2-Q01/02 | KAN-29 availability field, active statuses, UUID ordering and no-eligible failure are implemented as dated branch choices; team/customer acceptance and hosted rollout remain pending. 30 September scope correction removes handover; initial manual assignment remains. | Review documented definitions, then coordinate migration/availability and manual checks | Tristan implementation; Arvin schema coordination; reviewer to agree |
 | S2-Q03 | Historical venue inspection found broader calendar access; those routes were removed 26 September. Technical Support Staff detail policy still needs clarification for the new implementation. | Implement the agreed UI/API role matrix and tests | To agree |
 | S1-DEF-01–04 | Four carry-over paths require reproduction and regression evidence | Capture route, data, role and build; preserve successful Sprint 1 demo observations | To agree |
 | S2-Q04–07, S2-Q10/11 | Venue interval/status, requirement matching, booking information, rejection reasons and block/catalogue lifecycle policies need refinement | Agree the remaining rules while retaining Jira's existing suitability checks | To agree |

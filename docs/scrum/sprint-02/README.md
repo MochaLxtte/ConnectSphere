@@ -10,6 +10,8 @@ Sprint 2 has been initialized in Jira. The confirmed baseline is **12 PBIs and 4
 
 Tristan merged the team branches into `main`, and Sprint 1 was closed in Jira. The venue services, UI and their tests described in the original planning inspection were removed from `main` on 26 September (`dff42ed`); their migration tables remain. Those earlier inspection notes are historical planning context. Manual assignment remains implemented; on 28 September Tristan added KAN-29 automatic initial assignment on a feature branch. Neither implementation presence nor a merge establishes acceptance of a Sprint 2 story.
 
+**30 September scope correction:** the [repository audit](../../requirements/README.md#30-september-sprint-scope-audit) removes final confirmation/cancellation/completion, notification generation and coordinator handover from the current application. Initial manual assignment of an unassigned request, automatic allocation, clarification and read-only status history remain. Applied database history and integrity guards are preserved. This supersedes earlier implementation statements that retained handover; KAN-65 remains future work. The 43-point commitment, acceptance criteria and historical results are unchanged.
+
 ## Sprint records
 
 | Document | Purpose | Update when |
@@ -32,7 +34,7 @@ Use the shared [Definition of Done](../definition-of-done.md), [requirements](..
 | New Supporting story | KAN-55: 3 points |
 | Carry-over | KAN-6, KAN-33 and KAN-34 retain 3, 2 and 3 points respectively; 8 points included in the 43-point baseline |
 | Calendar access decision | Internal users: Event Coordinators, Venue Staff and Technical Support Staff |
-| Manual assignment decision | Coordinators may assign a request to themselves or another coordinator; handover authority for an already-assigned request still needs clarification |
+| Manual assignment decision | Coordinators may initially assign an unassigned request to themselves or another coordinator; replacing an existing coordinator is deferred to future KAN-65 |
 | Automatic assignment | Branch choices implemented 28 September: `coordinator_available` defaults false with explicit opt-in; count `SUBMITTED`, `UNDER_REVIEW`, `CLARIFICATION_REQUESTED`, `APPROVED`, `CONFIRMED`; choose least load then ascending profile UUID. No eligible coordinator returns 409 with the draft unchanged. Team/customer acceptance of these details remains pending. |
 | Team and allocation | Ryan, Ernest, Kai Jie, Irfan, Tristan and Arvin. Tristan owns KAN-29 (3 points) in the repository plan; no Jira assignee change or live recheck is claimed. The 21 September Jira snapshot retains Kai Jie for KAN-6/KAN-34 and Irfan for KAN-33. Other eight new-story owners and all review responsibilities remain to agree. |
 | Capacity and Scrum roles | Arvin is Scrum Master and Irfan is Product Owner; both also work as developers. Individual development hours and time for Scrum responsibilities remain to be recorded. |
@@ -48,6 +50,6 @@ The [21 September Jira update](../../requirements/assumptions-and-questions.md#2
 
 1. Record available development hours and meeting details before judging the feasibility of the 43-point baseline.
 2. Agree story owners/reviewers and reserve time for carry-over, integration, review and evidence capture.
-3. Review the implemented automatic-assignment choices, resolve remaining venue/handover policy questions, and record accepted decisions and allocation in Jira.
+3. Review the implemented automatic-assignment choices, resolve remaining venue policy questions, and record accepted decisions and allocation in Jira.
 4. Reproduce the four carry-over defects and inspect existing implementation against the new story criteria.
 5. Capture the actual Jira baseline, meeting records and executed acceptance evidence as they become available.

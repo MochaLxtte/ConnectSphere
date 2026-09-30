@@ -69,7 +69,7 @@ Submission locks the event, then coordinates with other automatic and manual all
 
 `NO_AVAILABLE_COORDINATOR` uses the message: "No event coordinator is currently available. Your request is still a draft. Please try again later." The create/edit form and saved-draft detail page show this explanation, retain draft editing and allow retry. `DRAFT_ALREADY_ASSIGNED` displays its specific explanation and retains editing; the existing assignment must be checked before submission can succeed. The form saves draft changes before calling submit, so a rolled-back submission does not undo an earlier successful draft save. Clients cannot choose the coordinator through submission input.
 
-The [manual check guide](../testing/kan29-manual-checks.md) covers account access, workload selection, recovery and retained manual handover. Previously submitted requests are not backfilled. Manual assignment remains a separate operation with its existing target list and permissions; the automatic availability flag does not restrict manual targets.
+The [manual check guide](../testing/kan29-manual-checks.md) covers account access, workload selection, recovery and refusal of out-of-scope reassignment. Previously submitted requests are not backfilled. Manual initial assignment remains a separate operation only for unassigned requests; the automatic availability flag does not restrict manual targets.
 
 ## Shared request detail: backend, coordinator and organiser pages connected
 
@@ -141,7 +141,7 @@ Creation and submission share the event API: `/events/new` uses `EventRequestFor
 | Coordinator viewing another current Sprint 1 status | Allow only when the request's `coordinatorId` matches their verified `app_users.id`. This includes `APPROVED` and `REJECTED`. |
 | Coordinator who fails the visibility policy, or a missing request | Return the same `404 EVENT_REQUEST_NOT_FOUND` response. |
 
-Viewing permission and decision permission are separate checks. A successful detail read does not establish permission to edit or approve/reject. Role alone does not grant coordinator access: unassigned requests and requests assigned to another coordinator are unavailable. `event_requests.coordinator_id` references `app_users.id`, not the Supabase Auth UUID. Reassignment changes access on subsequent requests; the decision write rechecks assignment against the locked event row.
+Viewing permission and decision permission are separate checks. A successful detail read does not establish permission to edit or approve/reject. Role alone does not grant coordinator access: unassigned requests and requests assigned to another coordinator are unavailable. `event_requests.coordinator_id` references `app_users.id`, not the Supabase Auth UUID. Any externally reconciled coordinator change affects subsequent access; the decision write rechecks assignment against the locked event row. The current application does not expose reassignment.
 
 An approved or rejected request leaves the pending-review queue but remains readable by its organiser and currently assigned coordinator. Refreshing after a decision should show the recorded outcome, without offering another initial decision. The queue's status filter must not be reused as the detail-access rule.
 
@@ -271,7 +271,7 @@ The existing malformed-JSON and payload-size responses also apply. Responses fro
 
 ## First-release routes (CF-02 to CF-07)
 
-**Status, 19 September 2026:** The routes in this section are implemented on `feat/KAN-24-core-feature-schema` and mounted by `createRuntimeApp` through the `workspace` dependencies (`pool` plus the same `authenticateRequest` session verifier as the Sprint 1 routes). Unit, component and PostgreSQL integration tests pass locally with fixture or locally signed identities. They have **not** been verified against hosted Supabase accounts, have not been peer reviewed, and do not mark any story Done. The business rules are team implementation assumptions for Q-02 and Q-04 to Q-13, recorded in the [19 September decision record](../requirements/assumptions-and-questions.md); the customer questions stay open. Venue Staff, Technical Support Staff and Attendee accounts must be provisioned in Supabase Auth and linked through `app_users.supabase_user_id` before those roles can sign in.
+**Current scope, 30 September 2026:** the routes below support Sprint 1 and Sprint 2. The earlier broad implementation was reduced on 26 September and again by the [30 September scope audit](../requirements/README.md#30-september-sprint-scope-audit). Confirmation, cancellation, completion and notification writes are removed. Manual assignment only sets an initial coordinator on an unassigned non-draft request; KAN-65 reassignment is deferred. Historical descriptions and test results remain dated evidence, not a list of current routes.
 
 Conventions shared by every route below:
 
@@ -280,9 +280,9 @@ Conventions shared by every route below:
 - Request bodies reject unknown fields. Timestamps are ISO 8601; intervals are half-open `[startsAt, endsAt)`, so back-to-back periods do not overlap.
 - An event, booking or request the caller has no relationship to returns the same 404 as a missing one. "Owner" means the organiser whose `app_users.id` equals `organiser_id`; "assigned coordinator" means `coordinator_id` equals the caller's `app_users.id`. Coordinators never see drafts.
 - Role abbreviations: EO Event Organiser, EC Event Coordinator, VS Venue Staff, TS Technical Support Staff, AT Attendee.
-- List responses are `{ "items": [...] }` unless stated. Notifications are written in the same transaction as the action they describe and never to the acting user.
+- List responses are `{ "items": [...] }` unless stated. Retained workflows do not generate notifications; delivery is future KAN-64 work.
 
-Mount order matters: `app.ts` registers the assignment, clarification, change-request and lifecycle routers on `/api/events` before the shared detail router, so `/unassigned` and `/coordinators` are not read as event IDs.
+Mount order matters: `app.ts` registers the assignment, clarification and status-history routers on `/api/events` before the shared detail router, so `/unassigned` and `/coordinators` are not read as event IDs.
 
 ### Events: draft creation (CF-02, CF-03) — `submitted-requests-router.ts`
 
@@ -296,32 +296,29 @@ Mount order matters: `app.ts` registers the assignment, clarification, change-re
 
 | Method / route | Roles | Success | Errors |
 | --- | --- | --- | --- |
-| `GET /api/events/unassigned` | EC | `200` items: `id`, `name`, `status`, `organiserName`, `startsAt`, `endsAt`, `expectedAttendance`, `updatedAt`; unassigned requests excluding `DRAFT`, `REJECTED`, `CANCELLED`, `COMPLETED`, oldest update first | `403 ACTION_FORBIDDEN` |
+| `GET /api/events/unassigned` | EC | `200` items: `id`, `name`, `status`, `organiserName`, `startsAt`, `endsAt`, `expectedAttendance`, `updatedAt`; unassigned requests in `SUBMITTED`, `UNDER_REVIEW`, `CLARIFICATION_REQUESTED` or `APPROVED`, oldest update first | `403 ACTION_FORBIDDEN` |
 | `GET /api/events/coordinators` | EC | `200` items: `id`, `displayName`, `email` of every Event Coordinator | `403 ACTION_FORBIDDEN` |
-| `PUT /api/events/:id/coordinator` | EC (any coordinator when unassigned; otherwise only the currently assigned coordinator) | `200` `eventRequestId`, `assignmentId`, `coordinatorId`, `previousCoordinatorId`. Body `{ coordinatorId, note? }`. Updates `event_requests.coordinator_id` and the assignment history together; notifies the new coordinator, the previous coordinator and the organiser | `400 INVALID_EVENT_REQUEST_ID`, `INVALID_INPUT`, `INVALID_ASSIGNMENT_INPUT`, `INVALID_COORDINATOR`; `403 ACTION_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND` (missing, draft, or assigned to another coordinator); `409 ASSIGNMENT_NOT_ALLOWED`, `COORDINATOR_ALREADY_ASSIGNED` |
+| `PUT /api/events/:id/coordinator` | EC, unassigned request in one of the four queue statuses above | `200` `eventRequestId`, `assignmentId`, `coordinatorId`, `previousCoordinatorId`. Body `{ coordinatorId, note? }`. Sets the initial `event_requests.coordinator_id` and assignment history together; `previousCoordinatorId` is null. Does not replace existing assignment or generate notifications | `400 INVALID_EVENT_REQUEST_ID`, `INVALID_INPUT`, `INVALID_ASSIGNMENT_INPUT`, `INVALID_COORDINATOR`; `403 ACTION_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND` (missing, draft, or assigned to another coordinator); `409 ASSIGNMENT_NOT_ALLOWED`, `COORDINATOR_ALREADY_ASSIGNED`, `REASSIGNMENT_NOT_AVAILABLE`, `ASSIGNMENT_HISTORY_CONFLICT` |
 | `GET /api/events/:id/assignments` | EO owner, assigned EC, or any EC while the non-draft request is unassigned | `200` items: `id`, `coordinatorId`, `coordinatorName`, `assignmentMethod`, `assignedById`, `assignedByName`, `note`, `assignedAt`, `unassignedAt`, newest first | `400 INVALID_EVENT_REQUEST_ID`; `403 ACTION_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND` |
 
-With migration 007, `assignmentMethod` is `AUTOMATIC` or `MANUAL`. Automatic records have null `assignedById` and `assignedByName`; the UI displays "Assigned automatically on ..." rather than attributing the choice to the organiser or coordinator. Manual records retain their acting staff member and existing display. Existing history defaults to `MANUAL`; the migration does not rewrite its actor or change the current coordinator. The owning organiser sees the history read-only, while the currently assigned coordinator retains the existing handover controls.
+With migration 007, `assignmentMethod` is `AUTOMATIC` or `MANUAL`. Automatic records have null `assignedById` and `assignedByName`; the UI displays "Assigned automatically on ..." rather than attributing the choice to the organiser or coordinator. Manual records retain their acting staff member and existing display. Existing history defaults to `MANUAL`; the migration does not rewrite its actor or change the current coordinator. The owning organiser sees the history read-only, and assigned coordinators can read it. Assignment controls appear only for initial assignment of unassigned requests; the API also refuses replacement.
 
 ### Events: review start and clarification (CF-04, KAN-27) — `clarification-router.ts`
 
 | Method / route | Roles | Success | Errors |
 | --- | --- | --- | --- |
-| `POST /api/events/:id/start-review` | Assigned EC | `200` `{ eventRequestId, status: "UNDER_REVIEW" }`; `SUBMITTED` → `UNDER_REVIEW`; notifies the organiser | `400 INVALID_EVENT_REQUEST_ID`; `403 ACTION_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND`; `409 REVIEW_NOT_STARTABLE` |
+| `POST /api/events/:id/start-review` | Assigned EC | `200` `{ eventRequestId, status: "UNDER_REVIEW" }`; `SUBMITTED` → `UNDER_REVIEW`; the organiser reads the clarification on the request | `400 INVALID_EVENT_REQUEST_ID`; `403 ACTION_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND`; `409 REVIEW_NOT_STARTABLE` |
 | `GET /api/events/:id/clarifications` | EO owner, assigned EC | `200` items: `id`, `eventRequestId`, `requestedById`, `requestedByName`, `message`, `response`, `createdAt`, `respondedAt`, oldest first | `400 INVALID_EVENT_REQUEST_ID`; `403 ACTION_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND` |
-| `POST /api/events/:id/clarifications` | Assigned EC | `201` `{ clarificationId, eventRequestId, status: "CLARIFICATION_REQUESTED" }`. Body `{ message }` (non-empty, at most 2000 characters). Allowed from `SUBMITTED` or `UNDER_REVIEW`; notifies the organiser | `400 INVALID_EVENT_REQUEST_ID`, `INVALID_INPUT`; `403 ACTION_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND`; `409 CLARIFICATION_NOT_ALLOWED` |
-| `POST /api/events/:id/clarifications/:clarificationId/response` | EO owner | `200` `{ clarificationId, eventRequestId, status }`. Body `{ response }`. `status` is `SUBMITTED` once every open question is answered, otherwise `CLARIFICATION_REQUESTED`; notifies the assigned coordinator | `400 INVALID_EVENT_REQUEST_ID`, `INVALID_CLARIFICATION_ID`, `INVALID_INPUT`; `403 ACTION_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND`, `CLARIFICATION_NOT_FOUND`; `409 CLARIFICATION_ALREADY_ANSWERED`, `CLARIFICATION_NOT_AWAITED` |
+| `POST /api/events/:id/clarifications` | Assigned EC | `201` `{ clarificationId, eventRequestId, status: "CLARIFICATION_REQUESTED" }`. Body `{ message }` (non-empty, at most 2000 characters). Allowed from `SUBMITTED` or `UNDER_REVIEW`; the organiser reads the clarification on the request | `400 INVALID_EVENT_REQUEST_ID`, `INVALID_INPUT`; `403 ACTION_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND`; `409 CLARIFICATION_NOT_ALLOWED` |
+| `POST /api/events/:id/clarifications/:clarificationId/response` | EO owner | `200` `{ clarificationId, eventRequestId, status }`. Body `{ response }`. `status` is `SUBMITTED` once every open question is answered, otherwise `CLARIFICATION_REQUESTED`; the assigned coordinator reads the saved response on the request | `400 INVALID_EVENT_REQUEST_ID`, `INVALID_CLARIFICATION_ID`, `INVALID_INPUT`; `403 ACTION_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND`, `CLARIFICATION_NOT_FOUND`; `409 CLARIFICATION_ALREADY_ANSWERED`, `CLARIFICATION_NOT_AWAITED` |
 
-### Events: lifecycle and status history (CF-06) — `lifecycle-router.ts`
+### Events: status history (KAN-16) ? `status-history-router.ts`
 
 | Method / route | Roles | Success | Errors |
 | --- | --- | --- | --- |
-| `POST /api/events/:id/confirm` | Assigned EC | `200` `{ eventRequestId, status: "CONFIRMED" }`; `APPROVED` → `CONFIRMED`; needs at least one `APPROVED` venue booking and no equipment request still `REQUESTED` | `400 INVALID_EVENT_REQUEST_ID`; `403 ACTION_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND`; `409 EVENT_NOT_CONFIRMABLE`, `VENUE_BOOKING_REQUIRED`, `EQUIPMENT_REQUESTS_PENDING` |
-| `POST /api/events/:id/cancel` | EO owner, assigned EC | `200` `{ eventRequestId, status: "CANCELLED", cancelledVenueBookings, cancelledEquipmentRequests, notifiedAttendees }`. Body `{ reason }` (required). Cancels `PENDING`/`APPROVED` bookings and `REQUESTED`/`RESERVED` equipment requests; the reason is sent to the organiser/coordinator only, registered attendees are told the event is off | `400 INVALID_EVENT_REQUEST_ID`, `INVALID_INPUT`; `403 ACTION_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND`; `409 EVENT_NOT_CANCELLABLE` (`DRAFT`, `REJECTED`, `CANCELLED`, `COMPLETED`) |
-| `POST /api/events/:id/complete` | Assigned EC | `200` `{ eventRequestId, status: "COMPLETED" }`; `CONFIRMED` → `COMPLETED` after `ends_at` has passed by the database clock | `400 INVALID_EVENT_REQUEST_ID`; `403 ACTION_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND`; `409 EVENT_NOT_COMPLETABLE`, `EVENT_NOT_ENDED` |
-| `GET /api/events/:id/history` | EO owner, assigned EC | `200` items: `id`, `fromStatus`, `toStatus`, `changedById`, `changedByName`, `createdAt`, oldest first; rows come from the `event_status_history` trigger | `400 INVALID_EVENT_REQUEST_ID`; `403 ACTION_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND` |
+| `GET /api/events/:id/history` | EO owner, assigned EC | `200` items: `id`, `fromStatus`, `toStatus`, `changedById`, `changedByName`, `createdAt`, oldest first; rows come from the retained status-history trigger | `400 INVALID_EVENT_REQUEST_ID`; `403 ACTION_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND` |
 
-The schema has no cancellation-reason column; the reason travels only in the notifications.
+`POST /api/events/:id/confirm`, `/cancel` and `/complete` are not mounted and return `404 NOT_FOUND`. Existing later-status records remain readable; their presence does not enable those actions. Equipment, registration, change-request and notification application endpoints are also absent. Venue routes will be added under their committed Sprint 2 stories.
 
 ### Frontend routes
 
@@ -334,8 +331,8 @@ Client navigation is not access control; every page relies on the API responses 
 | `/reviews`, `/reviews/unassigned` | Review queue; unassigned requests | EC after session resolution |
 | `/reviews/:id` | Coordinator review with the planning panels | Linked from the queue |
 
-`EventPlanningPanels.vue` adds the assignment, clarification and lifecycle panels to both detail pages.
+`EventPlanningPanels.vue` adds the assignment, clarification and read-only status-history panels to both detail pages.
 
-**Scope, 26 September 2026:** the venue, equipment, registration, notification and change-request routes recorded here earlier were removed before Sprint 2 so the team builds those stories itself; see the Sprint 2 backlog. Their tables remain in migration 005.
+**Earlier scope correction, 26 September 2026:** the venue, equipment, registration, notification and change-request routes recorded here earlier were removed before Sprint 2 so the team builds those stories itself; see the Sprint 2 backlog. Their tables remain in migration 005.
 
-**Verification:** Backend unit and HTTP-boundary tests live under `backend/test/events/` (`create-draft*.test.ts`, `workflow-support.test.ts`, `workflow-routers.test.ts`). PostgreSQL integration tests live under `database/tests/events/` (`create-draft`, `assignment`, `clarifications`, `lifecycle`) and `database/tests/core-schema.integration.test.ts`. Component tests sit beside each page and panel under `frontend/src/features/`. They use fixture authentication, API response fixtures or an isolated PostgreSQL test database. No Playwright check or hosted manual check covers these routes yet; record those results in the [test evidence](../testing/test-evidence.md) before claiming acceptance.
+**Verification:** Backend unit and HTTP-boundary tests live under `backend/test/events/` (`create-draft*.test.ts`, `workflow-support.test.ts`, `workflow-routers.test.ts`). PostgreSQL integration tests live under `database/tests/events/` (`create-draft`, `assignment`, `clarifications`, `status-history`) and `database/tests/core-schema.integration.test.ts`. Component tests sit beside each page and panel under `frontend/src/features/`. They use fixture authentication, API response fixtures or an isolated PostgreSQL test database. No Playwright check or hosted manual check covers these routes yet; record those results in the [test evidence](../testing/test-evidence.md) before claiming acceptance.

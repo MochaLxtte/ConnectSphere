@@ -779,3 +779,11 @@ Tristan is implementing automatic initial assignment in Sprint 2. The agreed sel
 | Scope | Existing manual handover permissions stay unchanged. KAN-65 reassignment acceptance and venue workflows are separate; no removed feature is restored by KAN-29. |
 
 Migration 007 is checked in for reproducible local/CI databases. Applying it and configuring eligible accounts in the shared Supabase project require the normal schema coordination with Arvin. No hosted schema change, Jira transition, peer acceptance or hosted manual pass is implied. See the [manual test guide](../testing/kan29-manual-checks.md).
+
+## 30 September 2026 - Sprint 1 and Sprint 2 application boundary
+
+Restrict the current application to the selected Sprint 1 and Sprint 2 stories. The earlier 28 September retention of manual handover is superseded: KAN-65 replacement of an existing coordinator remains future work. The Sprint 2 meeting's initial manual assignment to self/another coordinator remains available for unassigned requests in Submitted, Under review, Clarification requested or Approved. Automatic KAN-29 allocation and its recorded selection rules are unchanged.
+
+Remove KAN-61 confirmation, KAN-62 cancellation, KAN-10 completion and KAN-64 notification generation from application services, routes and controls. Preserve KAN-16 read-only status/history, KAN-27 clarification and its reply/review-start path, request registration fields needed by the selected draft stories, and existing status values for compatibility.
+
+Preserve applied database history, tables, triggers, constraints and stored data. Do not disable integrity protection or rewrite migrations to imitate a new database. Stop creating future equipment samples in new seed runs. Historical migration tests verify compatibility, not delivery of future application workflows. The [scope audit](README.md#30-september-sprint-scope-audit) and [test evidence](../testing/test-evidence.md#30-september-sprint-scope-correction) distinguish retained foundations, removed actions and verification. No changes to shared Supabase or Jira, sprint points, past review outcomes or future product-backlog criteria are implied.
