@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { parseAssignmentInput } from '../../src/modules/events/assignment.js';
 import {
-  othersThan, parseObjectBody, relationTo, requiredText, requireRelation,
+  parseObjectBody, relationTo, requiredText, requireRelation,
   type LockedEventRequest, type WorkflowActor,
 } from '../../src/modules/events/workflow-support.js';
 
@@ -9,8 +9,7 @@ const organiser: WorkflowActor = { id: '10000000-0000-4000-8000-000000000001', r
 const coordinator: WorkflowActor = { id: '20000000-0000-4000-8000-000000000001', role: 'EVENT_COORDINATOR' };
 const event: LockedEventRequest = {
   id: '30000000-0000-4000-8000-000000000001', organiserId: organiser.id, coordinatorId: coordinator.id,
-  status: 'APPROVED', name: 'Open day', startsAt: new Date('2026-10-01T02:00:00Z'),
-  endsAt: new Date('2026-10-01T06:00:00Z'), expectedAttendance: 80, hasEnded: false,
+  status: 'APPROVED',
 };
 
 describe('workflow access rules', () => {
@@ -33,10 +32,6 @@ describe('workflow access rules', () => {
     expect(requireRelation(organiser, { ...event, status: 'DRAFT' }, ['OWNER'])).toBe('OWNER');
   });
 
-  it('never lists the actor as a notification recipient', () => {
-    expect(othersThan(coordinator.id, organiser.id, coordinator.id, null, organiser.id, undefined))
-      .toEqual([organiser.id]);
-  });
 });
 
 describe('workflow input parsing', () => {
@@ -52,8 +47,8 @@ describe('workflow input parsing', () => {
   });
 
   it('parses an assignment and rejects non-UUID coordinators or extra fields', () => {
-    expect(parseAssignmentInput({ coordinatorId: coordinator.id, note: '  Handing over.  ' }))
-      .toEqual({ coordinatorId: coordinator.id, note: 'Handing over.' });
+    expect(parseAssignmentInput({ coordinatorId: coordinator.id, note: '  Initial assignment.  ' }))
+      .toEqual({ coordinatorId: coordinator.id, note: 'Initial assignment.' });
     expect(parseAssignmentInput({ coordinatorId: coordinator.id, note: ' ' }).note).toBeNull();
     for (const body of [{}, { coordinatorId: 'me' }, { coordinatorId: coordinator.id, assignedBy: 'x' },
       { coordinatorId: coordinator.id, note: 5 }]) {

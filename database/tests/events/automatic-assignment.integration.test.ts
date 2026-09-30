@@ -56,6 +56,7 @@ async function snapshot(eventRequestId: string) {
   return {
     event: event.rows[0], assignments: await assignmentRows(eventRequestId),
     history: await fixture.history(eventRequestId), reviews: reviews.rows,
+    notifications: await fixture.notifications(eventRequestId),
   };
 }
 
@@ -177,6 +178,7 @@ describe('KAN-29 automatic coordinator assignment persistence', () => {
     ]);
     expect(await snapshot(untouchedId)).toEqual(untouched);
     expect((await snapshot(id)).reviews).toEqual([]);
+    expect(await fixture.notifications(id)).toEqual([]);
     expect(await fixture.history(id)).toEqual([
       { from_status: null, to_status: 'DRAFT', changed_by: null },
       { from_status: 'DRAFT', to_status: 'SUBMITTED', changed_by: organiser.id },
@@ -298,11 +300,12 @@ describe('KAN-29 automatic coordinator assignment persistence', () => {
     for (const id of ids) expect(await assignmentRows(id)).toHaveLength(1);
   });
 
-  it('waits for a competing manual assignment and counts its committed workload', async () => {
+  it('waits for a competing initial manual assignment and counts its committed workload', async () => {
     const initial = await coordinator(firstCoordinatorId, true);
     await coordinator(secondCoordinatorId, true);
     const manualEventId = await fixture.createEvent({ organiserId: organiser.id });
     const automaticEventId = await draft();
+    expect((await fixture.eventRow(manualEventId)).coordinator_id).toBeNull();
     let resumeCommit!: () => void;
     let reportCommit!: () => void;
     const commitGate = new Promise<void>((resolve) => { resumeCommit = resolve; });
@@ -372,14 +375,17 @@ describe('KAN-29 automatic coordinator assignment persistence', () => {
     expect(await assignmentRows(automaticEventId)).toEqual([
       { coordinator_id: secondCoordinatorId, assigned_by: null, assignment_method: 'AUTOMATIC', active: true },
     ]);
+    expect(await fixture.notifications(manualEventId)).toEqual([]);
+    expect(await fixture.notifications(automaticEventId)).toEqual([]);
   });
 
-  it('keeps an existing automatic assignment when availability changes and preserves manual handover', async () => {
+  it('keeps an automatic assignment when availability changes and rejects manual handover', async () => {
     const initial = await coordinator(firstCoordinatorId, true);
     const replacement = await coordinator(secondCoordinatorId, false);
     const id = await draft();
     await submit(id);
     await fixture.pool.query('UPDATE app_users SET coordinator_available = false WHERE id = $1', [initial.id]);
+    const before = await snapshot(id);
     expect((await fixture.eventRow(id)).coordinator_id).toBe(initial.id);
     expect((await request(appFor(initial)).get(`/api/events/${id}`)).status).toBe(200);
 
@@ -387,22 +393,17 @@ describe('KAN-29 automatic coordinator assignment persistence', () => {
     await expect(assignCoordinator(fixture.dependencies, {
       eventRequestId: id, actor: replacement, input: { coordinatorId: replacement.id },
     })).rejects.toMatchObject({ code: 'EVENT_REQUEST_NOT_FOUND' });
-    const reassigned = await assignCoordinator(fixture.dependencies, {
+    await expect(assignCoordinator(fixture.dependencies, {
       eventRequestId: id, actor: initial, input: { coordinatorId: replacement.id },
-    });
-    expect(reassigned.previousCoordinatorId).toBe(initial.id);
-    expect(await assignmentRows(id)).toEqual(expect.arrayContaining([
-      { coordinator_id: initial.id, assigned_by: null, assignment_method: 'AUTOMATIC', active: false },
-      { coordinator_id: replacement.id, assigned_by: initial.id, assignment_method: 'MANUAL', active: true },
-    ]));
-    expect(await assignmentRows(id)).toHaveLength(2);
-    expect((await fixture.eventRow(id)).status).toBe('SUBMITTED');
-    expect((await request(appFor(initial)).get(`/api/events/${id}`)).status).toBe(404);
-    expect((await request(appFor(replacement)).get(`/api/events/${id}`)).status).toBe(200);
+    })).rejects.toMatchObject({ kind: 'CONFLICT', code: 'REASSIGNMENT_NOT_AVAILABLE' });
+    expect(await snapshot(id)).toEqual(before);
+    expect((await request(appFor(initial)).get(`/api/events/${id}`)).status).toBe(200);
+    expect((await request(appFor(replacement)).get(`/api/events/${id}`)).status).toBe(404);
     const history = await listAssignments(fixture.dependencies, { eventRequestId: id, actor: organiser });
-    expect(history).toEqual(expect.arrayContaining([
-      expect.objectContaining({ assignmentMethod: 'AUTOMATIC', assignedByName: null }),
-      expect.objectContaining({ assignmentMethod: 'MANUAL', assignedById: initial.id }),
-    ]));
+    expect(history).toEqual([
+      expect.objectContaining({
+        coordinatorId: initial.id, assignmentMethod: 'AUTOMATIC', assignedByName: null, unassignedAt: null,
+      }),
+    ]);
   });
 });

@@ -49,11 +49,7 @@ describe('CF-04 clarification persistence', () => {
       { from_status: 'UNDER_REVIEW', to_status: 'CLARIFICATION_REQUESTED', changed_by: coordinator.id },
       { from_status: 'CLARIFICATION_REQUESTED', to_status: 'SUBMITTED', changed_by: organiser.id },
     ]);
-    expect((await fixture.notifications(eventRequestId)).map((row) => [row.type, row.recipient_id])).toEqual([
-      ['CLARIFICATION_ANSWERED', coordinator.id],
-      ['CLARIFICATION_REQUESTED', organiser.id],
-      ['REVIEW_STARTED', organiser.id],
-    ]);
+    expect(await fixture.notifications(eventRequestId)).toEqual([]);
 
     for (const actor of [organiser, coordinator]) {
       expect(await listClarifications(fixture.dependencies, { eventRequestId, actor })).toEqual([{

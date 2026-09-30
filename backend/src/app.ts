@@ -9,7 +9,7 @@ import {
 } from './modules/events/submitted-requests-router.js';
 import { createAssignmentRouter } from './modules/events/assignment-router.js';
 import { createClarificationRouter } from './modules/events/clarification-router.js';
-import { createLifecycleRouter } from './modules/events/lifecycle-router.js';
+import { createStatusHistoryRouter } from './modules/events/status-history-router.js';
 import type { WorkflowRouterDependencies } from './modules/events/workflow-http.js';
 
 export interface AppDependencies {
@@ -65,7 +65,7 @@ export function createApp({
     // Mounted before the shared detail route so /unassigned and /coordinators are not read as IDs.
     app.use('/api/events', createAssignmentRouter(workspace));
     app.use('/api/events', createClarificationRouter(workspace));
-    app.use('/api/events', createLifecycleRouter(workspace));
+    app.use('/api/events', createStatusHistoryRouter(workspace));
   }
 
   // Queue/detail reads require verified identity and explicit visibility/decision policies.

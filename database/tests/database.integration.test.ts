@@ -90,11 +90,23 @@ test('SCF-DB-01 migrations persist schema, seeds preserve edits, and HTTP readin
   expect(await migrate(scopedUrl.toString())).toEqual([]);
   await expectDataApiAccessBlocked(pool);
   await seed(scopedUrl.toString());
+  expect((await pool.query('SELECT id FROM venues')).rows).toHaveLength(3);
+  expect((await pool.query('SELECT id FROM equipment_types')).rows).toEqual([]);
+  // Retained historical catalogue data survives seeding even though new equipment
+  // examples are outside the active application scope.
+  const retainedEquipmentId = randomUUID();
+  await pool.query(
+    'INSERT INTO equipment_types (id, name, total_quantity) VALUES ($1, $2, $3)',
+    [retainedEquipmentId, 'Existing equipment record', 7],
+  );
   await pool.query('UPDATE event_requests SET name = $1 WHERE id = $2', [
     'Keep this edit',
     '20000000-0000-4000-8000-000000000001',
   ]);
   await seed(scopedUrl.toString());
+  expect((await pool.query('SELECT id, name, total_quantity FROM equipment_types')).rows).toEqual([
+    { id: retainedEquipmentId, name: 'Existing equipment record', total_quantity: 7 },
+  ]);
   const users = await pool.query('SELECT role, password_hash FROM app_users ORDER BY role');
   expect(users.rows).toEqual([
     { role: 'EVENT_COORDINATOR', password_hash: null },
