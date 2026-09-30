@@ -1,98 +1,166 @@
-# ConnectSphere — Database Diagram
+# ConnectSphere Database Diagram
 
-Entity-relationship diagram generated from the Supabase `public` schema. The existing `app_user_identities` table is an unused legacy Firebase artifact, not an active authentication dependency. Its creation migration was retired on 30 September; new databases omit it, while existing data is preserved. This hosted-schema snapshot predates KAN-29 migration 006; see the [current schema changes](../database/migrations/006_automatic_coordinator_assignment.sql) for coordinator availability and assignment provenance.
+Current structure of the Supabase `public` schema, verified on 30 September 2026. It contains 14 application tables and two support tables.
 
-> Utility tables `schema_migrations` and `scaffold_metadata` are omitted (no relationships).
+`PK` marks primary keys, `FK` marks foreign keys, and `UK` marks a single-column unique key. Columns labelled `nullable` accept NULL; all other columns are `NOT NULL`. `text_array` represents PostgreSQL `text[]`.
+
+Relationship labels name the foreign-key column in the child table. `||` means exactly one parent, `|o` means zero or one parent, and `o{` means zero or more child rows.
+
+## Application tables
 
 ```mermaid
 erDiagram
-    app_users ||--o{ app_user_identities : "has"
-    app_users ||--o{ event_requests : "organises"
-    app_users ||--o{ event_requests : "coordinates"
-    app_users ||--o{ coordinator_assignments : "coordinator"
-    app_users ||--o{ coordinator_assignments : "assigned_by"
-    app_users ||--o{ equipment_requests : "requested_by"
-    app_users ||--o{ equipment_requests : "decided_by"
-    app_users ||--o{ event_change_requests : "requested_by"
-    app_users ||--o{ event_change_requests : "decided_by"
-    app_users ||--o{ event_clarifications : "requested_by"
-    app_users ||--o{ event_registrations : "attendee"
-    app_users ||--o{ event_reviews : "reviewed_by"
-    app_users ||--o{ event_status_history : "changed_by"
-    app_users ||--o{ notifications : "recipient"
-    app_users ||--o{ venue_bookings : "requested_by"
-    app_users ||--o{ venue_bookings : "decided_by"
-    app_users ||--o{ venue_unavailability : "created_by"
-
-    event_requests ||--o{ coordinator_assignments : "has"
-    event_requests ||--o{ equipment_requests : "has"
-    event_requests ||--o{ event_change_requests : "has"
-    event_requests ||--o{ event_clarifications : "has"
-    event_requests ||--o{ event_registrations : "has"
-    event_requests ||--o{ event_reviews : "has"
-    event_requests ||--o{ event_status_history : "has"
-    event_requests ||--o{ notifications : "about"
-    event_requests ||--o{ venue_bookings : "has"
-
-    equipment_types ||--o{ equipment_requests : "requested"
-    venues ||--o{ venue_bookings : "booked"
-    venues ||--o{ venue_unavailability : "has"
+    app_users |o..o{ coordinator_assignments : "assigned_by"
+    app_users ||..o{ coordinator_assignments : "coordinator_id"
+    event_requests ||..o{ coordinator_assignments : "event_request_id"
+    app_users |o..o{ equipment_requests : "decided_by"
+    equipment_types ||..o{ equipment_requests : "equipment_type_id"
+    event_requests ||..o{ equipment_requests : "event_request_id"
+    app_users ||..o{ equipment_requests : "requested_by"
+    app_users |o..o{ event_change_requests : "decided_by"
+    event_requests ||..o{ event_change_requests : "event_request_id"
+    app_users ||..o{ event_change_requests : "requested_by"
+    event_requests ||..o{ event_clarifications : "event_request_id"
+    app_users ||..o{ event_clarifications : "requested_by"
+    app_users ||..o{ event_registrations : "attendee_id"
+    event_requests ||..o{ event_registrations : "event_request_id"
+    app_users |o..o{ event_requests : "coordinator_id"
+    app_users ||..o{ event_requests : "organiser_id"
+    event_requests ||..o{ event_reviews : "event_request_id"
+    app_users ||..o{ event_reviews : "reviewed_by"
+    app_users |o..o{ event_status_history : "changed_by"
+    event_requests ||..o{ event_status_history : "event_request_id"
+    event_requests |o..o{ notifications : "event_request_id"
+    app_users ||..o{ notifications : "recipient_id"
+    app_users |o..o{ venue_bookings : "decided_by"
+    event_requests ||..o{ venue_bookings : "event_request_id"
+    app_users ||..o{ venue_bookings : "requested_by"
+    venues ||..o{ venue_bookings : "venue_id"
+    app_users |o..o{ venue_unavailability : "created_by"
+    venues ||..o{ venue_unavailability : "venue_id"
 
     app_users {
         uuid id PK
         text email
         text display_name
         text role
-        text password_hash
-        uuid supabase_user_id
+        text password_hash "nullable"
         timestamptz created_at
         timestamptz updated_at
-    }
-
-    app_user_identities {
-        uuid id PK
-        uuid user_id FK
-        text firebase_uid
-        timestamptz created_at
+        uuid supabase_user_id UK "nullable"
+        boolean coordinator_available
     }
 
     event_requests {
         uuid id PK
         uuid organiser_id FK
-        uuid coordinator_id FK
+        uuid coordinator_id FK "nullable"
         text status
-        text name
-        text purpose
-        text description
-        timestamptz starts_at
-        timestamptz ends_at
-        integer expected_attendance
-        text venue_requirements
-        text accessibility_needs
-        text equipment_requirements
-        boolean registration_required
-        integer registration_capacity
-        timestamptz registration_opens_at
-        timestamptz registration_closes_at
+        text name "nullable"
+        text purpose "nullable"
+        text description "nullable"
+        timestamptz starts_at "nullable"
+        timestamptz ends_at "nullable"
+        integer expected_attendance "nullable"
+        text venue_requirements "nullable"
+        text accessibility_needs "nullable"
+        text equipment_requirements "nullable"
+        boolean registration_required "nullable"
         timestamptz created_at
         timestamptz updated_at
+        integer registration_capacity "nullable"
+        timestamptz registration_opens_at "nullable"
+        timestamptz registration_closes_at "nullable"
     }
 
     coordinator_assignments {
         uuid id PK
         uuid event_request_id FK
         uuid coordinator_id FK
-        uuid assigned_by FK
-        text note
+        uuid assigned_by FK "nullable"
+        text note "nullable"
         timestamptz assigned_at
-        timestamptz unassigned_at
+        timestamptz unassigned_at "nullable"
+        text assignment_method
+    }
+
+    event_clarifications {
+        uuid id PK
+        uuid event_request_id FK
+        uuid requested_by FK
+        text message
+        text response "nullable"
+        timestamptz created_at
+        timestamptz responded_at "nullable"
+    }
+
+    event_reviews {
+        uuid id PK
+        uuid event_request_id FK
+        uuid reviewed_by FK
+        text decision
+        text reason "nullable"
+        timestamptz created_at
+    }
+
+    event_status_history {
+        uuid id PK
+        uuid event_request_id FK
+        text from_status "nullable"
+        text to_status
+        uuid changed_by FK "nullable"
+        timestamptz created_at
+    }
+
+    venues {
+        uuid id PK
+        text name
+        text description "nullable"
+        text location "nullable"
+        integer capacity
+        text_array layouts
+        text_array facilities
+        text_array accessibility_features
+        boolean wheelchair_accessible
+        time opens_at "nullable"
+        time closes_at "nullable"
+        boolean is_active
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    venue_unavailability {
+        uuid id PK
+        uuid venue_id FK
+        timestamptz starts_at
+        timestamptz ends_at
+        text reason "nullable"
+        uuid created_by FK "nullable"
+        timestamptz created_at
+    }
+
+    venue_bookings {
+        uuid id PK
+        uuid event_request_id FK
+        uuid venue_id FK
+        uuid requested_by FK
+        text status
+        timestamptz starts_at
+        timestamptz ends_at
+        text layout "nullable"
+        text notes "nullable"
+        uuid decided_by FK "nullable"
+        timestamptz decided_at "nullable"
+        text decision_reason "nullable"
+        timestamptz created_at
+        timestamptz updated_at
     }
 
     equipment_types {
         uuid id PK
         text name
-        text category
-        text description
+        text category "nullable"
+        text description "nullable"
         integer total_quantity
         boolean is_active
         timestamptz created_at
@@ -108,12 +176,21 @@ erDiagram
         text status
         timestamptz starts_at
         timestamptz ends_at
-        text notes
-        uuid decided_by FK
-        timestamptz decided_at
-        text decision_reason
+        text notes "nullable"
+        uuid decided_by FK "nullable"
+        timestamptz decided_at "nullable"
+        text decision_reason "nullable"
         timestamptz created_at
         timestamptz updated_at
+    }
+
+    event_registrations {
+        uuid id PK
+        uuid event_request_id FK
+        uuid attendee_id FK
+        text status
+        timestamptz registered_at
+        timestamptz withdrawn_at "nullable"
     }
 
     event_change_requests {
@@ -123,102 +200,51 @@ erDiagram
         text status
         jsonb proposed_changes
         text reason
-        uuid decided_by FK
-        timestamptz decided_at
-        text decision_reason
+        uuid decided_by FK "nullable"
+        timestamptz decided_at "nullable"
+        text decision_reason "nullable"
         timestamptz created_at
         timestamptz updated_at
-    }
-
-    event_clarifications {
-        uuid id PK
-        uuid event_request_id FK
-        uuid requested_by FK
-        text message
-        text response
-        timestamptz created_at
-        timestamptz responded_at
-    }
-
-    event_registrations {
-        uuid id PK
-        uuid event_request_id FK
-        uuid attendee_id FK
-        text status
-        timestamptz registered_at
-        timestamptz withdrawn_at
-    }
-
-    event_reviews {
-        uuid id PK
-        uuid event_request_id FK
-        uuid reviewed_by FK
-        text decision
-        text reason
-        timestamptz created_at
-    }
-
-    event_status_history {
-        uuid id PK
-        uuid event_request_id FK
-        text from_status
-        text to_status
-        uuid changed_by FK
-        timestamptz created_at
     }
 
     notifications {
         uuid id PK
         uuid recipient_id FK
-        uuid event_request_id FK
+        uuid event_request_id FK "nullable"
         text type
         text title
         text message
-        timestamptz read_at
-        timestamptz created_at
-    }
-
-    venues {
-        uuid id PK
-        text name
-        text description
-        text location
-        integer capacity
-        text_array layouts
-        text_array facilities
-        text_array accessibility_features
-        boolean wheelchair_accessible
-        time opens_at
-        time closes_at
-        boolean is_active
-        timestamptz created_at
-        timestamptz updated_at
-    }
-
-    venue_bookings {
-        uuid id PK
-        uuid event_request_id FK
-        uuid venue_id FK
-        uuid requested_by FK
-        text status
-        timestamptz starts_at
-        timestamptz ends_at
-        text layout
-        text notes
-        uuid decided_by FK
-        timestamptz decided_at
-        text decision_reason
-        timestamptz created_at
-        timestamptz updated_at
-    }
-
-    venue_unavailability {
-        uuid id PK
-        uuid venue_id FK
-        timestamptz starts_at
-        timestamptz ends_at
-        text reason
-        uuid created_by FK
+        timestamptz read_at "nullable"
         timestamptz created_at
     }
 ```
+
+## Support tables
+
+`scaffold_metadata` supports the database readiness check. `schema_migrations` records applied migration names, checksums and timestamps. Neither table has a foreign-key relationship.
+
+```mermaid
+erDiagram
+    scaffold_metadata {
+        text key PK
+        text value
+    }
+
+    schema_migrations {
+        text name PK
+        text checksum
+        timestamptz applied_at
+    }
+```
+
+## Relationship rules
+
+- `event_requests.organiser_id` and `coordinator_id` reference application profiles in `app_users`. A request can have no coordinator while it is a draft or remains unassigned.
+- `app_users.supabase_user_id` is a nullable, unique login mapping. It has no declared database foreign key to `auth.users`.
+- `app_users.coordinator_available` is required and defaults to `false`.
+- Assignment history permits multiple rows per request, with at most one active row (`unassigned_at IS NULL`). `assignment_method` defaults to `MANUAL`: manual rows require `assigned_by`, while `AUTOMATIC` rows require it to be NULL.
+- `event_reviews.event_request_id` has no unique constraint; its one-to-many relationship reflects the database structure. The review service prevents repeated initial decisions.
+- Registrations are unique per `(event_request_id, attendee_id)` pair. Neither foreign key is individually unique.
+- User email addresses, venue names and equipment-type names have case-insensitive unique indexes using `lower(...)`.
+
+The diagrams describe stored tables and relationships. The [database guide](../database/README.md) documents integrity guards and setup; the [scope record](requirements/README.md#30-september-sprint-scope-audit) distinguishes current workflows from later features.
