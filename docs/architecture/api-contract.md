@@ -35,7 +35,7 @@ The normal server mounts Supabase authentication, event listing, draft creation,
 | Ernest, KAN-31 / KAN-4 | `POST /api/events` | Save an incomplete draft for the authenticated organiser | Implemented 19 September; hosted acceptance outstanding |
 | Kai Jie / Irfan / Tristan, KAN-34 / KAN-33 / KAN-16 | `GET /api/events/:id` | Shared details, status and recorded decision | Implemented; coordinator and organiser detail pages connected |
 | Kai Jie, KAN-34 | `PATCH /api/events/:id` | Update an owned draft | Implemented |
-| Kai Jie / Tristan, KAN-6 / KAN-29 | `POST /api/events/:id/submit` | Validate and atomically submit with an automatically selected coordinator | Implemented on this branch; migration 006 and hosted verification required |
+| Kai Jie / Tristan, KAN-6 / KAN-29 | `POST /api/events/:id/submit` | Validate and atomically submit with an automatically selected coordinator | Implemented; migration 006 verified in shared Supabase on 30 September; hosted manual acceptance pending |
 | Irfan / Kai Jie / Tristan, KAN-33 / KAN-34 / KAN-16 | `GET /api/events` | Assigned coordinator queue, or the organiser's own drafts; organiser `?scope=all` includes all owned statuses; pagination pending | Implemented; organiser list page connected |
 | Irfan, KAN-27 | `POST /api/events/:id/clarifications` | Request clarification and make it visible to the organiser | Implemented 19 September; hosted acceptance outstanding |
 | Tristan, KAN-36 | `POST /api/events/:id/reviews` | Record an approval/rejection and update status atomically | Implemented |
@@ -49,6 +49,8 @@ Supabase Auth handles sign-in. Express verifies the access token and resolves `a
 ## KAN-29 automatic assignment on submission
 
 **Branch implementation, 28 September 2026:** `POST /api/events/:id/submit` retains its owned-draft, completeness and verified-organiser checks. It now allocates one coordinator as part of the submission transaction. This is not a hosted acceptance record: migration [006](../../database/migrations/006_automatic_coordinator_assignment.sql) has not been applied to the shared Supabase project by this work. Coordinate its rollout with Arvin through the [database setup](../../database/README.md#kan-29-automatic-assignment-setup).
+
+**30 September schema follow-up:** Tristan has since applied migration 006 to shared Supabase. [DB-SCHEMA-20260930-01](../testing/test-evidence.md#30-september-migration-and-hosted-schema-consistency) confirms its fields and constraint, with all six current migration checksums matching hosted history through the recognised filename aliases. The earlier implementation record remains dated evidence; provisioned-coordinator opt-in, hosted manual checks, availability-policy acceptance, CI and peer review remain separate follow-ups.
 
 An eligible candidate has application role `EVENT_COORDINATOR` and `app_users.coordinator_available = true`. The new availability flag defaults to `false`; opt in only provisioned coordinator profiles that are ready for work. Fictional seed accounts remain opted out. Selection counts requests in `SUBMITTED`, `UNDER_REVIEW`, `CLARIFICATION_REQUESTED`, `APPROVED` and `CONFIRMED`, chooses the smallest count, and breaks ties using ascending `app_users.id` UUID order. Availability is independent of current login state and does not revoke existing assignments when turned off.
 

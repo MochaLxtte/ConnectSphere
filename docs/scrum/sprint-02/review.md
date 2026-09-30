@@ -17,7 +17,7 @@ Before the review, record the reviewed commit/build and environment, prepare syn
 | Final board and burndown export | To capture at closure |
 | Meeting/feedback evidence | To capture at the actual review |
 
-KAN-29 preparation now has [local automated evidence, AUTO-20260928-01](../../testing/test-evidence.md#28-september-kan-29-automatic-assignment) and a [manual check guide](../../testing/kan29-manual-checks.md). This is not a completed review or hosted acceptance result. Coordinate migration 006 with Arvin, confirm provisioned-coordinator availability and record policy acceptance before the demo. Controlled load/no-eligible tests must use an isolated project or a coordinated window. Venue services/UI/tests were removed from `main` on 26 September; the venue demos remain planned scenarios requiring implementation, not available features inferred from the original inspection.
+KAN-29 preparation now has [local automated evidence, AUTO-20260928-01](../../testing/test-evidence.md#28-september-kan-29-automatic-assignment) and a [manual check guide](../../testing/kan29-manual-checks.md). **30 September schema follow-up:** Tristan has applied migration 006 to shared Supabase; [DB-SCHEMA-20260930-01](../../testing/test-evidence.md#30-september-migration-and-hosted-schema-consistency) confirms its fields and constraint, with all six current migration checksums matching hosted history through the recognised filename aliases. Hosted manual acceptance, availability-policy acceptance, CI and peer review remain pending. Confirm provisioned-coordinator availability and record policy acceptance before the demo. Controlled load/no-eligible tests must use an isolated project or a coordinated window. Venue services/UI/tests were removed from `main` on 26 September; the venue demos remain planned scenarios requiring implementation, not available features inferred from the original inspection.
 
 ## Demo run sheet
 
@@ -38,7 +38,7 @@ All results below are **Not executed**. Agree demonstrators and exact fixtures b
 
 | Story | Origin | Baseline points | Acceptance outcome | Remaining criteria / evidence / follow-up |
 | --- | --- | ---: | --- | --- |
-| KAN-29 | New | 3 | Not assessed | Tristan's branch implementation has local automated coverage. Policy acceptance, shared rollout, hosted checks, peer review and CI remain pending. |
+| KAN-29 | New | 3 | Not assessed | Tristan's branch implementation has local automated coverage; migration 006 is applied and its shared schema verified on 30 September. Policy acceptance, provisioned-coordinator opt-in, hosted manual checks, peer review and CI remain pending. |
 | KAN-50 | New | 5 | Not assessed | |
 | KAN-51 | New | 5 | Not assessed | |
 | KAN-12 | New | 5 | Not assessed | |

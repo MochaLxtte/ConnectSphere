@@ -46,6 +46,8 @@ The [21 September Jira update](../../requirements/assumptions-and-questions.md#2
 
 **KAN-29 handoff, 28 September:** automatic selection, atomic submission/history and recoverable allocation errors are implemented locally. The targeted PostgreSQL run passed 29 new automatic-assignment, 12 submission and 10 existing manual-assignment tests; see [AUTO-20260928-01](../../testing/test-evidence.md#28-september-kan-29-automatic-assignment) for the exact environment and limits. Coordinate migration 006 and provisioned-coordinator opt-in with Arvin before hosted testing, then follow the [manual guide](../../testing/kan29-manual-checks.md). Shared Supabase rollout, hosted acceptance, CI and peer review are not completed by this record. KAN-29 remains unaccepted and the baseline stays 43 points.
 
+**30 September schema follow-up:** Tristan has since applied migration 006 to shared Supabase. [DB-SCHEMA-20260930-01](../../testing/test-evidence.md#30-september-migration-and-hosted-schema-consistency) confirms the required fields and constraint, and all six current migration checksums match hosted history through the recognised filename aliases. The 28 September handoff above retains its original evidence boundary. Confirm provisioned-coordinator opt-in and complete the hosted manual checks, availability-policy acceptance, CI and peer review. No story acceptance or change to the 43-point baseline is recorded.
+
 ## Next actions
 
 1. Record available development hours and meeting details before judging the feasibility of the 43-point baseline.
