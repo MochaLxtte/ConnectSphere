@@ -25,6 +25,10 @@ Asynchronous update, not a Daily Scrum: Jira criteria were refined, KAN-56–KAN
 
 Later backlog refinement on the same date added KAN-65 reassignment, KAN-66 ordinary planning edits and KAN-67 registration viewing as unestimated future stories. Existing registration, change-review, equipment and notification criteria were consolidated. KAN-21 was archived as a duplicate, and optional KAN-19/KAN-22/KAN-23 were archived with history retained. The sprint commitment remains unchanged. See the [product backlog](../../requirements/product-backlog.md) for scope and the archive register; this is documentation/backlog work, not a feature completion or test result.
 
+### 29 September development update — Irfan (KAN-33 / KAN-56)
+
+Asynchronous development update, not a Daily Scrum record. KAN-56 assigned to Irfan and moved to In Progress; KAN-33 moved from In Review back to In Progress while its carry-over repair is worked. S1-DEF-02 reproduced statically on `dff42ed`: the coordinator queue lists only pending statuses and `/reviews` offered no route back to a decided request. Repair implemented on `feat/KAN-33-decided-request-access` (coordinator `scope=history` list plus a Decided requests section; [decision record](../../requirements/assumptions-and-questions.md#29-september-2026--kan-56-coordinator-decided-request-history)). Automated checks passed locally (AUTO-20260929-01); hosted walkthrough MAN-20260929-01, CI integration/browser runs and peer review remain before Done. KAN-42/KAN-43 are to be closed with this PR's CI evidence and review. No story points are completed by this update.
+
 ## Impediments and adaptations
 
 | Reference | Current planning position | Next inspection | Action owner / resolution |
@@ -59,7 +63,7 @@ Carry-over is already included in the starting 43 points. Add only actual later 
 | 26 September | | | | |
 | 27 September | | | | |
 | 28 September | | | | |
-| 29 September | | | | |
+| 29 September | 43 | 0 | 43 | Live Jira inspection by Irfan at about 18:40 +08:00: 0 Done. KAN-6/KAN-34 In Review; KAN-33 and subtask KAN-56 In Progress; KAN-8, KAN-12, KAN-29 and KAN-50–KAN-55 To Do, with KAN-50–KAN-55 unassigned. No portable capture retained. |
 | 30 September | | | | |
 | 1 October | | | | |
 | 2 October | | | | |

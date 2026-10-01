@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createApp } from '../../src/app.js';
 import type { HealthDatabase } from '../../src/db/pool.js';
 import {
+  listFollowUpRequests,
   listOwnedDrafts,
   listOwnedRequests,
   listReviewableRequests,
@@ -19,7 +20,10 @@ import { SubmissionValidationError } from '../../src/modules/events/submit-input
 vi.mock('../../src/modules/events/submitted-requests.js', async (importOriginal) => {
   const actual =
     await importOriginal<typeof import('../../src/modules/events/submitted-requests.js')>();
-  return { ...actual, listReviewableRequests: vi.fn(), listOwnedDrafts: vi.fn(), listOwnedRequests: vi.fn() };
+  return {
+    ...actual, listReviewableRequests: vi.fn(), listFollowUpRequests: vi.fn(),
+    listOwnedDrafts: vi.fn(), listOwnedRequests: vi.fn(),
+  };
 });
 
 vi.mock('../../src/modules/events/update-draft.js', async (importOriginal) => {
@@ -38,6 +42,7 @@ const coordinator: QueueActor = { id: '20000000-0000-4000-8000-000000000001', ro
 const organiser: QueueActor = { id: '20000000-0000-4000-8000-000000000002', role: 'EVENT_ORGANISER' };
 const requestId = '10000000-0000-4000-8000-000000000001';
 const list = vi.mocked(listReviewableRequests);
+const history = vi.mocked(listFollowUpRequests);
 const ownedDrafts = vi.mocked(listOwnedDrafts);
 const ownedRequests = vi.mocked(listOwnedRequests);
 const updateDraft = vi.mocked(updateOwnedDraft);
@@ -58,6 +63,7 @@ function setup(actor: QueueActor | null = coordinator) {
 
 beforeEach(() => {
   list.mockReset();
+  history.mockReset();
   ownedDrafts.mockReset();
   ownedRequests.mockReset();
   updateDraft.mockReset();
@@ -105,6 +111,84 @@ describe('KAN-33 GET /api/events (review queue)', () => {
     const response = await request(app).get('/api/events');
     expect(response.status).toBe(200);
     expect(response.body).toEqual({ items: [] });
+  });
+});
+
+describe('KAN-33 / KAN-56 GET /api/events?scope=history (decided-request access)', () => {
+  it('returns the coordinator\'s decided requests instead of the pending queue', async () => {
+    const { app, submittedRequests } = setup();
+    const items = [{ id: requestId, name: 'Approved event', status: 'APPROVED' as const,
+      createdAt: '2026-09-07T00:00:00Z', updatedAt: '2026-09-20T00:00:00Z' }];
+    history.mockResolvedValue(items);
+
+    const response = await request(app).get('/api/events?scope=history');
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ items });
+    expect(response.headers['cache-control']).toBe('no-store');
+    expect(history).toHaveBeenCalledExactlyOnceWith(submittedRequests, coordinator);
+    expect(list).not.toHaveBeenCalled();
+  });
+
+  it('keeps the default coordinator request on the pending queue', async () => {
+    const { app } = setup();
+    list.mockResolvedValue([]);
+    await request(app).get('/api/events');
+    expect(list).toHaveBeenCalledOnce();
+    expect(history).not.toHaveBeenCalled();
+  });
+
+  it('returns an empty list rather than an error when nothing has been decided', async () => {
+    const { app } = setup();
+    history.mockResolvedValue([]);
+    const response = await request(app).get('/api/events?scope=history');
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ items: [] });
+  });
+
+  it('requires verified authentication', async () => {
+    const { app } = setup(null);
+    const response = await request(app).get('/api/events?scope=history');
+    expect(response.status).toBe(401);
+    expect(history).not.toHaveBeenCalled();
+  });
+
+  it('does not expose a history scope to organisers', async () => {
+    const { app } = setup(organiser);
+    const response = await request(app).get('/api/events?scope=history');
+    expect(response.status).toBe(400);
+    expect(response.body.error.code).toBe('INVALID_EVENT_LIST_SCOPE');
+    expect(history).not.toHaveBeenCalled();
+    expect(ownedRequests).not.toHaveBeenCalled();
+  });
+
+  it.each(['VENUE_STAFF', 'TECHNICAL_SUPPORT_STAFF', 'ATTENDEE'] as const)(
+    'rejects the verified %s role', async (role) => {
+      const { app } = setup({ ...coordinator, role });
+      const response = await request(app).get('/api/events?scope=history');
+      expect(response.status).toBe(403);
+      expect(history).not.toHaveBeenCalled();
+    },
+  );
+
+  it.each(['scope=', 'scope=HISTORY', 'scope=decided', 'scope=history&scope=history'])(
+    'rejects an invalid or repeated coordinator scope before querying: %s', async (query) => {
+      const { app } = setup();
+      const response = await request(app).get(`/api/events?${query}`);
+      expect(response.status).toBe(400);
+      expect(response.body.error.code).toBe('INVALID_EVENT_LIST_SCOPE');
+      expect(history).not.toHaveBeenCalled();
+      expect(list).not.toHaveBeenCalled();
+    },
+  );
+
+  it('reports a failed history read without exposing database details', async () => {
+    const { app, logger } = setup();
+    history.mockRejectedValue(new Error('Internal database details'));
+    const response = await request(app).get('/api/events?scope=history');
+    expect(response.status).toBe(500);
+    expect(JSON.stringify(response.body)).not.toContain('Internal database details');
+    expect(logger.error).toHaveBeenCalledOnce();
   });
 });
 

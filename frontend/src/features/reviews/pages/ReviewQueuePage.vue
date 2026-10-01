@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from 'vue';
+import { onBeforeUnmount, onMounted, ref, type Ref } from 'vue';
 import AppIcon from '../../../components/AppIcon.vue';
 import { ApiError } from '../../../lib/api-client';
 import { clearLocalSession } from '../../auth/session.js';
-import { fetchReviewQueue } from '../api/submitted-requests';
+import { eventStatusLabel } from '../../events/presentation';
+import { fetchDecidedRequests, fetchReviewQueue } from '../api/submitted-requests';
 import type { ReviewQueueItem } from '../types';
 
 type LoadState =
@@ -12,29 +13,36 @@ type LoadState =
   | { status: 'ready'; items: ReviewQueueItem[] };
 
 const state = ref<LoadState>({ status: 'loading' });
+const decided = ref<LoadState>({ status: 'loading' });
 let controller: AbortController | undefined;
+
+async function loadInto(
+  target: Ref<LoadState>,
+  fetcher: (signal: AbortSignal) => Promise<ReviewQueueItem[]>,
+  fallbackMessage: string,
+  signal: AbortSignal,
+) {
+  try {
+    const items = await fetcher(signal);
+    if (!signal.aborted) target.value = { status: 'ready', items };
+  } catch (error) {
+    if (signal.aborted) return;
+    // The parent access page unmounts this queue when the session expires.
+    if (error instanceof ApiError && error.status === 401) clearLocalSession();
+    target.value = { status: 'error', message: error instanceof Error ? error.message : fallbackMessage };
+  }
+}
 
 async function load() {
   controller?.abort();
   const current = new AbortController();
   controller = current;
   state.value = { status: 'loading' };
-  try {
-    const items = await fetchReviewQueue(current.signal);
-    if (!current.signal.aborted) state.value = { status: 'ready', items };
-  } catch (error) {
-    if (!current.signal.aborted) {
-      // The parent access page unmounts this queue when the session expires.
-      if (error instanceof ApiError && error.status === 401) clearLocalSession();
-      state.value = {
-        status: 'error',
-        message:
-          error instanceof Error
-            ? error.message
-            : 'The review queue could not be loaded. Please try again.',
-      };
-    }
-  }
+  decided.value = { status: 'loading' };
+  await Promise.all([
+    loadInto(state, fetchReviewQueue, 'The review queue could not be loaded. Please try again.', current.signal),
+    loadInto(decided, fetchDecidedRequests, 'Decided requests could not be loaded. Please try again.', current.signal),
+  ]);
 }
 
 onMounted(load);
@@ -68,7 +76,34 @@ onBeforeUnmount(() => controller?.abort());
       <li v-for="item in state.items" :key="item.id">
         <RouterLink :to="`/reviews/${item.id}`" class="queue-item">
           <span class="queue-item-name">{{ item.name ?? 'Untitled event request' }}</span>
-          <span class="queue-item-status">{{ item.status }}</span>
+          <span class="queue-item-status">{{ eventStatusLabel(item.status) }}</span>
+          <AppIcon name="arrow" :size="16" />
+        </RouterLink>
+      </li>
+    </ul>
+  </section>
+
+  <section class="panel decided-panel" aria-labelledby="decided-title">
+    <h2 id="decided-title">Decided requests</h2>
+    <p class="decided-description">
+      Requests assigned to you that already have an approval or rejection stay here, so you can
+      reopen them for follow-up.
+    </p>
+
+    <p v-if="decided.status === 'loading'">Loading decided requests…</p>
+
+    <div v-else-if="decided.status === 'error'" role="alert">
+      <p>{{ decided.message }}</p>
+      <button type="button" class="button button-secondary" @click="load">Try again</button>
+    </div>
+
+    <p v-else-if="decided.items.length === 0" class="decided-empty">No decided requests yet.</p>
+
+    <ul v-else class="queue-list" aria-label="Decided requests">
+      <li v-for="item in decided.items" :key="item.id">
+        <RouterLink :to="`/reviews/${item.id}`" class="queue-item">
+          <span class="queue-item-name">{{ item.name ?? 'Untitled event request' }}</span>
+          <span class="queue-item-status">{{ eventStatusLabel(item.status) }}</span>
           <AppIcon name="arrow" :size="16" />
         </RouterLink>
       </li>
@@ -82,6 +117,10 @@ onBeforeUnmount(() => controller?.abort());
   display: flex; align-items: center; gap: 12px; padding: 14px 16px;
   border: 1px solid var(--border); border-radius: 8px; text-decoration: none; color: inherit;
 }
-.queue-item-name { flex: 1; font-weight: 600; }
-.queue-item-status { font-size: 13px; color: #59685e; text-transform: capitalize; }
+.queue-item-name { flex: 1; font-weight: 600; min-width: 0; overflow-wrap: anywhere; }
+.queue-item-status { font-size: 13px; color: #59685e; }
+.decided-panel { margin-top: 20px; }
+.decided-panel h2 { font-size: 19px; }
+.decided-description { color: #59685e; font-size: 14px; line-height: 1.6; margin: 6px 0 16px; }
+.decided-empty { font-size: 14px; color: #59685e; }
 </style>
