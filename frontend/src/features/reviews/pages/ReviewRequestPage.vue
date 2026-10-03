@@ -5,6 +5,7 @@ import { ApiError } from '../../../lib/api-client';
 import { clearLocalSession } from '../../auth/session.js';
 import ReviewDecisionPanel from '../components/ReviewDecisionPanel.vue';
 import EventPlanningPanels from '../../events/components/EventPlanningPanels.vue';
+import { singaporeDateKey } from '../../venues/availability';
 import { fetchReviewRequestDetail, submitReview } from '../api/submitted-requests';
 import type { ReviewFeedback, ReviewRequestDetail, ReviewSubmission } from '../types';
 
@@ -127,6 +128,12 @@ onBeforeUnmount(() => {
             : state.detail.registrationRequired ? 'Yes' : 'No' }}</dd>
         </div>
       </dl>
+      <!-- KAN-51: open the venue calendar at the week of the proposed start. -->
+      <RouterLink
+        v-if="state.detail.startsAt"
+        class="availability-link"
+        :to="{ path: '/venues/availability', query: { week: singaporeDateKey(state.detail.startsAt) } }"
+      >Check venue availability for this week</RouterLink>
     </section>
 
     <ReviewDecisionPanel
@@ -156,6 +163,10 @@ onBeforeUnmount(() => {
 .event-detail dl > div { display: contents; }
 .event-detail dt { font-weight: 600; font-size: 13px; color: #59685e; }
 .event-detail dd { margin: 0; overflow-wrap: anywhere; min-width: 0; }
+.availability-link {
+  display: inline-block; margin-top: 20px; color: var(--green); font-size: 14px;
+  text-decoration: underline; text-underline-offset: 3px;
+}
 @media (max-width: 520px) {
   .event-detail { padding: 20px; }
   .event-detail dl { grid-template-columns: 1fr; gap: 16px; }

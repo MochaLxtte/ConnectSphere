@@ -12,7 +12,8 @@ withDefaults(
       | 'database'
       | 'refresh'
       | 'user'
-      | 'leaf';
+      | 'leaf'
+      | 'availability';
     size?: number;
   }>(),
   { size: 20 },
@@ -30,6 +31,7 @@ const paths = {
   refresh: 'M20 7v5h-5 M4 17v-5h5 M6 6a8 8 0 0 1 13 3 M18 18a8 8 0 0 1-13-3',
   user: 'M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0 M4 21v-2a8 8 0 0 1 16 0v2',
   leaf: 'M20 3C7 2 2 8 5 15s15 5 15-12z M5 21L16 9 M10 16v-5',
+  availability: 'M4 5h16v16H4z M8 3v4 M16 3v4 M4 10h16 M9 15.5l2 2 4-4',
 } as const;
 </script>
 

@@ -60,6 +60,23 @@ async function chooseApproval() {
 }
 
 describe('KAN-33 review request detail page', () => {
+  it('KAN-51 links to venue availability for the Singapore week of the proposed start', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonResponse({ ...detail, startsAt: '2026-10-04T16:30:00Z' })));
+    await renderDetail();
+
+    // 16:30 UTC on 4 October is 00:30 on Monday 5 October in Singapore.
+    expect(await screen.findByRole('link', { name: 'Check venue availability for this week' }))
+      .toHaveAttribute('href', '/venues/availability?week=2026-10-05');
+  });
+
+  it('KAN-51 offers no venue availability link when the request has no proposed start', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonResponse({ ...detail, startsAt: null })));
+    await renderDetail();
+
+    await screen.findByRole('heading', { name: 'Career fair' });
+    expect(screen.queryByRole('link', { name: 'Check venue availability for this week' })).not.toBeInTheDocument();
+  });
+
   it('displays the submitted request fields required for review', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonResponse(detail)));
     await renderDetail();

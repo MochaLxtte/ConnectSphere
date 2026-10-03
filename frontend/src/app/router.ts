@@ -9,6 +9,7 @@ import ReviewAccessPage from '../features/reviews/pages/ReviewAccessPage.vue';
 import UnassignedRequestsPage from '../features/reviews/pages/UnassignedRequestsPage.vue';
 import ReviewQueuePage from '../features/reviews/pages/ReviewQueuePage.vue';
 import ReviewRequestPage from '../features/reviews/pages/ReviewRequestPage.vue';
+import VenueAvailabilityPage from '../features/venues/pages/VenueAvailabilityPage.vue';
 import NotFoundPage from '../components/NotFoundPage.vue';
 
 export const router = createRouter({
@@ -20,6 +21,7 @@ export const router = createRouter({
     { path: '/events/new', component: NewEventPage, meta: { title: 'New event request' } },
     { path: '/events/:id/edit', component: EventDraftEditPage, meta: { title: 'Edit draft' } },
     { path: '/events/:id', component: EventRequestDetailPage, meta: { title: 'Event request' } },
+    { path: '/venues/availability', component: VenueAvailabilityPage, meta: { title: 'Venue availability' } },
     {
       path: '/reviews', component: ReviewAccessPage,
       children: [
