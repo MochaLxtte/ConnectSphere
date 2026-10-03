@@ -2,11 +2,15 @@
 import { computed, onMounted } from 'vue';
 import AppIcon from './AppIcon.vue';
 import { authSession, restoreSession, roleLabel, signOut } from '../features/auth/session.js';
+import { canViewVenueAvailability } from '../features/venues/access.js';
 
-// Organiser entry points remain visible to visitors; coordinator links require a resolved session.
+// Organiser entry points remain visible to visitors; staff links require a resolved session.
 const role = computed(() => authSession.user?.role ?? null);
 const showOrganiser = computed(() => role.value === null || role.value === 'EVENT_ORGANISER');
 const showCoordinator = computed(() => !authSession.loading && role.value === 'EVENT_COORDINATOR');
+const showVenuePlanning = computed(() => !authSession.loading && canViewVenueAvailability(role.value));
+const showVenueBookings = computed(() => !authSession.loading &&
+  (role.value === 'EVENT_COORDINATOR' || role.value === 'VENUE_STAFF'));
 
 onMounted(() => { void restoreSession().catch(() => undefined); });
 
@@ -50,6 +54,18 @@ async function handleSignOut(): Promise<void> {
           >
           <RouterLink to="/reviews/unassigned" exact-active-class="is-active" class="nav-link"
             ><AppIcon name="user" />Unassigned requests</RouterLink
+          >
+          <RouterLink to="/venues" exact-active-class="is-active" class="nav-link"
+            ><AppIcon name="review" />Search Venues</RouterLink
+          >
+        </template>
+        <template v-if="showVenuePlanning">
+          <p class="nav-label">Venue planning</p>
+          <RouterLink to="/venues/availability" exact-active-class="is-active" class="nav-link"
+            ><AppIcon name="availability" />Venue availability</RouterLink
+          >
+          <RouterLink v-if="showVenueBookings" to="/venue-bookings" exact-active-class="is-active" class="nav-link"
+            ><AppIcon name="review" />Venue bookings</RouterLink
           >
         </template>
       </nav>

@@ -91,6 +91,9 @@ async function submitForReview() {
     } else if (error instanceof SubmissionIncompleteError) {
       const missing = error.missingFields.map((field) => submitFieldLabels.get(field) ?? field);
       submitError.value = `Edit the draft to complete these details before submitting: ${missing.join(', ')}.`;
+    } else if (error instanceof ApiError && error.status === 409 &&
+        ['NO_AVAILABLE_COORDINATOR', 'DRAFT_ALREADY_ASSIGNED'].includes(error.code)) {
+      submitError.value = error.message;
     } else if (error instanceof ApiError && [404, 409].includes(error.status)) {
       submitError.value = 'This request can no longer be submitted. Refresh to see its latest status.';
     } else {
@@ -172,11 +175,10 @@ onBeforeUnmount(() => controller?.abort());
   <EventPlanningPanels
     v-if="state.status === 'ready' && state.request.status !== 'DRAFT'"
     :event-request-id="state.request.id"
+    :current-coordinator-id="state.request.coordinatorId"
     :status="state.request.status"
     :viewer-role="authSession.user?.role ?? 'EVENT_ORGANISER'"
     :is-owner="true"
-    :starts-at="state.request.startsAt"
-    :ends-at="state.request.endsAt"
     @changed="refreshQuietly"
   />
 </template>

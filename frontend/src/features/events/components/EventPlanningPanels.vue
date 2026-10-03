@@ -2,11 +2,12 @@
 import { computed } from 'vue';
 import AssignmentPanel from './AssignmentPanel.vue';
 import ClarificationPanel from './ClarificationPanel.vue';
-import LifecyclePanel from './LifecyclePanel.vue';
+import StatusHistoryPanel from './StatusHistoryPanel.vue';
 
 /** Workflow panels shared by the organiser and coordinator pages for a submitted request. */
 const props = defineProps<{
   eventRequestId: string;
+  currentCoordinatorId: string | null;
   status: string;
   viewerRole: string;
   isOwner?: boolean;
@@ -21,9 +22,9 @@ const shared = computed(() => ({
 
 <template>
   <div class="planning-panels">
-    <AssignmentPanel v-bind="shared" @changed="emit('changed')" />
+    <AssignmentPanel v-bind="shared" :current-coordinator-id="currentCoordinatorId" @changed="emit('changed')" />
     <ClarificationPanel v-bind="shared" @changed="emit('changed')" />
-    <LifecyclePanel v-bind="shared" @changed="emit('changed')" />
+    <StatusHistoryPanel :event-request-id="eventRequestId" :status="status" />
   </div>
 </template>
 

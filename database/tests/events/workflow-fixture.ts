@@ -72,41 +72,6 @@ export async function createWorkflowFixture() {
     return found.rows;
   }
 
-  async function addVenueBooking(eventRequestId: string, requestedBy: string, status: 'PENDING' | 'APPROVED' | 'REJECTED') {
-    const venueId = randomUUID();
-    const bookingId = randomUUID();
-    await pool.query('INSERT INTO venues (id, name, capacity) VALUES ($1, $2, 100)', [venueId, `Venue ${venueId}`]);
-    const decided = status !== 'PENDING';
-    await pool.query(
-      `INSERT INTO venue_bookings (id, event_request_id, venue_id, requested_by, status, starts_at, ends_at,
-         decided_by, decided_at)
-       VALUES ($1, $2, $3, $4, $5, '2026-12-01T02:00:00Z', '2026-12-01T06:00:00Z', $6, $7)`,
-      [bookingId, eventRequestId, venueId, requestedBy, status,
-        decided ? requestedBy : null, decided ? new Date() : null],
-    );
-    return bookingId;
-  }
-
-  async function addEquipmentRequest(eventRequestId: string, requestedBy: string, status: 'REQUESTED' | 'RESERVED' | 'REJECTED') {
-    const typeId = randomUUID();
-    const requestId = randomUUID();
-    await pool.query('INSERT INTO equipment_types (id, name, total_quantity) VALUES ($1, $2, 10)', [typeId, `Type ${typeId}`]);
-    const decided = status !== 'REQUESTED';
-    await pool.query(
-      `INSERT INTO equipment_requests (id, event_request_id, equipment_type_id, requested_by, quantity, status,
-         starts_at, ends_at, decided_by, decided_at)
-       VALUES ($1, $2, $3, $4, 2, $5, '2026-12-01T02:00:00Z', '2026-12-01T06:00:00Z', $6, $7)`,
-      [requestId, eventRequestId, typeId, requestedBy, status,
-        decided ? requestedBy : null, decided ? new Date() : null],
-    );
-    return requestId;
-  }
-
-  async function statusOf(table: 'venue_bookings' | 'equipment_requests', id: string): Promise<string> {
-    const found = await pool.query<{ status: string }>(`SELECT status FROM ${table} WHERE id = $1`, [id]);
-    return found.rows[0]!.status;
-  }
-
   async function destroy() {
     await pool.end();
     await admin.query(`DROP SCHEMA IF EXISTS "${schema}" CASCADE`);
@@ -115,7 +80,7 @@ export async function createWorkflowFixture() {
 
   return {
     pool, dependencies: { pool }, createUser, createEvent, eventRow, notifications, history,
-    addVenueBooking, addEquipmentRequest, statusOf, destroy,
+    destroy,
   };
 }
 

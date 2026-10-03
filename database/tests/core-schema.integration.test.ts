@@ -3,6 +3,9 @@ import pg from 'pg';
 import { afterAll, beforeAll, expect, test } from 'vitest';
 import { migrate } from '../migrate.js';
 
+// Compatibility coverage for already-applied shared schema, including future-feature
+// tables and integrity guards. These checks do not establish application feature scope.
+
 // Explicit opt-in prevents accidentally using a developer's ordinary DATABASE_URL.
 const testUrl = process.env.TEST_DATABASE_URL;
 if (!testUrl) throw new Error('Set TEST_DATABASE_URL to a dedicated PostgreSQL test database.');

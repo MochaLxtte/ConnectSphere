@@ -27,7 +27,7 @@ Malformed JSON returns 400 (`INVALID_JSON`), oversized JSON returns 413 (`PAYLOA
 
 ## Sprint 1 routes
 
-The normal server mounts Supabase authentication, event listing, draft creation, shared detail, draft editing, submission and decision writing through `createRuntimeApp` in `backend/src/runtime-app.ts`. The coordinator review page consumes the shared detail, decision permissions and saved outcomes; the organiser detail page consumes the same response for status, outcome and permitted draft actions, with planning panels after submission. Draft creation and clarification were added on 19 September with the [first-release routes](#first-release-routes-cf-02-cf-03-and-cf-05-to-cf-20) below; "Implemented" in this table means the handler is mounted; actual test runs and hosted acceptance are recorded separately in the [test evidence](../testing/test-evidence.md). Organiser approval/rejection display and refresh passed with a real account in MAN-20260917-01. The signed-out detail page showed a sign-in prompt without request details or the review reason in MAN-20260917-02; draft/submitted detail status and review messages also passed in MAN-20260917-03. Later manual results and the outstanding submission-to-status integration check are tracked in the test evidence.
+The normal server mounts Supabase authentication, event listing, draft creation, shared detail, draft editing, submission and decision writing through `createRuntimeApp` in `backend/src/runtime-app.ts`. The coordinator review page consumes the shared detail, decision permissions and saved outcomes; the organiser detail page consumes the same response for status, outcome and permitted draft actions, with planning panels after submission. Draft creation and clarification were added on 19 September with the [first-release routes](#first-release-routes-cf-02-to-cf-07) below; "Implemented" in this table means the handler is mounted; actual test runs and hosted acceptance are recorded separately in the [test evidence](../testing/test-evidence.md). Organiser approval/rejection display and refresh passed with a real account in MAN-20260917-01. The signed-out detail page showed a sign-in prompt without request details or the review reason in MAN-20260917-02; draft/submitted detail status and review messages also passed in MAN-20260917-03. Later manual results and the outstanding submission-to-status integration check are tracked in the test evidence.
 
 | Owner | Method / route | Purpose | State |
 | --- | --- | --- | --- |
@@ -35,7 +35,7 @@ The normal server mounts Supabase authentication, event listing, draft creation,
 | Ernest, KAN-31 / KAN-4 | `POST /api/events` | Save an incomplete draft for the authenticated organiser | Implemented 19 September; hosted acceptance outstanding |
 | Kai Jie / Irfan / Tristan, KAN-34 / KAN-33 / KAN-16 | `GET /api/events/:id` | Shared details, status and recorded decision | Implemented; coordinator and organiser detail pages connected |
 | Kai Jie, KAN-34 | `PATCH /api/events/:id` | Update an owned draft | Implemented |
-| Kai Jie, KAN-6 | `POST /api/events/:id/submit` | Validate submission and transition atomically | Implemented |
+| Kai Jie / Tristan, KAN-6 / KAN-29 | `POST /api/events/:id/submit` | Validate and atomically submit with an automatically selected coordinator | Implemented; migration 006 verified in shared Supabase on 30 September; hosted manual acceptance pending |
 | Irfan / Kai Jie / Tristan, KAN-33 / KAN-34 / KAN-16 | `GET /api/events` | Assigned coordinator queue, or the organiser's own drafts; organiser `?scope=all` includes all owned statuses; coordinator `?scope=history` lists assigned decided requests (KAN-56); pagination pending | Implemented; organiser list page connected |
 | Irfan, KAN-27 | `POST /api/events/:id/clarifications` | Request clarification and make it visible to the organiser | Implemented 19 September; hosted acceptance outstanding |
 | Tristan, KAN-36 | `POST /api/events/:id/reviews` | Record an approval/rejection and update status atomically | Implemented |
@@ -45,6 +45,33 @@ Use camelCase in JSON and snake_case in SQL. IDs are UUID strings. Dates over HT
 Never accept organiser identity, acting role, arbitrary status, or reviewer identity from an untrusted request body. Derive them from the authenticated session and service action. Filter in repositories as well as enforcing service access rules. Sprint 1 uses assigned-coordinator access as a team implementation assumption; customer clarification about unassigned triage and delegation remains open under [Q-02](../requirements/assumptions-and-questions.md). Client navigation is not access control.
 
 Supabase Auth handles sign-in. Express verifies the access token and resolves `app_users.supabase_user_id` to the application profile and trusted role. `POST /api/auth/login` accepts `{ "accessToken": "..." }` and sets the verified token in an HttpOnly session cookie; `GET /api/auth/me` returns the mapped profile, and `POST /api/auth/logout` clears the cookie. Accounts must be provisioned before login; an unmapped account receives `403 ACCOUNT_NOT_PROVISIONED`. See the [authentication workstream](../../backend/src/modules/auth/README.md) for configuration and identity mapping. When adopting a significant contract change, keep this document, the corresponding UI, service and integration tests consistent in the implementation PR.
+
+## KAN-29 automatic assignment on submission
+
+**Branch implementation, 28 September 2026:** `POST /api/events/:id/submit` retains its owned-draft, completeness and verified-organiser checks. It now allocates one coordinator as part of the submission transaction. This is not a hosted acceptance record: migration [006](../../database/migrations/006_automatic_coordinator_assignment.sql) has not been applied to the shared Supabase project by this work. Coordinate its rollout with Arvin through the [database setup](../../database/README.md#kan-29-automatic-assignment-setup).
+
+**30 September schema follow-up:** Tristan has since applied migration 006 to shared Supabase. [DB-SCHEMA-20260930-01](../testing/test-evidence.md#30-september-migration-and-hosted-schema-consistency) confirms its fields and constraint, with all six current migration checksums matching hosted history through the recognised filename aliases. The earlier implementation record remains dated evidence; provisioned-coordinator opt-in, hosted manual checks, availability-policy acceptance, CI and peer review remain separate follow-ups.
+
+An eligible candidate has application role `EVENT_COORDINATOR` and `app_users.coordinator_available = true`. The new availability flag defaults to `false`; opt in only provisioned coordinator profiles that are ready for work. Fictional seed accounts remain opted out. Selection counts requests in `SUBMITTED`, `UNDER_REVIEW`, `CLARIFICATION_REQUESTED`, `APPROVED` and `CONFIRMED`, chooses the smallest count, and breaks ties using ascending `app_users.id` UUID order. Availability is independent of current login state and does not revoke existing assignments when turned off.
+
+Submission locks the event, then coordinates with other automatic and manual allocations through consistently ordered coordinator-row locks. It counts committed workload after acquiring those locks. The `SUBMITTED` status, `event_requests.coordinator_id` and one `AUTOMATIC` assignment-history row commit together. Failure rolls all three changes back. No approval/rejection record is created. Changing assignment or availability later does not cause a submitted request to be automatically reallocated.
+
+| Response | Meaning |
+| --- | --- |
+| `200` | Existing flat `EventRecord` response, now with `status: "SUBMITTED"` and the selected non-null `coordinatorId`. |
+| `400 INVALID_EVENT_REQUEST_ID` | The route ID is not a UUID. |
+| `400 SUBMISSION_INCOMPLETE` | Required submission data is missing/invalid; the error also supplies `missingFields`. No allocation occurs. |
+| `401 AUTHENTICATION_REQUIRED` | No verified session. |
+| `403 SUBMIT_FORBIDDEN` | The verified caller is not an event organiser. |
+| `404 EVENT_REQUEST_NOT_FOUND` | The request is missing or belongs to another organiser; no assignment details are revealed. |
+| `409 REQUEST_NOT_SUBMITTABLE` | The owned request is no longer a draft, including repeated submission. Status, coordinator and history stay unchanged. |
+| `409 NO_AVAILABLE_COORDINATOR` | No opted-in coordinator is available. The saved request remains an editable draft with no new assignment. |
+| `409 DRAFT_ALREADY_ASSIGNED` | The draft already has a coordinator or active assignment-history row. Preserve the existing data and investigate it before submission; automatic selection does not overwrite it. |
+| `500 INTERNAL_ERROR` | An unexpected failure; the submission transaction is rolled back. |
+
+`NO_AVAILABLE_COORDINATOR` uses the message: "No event coordinator is currently available. Your request is still a draft. Please try again later." The create/edit form and saved-draft detail page show this explanation, retain draft editing and allow retry. `DRAFT_ALREADY_ASSIGNED` displays its specific explanation and retains editing; the existing assignment must be checked before submission can succeed. The form saves draft changes before calling submit, so a rolled-back submission does not undo an earlier successful draft save. Clients cannot choose the coordinator through submission input.
+
+The [manual check guide](../testing/README.md#kan-29-hosted-verification) covers account access, workload selection, recovery and refusal of out-of-scope reassignment. Previously submitted requests are not backfilled. Manual initial assignment remains a separate operation only for unassigned requests; the automatic availability flag does not restrict manual targets.
 
 ## Shared request detail: backend, coordinator and organiser pages connected
 
@@ -116,7 +143,7 @@ Creation and submission share the event API: `/events/new` uses `EventRequestFor
 | Coordinator viewing another current Sprint 1 status | Allow only when the request's `coordinatorId` matches their verified `app_users.id`. This includes `APPROVED` and `REJECTED`. |
 | Coordinator who fails the visibility policy, or a missing request | Return the same `404 EVENT_REQUEST_NOT_FOUND` response. |
 
-Viewing permission and decision permission are separate checks. A successful detail read does not establish permission to edit or approve/reject. Role alone does not grant coordinator access: unassigned requests and requests assigned to another coordinator are unavailable. `event_requests.coordinator_id` references `app_users.id`, not the Supabase Auth UUID. Reassignment changes access on subsequent requests; the decision write rechecks assignment against the locked event row.
+Viewing permission and decision permission are separate checks. A successful detail read does not establish permission to edit or approve/reject. Role alone does not grant coordinator access: unassigned requests and requests assigned to another coordinator are unavailable. `event_requests.coordinator_id` references `app_users.id`, not the Supabase Auth UUID. Any externally reconciled coordinator change affects subsequent access; the decision write rechecks assignment against the locked event row. The current application does not expose reassignment.
 
 An approved or rejected request leaves the pending-review queue but remains readable by its organiser and currently assigned coordinator. Refreshing after a decision should show the recorded outcome, without offering another initial decision. The queue's status filter must not be reused as the detail-access rule.
 
@@ -159,7 +186,7 @@ but keeps its list query and status filter separate from the shared request-deta
 
 **KAN-16 list extension, 17 September:** An organiser can request
 `GET /api/events?scope=all` to retrieve their requests across all stored statuses
-(six at the time; nine since migration 005), including submitted and decided requests. `scope=drafts` explicitly selects the existing
+(six at the time; nine since migration 004), including submitted and decided requests. `scope=drafts` explicitly selects the existing
 draft-only list; omitting `scope` preserves that behaviour. Scope is a single, case-sensitive
 value: empty, unknown or repeated values return `400 INVALID_EVENT_LIST_SCOPE`.
 Coordinators omit `scope` for the pending queue. The only coordinator scope is `history`
@@ -257,7 +284,7 @@ The existing malformed-JSON and payload-size responses also apply. Responses fro
 
 ## First-release routes (CF-02 to CF-07)
 
-**Status, 19 September 2026:** The routes in this section are implemented on `feat/KAN-24-core-feature-schema` and mounted by `createRuntimeApp` through the `workspace` dependencies (`pool` plus the same `authenticateRequest` session verifier as the Sprint 1 routes). Unit, component and PostgreSQL integration tests pass locally with fixture or locally signed identities. They have **not** been verified against hosted Supabase accounts, have not been peer reviewed, and do not mark any story Done. The business rules are team implementation assumptions for Q-02 and Q-04 to Q-13, recorded in the [19 September decision record](../requirements/assumptions-and-questions.md); the customer questions stay open. Venue Staff, Technical Support Staff and Attendee accounts must be provisioned in Supabase Auth and linked through `app_users.supabase_user_id` before those roles can sign in.
+**Current scope, 30 September 2026:** the routes below support Sprint 1 and Sprint 2. The earlier broad implementation was reduced on 26 September and again by the [30 September scope audit](../requirements/README.md#30-september-sprint-scope-audit). Confirmation, cancellation, completion and notification writes are removed. Manual assignment only sets an initial coordinator on an unassigned non-draft request; KAN-65 reassignment is deferred. Historical descriptions and test results remain dated evidence, not a list of current routes.
 
 Conventions shared by every route below:
 
@@ -266,9 +293,9 @@ Conventions shared by every route below:
 - Request bodies reject unknown fields. Timestamps are ISO 8601; intervals are half-open `[startsAt, endsAt)`, so back-to-back periods do not overlap.
 - An event, booking or request the caller has no relationship to returns the same 404 as a missing one. "Owner" means the organiser whose `app_users.id` equals `organiser_id`; "assigned coordinator" means `coordinator_id` equals the caller's `app_users.id`. Coordinators never see drafts.
 - Role abbreviations: EO Event Organiser, EC Event Coordinator, VS Venue Staff, TS Technical Support Staff, AT Attendee.
-- List responses are `{ "items": [...] }` unless stated. Notifications are written in the same transaction as the action they describe and never to the acting user.
+- List responses are `{ "items": [...] }` unless stated. Retained workflows do not generate notifications; delivery is future KAN-64 work.
 
-Mount order matters: `app.ts` registers the assignment, clarification, change-request and lifecycle routers on `/api/events` before the shared detail router, so `/unassigned` and `/coordinators` are not read as event IDs.
+Mount order matters: `app.ts` registers the assignment, clarification and status-history routers on `/api/events` before the shared detail router, so `/unassigned` and `/coordinators` are not read as event IDs.
 
 ### Events: draft creation (CF-02, CF-03) — `submitted-requests-router.ts`
 
@@ -282,34 +309,33 @@ Mount order matters: `app.ts` registers the assignment, clarification, change-re
 
 | Method / route | Roles | Success | Errors |
 | --- | --- | --- | --- |
-| `GET /api/events/unassigned` | EC | `200` items: `id`, `name`, `status`, `organiserName`, `startsAt`, `endsAt`, `expectedAttendance`, `updatedAt`; unassigned requests excluding `DRAFT`, `REJECTED`, `CANCELLED`, `COMPLETED`, oldest update first | `403 ACTION_FORBIDDEN` |
+| `GET /api/events/unassigned` | EC | `200` items: `id`, `name`, `status`, `organiserName`, `startsAt`, `endsAt`, `expectedAttendance`, `updatedAt`; unassigned requests in `SUBMITTED`, `UNDER_REVIEW`, `CLARIFICATION_REQUESTED` or `APPROVED`, oldest update first | `403 ACTION_FORBIDDEN` |
 | `GET /api/events/coordinators` | EC | `200` items: `id`, `displayName`, `email` of every Event Coordinator | `403 ACTION_FORBIDDEN` |
-| `PUT /api/events/:id/coordinator` | EC (any coordinator when unassigned; otherwise only the currently assigned coordinator) | `200` `eventRequestId`, `assignmentId`, `coordinatorId`, `previousCoordinatorId`. Body `{ coordinatorId, note? }`. Updates `event_requests.coordinator_id` and the assignment history together; notifies the new coordinator, the previous coordinator and the organiser | `400 INVALID_EVENT_REQUEST_ID`, `INVALID_INPUT`, `INVALID_ASSIGNMENT_INPUT`, `INVALID_COORDINATOR`; `403 ACTION_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND` (missing, draft, or assigned to another coordinator); `409 ASSIGNMENT_NOT_ALLOWED`, `COORDINATOR_ALREADY_ASSIGNED` |
-| `GET /api/events/:id/assignments` | EO owner, assigned EC, or any EC while the non-draft request is unassigned | `200` items: `id`, `coordinatorId`, `coordinatorName`, `assignedById`, `assignedByName`, `note`, `assignedAt`, `unassignedAt`, newest first | `400 INVALID_EVENT_REQUEST_ID`; `403 ACTION_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND` |
+| `PUT /api/events/:id/coordinator` | EC, unassigned request in one of the four queue statuses above | `200` `eventRequestId`, `assignmentId`, `coordinatorId`, `previousCoordinatorId`. Body `{ coordinatorId, note? }`. Sets the initial `event_requests.coordinator_id` and assignment history together; `previousCoordinatorId` is null. Does not replace existing assignment or generate notifications | `400 INVALID_EVENT_REQUEST_ID`, `INVALID_INPUT`, `INVALID_ASSIGNMENT_INPUT`, `INVALID_COORDINATOR`; `403 ACTION_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND` (missing, draft, or assigned to another coordinator); `409 ASSIGNMENT_NOT_ALLOWED`, `COORDINATOR_ALREADY_ASSIGNED`, `REASSIGNMENT_NOT_AVAILABLE`, `ASSIGNMENT_HISTORY_CONFLICT` |
+| `GET /api/events/:id/assignments` | EO owner, assigned EC, or any EC while the non-draft request is unassigned | `200` items: `id`, `coordinatorId`, `coordinatorName`, `assignmentMethod`, `assignedById`, `assignedByName`, `note`, `assignedAt`, `unassignedAt`, newest first | `400 INVALID_EVENT_REQUEST_ID`; `403 ACTION_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND` |
+
+With migration 006, `assignmentMethod` is `AUTOMATIC` or `MANUAL`. Automatic records have null `assignedById` and `assignedByName`; the UI displays "Assigned automatically on ..." rather than attributing the choice to the organiser or coordinator. Manual records retain their acting staff member and existing display. Existing history defaults to `MANUAL`; the migration does not rewrite its actor or change the current coordinator. The owning organiser sees the history read-only, and assigned coordinators can read it. Assignment controls appear only for initial assignment of unassigned requests; the API also refuses replacement.
 
 ### Events: review start and clarification (CF-04, KAN-27) — `clarification-router.ts`
 
 | Method / route | Roles | Success | Errors |
 | --- | --- | --- | --- |
-| `POST /api/events/:id/start-review` | Assigned EC | `200` `{ eventRequestId, status: "UNDER_REVIEW" }`; `SUBMITTED` → `UNDER_REVIEW`; notifies the organiser | `400 INVALID_EVENT_REQUEST_ID`; `403 ACTION_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND`; `409 REVIEW_NOT_STARTABLE` |
+| `POST /api/events/:id/start-review` | Assigned EC | `200` `{ eventRequestId, status: "UNDER_REVIEW" }`; `SUBMITTED` → `UNDER_REVIEW`; the organiser reads the clarification on the request | `400 INVALID_EVENT_REQUEST_ID`; `403 ACTION_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND`; `409 REVIEW_NOT_STARTABLE` |
 | `GET /api/events/:id/clarifications` | EO owner, assigned EC | `200` items: `id`, `eventRequestId`, `requestedById`, `requestedByName`, `message`, `response`, `createdAt`, `respondedAt`, oldest first | `400 INVALID_EVENT_REQUEST_ID`; `403 ACTION_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND` |
-| `POST /api/events/:id/clarifications` | Assigned EC | `201` `{ clarificationId, eventRequestId, status: "CLARIFICATION_REQUESTED" }`. Body `{ message }` (non-empty, at most 2000 characters). Allowed from `SUBMITTED` or `UNDER_REVIEW`; notifies the organiser | `400 INVALID_EVENT_REQUEST_ID`, `INVALID_INPUT`; `403 ACTION_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND`; `409 CLARIFICATION_NOT_ALLOWED` |
-| `POST /api/events/:id/clarifications/:clarificationId/response` | EO owner | `200` `{ clarificationId, eventRequestId, status }`. Body `{ response }`. `status` is `SUBMITTED` once every open question is answered, otherwise `CLARIFICATION_REQUESTED`; notifies the assigned coordinator | `400 INVALID_EVENT_REQUEST_ID`, `INVALID_CLARIFICATION_ID`, `INVALID_INPUT`; `403 ACTION_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND`, `CLARIFICATION_NOT_FOUND`; `409 CLARIFICATION_ALREADY_ANSWERED`, `CLARIFICATION_NOT_AWAITED` |
+| `POST /api/events/:id/clarifications` | Assigned EC | `201` `{ clarificationId, eventRequestId, status: "CLARIFICATION_REQUESTED" }`. Body `{ message }` (non-empty, at most 2000 characters). Allowed from `SUBMITTED` or `UNDER_REVIEW`; the organiser reads the clarification on the request | `400 INVALID_EVENT_REQUEST_ID`, `INVALID_INPUT`; `403 ACTION_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND`; `409 CLARIFICATION_NOT_ALLOWED` |
+| `POST /api/events/:id/clarifications/:clarificationId/response` | EO owner | `200` `{ clarificationId, eventRequestId, status }`. Body `{ response }`. `status` is `SUBMITTED` once every open question is answered, otherwise `CLARIFICATION_REQUESTED`; the assigned coordinator reads the saved response on the request | `400 INVALID_EVENT_REQUEST_ID`, `INVALID_CLARIFICATION_ID`, `INVALID_INPUT`; `403 ACTION_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND`, `CLARIFICATION_NOT_FOUND`; `409 CLARIFICATION_ALREADY_ANSWERED`, `CLARIFICATION_NOT_AWAITED` |
 
-### Events: lifecycle and status history (CF-06) — `lifecycle-router.ts`
+### Events: status history (KAN-16) ? `status-history-router.ts`
 
 | Method / route | Roles | Success | Errors |
 | --- | --- | --- | --- |
-| `POST /api/events/:id/confirm` | Assigned EC | `200` `{ eventRequestId, status: "CONFIRMED" }`; `APPROVED` → `CONFIRMED`; needs at least one `APPROVED` venue booking and no equipment request still `REQUESTED` | `400 INVALID_EVENT_REQUEST_ID`; `403 ACTION_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND`; `409 EVENT_NOT_CONFIRMABLE`, `VENUE_BOOKING_REQUIRED`, `EQUIPMENT_REQUESTS_PENDING` |
-| `POST /api/events/:id/cancel` | EO owner, assigned EC | `200` `{ eventRequestId, status: "CANCELLED", cancelledVenueBookings, cancelledEquipmentRequests, notifiedAttendees }`. Body `{ reason }` (required). Cancels `PENDING`/`APPROVED` bookings and `REQUESTED`/`RESERVED` equipment requests; the reason is sent to the organiser/coordinator only, registered attendees are told the event is off | `400 INVALID_EVENT_REQUEST_ID`, `INVALID_INPUT`; `403 ACTION_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND`; `409 EVENT_NOT_CANCELLABLE` (`DRAFT`, `REJECTED`, `CANCELLED`, `COMPLETED`) |
-| `POST /api/events/:id/complete` | Assigned EC | `200` `{ eventRequestId, status: "COMPLETED" }`; `CONFIRMED` → `COMPLETED` after `ends_at` has passed by the database clock | `400 INVALID_EVENT_REQUEST_ID`; `403 ACTION_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND`; `409 EVENT_NOT_COMPLETABLE`, `EVENT_NOT_ENDED` |
-| `GET /api/events/:id/history` | EO owner, assigned EC | `200` items: `id`, `fromStatus`, `toStatus`, `changedById`, `changedByName`, `createdAt`, oldest first; rows come from the `event_status_history` trigger | `400 INVALID_EVENT_REQUEST_ID`; `403 ACTION_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND` |
+| `GET /api/events/:id/history` | EO owner, assigned EC | `200` items: `id`, `fromStatus`, `toStatus`, `changedById`, `changedByName`, `createdAt`, oldest first; rows come from the retained status-history trigger | `400 INVALID_EVENT_REQUEST_ID`; `403 ACTION_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND` |
 
-The schema has no cancellation-reason column; the reason travels only in the notifications.
+`POST /api/events/:id/confirm`, `/cancel` and `/complete` are not mounted and return `404 NOT_FOUND`. Existing later-status records remain readable; their presence does not enable those actions. Equipment, registration, change-request and notification application endpoints are also absent. KAN-12 search, KAN-51 availability and KAN-8 booking decisions are mounted under their committed Sprint 2 stories; their contracts are below.
 
 ### Frontend routes
 
-Client navigation is not access control; every page relies on the API responses above. `AppShell.vue` shows organiser links to signed-out visitors and filters the sidebar by the signed-in role. Review and unassigned-queue links require a resolved event-coordinator session; direct review navigation is also protected by `ReviewAccessPage.vue`.
+Client navigation is not access control; every page relies on the API responses above. `AppShell.vue` shows organiser links to signed-out visitors and filters the sidebar by the signed-in role. Review and unassigned-queue links require a resolved event-coordinator session; direct review navigation is also protected by `ReviewAccessPage.vue`. The venue availability link requires a resolved Event Coordinator, Venue Staff or Technical Support Staff session, and the page applies the same check before reading any data.
 
 | Path | Page | Sidebar visibility |
 | --- | --- | --- |
@@ -317,9 +343,101 @@ Client navigation is not access control; every page relies on the API responses 
 | `/events/:id`, `/events/:id/edit` | Organiser detail with the planning panels; draft editing | Linked from the list |
 | `/reviews`, `/reviews/unassigned` | Review queue; unassigned requests | EC after session resolution |
 | `/reviews/:id` | Coordinator review with the planning panels | Linked from the queue |
+| `/venues` | KAN-12 venue search and combined filters | EC after session resolution |
+| `/venue-bookings` | KAN-8 staff pending queue or coordinator outcomes; optional `?eventRequestId=<id>` | VS or EC after session resolution |
+| `/venue-bookings/:id` | KAN-8 request detail and saved decision; writes only for staff with a pending booking | Linked from the booking list; role checked on direct navigation |
+| `/venues/availability` | KAN-51 venue availability calendar; optional `?week=YYYY-MM-DD&venue=<id>` reopens a week and venue | EC, VS or TS after session resolution; also linked from `/reviews/:id` for the event's week |
 
-`EventPlanningPanels.vue` adds the assignment, clarification and lifecycle panels to both detail pages.
+`EventPlanningPanels.vue` adds the assignment, clarification and read-only status-history panels to both detail pages.
 
-**Scope, 26 September 2026:** the venue, equipment, registration, notification and change-request routes recorded here earlier were removed before Sprint 2 so the team builds those stories itself; see the Sprint 2 backlog. Their tables remain in migration 005.
+**Earlier scope correction, 26 September 2026:** the venue, equipment, registration, notification and change-request routes recorded here earlier were removed before Sprint 2 so the team builds those stories itself; see the Sprint 2 backlog. Their tables remain in migration 004. KAN-51's read-only calendar route was rebuilt on 3 October; see [below](#venue-availability-calendar-kan-51-cf-09).
 
-**Verification:** Backend unit and HTTP-boundary tests live under `backend/test/events/` (`create-draft*.test.ts`, `workflow-support.test.ts`, `workflow-routers.test.ts`). PostgreSQL integration tests live under `database/tests/events/` (`create-draft`, `assignment`, `clarifications`, `lifecycle`) and `database/tests/core-schema.integration.test.ts`. Component tests sit beside each page and panel under `frontend/src/features/`. They use fixture authentication, API response fixtures or an isolated PostgreSQL test database. No Playwright check or hosted manual check covers these routes yet; record those results in the [test evidence](../testing/test-evidence.md) before claiming acceptance.
+**Verification:** Backend unit and HTTP-boundary tests live under `backend/test/events/` (`create-draft*.test.ts`, `workflow-support.test.ts`, `workflow-routers.test.ts`). PostgreSQL integration tests live under `database/tests/events/` (`create-draft`, `assignment`, `clarifications`, `status-history`) and `database/tests/core-schema.integration.test.ts`. Component tests sit beside each page and panel under `frontend/src/features/`. They use fixture authentication, API response fixtures or an isolated PostgreSQL test database. Browser checks live in `tests/e2e/`; their response fixtures test UI behavior rather than hosted persistence. The [test evidence](../testing/test-evidence.md) records the exact route/build coverage of local automation, CI and separate hosted observations, including remaining acceptance gaps.
+
+## Venue availability calendar (KAN-51, CF-09)
+
+**Status, 3 October 2026:** implemented on `feat/KAN-51-venue-availability-calendar` in `backend/src/modules/venues/` and mounted by `createRuntimeApp` through the `workspace` dependencies. The route only reads migration 004's `venues`, `venue_bookings` and `venue_unavailability` tables; there is no schema change. Unit, HTTP-boundary, PostgreSQL, component and browser-fixture tests passed on `6ede774` and in CI for PR #22 (AUTO-20261003-01 and AUTO-20261003-02 in the [test evidence](../testing/test-evidence.md)). Hosted acceptance (S2-T05/S2-T06) and peer review are outstanding. The three-role access group is the 21 September team decision; the remaining rules are provisional team assumptions in the [3 October decision](../requirements/assumptions-and-questions.md#3-october-2026--kan-51-venue-availability-calendar).
+
+| Method / route | Roles | Success | Errors |
+| --- | --- | --- | --- |
+| `GET /api/venues/availability?from=…&to=…` | EC, VS, TS | `200` `{ from, to, items }` as described below | `400 INVALID_AVAILABILITY_WINDOW`; `401 AUTHENTICATION_REQUIRED`; `403 ACTION_FORBIDDEN` for EO and AT, before any venue data is read |
+
+- `from` and `to` are single ISO 8601 date-times with an explicit offset or `Z`; `to` must be after `from`, at most 31 days later. The response echoes both as UTC instants. The calendar page requests one Singapore week: Monday 00:00 to the next Monday 00:00 (+08:00).
+- `items` lists every **active** venue, ordered by name, with `id`, `name`, `location`, `capacity`, `opensAt` and `closesAt` (daily `HH:MM` in Singapore time; `null` leaves that end of the day unrestricted) and `unavailable`: the periods overlapping the window, earliest first, returned whole rather than clipped to the window.
+- Each period is either `{ id, kind: "BOOKING", startsAt, endsAt, event }` for an `APPROVED` booking, the implemented meaning of a confirmed booking, or `{ id, kind: "BLOCKED", startsAt, endsAt, reason }` for a `venue_unavailability` row. `PENDING`, `REJECTED` and `CANCELLED` bookings are omitted because they do not hold the venue. Intervals are half-open, so a period ending exactly at `from` or starting exactly at `to` lies outside the window.
+- `event` is `{ id, name }` only for the event's currently assigned coordinator, and never for a draft; it is `null` for every other reader. Block reasons are visible to all three roles. Labels and details remain open under S2-Q03.
+
+```json
+{
+  "from": "2026-10-04T16:00:00.000Z",
+  "to": "2026-10-11T16:00:00.000Z",
+  "items": [{
+    "id": "…", "name": "Harbour Hall", "location": "Level 1, Main Building", "capacity": 300,
+    "opensAt": "08:00", "closesAt": "22:00",
+    "unavailable": [
+      { "id": "…", "kind": "BOOKING", "startsAt": "2026-10-05T02:00:00.000Z", "endsAt": "2026-10-05T04:00:00.000Z", "event": null },
+      { "id": "…", "kind": "BLOCKED", "startsAt": "2026-10-06T01:00:00.000Z", "endsAt": "2026-10-06T10:00:00.000Z", "reason": "Maintenance" }
+    ]
+  }]
+}
+```
+
+Available time is whatever lies inside a venue's opening hours that no listed period covers. `/venues/availability` derives it from this response, showing each day of the selected venue's week as a bar for scanning and a text list for screen readers and narrow screens, labelled Available, Booked or Blocked, with closed hours shaded. It offers previous/this/next week, a date jump, refresh and a venue picker, and keeps the week and venue in the address so a reload or shared link reopens the same view. Signing out or changing accounts unmounts the calendar and aborts its pending read; a 401 clears the local session. Venue Staff and Technical Support Staff need provisioned Supabase Auth accounts linked through `app_users.supabase_user_id`.
+
+**Verification:** `backend/test/venues/` (window parsing, role refusal before any query, response mapping, HTTP boundary), `database/tests/venues/venue-availability.integration.test.ts` (all five roles and signed-out access through `createRuntimeApp`, booking statuses, half-open boundaries, inactive venues, cross-venue isolation, coordinator-only event names and refresh after changes), `frontend/src/features/venues/` (Singapore-time day/segment rules and page states) and `tests/e2e/venue-availability.spec.ts` (navigation by role, denied paths, venue/week changes, reload and a narrow screen). Record executed runs in the [test evidence](../testing/test-evidence.md) against their commit.
+
+
+## Venue search (KAN-12, CF-10)
+
+**Integrated 4 October 2026:** Ryan's venue search is mounted at `/venues` in the frontend. Only Event Coordinators may use the search/filter APIs; calendar access alone grants no search permission.
+
+| Method / route | Success | Failure |
+| --- | --- | --- |
+| `GET /api/venues/filter-options` | `200 { layouts, facilities, accessibility }` from the active catalogue | `401 AUTHENTICATION_REQUIRED`; `403 ACTION_FORBIDDEN` |
+| `GET /api/venues/search-venues` | `200 { items }` with matching current active venues | `400 INVALID_VENUE_SEARCH`; `401 AUTHENTICATION_REQUIRED`; `403 ACTION_FORBIDDEN` |
+
+Optional filters are `startsAt`/`endsAt` (both supplied or both omitted), positive integer `attendance` and `capacity`, `location`, `layout`, boolean `wheelchairAccessible`, and repeated `facilities`/`accessibility` parameters. Empty filters are ignored; each active filter must match. The capacity threshold is the greater of attendance and requested minimum capacity. Required facilities/accessibility values all need to exist on the venue; layout must be supported. The location text matches venue name/location. A provided period is checked against Singapore opening times, approved reservations and operational blocks, using half-open overlap boundaries. Search has no write side effects and an empty match returns an empty list.
+
+The 4 October integration fixes removed a hard-coded `public` schema so isolated test schemas work, and ensure operational blocks exclude a venue even without an approved booking. Three real PostgreSQL regressions are in `database/tests/venues/venue-search.integration.test.ts`; AUTO-20261004-KAN8-01 records the combined local run. This is supporting integration work, not KAN-52 suitability assessment or KAN-53 request submission. Hosted KAN-12 acceptance remains pending.
+
+## Venue booking decisions (KAN-8, CF-13)
+
+**Status, 4 October 2026:** implemented for existing `venue_bookings` rows, using the verified application session and migration 004's retained schema. KAN-53 booking submission remains unimplemented. No new migration or shared Supabase write is part of this implementation. The [implementation choices](../requirements/assumptions-and-questions.md#4-october-2026--kan-8-venue-booking-decisions) distinguish provisional policy from the story criteria. Executed checks belong in AUTO-20261004-KAN8-01 in the [test register](../testing/test-evidence.md); hosted acceptance, peer review and new CI remain pending.
+
+| Method / route | Roles and scope | Success |
+| --- | --- | --- |
+| `GET /api/venue-bookings?eventRequestId=…` | VS: pending bookings across venues. EC: all booking statuses for currently assigned, non-draft events. The optional UUID filter only narrows this scope. | `200 { items: VenueBooking[] }`, oldest request first, stable ID tie-break |
+| `GET /api/venue-bookings/:id` | VS: booking detail in any status, including a saved decision. EC: only a currently assigned, non-draft event. | `200 { booking: VenueBooking }` |
+| `POST /api/venue-bookings/:id/decision` | VS only, `PENDING` booking only | `200 { booking: VenueBooking }` after the decision commits |
+
+Request body for the decision route:
+
+```json
+{ "decision": "REJECTED", "reason": "The requested layout cannot be supported." }
+```
+
+`decision` must be `APPROVED` or `REJECTED`. `reason` is optional text or `null`, trimmed and limited to 2,000 characters; absent/blank becomes `null`. Unknown body fields and invalid types are refused. KAN-8 requires the ability to supply rejection information, but a mandatory reason has not been agreed. This differs from the separately recorded KAN-36/KAN-60 event-rejection rule.
+
+`VenueBooking` contains `id`, `eventRequestId`, `eventName`, `eventStatus`, `venueId`, `venueName`, `status`, `startsAt`, `endsAt`, `layout`, `notes`, `decidedBy`, `decidedAt`, `decisionReason`, `createdAt` and `updatedAt`. It also includes the **current** event's `eventStartsAt`, `eventEndsAt`, `purpose`, `description`, `expectedAttendance`, `venueRequirements` and `accessibilityNeeds`. Event text/timing/requirements and decision fields can be null; booking identifiers, booking timing and status are required. Date-times are ISO instants. This is a current event projection alongside the stored booking period/layout/notes, not a submission snapshot. No organiser email, authentication subject or unrelated event record is returned.
+
+The staff page at `/venue-bookings` opens `/venue-bookings/:id`; the assigned coordinator uses the same routes read-only, with an event-filtered link from `/reviews/:id`. Other roles cannot read these endpoints even if they may read the availability calendar. A saved staff decision remains readable by ID after it leaves the pending queue. The coordinator can find it in their all-status booking list.
+
+| HTTP / code | Meaning |
+| --- | --- |
+| `400 INVALID_VENUE_BOOKING_ID` | Invalid booking UUID. |
+| `400 INVALID_EVENT_REQUEST_ID` | Invalid, repeated or empty `eventRequestId` list filter. |
+| `400 INVALID_BOOKING_DECISION` / `INVALID_INPUT` | Unsupported decision, unknown field/query parameter, invalid reason type or excessive reason length. |
+| `401 AUTHENTICATION_REQUIRED` | No valid session. |
+| `403 ACTION_FORBIDDEN` | Role is not allowed to read/write the requested operation. |
+| `404 VENUE_BOOKING_NOT_FOUND` | Missing booking or coordinator has no current relationship to its non-draft event. |
+| `409 BOOKING_ALREADY_DECIDED` | The booking is no longer pending, including a repeated/opposite decision or a cancelled row. |
+| `409 EVENT_NOT_APPROVED` | Approval requires an event currently in `APPROVED`. Rejection of the pending booking remains available. |
+| `409 VENUE_INACTIVE` | The venue cannot receive an approval while inactive. |
+| `409 VENUE_BOOKING_CONFLICT` | Another approved booking overlaps this venue and period. |
+| `409 VENUE_UNAVAILABLE` | An operational block overlaps this venue and period. |
+
+The write uses one transaction, locks the booking row and rechecks `PENDING`. Approval also locks the event then venue, verifies `APPROVED`/active eligibility, and queries conflicts **after** obtaining the venue lock so competing approvals see the latest committed reservation. Periods use `[startsAt, endsAt)` with no turnover buffer; pending/rejected/cancelled rows do not reserve the venue. Rejection can close a stale pending request without requiring event/venue approval eligibility. The existing database trigger remains a final integrity guard; future booking/block writers must coordinate their venue locking and tests with this path.
+
+A successful write changes only this booking's status, decision actor/time/reason and update timestamp. It preserves the event/venue associations and booking period, and does not transition the event or generate notifications. KAN-51 reads the new approved period on refresh; rejected bookings remain absent. Repeated/competing decisions never overwrite the original outcome. An uncertain client response requires a read before retrying; the UI automatically reloads on 409 and offers a read-only retry after uncertain transport failures.
+
+Verification lives in `backend/test/venues/booking-input.test.ts`, `backend/test/venues/venue-bookings-router.test.ts`, `database/tests/venues/venue-bookings.integration.test.ts`, the two booking page component suites and `tests/e2e/venue-bookings.spec.ts`. Follow the [manual guide](../testing/README.md#kan-8-hosted-verification) with provisioned accounts and coordinated synthetic fixtures. Approval-time conflict coverage does not accept KAN-53 submission or all KAN-54/KAN-55 criteria.

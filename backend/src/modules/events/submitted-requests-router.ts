@@ -18,6 +18,7 @@ import { DraftUpdateInputError } from './draft-update-input.js';
 import { submitEventRequest, SubmitRequestNotFoundError, type SubmitRequestDependencies } from './submit-request.js';
 import { SubmitEligibilityError } from './submit-eligibility.js';
 import { SubmissionValidationError } from './submit-input.js';
+import { AutomaticAssignmentError } from './automatic-assignment.js';
 
 export interface SubmittedRequestsRouterDependencies
   extends SubmittedRequestQueryDependencies, CreateDraftDependencies, UpdateDraftDependencies,
@@ -245,7 +246,7 @@ export function createSubmittedRequestsRouter(dependencies: SubmittedRequestsRou
         response.status(404).json(unavailableRequest);
         return;
       }
-      if (error instanceof SubmitEligibilityError) {
+      if (error instanceof SubmitEligibilityError || error instanceof AutomaticAssignmentError) {
         response.status(409).json({ error: { code: error.code, message: error.message } });
         return;
       }

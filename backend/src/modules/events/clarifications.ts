@@ -1,6 +1,5 @@
-import { notify } from '../notifications/notify.js';
 import {
-  eventLabel, inActorTransaction, iso, isoOrNull, lockEventRequest, othersThan, parseObjectBody,
+  inActorTransaction, iso, isoOrNull, lockEventRequest, parseObjectBody,
   readEventRequest, requiredText, requireRelation, setEventStatus, WorkflowError,
   type WorkflowActor, type WorkflowDependencies,
 } from './workflow-support.js';
@@ -10,7 +9,7 @@ import {
  *   SUBMITTED -> UNDER_REVIEW                          assigned coordinator starts the review
  *   SUBMITTED | UNDER_REVIEW -> CLARIFICATION_REQUESTED assigned coordinator asks a question
  *   CLARIFICATION_REQUESTED -> SUBMITTED               owner has answered every open question
- * The request returns to SUBMITTED because the initial decision service accepts only SUBMITTED.
+ * The request returns to SUBMITTED so the coordinator can review the organiser's answer.
  */
 export interface ClarificationRecord {
   id: string;
@@ -41,11 +40,6 @@ export async function startReview(
       throw new WorkflowError('CONFLICT', 'REVIEW_NOT_STARTABLE', 'Only a submitted request can be moved to under review.');
     }
     await setEventStatus(client, event.id, 'UNDER_REVIEW');
-    await notify(client, othersThan(actor.id, event.organiserId).map((recipientId) => ({
-      recipientId, eventRequestId: event.id, type: 'REVIEW_STARTED',
-      title: 'Review started',
-      message: `A coordinator has started reviewing ${eventLabel(event)}.`,
-    })));
     return { eventRequestId: event.id, status: 'UNDER_REVIEW' as const };
   });
 }
@@ -69,11 +63,6 @@ export async function requestClarification(
       [event.id, actor.id, message],
     );
     await setEventStatus(client, event.id, 'CLARIFICATION_REQUESTED');
-    await notify(client, othersThan(actor.id, event.organiserId).map((recipientId) => ({
-      recipientId, eventRequestId: event.id, type: 'CLARIFICATION_REQUESTED',
-      title: 'Clarification requested',
-      message: `The coordinator needs more information about ${eventLabel(event)}: ${message}`,
-    })));
     return {
       clarificationId: inserted.rows[0]!.id,
       eventRequestId: event.id,
@@ -123,13 +112,6 @@ export async function respondToClarification(
     if (resubmitted) await setEventStatus(client, event.id, 'SUBMITTED');
     else await client.query('UPDATE event_requests SET updated_at = now() WHERE id = $1', [event.id]);
 
-    await notify(client, othersThan(actor.id, event.coordinatorId).map((recipientId) => ({
-      recipientId, eventRequestId: event.id, type: 'CLARIFICATION_ANSWERED',
-      title: 'Clarification answered',
-      message: resubmitted
-        ? `The organiser answered your question about ${eventLabel(event)}. The request awaits review again.`
-        : `The organiser answered one of your questions about ${eventLabel(event)}.`,
-    })));
     return {
       clarificationId,
       eventRequestId: event.id,

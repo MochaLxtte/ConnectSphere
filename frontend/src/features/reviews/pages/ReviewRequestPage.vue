@@ -5,6 +5,7 @@ import { ApiError } from '../../../lib/api-client';
 import { clearLocalSession } from '../../auth/session.js';
 import ReviewDecisionPanel from '../components/ReviewDecisionPanel.vue';
 import EventPlanningPanels from '../../events/components/EventPlanningPanels.vue';
+import { singaporeDateKey } from '../../venues/availability';
 import { fetchReviewRequestDetail, submitReview } from '../api/submitted-requests';
 import type { ReviewFeedback, ReviewRequestDetail, ReviewSubmission } from '../types';
 
@@ -50,7 +51,7 @@ async function refreshQuietly() {
     const detail = await fetchReviewRequestDetail(eventRequestId.value, current?.signal);
     if (!current?.signal.aborted && state.value.status === 'ready') state.value = { status: 'ready', detail };
   } catch {
-    // Handing a request to another coordinator removes access; show the unavailable message.
+    // Refresh failures may reflect expired access; show the current unavailable message.
     if (!current?.signal.aborted) await load();
   }
 }
@@ -127,6 +128,16 @@ onBeforeUnmount(() => {
             : state.detail.registrationRequired ? 'Yes' : 'No' }}</dd>
         </div>
       </dl>
+      <!-- KAN-51: open the venue calendar at the week of the proposed start. -->
+      <RouterLink
+        v-if="state.detail.startsAt"
+        class="availability-link"
+        :to="{ path: '/venues/availability', query: { week: singaporeDateKey(state.detail.startsAt) } }"
+      >Check venue availability for this week</RouterLink>
+      <p><RouterLink
+        class="availability-link"
+        :to="{ path: '/venue-bookings', query: { eventRequestId: state.detail.id } }"
+      >View venue booking requests and decisions</RouterLink></p>
     </section>
 
     <ReviewDecisionPanel
@@ -140,11 +151,10 @@ onBeforeUnmount(() => {
 
     <EventPlanningPanels
       :event-request-id="state.detail.id"
+      :current-coordinator-id="state.detail.coordinatorId"
       :status="state.detail.status"
       viewer-role="EVENT_COORDINATOR"
       :is-owner="false"
-      :starts-at="state.detail.startsAt"
-      :ends-at="state.detail.endsAt"
       @changed="refreshQuietly"
     />
   </template>
@@ -156,6 +166,10 @@ onBeforeUnmount(() => {
 .event-detail dl > div { display: contents; }
 .event-detail dt { font-weight: 600; font-size: 13px; color: #59685e; }
 .event-detail dd { margin: 0; overflow-wrap: anywhere; min-width: 0; }
+.availability-link {
+  display: inline-block; margin-top: 20px; color: var(--green); font-size: 14px;
+  text-decoration: underline; text-underline-offset: 3px;
+}
 @media (max-width: 520px) {
   .event-detail { padding: 20px; }
   .event-detail dl { grid-template-columns: 1fr; gap: 16px; }

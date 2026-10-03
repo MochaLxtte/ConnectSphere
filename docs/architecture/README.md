@@ -4,7 +4,7 @@ ConnectSphere uses one Git repository, one Vue frontend, one Express backend, Su
 
 ## C4 system context
 
-The context diagram describes the intended first release. Implemented today: organiser draft creation, editing and submission, coordinator assignment, clarification, review decisions, and event lifecycle and status history. The venue, equipment, registration and notification workflows are not implemented; migration 005 provides their tables and guards, and Sprint 2 builds the venue stories. Automated unit, component and PostgreSQL tests pass locally for what exists; none of it has been verified against hosted Supabase accounts, so the diagram does not imply acceptance. Venue Staff, Technical Support Staff and Attendee accounts still need provisioning in Supabase Auth and linking through `app_users.supabase_user_id`.
+The context diagram describes the intended first release. Implemented today: organiser draft creation, editing and submission, automatic and initial manual coordinator assignment, clarification, review decisions and read-only status history. KAN-51 provides the internal availability calendar and KAN-12 venue search is integrated. KAN-8 adds staff booking decisions and assigned-coordinator outcomes. Catalogue maintenance, suitability, booking submission and block creation remain to implement, as do the equipment, registration and notification workflows; migration 004 provides their tables and guards, and Sprint 2 builds the venue stories. The test evidence register separates local automated results from the hosted Sprint 1 observations below; the diagram does not imply acceptance. Final confirmation, cancellation/completion, reassignment and notification generation are deferred after the 30 September audit. Venue Staff, Technical Support Staff and Attendee accounts still need provisioning in Supabase Auth and linking through `app_users.supabase_user_id`.
 
 The organiser's approved outcome and rejected status/reason remained visible after refresh in the 17 September hosted check (MAN-20260917-01). Reopening a request URL after sign-out showed a sign-in prompt without request details or the review reason (MAN-20260917-02). Draft and Submitted detail statuses and their no-decision messages also passed (MAN-20260917-03). A second organiser received the unavailable/no-permission message for the first organiser's request and saw an empty request list (MAN-20260917-04). Opening `/events` directly after signing out showed a sign-in prompt without request names or statuses (MAN-20260917-05). The request list showed matching Draft, Submitted, Rejected and Approved labels, and Draft/Submitted detail statuses and review messages remained correct after refresh (MAN-20260917-06). The remaining submission-to-status check is in the [test evidence](../testing/test-evidence.md).
 
@@ -54,11 +54,11 @@ The browser obtains a Supabase access token through sign-in and exchanges it at 
 | Area          | Responsibility                                                        | Current state                                    |
 | ------------- | --------------------------------------------------------------------- | ------------------------------------------------ |
 | auth          | Identity, session lifecycle, role and event access policies           | Supabase sign-in, token verification, mapped profiles and sessions |
-| events        | Requests, drafts, assignment, review, status, significant changes     | Draft creation/edit/submit APIs and organiser forms, shared detail, coordinator queue and atomic decisions, unassigned queue and coordinator handover, review start and clarification, confirm/cancel/complete with status history, and change requests. Implemented with automated tests; source-commit results are in the test evidence register and hosted acceptance and peer review remain outstanding |
-| venues        | Catalogue, suitability, availability, booking decisions and conflicts | Tables and the booking-conflict trigger exist in migration 005; no services or pages. Sprint 2 builds these (KAN-50, 51, 12, 52, 53, 8, 54, 55) |
-| equipment     | Requests, quantity availability, reservations                         | Tables and the pooled-peak trigger exist in migrations 005/006; no services or pages. Planned |
-| registrations | Attendee eligibility, registration and withdrawal                     | Tables and the capacity trigger exist in migration 005; no services or pages. Planned |
-| notifications | Relevant recipients and notification delivery                         | Table and the `notify()` helper exist, written inside the clarification and lifecycle transactions; no inbox route or page. Planned |
+| events        | Requests, drafts, initial assignment, review and status | Draft creation/edit/submit, shared detail, coordinator queue and decisions, automatic allocation, initial manual assignment, review start, clarification and read-only status history. Later lifecycle writes, reassignment and significant changes are deferred. Dated validation is in the test evidence register. |
+| venues        | Catalogue, suitability, availability, booking decisions and conflicts | Tables and the booking-conflict trigger exist in migration 004. The read-only KAN-51 availability calendar (`GET /api/venues/availability`, `/venues/availability`) is implemented with automated tests for the three internal roles; hosted acceptance and peer review remain. KAN-12 search and KAN-8 pending-booking decisions/outcomes are integrated. KAN-8 rechecks conflicts during approval; KAN-50/52/53/55 and remaining KAN-54 integration are not implemented |
+| equipment     | Requests, quantity availability, reservations                         | Tables and the pooled-peak trigger exist in migrations 004/005; no services or pages. Planned |
+| registrations | Attendee eligibility, registration and withdrawal                     | Tables and the capacity trigger exist in migration 004; no services or pages. Planned |
+| notifications | Relevant recipients and notification delivery                         | Historical table retained; no writer, inbox route or page. Future KAN-64 work |
 
 Keep controllers thin: parse requests and call services. Services own permissions and workflow consistency; repositories own parameterized SQL. Add subfolders when real files justify them rather than pre-creating empty controller/service/repository trees. Avoid a global bucket of unrelated utilities. Cross-domain workflows should call explicit services and share a transaction when several reservations or statuses must change together.
 
@@ -66,8 +66,9 @@ The backend is currently laid out under `backend/src/modules/`; see its README f
 
 ## ERD
 
-Migrations 001–004 carry the Sprint 1 request workflow. Migration 005 adds the remaining
-first-release tables and 006 corrects the equipment availability guard. The diagram omits
+Migrations 001–003 provide the Sprint 1 request/authentication foundation. Migration 004 adds the
+broader first-release tables, 005 corrects the equipment availability guard and 006 adds
+automatic coordinator assignment fields. The diagram omits
 housekeeping timestamps, migration metadata and the unused legacy auth fields/tables.
 [docs/database-diagram.md](../database-diagram.md) holds the full generated diagram of
 the live `public` schema, including every foreign key this curated view leaves out.
@@ -90,6 +91,7 @@ erDiagram
     text email UK
     text role
     uuid supabase_user_id UK "nullable until account provisioned"
+    boolean coordinator_available "default false; explicit automatic-allocation opt-in"
   }
   EVENT_REQUESTS {
     uuid id PK
@@ -130,7 +132,8 @@ erDiagram
     uuid id PK
     uuid event_request_id FK
     uuid coordinator_id FK
-    uuid assigned_by FK
+    uuid assigned_by FK "null only for automatic assignment"
+    text assignment_method "AUTOMATIC or MANUAL"
     timestamptz unassigned_at "nullable; one active row per request"
   }
 ```
@@ -228,7 +231,7 @@ the status-history record, one approved booking per venue and period, the pooled
 peak, and the registration capacity. Roles, ownership and transition validity remain
 service responsibilities; `event_registrations` is unique per attendee and event.
 
-Numbered migrations define the reproducible local and CI schema; coordinate equivalent dashboard changes in the shared Supabase project with Arvin. The ERD omits housekeeping fields, migration metadata and unused legacy auth fields/tables. Credentials are managed by Supabase Auth; the nullable historical `password_hash` field and Firebase identity table are not used by the current authentication code. Role checks, event ownership, transition validity and atomic decisions belong to services, with database constraints providing additional integrity.
+Numbered migrations define the reproducible local and CI schema; coordinate equivalent dashboard changes in the shared Supabase project with Arvin. The ERD omits housekeeping fields, migration metadata and unused legacy auth fields/tables. Credentials are managed by Supabase Auth; the nullable historical `password_hash` field is not used by the current authentication code. Role checks, event ownership, transition validity and atomic decisions belong to services, with database constraints providing additional integrity.
 
 ## Decisions and tradeoffs
 
@@ -237,12 +240,11 @@ Numbered migrations define the reproducible local and CI schema; coordinate equi
 - Use hosted Supabase PostgreSQL and explicit SQL migrations for visible schema changes and future reservation transactions. Retain `pg` and the Express service boundary. The small migration runner is forward-only, transactional, checksummed, and tested for repeat execution. Evaluate a fuller migration tool if lifecycle needs grow.
 - Use a direct database connection where the network supports it, or the session pooler on port 5432 for IPv4 development. Connections verify TLS certificates. Compose remains available for optional local databases and isolated tests; GitHub Actions uses its own temporary PostgreSQL service.
 - Coordinate changes against the shared development database. A feature branch isolates code, but it does not isolate Supabase tables or data. Keep schema changes in migrations and agree their order before applying them.
-- Keep credentials out of the repository. Seed profiles have no login credentials; provision Supabase Auth accounts and map them to application profiles through `app_users.supabase_user_id` before sign-in, including the Venue Staff, Technical Support Staff and Attendee accounts the new routes need. `database/seed.ts` also adds fictional venues and equipment types once migration 005 has run, so the catalogue pages have something to show. All mounted routes verify the application session.
-- Use current coordinator assignment as the relationship rule. `event_requests.coordinator_id` refers to `app_users.id`, not the Supabase UUID. Recheck this assignment with the locked row when recording a decision. The assignment workflow now exists: `coordinator_assignments` keeps the history while `coordinator_id` stays the current assignment, any coordinator may claim or assign an unassigned non-draft request, and afterwards only the assigned coordinator may hand it over. That is a provisional team rule; Q-02 stays open for unassigned triage authority and delegation.
+- Keep credentials out of the repository. Seed profiles have no login credentials; provision Supabase Auth accounts and map them to application profiles through `app_users.supabase_user_id` before sign-in, including the Venue Staff, Technical Support Staff and Attendee accounts the new routes need. `database/seed.ts` also adds fictional venues once migration 004 has run; equipment sample generation is removed. All mounted routes verify the application session.
+- Use current coordinator assignment as the relationship rule. `event_requests.coordinator_id` refers to `app_users.id`, not the Supabase UUID. Recheck this assignment with the locked row when recording a decision. KAN-29 now selects an available coordinator on submission using the fewest active requests and ascending UUID order. Status, current coordinator and automatic history commit together; no eligible coordinator leaves an editable draft. Migration 006 adds explicit availability and distinguishes automatic history from manual actors. See the [allocation contract](api-contract.md#kan-29-automatic-assignment-on-submission) and [implementation choices](../requirements/assumptions-and-questions.md#28-september-2026--kan-29-implementation-choices). The separate initial manual workflow permits a coordinator to assign an unassigned non-draft request to themselves or another coordinator. Existing assignments cannot be handed over through the application; KAN-65 and its unresolved policy remain future work.
 - Keep optional draft values nullable. Do not reuse draft validation as submission validation. Record confirmed required fields in the clarification log.
-- Use the nine statuses defined by migration 005: `DRAFT`, `SUBMITTED`, `UNDER_REVIEW`, `CLARIFICATION_REQUESTED`, `APPROVED`, `REJECTED`, `CONFIRMED`, `CANCELLED` and `COMPLETED`. The six Sprint 1 statuses are unchanged; the migration adds the three later lifecycle states. Implemented transitions are draft submission, review start, clarification and its answer, initial approval/rejection, confirmation, cancellation and completion. Request approval remains distinct from confirmation of a fully arranged event, which additionally requires an approved venue booking and no equipment request still awaiting a decision. The transition rules are team implementation assumptions while Q-04 and Q-12 are open.
+- Use the nine statuses defined by migration 004: `DRAFT`, `SUBMITTED`, `UNDER_REVIEW`, `CLARIFICATION_REQUESTED`, `APPROVED`, `REJECTED`, `CONFIRMED`, `CANCELLED` and `COMPLETED`. The six Sprint 1 statuses are unchanged; the migration adds the three later lifecycle states. Implemented transitions are draft submission, review start, clarification and its answer, and initial approval/rejection. Later status values remain readable for compatibility with existing records and KAN-29 workload counting; the application cannot confirm, cancel or complete events. Request approval remains distinct from future final confirmation.
 - A coordinator may record an initial decision from `SUBMITTED` or `UNDER_REVIEW`, so starting a review does not block the decision it precedes. A pending clarification must be answered first, which returns the request to `SUBMITTED`.
-- The venue, equipment, registration and notification modules are implemented on this branch rather than deferred. Their routes mount through the shared `workspace` dependencies in `app.ts`, and database triggers guard the invariants concurrency could break: one approved booking per venue and period, the pooled equipment peak, and the registration capacity. Roles, ownership and transition validity stay in services.
-- Post-approval event fields change only through a reviewed change request, not direct editing, while Q-05 and Q-11 are open. Approving a change to the dates or expected attendance releases the event's open venue bookings and equipment requests and returns a `CONFIRMED` event to `APPROVED`.
+- The 26 September scope correction removed the broader venue, equipment, registration, change-request and notification feature modules. Their schema and database guards remain, but do not establish working interfaces or accepted stories. The 4 October integration adds KAN-12 search, KAN-51 availability and KAN-8 booking decisions within Sprint 2 scope. Equipment, attendee registration, change requests and notification application workflows remain absent.
 
 Record significant changes in the [decision log](../requirements/assumptions-and-questions.md), including context, options, the chosen approach, consequences, linked stories and any superseded decision. Keep implementation assumptions separate from customer clarifications.

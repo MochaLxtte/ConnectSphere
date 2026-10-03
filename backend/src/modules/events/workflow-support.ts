@@ -3,7 +3,7 @@ import type { AuthenticatedUser } from '../auth/types.js';
 import { isAssignedCoordinator } from './coordinator-access.js';
 import type { EventStatus } from './types.js';
 
-/** Shared by the CF-04/05/06/19 workflow services: assignment, clarifications, changes, lifecycle. */
+/** Shared by initial assignment, clarification and status-history services. */
 export type WorkflowActor = Pick<AuthenticatedUser, 'id' | 'role'>;
 
 export interface WorkflowDependencies {
@@ -35,18 +35,10 @@ export interface LockedEventRequest {
   organiserId: string;
   coordinatorId: string | null;
   status: EventStatus;
-  name: string | null;
-  startsAt: Date | null;
-  endsAt: Date | null;
-  expectedAttendance: number | null;
-  /** Evaluated by the database clock so every service shares one notion of "now". */
-  hasEnded: boolean;
 }
 
 const eventColumns = `
-  id, organiser_id AS "organiserId", coordinator_id AS "coordinatorId", status, name,
-  starts_at AS "startsAt", ends_at AS "endsAt", expected_attendance AS "expectedAttendance",
-  COALESCE(ends_at < now(), false) AS "hasEnded"
+  id, organiser_id AS "organiserId", coordinator_id AS "coordinatorId", status
 `;
 
 /** Competing writers wait on this row lock, then inspect the latest committed state. */
@@ -147,36 +139,6 @@ export async function setEventStatus(
     [status, eventRequestId],
   );
   if (updated.rowCount !== 1) throw new Error('The event request status could not be updated.');
-}
-
-/**
- * Q-11/Q-12 (provisional): release arrangements that no longer match the event. Only open
- * bookings and equipment requests change; decided rejections and earlier cancellations stay.
- */
-export async function cancelOpenArrangements(
-  client: Pick<PoolClient, 'query'>,
-  eventRequestId: string,
-): Promise<{ venueBookings: number; equipmentRequests: number }> {
-  const bookings = await client.query(
-    `UPDATE venue_bookings SET status = 'CANCELLED', updated_at = now()
-     WHERE event_request_id = $1 AND status IN ('PENDING', 'APPROVED')`,
-    [eventRequestId],
-  );
-  const equipment = await client.query(
-    `UPDATE equipment_requests SET status = 'CANCELLED', updated_at = now()
-     WHERE event_request_id = $1 AND status IN ('REQUESTED', 'RESERVED')`,
-    [eventRequestId],
-  );
-  return { venueBookings: bookings.rowCount ?? 0, equipmentRequests: equipment.rowCount ?? 0 };
-}
-
-export function eventLabel(event: Pick<LockedEventRequest, 'name'>): string {
-  return event.name?.trim() ? `"${event.name.trim()}"` : 'an untitled event request';
-}
-
-/** Recipients other than the acting user; the caller supplies every potentially affected user. */
-export function othersThan(actorId: string, ...userIds: (string | null | undefined)[]): string[] {
-  return [...new Set(userIds.filter((id): id is string => Boolean(id) && id !== actorId))];
 }
 
 export function parseObjectBody(input: unknown, allowedKeys: readonly string[]): Record<string, unknown> {

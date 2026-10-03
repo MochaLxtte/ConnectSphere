@@ -5,12 +5,15 @@ import {
   assignCoordinator, listAssignments, listCoordinators, listUnassignedRequests,
 } from '../../src/modules/events/assignment.js';
 import { createAssignmentRouter } from '../../src/modules/events/assignment-router.js';
+import { listStatusHistory } from '../../src/modules/events/status-history.js';
+import { createStatusHistoryRouter } from '../../src/modules/events/status-history-router.js';
 import type { WorkflowRouterDependencies } from '../../src/modules/events/workflow-http.js';
 import { WorkflowError, type WorkflowActor } from '../../src/modules/events/workflow-support.js';
 
 vi.mock('../../src/modules/events/assignment.js', () => ({
   assignCoordinator: vi.fn(), listAssignments: vi.fn(), listCoordinators: vi.fn(), listUnassignedRequests: vi.fn(),
 }));
+vi.mock('../../src/modules/events/status-history.js', () => ({ listStatusHistory: vi.fn() }));
 
 const eventId = '10000000-0000-4000-8000-000000000001';
 const coordinator: WorkflowActor = { id: '20000000-0000-4000-8000-000000000001', role: 'EVENT_COORDINATOR' };
@@ -28,6 +31,7 @@ function setup(actor: WorkflowActor | null) {
   app.use(express.json());
   // Same order the runtime uses: the assignment router precedes any GET /:id handler.
   app.use('/api/events', createAssignmentRouter(dependencies));
+  app.use('/api/events', createStatusHistoryRouter(dependencies));
   app.get('/api/events/:id', (_request, response) => { response.status(200).json({ detail: true }); });
   const handleError: ErrorRequestHandler = (_error, _request, response, _next) => {
     response.status(500).json({ error: { code: 'INTERNAL_ERROR', message: 'An unexpected error occurred.' } });
@@ -107,6 +111,8 @@ describe('KAN-29 assignment router HTTP boundary', () => {
     ['NOT_FOUND', 'EVENT_REQUEST_NOT_FOUND', 404],
     ['FORBIDDEN', 'ACTION_FORBIDDEN', 403],
     ['CONFLICT', 'EVENT_NOT_ASSIGNABLE', 409],
+    ['CONFLICT', 'REASSIGNMENT_NOT_AVAILABLE', 409],
+    ['CONFLICT', 'ASSIGNMENT_HISTORY_CONFLICT', 409],
   ] as const)('maps a %s service error to its status', async (kind, code, status) => {
     const { app } = setup(coordinator);
     vi.mocked(assignCoordinator).mockRejectedValue(new WorkflowError(kind, code, 'Explained.'));
@@ -122,5 +128,28 @@ describe('KAN-29 assignment router HTTP boundary', () => {
     const response = await request(app).get(`/api/events/${eventId}/assignments`);
     expect(response.status).toBe(500);
     expect(JSON.stringify(response.body)).not.toContain('secret');
+  });
+});
+
+describe('event status history HTTP boundary', () => {
+  it('keeps the authenticated read-only history route available', async () => {
+    const { app, dependencies } = setup(organiser);
+    vi.mocked(listStatusHistory).mockResolvedValue([]);
+    const response = await request(app).get(`/api/events/${eventId}/history`);
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ items: [] });
+    expect(response.headers['cache-control']).toBe('no-store');
+    expect(listStatusHistory).toHaveBeenCalledExactlyOnceWith(dependencies, {
+      eventRequestId: eventId, actor: organiser,
+    });
+  });
+
+  it.each([
+    { actor: null, expectedStatus: 401 },
+    { actor: { id: organiser.id, role: 'ATTENDEE' as const }, expectedStatus: 403 },
+  ])('refuses history access for $actor before reading data', async ({ actor, expectedStatus }) => {
+    const { app } = setup(actor);
+    expect((await request(app).get(`/api/events/${eventId}/history`)).status).toBe(expectedStatus);
+    expect(listStatusHistory).not.toHaveBeenCalled();
   });
 });

@@ -6,6 +6,22 @@ import pg from 'pg';
 import { migrationDatabaseUrl } from './config.js';
 import { validateDatabaseUrl } from '../backend/src/db/connection.js';
 
+// Retired from fresh installs; existing databases keep their table, data and ledger row.
+// This is the original file's SHA-256 after normalizing CRLF to LF, as below.
+const retiredFirebaseMigration = {
+  name: '003_add_firebase_identities.sql',
+  checksum: '1befbc68426fd4e58e0f3800c7cc6797de60ff0f350115fab5176243bf275ee4',
+} as const;
+
+// These files were renumbered without changing their SQL. Preserve existing ledger
+// names and validate their checksums instead of running the same migration again.
+const priorMigrationNames: Readonly<Record<string, string>> = {
+  '003_add_supabase_user_id.sql': '004_add_supabase_user_id.sql',
+  '004_core_feature_schema.sql': '005_core_feature_schema.sql',
+  '005_equipment_peak_availability.sql': '006_equipment_peak_availability.sql',
+  '006_automatic_coordinator_assignment.sql': '007_automatic_coordinator_assignment.sql',
+};
+
 export async function migrate(connectionString: string): Promise<string[]> {
   const client = new pg.Client({
     connectionString: validateDatabaseUrl(connectionString),
@@ -19,6 +35,13 @@ export async function migrate(connectionString: string): Promise<string[]> {
     await client.query(`CREATE TABLE IF NOT EXISTS schema_migrations (
       name text PRIMARY KEY, checksum text NOT NULL, applied_at timestamptz NOT NULL DEFAULT now()
     )`);
+    const retired = await client.query<{ checksum: string }>(
+      'SELECT checksum FROM schema_migrations WHERE name = $1',
+      [retiredFirebaseMigration.name],
+    );
+    if (retired.rows[0] && retired.rows[0].checksum !== retiredFirebaseMigration.checksum) {
+      throw new Error(`Applied migration ${retiredFirebaseMigration.name} was modified; reconcile its historical checksum before continuing.`);
+    }
     const directory = new URL('./migrations/', import.meta.url);
     const files = (await readdir(directory))
       .filter((name) => /^\d+_[a-z0-9_]+\.sql$/.test(name))
@@ -27,16 +50,17 @@ export async function migrate(connectionString: string): Promise<string[]> {
     for (const name of files) {
       const sql = await readFile(new URL(name, directory), 'utf8');
       const checksum = createHash('sha256').update(sql.replace(/\r\n/g, '\n')).digest('hex');
-      const existing = await client.query<{ checksum: string }>(
-        'SELECT checksum FROM schema_migrations WHERE name = $1',
-        [name],
+      const priorName = priorMigrationNames[name];
+      const existing = await client.query<{ name: string; checksum: string }>(
+        'SELECT name, checksum FROM schema_migrations WHERE name = ANY($1::text[])',
+        [priorName ? [name, priorName] : [name]],
       );
-      const previous = existing.rows[0];
-      if (previous) {
+      // Check every recorded name: a matching alias must not hide a changed checksum.
+      for (const previous of existing.rows) {
         if (previous.checksum !== checksum)
-          throw new Error(`Applied migration ${name} was modified; add a new migration instead.`);
-        continue;
+          throw new Error(`Applied migration ${previous.name} was modified; add a new migration instead.`);
       }
+      if (existing.rows.length > 0) continue;
       await client.query(sql);
       await client.query('INSERT INTO schema_migrations (name, checksum) VALUES ($1, $2)', [
         name,

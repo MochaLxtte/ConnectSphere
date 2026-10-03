@@ -1,4 +1,4 @@
-/* Shared by the assignment, clarification, change-request and lifecycle panels. Values follow
+/* Shared by the assignment, clarification and status-history panels. Values follow
    ReviewDecisionPanel so the panels sit together on the detail pages. */
 .workflow-panel { padding: 24px; color: #293a33; }
 .workflow-panel h2 { font-size: 22px; letter-spacing: -0.5px; }

@@ -6,7 +6,7 @@ import {
 import { formatEventTime } from '../presentation';
 import { usePanelAction, usePanelList, type WorkflowPanelProps } from './use-workflow-panel';
 
-const props = defineProps<WorkflowPanelProps>();
+const props = defineProps<WorkflowPanelProps & { currentCoordinatorId: string | null }>();
 const emit = defineEmits<{ changed: [] }>();
 
 const id = useId();
@@ -22,9 +22,9 @@ const selected = ref('');
 const note = ref('');
 
 const current = computed(() => assignments.value.find((item) => item.unassignedAt === null) ?? null);
-const closed = computed(() => ['DRAFT', 'REJECTED', 'CANCELLED', 'COMPLETED'].includes(props.status));
-const canAssign = computed(() => props.viewerRole === 'EVENT_COORDINATOR' && !closed.value);
-const choices = computed(() => coordinators.value.filter((item) => item.id !== current.value?.coordinatorId));
+const canAssign = computed(() => props.viewerRole === 'EVENT_COORDINATOR'
+  && ['SUBMITTED', 'UNDER_REVIEW', 'CLARIFICATION_REQUESTED', 'APPROVED'].includes(props.status)
+  && props.currentCoordinatorId === null && current.value === null && !loading.value && !loadError.value);
 
 watch(canAssign, async (allowed) => {
   if (!allowed || coordinators.value.length > 0) return;
@@ -37,7 +37,7 @@ watch(canAssign, async (allowed) => {
 }, { immediate: true });
 
 async function submit() {
-  if (!selected.value) return;
+  if (!canAssign.value || !selected.value) return;
   const name = coordinators.value.find((item) => item.id === selected.value)?.displayName ?? 'The coordinator';
   const saved = await run(
     () => assignCoordinator(props.eventRequestId, { coordinatorId: selected.value, note: note.value.trim() || null }),
@@ -70,25 +70,25 @@ async function submit() {
           <strong>{{ current.coordinatorName }}</strong> is coordinating this request
           <span class="panel-meta">(since {{ formatEventTime(current.assignedAt) }}).</span>
         </template>
-        <template v-else>No coordinator has been assigned yet.</template>
+        <template v-else-if="currentCoordinatorId === null">No coordinator has been assigned yet.</template>
+        <template v-else>A coordinator is assigned to this request. Assignment history is unavailable.</template>
       </p>
 
       <form v-if="canAssign" :aria-busy="busy" @submit.prevent="submit">
         <p v-if="coordinatorsError" class="panel-error" role="alert">{{ coordinatorsError }}</p>
-        <label :for="`${id}-coordinator`">{{ current ? 'Hand over to' : 'Assign to' }}</label>
+        <label :for="`${id}-coordinator`">Assign to</label>
         <select :id="`${id}-coordinator`" v-model="selected" :disabled="busy">
           <option value="" disabled>Choose a coordinator</option>
-          <option v-for="option in choices" :key="option.id" :value="option.id">
+          <option v-for="option in coordinators" :key="option.id" :value="option.id">
             {{ option.displayName }} ({{ option.email }})
           </option>
         </select>
         <label :for="`${id}-note`">Note <span class="optional">(optional)</span></label>
         <textarea :id="`${id}-note`" v-model="note" rows="2" maxlength="2000" :disabled="busy" />
-        <p v-if="current" class="panel-hint">After handing over you will no longer have access to this request.</p>
         <p v-if="actionError" class="panel-error" role="alert">{{ actionError }}</p>
         <div class="panel-actions">
           <button type="submit" class="button button-primary" :disabled="busy || !selected">
-            {{ busy ? 'Saving…' : current ? 'Reassign coordinator' : 'Assign coordinator' }}
+            {{ busy ? 'Saving…' : 'Assign coordinator' }}
           </button>
         </div>
       </form>
@@ -104,7 +104,9 @@ async function submit() {
               </span>
             </div>
             <p class="panel-meta">
-              Assigned by {{ item.assignedByName }} on {{ formatEventTime(item.assignedAt) }}<template v-if="item.unassignedAt">,
+              <template v-if="item.assignmentMethod === 'AUTOMATIC'">Assigned automatically</template>
+              <template v-else>Assigned by {{ item.assignedByName }}</template>
+              on {{ formatEventTime(item.assignedAt) }}<template v-if="item.unassignedAt">,
               until {{ formatEventTime(item.unassignedAt) }}</template>
             </p>
             <p v-if="item.note">{{ item.note }}</p>

@@ -22,15 +22,15 @@ export async function seed(connectionString: string): Promise<void> {
       ('20000000-0000-4000-8000-000000000001', '10000000-0000-4000-8000-000000000001',
       'Sample planning workshop', 'Incomplete draft for local development. No customer data.')
       ON CONFLICT DO NOTHING`);
-    // Catalogue tables arrive with migration 005; an older schema keeps its original seed.
+    // Catalogue tables arrive with migration 004; an older schema keeps its original seed.
     const catalogue = await client.query<{ ready: boolean }>(
-      "SELECT to_regclass('venues') IS NOT NULL AND to_regclass('equipment_types') IS NOT NULL AS ready",
+      "SELECT to_regclass('venues') IS NOT NULL AS ready",
     );
     if (!catalogue.rows[0]?.ready) {
       await client.query('COMMIT');
       return;
     }
-    // Fictional catalogue entries so the venue and equipment pages have something to show.
+    // Fictional venue fixtures support the Sprint 2 catalogue work.
     await client.query(`INSERT INTO venues
       (id, name, description, location, capacity, layouts, facilities, accessibility_features,
        wheelchair_accessible, opens_at, closes_at) VALUES
@@ -42,12 +42,6 @@ export async function seed(connectionString: string): Promise<void> {
        '{STEP_FREE_ACCESS}', true, '08:00', '20:00'),
       ('30000000-0000-4000-8000-000000000003', 'Rooftop Terrace', 'Open-air space for networking sessions.',
        'Level 8, Annex', 120, '{STANDING,COCKTAIL}', '{PA_SYSTEM}', '{}', false, '10:00', '22:00')
-      ON CONFLICT DO NOTHING`);
-    await client.query(`INSERT INTO equipment_types (id, name, category, description, total_quantity) VALUES
-      ('40000000-0000-4000-8000-000000000001', 'Portable projector', 'AV', 'Full HD projector with HDMI.', 6),
-      ('40000000-0000-4000-8000-000000000002', 'Wireless microphone', 'AV', 'Handheld microphone with receiver.', 12),
-      ('40000000-0000-4000-8000-000000000003', 'Laptop', 'IT', 'Presentation laptop with adapters.', 8),
-      ('40000000-0000-4000-8000-000000000004', 'Folding table', 'FURNITURE', '1.8 m folding table.', 30)
       ON CONFLICT DO NOTHING`);
     await client.query('COMMIT');
   } catch (error) {

@@ -1,22 +1,23 @@
 import type { UserRole } from '../auth/types.js';
-import { notify, type NotificationInput } from '../notifications/notify.js';
 import type { EventStatus } from './types.js';
+import { lockCoordinators } from './automatic-assignment.js';
 import {
-  eventLabel, inActorTransaction, iso, isoOrNull, lockEventRequest, optionalText, othersThan,
+  inActorTransaction, iso, isoOrNull, lockEventRequest, optionalText,
   parseObjectBody, readEventRequest, requestNotFound, requireRelation, UUID_PATTERN, WorkflowError,
   type WorkflowActor, type WorkflowDependencies,
 } from './workflow-support.js';
 
 /**
- * CF-05 coordinator assignment. Q-02 is still open with the customer, so this is a
- * PROVISIONAL team rule:
- * - any Event Coordinator may see unassigned non-draft requests and the coordinator list;
+ * Manual initial assignment supports the Sprint 2 self/other-coordinator decision:
+ * - any Event Coordinator may see unassigned requests in the current review/planning scope;
  * - any Event Coordinator may assign an unassigned request to themself or a colleague;
- * - once assigned, only the currently assigned coordinator may hand the request over;
- * - drafts and closed requests (REJECTED, CANCELLED, COMPLETED) cannot be assigned.
+ * - an existing assignment cannot be replaced; handover is future KAN-65 work;
+ * - drafts, rejected requests and later lifecycle states cannot be assigned.
  * Coordinators unrelated to an already-assigned request get the same 404 as a missing one.
  */
-const UNASSIGNABLE_STATUSES: readonly EventStatus[] = ['DRAFT', 'REJECTED', 'CANCELLED', 'COMPLETED'];
+const ASSIGNABLE_STATUSES: readonly EventStatus[] = [
+  'SUBMITTED', 'UNDER_REVIEW', 'CLARIFICATION_REQUESTED', 'APPROVED',
+];
 
 export interface UnassignedRequest {
   id: string;
@@ -39,8 +40,9 @@ export interface AssignmentRecord {
   id: string;
   coordinatorId: string;
   coordinatorName: string;
-  assignedById: string;
-  assignedByName: string;
+  assignmentMethod: 'AUTOMATIC' | 'MANUAL';
+  assignedById: string | null;
+  assignedByName: string | null;
   note: string | null;
   assignedAt: string;
   unassignedAt: string | null;
@@ -65,7 +67,7 @@ export function parseAssignmentInput(input: unknown): AssignmentInput {
   return { coordinatorId: body.coordinatorId.toLowerCase(), note: optionalText(body, 'note') };
 }
 
-/** Requests that a coordinator could still pick up; closed requests are left out. */
+/** Unassigned requests in the supported review/planning states. */
 export async function listUnassignedRequests(
   { pool }: WorkflowDependencies,
   actor: WorkflowActor,
@@ -78,9 +80,9 @@ export async function listUnassignedRequests(
             e.ends_at AS "endsAt", e.expected_attendance AS "expectedAttendance",
             e.updated_at AS "updatedAt"
      FROM event_requests e JOIN app_users u ON u.id = e.organiser_id
-     WHERE e.coordinator_id IS NULL AND NOT (e.status = ANY($1::text[]))
+     WHERE e.coordinator_id IS NULL AND e.status = ANY($1::text[])
      ORDER BY e.updated_at ASC, e.id ASC`,
-    [UNASSIGNABLE_STATUSES],
+    [ASSIGNABLE_STATUSES],
   );
   return found.rows.map((row) => ({
     ...row,
@@ -109,7 +111,7 @@ export interface AssignmentResult {
   previousCoordinatorId: string | null;
 }
 
-/** Update the current assignment and its history together. */
+/** Record a manual initial assignment without replacing an existing assignment or history. */
 export async function assignCoordinator(
   { pool }: WorkflowDependencies,
   command: { eventRequestId: string; actor: WorkflowActor; input: unknown },
@@ -123,15 +125,28 @@ export async function assignCoordinator(
     // Hide drafts and other coordinators' requests before revealing any state conflict.
     if (event.status === 'DRAFT') throw requestNotFound();
     if (event.coordinatorId !== null && event.coordinatorId !== actor.id) throw requestNotFound();
-    if (UNASSIGNABLE_STATUSES.includes(event.status)) {
-      throw new WorkflowError('CONFLICT', 'ASSIGNMENT_NOT_ALLOWED', 'A closed event request cannot be assigned.');
+    if (!ASSIGNABLE_STATUSES.includes(event.status)) {
+      throw new WorkflowError('CONFLICT', 'ASSIGNMENT_NOT_ALLOWED', 'An event request in this status cannot be assigned.');
     }
     if (event.coordinatorId === input.coordinatorId) {
       throw new WorkflowError('CONFLICT', 'COORDINATOR_ALREADY_ASSIGNED', 'This coordinator is already assigned to the request.');
     }
+    if (event.coordinatorId !== null) {
+      throw new WorkflowError('CONFLICT', 'REASSIGNMENT_NOT_AVAILABLE', 'This request already has a coordinator. Reassignment is not available.');
+    }
 
-    const targets = await client.query<{ role: UserRole; displayName: string }>(
-      'SELECT role, display_name AS "displayName" FROM app_users WHERE id = $1',
+    const activeAssignment = await client.query<{ exists: boolean }>(
+      `SELECT EXISTS (SELECT 1 FROM coordinator_assignments
+                      WHERE event_request_id = $1 AND unassigned_at IS NULL) AS exists`,
+      [event.id],
+    );
+    if (activeAssignment.rows[0]!.exists) {
+      throw new WorkflowError('CONFLICT', 'ASSIGNMENT_HISTORY_CONFLICT', 'This request already has an active assignment record. Its assignment must be reconciled before assigning it.');
+    }
+
+    await lockCoordinators(client);
+    const targets = await client.query<{ role: UserRole }>(
+      'SELECT role FROM app_users WHERE id = $1',
       [input.coordinatorId],
     );
     const target = targets.rows[0];
@@ -139,12 +154,6 @@ export async function assignCoordinator(
       throw new WorkflowError('INVALID_INPUT', 'INVALID_COORDINATOR', 'The selected user is not an event coordinator.');
     }
 
-    // The partial unique index allows one active row, so close it before inserting the next.
-    await client.query(
-      `UPDATE coordinator_assignments SET unassigned_at = now()
-       WHERE event_request_id = $1 AND unassigned_at IS NULL`,
-      [event.id],
-    );
     const inserted = await client.query<{ id: string }>(
       `INSERT INTO coordinator_assignments (event_request_id, coordinator_id, assigned_by, note)
        VALUES ($1, $2, $3, $4) RETURNING id`,
@@ -155,31 +164,6 @@ export async function assignCoordinator(
       [input.coordinatorId, event.id],
     );
     if (updated.rowCount !== 1) throw new Error('The coordinator assignment could not be saved.');
-
-    const label = eventLabel(event);
-    const notifications: NotificationInput[] = [];
-    if (input.coordinatorId !== actor.id) {
-      notifications.push({
-        recipientId: input.coordinatorId, eventRequestId: event.id, type: 'COORDINATOR_ASSIGNED',
-        title: 'Event request assigned to you',
-        message: `You are now the coordinator for ${label}.`,
-      });
-    }
-    for (const recipientId of othersThan(actor.id, event.coordinatorId)) {
-      notifications.push({
-        recipientId, eventRequestId: event.id, type: 'COORDINATOR_UNASSIGNED',
-        title: 'Event request reassigned',
-        message: `${label} has been reassigned to ${target.displayName}.`,
-      });
-    }
-    for (const recipientId of othersThan(actor.id, event.organiserId)) {
-      notifications.push({
-        recipientId, eventRequestId: event.id, type: 'COORDINATOR_CHANGED',
-        title: 'Coordinator assigned',
-        message: `${target.displayName} is now the coordinator for ${label}.`,
-      });
-    }
-    await notify(client, notifications);
 
     return {
       eventRequestId: event.id,
@@ -204,11 +188,12 @@ export async function listAssignments(
     assignedAt: Date; unassignedAt: Date | null;
   }>(
     `SELECT a.id, a.coordinator_id AS "coordinatorId", c.display_name AS "coordinatorName",
+            a.assignment_method AS "assignmentMethod",
             a.assigned_by AS "assignedById", b.display_name AS "assignedByName", a.note,
             a.assigned_at AS "assignedAt", a.unassigned_at AS "unassignedAt"
      FROM coordinator_assignments a
      JOIN app_users c ON c.id = a.coordinator_id
-     JOIN app_users b ON b.id = a.assigned_by
+     LEFT JOIN app_users b ON b.id = a.assigned_by
      WHERE a.event_request_id = $1
      ORDER BY a.assigned_at DESC, a.id`,
     [event.id],

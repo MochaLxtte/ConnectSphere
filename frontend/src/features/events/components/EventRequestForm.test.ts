@@ -313,6 +313,43 @@ describe('CF-02/CF-03 event request form', () => {
     expect(screen.getByLabelText(/^Event name/)).toBeDisabled();
   });
 
+  it.each([
+    ['NO_AVAILABLE_COORDINATOR', 'No event coordinator is currently available. Your request is still a draft. Please try again later.'],
+    ['DRAFT_ALREADY_ASSIGNED', 'This draft already has a coordinator assignment. Ask the team to check its assignment before submitting.'],
+  ])('KAN-29 keeps the saved draft editable after %s and can retry once the conflict is resolved', async (code, message) => {
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce(jsonResponse(saved({ name: 'Career fair' }), 201))
+      .mockResolvedValueOnce(jsonResponse({ error: { code, message } }, 409))
+      .mockResolvedValueOnce(jsonResponse(saved({ name: 'Career fair', purpose: 'Hiring' })))
+      .mockResolvedValueOnce(jsonResponse({ ...saved({ name: 'Career fair', purpose: 'Hiring' }, 'SUBMITTED'), coordinatorId: 'casey' }));
+    vi.stubGlobal('fetch', fetchMock);
+    const { emitted } = renderForm();
+    await fireEvent.update(screen.getByLabelText(/^Event name/), 'Career fair');
+    await fireEvent.click(submitButton());
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(message);
+    expect(screen.getByLabelText(/^Event name/)).toBeEnabled();
+    expect(screen.getByLabelText(/^Event name/)).toHaveValue('Career fair');
+    expect(submitButton()).toBeEnabled();
+    expect(screen.queryByRole('link', { name: 'View this request' })).not.toBeInTheDocument();
+    expect(emitted().submitted).toBeUndefined();
+
+    // Editing and saving is still allowed; subsequent submission reuses this draft.
+    await fireEvent.update(screen.getByLabelText(/^Purpose/), 'Hiring');
+    expect(saveButton()).toBeEnabled();
+    await fireEvent.click(saveButton());
+    await waitFor(() => expect(emitted().saved).toEqual([['draft-1']]));
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    await fireEvent.click(submitButton());
+
+    await waitFor(() => expect(emitted().submitted).toEqual([['draft-1']]));
+    expect(fetchMock.mock.calls.map((call) => [call[0], (call[1] as RequestInit).method])).toEqual([
+      ['/api/events', 'POST'], ['/api/events/draft-1/submit', 'POST'],
+      ['/api/events/draft-1', 'PATCH'], ['/api/events/draft-1/submit', 'POST'],
+    ]);
+    expect(sentBody(fetchMock, 2)).toEqual({ purpose: 'Hiring' });
+  });
+
   it('keeps the entered details and allows a retry after a failed save', async () => {
     const fetchMock = vi.fn()
       .mockRejectedValueOnce(new TypeError('offline'))

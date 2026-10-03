@@ -787,6 +787,87 @@ S2-T20.
 
 **Supersedes:** The 17 September contract line that coordinators must omit `scope`.
 
+## 1 October 2026 — S1-DEF-01 and S1-DEF-03 repaired and re-verified
+
+**Decision and rationale:** Re-investigated two of the four Sprint 1 carry-over defects against the current `main` (`dff42ed`, after the 26 September KAN-24 over-scope revert) and confirmed both are already fixed, merged before this entry:
+
+- **S1-DEF-03 (KAN-58, under KAN-6):** "Saved-draft-to-submitted-request action reported unavailable although DEMO-05 passed and submission code exists" ([Sprint 1 review](../scrum/sprint-01/review.md#review-defects-and-carry-over)). Root cause: `PATCH /api/events/:id` returns a plain draft record with no `actions`/`review`, but `EventDraftEditPage.vue`'s save/submit handlers read `updated.actions.canEditDraft` on that response. The write always succeeded; reading a field that was never there threw immediately afterward, so submitting from the saved-draft edit path always failed with a generic error — exactly the reported symptom — even though the draft itself saved correctly. Fixed by re-reading the shared `GET` detail after a successful write instead of guessing from a response shape that never carried it.
+- **S1-DEF-01 (KAN-57, under KAN-34):** "Existing draft registration changed No → Yes, but capacity and registration dates were unavailable" (same review record). `EventDraftEditPage.vue` had its own hand-rolled form that predated the registration-window fields added under KAN-24/CF-18 and was never updated to include them. Fixed by replacing that duplicate form with the already-built, already-tested `EventRequestForm.vue` (used by `NewEventPage.vue` for creation), which already has registration capacity/opens/closes fields, conditional on Registration required = Yes.
+
+**Kind:** Team implementation record (bug fixes merged 20 September, re-verified 1 October); not a new customer clarification.
+
+**Verification on re-check:** `npm run check` on current `main` passes — typecheck clean, 190 frontend + 372 backend unit tests, both builds. Targeted re-run of `EventDraftEditPage.test.ts` and `EventRequestForm.test.ts` (23 tests) also passes in isolation. This is automated-fixture coverage only; no hosted Supabase Auth browser walkthrough has been performed for either fix, matching the standing caveat on this environment's test credentials.
+
+**Scope — what this does not close:** S1-DEF-04 (mandatory-field validation gaps under KAN-6/KAN-59) remains open. This work did not assess S1-DEF-02 (KAN-33/KAN-56 coordinator follow-up navigation, Irfan); its separate repair and hosted result are recorded in the 29 September entry and MAN-20260929-01. Hosted/browser acceptance for S1-DEF-01 and S1-DEF-03 (the S2-T19 and S2-T21 scenarios) is also still outstanding — this entry closes the *repair*, not the Sprint 2 acceptance test cases, which need a real account to execute.
+
+**Source and date:** Kai Jie, 1 October 2026.
+
+**Affected story and acceptance-criterion IDs:** KAN-6-AC1/AC4 (S1-DEF-03/KAN-58); KAN-34-AC1–AC3 (S1-DEF-01/KAN-57); supports S2-T19 and S2-T21 in [the Sprint 2 backlog](../scrum/sprint-02/sprint-backlog.md).
+
+**Affected implementation and tests:** `frontend/src/features/events/pages/EventDraftEditPage.vue`, `frontend/src/features/events/components/EventRequestForm.vue`, `frontend/src/features/events/api/event-requests.ts`, `frontend/src/features/events/pages/EventDraftEditPage.test.ts`, `frontend/src/features/events/components/EventRequestForm.test.ts`. Originally merged as PR #17 and PR #18 on 20 September 2026.
+
+**Supersedes:** None — narrows the open scope of S1-DEF-01 and S1-DEF-03 recorded in the [Sprint 1 review](../scrum/sprint-01/review.md#review-defects-and-carry-over) and [Sprint 2 carry-over table](../scrum/sprint-02/sprint-backlog.md#carry-over-repair-criteria-and-tasks); does not reopen or change the Sprint 1 closure record itself.
+
+## 3 October 2026 — KAN-51 venue availability calendar
+
+**Question ID:** S2-Q03 (calendar labels and details) and S2-Q04 (booking-time boundaries); related to Q-06, Q-07 and S2-Q07. Who may use the calendar is the 21 September team decision above.
+
+**Decision and rationale:** The calendar is rebuilt as a read-only module rather than by restoring the code removed on 26 September. `GET /api/venues/availability` returns every active venue with the periods overlapping a requested window of at most 31 days, and `/venues/availability` shows one week of it at a time:
+
+- Only `EVENT_COORDINATOR`, `VENUE_STAFF` and `TECHNICAL_SUPPORT_STAFF` may read it. Organisers, attendees and signed-out callers are refused before any venue data is read; the sidebar link and page follow the same rule. Calendar access grants no booking, catalogue or event-request permission.
+- A confirmed booking is an `APPROVED` `venue_bookings` row, following S2-Q04's note that the booking status is `APPROVED`, distinct from event `CONFIRMED`. `PENDING`, `REJECTED` and `CANCELLED` bookings are not shown, because migration 004's provisional Q-06 rule says they do not hold the venue. Whether pending requests should appear remains open under S2-Q04.
+- Every `venue_unavailability` row is a recorded period of unavailability (KAN-51-AC3; displayed for KAN-55-AC8).
+- Intervals are half-open in the API and the page, so back-to-back periods do not overlap and no turnover buffer is added. The page uses Singapore time (fixed +08:00) and Monday-to-Sunday weeks. Time inside a venue's opening hours that no period covers is available; time outside them is shown as closed, and a missing opening or closing time leaves that end of the day unrestricted.
+- Inactive venues are not listed, because they cannot be requested.
+- Detail visibility (S2-Q03): a booking names its event only to that event's currently assigned coordinator, and never for a draft, because that coordinator can already open the request; every other reader sees an anonymous confirmed booking. Block reasons are shown to all three roles because they explain operational unavailability to the planners KAN-55 serves. Both rules sit in `backend/src/modules/venues/availability.ts` so they can change in one place.
+- Where a booking and a blocked period overlap (S2-Q07), the day bar shows the block and the day's list shows both periods, so neither is hidden.
+
+**Kind:** Team implementation assumption, not a customer clarification. S2-Q03, S2-Q04 and S2-Q07 remain open; the detail-visibility and pending-request rules need team confirmation.
+
+**Source and date:** Ernest, 3 October 2026, while implementing KAN-51.
+
+**Affected story and acceptance-criterion IDs:** KAN-51-AC1–KAN-51-AC6; KAN-55-AC8 (display only); S2-T05, S2-T06.
+
+**Affected implementation and tests:** `backend/src/modules/venues/availability.ts`,
+`backend/src/modules/venues/availability-router.ts`, `backend/src/app.ts`,
+`frontend/src/features/venues/` (`access.ts`, `availability.ts`, `api/availability.ts`,
+`components/VenueAvailabilityCalendar.vue`, `components/VenueWeekTimeline.vue`,
+`pages/VenueAvailabilityPage.vue`), `frontend/src/app/router.ts`,
+`frontend/src/components/AppShell.vue`, `frontend/src/features/reviews/pages/ReviewRequestPage.vue`
+(link to the event's week), `backend/test/venues/availability.test.ts`,
+`backend/test/venues/availability-router.test.ts`,
+`database/tests/venues/venue-availability.integration.test.ts`,
+`frontend/src/features/venues/availability.test.ts`,
+`frontend/src/features/venues/pages/VenueAvailabilityPage.test.ts`,
+`frontend/src/features/reviews/pages/ReviewRequestPage.test.ts`, `tests/e2e/venue-availability.spec.ts`.
+
+**Supersedes:** The 21 September implementation-gap note that the calendar route accepted any authenticated role; that route was removed on 26 September, and the new route enforces the three-role decision. The calendar references in the 19 September Q-07 rule describe removed code.
+
+## 4 October 2026 — KAN-8 venue booking decisions
+
+**Question IDs:** S2-Q04, S2-Q06, S2-Q10; KAN-8 pending-decision concurrency and failure recovery.
+
+**Implementation and rationale:** Tristan has taken KAN-8 (three points) alongside KAN-29 (three points). Staff can list/open existing pending venue requests, approve/reject once and read the saved decision. The event's currently assigned coordinator can read their own booking requests and outcomes. The implementation uses retained migration 004 tables and adds no migration. KAN-53 booking submission is not included: manual checks need existing synthetic pending rows until that story is integrated.
+
+The following are explicit **implementation choices awaiting team/customer confirmation**, not new agreed acceptance criteria:
+
+- All verified `VENUE_STAFF` can review bookings across venues because there is no per-venue staff allocation model. Event Coordinators see only bookings for their currently assigned non-draft events; other roles cannot use this booking-detail API. Calendar permissions remain separately scoped.
+- Only `PENDING` bookings accept a decision. Repeated, opposite or concurrent decisions return `409 BOOKING_ALREADY_DECIDED` after the first successful decision, leaving the first outcome unchanged.
+- Approval requires an `APPROVED` event and an active venue. A stale pending booking can still be rejected. Booking approval does not change event status or implement final event confirmation.
+- Staff receive the current event timing, attendance, purpose/description, venue requirements and accessibility needs alongside the booking's saved period, layout and notes. There is no new immutable requirements snapshot. Future KAN-53 work must agree how submitted requirements and later edits interact.
+- A reason is optional, trimmed and limited to 2,000 characters; blank becomes null. KAN-8 requires staff to be able to provide rejection information, but does not currently require a nonblank reason. Do not infer that requirement from KAN-36/KAN-60.
+- Approval rechecks approved bookings and operational blocks after locking the venue. Intervals are half-open, allowing adjacency without a turnover buffer; pending/rejected/cancelled bookings do not hold availability, consistent with KAN-51's recorded default. Whether pending holds should exist remains an open policy question.
+
+The booking decision transaction preserves the original event/venue association and interval, records the verified staff profile and timestamp, and makes no event-status or notification writes. The existing conflict trigger remains in force. Creating or changing operational blocks is future KAN-55 integration and must coordinate venue locking; this implementation does not settle the block-over-existing-reservation policy.
+
+**Evidence and limits:** Executed local checks are recorded under AUTO-20261004-KAN8-01 in [test evidence](../testing/test-evidence.md); the [manual guide](../testing/README.md#kan-8-hosted-verification) covers real staff/coordinator access, persistence, conflicts and refresh. Hosted acceptance, peer review and newly published CI remain pending. All fetched team branch heads are integrated locally; neither integration nor local tests accepts all selected stories. KAN-50/KAN-52/KAN-53/KAN-55 and the complete connected submission-to-booking path remain separate work.
+
+**Source/date:** Tristan's implementation request; 4 October 2026. This is a development update after the planned 3 October sprint end, not a reconstructed planning/review decision. The 43-point baseline and historical Sprint 1 acceptance remain unchanged; actual Sprint 2 review/closure has not been supplied.
+
+**Affected IDs:** KAN-8-AC1–AC11, TC-13, S2-T13/T14; approval/calendar portions of S2-T15/T16/T23. See the [API contract](../architecture/api-contract.md#venue-booking-decisions-kan-8-cf-13) for the concrete routes and errors.
+
+**Supersedes:** Earlier current-implementation statements that the venue booking decision service/page is absent. Historical removed implementations and test observations keep their dates. Open policy questions are narrowed by these documented defaults, not marked customer-resolved.
+
 ## Decision record template
 
 Copy this block when the team receives an answer or adopts an explicit implementation assumption. Keep superseded decisions so later changes remain explainable.
@@ -800,3 +881,40 @@ Affected story and acceptance-criterion IDs:
 Affected implementation and tests:
 Supersedes, if any:
 ```
+
+## 28 September 2026 — KAN-29 implementation choices
+
+Tristan is implementing automatic initial assignment in Sprint 2. The agreed selection rule remains available coordinators first, then fewest active events, then a consistent identifier order. The following defaults make that rule executable on this branch; they remain implementation choices for team review, not an additional customer clarification or a recorded meeting decision.
+
+| Topic | Implementation choice |
+| --- | --- |
+| Availability | `app_users.coordinator_available`, non-null boolean defaulting to `false`. Configure it in Supabase for provisioned Event Coordinator accounts. Fictional seeds and new profiles remain unavailable until deliberately enabled. No availability-management UI. |
+| Active workload | Count assigned requests in `SUBMITTED`, `UNDER_REVIEW`, `CLARIFICATION_REQUESTED`, `APPROVED` and `CONFIRMED`. Exclude `DRAFT`, `REJECTED`, `CANCELLED` and `COMPLETED`. Count requests, not assignment-history rows or event duration. |
+| Tie break | Lowest application-user UUID using PostgreSQL UUID ascending order. |
+| No eligible coordinator | HTTP `409 NO_AVAILABLE_COORDINATOR`. Submission rolls back; the saved request remains an editable draft with a retry message and no new assignment. |
+| Atomicity and concurrency | Submit, coordinator linkage, automatic assignment history and submission status history commit together. Automatic and manual assignment writers lock the event first and coordinator rows in UUID order; automatic selection counts workload in a fresh statement after waiting. |
+| Existing assignment on a draft | HTTP `409 DRAFT_ALREADY_ASSIGNED`; preserve the existing data for reconciliation. Retried submissions of an already-submitted request keep the existing `REQUEST_NOT_SUBMITTABLE` response. Neither case silently reallocates an event. |
+| History | Migration 007 records `AUTOMATIC` with no human assigner; existing and later manual rows remain `MANUAL` with their actual actor. The organiser remains the actor for the submission status change. |
+| Scope | Existing manual handover permissions stay unchanged. KAN-65 reassignment acceptance and venue workflows are separate; no removed feature is restored by KAN-29. |
+
+Migration 007 is checked in for reproducible local/CI databases. Applying it and configuring eligible accounts in the shared Supabase project require the normal schema coordination with Arvin. No hosted schema change, Jira transition, peer acceptance or hosted manual pass is implied. See the [manual test guide](../testing/README.md#kan-29-hosted-verification).
+
+## 30 September 2026 - Sprint 1 and Sprint 2 application boundary
+
+Restrict the current application to the selected Sprint 1 and Sprint 2 stories. The earlier 28 September retention of manual handover is superseded: KAN-65 replacement of an existing coordinator remains future work. The Sprint 2 meeting's initial manual assignment to self/another coordinator remains available for unassigned requests in Submitted, Under review, Clarification requested or Approved. Automatic KAN-29 allocation and its recorded selection rules are unchanged.
+
+Remove KAN-61 confirmation, KAN-62 cancellation, KAN-10 completion and KAN-64 notification generation from application services, routes and controls. Preserve KAN-16 read-only status/history, KAN-27 clarification and its reply/review-start path, request registration fields needed by the selected draft stories, and existing status values for compatibility.
+
+Preserve applied database history, tables, triggers, constraints and stored data. Do not disable integrity protection or rewrite migrations to imitate a new database. Stop creating future equipment samples in new seed runs. Historical migration tests verify compatibility, not delivery of future application workflows. The [scope audit](README.md#30-september-sprint-scope-audit) and [test evidence](../testing/test-evidence.md#30-september-sprint-scope-correction) distinguish retained foundations, removed actions and verification. No changes to shared Supabase or Jira, sprint points, past review outcomes or future product-backlog criteria are implied.
+
+## 30 September 2026 - Firebase migration retirement
+
+Retire `003_add_firebase_identities.sql` because authentication uses Supabase. Renumber the remaining active files consecutively as 001-006 without changing their SQL: Supabase mapping 004 becomes 003, core schema 005 becomes 004, equipment integrity 006 becomes 005, and automatic assignment 007 becomes 006. The [database guide](../../database/README.md#shared-schema-and-migrations) lists exact filenames. Earlier dated decisions, test records and comments in unchanged SQL retain their original numbering; live setup instructions and implementation links use the new names.
+
+Existing tables, identities and migration records are not deleted or renamed. The runner recognises each exact former filename, validates every recorded old/current checksum and skips already-applied SQL. It writes the current name only for a migration it actually executes, never a fictional alias record. A mismatched checksum rolls back the migration transaction. The retired Firebase checksum is still validated if its exact historical name is recorded; its original SQL remains in Git history. The dashboard-era `003_add_supabase_auth.sql` is a separate record, not an alias.
+
+Read-only inspection found matching checksums under the original names 001, 002 and 004-006, an existing unused identity table without the canonical Firebase history row, and the separate dashboard-era record. Automatic assignment (old 007, now 006) and its new columns were absent. Retirement removes the attempt to recreate the legacy table, and the aliases let the updated runner proceed to only the new 006 once rollout is coordinated. This supersedes the earlier recommendation to restore missing Firebase history. It does not establish full hosted-schema equivalence or KAN-29 acceptance. No shared schema, data or history mutation is part of this repository change.
+
+## 30 September 2026 - Shared migration verification
+
+After migration 006 was applied to the shared project, read-only inspection confirmed its history checksum and KAN-29 columns/constraint. A fresh local run of 001-006 reproduced the application's tables, columns, constraints, indexes, triggers and normalized project function definitions. [DB-SCHEMA-20260930-01](../testing/test-evidence.md#30-september-migration-and-hosted-schema-consistency) records the counts and hosted-only RLS automation. No applied SQL file needs correction and no shared data or history was changed during this verification. Earlier observations that 006 was pending describe the pre-migration state; availability setup, hosted manual acceptance, CI and peer review remain separate work.

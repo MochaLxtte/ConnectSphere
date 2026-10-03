@@ -41,7 +41,7 @@ export async function createDraft(
   let releaseError: Error | undefined;
   try {
     await client.query('BEGIN ISOLATION LEVEL READ COMMITTED');
-    // Attribute the initial status-history row to the organiser (see migration 005).
+    // Attribute the initial status-history row to the organiser (see migration 004).
     await client.query(`SELECT set_config('app.actor_id', $1, true)`, [actor.id]);
 
     const created = await client.query<DraftRow>(`
