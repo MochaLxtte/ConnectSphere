@@ -69,8 +69,13 @@ export function patchJson<T>(path: `/api/${string}`, body: unknown, signal?: Abo
   return sendJson<T>('PATCH', path, body, signal);
 }
 
+/** Keep calls same-origin; Vite proxies /api to Express during development. */
+export function deleteJson<T>(path: `/api/${string}`, signal?: AbortSignal): Promise<T> {
+  return sendJson<T>('DELETE', path, undefined, signal);
+}
+
 async function sendJson<T>(
-  method: 'POST' | 'PATCH',
+  method: 'POST' | 'PATCH' | 'DELETE',
   path: `/api/${string}`,
   body: unknown,
   signal?: AbortSignal,
@@ -79,8 +84,10 @@ async function sendJson<T>(
   try {
     response = await fetch(path, {
       method,
-      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
+      headers: body === undefined
+        ? { Accept: 'application/json' }
+        : { Accept: 'application/json', 'Content-Type': 'application/json' },
+      ...(body === undefined ? {} : { body: JSON.stringify(body) }),
       signal,
     });
   } catch (error) {

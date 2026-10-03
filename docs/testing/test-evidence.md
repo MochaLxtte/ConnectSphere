@@ -2,6 +2,23 @@
 
 Record each relevant run with its commit, scope and result. Store concise report exports alongside this document and link the corresponding tests from the [traceability matrix](../requirements/traceability.csv). The [Sprint 1 acceptance test plan](../scrum/sprint-01/sprint-backlog.md#acceptance-test-plan) provides the initial scenario and acceptance-criterion IDs.
 
+## 4 October: venue-unavailability blocks
+
+**AUTO-20261004-KAN55-01 — local automated verification, integration not executed.** Tested on `feat/KAN-55-block-venue-unavailability`, branched from `main` (`667c4ef`), with Node 24 on Windows.
+
+| Command / environment | Actual result |
+| --- | --- |
+| `npm run check` | Passed: tools/frontend/backend type checks, **300 frontend tests** (293 + 7 new `VenueBlocksPage.test.ts` cases), **503 backend tests** (472 + 20 new `block-input.test.ts` cases + 11 new `block-router.test.ts` cases), and both production builds. |
+| `npx vitest run test/venues/block-input.test.ts` (backend, isolated) | Passed: 20 tests, including the mandatory-reason requirement, missing/invalid/out-of-order dates, and confirming `venueId` is not an accepted body field. |
+| `npx vitest run test/venues/block-router.test.ts` (backend, isolated) | Passed: 11 tests covering authentication (401), role gate (403, Venue Staff only), venue/block UUID validation (400), the create/list/delete success paths forwarding verified actor/params/body to the service, and `WorkflowError`-to-HTTP mapping (409/404). |
+| `npx vitest run src/features/venues/pages/VenueBlocksPage.test.ts` (frontend, isolated) | Passed: 7 tests covering venue-list loading, the non-staff read-only message with no fetch, block creation and reload, client-side time validation, block removal and reload, and load-error retry. |
+| `database/tests/venues/venue-blocks.integration.test.ts` (new) | **Not executed.** `TEST_DATABASE_URL` is blank in `.env` and Docker is unavailable in this environment, so the local fallback test database (see [Commands](../../CLAUDE.md#commands)) could not be created — the same limitation recorded for KAN-53 above. The suite covers KAN-55-AC1–AC13 (association, role checks, venue eligibility, the booking-overlap conflict, listing, deletion) but has no execution result yet. |
+| `npm run test:e2e` | Not executed this session (same constraint: Playwright's `webServer` needs a migrated dev database). |
+
+This is automated-fixture coverage at the unit/component level only. It does not establish real PostgreSQL persistence/concurrency behaviour, a hosted Venue Staff walkthrough, CI or peer review for this branch.
+
+**Remaining:** execute the integration suite against a dedicated test database; execute the browser suite; agree the [block-over-existing-booking implementation default](../requirements/assumptions-and-questions.md#4-october-2026--kan-55-block-venue-for-operational-unavailability) with the team/customer; obtain peer review and CI. No hosted acceptance, Jira Done transition, Sprint 2 review outcome or change to the **43-point** baseline is claimed. Nothing was pushed by this task.
+
 ## 4 October: integrated venue booking decisions
 
 **AUTO-20261004-KAN8-01 — local automated verification.** Tested code through `723804f` on `codex/KAN-29-automatic-coordinator-assignment`, with Node 24.21.0 on Windows. The live fetch included `origin/main` (`b981f11`), draft verification (`a2a77d7`), Ryan's venue search (`16b59f0`) and Ernest's availability calendar (`d33d18c`); their histories are retained in merge commits `1e6b0e1`, `9a6dfcf`, `2adea20` and `3629526`. The published scope-correction branch was already an ancestor. A second fetch confirmed the same heads. Unpublished teammate work is outside this statement.
