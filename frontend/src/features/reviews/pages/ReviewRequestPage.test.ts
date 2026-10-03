@@ -60,6 +60,13 @@ async function chooseApproval() {
 }
 
 describe('KAN-33 review request detail page', () => {
+  it('KAN-8 links the coordinator to booking outcomes for this event', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonResponse(detail)));
+    await renderDetail();
+    expect(await screen.findByRole('link', { name: 'View venue booking requests and decisions' }))
+      .toHaveAttribute('href', '/venue-bookings?eventRequestId=a');
+  });
+
   it('KAN-51 links to venue availability for the Singapore week of the proposed start', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonResponse({ ...detail, startsAt: '2026-10-04T16:30:00Z' })));
     await renderDetail();

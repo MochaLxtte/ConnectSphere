@@ -12,6 +12,8 @@ import ReviewRequestPage from '../features/reviews/pages/ReviewRequestPage.vue';
 import VenueAvailabilityPage from '../features/venues/pages/VenueAvailabilityPage.vue';
 import NotFoundPage from '../components/NotFoundPage.vue';
 import VenueSearchPage from '../features/venues/pages/VenueSearchPage.vue';
+import VenueBookingsPage from '../features/venues/pages/VenueBookingsPage.vue';
+import VenueBookingDetailPage from '../features/venues/pages/VenueBookingDetailPage.vue';
 
 export const router = createRouter({
   history: createWebHistory(),
@@ -32,6 +34,8 @@ export const router = createRouter({
       ],
     },
     { path: '/venues', component: VenueSearchPage, meta: { title: 'Venue search' } },
+    { path: '/venue-bookings', component: VenueBookingsPage, meta: { title: 'Venue bookings' } },
+    { path: '/venue-bookings/:id', component: VenueBookingDetailPage, meta: { title: 'Venue booking' } },
     { path: '/:pathMatch(.*)*', component: NotFoundPage, meta: { title: 'Page not found' } },
   ],
   scrollBehavior: () => ({ top: 0 }),

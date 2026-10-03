@@ -134,6 +134,10 @@ onBeforeUnmount(() => {
         class="availability-link"
         :to="{ path: '/venues/availability', query: { week: singaporeDateKey(state.detail.startsAt) } }"
       >Check venue availability for this week</RouterLink>
+      <p><RouterLink
+        class="availability-link"
+        :to="{ path: '/venue-bookings', query: { eventRequestId: state.detail.id } }"
+      >View venue booking requests and decisions</RouterLink></p>
     </section>
 
     <ReviewDecisionPanel

@@ -9,6 +9,8 @@ const role = computed(() => authSession.user?.role ?? null);
 const showOrganiser = computed(() => role.value === null || role.value === 'EVENT_ORGANISER');
 const showCoordinator = computed(() => !authSession.loading && role.value === 'EVENT_COORDINATOR');
 const showVenuePlanning = computed(() => !authSession.loading && canViewVenueAvailability(role.value));
+const showVenueBookings = computed(() => !authSession.loading &&
+  (role.value === 'EVENT_COORDINATOR' || role.value === 'VENUE_STAFF'));
 
 onMounted(() => { void restoreSession().catch(() => undefined); });
 
@@ -61,6 +63,9 @@ async function handleSignOut(): Promise<void> {
           <p class="nav-label">Venue planning</p>
           <RouterLink to="/venues/availability" exact-active-class="is-active" class="nav-link"
             ><AppIcon name="availability" />Venue availability</RouterLink
+          >
+          <RouterLink v-if="showVenueBookings" to="/venue-bookings" exact-active-class="is-active" class="nav-link"
+            ><AppIcon name="review" />Venue bookings</RouterLink
           >
         </template>
       </nav>
