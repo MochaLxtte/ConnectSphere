@@ -15,7 +15,10 @@ type State = { status: 'idle' | 'loading' }
   | { status: 'error'; message: string; retryable: boolean };
 
 const route = useRoute();
-const bookingId = computed(() => String(route.params.id));
+// A synchronous route watcher can run before this page unmounts. Other pages may
+// also have an `id` parameter, so only read it while the booking-detail route matches.
+const bookingId = computed(() => route.matched.some((record) => record.path === '/venue-bookings/:id')
+  && typeof route.params.id === 'string' ? route.params.id : '');
 const staff = computed(() => authSession.user?.role === 'VENUE_STAFF');
 const allowed = computed(() => staff.value || authSession.user?.role === 'EVENT_COORDINATOR');
 const state = ref<State>({ status: 'idle' });
@@ -36,7 +39,7 @@ let viewVersion = 0;
 async function load() {
   readController?.abort();
   state.value = { status: 'idle' };
-  if (authSession.loading || !allowed.value) return;
+  if (authSession.loading || !allowed.value || !bookingId.value) return;
   const current = new AbortController();
   readController = current;
   state.value = { status: 'loading' };

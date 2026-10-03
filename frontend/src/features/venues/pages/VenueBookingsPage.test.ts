@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/vue';
 import { nextTick } from 'vue';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { createMemoryHistory, createRouter } from 'vue-router';
+import { createMemoryHistory, createRouter, RouterView } from 'vue-router';
 import { authSession, type SignedInUser, type UserRole } from '../../auth/session.js';
 import type { VenueBooking } from '../api/venue-bookings';
 import VenueBookingsPage from './VenueBookingsPage.vue';
@@ -35,11 +35,12 @@ function deferred() {
 async function open(path = '/venue-bookings') {
   const router = createRouter({ history: createMemoryHistory(), routes: [
     { path: '/venue-bookings', component: VenueBookingsPage },
+    { path: '/venue-bookings/:id', component: { template: '<h1>Booking detail destination</h1>' } },
     { path: '/:pathMatch(.*)*', component: { template: '<p>Other page</p>' } },
   ] });
   await router.push(path);
   await router.isReady();
-  return { ...render(VenueBookingsPage, { global: { plugins: [router] } }), router };
+  return { ...render(RouterView, { global: { plugins: [router] } }), router };
 }
 
 beforeEach(() => { session.user = user(); session.loading = false; });
@@ -167,5 +168,16 @@ describe('KAN-8 venue booking requests list', () => {
     expect(fetchMock.mock.calls[1]![0]).toBe('/api/venue-bookings?eventRequestId=event-b');
     expect(screen.queryByText('Career fair · Harbour Hall')).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Try again' })).not.toBeInTheDocument();
+  });
+
+  it('opens a filtered booking without reloading an unfiltered list before unmount', async () => {
+    const fetchMock = vi.fn().mockResolvedValueOnce(json({ items: [booking] }));
+    vi.stubGlobal('fetch', fetchMock);
+    await open('/venue-bookings?eventRequestId=event-a');
+    await fireEvent.click(await screen.findByRole('link', { name: 'Career fair · Harbour Hall' }));
+    expect(await screen.findByRole('heading', { name: 'Booking detail destination' })).toBeInTheDocument();
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock.mock.calls[0]![0]).toBe('/api/venue-bookings?eventRequestId=event-a');
+    expect((fetchMock.mock.calls[0]![1] as RequestInit).signal?.aborted).toBe(true);
   });
 });

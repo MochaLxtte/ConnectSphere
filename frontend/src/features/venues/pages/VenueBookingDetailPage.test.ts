@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/vue';
 import { nextTick } from 'vue';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { createMemoryHistory, createRouter } from 'vue-router';
+import { createMemoryHistory, createRouter, RouterView } from 'vue-router';
 import { authSession, type SignedInUser, type UserRole } from '../../auth/session.js';
 import type { VenueBooking, VenueBookingDecision } from '../api/venue-bookings';
 import VenueBookingDetailPage from './VenueBookingDetailPage.vue';
@@ -43,11 +43,13 @@ async function settle(pending: ReturnType<typeof deferred>, response: Response) 
 async function open(id = 'booking-a') {
   const router = createRouter({ history: createMemoryHistory(), routes: [
     { path: '/venue-bookings/:id', component: VenueBookingDetailPage },
+    { path: '/venue-bookings', component: { template: '<h1>Venue booking queue</h1>' } },
+    { path: '/reviews/:id', component: { template: '<h1>Event review destination</h1>' } },
     { path: '/:pathMatch(.*)*', component: { template: '<p>Other page</p>' } },
   ] });
   await router.push(`/venue-bookings/${id}`);
   await router.isReady();
-  return { ...render(VenueBookingDetailPage, { global: { plugins: [router] } }), router };
+  return { ...render(RouterView, { global: { plugins: [router] } }), router };
 }
 async function choose(decision: VenueBookingDecision = 'APPROVED', reason?: string) {
   await screen.findByRole('heading', { name: 'Career fair' });
@@ -291,6 +293,27 @@ describe('KAN-8 booking detail and staff decisions', () => {
     expect(screen.queryByText('Venue booking approved.')).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Record decision' })).toBeDisabled();
     expect((fetchMock.mock.calls[1]![1] as RequestInit).signal?.aborted).toBe(true);
+  });
+
+  it('returns to the queue without fetching an undefined booking before unmount', async () => {
+    const fetchMock = vi.fn().mockResolvedValueOnce(json({ booking }));
+    vi.stubGlobal('fetch', fetchMock);
+    await open();
+    await screen.findByRole('heading', { name: 'Career fair' });
+    await fireEvent.click(screen.getByRole('link', { name: 'Back to venue booking requests' }));
+    expect(await screen.findByRole('heading', { name: 'Venue booking queue' })).toBeInTheDocument();
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect((fetchMock.mock.calls[0]![1] as RequestInit).signal?.aborted).toBe(true);
+  });
+
+  it.each(['event-b', 'booking-a'])('does not treat the next route id %s as a booking id', async (id) => {
+    const fetchMock = vi.fn().mockResolvedValueOnce(json({ booking }));
+    vi.stubGlobal('fetch', fetchMock);
+    const { router } = await open();
+    await screen.findByRole('heading', { name: 'Career fair' });
+    await router.push(`/reviews/${id}`);
+    expect(await screen.findByRole('heading', { name: 'Event review destination' })).toBeInTheDocument();
+    expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
   it('removes private data immediately when a permitted role becomes forbidden', async () => {

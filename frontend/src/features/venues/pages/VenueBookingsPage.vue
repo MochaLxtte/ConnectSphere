@@ -11,6 +11,7 @@ type State = { status: 'idle' | 'loading' }
   | { status: 'error'; message: string; retryable: boolean };
 
 const route = useRoute();
+const isListRoute = computed(() => route.matched.some((record) => record.path === '/venue-bookings'));
 const eventRequestId = computed(() => typeof route.query.eventRequestId === 'string' ? route.query.eventRequestId : undefined);
 const staff = computed(() => authSession.user?.role === 'VENUE_STAFF');
 const allowed = computed(() => staff.value || authSession.user?.role === 'EVENT_COORDINATOR');
@@ -20,7 +21,7 @@ let controller: AbortController | undefined;
 async function load() {
   controller?.abort();
   state.value = { status: 'idle' };
-  if (authSession.loading || !allowed.value) return;
+  if (authSession.loading || !allowed.value || !isListRoute.value) return;
   const current = new AbortController();
   controller = current;
   state.value = { status: 'loading' };
@@ -43,7 +44,7 @@ async function load() {
 }
 
 // Remove private results immediately whenever the account, role or event filter changes.
-watch(() => [authSession.loading, authSession.user?.id, authSession.user?.role, eventRequestId.value],
+watch(() => [authSession.loading, authSession.user?.id, authSession.user?.role, isListRoute.value, eventRequestId.value],
   () => { void load(); }, { immediate: true, flush: 'sync' });
 onBeforeUnmount(() => controller?.abort());
 </script>
