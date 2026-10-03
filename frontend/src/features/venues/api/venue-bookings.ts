@@ -40,6 +40,23 @@ export async function fetchVenueBookings(eventRequestId?: string, signal?: Abort
   return (await getJson<{ items: VenueBooking[] }>(`/api/venue-bookings${query}`, signal)).items;
 }
 
+/** KAN-53 submission fields; the event's own venue requirements are shown separately, not resent. */
+export interface VenueBookingSubmissionInput {
+  venueId: string;
+  startsAt: string;
+  endsAt: string;
+  layout: string | null;
+  notes: string | null;
+}
+
+export async function submitVenueBooking(
+  eventRequestId: string, input: VenueBookingSubmissionInput, signal?: AbortSignal,
+): Promise<VenueBooking> {
+  return (await postJson<{ booking: VenueBooking }>(
+    `/api/events/${encodeURIComponent(eventRequestId)}/venue-bookings`, input, signal,
+  )).booking;
+}
+
 export async function fetchVenueBooking(id: string, signal?: AbortSignal): Promise<VenueBooking> {
   return (await getJson<{ booking: VenueBooking }>(`/api/venue-bookings/${encodeURIComponent(id)}`, signal)).booking;
 }

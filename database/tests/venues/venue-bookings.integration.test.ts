@@ -6,7 +6,7 @@ import type { UserRole } from '../../../backend/src/modules/auth/types.js';
 import type { EventStatus } from '../../../backend/src/modules/events/types.js';
 import type { WorkflowActor } from '../../../backend/src/modules/events/workflow-support.js';
 import {
-  decideVenueBooking, getVenueBooking, listVenueBookings,
+  createVenueBooking, decideVenueBooking, getVenueBooking, listVenueBookings,
 } from '../../../backend/src/modules/venues/booking-service.js';
 import { listVenueAvailability } from '../../../backend/src/modules/venues/availability.js';
 import { createWorkflowFixture, type WorkflowFixture } from '../events/workflow-fixture.js';
@@ -235,6 +235,88 @@ describe('KAN-8 atomic venue booking decisions against PostgreSQL', () => {
 
   it('returns the same not-found response for a missing booking', async () => {
     await expect(decide(randomUUID(), 'APPROVED')).rejects.toMatchObject({ code: 'VENUE_BOOKING_NOT_FOUND' });
+  });
+});
+
+const submission = { venueId: '', startsAt, endsAt, layout: 'Theatre', notes: 'Projector required' };
+const submit = (eventRequestId: string, actor: WorkflowActor, overrides: Partial<typeof submission> = {}) =>
+  createVenueBooking(fixture.dependencies,
+    { eventRequestId, actor, input: { ...submission, ...overrides } });
+
+describe('KAN-53 venue booking submission against PostgreSQL', () => {
+  it('creates a pending booking associated with the correct event and venue (AC1-AC7, AC9, AC10)', async () => {
+    const venueId = randomUUID();
+    await fixture.pool.query('INSERT INTO venues(id,name,capacity) VALUES($1,$2,100)', [venueId, `Venue ${venueId}`]);
+    const eventRequestId = await fixture.createEvent({ organiserId: organiser.id, coordinatorId: coordinator.id });
+    const saved = await submit(eventRequestId, coordinator, { venueId });
+    expect(saved).toMatchObject({
+      eventRequestId, venueId, status: 'PENDING', startsAt, endsAt,
+      layout: 'Theatre', notes: 'Projector required', decidedBy: null, decidedAt: null,
+      venueRequirements: 'A hall',
+    });
+    expect(await row(saved.id)).toMatchObject({
+      event_request_id: eventRequestId, venue_id: venueId, requested_by: coordinator.id, status: 'PENDING',
+    });
+  });
+
+  it('becomes visible to venue staff review and to the coordinator, but not before approval (AC8)', async () => {
+    const created = await booking({ eventStatus: 'SUBMITTED' });
+    const saved = await submit(created.eventRequestId, coordinator, { venueId: created.venueId });
+    const staffQueue = await listVenueBookings(fixture.dependencies, { actor: staff, eventRequestId: created.eventRequestId });
+    expect(staffQueue.map((item) => item.id)).toContain(saved.id);
+    expect(saved.status).toBe('PENDING');
+    const coordinatorItems = await listVenueBookings(fixture.dependencies, { actor: coordinator, eventRequestId: created.eventRequestId });
+    expect(coordinatorItems.map((item) => item.id)).toContain(saved.id);
+  });
+
+  it.each(['EVENT_ORGANISER', 'VENUE_STAFF', 'TECHNICAL_SUPPORT_STAFF', 'ATTENDEE'] as const)(
+    'refuses submission by %s without creating a row (AC11)', async (role) => {
+      const eventRequestId = await fixture.createEvent({ organiserId: organiser.id, coordinatorId: coordinator.id });
+      const before = await fixture.pool.query('SELECT count(*)::int AS count FROM venue_bookings WHERE event_request_id = $1', [eventRequestId]);
+      const actor = role === 'EVENT_ORGANISER' ? organiser : await fixture.createUser(role);
+      await expect(submit(eventRequestId, actor, { venueId: randomUUID() }))
+        .rejects.toMatchObject({ code: 'ACTION_FORBIDDEN' });
+      expect((await fixture.pool.query('SELECT count(*)::int AS count FROM venue_bookings WHERE event_request_id = $1', [eventRequestId])).rows[0].count)
+        .toBe(before.rows[0].count);
+    },
+  );
+
+  it('refuses submission by an unrelated or unassigned coordinator with the same not-found response (AC11)', async () => {
+    const eventRequestId = await fixture.createEvent({ organiserId: organiser.id, coordinatorId: coordinator.id });
+    await expect(submit(eventRequestId, otherCoordinator, { venueId: randomUUID() }))
+      .rejects.toMatchObject({ code: 'EVENT_REQUEST_NOT_FOUND' });
+    const draftId = await fixture.createEvent({ organiserId: organiser.id, coordinatorId: coordinator.id, status: 'DRAFT' });
+    await expect(submit(draftId, coordinator, { venueId: randomUUID() }))
+      .rejects.toMatchObject({ code: 'EVENT_REQUEST_NOT_FOUND' });
+  });
+
+  it.each(['REJECTED', 'CANCELLED', 'COMPLETED'] as const)(
+    'refuses submission for a %s event', async (eventStatus) => {
+      const eventRequestId = await fixture.createEvent({ organiserId: organiser.id, coordinatorId: coordinator.id, status: eventStatus });
+      await expect(submit(eventRequestId, coordinator, { venueId: randomUUID() }))
+        .rejects.toMatchObject({ code: 'EVENT_NOT_ELIGIBLE' });
+    },
+  );
+
+  it('refuses submission for a missing or inactive venue', async () => {
+    const eventRequestId = await fixture.createEvent({ organiserId: organiser.id, coordinatorId: coordinator.id });
+    await expect(submit(eventRequestId, coordinator, { venueId: randomUUID() }))
+      .rejects.toMatchObject({ code: 'VENUE_NOT_FOUND' });
+    const venueId = randomUUID();
+    await fixture.pool.query('INSERT INTO venues(id,name,capacity,is_active) VALUES($1,$2,100,false)', [venueId, `Venue ${venueId}`]);
+    await expect(submit(eventRequestId, coordinator, { venueId }))
+      .rejects.toMatchObject({ code: 'VENUE_INACTIVE' });
+  });
+
+  it('allows several pending requests for the same event and venue without auto-approving any (AC9)', async () => {
+    const venueId = randomUUID();
+    await fixture.pool.query('INSERT INTO venues(id,name,capacity) VALUES($1,$2,100)', [venueId, `Venue ${venueId}`]);
+    const eventRequestId = await fixture.createEvent({ organiserId: organiser.id, coordinatorId: coordinator.id });
+    const first = await submit(eventRequestId, coordinator, { venueId });
+    const second = await submit(eventRequestId, coordinator, { venueId });
+    expect(first.status).toBe('PENDING');
+    expect(second.status).toBe('PENDING');
+    expect(first.id).not.toBe(second.id);
   });
 });
 

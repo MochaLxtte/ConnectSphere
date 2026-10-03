@@ -1,7 +1,9 @@
 import { Router } from 'express';
 import { param, workflowRoute, type WorkflowRouterDependencies } from '../events/workflow-http.js';
 import { parseBookingFilter } from './booking-input.js';
-import { decideVenueBooking, getVenueBooking, listVenueBookings } from './booking-service.js';
+import {
+  createVenueBooking, decideVenueBooking, getVenueBooking, listVenueBookings,
+} from './booking-service.js';
 
 export function createVenueBookingsRouter(dependencies: WorkflowRouterDependencies): Router {
   const router = Router();
@@ -25,6 +27,23 @@ export function createVenueBookingsRouter(dependencies: WorkflowRouterDependenci
   }, async (actor, request) => ({
     booking: await decideVenueBooking(dependencies,
       { actor, bookingId: param(request, 'id'), input: request.body }),
+  })));
+  return router;
+}
+
+/**
+ * KAN-53 booking submission, nested under events so `:id` is the event request, e.g.
+ *   app.use('/api/events', createVenueBookingSubmissionRouter(dependencies));
+ * Kept separate from createVenueBookingsRouter so its `:id` param never means a booking ID.
+ */
+export function createVenueBookingSubmissionRouter(dependencies: WorkflowRouterDependencies): Router {
+  const router = Router();
+  router.post('/:id/venue-bookings', workflowRoute(dependencies, {
+    signInMessage: 'Sign in to submit a venue booking request.',
+    roles: ['EVENT_COORDINATOR'], uuidParams: { id: 'INVALID_EVENT_REQUEST_ID' }, successStatus: 201,
+  }, async (actor, request) => ({
+    booking: await createVenueBooking(dependencies,
+      { actor, eventRequestId: param(request, 'id'), input: request.body }),
   })));
   return router;
 }

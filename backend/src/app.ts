@@ -11,7 +11,9 @@ import { createAssignmentRouter } from './modules/events/assignment-router.js';
 import { createClarificationRouter } from './modules/events/clarification-router.js';
 import { createStatusHistoryRouter } from './modules/events/status-history-router.js';
 import { createVenueRouter } from './modules/venues/venue-router.js';
-import { createVenueBookingsRouter } from './modules/venues/venue-bookings-router.js';
+import {
+  createVenueBookingsRouter, createVenueBookingSubmissionRouter,
+} from './modules/venues/venue-bookings-router.js';
 import type { WorkflowRouterDependencies } from './modules/events/workflow-http.js';
 import { createVenueAvailabilityRouter } from './modules/venues/availability-router.js';
 
@@ -72,6 +74,8 @@ export function createApp({
     app.use('/api/events', createAssignmentRouter(workspace));
     app.use('/api/events', createClarificationRouter(workspace));
     app.use('/api/events', createStatusHistoryRouter(workspace));
+    // KAN-53: coordinator venue booking submission, nested under the event request.
+    app.use('/api/events', createVenueBookingSubmissionRouter(workspace));
     app.use('/api/venues', createVenueRouter(workspace));
   }
 

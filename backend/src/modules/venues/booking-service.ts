@@ -1,10 +1,10 @@
 import type { Pool, PoolClient } from 'pg';
 import type { EventStatus } from '../events/types.js';
 import {
-  inActorTransaction, iso, isoOrNull, WorkflowError,
+  inActorTransaction, iso, isoOrNull, lockEventRequest, requireRelation, WorkflowError,
   type WorkflowActor, type WorkflowDependencies,
 } from '../events/workflow-support.js';
-import { parseBookingDecision } from './booking-input.js';
+import { parseBookingDecision, parseBookingSubmission } from './booking-input.js';
 
 export type VenueBookingStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'CANCELLED';
 
@@ -101,6 +101,46 @@ export async function getVenueBooking(
 
 function conflict(code: string, message: string): never {
   throw new WorkflowError('CONFLICT', code, message);
+}
+
+const TERMINAL_EVENT_STATUSES: readonly EventStatus[] = ['REJECTED', 'CANCELLED', 'COMPLETED'];
+
+/**
+ * KAN-53: only the event's currently assigned coordinator may request a venue, and only while
+ * the event has not reached a terminal outcome. Eligible event states beyond that are an
+ * implementation default awaiting team/customer confirmation (S2-T11/S2-T12), not an agreed rule.
+ * Submitting never approves the booking (AC9); it stays PENDING until Venue Staff decide (KAN-8).
+ */
+export async function createVenueBooking(
+  { pool }: WorkflowDependencies,
+  { eventRequestId, actor, input }: { eventRequestId: string; actor: WorkflowActor; input: unknown },
+): Promise<VenueBooking> {
+  if (actor.role !== 'EVENT_COORDINATOR') {
+    throw new WorkflowError('FORBIDDEN', 'ACTION_FORBIDDEN',
+      'Only the assigned Event Coordinator can submit a venue booking request.');
+  }
+  const submission = parseBookingSubmission(input);
+  return inActorTransaction(pool, actor.id, async (client) => {
+    const event = await lockEventRequest(client, eventRequestId);
+    requireRelation(actor, event, ['ASSIGNED_COORDINATOR'],
+      'Only the assigned Event Coordinator can submit a venue booking request for this event.');
+    if (TERMINAL_EVENT_STATUSES.includes(event.status)) {
+      conflict('EVENT_NOT_ELIGIBLE',
+        'A venue booking cannot be requested for a rejected, cancelled or completed event.');
+    }
+    const venue = await client.query<{ isActive: boolean }>(
+      'SELECT is_active AS "isActive" FROM venues WHERE id = $1 FOR UPDATE', [submission.venueId]);
+    if (!venue.rows[0]) throw new WorkflowError('NOT_FOUND', 'VENUE_NOT_FOUND', 'The venue was not found.');
+    if (!venue.rows[0].isActive) conflict('VENUE_INACTIVE', 'This venue is no longer active.');
+
+    const inserted = await client.query<{ id: string }>(
+      `INSERT INTO venue_bookings (event_request_id, venue_id, requested_by, starts_at, ends_at, layout, notes)
+       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
+      [eventRequestId, submission.venueId, actor.id, submission.startsAt, submission.endsAt,
+        submission.layout, submission.notes],
+    );
+    return readBooking(client, inserted.rows[0]!.id, actor);
+  });
 }
 
 /** No event status, notifications or other booking rows change as part of a booking decision. */
