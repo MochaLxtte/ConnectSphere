@@ -31,7 +31,7 @@ Asynchronous development update for Tristan, not a Daily Scrum or review: KAN-29
 
 Targeted local PostgreSQL checks passed: 29 automatic-assignment, 12 submission and 10 manual-assignment regression tests. [AUTO-20260928-01](../../testing/test-evidence.md#28-september-kan-29-automatic-assignment) records the tested environment and limitations. This update does not claim shared Supabase rollout, hosted manual acceptance, CI, peer review or a live Jira status/assignee change. The 43-point baseline is unchanged and no new burndown observation is recorded.
 
-Next: coordinate schema/history reconciliation and migration 007 with Arvin, enable availability only for provisioned coordinators, review the implementation choices with the team/customer and execute the [manual checks](../../testing/kan29-manual-checks.md). Select a peer reviewer and record CI for the published branch. Venue services/UI/tests were removed from `main` on 26 September (`dff42ed`); earlier venue implementation observations are historical planning context, not current feature availability.
+Next: coordinate schema/history reconciliation and migration 007 with Arvin, enable availability only for provisioned coordinators, review the implementation choices with the team/customer and execute the [manual checks](../../testing/README.md#kan-29-hosted-verification). Select a peer reviewer and record CI for the published branch. Venue services/UI/tests were removed from `main` on 26 September (`dff42ed`); earlier venue implementation observations are historical planning context, not current feature availability.
 
 ### 30 September repository scope correction
 
@@ -47,7 +47,7 @@ Retired the unused Firebase setup file from the active migration sequence. Fresh
 
 Asynchronous follow-up, not a Daily Scrum: Tristan has applied migration 006 to shared Supabase. Read-only verification confirmed the required fields and constraint, and all six current migration checksums matched hosted history through the recognised filename aliases. The earlier scope-correction and Firebase-retirement entries retain their original execution boundaries. See [DB-SCHEMA-20260930-01](../../testing/test-evidence.md#30-september-migration-and-hosted-schema-consistency) for the schema comparison and its limits.
 
-Next: confirm availability only for provisioned coordinators, record team/customer acceptance of the availability policy, execute the hosted [manual checks](../../testing/kan29-manual-checks.md), and complete CI and peer review. Schema verification does not accept KAN-29, change the 43-point baseline or record Done points, a Jira transition or a new burndown observation.
+Next: confirm availability only for provisioned coordinators, record team/customer acceptance of the availability policy, execute the hosted [manual checks](../../testing/README.md#kan-29-hosted-verification), and complete CI and peer review. Schema verification does not accept KAN-29, change the 43-point baseline or record Done points, a Jira transition or a new burndown observation.
 
 ### 29 September development update — Irfan (KAN-33 / KAN-56)
 
@@ -67,7 +67,7 @@ Asynchronous development update after the planned 3 October sprint boundary, not
 
 KAN-8 now supplies a staff pending-booking queue/detail and approval/rejection, with assigned-coordinator outcome visibility. Decisions are atomic and pending-only. Approval requires an approved event and active venue, then rechecks reserved/blocked periods; repeated/competing decisions preserve the first outcome. Staff see current event requirements and may supply an optional reason. The [4 October choices](../../requirements/assumptions-and-questions.md#4-october-2026--kan-8-venue-booking-decisions) remain subject to team/customer confirmation. Local test commands/results are recorded in AUTO-20261004-KAN8-01 in [test evidence](../../testing/test-evidence.md), separately from hosted checks.
 
-Next: Tristan follows the [manual guide](../../testing/kan8-manual-checks.md), then publishes for CI/peer review. KAN-53 booking submission is still absent, so existing synthetic pending booking rows are needed; that setup does not accept the complete submission-to-booking path. KAN-8's three points plus KAN-29's three points give Tristan six new-story points. No Done points, live Jira state, review outcome, burndown observation or change to the 43-point baseline is claimed.
+Next: Tristan follows the [manual guide](../../testing/README.md#kan-8-hosted-verification), then publishes for CI/peer review. KAN-53 booking submission is still absent, so existing synthetic pending booking rows are needed; that setup does not accept the complete submission-to-booking path. KAN-8's three points plus KAN-29's three points give Tristan six new-story points. No Done points, live Jira state, review outcome, burndown observation or change to the 43-point baseline is claimed.
 
 ## Impediments and adaptations
 

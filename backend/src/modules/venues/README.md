@@ -68,4 +68,4 @@ approved bookings from the same table.
   hosted Supabase login check.
 
 Run integration tests with `TEST_DATABASE_URL` pointing to a dedicated local test database.
-Manual acceptance is tracked in `docs/testing/kan8-manual-checks.md` after shared deployment.
+Manual acceptance is tracked in `docs/testing/README.md#kan-8-hosted-verification` after shared deployment.

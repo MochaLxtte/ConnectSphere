@@ -90,7 +90,7 @@ The migration also records `coordinator_assignments.assignment_method`: existing
 
 If no coordinator is available, submission returns `409 NO_AVAILABLE_COORDINATOR` and the transaction leaves the saved draft unchanged, with no new assignment. The organiser can edit, save and retry once availability is configured. A draft with an existing `coordinator_id` or active assignment-history row instead returns `409 DRAFT_ALREADY_ASSIGNED`, preserving that data for investigation rather than replacing it. Old submitted requests are not backfilled or reassigned by this change; initial manual assignment remains available only for unassigned Submitted, Under review, Clarification requested or Approved requests. Reassignment is future KAN-65 work and is refused without changing current assignment or history.
 
-Use the [manual check guide](../docs/testing/kan29-manual-checks.md) for hosted verification. Tests that alter all coordinator availability flags or construct controlled workloads belong in an isolated project, or in a coordinated test window with the original settings recorded and restored. A feature branch does not isolate Supabase data.
+Use the [manual check guide](../docs/testing/README.md#kan-29-hosted-verification) for hosted verification. Tests that alter all coordinator availability flags or construct controlled workloads belong in an isolated project, or in a coordinated test window with the original settings recorded and restored. A feature branch does not isolate Supabase data.
 
 ## Optional local PostgreSQL and integration tests
 

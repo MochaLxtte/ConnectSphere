@@ -21,7 +21,7 @@ The booking integration tests exercise the real runtime HTTP/session mapping and
 
 The first targeted browser run caught route-leave requests to `/api/venue-bookings/undefined`; the detail/list route guards and four component regressions fix this without weakening the browser request assertions. The first full browser run while check/coverage were also running passed 54/56, with two older-page navigation timeouts before assertions. The standalone rerun result is recorded above; timeouts were not marked as functional passes. Feature browser scenarios use API/session fixtures, while unauthenticated API and startup/readiness cases use the running local backend. They do **not** prove real Supabase login-to-decision persistence.
 
-**Remaining:** execute [KAN-8 manual checks](kan8-manual-checks.md) using provisioned staff/coordinator accounts and synthetic pending bookings; confirm the [documented policy defaults](../requirements/assumptions-and-questions.md#4-october-2026--kan-8-venue-booking-decisions), then obtain peer review and new GitHub CI. KAN-53 booking submission is not in the fetched work, so the complete submission-to-booking walkthrough remains pending. No hosted acceptance, Jira Done transition, Sprint 2 review outcome or change to the **43-point** baseline is claimed. Nothing was pushed by this task.
+**Remaining:** execute [KAN-8 manual checks](README.md#kan-8-hosted-verification) using provisioned staff/coordinator accounts and synthetic pending bookings; confirm the [documented policy defaults](../requirements/assumptions-and-questions.md#4-october-2026--kan-8-venue-booking-decisions), then obtain peer review and new GitHub CI. KAN-53 booking submission is not in the fetched work, so the complete submission-to-booking walkthrough remains pending. No hosted acceptance, Jira Done transition, Sprint 2 review outcome or change to the **43-point** baseline is claimed. Nothing was pushed by this task.
 
 ## 30 September: migration and hosted schema consistency
 
@@ -43,7 +43,7 @@ The hosted project additionally has `public.rls_auto_enable()` and the enabled `
 
 The comparison covers application objects in `public`, not copies of business rows, login accounts or the Supabase-managed schemas, extensions, global roles, owners and default privileges. Historical migration names/timestamps can differ from a fresh database. These boundaries do not affect the verified application definitions above. No SQL rewrite or additional corrective migration is required.
 
-This result supersedes earlier setup notes that migration 006 was pending. It does not establish hosted KAN-29 acceptance, coordinator availability policy, CI, peer approval or a Jira Done transition. Continue with [K29-M01-M10](kan29-manual-checks.md) and record their actual results separately.
+This result supersedes earlier setup notes that migration 006 was pending. It does not establish hosted KAN-29 acceptance, coordinator availability policy, CI, peer approval or a Jira Done transition. Continue with [K29-M01-M10](README.md#kan-29-hosted-verification) and record their actual results separately.
 
 ## 30 September: Firebase migration retirement
 
@@ -81,7 +81,7 @@ The regression coverage verifies:
 - Owners and assigned coordinators retain read-only status history, including stored later states: [history integration](../../database/tests/events/status-history.integration.test.ts). The [status panel tests](../../frontend/src/features/events/components/StatusHistoryPanel.test.ts) verify status refresh, retry and absence of mutations; [assignment panel tests](../../frontend/src/features/events/components/AssignmentPanel.test.ts) prevent handover even with missing history or stale host data.
 - Browser fixtures answer only retained workflow reads. [Coordinator browser checks](../../tests/e2e/review-access.spec.ts) retain review controls without handover or later lifecycle controls.
 
-**Boundaries and follow-up:** no applied migration, trigger, table or shared Supabase data was changed. Historical compatibility tests do not mean equipment, attendee registration or other deferred application features are delivered. No new hosted acceptance, GitHub CI result, coverage percentage, Jira transition or Done points are claimed. Venue application stories remain pending in this branch. KAN-29 still needs the documented hosted setup and [manual checks](kan29-manual-checks.md), peer review and CI. The separate KAN-33 decided-request-access branch was not merged by this audit. See the [scope matrix](../requirements/README.md#30-september-sprint-scope-audit).
+**Boundaries and follow-up:** no applied migration, trigger, table or shared Supabase data was changed. Historical compatibility tests do not mean equipment, attendee registration or other deferred application features are delivered. No new hosted acceptance, GitHub CI result, coverage percentage, Jira transition or Done points are claimed. Venue application stories remain pending in this branch. KAN-29 still needs the documented hosted setup and [manual checks](README.md#kan-29-hosted-verification), peer review and CI. The separate KAN-33 decided-request-access branch was not merged by this audit. See the [scope matrix](../requirements/README.md#30-september-sprint-scope-audit).
 
 ## 28 September: KAN-29 automatic assignment
 
@@ -107,7 +107,7 @@ Coverage of **KAN-29-AC1–AC7 / S2-T01 / local portions of S2-T02**:
 
 Implementation and test entry points: [automatic assignment](../../backend/src/modules/events/automatic-assignment.ts), [29 database cases](../../database/tests/events/automatic-assignment.integration.test.ts), [authenticated workflow](../../database/tests/events/authenticated-review.integration.test.ts), [assignment panel tests](../../frontend/src/features/events/components/AssignmentPanel.test.ts), [form tests](../../frontend/src/features/events/components/EventRequestForm.test.ts) and [detail tests](../../frontend/src/features/events/pages/EventRequestDetailPage.test.ts).
 
-**Remaining:** migration 007 and coordinator availability setup in shared Supabase, [hosted manual cases K29-M01–M10](kan29-manual-checks.md), peer review, GitHub CI and review of the documented implementation defaults. No shared Supabase schema/data changes or live Jira transitions were made. S2-T23's venue workflow and future KAN-65 acceptance remain pending. Local passes do not mark KAN-29 Done or change the 43-point sprint baseline. Generated test reports remain ignored local artifacts.
+**Remaining:** migration 007 and coordinator availability setup in shared Supabase, [hosted manual cases K29-M01–M10](README.md#kan-29-hosted-verification), peer review, GitHub CI and review of the documented implementation defaults. No shared Supabase schema/data changes or live Jira transitions were made. S2-T23's venue workflow and future KAN-65 acceptance remain pending. Local passes do not mark KAN-29 Done or change the 43-point sprint baseline. Generated test reports remain ignored local artifacts.
 
 ## Sprint 1 closure and Sprint 2 follow-up, recorded 21 September
 

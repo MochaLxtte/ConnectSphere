@@ -860,7 +860,7 @@ The following are explicit **implementation choices awaiting team/customer confi
 
 The booking decision transaction preserves the original event/venue association and interval, records the verified staff profile and timestamp, and makes no event-status or notification writes. The existing conflict trigger remains in force. Creating or changing operational blocks is future KAN-55 integration and must coordinate venue locking; this implementation does not settle the block-over-existing-reservation policy.
 
-**Evidence and limits:** Executed local checks are recorded under AUTO-20261004-KAN8-01 in [test evidence](../testing/test-evidence.md); the [manual guide](../testing/kan8-manual-checks.md) covers real staff/coordinator access, persistence, conflicts and refresh. Hosted acceptance, peer review and newly published CI remain pending. All fetched team branch heads are integrated locally; neither integration nor local tests accepts all selected stories. KAN-50/KAN-52/KAN-53/KAN-55 and the complete connected submission-to-booking path remain separate work.
+**Evidence and limits:** Executed local checks are recorded under AUTO-20261004-KAN8-01 in [test evidence](../testing/test-evidence.md); the [manual guide](../testing/README.md#kan-8-hosted-verification) covers real staff/coordinator access, persistence, conflicts and refresh. Hosted acceptance, peer review and newly published CI remain pending. All fetched team branch heads are integrated locally; neither integration nor local tests accepts all selected stories. KAN-50/KAN-52/KAN-53/KAN-55 and the complete connected submission-to-booking path remain separate work.
 
 **Source/date:** Tristan's implementation request; 4 October 2026. This is a development update after the planned 3 October sprint end, not a reconstructed planning/review decision. The 43-point baseline and historical Sprint 1 acceptance remain unchanged; actual Sprint 2 review/closure has not been supplied.
 
@@ -897,7 +897,7 @@ Tristan is implementing automatic initial assignment in Sprint 2. The agreed sel
 | History | Migration 007 records `AUTOMATIC` with no human assigner; existing and later manual rows remain `MANUAL` with their actual actor. The organiser remains the actor for the submission status change. |
 | Scope | Existing manual handover permissions stay unchanged. KAN-65 reassignment acceptance and venue workflows are separate; no removed feature is restored by KAN-29. |
 
-Migration 007 is checked in for reproducible local/CI databases. Applying it and configuring eligible accounts in the shared Supabase project require the normal schema coordination with Arvin. No hosted schema change, Jira transition, peer acceptance or hosted manual pass is implied. See the [manual test guide](../testing/kan29-manual-checks.md).
+Migration 007 is checked in for reproducible local/CI databases. Applying it and configuring eligible accounts in the shared Supabase project require the normal schema coordination with Arvin. No hosted schema change, Jira transition, peer acceptance or hosted manual pass is implied. See the [manual test guide](../testing/README.md#kan-29-hosted-verification).
 
 ## 30 September 2026 - Sprint 1 and Sprint 2 application boundary
 
