@@ -4,7 +4,7 @@ import {
 } from '../events/workflow-support.js';
 
 /**
- * Coordinator venue search over the existing public.venues table (no other tables).
+ * Coordinator venue search over the venue catalogue, bookings and operational blocks.
  *
  * Rules:
  * - only Event Coordinators may search (the route also enforces this; checked again here);
@@ -18,7 +18,7 @@ import {
  * - date/time (both checks apply):
  *   1. the event's start and end time of day (Singapore time) must fall within the venue's
  *      opens_at / closes_at (a venue with no opening hours is not restricted);
- *   2. the venue must have no APPROVED venue_bookings row overlapping the event's time range.
+ *   2. the venue must have no APPROVED booking or operational block overlapping the time range.
  *      Overlap is half-open, so a booking ending exactly when the event starts does not conflict.
  * - an empty result is a normal answer, never an error, and changes no event request.
  */
@@ -159,7 +159,7 @@ const SEARCH_SQL = `
          to_char(v.opens_at, 'HH24:MI') AS "opensAt",
          to_char(v.closes_at, 'HH24:MI') AS "closesAt",
          v.updated_at AS "updatedAt"
-  FROM public.venues v
+  FROM venues v
   WHERE v.is_active
     AND v.capacity >= $1::int
     AND ($2::text IS NULL
@@ -174,11 +174,16 @@ const SEARCH_SQL = `
       AND (v.closes_at IS NULL
             OR ($8::timestamptz AT TIME ZONE '${VENUE_TIME_ZONE}')::time <= v.closes_at)))
     AND ($7::timestamptz IS NULL OR NOT EXISTS (
-          SELECT 1 FROM public.venue_bookings b
+          SELECT 1 FROM venue_bookings b
           WHERE b.venue_id = v.id
             AND b.status = '${BLOCKING_BOOKING_STATUS}'
             AND b.starts_at < $8::timestamptz
             AND b.ends_at > $7::timestamptz))
+    AND ($7::timestamptz IS NULL OR NOT EXISTS (
+          SELECT 1 FROM venue_unavailability u
+          WHERE u.venue_id = v.id
+            AND u.starts_at < $8::timestamptz
+            AND u.ends_at > $7::timestamptz))
   ORDER BY lower(v.name), v.id`;
 
 type VenueRow = Omit<VenueResult, 'updatedAt'> & { updatedAt: Date };
@@ -212,7 +217,7 @@ export async function listVenueFilterOptions(
   const distinct = (column: 'layouts' | 'facilities' | 'accessibility_features') =>
     pool.query<{ value: string }>(
       `SELECT DISTINCT item AS value
-       FROM public.venues v, unnest(v.${column}) AS item
+       FROM venues v, unnest(v.${column}) AS item
        WHERE v.is_active AND trim(item) <> ''
        ORDER BY 1`,
     );

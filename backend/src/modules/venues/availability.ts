@@ -9,7 +9,7 @@ import {
  * 3 October decision log entry:
  * - only Event Coordinators, Venue Staff and Technical Support Staff may read the calendar;
  * - a confirmed booking is an APPROVED venue_bookings row. PENDING, REJECTED and CANCELLED rows
- *   do not hold the venue, matching the venue_bookings_conflict trigger in migration 005;
+ *   do not hold the venue, matching the venue_bookings_conflict trigger in migration 004;
  * - every venue_unavailability row is a recorded period of operational unavailability;
  * - intervals are half-open [startsAt, endsAt), so a period ending exactly at `from` or starting
  *   exactly at `to` lies outside the window; periods are returned whole, not clipped;
