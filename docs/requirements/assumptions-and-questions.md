@@ -787,6 +787,27 @@ S2-T20.
 
 **Supersedes:** The 17 September contract line that coordinators must omit `scope`.
 
+## 1 October 2026 — S1-DEF-01 and S1-DEF-03 repaired and re-verified
+
+**Decision and rationale:** Re-investigated two of the four Sprint 1 carry-over defects against the current `main` (`dff42ed`, after the 26 September KAN-24 over-scope revert) and confirmed both are already fixed, merged before this entry:
+
+- **S1-DEF-03 (KAN-58, under KAN-6):** "Saved-draft-to-submitted-request action reported unavailable although DEMO-05 passed and submission code exists" ([Sprint 1 review](../scrum/sprint-01/review.md#review-defects-and-carry-over)). Root cause: `PATCH /api/events/:id` returns a plain draft record with no `actions`/`review`, but `EventDraftEditPage.vue`'s save/submit handlers read `updated.actions.canEditDraft` on that response. The write always succeeded; reading a field that was never there threw immediately afterward, so submitting from the saved-draft edit path always failed with a generic error — exactly the reported symptom — even though the draft itself saved correctly. Fixed by re-reading the shared `GET` detail after a successful write instead of guessing from a response shape that never carried it.
+- **S1-DEF-01 (KAN-57, under KAN-34):** "Existing draft registration changed No → Yes, but capacity and registration dates were unavailable" (same review record). `EventDraftEditPage.vue` had its own hand-rolled form that predated the registration-window fields added under KAN-24/CF-18 and was never updated to include them. Fixed by replacing that duplicate form with the already-built, already-tested `EventRequestForm.vue` (used by `NewEventPage.vue` for creation), which already has registration capacity/opens/closes fields, conditional on Registration required = Yes.
+
+**Kind:** Team implementation record (bug fixes merged 20 September, re-verified 1 October); not a new customer clarification.
+
+**Verification on re-check:** `npm run check` on current `main` passes — typecheck clean, 190 frontend + 372 backend unit tests, both builds. Targeted re-run of `EventDraftEditPage.test.ts` and `EventRequestForm.test.ts` (23 tests) also passes in isolation. This is automated-fixture coverage only; no hosted Supabase Auth browser walkthrough has been performed for either fix, matching the standing caveat on this environment's test credentials.
+
+**Scope — what this does not close:** S1-DEF-04 (mandatory-field validation gaps under KAN-6/KAN-59) remains open. This work did not assess S1-DEF-02 (KAN-33/KAN-56 coordinator follow-up navigation, Irfan); its separate repair and hosted result are recorded in the 29 September entry and MAN-20260929-01. Hosted/browser acceptance for S1-DEF-01 and S1-DEF-03 (the S2-T19 and S2-T21 scenarios) is also still outstanding — this entry closes the *repair*, not the Sprint 2 acceptance test cases, which need a real account to execute.
+
+**Source and date:** Kai Jie, 1 October 2026.
+
+**Affected story and acceptance-criterion IDs:** KAN-6-AC1/AC4 (S1-DEF-03/KAN-58); KAN-34-AC1–AC3 (S1-DEF-01/KAN-57); supports S2-T19 and S2-T21 in [the Sprint 2 backlog](../scrum/sprint-02/sprint-backlog.md).
+
+**Affected implementation and tests:** `frontend/src/features/events/pages/EventDraftEditPage.vue`, `frontend/src/features/events/components/EventRequestForm.vue`, `frontend/src/features/events/api/event-requests.ts`, `frontend/src/features/events/pages/EventDraftEditPage.test.ts`, `frontend/src/features/events/components/EventRequestForm.test.ts`. Originally merged as PR #17 and PR #18 on 20 September 2026.
+
+**Supersedes:** None — narrows the open scope of S1-DEF-01 and S1-DEF-03 recorded in the [Sprint 1 review](../scrum/sprint-01/review.md#review-defects-and-carry-over) and [Sprint 2 carry-over table](../scrum/sprint-02/sprint-backlog.md#carry-over-repair-criteria-and-tasks); does not reopen or change the Sprint 1 closure record itself.
+
 ## Decision record template
 
 Copy this block when the team receives an answer or adopts an explicit implementation assumption. Keep superseded decisions so later changes remain explainable.
