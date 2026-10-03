@@ -29,6 +29,10 @@ Later backlog refinement on the same date added KAN-65 reassignment, KAN-66 ordi
 
 Asynchronous development update, not a Daily Scrum record. KAN-56 assigned to Irfan and moved to In Progress; KAN-33 moved from In Review back to In Progress while its carry-over repair is worked. S1-DEF-02 reproduced statically on `dff42ed`: the coordinator queue lists only pending statuses and `/reviews` offered no route back to a decided request. Repair implemented on `feat/KAN-33-decided-request-access` (coordinator `scope=history` list plus a Decided requests section; [decision record](../../requirements/assumptions-and-questions.md#29-september-2026--kan-56-coordinator-decided-request-history)). Automated checks passed locally (AUTO-20260929-01); hosted walkthrough MAN-20260929-01, CI integration/browser runs and peer review remain before Done. KAN-42/KAN-43 are to be closed with this PR's CI evidence and review. No story points are completed by this update.
 
+### 3 October development update — Ernest (KAN-51)
+
+Asynchronous development update, not a Daily Scrum record. KAN-51 was built on `feat/KAN-51-venue-availability-calendar` (`4c89da9` backend, `6ede774` frontend) as a new read-only module, because the earlier venue code was removed on 26 September: `GET /api/venues/availability` for Event Coordinators, Venue Staff and Technical Support Staff, and the `/venues/availability` week calendar. Provisional rules are in the [3 October decision](../../requirements/assumptions-and-questions.md#3-october-2026--kan-51-venue-availability-calendar). Automated layers passed locally (AUTO-20261003-01). The hosted S2-T05/S2-T06 checks still need Venue Staff and Technical Support Staff accounts and synthetic bookings and blocks, because the booking and blocking stories are not built yet. Jira status is not recorded by this update.
+
 ## Impediments and adaptations
 
 | Reference | Current planning position | Next inspection | Action owner / resolution |

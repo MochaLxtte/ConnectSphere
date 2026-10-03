@@ -24,6 +24,7 @@ The normal server also mounts these business routes:
 | `PATCH /api/events/:id` | Validate and update an organiser's own draft. |
 | `POST /api/events/:id/submit` | Validate an owned draft and change it to `SUBMITTED`. |
 | `POST /api/events/:id/reviews` | Record an assigned coordinator's initial decision and matching status in one transaction. |
+| `GET /api/venues/availability?from=…&to=…` | KAN-51 calendar for Event Coordinators, Venue Staff and Technical Support Staff: active venues with their confirmed (`APPROVED`) bookings and blocked periods in a window of up to 31 days. |
 
 Draft creation and clarification routes are not implemented. KAN-16's organiser list uses `GET /api/events?scope=all`, and its read-only detail page uses the shared detail endpoint. Recorded browser checks cover status labels, outcome display and refresh, signed-out access and other-organiser isolation. The final submission-to-status check awaits KAN-6 frontend integration; see [test evidence](../docs/testing/test-evidence.md). The [API contract](../docs/architecture/api-contract.md) distinguishes current routes from planned ones and defines access/error responses.
 
@@ -39,6 +40,7 @@ Readiness checks only the scaffold metadata and connection, not every table or f
 - `src/db/pool.ts`: one shared PostgreSQL pool with bounded connection/query timeouts.
 - `src/modules/auth/`: Supabase token verification, application-user mapping, session routes and five role contracts.
 - `src/modules/events/`: draft editing/submission, queue and shared detail, decision validation, access policies and transactional persistence.
+- `src/modules/venues/`: the read-only KAN-51 availability calendar (`availability.ts`, `availability-router.ts`), using the shared `workflowRoute` boundary for authentication, the role gate and error mapping.
 
 Organisers can read their own requests; coordinators can read non-drafts assigned to their `app_users.id`. Initial approval/rejection requires `SUBMITTED` status with no recorded decision. The write rechecks assignment and state against a locked row. This assigned-coordinator rule is a Sprint 1 team assumption while assignment/delegation questions remain open. Keep these server checks when extending routes; frontend flags are only presentation guidance.
 

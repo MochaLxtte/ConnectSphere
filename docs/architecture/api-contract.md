@@ -309,7 +309,7 @@ The schema has no cancellation-reason column; the reason travels only in the not
 
 ### Frontend routes
 
-Client navigation is not access control; every page relies on the API responses above. `AppShell.vue` shows organiser links to signed-out visitors and filters the sidebar by the signed-in role. Review and unassigned-queue links require a resolved event-coordinator session; direct review navigation is also protected by `ReviewAccessPage.vue`.
+Client navigation is not access control; every page relies on the API responses above. `AppShell.vue` shows organiser links to signed-out visitors and filters the sidebar by the signed-in role. Review and unassigned-queue links require a resolved event-coordinator session; direct review navigation is also protected by `ReviewAccessPage.vue`. The venue availability link requires a resolved Event Coordinator, Venue Staff or Technical Support Staff session, and the page applies the same check before reading any data.
 
 | Path | Page | Sidebar visibility |
 | --- | --- | --- |
@@ -317,9 +317,42 @@ Client navigation is not access control; every page relies on the API responses 
 | `/events/:id`, `/events/:id/edit` | Organiser detail with the planning panels; draft editing | Linked from the list |
 | `/reviews`, `/reviews/unassigned` | Review queue; unassigned requests | EC after session resolution |
 | `/reviews/:id` | Coordinator review with the planning panels | Linked from the queue |
+| `/venues/availability` | KAN-51 venue availability calendar; optional `?week=YYYY-MM-DD&venue=<id>` reopens a week and venue | EC, VS or TS after session resolution; also linked from `/reviews/:id` for the event's week |
 
 `EventPlanningPanels.vue` adds the assignment, clarification and lifecycle panels to both detail pages.
 
-**Scope, 26 September 2026:** the venue, equipment, registration, notification and change-request routes recorded here earlier were removed before Sprint 2 so the team builds those stories itself; see the Sprint 2 backlog. Their tables remain in migration 005.
+**Scope, 26 September 2026:** the venue, equipment, registration, notification and change-request routes recorded here earlier were removed before Sprint 2 so the team builds those stories itself; see the Sprint 2 backlog. Their tables remain in migration 005. KAN-51's read-only calendar route was rebuilt on 3 October; see [below](#venue-availability-calendar-kan-51-cf-09).
 
 **Verification:** Backend unit and HTTP-boundary tests live under `backend/test/events/` (`create-draft*.test.ts`, `workflow-support.test.ts`, `workflow-routers.test.ts`). PostgreSQL integration tests live under `database/tests/events/` (`create-draft`, `assignment`, `clarifications`, `lifecycle`) and `database/tests/core-schema.integration.test.ts`. Component tests sit beside each page and panel under `frontend/src/features/`. They use fixture authentication, API response fixtures or an isolated PostgreSQL test database. No Playwright check or hosted manual check covers these routes yet; record those results in the [test evidence](../testing/test-evidence.md) before claiming acceptance.
+
+## Venue availability calendar (KAN-51, CF-09)
+
+**Status, 3 October 2026:** implemented on `feat/KAN-51-venue-availability-calendar` in `backend/src/modules/venues/` and mounted by `createRuntimeApp` through the `workspace` dependencies. The route only reads migration 005's `venues`, `venue_bookings` and `venue_unavailability` tables; there is no schema change. Unit, HTTP-boundary, PostgreSQL, component and browser-fixture tests passed on `6ede774` (AUTO-20261003-01 in the [test evidence](../testing/test-evidence.md)). Hosted acceptance (S2-T05/S2-T06) and peer review are outstanding. The three-role access group is the 21 September team decision; the remaining rules are provisional team assumptions in the [3 October decision](../requirements/assumptions-and-questions.md#3-october-2026--kan-51-venue-availability-calendar).
+
+| Method / route | Roles | Success | Errors |
+| --- | --- | --- | --- |
+| `GET /api/venues/availability?from=…&to=…` | EC, VS, TS | `200` `{ from, to, items }` as described below | `400 INVALID_AVAILABILITY_WINDOW`; `401 AUTHENTICATION_REQUIRED`; `403 ACTION_FORBIDDEN` for EO and AT, before any venue data is read |
+
+- `from` and `to` are single ISO 8601 date-times with an explicit offset or `Z`; `to` must be after `from`, at most 31 days later. The response echoes both as UTC instants. The calendar page requests one Singapore week: Monday 00:00 to the next Monday 00:00 (+08:00).
+- `items` lists every **active** venue, ordered by name, with `id`, `name`, `location`, `capacity`, `opensAt` and `closesAt` (daily `HH:MM` in Singapore time; `null` leaves that end of the day unrestricted) and `unavailable`: the periods overlapping the window, earliest first, returned whole rather than clipped to the window.
+- Each period is either `{ id, kind: "BOOKING", startsAt, endsAt, event }` for an `APPROVED` booking, the implemented meaning of a confirmed booking, or `{ id, kind: "BLOCKED", startsAt, endsAt, reason }` for a `venue_unavailability` row. `PENDING`, `REJECTED` and `CANCELLED` bookings are omitted because they do not hold the venue. Intervals are half-open, so a period ending exactly at `from` or starting exactly at `to` lies outside the window.
+- `event` is `{ id, name }` only for the event's currently assigned coordinator, and never for a draft; it is `null` for every other reader. Block reasons are visible to all three roles. Labels and details remain open under S2-Q03.
+
+```json
+{
+  "from": "2026-10-04T16:00:00.000Z",
+  "to": "2026-10-11T16:00:00.000Z",
+  "items": [{
+    "id": "…", "name": "Harbour Hall", "location": "Level 1, Main Building", "capacity": 300,
+    "opensAt": "08:00", "closesAt": "22:00",
+    "unavailable": [
+      { "id": "…", "kind": "BOOKING", "startsAt": "2026-10-05T02:00:00.000Z", "endsAt": "2026-10-05T04:00:00.000Z", "event": null },
+      { "id": "…", "kind": "BLOCKED", "startsAt": "2026-10-06T01:00:00.000Z", "endsAt": "2026-10-06T10:00:00.000Z", "reason": "Maintenance" }
+    ]
+  }]
+}
+```
+
+Available time is whatever lies inside a venue's opening hours that no listed period covers. `/venues/availability` derives it from this response, showing each day of the selected venue's week as a bar for scanning and a text list for screen readers and narrow screens, labelled Available, Booked or Blocked, with closed hours shaded. It offers previous/this/next week, a date jump, refresh and a venue picker, and keeps the week and venue in the address so a reload or shared link reopens the same view. Signing out or changing accounts unmounts the calendar and aborts its pending read; a 401 clears the local session. Venue Staff and Technical Support Staff need provisioned Supabase Auth accounts linked through `app_users.supabase_user_id`.
+
+**Verification:** `backend/test/venues/` (window parsing, role refusal before any query, response mapping, HTTP boundary), `database/tests/venues/venue-availability.integration.test.ts` (all five roles and signed-out access through `createRuntimeApp`, booking statuses, half-open boundaries, inactive venues, cross-venue isolation, coordinator-only event names and refresh after changes), `frontend/src/features/venues/` (Singapore-time day/segment rules and page states) and `tests/e2e/venue-availability.spec.ts` (navigation by role, denied paths, venue/week changes, reload and a narrow screen). Record executed runs in the [test evidence](../testing/test-evidence.md) against their commit.
