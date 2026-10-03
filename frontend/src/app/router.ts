@@ -10,6 +10,7 @@ import UnassignedRequestsPage from '../features/reviews/pages/UnassignedRequests
 import ReviewQueuePage from '../features/reviews/pages/ReviewQueuePage.vue';
 import ReviewRequestPage from '../features/reviews/pages/ReviewRequestPage.vue';
 import NotFoundPage from '../components/NotFoundPage.vue';
+import VenueSearchPage from '../features/venues/pages/VenueSearchPage.vue';
 
 export const router = createRouter({
   history: createWebHistory(),
@@ -28,6 +29,7 @@ export const router = createRouter({
         { path: ':id', component: ReviewRequestPage, meta: { title: 'Event request review' } },
       ],
     },
+    { path: '/venues', component: VenueSearchPage, meta: { title: 'Venue search' } },
     { path: '/:pathMatch(.*)*', component: NotFoundPage, meta: { title: 'Page not found' } },
   ],
   scrollBehavior: () => ({ top: 0 }),

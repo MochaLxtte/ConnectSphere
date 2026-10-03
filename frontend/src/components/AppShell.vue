@@ -51,6 +51,9 @@ async function handleSignOut(): Promise<void> {
           <RouterLink to="/reviews/unassigned" exact-active-class="is-active" class="nav-link"
             ><AppIcon name="user" />Unassigned requests</RouterLink
           >
+          <RouterLink to="/venues" exact-active-class="is-active" class="nav-link"
+            ><AppIcon name="review" />Search Venues</RouterLink
+          >
         </template>
       </nav>
 

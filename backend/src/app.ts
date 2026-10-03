@@ -10,6 +10,7 @@ import {
 import { createAssignmentRouter } from './modules/events/assignment-router.js';
 import { createClarificationRouter } from './modules/events/clarification-router.js';
 import { createStatusHistoryRouter } from './modules/events/status-history-router.js';
+import { createVenueRouter } from './modules/venues/venue-router.js';
 import type { WorkflowRouterDependencies } from './modules/events/workflow-http.js';
 
 export interface AppDependencies {
@@ -66,6 +67,7 @@ export function createApp({
     app.use('/api/events', createAssignmentRouter(workspace));
     app.use('/api/events', createClarificationRouter(workspace));
     app.use('/api/events', createStatusHistoryRouter(workspace));
+    app.use('/api/venues', createVenueRouter(workspace));
   }
 
   // Queue/detail reads require verified identity and explicit visibility/decision policies.
