@@ -70,7 +70,7 @@ The [Sprint 2 backlog](../scrum/sprint-02/sprint-backlog.md) is the detailed aut
 | KAN-54 | Detect Venue Booking Conflicts | 5 |
 | KAN-55 | Block Venue for Operational Unavailability | 3 |
 
-KAN-29 uses preconfigured coordinator availability, fewest active events and a consistent ID/order tie-break. Tristan is implementing this three-point story. The [28 September implementation choices](assumptions-and-questions.md#28-september-2026--kan-29-implementation-choices) define an explicit availability flag, counted statuses, UUID ordering and a retryable draft when nobody is available. These defaults await team review; local automated results do not establish hosted acceptance or Jira Done. KAN-51 permits Event Coordinators, Venue Staff and Technical Support Staff. Venue submission must refuse a period already reserved or operationally unavailable, and booking approval must recheck conflicts. Pending holds, interval boundaries and a new operational block overlapping an existing booking remain decisions to settle.
+KAN-29 uses preconfigured coordinator availability, fewest active events and a consistent ID/order tie-break. Tristan owns this three-point story and, from 4 October, the three-point KAN-8 booking decision story (six new-story points total). The [28 September implementation choices](assumptions-and-questions.md#28-september-2026--kan-29-implementation-choices) define an explicit availability flag, counted statuses, UUID ordering and a retryable draft when nobody is available. These defaults await team review; local automated results do not establish hosted acceptance or Jira Done. KAN-51 permits Event Coordinators, Venue Staff and Technical Support Staff. Venue submission must refuse a period already reserved or operationally unavailable, and booking approval must recheck conflicts. Pending holds, interval boundaries and a new operational block overlapping an existing booking remain decisions to settle.
 
 | Corrective subtask | Parent | Scope |
 | --- | --- | --- |
@@ -79,7 +79,7 @@ KAN-29 uses preconfigured coordinator availability, fewest active events and a c
 | KAN-58 | KAN-6 | Enable and verify saved-draft submission |
 | KAN-59 | KAN-6 | Reject incomplete new-request and saved-draft submissions with field errors |
 
-These subtasks are included in the carried parent estimates, not extra story points. Creating the tasks does not establish that the defects are fixed. Owners for the nine new stories, subtask allocation and review responsibilities still need to be recorded in the sprint plan.
+These subtasks are included in the carried parent estimates, not extra story points. Creating the tasks does not establish that the defects are fixed. Tristan's KAN-29/KAN-8 ownership and Ryan's KAN-12 and Ernest's KAN-51 implementations are recorded in the repository plan; remaining allocations, reviewers and live Jira assignments still need confirmation.
 
 ## Future backlog and corrective work
 

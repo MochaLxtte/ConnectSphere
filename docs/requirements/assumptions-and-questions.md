@@ -843,6 +843,31 @@ S2-T20.
 
 **Supersedes:** The 21 September implementation-gap note that the calendar route accepted any authenticated role; that route was removed on 26 September, and the new route enforces the three-role decision. The calendar references in the 19 September Q-07 rule describe removed code.
 
+## 4 October 2026 — KAN-8 venue booking decisions
+
+**Question IDs:** S2-Q04, S2-Q06, S2-Q10; KAN-8 pending-decision concurrency and failure recovery.
+
+**Implementation and rationale:** Tristan has taken KAN-8 (three points) alongside KAN-29 (three points). Staff can list/open existing pending venue requests, approve/reject once and read the saved decision. The event's currently assigned coordinator can read their own booking requests and outcomes. The implementation uses retained migration 004 tables and adds no migration. KAN-53 booking submission is not included: manual checks need existing synthetic pending rows until that story is integrated.
+
+The following are explicit **implementation choices awaiting team/customer confirmation**, not new agreed acceptance criteria:
+
+- All verified `VENUE_STAFF` can review bookings across venues because there is no per-venue staff allocation model. Event Coordinators see only bookings for their currently assigned non-draft events; other roles cannot use this booking-detail API. Calendar permissions remain separately scoped.
+- Only `PENDING` bookings accept a decision. Repeated, opposite or concurrent decisions return `409 BOOKING_ALREADY_DECIDED` after the first successful decision, leaving the first outcome unchanged.
+- Approval requires an `APPROVED` event and an active venue. A stale pending booking can still be rejected. Booking approval does not change event status or implement final event confirmation.
+- Staff receive the current event timing, attendance, purpose/description, venue requirements and accessibility needs alongside the booking's saved period, layout and notes. There is no new immutable requirements snapshot. Future KAN-53 work must agree how submitted requirements and later edits interact.
+- A reason is optional, trimmed and limited to 2,000 characters; blank becomes null. KAN-8 requires staff to be able to provide rejection information, but does not currently require a nonblank reason. Do not infer that requirement from KAN-36/KAN-60.
+- Approval rechecks approved bookings and operational blocks after locking the venue. Intervals are half-open, allowing adjacency without a turnover buffer; pending/rejected/cancelled bookings do not hold availability, consistent with KAN-51's recorded default. Whether pending holds should exist remains an open policy question.
+
+The booking decision transaction preserves the original event/venue association and interval, records the verified staff profile and timestamp, and makes no event-status or notification writes. The existing conflict trigger remains in force. Creating or changing operational blocks is future KAN-55 integration and must coordinate venue locking; this implementation does not settle the block-over-existing-reservation policy.
+
+**Evidence and limits:** Executed local checks are recorded under AUTO-20261004-KAN8-01 in [test evidence](../testing/test-evidence.md); the [manual guide](../testing/kan8-manual-checks.md) covers real staff/coordinator access, persistence, conflicts and refresh. Hosted acceptance, peer review and newly published CI remain pending. All fetched team branch heads are integrated locally; neither integration nor local tests accepts all selected stories. KAN-50/KAN-52/KAN-53/KAN-55 and the complete connected submission-to-booking path remain separate work.
+
+**Source/date:** Tristan's implementation request; 4 October 2026. This is a development update after the planned 3 October sprint end, not a reconstructed planning/review decision. The 43-point baseline and historical Sprint 1 acceptance remain unchanged; actual Sprint 2 review/closure has not been supplied.
+
+**Affected IDs:** KAN-8-AC1–AC11, TC-13, S2-T13/T14; approval/calendar portions of S2-T15/T16/T23. See the [API contract](../architecture/api-contract.md#venue-booking-decisions-kan-8-cf-13) for the concrete routes and errors.
+
+**Supersedes:** Earlier current-implementation statements that the venue booking decision service/page is absent. Historical removed implementations and test observations keep their dates. Open policy questions are narrowed by these documented defaults, not marked customer-resolved.
+
 ## Decision record template
 
 Copy this block when the team receives an answer or adopts an explicit implementation assumption. Keep superseded decisions so later changes remain explainable.

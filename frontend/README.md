@@ -26,6 +26,7 @@ The dev server runs at `http://127.0.0.1:5173` and fails clearly if that port is
 - Organiser details at `/events/:id`, showing status and recorded decision, draft edit/submit controls where permitted, and planning panels after submission.
 - KAN-29 automatic assignment on submission, initial manual assignment of unassigned requests, clarification and read-only status history. Later confirmation/cancellation/completion, coordinator handover, equipment, attendee registration, change-request and notification features are outside the current application. KAN-12 venue search is integrated; remaining venue application work stays in Sprint 2, with schema foundations retained; see the [scope audit](../docs/requirements/README.md#30-september-sprint-scope-audit).
 - KAN-51 venue availability calendar at `/venues/availability` for event coordinators, venue staff and technical support staff (`src/features/venues`). It shows one Singapore week per venue, distinguishing available time, confirmed bookings, blocked periods and closed hours, with week navigation, refresh, a venue picker and shareable `?week=&venue=` links. The coordinator review page links to the week of the event's proposed start.
+- KAN-8 venue booking queue/outcomes at `/venue-bookings` and detail at `/venue-bookings/:id`. Venue Staff review pending requests and record a decision; assigned coordinators read their booking outcomes. Other roles are denied before booking content loads. Booking submission itself remains KAN-53 work.
 
 The creation, draft-editing and submission interfaces are integrated. Hosted organiser checks cover approval/rejection display and refresh, signed-out detail access, Draft/Submitted detail states and another organiser's denied detail access and empty list (MAN-20260917-01 through MAN-20260917-04). Opening `/events` directly after signing out showed a sign-in prompt without request names or statuses (MAN-20260917-05). The request list showed matching Draft, Submitted, Rejected and Approved labels, and Draft/Submitted detail statuses and review messages remained correct after refresh (MAN-20260917-06). The hosted submission-to-status check and acceptance of the newer planning features remain pending in [test evidence](../docs/testing/test-evidence.md). Express authenticates event API calls and enforces roles, ownership and current coordinator assignment. Frontend navigation and action flags do not replace those checks.
 
@@ -51,6 +52,8 @@ Component tests cover loading, labels, status refresh, recorded and absent outco
 | Event editing and submission         | Kai Jie | `src/features/events`                         | KAN-34, KAN-6       |
 | Coordinator review and clarification | Irfan   | `src/features/reviews`                        | KAN-33, KAN-27      |
 | Decisions and organiser status       | Tristan | `src/features/reviews`, `src/features/events` | KAN-36, KAN-16      |
+| Venue booking decisions/outcomes     | Tristan | `src/features/venues`                        | KAN-8               |
+| Venue availability calendar          | Ernest  | `src/features/venues`                        | KAN-51              |
 | Health checks                        | Shared  | `src/features/system`                         | Shared foundation   |
 
 Arvin supports cross-feature integration, end-to-end testing and resolving integration issues after database setup.
@@ -113,3 +116,11 @@ Run the component tests from the repository root:
 ```powershell
 npm.cmd run test --workspace @connectsphere/frontend -- src/features/reviews/components/ReviewDecisionPanel.test.ts
 ```
+
+## KAN-8 venue booking decisions
+
+The booking pages use `src/features/venues/api/venue-bookings.ts`. The staff list contains pending requests; the coordinator list contains all booking statuses for events currently assigned to that coordinator. Both open the same booking detail. It displays stored booking times/layout/notes alongside the latest event timing, attendance, venue requirements and accessibility needs, then the recorded decision, optional reason and timestamp. These event fields are current values, not a submission snapshot.
+
+Only Venue Staff see decision controls for a pending booking. The optional reason is limited to 2,000 characters and sent as plain text; blank text becomes `null`. Saving disables duplicate actions. A 409 conflict automatically refreshes the detail read; an uncertain network/server result requires manual Refresh booking before another attempt; a saved decision remains readable with no new decision controls. Signed-out/wrong-role access, account changes and expired sessions clear protected content. The server rechecks eligibility and permissions for every request.
+
+The coordinator's event-review page links to its booking outcomes using `eventRequestId`; staff can inspect booking-specific event information without receiving access to the wider coordinator event-review routes. Follow the [KAN-8 manual guide](../docs/testing/kan8-manual-checks.md) with provisioned staff/coordinator accounts and existing synthetic pending rows. No booking-creation interface or hosted acceptance is implied.

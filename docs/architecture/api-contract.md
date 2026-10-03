@@ -331,7 +331,7 @@ With migration 006, `assignmentMethod` is `AUTOMATIC` or `MANUAL`. Automatic rec
 | --- | --- | --- | --- |
 | `GET /api/events/:id/history` | EO owner, assigned EC | `200` items: `id`, `fromStatus`, `toStatus`, `changedById`, `changedByName`, `createdAt`, oldest first; rows come from the retained status-history trigger | `400 INVALID_EVENT_REQUEST_ID`; `403 ACTION_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND` |
 
-`POST /api/events/:id/confirm`, `/cancel` and `/complete` are not mounted and return `404 NOT_FOUND`. Existing later-status records remain readable; their presence does not enable those actions. Equipment, registration, change-request and notification application endpoints are also absent. Venue routes will be added under their committed Sprint 2 stories.
+`POST /api/events/:id/confirm`, `/cancel` and `/complete` are not mounted and return `404 NOT_FOUND`. Existing later-status records remain readable; their presence does not enable those actions. Equipment, registration, change-request and notification application endpoints are also absent. KAN-12 search, KAN-51 availability and KAN-8 booking decisions are mounted under their committed Sprint 2 stories; their contracts are below.
 
 ### Frontend routes
 
@@ -343,13 +343,16 @@ Client navigation is not access control; every page relies on the API responses 
 | `/events/:id`, `/events/:id/edit` | Organiser detail with the planning panels; draft editing | Linked from the list |
 | `/reviews`, `/reviews/unassigned` | Review queue; unassigned requests | EC after session resolution |
 | `/reviews/:id` | Coordinator review with the planning panels | Linked from the queue |
+| `/venues` | KAN-12 venue search and combined filters | EC after session resolution |
+| `/venue-bookings` | KAN-8 staff pending queue or coordinator outcomes; optional `?eventRequestId=<id>` | VS or EC after session resolution |
+| `/venue-bookings/:id` | KAN-8 request detail and saved decision; writes only for staff with a pending booking | Linked from the booking list; role checked on direct navigation |
 | `/venues/availability` | KAN-51 venue availability calendar; optional `?week=YYYY-MM-DD&venue=<id>` reopens a week and venue | EC, VS or TS after session resolution; also linked from `/reviews/:id` for the event's week |
 
 `EventPlanningPanels.vue` adds the assignment, clarification and read-only status-history panels to both detail pages.
 
 **Earlier scope correction, 26 September 2026:** the venue, equipment, registration, notification and change-request routes recorded here earlier were removed before Sprint 2 so the team builds those stories itself; see the Sprint 2 backlog. Their tables remain in migration 004. KAN-51's read-only calendar route was rebuilt on 3 October; see [below](#venue-availability-calendar-kan-51-cf-09).
 
-**Verification:** Backend unit and HTTP-boundary tests live under `backend/test/events/` (`create-draft*.test.ts`, `workflow-support.test.ts`, `workflow-routers.test.ts`). PostgreSQL integration tests live under `database/tests/events/` (`create-draft`, `assignment`, `clarifications`, `status-history`) and `database/tests/core-schema.integration.test.ts`. Component tests sit beside each page and panel under `frontend/src/features/`. They use fixture authentication, API response fixtures or an isolated PostgreSQL test database. No Playwright check or hosted manual check covers these routes yet; record those results in the [test evidence](../testing/test-evidence.md) before claiming acceptance.
+**Verification:** Backend unit and HTTP-boundary tests live under `backend/test/events/` (`create-draft*.test.ts`, `workflow-support.test.ts`, `workflow-routers.test.ts`). PostgreSQL integration tests live under `database/tests/events/` (`create-draft`, `assignment`, `clarifications`, `status-history`) and `database/tests/core-schema.integration.test.ts`. Component tests sit beside each page and panel under `frontend/src/features/`. They use fixture authentication, API response fixtures or an isolated PostgreSQL test database. Browser checks live in `tests/e2e/`; their response fixtures test UI behavior rather than hosted persistence. The [test evidence](../testing/test-evidence.md) records the exact route/build coverage of local automation, CI and separate hosted observations, including remaining acceptance gaps.
 
 ## Venue availability calendar (KAN-51, CF-09)
 
@@ -382,3 +385,59 @@ Client navigation is not access control; every page relies on the API responses 
 Available time is whatever lies inside a venue's opening hours that no listed period covers. `/venues/availability` derives it from this response, showing each day of the selected venue's week as a bar for scanning and a text list for screen readers and narrow screens, labelled Available, Booked or Blocked, with closed hours shaded. It offers previous/this/next week, a date jump, refresh and a venue picker, and keeps the week and venue in the address so a reload or shared link reopens the same view. Signing out or changing accounts unmounts the calendar and aborts its pending read; a 401 clears the local session. Venue Staff and Technical Support Staff need provisioned Supabase Auth accounts linked through `app_users.supabase_user_id`.
 
 **Verification:** `backend/test/venues/` (window parsing, role refusal before any query, response mapping, HTTP boundary), `database/tests/venues/venue-availability.integration.test.ts` (all five roles and signed-out access through `createRuntimeApp`, booking statuses, half-open boundaries, inactive venues, cross-venue isolation, coordinator-only event names and refresh after changes), `frontend/src/features/venues/` (Singapore-time day/segment rules and page states) and `tests/e2e/venue-availability.spec.ts` (navigation by role, denied paths, venue/week changes, reload and a narrow screen). Record executed runs in the [test evidence](../testing/test-evidence.md) against their commit.
+
+
+## Venue search (KAN-12, CF-10)
+
+**Integrated 4 October 2026:** Ryan's venue search is mounted at `/venues` in the frontend. Only Event Coordinators may use the search/filter APIs; calendar access alone grants no search permission.
+
+| Method / route | Success | Failure |
+| --- | --- | --- |
+| `GET /api/venues/filter-options` | `200 { layouts, facilities, accessibility }` from the active catalogue | `401 AUTHENTICATION_REQUIRED`; `403 ACTION_FORBIDDEN` |
+| `GET /api/venues/search-venues` | `200 { items }` with matching current active venues | `400 INVALID_VENUE_SEARCH`; `401 AUTHENTICATION_REQUIRED`; `403 ACTION_FORBIDDEN` |
+
+Optional filters are `startsAt`/`endsAt` (both supplied or both omitted), positive integer `attendance` and `capacity`, `location`, `layout`, boolean `wheelchairAccessible`, and repeated `facilities`/`accessibility` parameters. Empty filters are ignored; each active filter must match. The capacity threshold is the greater of attendance and requested minimum capacity. Required facilities/accessibility values all need to exist on the venue; layout must be supported. The location text matches venue name/location. A provided period is checked against Singapore opening times, approved reservations and operational blocks, using half-open overlap boundaries. Search has no write side effects and an empty match returns an empty list.
+
+The 4 October integration fixes removed a hard-coded `public` schema so isolated test schemas work, and ensure operational blocks exclude a venue even without an approved booking. Three real PostgreSQL regressions are in `database/tests/venues/venue-search.integration.test.ts`; AUTO-20261004-KAN8-01 records the combined local run. This is supporting integration work, not KAN-52 suitability assessment or KAN-53 request submission. Hosted KAN-12 acceptance remains pending.
+
+## Venue booking decisions (KAN-8, CF-13)
+
+**Status, 4 October 2026:** implemented for existing `venue_bookings` rows, using the verified application session and migration 004's retained schema. KAN-53 booking submission remains unimplemented. No new migration or shared Supabase write is part of this implementation. The [implementation choices](../requirements/assumptions-and-questions.md#4-october-2026--kan-8-venue-booking-decisions) distinguish provisional policy from the story criteria. Executed checks belong in AUTO-20261004-KAN8-01 in the [test register](../testing/test-evidence.md); hosted acceptance, peer review and new CI remain pending.
+
+| Method / route | Roles and scope | Success |
+| --- | --- | --- |
+| `GET /api/venue-bookings?eventRequestId=…` | VS: pending bookings across venues. EC: all booking statuses for currently assigned, non-draft events. The optional UUID filter only narrows this scope. | `200 { items: VenueBooking[] }`, oldest request first, stable ID tie-break |
+| `GET /api/venue-bookings/:id` | VS: booking detail in any status, including a saved decision. EC: only a currently assigned, non-draft event. | `200 { booking: VenueBooking }` |
+| `POST /api/venue-bookings/:id/decision` | VS only, `PENDING` booking only | `200 { booking: VenueBooking }` after the decision commits |
+
+Request body for the decision route:
+
+```json
+{ "decision": "REJECTED", "reason": "The requested layout cannot be supported." }
+```
+
+`decision` must be `APPROVED` or `REJECTED`. `reason` is optional text or `null`, trimmed and limited to 2,000 characters; absent/blank becomes `null`. Unknown body fields and invalid types are refused. KAN-8 requires the ability to supply rejection information, but a mandatory reason has not been agreed. This differs from the separately recorded KAN-36/KAN-60 event-rejection rule.
+
+`VenueBooking` contains `id`, `eventRequestId`, `eventName`, `eventStatus`, `venueId`, `venueName`, `status`, `startsAt`, `endsAt`, `layout`, `notes`, `decidedBy`, `decidedAt`, `decisionReason`, `createdAt` and `updatedAt`. It also includes the **current** event's `eventStartsAt`, `eventEndsAt`, `purpose`, `description`, `expectedAttendance`, `venueRequirements` and `accessibilityNeeds`. Event text/timing/requirements and decision fields can be null; booking identifiers, booking timing and status are required. Date-times are ISO instants. This is a current event projection alongside the stored booking period/layout/notes, not a submission snapshot. No organiser email, authentication subject or unrelated event record is returned.
+
+The staff page at `/venue-bookings` opens `/venue-bookings/:id`; the assigned coordinator uses the same routes read-only, with an event-filtered link from `/reviews/:id`. Other roles cannot read these endpoints even if they may read the availability calendar. A saved staff decision remains readable by ID after it leaves the pending queue. The coordinator can find it in their all-status booking list.
+
+| HTTP / code | Meaning |
+| --- | --- |
+| `400 INVALID_VENUE_BOOKING_ID` | Invalid booking UUID. |
+| `400 INVALID_EVENT_REQUEST_ID` | Invalid, repeated or empty `eventRequestId` list filter. |
+| `400 INVALID_BOOKING_DECISION` / `INVALID_INPUT` | Unsupported decision, unknown field/query parameter, invalid reason type or excessive reason length. |
+| `401 AUTHENTICATION_REQUIRED` | No valid session. |
+| `403 ACTION_FORBIDDEN` | Role is not allowed to read/write the requested operation. |
+| `404 VENUE_BOOKING_NOT_FOUND` | Missing booking or coordinator has no current relationship to its non-draft event. |
+| `409 BOOKING_ALREADY_DECIDED` | The booking is no longer pending, including a repeated/opposite decision or a cancelled row. |
+| `409 EVENT_NOT_APPROVED` | Approval requires an event currently in `APPROVED`. Rejection of the pending booking remains available. |
+| `409 VENUE_INACTIVE` | The venue cannot receive an approval while inactive. |
+| `409 VENUE_BOOKING_CONFLICT` | Another approved booking overlaps this venue and period. |
+| `409 VENUE_UNAVAILABLE` | An operational block overlaps this venue and period. |
+
+The write uses one transaction, locks the booking row and rechecks `PENDING`. Approval also locks the event then venue, verifies `APPROVED`/active eligibility, and queries conflicts **after** obtaining the venue lock so competing approvals see the latest committed reservation. Periods use `[startsAt, endsAt)` with no turnover buffer; pending/rejected/cancelled rows do not reserve the venue. Rejection can close a stale pending request without requiring event/venue approval eligibility. The existing database trigger remains a final integrity guard; future booking/block writers must coordinate their venue locking and tests with this path.
+
+A successful write changes only this booking's status, decision actor/time/reason and update timestamp. It preserves the event/venue associations and booking period, and does not transition the event or generate notifications. KAN-51 reads the new approved period on refresh; rejected bookings remain absent. Repeated/competing decisions never overwrite the original outcome. An uncertain client response requires a read before retrying; the UI automatically reloads on 409 and offers a read-only retry after uncertain transport failures.
+
+Verification lives in `backend/test/venues/booking-input.test.ts`, `backend/test/venues/venue-bookings-router.test.ts`, `database/tests/venues/venue-bookings.integration.test.ts`, the two booking page component suites and `tests/e2e/venue-bookings.spec.ts`. Follow the [manual guide](../testing/kan8-manual-checks.md) with provisioned accounts and coordinated synthetic fixtures. Approval-time conflict coverage does not accept KAN-53 submission or all KAN-54/KAN-55 criteria.
