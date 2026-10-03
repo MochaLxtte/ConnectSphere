@@ -15,6 +15,18 @@ export const REVIEWABLE_STATUSES = [
   'CLARIFICATION_REQUESTED',
 ] as const satisfies readonly EventStatus[];
 
+/**
+ * KAN-33 / S1-DEF-02: requests that have left the initial-review queue after a decision,
+ * listed so their coordinator can reopen them for follow-up. Drafts are never included.
+ */
+export const FOLLOW_UP_STATUSES = [
+  'APPROVED',
+  'REJECTED',
+  'CONFIRMED',
+  'CANCELLED',
+  'COMPLETED',
+] as const satisfies readonly EventStatus[];
+
 export interface SubmittedRequestQueryDependencies {
   pool: Pick<Pool, 'query'>;
   /**
@@ -39,15 +51,32 @@ const listColumns = `
 `;
 
 /** List reviewable requests visible to this actor. Non-coordinators see an empty queue. */
-export async function listReviewableRequests(
+export function listReviewableRequests(
+  dependencies: SubmittedRequestQueryDependencies,
+  actor: QueueActor,
+): Promise<SubmittedRequestSummary[]> {
+  return listCoordinatorRequests(dependencies, actor, REVIEWABLE_STATUSES, 'created_at ASC');
+}
+
+/** Decided/follow-up requests visible to this coordinator, most recently changed first. */
+export function listFollowUpRequests(
+  dependencies: SubmittedRequestQueryDependencies,
+  actor: QueueActor,
+): Promise<SubmittedRequestSummary[]> {
+  return listCoordinatorRequests(dependencies, actor, FOLLOW_UP_STATUSES, 'updated_at DESC');
+}
+
+async function listCoordinatorRequests(
   { pool, canViewRequest }: SubmittedRequestQueryDependencies,
   actor: QueueActor,
+  statuses: readonly EventStatus[],
+  orderBy: 'created_at ASC' | 'updated_at DESC',
 ): Promise<SubmittedRequestSummary[]> {
   if (actor.role !== 'EVENT_COORDINATOR') return [];
 
   const result = await pool.query<SubmittedRequestSummary & ReviewableRequest>(
-    `SELECT ${listColumns} FROM event_requests WHERE status = ANY($1) ORDER BY created_at ASC`,
-    [REVIEWABLE_STATUSES],
+    `SELECT ${listColumns} FROM event_requests WHERE status = ANY($1) ORDER BY ${orderBy}`,
+    [statuses],
   );
 
   const visible: SubmittedRequestSummary[] = [];

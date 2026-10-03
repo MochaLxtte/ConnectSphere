@@ -36,7 +36,7 @@ The normal server mounts Supabase authentication, event listing, draft creation,
 | Kai Jie / Irfan / Tristan, KAN-34 / KAN-33 / KAN-16 | `GET /api/events/:id` | Shared details, status and recorded decision | Implemented; coordinator and organiser detail pages connected |
 | Kai Jie, KAN-34 | `PATCH /api/events/:id` | Update an owned draft | Implemented |
 | Kai Jie / Tristan, KAN-6 / KAN-29 | `POST /api/events/:id/submit` | Validate and atomically submit with an automatically selected coordinator | Implemented; migration 006 verified in shared Supabase on 30 September; hosted manual acceptance pending |
-| Irfan / Kai Jie / Tristan, KAN-33 / KAN-34 / KAN-16 | `GET /api/events` | Assigned coordinator queue, or the organiser's own drafts; organiser `?scope=all` includes all owned statuses; pagination pending | Implemented; organiser list page connected |
+| Irfan / Kai Jie / Tristan, KAN-33 / KAN-34 / KAN-16 | `GET /api/events` | Assigned coordinator queue, or the organiser's own drafts; organiser `?scope=all` includes all owned statuses; coordinator `?scope=history` lists assigned decided requests (KAN-56); pagination pending | Implemented; organiser list page connected |
 | Irfan, KAN-27 | `POST /api/events/:id/clarifications` | Request clarification and make it visible to the organiser | Implemented 19 September; hosted acceptance outstanding |
 | Tristan, KAN-36 | `POST /api/events/:id/reviews` | Record an approval/rejection and update status atomically | Implemented |
 
@@ -189,8 +189,19 @@ but keeps its list query and status filter separate from the shared request-deta
 (six at the time; nine since migration 004), including submitted and decided requests. `scope=drafts` explicitly selects the existing
 draft-only list; omitting `scope` preserves that behaviour. Scope is a single, case-sensitive
 value: empty, unknown or repeated values return `400 INVALID_EVENT_LIST_SCOPE`.
-Coordinators must omit `scope`; supplying it returns the same 400 and does not expand
+Coordinators omit `scope` for the pending queue. The only coordinator scope is `history`
+(below); `all`, `drafts` or any other value returns the same 400 and does not expand
 their review queue. Other roles remain forbidden and unauthenticated callers receive 401.
+
+**KAN-33 / KAN-56 decided-request history, 29 September (S1-DEF-02):** A coordinator can
+request `GET /api/events?scope=history` to list requests assigned to them that have left the
+initial-review queue: `APPROVED`, `REJECTED`, `CONFIRMED`, `CANCELLED` or `COMPLETED`
+(`FOLLOW_UP_STATUSES` in `submitted-requests.ts`), ordered by `updated_at DESC`. It applies
+the same `canViewRequest` assignment policy as the queue, never includes drafts, and returns
+the same five-field items. Reopening an item uses the shared `GET /api/events/:id`, whose
+action flags already withhold a second initial decision. Organisers receive
+`400 INVALID_EVENT_LIST_SCOPE` for `scope=history`. The `/reviews` page shows these items in
+a "Decided requests" section below the pending queue, linking to `/reviews/:id`.
 
 Both organiser lists filter by the authenticated `app_users.id` in the database and order
 by `updated_at DESC`. A client-supplied `organiserId` or role cannot choose another owner.
@@ -223,7 +234,7 @@ not implemented. `GET /api/events/:id` uses the shared detail response documente
 | Response | Meaning |
 | --- | --- |
 | `200` | An object containing an `items` array, which may be empty. |
-| `400 INVALID_EVENT_LIST_SCOPE` | An organiser supplied an invalid/repeated scope, or a coordinator supplied any scope. |
+| `400 INVALID_EVENT_LIST_SCOPE` | An organiser supplied an invalid/repeated scope (including `history`), or a coordinator supplied any scope other than a single `history`. |
 | `401 AUTHENTICATION_REQUIRED` | The authentication adapter reports absent or invalid credentials. |
 | `403 VIEW_FORBIDDEN` | The verified account is neither an event coordinator nor an event organiser. |
 | `500 INTERNAL_ERROR` | An unexpected verification or persistence failure occurred; details are not returned. |

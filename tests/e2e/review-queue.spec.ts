@@ -17,6 +17,7 @@ test('KAN-33 review queue shows a service error and retries successfully', async
       error: { code: 'DATABASE_UNAVAILABLE', message: 'The review service is temporarily unavailable.' },
     }),
   }));
+  await page.route('**/api/events?scope=history', (route) => route.fulfill({ json: { items: [] } }));
   await page.goto('/');
   await page.getByRole('navigation', { name: 'Main navigation' })
     .getByRole('link', { name: 'Review queue', exact: true }).click();

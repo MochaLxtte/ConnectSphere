@@ -749,6 +749,44 @@ The requirements map, traceability matrix, future test outlines, Sprint 2 refere
 
 The [portable Jira snapshot](../submission/1/jira-backlog-2026-09-21.csv), exported at 03:59 +08:00 on 21 September, retains all 51 active/non-archived records, including Done items: 33 stories, one task and 17 subtasks. Complete descriptions/criteria and relevant planning fields are preserved; [export metadata](../submission/1/README.md) explains field selection and limits. The live future backlog has 15 items: seven older estimates totalling 26 points and eight unestimated items. Sprint 2 remains 35 points To Do, eight In Review and zero Done. The snapshot is current refinement evidence, not a historical closing board or a new acceptance result. Final submission needs a refreshed snapshot and the remaining original meeting/board evidence.
 
+## 29 September 2026 — KAN-56 coordinator decided-request history
+
+**Question ID:** S1-DEF-02 (KAN-56 under KAN-33); related to Q-02 and Q-04.
+
+**Decision and rationale:** Decided requests stay out of the initial-review queue, which keeps
+`REVIEWABLE_STATUSES` unchanged. A separate coordinator list, `GET /api/events?scope=history`,
+returns the coordinator's assigned requests in `APPROVED`, `REJECTED`, `CONFIRMED`,
+`CANCELLED` or `COMPLETED` (`FOLLOW_UP_STATUSES`), newest change first, using the same
+`canViewRequest` assignment policy as the queue. Drafts are never listed. The later lifecycle
+statuses are included so a request stays reachable after follow-up steps such as confirmation,
+which was the Sprint 1 review's concern. A query parameter on the existing list route was chosen
+over a new route to mirror the organiser's `scope=all` pattern; organisers are refused
+`scope=history`. Reopening uses the shared detail route, so "no second initial decision" relies on
+its existing action flags and the decision endpoint's 409, not on new logic. Final confirmation
+itself remains KAN-61.
+
+**Kind:** Team implementation assumption, not a customer clarification. Unassigned triage,
+delegation and whether a reassigned coordinator keeps history access remain open under Q-02;
+this list follows the *current* assignment only, like the queue.
+
+**Source and date:** Irfan, 29 September 2026, while implementing KAN-56.
+
+**Affected story and acceptance-criterion IDs:** KAN-33-AC1–AC3; KAN-56 acceptance checks;
+S2-T20.
+
+**Affected implementation and tests:** `backend/src/modules/events/submitted-requests.ts`,
+`backend/src/modules/events/submitted-requests-router.ts`,
+`frontend/src/features/reviews/api/submitted-requests.ts`,
+`frontend/src/features/reviews/pages/ReviewQueuePage.vue`,
+`backend/test/events/submitted-requests.test.ts`,
+`backend/test/events/submitted-requests-router.test.ts`,
+`database/tests/events/authenticated-review.integration.test.ts`,
+`frontend/src/features/reviews/pages/ReviewQueuePage.test.ts`,
+`frontend/src/features/reviews/pages/ReviewAccessPage.test.ts`,
+`tests/e2e/review-access.spec.ts`, `tests/e2e/review-queue.spec.ts`.
+
+**Supersedes:** The 17 September contract line that coordinators must omit `scope`.
+
 ## Decision record template
 
 Copy this block when the team receives an answer or adopts an explicit implementation assumption. Keep superseded decisions so later changes remain explainable.
