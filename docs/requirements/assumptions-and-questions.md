@@ -808,6 +808,41 @@ S2-T20.
 
 **Supersedes:** None — narrows the open scope of S1-DEF-01 and S1-DEF-03 recorded in the [Sprint 1 review](../scrum/sprint-01/review.md#review-defects-and-carry-over) and [Sprint 2 carry-over table](../scrum/sprint-02/sprint-backlog.md#carry-over-repair-criteria-and-tasks); does not reopen or change the Sprint 1 closure record itself.
 
+## 3 October 2026 — KAN-51 venue availability calendar
+
+**Question ID:** S2-Q03 (calendar labels and details) and S2-Q04 (booking-time boundaries); related to Q-06, Q-07 and S2-Q07. Who may use the calendar is the 21 September team decision above.
+
+**Decision and rationale:** The calendar is rebuilt as a read-only module rather than by restoring the code removed on 26 September. `GET /api/venues/availability` returns every active venue with the periods overlapping a requested window of at most 31 days, and `/venues/availability` shows one week of it at a time:
+
+- Only `EVENT_COORDINATOR`, `VENUE_STAFF` and `TECHNICAL_SUPPORT_STAFF` may read it. Organisers, attendees and signed-out callers are refused before any venue data is read; the sidebar link and page follow the same rule. Calendar access grants no booking, catalogue or event-request permission.
+- A confirmed booking is an `APPROVED` `venue_bookings` row, following S2-Q04's note that the booking status is `APPROVED`, distinct from event `CONFIRMED`. `PENDING`, `REJECTED` and `CANCELLED` bookings are not shown, because migration 004's provisional Q-06 rule says they do not hold the venue. Whether pending requests should appear remains open under S2-Q04.
+- Every `venue_unavailability` row is a recorded period of unavailability (KAN-51-AC3; displayed for KAN-55-AC8).
+- Intervals are half-open in the API and the page, so back-to-back periods do not overlap and no turnover buffer is added. The page uses Singapore time (fixed +08:00) and Monday-to-Sunday weeks. Time inside a venue's opening hours that no period covers is available; time outside them is shown as closed, and a missing opening or closing time leaves that end of the day unrestricted.
+- Inactive venues are not listed, because they cannot be requested.
+- Detail visibility (S2-Q03): a booking names its event only to that event's currently assigned coordinator, and never for a draft, because that coordinator can already open the request; every other reader sees an anonymous confirmed booking. Block reasons are shown to all three roles because they explain operational unavailability to the planners KAN-55 serves. Both rules sit in `backend/src/modules/venues/availability.ts` so they can change in one place.
+- Where a booking and a blocked period overlap (S2-Q07), the day bar shows the block and the day's list shows both periods, so neither is hidden.
+
+**Kind:** Team implementation assumption, not a customer clarification. S2-Q03, S2-Q04 and S2-Q07 remain open; the detail-visibility and pending-request rules need team confirmation.
+
+**Source and date:** Ernest, 3 October 2026, while implementing KAN-51.
+
+**Affected story and acceptance-criterion IDs:** KAN-51-AC1–KAN-51-AC6; KAN-55-AC8 (display only); S2-T05, S2-T06.
+
+**Affected implementation and tests:** `backend/src/modules/venues/availability.ts`,
+`backend/src/modules/venues/availability-router.ts`, `backend/src/app.ts`,
+`frontend/src/features/venues/` (`access.ts`, `availability.ts`, `api/availability.ts`,
+`components/VenueAvailabilityCalendar.vue`, `components/VenueWeekTimeline.vue`,
+`pages/VenueAvailabilityPage.vue`), `frontend/src/app/router.ts`,
+`frontend/src/components/AppShell.vue`, `frontend/src/features/reviews/pages/ReviewRequestPage.vue`
+(link to the event's week), `backend/test/venues/availability.test.ts`,
+`backend/test/venues/availability-router.test.ts`,
+`database/tests/venues/venue-availability.integration.test.ts`,
+`frontend/src/features/venues/availability.test.ts`,
+`frontend/src/features/venues/pages/VenueAvailabilityPage.test.ts`,
+`frontend/src/features/reviews/pages/ReviewRequestPage.test.ts`, `tests/e2e/venue-availability.spec.ts`.
+
+**Supersedes:** The 21 September implementation-gap note that the calendar route accepted any authenticated role; that route was removed on 26 September, and the new route enforces the three-role decision. The calendar references in the 19 September Q-07 rule describe removed code.
+
 ## Decision record template
 
 Copy this block when the team receives an answer or adopts an explicit implementation assumption. Keep superseded decisions so later changes remain explainable.

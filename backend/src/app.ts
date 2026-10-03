@@ -12,6 +12,7 @@ import { createClarificationRouter } from './modules/events/clarification-router
 import { createStatusHistoryRouter } from './modules/events/status-history-router.js';
 import { createVenueRouter } from './modules/venues/venue-router.js';
 import type { WorkflowRouterDependencies } from './modules/events/workflow-http.js';
+import { createVenueAvailabilityRouter } from './modules/venues/availability-router.js';
 
 export interface AppDependencies {
   database: HealthDatabase;
@@ -19,7 +20,7 @@ export interface AppDependencies {
   reviews?: ReviewRouterDependencies;
   submittedRequests?: SubmittedRequestsRouterDependencies;
   auth?: AuthRouterDependencies;
-  /** Verified identity and pool shared by the coordinator workflow routes. */
+  /** Verified identity and pool shared by the coordinator workflow and venue routes. */
   workspace?: WorkflowRouterDependencies;
 }
 
@@ -63,6 +64,8 @@ export function createApp({
   if (auth) app.use('/api/auth', createAuthRouter(auth));
 
   if (workspace) {
+    // KAN-51: read-only venue calendar for the internal planning roles.
+    app.use('/api/venues', createVenueAvailabilityRouter(workspace));
     // Mounted before the shared detail route so /unassigned and /coordinators are not read as IDs.
     app.use('/api/events', createAssignmentRouter(workspace));
     app.use('/api/events', createClarificationRouter(workspace));
