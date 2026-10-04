@@ -14,6 +14,7 @@ import NotFoundPage from '../components/NotFoundPage.vue';
 import VenueSearchPage from '../features/venues/pages/VenueSearchPage.vue';
 import VenueBookingsPage from '../features/venues/pages/VenueBookingsPage.vue';
 import VenueBookingDetailPage from '../features/venues/pages/VenueBookingDetailPage.vue';
+import VenueBlocksPage from '../features/venues/pages/VenueBlocksPage.vue';
 
 export const router = createRouter({
   history: createWebHistory(),
@@ -36,6 +37,7 @@ export const router = createRouter({
     { path: '/venues', component: VenueSearchPage, meta: { title: 'Venue search' } },
     { path: '/venue-bookings', component: VenueBookingsPage, meta: { title: 'Venue bookings' } },
     { path: '/venue-bookings/:id', component: VenueBookingDetailPage, meta: { title: 'Venue booking' } },
+    { path: '/venue-blocks', component: VenueBlocksPage, meta: { title: 'Venue blocks' } },
     { path: '/:pathMatch(.*)*', component: NotFoundPage, meta: { title: 'Page not found' } },
   ],
   scrollBehavior: () => ({ top: 0 }),

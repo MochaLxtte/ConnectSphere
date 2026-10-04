@@ -6,6 +6,43 @@
   blocks are unavailable; event names are shown only to the assigned coordinator.
 - `booking-input.ts` / `booking-service.ts` / `venue-bookings-router.ts`: KAN-8 booking
   review and decisions, described below.
+- `block-input.ts` / `block-service.ts` / `block-router.ts`: KAN-55 venue-unavailability
+  blocks, described below.
+
+## Venue-unavailability blocks — KAN-55
+
+`block-router.ts` is mounted at `/api/venues` and is Venue Staff only end to end; the
+service re-checks the role for direct callers.
+
+| Endpoint | Access and result |
+| --- | --- |
+| `GET /api/venues/:venueId/unavailability` | Venue Staff only. Returns `{ items }`, earliest first, for one venue. |
+| `POST /api/venues/:venueId/unavailability` | Venue Staff only; accepts `{ startsAt, endsAt, reason }` (reason is mandatory, unlike KAN-8's optional decision reason). Returns `201` with the saved `{ block }`. |
+| `DELETE /api/venues/:venueId/unavailability/:blockId` | Venue Staff only; removes the block. Returns `{ id }`. Amendment/removal is implementation scope beyond KAN-55's listed acceptance criteria. |
+
+### Rules
+
+- `venueId` must be an active venue, or the call fails with `404 VENUE_NOT_FOUND` /
+  `409 VENUE_INACTIVE` before any row is written.
+- A new block that overlaps an existing `APPROVED` `venue_bookings` row is refused with
+  `409 VENUE_BOOKING_CONFLICT`: an existing reservation must not be silently displaced by a
+  later block (open policy question, see the decision record). This is an application-level
+  check only; no new migration/trigger guards the reverse direction the way migration 004's
+  `venue_bookings_conflict` trigger already guards a booking against an existing block.
+- This reuses the existing `venue_unavailability` table from migration 004; no new migration
+  is required. KAN-51's calendar, KAN-12's search and KAN-8's approval-time recheck already
+  read this table, so a saved block is immediately reflected everywhere that already reads it
+  (KAN-55-AC8–AC12); only creation/removal (AC1–AC7, AC13) is new in this module.
+
+### Verification
+
+- `backend/test/venues/block-input.test.ts`: submission input boundaries.
+- `backend/test/venues/block-router.test.ts`: login, roles, parameter validation, verified
+  actor forwarding and error mapping.
+- `database/tests/venues/venue-blocks.integration.test.ts`: real PostgreSQL persistence,
+  role checks, venue eligibility, the booking-overlap conflict, listing and deletion.
+
+Run integration tests with `TEST_DATABASE_URL` pointing to a dedicated local test database.
 
 ## Booking decisions — KAN-8
 

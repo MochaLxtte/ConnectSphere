@@ -69,6 +69,14 @@ KAN-8 now supplies a staff pending-booking queue/detail and approval/rejection, 
 
 Next: Tristan follows the [manual guide](../../testing/README.md#kan-8-hosted-verification), then publishes for CI/peer review. KAN-53 booking submission is still absent, so existing synthetic pending booking rows are needed; that setup does not accept the complete submission-to-booking path. KAN-8's three points plus KAN-29's three points give Tristan six new-story points. No Done points, live Jira state, review outcome, burndown observation or change to the 43-point baseline is claimed.
 
+### 4 October development update — Kai Jie (KAN-55)
+
+Asynchronous development update after the planned 3 October sprint boundary, not a Daily Scrum or review record, on `feat/KAN-55-block-venue-unavailability` (branched from `main`, separately from the still-open KAN-53 PR). Picked up after KAN-53, since no teammate had claimed it in the repository plan; Jira separately shows KAN-54 (Detect Venue Booking Conflicts) assigned to Ernest, which this update does not touch. Implemented `POST/GET/DELETE /api/venues/:venueId/unavailability`, letting Venue Staff record a mandatory-reason unavailability period for one venue, list a venue's blocks and remove one; and a Venue Staff-only `VenueBlocksPage` (`/venue-blocks`). A new block overlapping an existing `APPROVED` booking is refused (`409 VENUE_BOOKING_CONFLICT`) so an existing reservation is never silently displaced — a documented team default, not agreed policy; see the [4 October decision](../../requirements/assumptions-and-questions.md#4-october-2026--kan-55-block-venue-for-operational-unavailability). KAN-55-AC8–AC12 needed no new code: KAN-51's calendar, KAN-12's search and KAN-8's approval-time recheck already read `venue_unavailability`.
+
+Local checks: `npm run check` passes (typecheck, 503 backend + 300 frontend unit tests, both builds). New unit/component tests cover the input parser, the HTTP boundary and the page. A `database/tests/venues/venue-blocks.integration.test.ts` covering KAN-55-AC1–AC13 against real PostgreSQL was written but **not executed**: this environment has no `TEST_DATABASE_URL` and no Docker, the same limitation recorded for KAN-53. This is automated-fixture coverage only; S2-T17/T18, policy acceptance, peer review and CI remain pending. No Done points, live Jira state, review outcome, burndown observation or change to the 43-point baseline is claimed.
+
+Next: run the integration suite against a real test database; agree the block-over-existing-booking policy with the team; publish for CI/peer review.
+
 ## Impediments and adaptations
 
 | Reference | Current planning position | Next inspection | Action owner / resolution |

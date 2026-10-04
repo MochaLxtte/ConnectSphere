@@ -918,3 +918,24 @@ Read-only inspection found matching checksums under the original names 001, 002 
 ## 30 September 2026 - Shared migration verification
 
 After migration 006 was applied to the shared project, read-only inspection confirmed its history checksum and KAN-29 columns/constraint. A fresh local run of 001-006 reproduced the application's tables, columns, constraints, indexes, triggers and normalized project function definitions. [DB-SCHEMA-20260930-01](../testing/test-evidence.md#30-september-migration-and-hosted-schema-consistency) records the counts and hosted-only RLS automation. No applied SQL file needs correction and no shared data or history was changed during this verification. Earlier observations that 006 was pending describe the pre-migration state; availability setup, hosted manual acceptance, CI and peer review remain separate work.
+
+## 4 October 2026 — KAN-55 block venue for operational unavailability
+
+**Question IDs:** Q-06/Q-07, S2-Q07; the open "block-over-existing-booking" question flagged for KAN-55 in the backlog's refinement table.
+
+**Implementation and rationale:** Kai Jie picked up KAN-55 (three points) after KAN-53. `POST /api/venues/:venueId/unavailability` lets Venue Staff record a mandatory-reason unavailability period for one venue; `GET` lists a venue's blocks and `DELETE` removes one. All three routes are Venue Staff only (KAN-55-AC13). The service inserts into the existing `venue_unavailability` table from migration 004 — no new migration. A Venue Staff-only `VenueBlocksPage` (`/venue-blocks`) lets staff pick a venue, submit a block and remove one.
+
+The following are explicit **implementation choices awaiting team/customer confirmation**, not new agreed acceptance criteria:
+
+- Block-over-existing-booking (the open question above): creation is refused with `409 VENUE_BOOKING_CONFLICT` if the new period overlaps an existing `APPROVED` `venue_bookings` row, so an existing reservation is never silently displaced by a later block. This is an **application-level check only**; unlike migration 004's `venue_bookings_conflict` trigger (which already guards a new booking against an existing block), no new migration/trigger guards this reverse direction at the database level.
+- Removal/amendment (`DELETE`) is implementation scope beyond KAN-55's listed acceptance criteria (AC1–AC13 only cover creation and downstream display); it was added as a reasonable minimum so staff can correct a mistake, following the backlog's own note about "retained removal functionality."
+- KAN-55-AC8–AC12 (calendar/search/suitability exclusion and approval protection) needed no new code: KAN-51's calendar, KAN-12's search and KAN-8's approval-time recheck already read `venue_unavailability` directly, so a saved block is immediately reflected everywhere those already read it. Only creation/removal (AC1–AC7, AC13) is new in this module.
+- The venue picker in `VenueBlocksPage` reuses the KAN-51 availability endpoint (already Venue Staff accessible) purely to get venue id/name; no new "list venues" endpoint was added.
+
+**Evidence and limits:** `backend/test/venues/block-input.test.ts`, `backend/test/venues/block-router.test.ts` and `frontend/src/features/venues/pages/VenueBlocksPage.test.ts` cover input/HTTP/UI boundaries. `npm run check` (typecheck, 503 backend + 300 frontend unit tests, both builds) passes on this branch. A new `database/tests/venues/venue-blocks.integration.test.ts` was written to cover association, role checks, venue eligibility, the booking-overlap conflict, listing and deletion against real PostgreSQL, but **could not be executed** in this environment: `TEST_DATABASE_URL` is blank and Docker is unavailable here (the same limitation recorded for KAN-53). This is local automated-fixture coverage only; the integration suite, hosted S2-T17/T18 walkthrough, policy acceptance, peer review and CI remain pending.
+
+**Source/date:** Kai Jie's implementation; 4 October 2026. This is a development update after the planned 3 October sprint end, not a reconstructed planning/review decision. Jira shows KAN-54 (Detect Venue Booking Conflicts) assigned to Ernest; this entry does not touch KAN-54.
+
+**Affected IDs:** KAN-55-AC1–AC13, S2-T17/S2-T18. See the [venues module README](../../backend/src/modules/venues/README.md#venue-unavailability-blocks--kan-55) for the concrete routes and errors.
+
+**Supersedes:** None recorded for KAN-55 specifically; narrows the open block-over-existing-booking question above to a documented team default pending confirmation.
