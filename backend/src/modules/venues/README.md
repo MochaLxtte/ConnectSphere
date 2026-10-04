@@ -8,6 +8,8 @@
   review and decisions, described below.
 - `block-input.ts` / `block-service.ts` / `block-router.ts`: KAN-55 venue-unavailability
   blocks, described below.
+- `suitability-input.ts` / `suitability-rules.ts` / `suitability-service.ts` /
+  `suitability-router.ts`: KAN-52 read-only event-specific assessment, described below.
 
 ## Venue-unavailability blocks — KAN-55
 
@@ -32,7 +34,9 @@ service re-checks the role for direct callers.
 - This reuses the existing `venue_unavailability` table from migration 004; no new migration
   is required. KAN-51's calendar, KAN-12's search and KAN-8's approval-time recheck already
   read this table, so a saved block is immediately reflected everywhere that already reads it
-  (KAN-55-AC8–AC12); only creation/removal (AC1–AC7, AC13) is new in this module.
+  for calendar/search/approval. KAN-52 now also reads these blocks for suitability;
+  those downstream checks need their own evidence. Only creation/removal (AC1–AC7, AC13)
+  is new in the KAN-55 module.
 
 ### Verification
 
@@ -106,3 +110,31 @@ approved bookings from the same table.
 
 Run integration tests with `TEST_DATABASE_URL` pointing to a dedicated local test database.
 Manual acceptance is tracked in `docs/testing/README.md#kan-8-hosted-verification` after shared deployment.
+
+## Venue suitability — KAN-52
+
+`GET /api/events/:id/venue-suitability` returns the current source event, requirements
+version and active venue capabilities. `POST` on the same route returns an explained
+assessment without writing data. The service rechecks the verified coordinator role and
+current assignment; draft, absent and unrelated events are unavailable. No schema change
+or persisted interpretation is involved.
+
+The coordinator supplies an explicit interpretation of free-text needs: facilities,
+accessibility labels, one layout, wheelchair requirement, confirmation and unresolved
+requirements. Labels match by case-insensitive trimmed equality, including unlisted
+requirements. Each applicable check reports PASS/FAIL/UNKNOWN; the overall result is
+UNSUITABLE for a definite failure, otherwise NEEDS_REVIEW for any unknown, otherwise
+SUITABLE. Capacity, full-interval Singapore opening hours, active state, all approved
+reservations and operational blocks are read fresh. Adjacent intervals do not overlap.
+
+The source version hashes relevant event values, so direct dashboard changes are detected
+even without an updated timestamp. A mismatch gives `409 SUITABILITY_CONTEXT_CHANGED`;
+the UI reloads and resets interpretation. A valid result remains an observation at check
+time, not a venue hold, event approval or permission to create a booking.
+
+See the [full contract](../../../../docs/architecture/api-contract.md#venue-suitability-kan-52-cf-11)
+for request/response fields and limits, [decision record](../../../../docs/requirements/assumptions-and-questions.md#4-october-2026--kan-52-venue-suitability)
+for policy boundaries and [testing guidance](../../../../docs/testing/README.md#kan-52-hosted-verification)
+for remaining hosted checks. Unit/HTTP tests are `backend/test/venues/suitability-*.test.ts`;
+PostgreSQL tests are `database/tests/venues/venue-suitability.integration.test.ts`.
+Record executed results separately in the shared test register.

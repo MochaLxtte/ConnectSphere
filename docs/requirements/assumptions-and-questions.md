@@ -939,3 +939,23 @@ The following are explicit **implementation choices awaiting team/customer confi
 **Affected IDs:** KAN-55-AC1–AC13, S2-T17/S2-T18. See the [venues module README](../../backend/src/modules/venues/README.md#venue-unavailability-blocks--kan-55) for the concrete routes and errors.
 
 **Supersedes:** None recorded for KAN-55 specifically; narrows the open block-over-existing-booking question above to a documented team default pending confirmation.
+
+## 4 October 2026 — KAN-52 venue suitability
+
+**Question IDs:** Q-08 / S2-Q05, with existing S2-Q04 interval defaults. **Source:** Tristan requested KAN-52 implementation and confirmed that the coordinator should interpret free-text event requirements for each check, without a database migration. This is a development choice after the planned sprint boundary, not an additional customer clarification or a retrospective planning decision.
+
+An assigned Event Coordinator can assess a selected venue for their non-draft event. The page displays the current event's free-text venue/accessibility needs alongside its timing and expected attendance, and the venue's recorded capabilities. Facilities, accessibility labels, one required layout and wheelchair access are explicit per-assessment inputs. They are not saved back to the event or inferred by parsing arbitrary prose. Unlisted required labels are allowed so a missing capability can be tested. The coordinator must explicitly confirm that the interpretation includes every applicable need; confirming empty fields means none are required. Unresolved needs remain visible and prevent a Suitable result.
+
+The following implementation details remain subject to team/customer review:
+
+- Labels match by trimmed, case-insensitive exact equality. All specified facilities/accessibility labels are required; a selected layout must be supported. Wheelchair access has its own boolean check. One unrelated accessibility feature never satisfies a different stated need.
+- Each check reports PASS, FAIL or UNKNOWN with a reason. A definite failure gives **UNSUITABLE**; otherwise missing, unconfirmed or unresolved requirements give **NEEDS_REVIEW**; only all applicable checks passing gives **SUITABLE**. Unknown data is not treated as absent requirements or as a proven mismatch.
+- Numeric capacity uses the event's current expected attendance; equality with maximum capacity passes. Event time must be known and ordered. Opening hours apply continuously to the entire interval in Singapore time, including intervening days; a null endpoint is unrestricted. Inactive venues fail even if their other capabilities match.
+- Availability uses every overlapping APPROVED booking, including the selected event's own existing reservation, and every operational block. PENDING/REJECTED/CANCELLED bookings do not reserve time. Half-open intervals permit adjacency and add no turnover buffer. These reuse the documented calendar/booking defaults; an assessment is not a reservation.
+- The backend rechecks role/current assignment and reads event, venue and conflict information in one SQL snapshot on each assessment. A SHA-256 requirements version covers the relevant event source fields. Changed source data returns `409 SUITABILITY_CONTEXT_CHANGED`; the UI refreshes the source and requires a new interpretation. A previous venue or availability result is never a durable guarantee.
+
+The operation is read-only: no booking, event decision/status, requirement update or stored suitability record is created. The retained Jira text says suitability informs venue selection and must not automatically reject an event. KAN-53 booking submission is not yet integrated into this branch/main; KAN-52 does not add an implicit booking override/blocking policy. KAN-55 block creation is already integrated and its records participate in the assessment.
+
+**Scope/evidence:** KAN-52-AC1–AC9, S2-T09/T10 and CF-11/TC-11. The detailed contract is in [the API document](../architecture/api-contract.md#venue-suitability-kan-52-cf-11), and hosted cases remain in [the shared testing guide](../testing/README.md#kan-52-hosted-verification). Executed commands/results belong in [test evidence](../testing/test-evidence.md); implementation and test files alone do not establish a pass, hosted acceptance, peer review, CI or Jira Done. All migrations remain unchanged. The 93 criterion IDs and **43 points: 35 new + 8 carry-over** remain intact.
+
+**Supersedes:** the removed 19 September suitability implementation's five-check description, loose accessibility interpretation and omission of facilities/layout checks. It narrows S2-Q05 to explicit per-assessment interpretation; remaining matching/eligibility and future booking-policy acceptance remain open.

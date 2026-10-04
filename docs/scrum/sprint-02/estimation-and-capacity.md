@@ -40,7 +40,7 @@ The target of roughly **six points per member** describes the 35 new points acro
 | Ernest | Not recorded | To agree | KAN-51 calendar implementation, 5 points | Not recorded |
 | Kai Jie | Not recorded | KAN-6 / KAN-34 retained in Jira; integration allocation to agree | To agree | Not recorded |
 | Irfan | Not recorded | KAN-33 retained in Jira; integration allocation to agree | To agree | Not recorded |
-| Tristan | Not recorded | Integration with current team branches and KAN-8 outcome/calendar testing | KAN-29, 3 points (28 September); KAN-8, 3 points (4 October): 6 new points total | Not recorded |
+| Tristan | Not recorded | Integration with current team branches and KAN-8 outcome/calendar testing | KAN-29, KAN-8 and user-requested KAN-52, 3 points each: 9 points of implementation responsibility; formal allocation to confirm | Not recorded |
 | Arvin | Not recorded | To agree | To agree | Not recorded |
 
 Record leave, coursework deadlines, working days, coordination, test execution and Scrum role responsibilities before judging feasibility. Arvin is Scrum Master and Irfan is Product Owner; both also develop, so include time for these duties within their availability. Points indicate relative scope; availability is recorded in hours separately. Sprint 1 closed with seven PBIs Done and 24 accepted points, leaving these three stories at 8 points. This is one observed sprint, not a stable capacity forecast; the 43-point Sprint 2 baseline exceeds that observed outcome and needs an explicit feasibility check.
@@ -54,7 +54,7 @@ Record leave, coursework deadlines, working days, coordination, test execution a
 | Questions affecting estimates | Team/customer acceptance of KAN-29's implemented availability/active-status/fallback choices; calendar detail visibility, suitability matching, concurrency, operational-block behavior and defect reproduction. Assignment ordering and the three calendar roles are settled. |
 | Final carry-over estimate decision | Original 8 points retained: KAN-6 at 3, KAN-33 at 2 and KAN-34 at 3 |
 | Final Sprint 2 point baseline | Confirmed: 43 points across 12 PBIs |
-| Ownership and reviewers | Carry-over owners in the 21 September snapshot: Kai Jie (KAN-6/KAN-34), Irfan (KAN-33). Tristan owns KAN-29/KAN-8 (six new-story points) in the repository plan; Ryan implements KAN-12 and Ernest implements KAN-51. Other allocations and all reviewers remain to confirm. No live Jira assignment change or verification is claimed. |
+| Ownership and reviewers | Carry-over owners in the 21 September snapshot: Kai Jie (KAN-6/KAN-34), Irfan (KAN-33). Tristan implements KAN-29/KAN-8/KAN-52 (nine new-story points), Ryan implements KAN-12, Ernest implements KAN-51 and Kai Jie implements KAN-55. This records development responsibility without inventing a revised planning commitment. Other allocations and all reviewers remain to confirm. No live Jira assignment change or verification is claimed. |
 | Capacity decision and scope trade-offs | To record after availability and carry-over work are understood |
 | Actual accepted points / unfinished points | Not yet assessed; complete at [review](review.md) |
 
@@ -63,3 +63,5 @@ At review, calculate accepted points only for stories meeting the Definition of 
 **28 September allocation update:** KAN-29's three points are assigned to Tristan in this plan. Local automated evidence is [AUTO-20260928-01](../../testing/test-evidence.md#28-september-kan-29-automatic-assignment); it does not award Done points, establish actual development hours or alter the 43-point commitment. Hosted acceptance, peer review and CI remain pending. The prior venue implementation was removed from `main` on 26 September; its historical presence must not be treated as reduced remaining work without a fresh implementation assessment.
 
 **4 October allocation update:** Tristan took up KAN-8, keeping his new-story allocation at 3 + 3 = 6 points. This implementation update is after the planned 3 October boundary; it does not change the sprint dates, record review acceptance or award points. Actual review/closure and any carry-over decision still require team records.
+
+**4 October KAN-52 responsibility update:** Tristan requested this three-point implementation after KAN-29 and KAN-8, making nine new-story points across his three implementations. The original roughly six-point target remains a historical distribution guide. No point estimate, 43-point baseline, Jira assignee, review outcome or Done count changes through this record. Reconcile capacity and formal allocation with the team.
