@@ -2,24 +2,24 @@ import {
   iso, WorkflowError,
   type WorkflowActor, type WorkflowDependencies,
 } from '../events/workflow-support.js';
+import { intervalWithinVenueHours } from './suitability-rules.js';
 
 /**
  * Coordinator venue search over the venue catalogue, bookings and operational blocks.
  *
  * Rules:
  * - only Event Coordinators may search (the route also enforces this; checked again here);
- * - only active venues are searched, always read live from the table;
+ * - only active venues are searched, always read live from the database;
  * - a venue must satisfy EVERY applied filter; filters left empty are ignored;
  * - attendance and capacity are both minimum-capacity requirements: venues.capacity must be at
  *   least the larger of the two;
  * - layout: the chosen layout must be in venues.layouts;
  * - facilities / accessibility: the venue must have ALL selected values (array containment);
  * - wheelchair accessible: venues.wheelchair_accessible must be true;
- * - date/time (both checks apply):
- *   1. the event's start and end time of day (Singapore time) must fall within the venue's
- *      opens_at / closes_at (a venue with no opening hours is not restricted);
- *   2. the venue must have no APPROVED booking or operational block overlapping the time range.
- *      Overlap is half-open, so a booking ending exactly when the event starts does not conflict.
+ * - date/time: the event occupies the venue continuously from start to end, so BOTH must hold:
+ *   1. opening hours (see isOpenForRange): the whole interval must be within daily Singapore
+ *      opening hours; overnight/multi-day events need a venue with no closed period;
+ *   2. no APPROVED booking or operational block overlaps the event (half-open: adjacency is fine).
  * - an empty result is a normal answer, never an error, and changes no event request.
  */
 
@@ -56,7 +56,6 @@ export interface VenueFilterOptions {
   accessibility: string[];
 }
 
-const VENUE_TIME_ZONE = 'Asia/Singapore';
 /**
  * Only APPROVED bookings make a venue unavailable. This matches the database's
  * venue_bookings_conflict trigger, which only guards APPROVED rows, so PENDING requests
@@ -152,12 +151,27 @@ export function parseVenueSearchQuery(query: Record<string, unknown>): VenueSear
   };
 }
 
+/**
+ * Whether a venue's opening hours can host an event running continuously from startsAt to endsAt.
+ * Shares KAN-52's whole-interval check, including exclusive midnight ends and second precision.
+ * Missing bounds mean midnight/day-end; an unrestricted or explicit 24-hour venue is always open.
+ * Invalid hours or event timing do not produce a match.
+ */
+export function isOpenForRange(
+  hours: { opensAt: string | null; closesAt: string | null },
+  startsAt: string,
+  endsAt: string,
+): boolean {
+  return intervalWithinVenueHours(startsAt, endsAt, hours.opensAt, hours.closesAt) === true;
+}
+
 const SEARCH_SQL = `
   SELECT v.id, v.name, v.description, v.location, v.capacity,
          v.layouts, v.facilities, v.accessibility_features AS "accessibilityFeatures",
          v.wheelchair_accessible AS "wheelchairAccessible",
          to_char(v.opens_at, 'HH24:MI') AS "opensAt",
          to_char(v.closes_at, 'HH24:MI') AS "closesAt",
+         v.opens_at::text AS "openingStartsAt", v.closes_at::text AS "openingEndsAt",
          v.updated_at AS "updatedAt"
   FROM venues v
   WHERE v.is_active
@@ -168,11 +182,6 @@ const SEARCH_SQL = `
     AND v.facilities @> $4::text[]
     AND v.accessibility_features @> $5::text[]
     AND (NOT $6::boolean OR v.wheelchair_accessible)
-    AND ($7::timestamptz IS NULL OR (
-          (v.opens_at IS NULL
-            OR ($7::timestamptz AT TIME ZONE '${VENUE_TIME_ZONE}')::time >= v.opens_at)
-      AND (v.closes_at IS NULL
-            OR ($8::timestamptz AT TIME ZONE '${VENUE_TIME_ZONE}')::time <= v.closes_at)))
     AND ($7::timestamptz IS NULL OR NOT EXISTS (
           SELECT 1 FROM venue_bookings b
           WHERE b.venue_id = v.id
@@ -186,7 +195,11 @@ const SEARCH_SQL = `
             AND u.ends_at > $7::timestamptz))
   ORDER BY lower(v.name), v.id`;
 
-type VenueRow = Omit<VenueResult, 'updatedAt'> & { updatedAt: Date };
+type VenueRow = Omit<VenueResult, 'updatedAt'> & {
+  updatedAt: Date;
+  openingStartsAt: string | null;
+  openingEndsAt: string | null;
+};
 
 export async function searchVenues(
   { pool }: WorkflowDependencies,
@@ -205,7 +218,17 @@ export async function searchVenues(
     filters.startsAt,
     filters.endsAt,
   ]);
-  return found.rows.map((row) => ({ ...row, updatedAt: iso(row.updatedAt) }));
+  let venues = found.rows;
+
+  const { startsAt, endsAt } = filters;
+  if (startsAt !== null && endsAt !== null) {
+    venues = venues.filter((venue) => isOpenForRange({
+      opensAt: venue.openingStartsAt, closesAt: venue.openingEndsAt,
+    }, startsAt, endsAt));
+  }
+  return venues.map(({ openingStartsAt: _opens, openingEndsAt: _closes, ...row }) => ({
+    ...row, updatedAt: iso(row.updatedAt),
+  }));
 }
 
 /** The layouts, facilities and accessibility features that exist on active venues right now. */
