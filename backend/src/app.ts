@@ -15,6 +15,7 @@ import { createVenueBookingsRouter } from './modules/venues/venue-bookings-route
 import type { WorkflowRouterDependencies } from './modules/events/workflow-http.js';
 import { createVenueAvailabilityRouter } from './modules/venues/availability-router.js';
 import { createVenueBlockRouter } from './modules/venues/block-router.js';
+import { createVenueSuitabilityRouter } from './modules/venues/suitability-router.js';
 
 export interface AppDependencies {
   database: HealthDatabase;
@@ -73,6 +74,7 @@ export function createApp({
     app.use('/api/events', createAssignmentRouter(workspace));
     app.use('/api/events', createClarificationRouter(workspace));
     app.use('/api/events', createStatusHistoryRouter(workspace));
+    app.use('/api/events', createVenueSuitabilityRouter(workspace));
     app.use('/api/venues', createVenueRouter(workspace));
     // KAN-55: Venue Staff manage operational-unavailability blocks per venue.
     app.use('/api/venues', createVenueBlockRouter(workspace));
