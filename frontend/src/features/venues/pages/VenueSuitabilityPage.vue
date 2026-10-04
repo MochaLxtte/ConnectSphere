@@ -198,6 +198,7 @@ onBeforeUnmount(() => { readController?.abort(); assessmentController?.abort(); 
 
         <section class="panel suitability-panel" aria-labelledby="suitability-venue-title">
           <h2 id="suitability-venue-title">Choose a venue</h2>
+          <p class="suitability-hint">Catalogue details from the last refresh. Each assessment checks the latest venue information; use Refresh event and venues to update the details shown here.</p>
           <p v-if="state.context.venues.length === 0" class="suitability-hint" role="status">No active venues are available to assess. Refresh after the venue catalogue is updated.</p>
           <template v-else>
             <label class="field-label" for="suitability-venue">Venue to assess</label>
