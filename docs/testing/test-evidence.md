@@ -35,9 +35,30 @@ Browser feature responses are intercepted fixtures; unauthenticated API and star
 | `database/tests/venues/venue-blocks.integration.test.ts` (new) | **Not executed in this original run.** `TEST_DATABASE_URL` was blank in `.env` and Docker was unavailable, so the [dedicated test database](README.md#database-environments) could not be created. The suite covers KAN-55-AC1–AC13 (association, role checks, venue eligibility, the booking-overlap conflict, listing, deletion). Its later passing execution is included in AUTO-20261004-KAN52-01 above. |
 | `npm run test:e2e` | Not executed this session (same constraint: Playwright's `webServer` needs a migrated dev database). |
 
+**Imported-record caveat, 5 October:** the stated 500 backend total above is preserved from the original branch, but its parenthetical calculation does not reconcile (472 + 28 + 9 = 509). It is not an independently recounted result. The organiser-list component fixture above also did not establish backend organiser permission; the integrated panel is coordinator-only. Subsequent combined-build runs are recorded separately.
+
 This is automated-fixture coverage at the unit/component level only. It does not establish real PostgreSQL persistence/concurrency behaviour, a hosted Venue Staff walkthrough, CI or peer review for this branch.
 
 **Remaining:** execute the integration suite against a dedicated test database; execute the browser suite; agree the [block-over-existing-booking implementation default](../requirements/assumptions-and-questions.md#4-october-2026--kan-55-block-venue-for-operational-unavailability) with the team/customer; obtain peer review and CI. No hosted acceptance, Jira Done transition, Sprint 2 review outcome or change to the **43-point** baseline is claimed. Nothing was pushed by this task.
+
+## 4 October: venue booking submission
+
+**AUTO-20261004-KAN53-01 — local automated verification, integration not executed.** Tested on `feat/KAN-53-submit-venue-booking-request`, branched from `main` (`667c4ef`, after PR #23 integrated KAN-29/KAN-8), with Node 24 on Windows.
+
+| Command / environment | Actual result |
+| --- | --- |
+| `npm run check` | Passed: tools/frontend/backend type checks, **301 frontend tests** (293 + 8 new `VenueBookingPanel.test.ts` cases), **500 backend tests** (472 + 28 new `booking-input.test.ts` submission cases + 9 new `venue-booking-submission-router.test.ts` cases, less name collisions none), and both production builds. |
+| `npx vitest run test/venues/booking-input.test.ts` (backend, isolated) | Passed: 32 tests, including the new KAN-53 submission input boundaries (missing fields, invalid venue UUID, invalid/out-of-order dates, optional layout/notes trimming, unknown fields rejected). |
+| `npx vitest run test/venues/venue-booking-submission-router.test.ts` (backend, isolated) | Passed: 9 tests covering authentication (401), role gate (403, coordinator-only), event-id UUID validation (400), the 201 success path forwarding the verified actor/event id/body to the service, and `WorkflowError`-to-HTTP mapping (409/404). |
+| `npx vitest run src/features/events/components/VenueBookingPanel.test.ts` (frontend, isolated) | Passed: 8 tests covering coordinator submission and list refresh, client-side end-after-start time validation, server-refusal display without emitting `changed`, the read-only list shown to the owning organiser, read-only rendering once the event is `REJECTED`/`CANCELLED`/`COMPLETED`, and load-error retry. |
+| `database/tests/venues/venue-bookings.integration.test.ts` (new "KAN-53 venue booking submission against PostgreSQL" describe block) | **Not executed.** `TEST_DATABASE_URL` is blank in `.env` and Docker is unavailable in this environment, so the local fallback test database (see [dedicated test database](README.md#database-environments)) could not be created. The block was written to cover KAN-53-AC1–AC11 (association, visibility, eligible-state and venue-eligibility checks) but has no execution result yet. |
+| `npm run test:e2e` | Not executed this session (same booking-independent constraint: Playwright's `webServer` needs a migrated dev database, not exercised here). |
+
+**Imported-record caveat, 5 October:** the stated 500 backend total above is preserved from the original branch, but its parenthetical calculation does not reconcile (472 + 28 + 9 = 509). It is not an independently recounted result. The organiser-list component fixture above also did not establish backend organiser permission; the integrated panel is coordinator-only. Subsequent combined-build runs are recorded separately.
+
+This is automated-fixture coverage at the unit/component level only. It does not establish real PostgreSQL persistence/concurrency behaviour, a hosted Supabase login-to-submission walkthrough, CI or peer review for this branch.
+
+**Remaining:** execute the integration suite against a dedicated test database (local Docker fallback or a future dedicated Supabase test project) before claiming database-level verification; execute the browser suite; agree the [eligible-event-states and duplicate-request implementation defaults](../requirements/assumptions-and-questions.md#4-october-2026--kan-53-venue-booking-submission) with the team/customer; obtain peer review and CI. No hosted acceptance, Jira Done transition, Sprint 2 review outcome or change to the **43-point** baseline is claimed. Nothing was pushed by this task.
 
 ## 4 October: integrated venue booking decisions
 

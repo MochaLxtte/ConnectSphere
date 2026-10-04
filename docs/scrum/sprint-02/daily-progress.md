@@ -83,6 +83,14 @@ Asynchronous development update, not a Daily Scrum or review result: started `co
 
 Local verification passed: 913 unit/component tests, 228 PostgreSQL integration tests, 64 browser cases, type checks, builds and coverage reporting; see [AUTO-20261004-KAN52-01](../../testing/test-evidence.md#4-october-venue-suitability) for environments and boundaries. Next: perform [hosted S2-T09/T10 checks](../../testing/README.md#kan-52-hosted-verification), review the remaining [policy choices](../../requirements/assumptions-and-questions.md#4-october-2026--kan-52-venue-suitability), and obtain peer review/CI after publication. KAN-53 booking creation is not in this main baseline. Tristan's three implementations total nine existing new-story points; this does not reallocate Jira, change the 43-point baseline, award Done points or reconstruct the planned 3 October review.
 
+### 4 October development update — Kai Jie (KAN-53)
+
+Asynchronous development update after the planned 3 October sprint boundary, not a Daily Scrum or review record, on `feat/KAN-53-submit-venue-booking-request`. KAN-53 was the remaining unclaimed Sprint 2 item after reviewing the committed backlog's owner column; it was also the dependency the 4 October KAN-8 entry above flagged ("KAN-53 booking submission is still absent"). Implemented `POST /api/events/:id/venue-bookings`, letting the event's currently assigned, non-draft coordinator create a `PENDING` venue booking (venue, timing, optional layout/notes); and a coordinator-facing `VenueBookingPanel` added to `EventPlanningPanels`, alongside the existing assignment and clarification panels. Eligible event states (`REJECTED`/`CANCELLED`/`COMPLETED` refused; everything else accepted) and allowing duplicate pending requests are documented team implementation defaults, not agreed criteria — see the [4 October decision](../../requirements/assumptions-and-questions.md#4-october-2026--kan-53-venue-booking-submission).
+
+Local checks: `npm run check` passes (typecheck, 500 backend + 301 frontend unit tests, both builds). New unit/component tests cover the input parser, the HTTP boundary and the panel. A `database/tests/venues/venue-bookings.integration.test.ts` describe block covering KAN-53-AC1–AC11 against real PostgreSQL was written but **not executed**: this environment has no `TEST_DATABASE_URL` and no Docker, so the local fallback test database could not be created. This is automated-fixture coverage only, not integration, hosted or CI evidence; S2-T11/T12, policy acceptance, peer review and CI remain pending. No Done points, live Jira state, review outcome, burndown observation or change to the 43-point baseline is claimed.
+
+Next: run the integration suite against a real test database (local Docker or a dedicated Supabase test project) before claiming database-level verification; agree the eligible-event-states and duplicate-request policy with the team; publish for CI/peer review.
+
 ## Impediments and adaptations
 
 | Reference | Current planning position | Next inspection | Action owner / resolution |
@@ -128,3 +136,9 @@ For each verified checkpoint, record `remaining = current scope total − accept
 ## Produce and interpret the chart
 
 Export the actual Jira burndown and retain its source/filter/date in the [evidence register](evidence/README.md). If producing a separate chart, use the verified table values, preserve gaps and annotate dated scope changes. Any ideal line should be labeled as a plan and use the agreed calendar/working-day convention. No actual burndown chart or trend is recorded yet.
+
+### 5 October development update — published venue-branch integration
+
+Tristan's KAN-52 branch now combines the published KAN-12 date-filter updates and Kai Jie's KAN-53 submission with KAN-8 decisions and KAN-55 blocks. Integration adds submission-time refusal of current approved reservations/blocks after the venue lock, coordinator-only panel access and stale/uncertain-request recovery. KAN-12 shares KAN-52's continuous-interval Singapore opening-hours rule. No migration is added.
+
+The dated 4 October records above describe their original branch states and test environments. Combined automated results belong in [test evidence](../../testing/test-evidence.md); this entry claims no new passing run. Next: verify the connected [coordinator submission](../../testing/README.md#kan-53-hosted-verification) → [staff decision and coordinator outcome](../../testing/README.md#kan-8-hosted-verification) journey, then peer review and CI after publication. Eligibility, duplicate-pending and snapshot policies still need confirmation. Remote main, Jira assignments/statuses, review outcomes and the 43-point baseline are unchanged by this local integration.

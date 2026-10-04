@@ -63,7 +63,8 @@ async function reviewFixtures(page: Page, initialUser: typeof coordinator | null
       await route.fulfill({ json: detail });
     } else if (request.method() === 'GET' && path === '/api/events/unassigned') {
       await route.fulfill({ json: { items: [{ ...detail, organiserName: 'Test organiser' }] } });
-    } else if (!(await fulfilWorkspaceRead(route, request))) {
+    } else if (!(await fulfilWorkspaceRead(route, request,
+      user?.role === 'EVENT_COORDINATOR' ? { coordinatorBookingEventId: requestId } : {}))) {
       unexpectedRequests.push(`${request.method()} ${path}`);
       await route.fulfill({ status: 501, json: {
         error: { code: 'UNEXPECTED_TEST_REQUEST', message: 'No response fixture was configured.' },

@@ -70,7 +70,7 @@ for (const scenario of scenarios) {
         submissions.push(request.postDataJSON());
         saved = true;
         await route.fulfill({ status: 201, json: savedReview });
-      } else if (!(await fulfilWorkspaceRead(route, request))) {
+      } else if (!(await fulfilWorkspaceRead(route, request, { coordinatorBookingEventId: requestId }))) {
         // Fail closed: an unexpected request must never reach the configured database.
         unexpectedRequests.push(`${request.method()} ${path}`);
         await route.fulfill({ status: 501, json: {
@@ -124,7 +124,7 @@ test('KAN-36 a submitted request without the decision action has no decision con
         review: null,
         actions: { canEditDraft: false, canMakeInitialDecision: false },
       } });
-    } else if (!(await fulfilWorkspaceRead(route, request))) {
+    } else if (!(await fulfilWorkspaceRead(route, request, { coordinatorBookingEventId: requestId }))) {
       unexpectedRequests.push(`${request.method()} ${path}`);
       await route.fulfill({ status: 501, json: {
         error: { code: 'UNEXPECTED_TEST_REQUEST', message: 'No response fixture was configured.' },

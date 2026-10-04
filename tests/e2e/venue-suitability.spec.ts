@@ -77,7 +77,8 @@ async function fixtures(page: Page, options: {
         unexpected.push(`${method} ${path}`);
         await route.fulfill({ status: 501, json: error('UNEXPECTED_TEST_REQUEST', 'Unexpected method.') });
       }
-    } else if (!(await fulfilWorkspaceRead(route, request))) {
+    } else if (!(await fulfilWorkspaceRead(route, request,
+      role === 'EVENT_COORDINATOR' ? { coordinatorBookingEventId: eventId } : {}))) {
       unexpected.push(`${method} ${path}`);
       await route.fulfill({ status: 501, json: error('UNEXPECTED_TEST_REQUEST', 'No fixture configured.') });
     }
