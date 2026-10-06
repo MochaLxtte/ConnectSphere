@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, useId } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import AppIcon from '../../../components/AppIcon.vue';
 import { ApiError } from '../../../lib/api-client';
@@ -78,6 +78,15 @@ function jumpToDate() {
   if (day) showWeek(startOfWeek(day));
 }
 
+// Vue Router reuses this calendar for links and history entries with different query values.
+watch(() => [route.query.week, route.query.venue] as const, ([week, venue]) => {
+  const nextWeek = startOfWeek(parseDateKey(week) ?? today);
+  const weekChanged = nextWeek !== weekStart.value;
+  weekStart.value = nextWeek;
+  requestedVenueId.value = typeof venue === 'string' ? venue : '';
+  if (weekChanged) void load();
+});
+
 onMounted(load);
 onBeforeUnmount(() => controller?.abort());
 </script>
@@ -120,18 +129,18 @@ onBeforeUnmount(() => controller?.abort());
 
     <template v-else>
       <header class="venue-header">
+        <div class="venue-picker">
+          <label :for="`${id}-select`">Venue</label>
+          <select :id="`${id}-select`" v-model="chosenVenueId">
+            <option v-for="venue in venues" :key="venue.id" :value="venue.id">{{ venue.name }}</option>
+          </select>
+        </div>
         <div class="venue-summary">
           <h2 :id="`${id}-venue`">{{ selectedVenue.name }}</h2>
           <p class="venue-meta">
             {{ selectedVenue.location?.trim() || 'Location not listed' }} · Up to {{ selectedVenue.capacity }} people ·
             {{ formatOpeningHours(selectedVenue) }}
           </p>
-        </div>
-        <div class="venue-picker">
-          <label :for="`${id}-select`">Venue</label>
-          <select :id="`${id}-select`" v-model="chosenVenueId">
-            <option v-for="venue in venues" :key="venue.id" :value="venue.id">{{ venue.name }}</option>
-          </select>
         </div>
       </header>
       <VenueWeekTimeline :venue="selectedVenue" :week-start="weekStart" :today="today" />
@@ -156,11 +165,11 @@ onBeforeUnmount(() => controller?.abort());
 .week-label strong { color: #293a33; font-weight: 650; }
 .calendar-panel { padding: 24px; min-width: 0; }
 .calendar-error .button { margin-top: 12px; }
-.venue-header { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px; }
+.venue-header { display: grid; gap: 20px; }
 .venue-summary { min-width: 0; }
 .venue-summary h2 { font-size: 19px; line-height: 1.5; overflow-wrap: anywhere; }
 .venue-meta { color: #59685e; font-size: 13px; line-height: 1.6; margin-top: 4px; }
-.venue-picker { display: grid; gap: 6px; min-width: min(100%, 240px); }
+.venue-picker { display: grid; gap: 6px; width: min(100%, 320px); }
 .venue-picker label { font-size: 12px; font-weight: 600; color: #52614e; }
 @media (max-width: 600px) {
   .calendar-toolbar, .calendar-panel { padding: 20px; }
