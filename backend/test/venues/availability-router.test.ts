@@ -66,6 +66,26 @@ describe('KAN-51 GET /api/venues/availability HTTP boundary', () => {
     expect(list).not.toHaveBeenCalled();
   });
 
+  it.each(['EVENT_ORGANISER', 'ATTENDEE'] as const)(
+    'denies %s access to availability data even with spoofed internal-user claims', async (role) => {
+      const { app, workspace } = setup(actorWith(role));
+      // Data would be returned if the route trusted the request's claimed role.
+      list.mockResolvedValue(venues);
+      const claimedUserId = '20000000-0000-4000-8000-000000000002';
+      const response = await request(app).get(path)
+        .query({ ...query, userId: claimedUserId, role: 'VENUE_STAFF' })
+        .set('X-User-Id', claimedUserId).set('X-User-Role', 'VENUE_STAFF');
+
+      expect(workspace.authenticate).toHaveBeenCalledOnce();
+      expect(response.status).toBe(403);
+      expect(response.body).toEqual({
+        error: { code: 'ACTION_FORBIDDEN', message: expect.any(String) },
+      });
+      expect(response.headers['cache-control']).toBe('no-store');
+      expect(list).not.toHaveBeenCalled();
+    },
+  );
+
   it.each(['EVENT_COORDINATOR', 'VENUE_STAFF', 'TECHNICAL_SUPPORT_STAFF'] as const)(
     'serves %s the venues for the normalised window', async (role) => {
       const { app, workspace } = setup(actorWith(role));

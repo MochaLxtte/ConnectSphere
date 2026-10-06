@@ -277,6 +277,60 @@ describe('KAN-51 venue availability calendar', () => {
     expect(windowOf(fetchMock.mock.calls[0]![0])).toEqual(thisWeek);
   });
 
+  it('follows calendar links and browser history to the requested week and venue', async () => {
+    const fetchMock = stubAvailability();
+    const router = await openCalendar();
+    await screen.findByRole('heading', { name: 'Harbour Hall' });
+
+    await router.push('/venues/availability?week=2026-10-12&venue=venue-room');
+    await screen.findByRole('heading', { name: 'Orchid Seminar Room' });
+    expect(screen.getByText('12–18 Oct 2026')).toBeInTheDocument();
+    expect(windowOf(fetchMock.mock.calls[1]![0])).toEqual(nextWeek);
+    expect(agendaFor('Mon, 12 Oct')).toEqual(['Available all day']);
+
+    router.back();
+    await screen.findByRole('heading', { name: 'Harbour Hall' });
+    expect(screen.getByText('5–11 Oct 2026')).toBeInTheDocument();
+    expect(windowOf(fetchMock.mock.calls[2]![0])).toEqual(thisWeek);
+    expect(agendaFor('Mon, 5 Oct')).toContain('Booked 10:00 – 12:00');
+
+    router.forward();
+    await screen.findByRole('heading', { name: 'Orchid Seminar Room' });
+    expect(screen.getByText('12–18 Oct 2026')).toBeInTheDocument();
+    expect(windowOf(fetchMock.mock.calls[3]![0])).toEqual(nextWeek);
+  });
+
+  it('updates the venue from a calendar link within the already loaded week', async () => {
+    const fetchMock = stubAvailability();
+    const router = await openCalendar();
+    await screen.findByRole('heading', { name: 'Harbour Hall' });
+
+    await router.push('/venues/availability?venue=venue-room');
+    await screen.findByRole('heading', { name: 'Orchid Seminar Room' });
+    expect(agendaFor('Mon, 5 Oct')).toEqual(['Available all day']);
+    expect(agendaFor('Wed, 7 Oct')).toContain('Booked 14:00 – 16:00 · Assigned to you: Career fair');
+    expect(fetchMock).toHaveBeenCalledOnce();
+  });
+
+  it('discards a previous week\'s pending read when a different calendar link is opened', async () => {
+    const oldRead = deferredResponse();
+    const fetchMock = vi.fn()
+      .mockReturnValueOnce(oldRead.promise)
+      .mockResolvedValueOnce(jsonResponse({ ...nextWeek, items: [hall, room] }));
+    vi.stubGlobal('fetch', fetchMock);
+    const router = await openCalendar();
+    const oldSignal = (fetchMock.mock.calls[0]![1] as RequestInit).signal!;
+
+    await router.push('/venues/availability?week=2026-10-12&venue=venue-room');
+    await screen.findByRole('heading', { name: 'Orchid Seminar Room' });
+    expect(oldSignal.aborted).toBe(true);
+    expect(windowOf(fetchMock.mock.calls[1]![0])).toEqual(nextWeek);
+    await settle(oldRead, jsonResponse({ ...thisWeek, items: [hall] }));
+    expect(screen.getByRole('heading', { name: 'Orchid Seminar Room' })).toBeInTheDocument();
+    expect(screen.getByText('12–18 Oct 2026')).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Harbour Hall' })).not.toBeInTheDocument();
+  });
+
   it('shows newly recorded periods after a refresh', async () => {
     const fetchMock = vi.fn()
       .mockResolvedValueOnce(jsonResponse({ ...thisWeek, items: [{ ...hall, unavailable: [] }] }))
