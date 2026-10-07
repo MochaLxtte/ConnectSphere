@@ -1,0 +1,261 @@
+import { fireEvent, render, screen, waitFor } from '@testing-library/vue';
+import { nextTick } from 'vue';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { authSession, type SignedInUser } from '../../auth/session.js';
+import VenueBookingPanel from './VenueBookingPanel.vue';
+import type { VenueBooking } from '../../venues/api/venue-bookings';
+import { apiError, stubApi } from './test-api';
+
+vi.mock('../../auth/session.js', async () => {
+  const { reactive } = await import('vue');
+  const state = reactive({ user: null, loading: false });
+  return { authSession: state, clearLocalSession: () => { state.user = null; } };
+});
+const session = authSession as { user: SignedInUser | null; loading: boolean };
+const coordinator = { id: 'coordinator-a', role: 'EVENT_COORDINATOR' as const, email: 'coordinator@example.test', displayName: 'Coordinator' };
+beforeEach(() => { session.user = { ...coordinator }; session.loading = false; });
+
+const eventRequestId = 'event-one';
+const base = `/api/events/${eventRequestId}`;
+const venues = { body: { items: [
+  { id: 'hall', name: 'Main Hall', description: null, location: null, capacity: 200, layouts: [], facilities: [],
+    accessibilityFeatures: [], wheelchairAccessible: false, opensAt: null, closesAt: null, updatedAt: '2026-09-01T00:00:00.000Z' },
+] } };
+const pending: VenueBooking = {
+  id: 'b1', eventRequestId, eventName: 'Open day', eventStatus: 'APPROVED', venueId: 'hall', venueName: 'Main Hall',
+  status: 'PENDING', startsAt: '2026-12-01T02:00:00.000Z', endsAt: '2026-12-01T06:00:00.000Z',
+  layout: 'Theatre', notes: 'Projector required', decidedBy: null, decidedAt: null, decisionReason: null,
+  createdAt: '2026-10-01T00:00:00.000Z', updatedAt: '2026-10-01T00:00:00.000Z',
+  eventStartsAt: null, eventEndsAt: null, purpose: null, description: null, expectedAttendance: null,
+  venueRequirements: null, accessibilityNeeds: null,
+};
+
+const coordinatorProps = { eventRequestId, status: 'APPROVED', viewerRole: 'EVENT_COORDINATOR' };
+const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status });
+function deferred() {
+  let resolve!: (response: Response) => void;
+  const promise = new Promise<Response>((done) => { resolve = done; });
+  return { promise, resolve };
+}
+async function settle(pendingResponse: ReturnType<typeof deferred>, response: Response) {
+  pendingResponse.resolve(response);
+  await new Promise((resolve) => setTimeout(resolve, 0));
+}
+
+async function fillAndSubmit() {
+  await fireEvent.update(await screen.findByRole('combobox', { name: 'Venue' }), 'hall');
+  await fireEvent.update(screen.getByLabelText('Starts (Singapore time)'), '2026-12-01T10:00');
+  await fireEvent.update(screen.getByLabelText('Ends (Singapore time)'), '2026-12-01T14:00');
+  await fireEvent.click(screen.getByRole('button', { name: 'Request this venue' }));
+}
+
+describe('KAN-53 venue booking request panel', () => {
+  it('lets the coordinator submit a request and shows it after reload', async () => {
+    const api = stubApi({
+      [`GET /api/venue-bookings?eventRequestId=${eventRequestId}`]: { body: { items: [] } },
+      'GET /api/venues/search-venues': venues,
+      [`POST ${base}/venue-bookings`]: { status: 201, body: { booking: pending } },
+    });
+    const view = render(VenueBookingPanel, { props: coordinatorProps });
+    expect(await screen.findByText('No venue has been requested for this event yet.')).toBeInTheDocument();
+    const submit = screen.getByRole('button', { name: 'Request this venue' });
+    expect(submit).toBeDisabled();
+
+    api.set(`GET /api/venue-bookings?eventRequestId=${eventRequestId}`, { body: { items: [pending] } });
+    await fillAndSubmit();
+
+    expect(await screen.findByText('A venue booking request for Main Hall was submitted for review.')).toBeInTheDocument();
+    expect(await screen.findByText('Pending')).toBeInTheDocument();
+    expect(screen.getAllByText('Main Hall').length).toBeGreaterThan(0);
+    expect(api.writes()).toEqual([{
+      key: `POST ${base}/venue-bookings`,
+      body: { venueId: 'hall', startsAt: '2026-12-01T02:00:00.000Z', endsAt: '2026-12-01T06:00:00.000Z', layout: null, notes: null },
+    }]);
+    expect(view.emitted('changed')).toHaveLength(1);
+  });
+
+  it('shows a validation error when the end time is not after the start time', async () => {
+    stubApi({
+      [`GET /api/venue-bookings?eventRequestId=${eventRequestId}`]: { body: { items: [] } },
+      'GET /api/venues/search-venues': venues,
+    });
+    render(VenueBookingPanel, { props: coordinatorProps });
+    await fireEvent.update(await screen.findByRole('combobox', { name: 'Venue' }), 'hall');
+    await fireEvent.update(screen.getByLabelText('Starts (Singapore time)'), '2026-12-01T10:00');
+    await fireEvent.update(screen.getByLabelText('Ends (Singapore time)'), '2026-12-01T09:00');
+    expect(await screen.findByRole('alert')).toHaveTextContent('The end time must be after the start time.');
+    expect(screen.getByRole('button', { name: 'Request this venue' })).toBeDisabled();
+  });
+
+  it('shows a server refusal without emitting changed', async () => {
+    stubApi({
+      [`GET /api/venue-bookings?eventRequestId=${eventRequestId}`]: { body: { items: [] } },
+      'GET /api/venues/search-venues': venues,
+      [`POST ${base}/venue-bookings`]: apiError(409, 'EVENT_NOT_ELIGIBLE', 'A venue booking cannot be requested for this event.'),
+    });
+    const view = render(VenueBookingPanel, { props: coordinatorProps });
+    await fillAndSubmit();
+    expect(await screen.findByRole('alert')).toHaveTextContent('A venue booking cannot be requested for this event.');
+    expect(view.emitted('changed')).toBeUndefined();
+  });
+
+  it('lists existing requests with their decision outcome for the coordinator', async () => {
+    const decided: VenueBooking = { ...pending, status: 'REJECTED', decidedBy: 'staff', decisionReason: 'No capacity.' };
+    const api = stubApi({ [`GET /api/venue-bookings?eventRequestId=${eventRequestId}`]: { body: { items: [decided] } } });
+    render(VenueBookingPanel, { props: { ...coordinatorProps, status: 'REJECTED' } });
+    expect(await screen.findByText('Rejected')).toBeInTheDocument();
+    expect(screen.getByText('Decision note: No capacity.')).toBeInTheDocument();
+    expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
+    expect(api.calls.map((call) => call.key)).toEqual([`GET /api/venue-bookings?eventRequestId=${eventRequestId}`]);
+  });
+
+  it.each(['REJECTED', 'CANCELLED', 'COMPLETED'])('is read-only for a coordinator once the event is %s', async (status) => {
+    const api = stubApi({ [`GET /api/venue-bookings?eventRequestId=${eventRequestId}`]: { body: { items: [] } } });
+    render(VenueBookingPanel, { props: { ...coordinatorProps, status } });
+    await screen.findByText('No venue has been requested for this event yet.');
+    expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
+    expect(api.calls.map((call) => call.key)).toEqual([`GET /api/venue-bookings?eventRequestId=${eventRequestId}`]);
+  });
+
+  it('offers a read retry without exposing the request form when the list cannot be loaded', async () => {
+    const api = stubApi({
+      [`GET /api/venue-bookings?eventRequestId=${eventRequestId}`]: apiError(500, 'INTERNAL_ERROR', 'An unexpected error occurred.'),
+      'GET /api/venues/search-venues': venues,
+    });
+    render(VenueBookingPanel, { props: coordinatorProps });
+    expect(await screen.findByRole('alert')).toHaveTextContent('An unexpected error occurred.');
+    expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
+    api.set(`GET /api/venue-bookings?eventRequestId=${eventRequestId}`, { body: { items: [] } });
+    await fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
+    await waitFor(() => expect(screen.getByText('No venue has been requested for this event yet.')).toBeInTheDocument());
+  });
+
+  it.each(['EVENT_ORGANISER', 'VENUE_STAFF', 'TECHNICAL_SUPPORT_STAFF', 'ATTENDEE'] as const)(
+    'does not expose or request booking information for %s even with coordinator props', async (role) => {
+      session.user = { ...coordinator, role };
+      const api = stubApi({});
+      render(VenueBookingPanel, { props: coordinatorProps });
+      await nextTick();
+      expect(screen.queryByRole('heading', { name: 'Venue booking requests' })).not.toBeInTheDocument();
+      expect(api.calls).toEqual([]);
+    },
+  );
+
+  it('does not fetch for organiser props, an unresolved session, a visitor or a draft', async () => {
+    const api = stubApi({});
+    const view = render(VenueBookingPanel, { props: { ...coordinatorProps, viewerRole: 'EVENT_ORGANISER' } });
+    session.loading = true;
+    await view.rerender(coordinatorProps);
+    session.user = null; session.loading = false;
+    await nextTick();
+    await view.rerender({ ...coordinatorProps, status: 'DRAFT' });
+    session.user = { ...coordinator };
+    await nextTick();
+    expect(api.calls).toEqual([]);
+    expect(screen.queryByRole('form')).not.toBeInTheDocument();
+  });
+
+  it.each(['VENUE_BOOKING_CONFLICT', 'VENUE_UNAVAILABLE'])(
+    'keeps the form and shows %s without claiming a save', async (code) => {
+      const api = stubApi({
+        [`GET /api/venue-bookings?eventRequestId=${eventRequestId}`]: { body: { items: [] } },
+        'GET /api/venues/search-venues': venues,
+        [`POST ${base}/venue-bookings`]: apiError(409, code, 'This period is unavailable.'),
+      });
+      const view = render(VenueBookingPanel, { props: coordinatorProps });
+      await fillAndSubmit();
+      expect(await screen.findByRole('alert')).toHaveTextContent('This period is unavailable.');
+      expect(screen.getByRole('combobox', { name: 'Venue' })).toHaveValue('hall');
+      expect(view.emitted('changed')).toBeUndefined();
+      expect(api.writes()).toHaveLength(1);
+    },
+  );
+
+  it('offers a catalogue retry and does not treat a failed read as an empty catalogue', async () => {
+    const api = stubApi({
+      [`GET /api/venue-bookings?eventRequestId=${eventRequestId}`]: { body: { items: [] } },
+      'GET /api/venues/search-venues': apiError(500, 'INTERNAL_ERROR', 'Unavailable'),
+    });
+    render(VenueBookingPanel, { props: coordinatorProps });
+    expect(await screen.findByRole('alert')).toHaveTextContent('The venue catalogue could not be loaded');
+    api.set('GET /api/venues/search-venues', venues);
+    await fireEvent.click(screen.getByRole('button', { name: 'Retry venue catalogue' }));
+    expect(await screen.findByRole('option', { name: 'Main Hall' })).toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('requires a list refresh after an uncertain save instead of automatically retrying the write', async () => {
+    const api = stubApi({
+      [`GET /api/venue-bookings?eventRequestId=${eventRequestId}`]: { body: { items: [] } },
+      'GET /api/venues/search-venues': venues,
+      [`POST ${base}/venue-bookings`]: apiError(500, 'INTERNAL_ERROR', 'Unavailable'),
+    });
+    const view = render(VenueBookingPanel, { props: coordinatorProps });
+    await fillAndSubmit();
+    expect(await screen.findByRole('alert')).toHaveTextContent('could not confirm whether the booking request was saved');
+    expect(screen.getByRole('button', { name: 'Request this venue' })).toBeDisabled();
+    api.set(`GET /api/venue-bookings?eventRequestId=${eventRequestId}`, { body: { items: [pending] } });
+    await fireEvent.click(screen.getByRole('button', { name: 'Refresh booking requests' }));
+    expect(await screen.findByText('Pending')).toBeInTheDocument();
+    expect(screen.getByRole('combobox', { name: 'Venue' })).toHaveValue('');
+    expect(view.emitted('changed')).toBeUndefined();
+    expect(api.writes()).toHaveLength(1);
+  });
+
+  it.each(['unmount', 'event change', 'account change', 'sign out', 'role change'])(
+    'ignores a pending save after %s and never reloads its old context', async (change) => {
+      const save = deferred();
+      const fetchMock = vi.fn((url: string, init?: RequestInit) => {
+        if (init?.method === 'POST') return save.promise;
+        return Promise.resolve(json(url.includes('search-venues') ? venues.body : { items: [] }));
+      });
+      vi.stubGlobal('fetch', fetchMock);
+      const view = render(VenueBookingPanel, { props: coordinatorProps });
+      await fillAndSubmit();
+      expect(screen.getByRole('button', { name: 'Submitting…' })).toBeDisabled();
+      const postSignal = fetchMock.mock.calls.find(([, init]) => init?.method === 'POST')![1]!.signal;
+      if (change === 'unmount') view.unmount();
+      if (change === 'event change') await view.rerender({ ...coordinatorProps, eventRequestId: 'event-two' });
+      if (change === 'account change') session.user = { ...coordinator, id: 'coordinator-b' };
+      if (change === 'sign out') session.user = null;
+      if (change === 'role change') session.user = { ...coordinator, role: 'EVENT_ORGANISER' };
+      await nextTick();
+      const readsAfterChange = fetchMock.mock.calls.length;
+      await settle(save, json({ booking: pending }, 201));
+      expect(postSignal?.aborted).toBe(true);
+      expect(fetchMock).toHaveBeenCalledTimes(readsAfterChange);
+      expect(view.emitted('changed')).toBeUndefined();
+      expect(screen.queryByText(/was submitted for review/)).not.toBeInTheDocument();
+    },
+  );
+
+  it.each(['list', 'catalogue'] as const)('ignores a pending %s response after losing coordinator access', async (source) => {
+    const response = deferred();
+    const fetchMock = vi.fn((url: string) => {
+      const catalogue = url.includes('search-venues');
+      if ((source === 'catalogue') === catalogue) return response.promise;
+      return Promise.resolve(json(catalogue ? venues.body : { items: [] }));
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    render(VenueBookingPanel, { props: coordinatorProps });
+    session.user = null;
+    await settle(response, json(source === 'catalogue' ? venues.body : { items: [pending] }));
+    expect(screen.queryByText('Main Hall')).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Venue booking requests' })).not.toBeInTheDocument();
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it.each([401, 403, 404])('clears private information when a submission returns %s', async (status) => {
+    stubApi({
+      [`GET /api/venue-bookings?eventRequestId=${eventRequestId}`]: { body: { items: [pending] } },
+      'GET /api/venues/search-venues': venues,
+      [`POST ${base}/venue-bookings`]: apiError(status, 'EVENT_REQUEST_NOT_FOUND', 'Unavailable'),
+    });
+    render(VenueBookingPanel, { props: coordinatorProps });
+    await fillAndSubmit();
+    await waitFor(() => expect(screen.queryByRole('combobox')).not.toBeInTheDocument());
+    expect(screen.queryByText('Pending')).not.toBeInTheDocument();
+    if (status === 401) expect(session.user).toBeNull();
+    else expect(screen.getByRole('alert')).toHaveTextContent('no longer have access');
+  });
+});

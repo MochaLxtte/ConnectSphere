@@ -128,6 +128,10 @@ onBeforeUnmount(() => {
             : state.detail.registrationRequired ? 'Yes' : 'No' }}</dd>
         </div>
       </dl>
+      <p><RouterLink
+        class="availability-link"
+        :to="`/reviews/${state.detail.id}/venue-suitability`"
+      >Check venue suitability</RouterLink></p>
       <!-- KAN-51: open the venue calendar at the week of the proposed start. -->
       <RouterLink
         v-if="state.detail.startsAt"

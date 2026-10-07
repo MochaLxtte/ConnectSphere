@@ -6,7 +6,7 @@ import type { UserRole } from '../../../backend/src/modules/auth/types.js';
 import type { EventStatus } from '../../../backend/src/modules/events/types.js';
 import type { WorkflowActor } from '../../../backend/src/modules/events/workflow-support.js';
 import {
-  decideVenueBooking, getVenueBooking, listVenueBookings,
+  createVenueBooking, decideVenueBooking, getVenueBooking, listVenueBookings,
 } from '../../../backend/src/modules/venues/booking-service.js';
 import { listVenueAvailability } from '../../../backend/src/modules/venues/availability.js';
 import { createWorkflowFixture, type WorkflowFixture } from '../events/workflow-fixture.js';
@@ -235,6 +235,280 @@ describe('KAN-8 atomic venue booking decisions against PostgreSQL', () => {
 
   it('returns the same not-found response for a missing booking', async () => {
     await expect(decide(randomUUID(), 'APPROVED')).rejects.toMatchObject({ code: 'VENUE_BOOKING_NOT_FOUND' });
+  });
+});
+
+const submission = { venueId: '', startsAt, endsAt, layout: 'Theatre', notes: 'Projector required' };
+const submit = (eventRequestId: string, actor: WorkflowActor, overrides: Partial<typeof submission> = {}) =>
+  createVenueBooking(fixture.dependencies,
+    { eventRequestId, actor, input: { ...submission, ...overrides } });
+
+async function submissionTarget(venueId?: string) {
+  const id = venueId ?? randomUUID();
+  if (!venueId) await fixture.pool.query('INSERT INTO venues(id,name,capacity) VALUES($1,$2,100)', [id, `Venue ${id}`]);
+  const eventRequestId = await fixture.createEvent({
+    organiserId: organiser.id, coordinatorId: coordinator.id, status: 'APPROVED',
+  });
+  return { venueId: id, eventRequestId };
+}
+
+async function submissionState(eventRequestId: string) {
+  return {
+    event: (await fixture.pool.query('SELECT * FROM event_requests WHERE id=$1', [eventRequestId])).rows[0],
+    bookings: (await fixture.pool.query('SELECT * FROM venue_bookings WHERE event_request_id=$1 ORDER BY id', [eventRequestId])).rows,
+    history: await fixture.history(eventRequestId),
+    notifications: await fixture.notifications(eventRequestId),
+  };
+}
+
+describe('KAN-53 venue booking submission against PostgreSQL', () => {
+  it('creates a pending booking associated with the correct event and venue (AC1-AC7, AC9, AC10)', async () => {
+    const venueId = randomUUID();
+    await fixture.pool.query('INSERT INTO venues(id,name,capacity) VALUES($1,$2,100)', [venueId, `Venue ${venueId}`]);
+    const eventRequestId = await fixture.createEvent({ organiserId: organiser.id, coordinatorId: coordinator.id });
+    const saved = await submit(eventRequestId, coordinator, { venueId });
+    expect(saved).toMatchObject({
+      eventRequestId, venueId, status: 'PENDING', startsAt, endsAt,
+      layout: 'Theatre', notes: 'Projector required', decidedBy: null, decidedAt: null,
+      venueRequirements: 'A hall',
+    });
+    expect(await row(saved.id)).toMatchObject({
+      event_request_id: eventRequestId, venue_id: venueId, requested_by: coordinator.id, status: 'PENDING',
+    });
+  });
+
+  it('becomes visible to venue staff review and to the coordinator, but not before approval (AC8)', async () => {
+    const created = await booking({ eventStatus: 'SUBMITTED' });
+    const saved = await submit(created.eventRequestId, coordinator, { venueId: created.venueId });
+    const staffQueue = await listVenueBookings(fixture.dependencies, { actor: staff, eventRequestId: created.eventRequestId });
+    expect(staffQueue.map((item) => item.id)).toContain(saved.id);
+    expect(saved.status).toBe('PENDING');
+    const coordinatorItems = await listVenueBookings(fixture.dependencies, { actor: coordinator, eventRequestId: created.eventRequestId });
+    expect(coordinatorItems.map((item) => item.id)).toContain(saved.id);
+  });
+
+  it.each(['EVENT_ORGANISER', 'VENUE_STAFF', 'TECHNICAL_SUPPORT_STAFF', 'ATTENDEE'] as const)(
+    'refuses submission by %s without creating a row (AC11)', async (role) => {
+      const eventRequestId = await fixture.createEvent({ organiserId: organiser.id, coordinatorId: coordinator.id });
+      const before = await fixture.pool.query('SELECT count(*)::int AS count FROM venue_bookings WHERE event_request_id = $1', [eventRequestId]);
+      const actor = role === 'EVENT_ORGANISER' ? organiser : await fixture.createUser(role);
+      await expect(submit(eventRequestId, actor, { venueId: randomUUID() }))
+        .rejects.toMatchObject({ code: 'ACTION_FORBIDDEN' });
+      expect((await fixture.pool.query('SELECT count(*)::int AS count FROM venue_bookings WHERE event_request_id = $1', [eventRequestId])).rows[0].count)
+        .toBe(before.rows[0].count);
+    },
+  );
+
+  it('refuses submission by an unrelated or unassigned coordinator with the same not-found response (AC11)', async () => {
+    const eventRequestId = await fixture.createEvent({ organiserId: organiser.id, coordinatorId: coordinator.id });
+    await expect(submit(eventRequestId, otherCoordinator, { venueId: randomUUID() }))
+      .rejects.toMatchObject({ code: 'EVENT_REQUEST_NOT_FOUND' });
+    const draftId = await fixture.createEvent({ organiserId: organiser.id, coordinatorId: coordinator.id, status: 'DRAFT' });
+    await expect(submit(draftId, coordinator, { venueId: randomUUID() }))
+      .rejects.toMatchObject({ code: 'EVENT_REQUEST_NOT_FOUND' });
+  });
+
+  it.each(['REJECTED', 'CANCELLED', 'COMPLETED'] as const)(
+    'refuses submission for a %s event', async (eventStatus) => {
+      const eventRequestId = await fixture.createEvent({ organiserId: organiser.id, coordinatorId: coordinator.id, status: eventStatus });
+      await expect(submit(eventRequestId, coordinator, { venueId: randomUUID() }))
+        .rejects.toMatchObject({ code: 'EVENT_NOT_ELIGIBLE' });
+    },
+  );
+
+  it('refuses submission for a missing or inactive venue', async () => {
+    const eventRequestId = await fixture.createEvent({ organiserId: organiser.id, coordinatorId: coordinator.id });
+    await expect(submit(eventRequestId, coordinator, { venueId: randomUUID() }))
+      .rejects.toMatchObject({ code: 'VENUE_NOT_FOUND' });
+    const venueId = randomUUID();
+    await fixture.pool.query('INSERT INTO venues(id,name,capacity,is_active) VALUES($1,$2,100,false)', [venueId, `Venue ${venueId}`]);
+    await expect(submit(eventRequestId, coordinator, { venueId }))
+      .rejects.toMatchObject({ code: 'VENUE_INACTIVE' });
+  });
+
+  it('allows several pending requests for the same event and venue without auto-approving any (AC9)', async () => {
+    const venueId = randomUUID();
+    await fixture.pool.query('INSERT INTO venues(id,name,capacity) VALUES($1,$2,100)', [venueId, `Venue ${venueId}`]);
+    const eventRequestId = await fixture.createEvent({ organiserId: organiser.id, coordinatorId: coordinator.id });
+    const first = await submit(eventRequestId, coordinator, { venueId });
+    const second = await submit(eventRequestId, coordinator, { venueId });
+    expect(first.status).toBe('PENDING');
+    expect(second.status).toBe('PENDING');
+    expect(first.id).not.toBe(second.id);
+  });
+
+  it.each(['approved booking', 'operational block'] as const)(
+    'refuses submission overlapping an %s without inserting a booking or changing the event', async (kind) => {
+      const existing = await booking();
+      if (kind === 'approved booking') await decide(existing.id, 'APPROVED');
+      else await fixture.pool.query(`INSERT INTO venue_unavailability(venue_id,starts_at,ends_at,reason)
+        VALUES($1,$2,$3,'Maintenance')`, [existing.venueId, startsAt, endsAt]);
+      const target = await submissionTarget(existing.venueId);
+      const before = await submissionState(target.eventRequestId);
+      const existingBefore = await row(existing.id);
+      await expect(submit(target.eventRequestId, coordinator, { venueId: target.venueId }))
+        .rejects.toMatchObject({ code: kind === 'approved booking' ? 'VENUE_BOOKING_CONFLICT' : 'VENUE_UNAVAILABLE' });
+      expect(await submissionState(target.eventRequestId)).toEqual(before);
+      expect(await row(existing.id)).toEqual(existingBefore);
+    },
+  );
+
+  it.each(['approved booking', 'operational block'] as const)(
+    'permits submission immediately before and after an %s', async (kind) => {
+      const existing = await booking();
+      if (kind === 'approved booking') await decide(existing.id, 'APPROVED');
+      else await fixture.pool.query(`INSERT INTO venue_unavailability(venue_id,starts_at,ends_at)
+        VALUES($1,$2,$3)`, [existing.venueId, startsAt, endsAt]);
+      const target = await submissionTarget(existing.venueId);
+      const before = await submissionState(target.eventRequestId);
+      const earlier = await submit(target.eventRequestId, coordinator, {
+        venueId: target.venueId, startsAt: '2026-12-01T00:00:00.000Z', endsAt: startsAt,
+      });
+      const later = await submit(target.eventRequestId, coordinator, {
+        venueId: target.venueId, startsAt: endsAt, endsAt: '2026-12-01T08:00:00.000Z',
+      });
+      expect(earlier.status).toBe('PENDING');
+      expect(later.status).toBe('PENDING');
+      const after = await submissionState(target.eventRequestId);
+      expect(after.bookings).toHaveLength(2);
+      expect({ ...after, bookings: [] }).toEqual(before);
+    },
+  );
+
+  it.each(['approved booking', 'operational block'] as const)(
+    'sees an %s committed while submission waits for the venue lock', async (kind) => {
+      const existing = await booking();
+      const target = await submissionTarget(existing.venueId);
+      const before = await submissionState(target.eventRequestId);
+      const writer = await fixture.pool.connect();
+      let attempt: Promise<PromiseSettledResult<Awaited<ReturnType<typeof submit>>>[]> | undefined;
+      let results: PromiseSettledResult<Awaited<ReturnType<typeof submit>>>[] = [];
+      try {
+        await writer.query('BEGIN');
+        await writer.query('SELECT id FROM venues WHERE id=$1 FOR UPDATE', [existing.venueId]);
+        attempt = Promise.allSettled([submit(target.eventRequestId, coordinator, { venueId: target.venueId })]);
+        // Observe the service actually blocked on the venue row; no timing-based sleeps.
+        await expect.poll(async () => {
+          const waiting = await fixture.pool.query<{ count: number }>(`SELECT count(*)::integer AS count
+            FROM pg_stat_activity WHERE application_name=current_schema() AND wait_event_type='Lock'
+              AND query LIKE '%FROM venues WHERE id = $1 FOR UPDATE%'`);
+          return waiting.rows[0]!.count;
+        }, { timeout: 3000 }).toBe(1);
+        if (kind === 'approved booking') {
+          await writer.query(`UPDATE venue_bookings SET status='APPROVED',decided_by=$2,decided_at=now()
+            WHERE id=$1`, [existing.id, staff.id]);
+        } else {
+          await writer.query(`INSERT INTO venue_unavailability(venue_id,starts_at,ends_at,reason)
+            VALUES($1,$2,$3,'Committed during submission wait')`, [existing.venueId, startsAt, endsAt]);
+        }
+        await writer.query('COMMIT');
+      } finally {
+        try { await writer.query('ROLLBACK'); } finally {
+          writer.release(true);
+          if (attempt) results = await attempt;
+        }
+      }
+      expect(results).toEqual([expect.objectContaining({ status: 'rejected',
+        reason: expect.objectContaining({ code: kind === 'approved booking' ? 'VENUE_BOOKING_CONFLICT' : 'VENUE_UNAVAILABLE' }),
+      })]);
+      expect(await submissionState(target.eventRequestId)).toEqual(before);
+    },
+  );
+});
+
+describe('KAN-53/KAN-8 runtime submission-to-decision workflow', () => {
+  async function runtime() {
+    const claims = new Map<string, string>();
+    // Supabase token verification is injected; cookie handling, current DB role/relation checks,
+    // mounted endpoints and persisted records are the actual runtime implementation.
+    const app = createRuntimeApp({ pool: fixture.pool, supabaseAuth: {
+      async verifyAccessToken(token) {
+        const uid = claims.get(token);
+        if (!uid) throw Object.assign(new Error('Invalid fixture token'), { code: 'ERR_JWT_INVALID' });
+        return { uid, exp: Math.floor(Date.now() / 1000) + 3600 };
+      },
+    } });
+    async function sessionFor(actor: WorkflowActor) {
+      const uid = randomUUID();
+      const token = randomUUID();
+      claims.set(token, uid);
+      await fixture.pool.query('UPDATE app_users SET supabase_user_id=$1 WHERE id=$2', [uid, actor.id]);
+      const session = request.agent(app);
+      expect((await session.post('/api/auth/login').send({ accessToken: token })).status).toBe(200);
+      return session;
+    }
+    return { app, sessionFor };
+  }
+
+  it.each(['APPROVED', 'REJECTED'] as const)('persists coordinator submission, staff %s and coordinator outcome', async (decision) => {
+    const { sessionFor } = await runtime();
+    const target = await submissionTarget();
+    const before = await submissionState(target.eventRequestId);
+    const coordinatorSession = await sessionFor(coordinator);
+    const staffSession = await sessionFor(staff);
+    const path = `/api/events/${target.eventRequestId}/venue-bookings`;
+    const created = await coordinatorSession.post(path).send({ ...submission, venueId: target.venueId });
+    expect(created.status).toBe(201);
+    expect(created.headers['cache-control']).toBe('no-store');
+    const saved = created.body.booking;
+    expect(saved).toMatchObject({ eventRequestId: target.eventRequestId, venueId: target.venueId,
+      status: 'PENDING', decidedBy: null, decidedAt: null, startsAt, endsAt });
+    expect(await row(saved.id)).toMatchObject({ requested_by: coordinator.id, status: 'PENDING' });
+    const detailPath = `/api/venue-bookings/${saved.id}`;
+    const queue = await staffSession.get('/api/venue-bookings').query({ eventRequestId: target.eventRequestId });
+    expect(queue.status).toBe(200);
+    expect(queue.body.items.map((item: { id: string }) => item.id)).toEqual([saved.id]);
+    const decided = await staffSession.post(`${detailPath}/decision`).send({ decision, reason: 'Staff assessment.' });
+    expect(decided.status).toBe(200);
+    expect(decided.body.booking).toMatchObject({ id: saved.id, status: decision, decidedBy: staff.id });
+    const outcome = await coordinatorSession.get(detailPath);
+    expect(outcome.status).toBe(200);
+    expect(outcome.body.booking).toEqual(decided.body.booking);
+    const repeated = await staffSession.post(`${detailPath}/decision`).send({ decision });
+    expect(repeated.status).toBe(409);
+    expect(repeated.body.error.code).toBe('BOOKING_ALREADY_DECIDED');
+    expect((await staffSession.get('/api/venue-bookings').query({ eventRequestId: target.eventRequestId })).body.items).toEqual([]);
+    const after = await submissionState(target.eventRequestId);
+    expect(after.bookings).toHaveLength(1);
+    expect({ ...after, bookings: [] }).toEqual(before);
+
+    if (decision === 'APPROVED') {
+      const overlap = await coordinatorSession.post(path).send({ ...submission, venueId: target.venueId });
+      expect(overlap.status).toBe(409);
+      expect(overlap.body.error.code).toBe('VENUE_BOOKING_CONFLICT');
+      expect(await submissionState(target.eventRequestId)).toEqual(after);
+    }
+  });
+
+  it('enforces mapped roles, current assignment and private errors on the running submission endpoint', async () => {
+    const { app, sessionFor } = await runtime();
+    const target = await submissionTarget();
+    const before = await submissionState(target.eventRequestId);
+    const path = `/api/events/${target.eventRequestId}/venue-bookings`;
+    const body = { ...submission, venueId: target.venueId };
+    expect((await request(app).post(path).send(body)).status).toBe(401);
+    expect((await request(app).post(path).set('Cookie', 'connectsphere_session=invalid').send(body)).status).toBe(401);
+    for (const role of ['EVENT_ORGANISER', 'VENUE_STAFF', 'TECHNICAL_SUPPORT_STAFF', 'ATTENDEE'] as const) {
+      const actor = await fixture.createUser(role);
+      const session = await sessionFor(actor);
+      const denied = await session.post(path).set('X-Role', 'EVENT_COORDINATOR').set('X-User-Id', coordinator.id).send(body);
+      expect(denied.status).toBe(403);
+      expect(denied.body.error.code).toBe('ACTION_FORBIDDEN');
+    }
+    const outsider = await sessionFor(otherCoordinator);
+    const hidden = await outsider.post(path).send(body);
+    const absent = await outsider.post(`/api/events/${randomUUID()}/venue-bookings`).send(body);
+    expect(hidden.status).toBe(404);
+    expect(hidden.body).toEqual(absent.body);
+    expect(hidden.body.error.code).toBe('EVENT_REQUEST_NOT_FOUND');
+    const own = await sessionFor(coordinator);
+    const forged = await own.post(path).send({ ...body, requestedBy: otherCoordinator.id, status: 'APPROVED' });
+    expect(forged.status).toBe(400);
+    expect(await submissionState(target.eventRequestId)).toEqual(before);
+    await fixture.pool.query('UPDATE event_requests SET coordinator_id=$2 WHERE id=$1', [target.eventRequestId, otherCoordinator.id]);
+    const reassignedBefore = await submissionState(target.eventRequestId);
+    expect((await own.post(path).send(body)).status).toBe(404);
+    expect(await submissionState(target.eventRequestId)).toEqual(reassignedBefore);
   });
 });
 

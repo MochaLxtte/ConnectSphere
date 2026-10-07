@@ -11,10 +11,13 @@ import { createAssignmentRouter } from './modules/events/assignment-router.js';
 import { createClarificationRouter } from './modules/events/clarification-router.js';
 import { createStatusHistoryRouter } from './modules/events/status-history-router.js';
 import { createVenueRouter } from './modules/venues/venue-router.js';
-import { createVenueBookingsRouter } from './modules/venues/venue-bookings-router.js';
+import {
+  createVenueBookingsRouter, createVenueBookingSubmissionRouter,
+} from './modules/venues/venue-bookings-router.js';
 import type { WorkflowRouterDependencies } from './modules/events/workflow-http.js';
 import { createVenueAvailabilityRouter } from './modules/venues/availability-router.js';
 import { createVenueBlockRouter } from './modules/venues/block-router.js';
+import { createVenueSuitabilityRouter } from './modules/venues/suitability-router.js';
 
 export interface AppDependencies {
   database: HealthDatabase;
@@ -73,6 +76,9 @@ export function createApp({
     app.use('/api/events', createAssignmentRouter(workspace));
     app.use('/api/events', createClarificationRouter(workspace));
     app.use('/api/events', createStatusHistoryRouter(workspace));
+    app.use('/api/events', createVenueSuitabilityRouter(workspace));
+    // KAN-53: coordinator venue booking submission, nested under the event request.
+    app.use('/api/events', createVenueBookingSubmissionRouter(workspace));
     app.use('/api/venues', createVenueRouter(workspace));
     // KAN-55: Venue Staff manage operational-unavailability blocks per venue.
     app.use('/api/venues', createVenueBlockRouter(workspace));

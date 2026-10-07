@@ -2,6 +2,18 @@
 
 Record each relevant run with its commit, scope and result. Store concise report exports alongside this document and link the corresponding tests from the [traceability matrix](../requirements/traceability.csv). The [Sprint 1 acceptance test plan](../scrum/sprint-01/sprint-backlog.md#acceptance-test-plan) provides the initial scenario and acceptance-criterion IDs.
 
+## 8 October: PR #27 conflict resolution
+
+**AUTO-20261008-PR27-01 — local merge verification.** Tested the merge of `origin/main` at `1ed0332` into PR #27's `feat/KAN-52-venue-suitability` at `ae54ec7`. The only conflict was this evidence document: the 6 October KAN-51 walkthrough and the 5/4 October integration and suitability records are preserved verbatim. The calendar route/history fix and its regression tests merged without code conflicts.
+
+| Command / environment | Actual result |
+| --- | --- |
+| `npm.cmd run check`; Windows, Node 24.21.0 | Passed tools/frontend/backend type checks, **371 frontend + 662 backend tests (1,033 total)**, and both production builds. |
+| `npm.cmd run test:e2e -- tests/e2e/venue-availability.spec.ts tests/e2e/venue-bookings.spec.ts tests/e2e/venue-booking-submission.spec.ts tests/e2e/venue-suitability.spec.ts --workers=2`; Chromium, local Express/Vite | **39/39 passed**. Covers calendar access/navigation, booking submission and decisions, suitability, and narrow-screen layouts. |
+| Conflict and whitespace checks | No unresolved Git paths; `git diff --cached --check` passed. Both branches' prior evidence sections were checked for exact preservation. |
+
+**Limits:** browser feature responses use intercepted fixtures; login-required checks use the running backend. The test server used an unused local database URL and did not connect to shared Supabase. No database integration or coverage rerun was needed for this merge delta, which changes calendar UI and tests but no backend service or schema. Earlier database/coverage results remain historical records. Hosted acceptance and GitHub CI are separate checks; this entry records no Jira status change or PR approval.
+
 ## 6 October: KAN-51 interactive website walkthrough
 
 **MAN-20261006-KAN51-01 — local interactive verification.** Codex walked through the website in a visible, temporary Chromium browser using the user-authorised Playwright fallback, inspecting rendered text and screenshots after each action. This was an interactive walkthrough rather than an execution of the browser test suite. Scope: KAN-51-AC1–AC6 only, on the working tree of `codex/kan-51-availability-plan` based on `ae2be66`, including the calendar route/history fix.
@@ -27,6 +39,45 @@ Record each relevant run with its commit, scope and result. Store concise report
 
 **Limits:** Supabase email/password sign-in, hosted S2-T05/S2-T06 acceptance, actual token-expiry timing and peer review were not exercised. Invalid-session recovery was inspected, not timed token expiry. The local walkthrough does not change Jira status or resolve the existing policy questions.
 
+## 5 October: integrated venue search and booking submission
+
+**AUTO-20261005-INTEGRATION-01 — local automated verification.** Combined source: `a093ca5` on `codex/KAN-52-venue-suitability`. Live fetches confirmed `origin/main` at `ae2be66`, KAN-12 at `a7e7bca` and KAN-53 at `87c2103`. Main and the other published team branches were already included. Merge `04ec1ce` adds KAN-12's three missing commits; merge `a093ca5` adds KAN-53's missing commit and resolves integration issues. The final ancestry check found **zero missing commits from every fetched remote branch tip**. Unpublished teammate changes are outside this statement; nothing was pushed or merged into remote main.
+
+Search retains operational-block filtering and schema isolation while sharing KAN-52's continuous-interval opening-hours check. Booking submission now checks approved reservations and operational blocks after acquiring the venue lock, rejects impossible/ambiguous timestamps, and leaves refusals without a new booking row. The coordinator-only panel handles account/event changes, stale responses and uncertain saves. KAN-52, KAN-8 and KAN-55 remain connected without a new migration or future-sprint application feature.
+
+| Command / environment | Actual result |
+| --- | --- |
+| `npm.cmd run check`; Windows, Node 24.21.0 | Passed tools/frontend/backend type checks, **368 frontend + 660 backend tests (1,028 total)**, and both production builds. |
+| `npm.cmd run test:coverage` | Passed all **1,028** tests. Frontend statements/branches/functions/lines: **88% / 83.4% / 88.93% / 90.45%**; backend: **69.86% / 75.86% / 67.55% / 70.92%**. Separate database/browser suites are excluded from these measurements; they are not requirements coverage or mutation scores. |
+| `npm.cmd run test:integration`; dedicated PostgreSQL **18.6** in WSL, isolated schemas | Final run at `a093ca5` passed **255 tests across 18 files**. Includes **44 booking submission/decision cases**, **9 search cases**, and the existing suitability, calendar, block, auth and event suites. CI's PostgreSQL **17** environment remains separate verification. |
+| `npm.cmd run db:migrate` and `npm.cmd run db:seed`; explicit local application-database URLs | Passed: migrations already up to date; seed preserved existing local records. Shared Supabase was not used. |
+| `npm.cmd run test:e2e -- --workers=2`; Chromium, local Express/Vite | Passed **71/71** cases in 1.1 minutes, including seven new KAN-53 cases for connected approval/rejection outcomes, both submission-conflict messages, uncertain-save recovery, organiser access and the running API's login requirement. |
+| Documentation/schema consistency | All **93** Sprint 2 acceptance-criterion definitions remain identical to the pre-integration branch; both CSV registers retain **20** rows with consistent columns. The final pass checked **425** local Markdown file targets in modified documentation; all resolve. Migrations 001–006 are unchanged. `git diff --check` and staged whitespace checks passed. |
+
+The PostgreSQL cases verify no persisted booking/event/history/notification change on a refused submission, adjacency, and a waiting submission seeing a reservation or block committed before it acquires the venue lock. Runtime tests exercise cookie handling, mapped roles, routing and SQL with a controlled token-verification fixture. Browser feature responses use explicit API fixtures; startup/readiness and unauthenticated API checks use the running backend. These results do not establish hosted Supabase login-to-booking acceptance.
+
+**Remaining:** run [KAN-53 hosted verification](README.md#kan-53-hosted-verification), including staff decisions and coordinator outcomes, and the existing KAN-52 hosted checks. Confirm open booking eligibility/duplicate-pending policies, obtain peer review, and check CI after publication. No Jira Done transition, Sprint 2 review outcome or change to **43 points: 35 new + 8 carry-over** is claimed.
+
+## 4 October: venue suitability
+
+**AUTO-20261004-KAN52-01 — local automated verification.** Implemented on `codex/KAN-52-venue-suitability`, created from freshly fetched `origin/main` (`ae2be66`, including KAN-55). Code and tests through `6598ebf`: `68026e2` adds input/rules, `b51d6a8` adds the authenticated read-only API, `670d4f0` adds the interface, `8f78541` adds component coverage and clarifies displayed catalogue freshness, and `6598ebf` adds browser coverage. No pending feature branch was merged, and no shared Supabase data, migration or Jira status was changed.
+
+| Command / environment | Actual result |
+| --- | --- |
+| `npm.cmd run check`; Windows, Node 24.21.0 | Passed: tools/frontend/backend type checks, **341 frontend + 572 backend tests (913 total)** and both production builds. |
+| `npm.cmd run test:coverage` | Passed all **913** tests after the final display-copy/fixture clarification. Configured frontend statements/branches/functions/lines: **86.29% / 82.51% / 87.87% / 88.63%**; backend: **64.98% / 70.71% / 58.98% / 66.26%**. These measurements exclude the separate database/browser suites and are not requirements coverage or mutation scores. |
+| `npm.cmd run test:integration`; dedicated local PostgreSQL **18.6** in WSL, isolated schemas | Passed **228 tests across 18 files**, including **33 KAN-52 cases** and the existing KAN-55 block suite. This local environment does not replace PostgreSQL **17** verification in GitHub CI. |
+| `npm.cmd run db:migrate` and `npm.cmd run db:seed`; explicit local application-database URLs | Passed: migrations already up to date; local seed preserved existing rows. The test servers used this isolated application database, not shared Supabase. No KAN-52 migration is needed. |
+| `npm.cmd run test:e2e -- --workers=2`; Chromium, local Express/Vite | Full run passed **64/64** browser cases. After the catalogue-refresh label and complete seven-check fixture were added, the focused KAN-52 rerun passed **8/8** in 11.3 seconds. |
+| Visual inspection | Reviewed desktop and 390-pixel mobile assessment captures. Source text, interpretation inputs and result reasons remain legible; long requirements wrap without horizontal overflow. |
+| Documentation consistency | **402** local Markdown file targets in the modified documents resolve; the initial documentation pass also checked their existing/new anchors. Both traceability/test-case CSVs retain **20** rows with consistent columns. All **93** Sprint 2 acceptance-criterion definition lines match `ae2be66` unchanged, as do all migration files. |
+
+KAN-52 adds **60 input/rule tests**, **9 HTTP tests**, **41 component tests**, **33 PostgreSQL tests** and **8 browser cases**. The integration suite exercises current assignment and mapped runtime cookie authentication using local token fixtures, stale source rejection despite unchanged `updated_at`, fresh venue edits, exact capability matching, inactive venues, missing/invalid information, full-period Singapore opening hours, booking/block overlap and adjacency, and unchanged event/venue/booking/audit rows after assessment. Pure rules also check false/unconfirmed interpretation and capacity boundaries. Component/browser tests cover confirmation, current-data rechecks, source refresh, stale responses, account/role changes, access messages, navigation and mobile layout.
+
+Browser feature responses are intercepted fixtures; unauthenticated API and startup/readiness checks use the running local backend. The PostgreSQL tests use real SQL and runtime routes with controlled authentication fixtures. Neither establishes hosted Supabase login-to-assessment acceptance. The UI's venue details are labelled as the last refreshed catalogue snapshot; assessment results always use a new database read. The final copy change does not alter the assessment calculation.
+
+**Remaining:** execute [KAN-52 hosted checks](README.md#kan-52-hosted-verification), confirm remaining matching/eligibility policies with the team/customer, and obtain peer review and published CI. KAN-53 booking submission is not yet integrated into this branch/main; suitability neither reserves a venue nor rejects an event. No Done points, Sprint 2 review outcome or change to **43 points: 35 new + 8 carry-over** is claimed. All work is committed locally; nothing was pushed.
+
 ## 4 October: venue-unavailability blocks
 
 **AUTO-20261004-KAN55-01 — local automated verification, integration not executed.** Tested on `feat/KAN-55-block-venue-unavailability`, branched from `main` (`667c4ef`), with Node 24 on Windows.
@@ -37,12 +88,33 @@ Record each relevant run with its commit, scope and result. Store concise report
 | `npx vitest run test/venues/block-input.test.ts` (backend, isolated) | Passed: 20 tests, including the mandatory-reason requirement, missing/invalid/out-of-order dates, and confirming `venueId` is not an accepted body field. |
 | `npx vitest run test/venues/block-router.test.ts` (backend, isolated) | Passed: 11 tests covering authentication (401), role gate (403, Venue Staff only), venue/block UUID validation (400), the create/list/delete success paths forwarding verified actor/params/body to the service, and `WorkflowError`-to-HTTP mapping (409/404). |
 | `npx vitest run src/features/venues/pages/VenueBlocksPage.test.ts` (frontend, isolated) | Passed: 7 tests covering venue-list loading, the non-staff read-only message with no fetch, block creation and reload, client-side time validation, block removal and reload, and load-error retry. |
-| `database/tests/venues/venue-blocks.integration.test.ts` (new) | **Not executed.** `TEST_DATABASE_URL` is blank in `.env` and Docker is unavailable in this environment, so the local fallback test database (see [Commands](../../CLAUDE.md#commands)) could not be created — the same limitation recorded for KAN-53 above. The suite covers KAN-55-AC1–AC13 (association, role checks, venue eligibility, the booking-overlap conflict, listing, deletion) but has no execution result yet. |
+| `database/tests/venues/venue-blocks.integration.test.ts` (new) | **Not executed in this original run.** `TEST_DATABASE_URL` was blank in `.env` and Docker was unavailable, so the [dedicated test database](README.md#database-environments) could not be created. The suite covers KAN-55-AC1–AC13 (association, role checks, venue eligibility, the booking-overlap conflict, listing, deletion). Its later passing execution is included in AUTO-20261004-KAN52-01 above. |
 | `npm run test:e2e` | Not executed this session (same constraint: Playwright's `webServer` needs a migrated dev database). |
+
+**Imported-record caveat, 5 October:** the stated 500 backend total above is preserved from the original branch, but its parenthetical calculation does not reconcile (472 + 28 + 9 = 509). It is not an independently recounted result. The organiser-list component fixture above also did not establish backend organiser permission; the integrated panel is coordinator-only. Subsequent combined-build runs are recorded separately.
 
 This is automated-fixture coverage at the unit/component level only. It does not establish real PostgreSQL persistence/concurrency behaviour, a hosted Venue Staff walkthrough, CI or peer review for this branch.
 
 **Remaining:** execute the integration suite against a dedicated test database; execute the browser suite; agree the [block-over-existing-booking implementation default](../requirements/assumptions-and-questions.md#4-october-2026--kan-55-block-venue-for-operational-unavailability) with the team/customer; obtain peer review and CI. No hosted acceptance, Jira Done transition, Sprint 2 review outcome or change to the **43-point** baseline is claimed. Nothing was pushed by this task.
+
+## 4 October: venue booking submission
+
+**AUTO-20261004-KAN53-01 — local automated verification, integration not executed.** Tested on `feat/KAN-53-submit-venue-booking-request`, branched from `main` (`667c4ef`, after PR #23 integrated KAN-29/KAN-8), with Node 24 on Windows.
+
+| Command / environment | Actual result |
+| --- | --- |
+| `npm run check` | Passed: tools/frontend/backend type checks, **301 frontend tests** (293 + 8 new `VenueBookingPanel.test.ts` cases), **500 backend tests** (472 + 28 new `booking-input.test.ts` submission cases + 9 new `venue-booking-submission-router.test.ts` cases, less name collisions none), and both production builds. |
+| `npx vitest run test/venues/booking-input.test.ts` (backend, isolated) | Passed: 32 tests, including the new KAN-53 submission input boundaries (missing fields, invalid venue UUID, invalid/out-of-order dates, optional layout/notes trimming, unknown fields rejected). |
+| `npx vitest run test/venues/venue-booking-submission-router.test.ts` (backend, isolated) | Passed: 9 tests covering authentication (401), role gate (403, coordinator-only), event-id UUID validation (400), the 201 success path forwarding the verified actor/event id/body to the service, and `WorkflowError`-to-HTTP mapping (409/404). |
+| `npx vitest run src/features/events/components/VenueBookingPanel.test.ts` (frontend, isolated) | Passed: 8 tests covering coordinator submission and list refresh, client-side end-after-start time validation, server-refusal display without emitting `changed`, the read-only list shown to the owning organiser, read-only rendering once the event is `REJECTED`/`CANCELLED`/`COMPLETED`, and load-error retry. |
+| `database/tests/venues/venue-bookings.integration.test.ts` (new "KAN-53 venue booking submission against PostgreSQL" describe block) | **Not executed.** `TEST_DATABASE_URL` is blank in `.env` and Docker is unavailable in this environment, so the local fallback test database (see [dedicated test database](README.md#database-environments)) could not be created. The block was written to cover KAN-53-AC1–AC11 (association, visibility, eligible-state and venue-eligibility checks) but has no execution result yet. |
+| `npm run test:e2e` | Not executed this session (same booking-independent constraint: Playwright's `webServer` needs a migrated dev database, not exercised here). |
+
+**Imported-record caveat, 5 October:** the stated 500 backend total above is preserved from the original branch, but its parenthetical calculation does not reconcile (472 + 28 + 9 = 509). It is not an independently recounted result. The organiser-list component fixture above also did not establish backend organiser permission; the integrated panel is coordinator-only. Subsequent combined-build runs are recorded separately.
+
+This is automated-fixture coverage at the unit/component level only. It does not establish real PostgreSQL persistence/concurrency behaviour, a hosted Supabase login-to-submission walkthrough, CI or peer review for this branch.
+
+**Remaining:** execute the integration suite against a dedicated test database (local Docker fallback or a future dedicated Supabase test project) before claiming database-level verification; execute the browser suite; agree the [eligible-event-states and duplicate-request implementation defaults](../requirements/assumptions-and-questions.md#4-october-2026--kan-53-venue-booking-submission) with the team/customer; obtain peer review and CI. No hosted acceptance, Jira Done transition, Sprint 2 review outcome or change to the **43-point** baseline is claimed. Nothing was pushed by this task.
 
 ## 4 October: integrated venue booking decisions
 

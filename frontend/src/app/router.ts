@@ -15,6 +15,7 @@ import VenueSearchPage from '../features/venues/pages/VenueSearchPage.vue';
 import VenueBookingsPage from '../features/venues/pages/VenueBookingsPage.vue';
 import VenueBookingDetailPage from '../features/venues/pages/VenueBookingDetailPage.vue';
 import VenueBlocksPage from '../features/venues/pages/VenueBlocksPage.vue';
+import VenueSuitabilityPage from '../features/venues/pages/VenueSuitabilityPage.vue';
 
 export const router = createRouter({
   history: createWebHistory(),
@@ -31,6 +32,7 @@ export const router = createRouter({
       children: [
         { path: '', component: ReviewQueuePage, meta: { title: 'Review queue' } },
         { path: 'unassigned', component: UnassignedRequestsPage, meta: { title: 'Unassigned requests' } },
+        { path: ':id/venue-suitability', component: VenueSuitabilityPage, meta: { title: 'Venue suitability' } },
         { path: ':id', component: ReviewRequestPage, meta: { title: 'Event request review' } },
       ],
     },

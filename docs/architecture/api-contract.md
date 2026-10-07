@@ -331,7 +331,7 @@ With migration 006, `assignmentMethod` is `AUTOMATIC` or `MANUAL`. Automatic rec
 | --- | --- | --- | --- |
 | `GET /api/events/:id/history` | EO owner, assigned EC | `200` items: `id`, `fromStatus`, `toStatus`, `changedById`, `changedByName`, `createdAt`, oldest first; rows come from the retained status-history trigger | `400 INVALID_EVENT_REQUEST_ID`; `403 ACTION_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND` |
 
-`POST /api/events/:id/confirm`, `/cancel` and `/complete` are not mounted and return `404 NOT_FOUND`. Existing later-status records remain readable; their presence does not enable those actions. Equipment, registration, change-request and notification application endpoints are also absent. KAN-12 search, KAN-51 availability and KAN-8 booking decisions are mounted under their committed Sprint 2 stories; their contracts are below.
+`POST /api/events/:id/confirm`, `/cancel` and `/complete` are not mounted and return `404 NOT_FOUND`. Existing later-status records remain readable; their presence does not enable those actions. Equipment, registration, change-request and notification application endpoints are also absent. KAN-12 search, KAN-51 availability, KAN-52 suitability, KAN-55 operational blocks and KAN-8 booking decisions are mounted under their committed Sprint 2 stories; their contracts are below.
 
 ### Frontend routes
 
@@ -343,6 +343,8 @@ Client navigation is not access control; every page relies on the API responses 
 | `/events/:id`, `/events/:id/edit` | Organiser detail with the planning panels; draft editing | Linked from the list |
 | `/reviews`, `/reviews/unassigned` | Review queue; unassigned requests | EC after session resolution |
 | `/reviews/:id` | Coordinator review with the planning panels | Linked from the queue |
+| `/reviews/:id/venue-suitability` | KAN-52 event-specific suitability and requirement interpretation | Linked from the assigned coordinator's review; role and relationship checked by the API |
+| `/venue-blocks` | KAN-55 operational block creation, list and removal | VS after session resolution |
 | `/venues` | KAN-12 venue search and combined filters | EC after session resolution |
 | `/venue-bookings` | KAN-8 staff pending queue or coordinator outcomes; optional `?eventRequestId=<id>` | VS or EC after session resolution |
 | `/venue-bookings/:id` | KAN-8 request detail and saved decision; writes only for staff with a pending booking | Linked from the booking list; role checked on direct navigation |
@@ -400,9 +402,48 @@ Optional filters are `startsAt`/`endsAt` (both supplied or both omitted), positi
 
 The 4 October integration fixes removed a hard-coded `public` schema so isolated test schemas work, and ensure operational blocks exclude a venue even without an approved booking. Three real PostgreSQL regressions are in `database/tests/venues/venue-search.integration.test.ts`; AUTO-20261004-KAN8-01 records the combined local run. This is supporting integration work, not KAN-52 suitability assessment or KAN-53 request submission. Hosted KAN-12 acceptance remains pending.
 
+**5 October date-filter integration:** the search now shares KAN-52's whole-interval opening-hours helper. A continuous event must fit all occupied Singapore days, not merely endpoint clock times. Missing bounds mean 00:00/24:00; an interval ending exactly at midnight occupies only the preceding day. Explicit full-day hours or absent bounds allow multi-day continuous use; daily closed periods exclude it. Catalogue, approved bookings and operational blocks are read in one SQL snapshot; opening-hour checks retain database seconds/fractions and use those returned rows. No write or reservation is created. See [search details](../../backend/src/modules/venues/venue-search.md).
+
+## Venue booking submission (KAN-53, CF-12)
+
+**Integrated on this branch, 5 October 2026:** Kai Jie's submission API and coordinator panel connect venue selection to KAN-8 decisions. This local merge does not change remote main or establish hosted acceptance. No migration is added.
+
+`POST /api/events/:id/venue-bookings` uses the **event request ID**, requires the currently assigned Event Coordinator, and returns `201 { booking }` with status `PENDING`. The accepted JSON fields are:
+
+```json
+{
+  "venueId": "venue-uuid",
+  "startsAt": "2026-10-20T10:00:00+08:00",
+  "endsAt": "2026-10-20T12:00:00+08:00",
+  "layout": "THEATRE",
+  "notes": "Fictional planning notes"
+}
+```
+
+Venue/timing are required; layout and notes may be omitted or null. Dates must be valid ISO date-times with an explicit `Z` or numeric timezone offset and a valid calendar day; end must be later than start. Optional text is trimmed and limited to 2,000 characters by the API. The panel limits layout to 100 and notes to 2,000. Unknown fields, including a forged requested-by actor or booking status, are rejected.
+
+| Failure | Meaning |
+| --- | --- |
+| `401 AUTHENTICATION_REQUIRED` | No verified session. |
+| `403 ACTION_FORBIDDEN` | Verified actor is not an Event Coordinator. |
+| `400 INVALID_EVENT_REQUEST_ID` / `INVALID_VENUE_ID` / `INVALID_BOOKING_PERIOD` / `INVALID_INPUT` | Malformed identifier/body, invalid dates/text, or end not after start. |
+| `404 EVENT_REQUEST_NOT_FOUND` | Missing event, draft, or event not assigned to this coordinator; no event data disclosed. |
+| `404 VENUE_NOT_FOUND` / `409 VENUE_INACTIVE` | Missing or inactive venue. |
+| `409 EVENT_NOT_ELIGIBLE` | Event is Rejected, Cancelled or Completed. |
+| `409 VENUE_BOOKING_CONFLICT` | An approved booking currently overlaps the requested venue/period. No new row is saved. |
+| `409 VENUE_UNAVAILABLE` | An operational block currently overlaps the requested venue/period. No new row is saved. |
+
+The transaction locks the event and venue, then reads conflicts in a fresh query after acquiring the venue lock. Half-open intervals allow exact adjacency; different venues do not conflict. Pending, rejected and cancelled bookings do not hold availability. Several pending requests for the same event/venue/period are allowed; this endpoint has no duplicate-submission idempotency key. Approval independently rechecks availability. Creation neither approves the booking nor changes event status.
+
+Current event timing and free-text requirements remain visible alongside saved booking timing/layout/notes; they are not a submission snapshot. The coordinator enters the booking interval, so it may differ from the event interval used by KAN-52. Suitability is a separate read-only assessment and does not automatically gate submission. Every non-draft event state except Rejected/Cancelled/Completed currently permits a request, while later approval requires an Approved event. Eligibility, duplicate-pending policy, snapshot semantics and any stronger suitability gate remain [documented defaults](../requirements/assumptions-and-questions.md#5-october-2026--venue-branch-integration), not newly agreed criteria.
+
+On `/reviews/:id`, **Venue booking requests** lets the coordinator choose an active venue, enter Singapore start/end, optional **Room layout**/**Notes for Venue Staff**, and choose **Request this venue**. It reloads the booking list after success and presents refusals without reporting success. Organisers and other roles do not mount this panel. Account/event changes discard stale asynchronous results. Existing `/venue-bookings` and `/venue-bookings/:id` pages show the staff queue and assigned-coordinator outcomes.
+
+Verification sources include `booking-input.test.ts`, `venue-booking-submission-router.test.ts`, `VenueBookingPanel.test.ts` and `database/tests/venues/venue-bookings.integration.test.ts`. The original branch's [4 October results](../testing/test-evidence.md#4-october-venue-booking-submission) have a narrower scope than this merged implementation. Record combined runs separately and follow [hosted submission checks](../testing/README.md#kan-53-hosted-verification); no hosted result is claimed here.
+
 ## Venue booking decisions (KAN-8, CF-13)
 
-**Status, 4 October 2026:** implemented for existing `venue_bookings` rows, using the verified application session and migration 004's retained schema. KAN-53 booking submission remains unimplemented. No new migration or shared Supabase write is part of this implementation. The [implementation choices](../requirements/assumptions-and-questions.md#4-october-2026--kan-8-venue-booking-decisions) distinguish provisional policy from the story criteria. Executed checks belong in AUTO-20261004-KAN8-01 in the [test register](../testing/test-evidence.md); hosted acceptance, peer review and new CI remain pending.
+**Status, 4 October 2026:** implemented for existing `venue_bookings` rows, using the verified application session and migration 004's retained schema. KAN-53 was not integrated in that original run; the [5 October submission integration](#venue-booking-submission-kan-53-cf-12) now supplies pending rows on this branch. No new migration or shared Supabase write is part of this implementation. The [implementation choices](../requirements/assumptions-and-questions.md#4-october-2026--kan-8-venue-booking-decisions) distinguish provisional policy from the story criteria. Executed checks belong in AUTO-20261004-KAN8-01 in the [test register](../testing/test-evidence.md); hosted acceptance, peer review and new CI remain pending.
 
 | Method / route | Roles and scope | Success |
 | --- | --- | --- |
@@ -441,3 +482,45 @@ The write uses one transaction, locks the booking row and rechecks `PENDING`. Ap
 A successful write changes only this booking's status, decision actor/time/reason and update timestamp. It preserves the event/venue associations and booking period, and does not transition the event or generate notifications. KAN-51 reads the new approved period on refresh; rejected bookings remain absent. Repeated/competing decisions never overwrite the original outcome. An uncertain client response requires a read before retrying; the UI automatically reloads on 409 and offers a read-only retry after uncertain transport failures.
 
 Verification lives in `backend/test/venues/booking-input.test.ts`, `backend/test/venues/venue-bookings-router.test.ts`, `database/tests/venues/venue-bookings.integration.test.ts`, the two booking page component suites and `tests/e2e/venue-bookings.spec.ts`. Follow the [manual guide](../testing/README.md#kan-8-hosted-verification) with provisioned accounts and coordinated synthetic fixtures. Approval-time conflict coverage does not accept KAN-53 submission or all KAN-54/KAN-55 criteria.
+
+## Venue suitability (KAN-52, CF-11)
+
+**Status, 4 October 2026:** implemented without a migration; the user confirmed coordinator interpretation of free-text event requirements for each assessment. The remaining [implementation choices](../requirements/assumptions-and-questions.md#4-october-2026--kan-52-venue-suitability), executed tests, hosted acceptance, peer review and CI are separate records. The API never creates a booking or changes an event.
+
+Only the currently assigned `EVENT_COORDINATOR` can use either route for a non-draft event. A staff role or calendar permission does not grant this event-specific access.
+
+| Method and route | Success | Errors |
+| --- | --- | --- |
+| `GET /api/events/:id/venue-suitability` | `200 { event, requirementsVersion, venues }` | `401 AUTHENTICATION_REQUIRED`; `403 ACTION_FORBIDDEN`; `400 INVALID_EVENT_REQUEST_ID`; `404 EVENT_REQUEST_NOT_FOUND` for absent, draft or unrelated requests |
+| `POST /api/events/:id/venue-suitability` | `200 { assessment }`, including unsuitable or unknown results | Same identity/ID errors; `400 INVALID_SUITABILITY_INPUT`; `404 VENUE_NOT_FOUND`; `409 SUITABILITY_CONTEXT_CHANGED` |
+
+`event` contains `id`, nullable `name`, `startsAt`, `endsAt`, `expectedAttendance`, `venueRequirements` and `accessibilityNeeds`. `venues` contains active catalogue entries ordered by name/ID with `id`, `name`, `capacity`, `facilities`, `accessibilityFeatures`, `layouts`, `wheelchairAccessible`, `opensAt` and `closesAt`. Event dates are ISO instants; venue opening times are nullable Singapore daily clock values. `requirementsVersion` is the SHA-256 hash of the actual returned event source fields, so dashboard edits need not update `updated_at` to invalidate stale interpretations. Treat it as an opaque freshness value, not an authorization token.
+
+Every POST field is required explicitly, including empty lists, booleans and nullable strings; unknown fields are rejected:
+
+```json
+{
+  "venueId": "<venue UUID>",
+  "requirementsVersion": "<version returned by GET>",
+  "facilities": ["Projector"],
+  "accessibility": ["Hearing loop"],
+  "layout": "Theatre",
+  "wheelchairRequired": true,
+  "requirementsConfirmed": true,
+  "unresolvedRequirements": null
+}
+```
+
+Facilities/accessibility each allow at most 30 distinct, nonblank labels of up to 100 characters. Labels are trimmed and deduplicated ignoring case; matching requires exact normalised equality, not substring or natural-language inference. All specified labels are required, including values absent from the selected venue's catalogue. `layout` is one label of up to 100 characters or null. `unresolvedRequirements` is up to 2,000 characters or null; blank nullable strings become null. Confirming empty lists/layout and an unchecked wheelchair requirement explicitly means none is required; an unchecked confirmation never silently passes.
+
+`assessment` contains `eventId`, nullable `eventName`, `venueId`, `venueName`, ISO `checkedAt`, `outcome` (`SUITABLE`, `UNSUITABLE`, `NEEDS_REVIEW`) and `checks`. Each check has a `key`, `status` (`PASS`, `FAIL`, `UNKNOWN`) and explanatory `message`. Keys are `venueActive`, `capacity`, `facilities`, `accessibility`, `layout`, `availability` and `requirements`. A definite failed check takes precedence and yields Unsuitable; otherwise any unknown check yields Needs review; only every applicable check passing yields Suitable.
+
+Each POST reads current authorized event, selected venue and conflicts in one SQL snapshot. It checks active state, positive known attendance against capacity, interpreted capabilities, and continuous coverage of the entire event interval by daily Singapore opening hours. Missing/invalid attendance or time yields UNKNOWN. Availability includes all approved bookings, even the selected event's own booking, and recorded operational blocks. Overlap is half-open, so adjacent periods are allowed; pending/rejected/cancelled bookings do not reserve. The check is read-only and does not lock or reserve a venue.
+
+When the relevant event source changed, POST returns `409 SUITABILITY_CONTEXT_CHANGED`; the UI reloads the source and requires interpretation/confirmation again. Venue/capability/availability changes are re-evaluated on each check. `/reviews/:id/venue-suitability` shows source text, capabilities, per-check reasons, refresh/recheck controls and denied/expired-session/retry states; editing the interpretation or venue discards its previous conclusion and confirmation. The venue details panel is explicitly labelled as the last refreshed catalogue snapshot; assessment results use a fresh read even when that panel has not been refreshed.
+
+Tests live in `backend/test/venues/suitability-input.test.ts`, `suitability-rules.test.ts`, `suitability-router.test.ts`, `database/tests/venues/venue-suitability.integration.test.ts`, `frontend/src/features/venues/pages/VenueSuitabilityPage.test.ts` and `tests/e2e/venue-suitability.spec.ts`. Consult [test evidence](../testing/test-evidence.md) for actual executions and [hosted checks](../testing/README.md#kan-52-hosted-verification) for S2-T09/T10. A fixture-based pass is not hosted acceptance or a booking guarantee.
+
+## Operational venue blocks (KAN-55, CF-09/CF-14)
+
+Current main provides Venue Staff-only `GET`/`POST /api/venues/:venueId/unavailability` and `DELETE /api/venues/:venueId/unavailability/:blockId`. Creation records an ordered time interval and a mandatory reason against the correct active venue; it refuses overlap with an existing approved booking. The shared `venue_unavailability` records feed the calendar, search, KAN-52 suitability and booking approval. See the [module contract](../../backend/src/modules/venues/README.md#venue-unavailability-blocks--kan-55) and [dated implementation record](../requirements/assumptions-and-questions.md#4-october-2026--kan-55-block-venue-for-operational-unavailability). Block removal is additional implementation behavior recorded there; inclusion in main does not itself establish hosted acceptance. KAN-53 creation is now integrated on this branch; its submission-time checks read the same operational blocks.

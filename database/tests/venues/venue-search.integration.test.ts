@@ -67,3 +67,21 @@ it('KAN-12 keeps search restricted to coordinators', async () => {
   await expect(searchVenues({ pool }, { id: organiserId, role: 'EVENT_ORGANISER' },
     parseVenueSearchQuery({}))).rejects.toMatchObject({ code: 'VENUE_SEARCH_FORBIDDEN' });
 });
+
+it.each([
+  ['08:00', '20:00', '2027-02-10T18:00:00+08:00', '2027-02-11T10:00:00+08:00', false],
+  [null, null, '2027-02-10T18:00:00+08:00', '2027-02-12T10:00:00+08:00', true],
+  ['08:00', null, '2027-02-10T18:00:00+08:00', '2027-02-11T00:00:00+08:00', true],
+  ['00:00', '24:00', '2027-02-10T18:00:00+08:00', '2027-02-12T10:00:00+08:00', true],
+  ['09:00:30', '18:00', '2027-02-10T09:00:29+08:00', '2027-02-10T12:00:00+08:00', false],
+  ['09:00:30', '18:00', '2027-02-10T09:00:30+08:00', '2027-02-10T12:00:00+08:00', true],
+] as const)('KAN-12/KAN-52 applies continuous venue hours %s–%s to %s–%s (available=%s)',
+  async (opensAt, closesAt, startsAt, endsAt, available) => {
+    const id = randomUUID();
+    await pool.query(`INSERT INTO venues (id, name, capacity, opens_at, closes_at)
+      VALUES ($1, $2, 100, $3, $4)`, [id, `Hours ${id}`, opensAt, closesAt]);
+    const results = await searchVenues({ pool }, actor, parseVenueSearchQuery({
+      location: `Hours ${id}`, startsAt, endsAt,
+    }));
+    expect(results.map(venue => venue.id)).toEqual(available ? [id] : []);
+  });
