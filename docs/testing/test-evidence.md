@@ -2,6 +2,43 @@
 
 Record each relevant run with its commit, scope and result. Store concise report exports alongside this document and link the corresponding tests from the [traceability matrix](../requirements/traceability.csv). The [Sprint 1 acceptance test plan](../scrum/sprint-01/sprint-backlog.md#acceptance-test-plan) provides the initial scenario and acceptance-criterion IDs.
 
+## 8 October: PR #27 conflict resolution
+
+**AUTO-20261008-PR27-01 — local merge verification.** Tested the merge of `origin/main` at `1ed0332` into PR #27's `feat/KAN-52-venue-suitability` at `ae54ec7`. The only conflict was this evidence document: the 6 October KAN-51 walkthrough and the 5/4 October integration and suitability records are preserved verbatim. The calendar route/history fix and its regression tests merged without code conflicts.
+
+| Command / environment | Actual result |
+| --- | --- |
+| `npm.cmd run check`; Windows, Node 24.21.0 | Passed tools/frontend/backend type checks, **371 frontend + 662 backend tests (1,033 total)**, and both production builds. |
+| `npm.cmd run test:e2e -- tests/e2e/venue-availability.spec.ts tests/e2e/venue-bookings.spec.ts tests/e2e/venue-booking-submission.spec.ts tests/e2e/venue-suitability.spec.ts --workers=2`; Chromium, local Express/Vite | **39/39 passed**. Covers calendar access/navigation, booking submission and decisions, suitability, and narrow-screen layouts. |
+| Conflict and whitespace checks | No unresolved Git paths; `git diff --cached --check` passed. Both branches' prior evidence sections were checked for exact preservation. |
+
+**Limits:** browser feature responses use intercepted fixtures; login-required checks use the running backend. The test server used an unused local database URL and did not connect to shared Supabase. No database integration or coverage rerun was needed for this merge delta, which changes calendar UI and tests but no backend service or schema. Earlier database/coverage results remain historical records. Hosted acceptance and GitHub CI are separate checks; this entry records no Jira status change or PR approval.
+
+## 6 October: KAN-51 interactive website walkthrough
+
+**MAN-20261006-KAN51-01 — local interactive verification.** Codex walked through the website in a visible, temporary Chromium browser using the user-authorised Playwright fallback, inspecting rendered text and screenshots after each action. This was an interactive walkthrough rather than an execution of the browser test suite. Scope: KAN-51-AC1–AC6 only, on the working tree of `codex/kan-51-availability-plan` based on `ae2be66`, including the calendar route/history fix.
+
+**Environment:** Windows, Node 24.21.0, Vite at `http://127.0.0.1:5173`, the real `createRuntimeApp` API at port 3000, and a disposable PostgreSQL 17 container at port 55451. All six migrations were applied to this isolated database. Synthetic profiles and locally signed fixture JWTs exercised the normal session-cookie verification and database role mapping; calendar API responses were not mocked. The dataset contained two active venues, one inactive venue, approved/pending/rejected/cancelled bookings, adjacent bookings, a block crossing the week boundary and a multi-day block. The displayed Singapore week was 5–11 October.
+
+| Walkthrough | Observed result |
+| --- | --- |
+| Calendar access for Event Coordinator, Venue Staff and Technical Support Staff | All three roles obtained the calendar and the correct periods. |
+| Signed-out, Event Organiser and Attendee access | Signed-out API returned 401 and the page offered sign-in; the other two roles received 403 and an access message. No calendar sidebar link or venue data appeared for these callers. |
+| Availability labels, statuses and venue association | Available, Booked, Blocked and Closed were distinguishable in the legend, bars and text. Only approved bookings consumed availability; pending/rejected/cancelled bookings and the inactive venue were excluded. Switching venues showed their own periods. |
+| Adjacent bookings and period boundaries | Adjacent 10:00–12:00 and 12:00–13:00 bookings appeared without an intervening free slot. A block starting before the week was clipped to Monday with its whole period in the text; a Friday-to-Sunday block appeared on all affected days. |
+| Previous/next/this week, date jump and reload | Controls changed both the label and recorded periods. Jumping to 4 November showed 2–8 November. Reload retained the selected week and venue. |
+| Same-page navigation and browser history | From next week's Orchid Seminar Room, clicking the calendar sidebar link restored this week's Harbour Hall. Browser Back restored the room and next week; Forward restored the hall and this week. |
+| Refresh after fixture changes | A newly added Wednesday block and newly approved booking appeared after Refresh; a cancelled Monday booking disappeared and its interval became available. Only isolated fixture rows were changed. |
+| Role-specific booking details | The assigned coordinator saw the event name/link for their own booking; another coordinator's booking stayed anonymous. Venue Staff and Technical Support Staff saw anonymous bookings. |
+| Keyboard and mobile use | The venue picker worked with Arrow Down/Enter. At 390 × 844 pixels, labels and multi-day details wrapped legibly; document width was 375 pixels, with no horizontal overflow. |
+| Empty catalogue | Temporarily inactivating the two fixture venues showed the empty state with no picker. Restoring them and clicking Refresh restored the selected venue. |
+| Connection failure and retry | Offline Refresh hid the old calendar and showed the API connection error with Try again. Returning online and clicking Try again restored the correct venue. |
+| Invalid window, sign-out and invalid session | A reversed API window returned 400 `INVALID_AVAILABILITY_WINDOW`. Sign out cleared the calendar and restored 401. Replacing the temporary browser's session with an invalid fixture token also removed the calendar, protected navigation and cached identity. |
+
+**Result:** all 15 recorded checks passed; no functional or layout defects were found in the inspected KAN-51 flows. No browser `pageerror` events occurred. Screenshots and the detailed local result are retained under ignored `test-results/kan51-manual/`: [results JSON](../../test-results/kan51-manual/results.json), [venue-staff calendar](../../test-results/kan51-manual/02-venue-staff-calendar.png), [coordinator visibility](../../test-results/kan51-manual/07-coordinator-visibility.png) and [mobile calendar](../../test-results/kan51-manual/08-technical-support-mobile.png). These local files are not committed submission artifacts.
+
+**Limits:** Supabase email/password sign-in, hosted S2-T05/S2-T06 acceptance, actual token-expiry timing and peer review were not exercised. Invalid-session recovery was inspected, not timed token expiry. The local walkthrough does not change Jira status or resolve the existing policy questions.
+
 ## 5 October: integrated venue search and booking submission
 
 **AUTO-20261005-INTEGRATION-01 — local automated verification.** Combined source: `a093ca5` on `codex/KAN-52-venue-suitability`. Live fetches confirmed `origin/main` at `ae2be66`, KAN-12 at `a7e7bca` and KAN-53 at `87c2103`. Main and the other published team branches were already included. Merge `04ec1ce` adds KAN-12's three missing commits; merge `a093ca5` adds KAN-53's missing commit and resolves integration issues. The final ancestry check found **zero missing commits from every fetched remote branch tip**. Unpublished teammate changes are outside this statement; nothing was pushed or merged into remote main.
