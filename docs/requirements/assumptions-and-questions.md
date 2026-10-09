@@ -994,3 +994,22 @@ The following are explicit **implementation choices awaiting team/customer confi
 **Evidence boundary:** original 4 October records retain their tested builds and limitations. Record the combined 5 October commands/results separately in [test evidence](../testing/test-evidence.md) and use [KAN-53 hosted checks](../testing/README.md#kan-53-hosted-verification). No test pass, hosted acceptance, CI, peer review, Done points or new planning allocation is inferred from this update. All six migrations, the 93 detailed criteria and **43 points: 35 new + 8 carry-over** are preserved.
 
 **Supersedes:** the current applicability of earlier "KAN-53 absent" summaries and the imported organiser-panel claim; historical evidence remains unchanged in scope. S2-Q04/Q05/Q06/Q10 policy questions remain open where noted above.
+
+## 9 October 2026 — KAN-59 submission validation rules (S1-DEF-04)
+
+**Question IDs:** Q-03 (the field and conditional-registration validation table was still to be completed); S2-T22.
+
+**Implementation and rationale:** an audit of `submit-input.ts` found three ways a direct API call could submit a request that the browser form would have stopped. The form trims text, turns blank text into `null` and checks the end time and registration window before it calls the API, so only other clients were exposed. The server only rejected `null`, so a whitespace-only name, purpose or venue requirement, an end time that was not after the start, and a registration window that closed before it opened all passed. Migration 004 notes that `ends_at > starts_at` "stays a service rule", but no such rule existed on submission. The following are explicit **implementation choices awaiting team confirmation**, not new agreed acceptance criteria:
+
+- A blank or whitespace-only name, purpose or venue requirement counts as missing, the same as `null`. The response lists it in `missingFields`.
+- The event end must be strictly after the start; otherwise the submission is refused for `endsAt`.
+- When registration is required and both registration times are set, the registration close must be strictly after the open; otherwise it is refused for `registrationClosesAt`. A blank capacity still means "no limit", as the form already allows, and the registration window is not required to end before the event starts.
+- An expected attendance of `0` is still accepted, because the existing test treats `0` as present and not missing. **Resolved 9 October by the Product Owner:** follow the customer documents. The Week 1 Customer Briefing and the Week 4 Project Instructions require expected attendance but set no minimum, so no rule is added and `0` stays accepted. If the customer later sets a minimum, add it as a new criterion. The consultation transcript PDF has no extractable text and was not checked.
+- Past dates are not refused; no customer rule requires it. Description, accessibility needs and equipment requirements stay optional, and "None / Not Required" is ordinary text.
+- A request with only missing fields returns `400 SUBMISSION_INCOMPLETE`. Any invalid value returns `400 SUBMISSION_INVALID` with `fieldErrors` (field to message) and still lists `missingFields`. Both roll back before the status update, so the request stays `DRAFT` with its data unchanged.
+
+**Scope/evidence:** KAN-6-AC2, KAN-6-AC3; S1-DEF-04 (Jira KAN-59); S2-T22. Executed commands and results belong in [test evidence](../testing/test-evidence.md); this entry alone does not show acceptance.
+
+**Source/date:** Irfan, 9 October 2026, while verifying the remaining Sprint 2 items. KAN-6 and KAN-59 belong to Kai Jie's story; their Jira cards were not edited.
+
+**Supersedes:** nothing. It refines the 13 September entry's six mandatory fields by treating blank text as missing and adds the two ordering rules.

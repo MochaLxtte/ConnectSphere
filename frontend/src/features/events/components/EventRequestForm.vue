@@ -3,7 +3,8 @@ import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, useId, w
 import { ApiError } from '../../../lib/api-client';
 import { clearLocalSession } from '../../auth/session.js';
 import {
-  createDraft, submitRequest, updateDraft, SubmissionIncompleteError, type EventDraftInput,
+  createDraft, submitRequest, updateDraft, SubmissionIncompleteError, SubmissionInvalidError,
+  type EventDraftInput,
 } from '../api/event-requests';
 
 type FieldName = keyof EventDraftInput;
@@ -210,6 +211,17 @@ function showFailure(error: unknown, draftSaved: boolean) {
     }
     const missing = error.missingFields.map((field) => fieldLabels[field as FieldName] ?? field);
     formError.value = `Your draft is saved. Complete these details before submitting: ${missing.join(', ')}.`;
+    void focusFirstError();
+    return;
+  }
+  if (error instanceof SubmissionInvalidError) {
+    for (const field of error.missingFields) {
+      if (field in fieldLabels) errors[field as FieldName] = 'Complete this before submitting.';
+    }
+    for (const [field, message] of Object.entries(error.fieldErrors)) {
+      if (field in fieldLabels) errors[field as FieldName] = message;
+    }
+    formError.value = 'Your draft is saved. Fix the highlighted details, then submit again.';
     void focusFirstError();
     return;
   }

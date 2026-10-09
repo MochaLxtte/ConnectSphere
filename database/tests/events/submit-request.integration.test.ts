@@ -202,3 +202,131 @@ describe('KAN-6 submission persistence', () => {
     expect(await readState(eventRequestId)).toEqual(before);
   });
 });
+
+async function assignmentState(id: string) {
+  const result = await pool.query(
+    `SELECT coordinator_id AS "coordinatorId",
+            (SELECT count(*)::int FROM coordinator_assignments WHERE event_request_id = $1) AS "assignments"
+     FROM event_requests WHERE id = $1`,
+    [id],
+  );
+  return result.rows[0] as { coordinatorId: string | null; assignments: number };
+}
+
+const asOrganiser = () => createApp({
+  database: pool,
+  submittedRequests: {
+    pool, canViewRequest: () => true, canReviewRequest: () => false, authenticate: async () => organiser,
+  },
+});
+
+describe('KAN-59 saved drafts with blank or invalid values stay DRAFT (S1-DEF-04, KAN-6-AC2)', () => {
+  it.each([
+    ['name', 'name'], ['purpose', 'purpose'], ['venue_requirements', 'venueRequirements'],
+  ] as const)('refuses a blank %s of any whitespace kind and changes nothing', async (column, field) => {
+    for (const blank of ['', '   ', '\n\t ']) {
+      const eventRequestId = await createEvent('DRAFT', { ...completeFields, [column]: blank });
+      const before = await readState(eventRequestId);
+      await expect(submitEventRequest(dependencies, { eventRequestId, actor: organiser }))
+        .rejects.toMatchObject({ name: 'SubmissionValidationError', missingFields: [field], invalidFields: [] });
+      expect(await readState(eventRequestId)).toEqual(before);
+      expect(await assignmentState(eventRequestId)).toEqual({ coordinatorId: null, assignments: 0 });
+    }
+  });
+
+  it.each([
+    ['equal to the start', new Date('2026-10-01T09:00:00.000Z')],
+    ['before the start', new Date('2026-09-30T09:00:00.000Z')],
+  ])('refuses an end %s and changes nothing', async (_label, endsAt) => {
+    const eventRequestId = await createEvent('DRAFT', { ...completeFields, ends_at: endsAt });
+    const before = await readState(eventRequestId);
+    await expect(submitEventRequest(dependencies, { eventRequestId, actor: organiser }))
+      .rejects.toMatchObject({
+        missingFields: [], invalidFields: [{ field: 'endsAt', message: 'The end must be after the start.' }],
+      });
+    expect(await readState(eventRequestId)).toEqual(before);
+    expect(await assignmentState(eventRequestId)).toEqual({ coordinatorId: null, assignments: 0 });
+  });
+
+  it('refuses a registration window that closes before it opens, only while registration is required', async () => {
+    const window = {
+      registration_opens_at: new Date('2026-09-25T00:00:00.000Z'),
+      registration_closes_at: new Date('2026-09-20T00:00:00.000Z'),
+    };
+    const required = await createEvent('DRAFT', { ...completeFields, registration_required: true, ...window });
+    const before = await readState(required);
+    await expect(submitEventRequest(dependencies, { eventRequestId: required, actor: organiser }))
+      .rejects.toMatchObject({ invalidFields: [expect.objectContaining({ field: 'registrationClosesAt' })] });
+    expect(await readState(required)).toEqual(before);
+
+    const notRequired = await createEvent('DRAFT', { ...completeFields, registration_required: false, ...window });
+    expect((await submitEventRequest(dependencies, { eventRequestId: notRequired, actor: organiser })).status)
+      .toBe('SUBMITTED');
+  });
+
+  it('accepts a valid registration window and a blank capacity meaning no limit', async () => {
+    const eventRequestId = await createEvent('DRAFT', {
+      ...completeFields, registration_required: true,
+      registration_opens_at: new Date('2026-09-20T00:00:00.000Z'),
+      registration_closes_at: new Date('2026-09-25T00:00:00.000Z'),
+    });
+    expect((await submitEventRequest(dependencies, { eventRequestId, actor: organiser })).status).toBe('SUBMITTED');
+  });
+
+  it('still accepts an expected attendance of 0 (open question in the 9 October decision entry)', async () => {
+    const eventRequestId = await createEvent('DRAFT', { ...completeFields, expected_attendance: 0 });
+    expect((await submitEventRequest(dependencies, { eventRequestId, actor: organiser })).status).toBe('SUBMITTED');
+  });
+
+  it('reports every problem in one error and the request can be corrected and submitted afterwards', async () => {
+    const eventRequestId = await createEvent('DRAFT', {
+      ...completeFields, name: '  ', ends_at: new Date('2026-09-30T09:00:00.000Z'),
+    });
+    await expect(submitEventRequest(dependencies, { eventRequestId, actor: organiser })).rejects.toMatchObject({
+      missingFields: ['name'], invalidFields: [expect.objectContaining({ field: 'endsAt' })],
+    });
+    expect((await readState(eventRequestId)).status).toBe('DRAFT');
+
+    await pool.query('UPDATE event_requests SET name = $2, ends_at = $3 WHERE id = $1',
+      [eventRequestId, 'Corrected name', new Date('2026-10-01T17:00:00.000Z')]);
+    const submitted = await submitEventRequest(dependencies, { eventRequestId, actor: organiser });
+    expect(submitted.status).toBe('SUBMITTED');
+    expect(submitted.name).toBe('Corrected name');
+  });
+
+  it('returns 400 SUBMISSION_INCOMPLETE through HTTP for a blank name and keeps the draft', async () => {
+    const eventRequestId = await createEvent('DRAFT', { ...completeFields, name: '   ' });
+    const before = await readState(eventRequestId);
+    const response = await request(asOrganiser()).post(`/api/events/${eventRequestId}/submit`);
+    expect(response.status).toBe(400);
+    expect(response.body.error).toMatchObject({ code: 'SUBMISSION_INCOMPLETE', missingFields: ['name'] });
+    expect(response.body.error).not.toHaveProperty('fieldErrors');
+    expect(await readState(eventRequestId)).toEqual(before);
+  });
+
+  it('returns 400 SUBMISSION_INVALID with field messages through HTTP and keeps the draft', async () => {
+    const eventRequestId = await createEvent('DRAFT', {
+      ...completeFields, ends_at: new Date('2026-09-30T09:00:00.000Z'),
+    });
+    const before = await readState(eventRequestId);
+    const response = await request(asOrganiser()).post(`/api/events/${eventRequestId}/submit`);
+    expect(response.status).toBe(400);
+    expect(response.body.error).toMatchObject({
+      code: 'SUBMISSION_INVALID', missingFields: [], fieldErrors: { endsAt: 'The end must be after the start.' },
+    });
+    expect(await readState(eventRequestId)).toEqual(before);
+  });
+
+  it('does not reveal completeness to another organiser: the invalid draft is still a 404', async () => {
+    const eventRequestId = await createEvent('DRAFT', { ...completeFields, name: null });
+    const app = createApp({
+      database: pool,
+      submittedRequests: {
+        pool, canViewRequest: () => true, canReviewRequest: () => false, authenticate: async () => otherOrganiser,
+      },
+    });
+    const response = await request(app).post(`/api/events/${eventRequestId}/submit`);
+    expect(response.status).toBe(404);
+    expect(response.body.error.code).toBe('EVENT_REQUEST_NOT_FOUND');
+  });
+});
