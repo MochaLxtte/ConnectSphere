@@ -2,6 +2,19 @@
 
 Record each relevant run with its commit, scope and result. Store concise report exports alongside this document and link the corresponding tests from the [traceability matrix](../requirements/traceability.csv). The [Sprint 1 acceptance test plan](../scrum/sprint-01/sprint-backlog.md#acceptance-test-plan) provides the initial scenario and acceptance-criterion IDs.
 
+## 9 October: connected workflow test (S2-T23)
+
+**AUTO-20261009-S2T23-01 — written and type-checked; not executed.** Added at `8d7c587` on `test/S2-T23-connected-workflow`, branched from `main` (`14ad0b2`), Node 22.20.0 on Windows. This is an automated stand-in for part of the hosted S2-T23 walkthrough; it does not replace it.
+
+| Command / environment | Actual result |
+| --- | --- |
+| `npm run check` | Passed: type checks (including the new file), 371 frontend and 662 backend tests, both builds. The new test is an integration test and is not part of this command. |
+| `database/tests/workflow/sprint2-connected.integration.test.ts` (1 test) | **Not executed.** `TEST_DATABASE_URL` is unset and this machine has neither Docker nor local PostgreSQL. It was written without being run, so it may need small fixes when CI runs it first. |
+
+**What it checks, through the real Express app with cookie sessions and database role mapping:** an organiser's complete draft is created and submitted (SUBMITTED, assigned to the only coordinator); organiser and venue staff are refused venue search; the coordinator finds the venue, approves the event and requests a booking, which is saved as pending without reserving the venue, changing the event or removing the venue from search; venue staff see it in their queue and approve it; the coordinator reads the same outcome; the event is unchanged; the availability calendar shows the period and search no longer offers the venue; a second request for the same period is refused with `VENUE_BOOKING_CONFLICT` and creates nothing.
+
+**Not covered:** suitability (KAN-52), the browser UI, refresh behaviour across roles and the real Supabase login. These need the hosted S2-T23 run, which is still pending along with CI.
+
 ## 8 October: PR #27 conflict resolution
 
 **AUTO-20261008-PR27-01 — local merge verification.** Tested the merge of `origin/main` at `1ed0332` into PR #27's `feat/KAN-52-venue-suitability` at `ae54ec7`. The only conflict was this evidence document: the 6 October KAN-51 walkthrough and the 5/4 October integration and suitability records are preserved verbatim. The calendar route/history fix and its regression tests merged without code conflicts.
