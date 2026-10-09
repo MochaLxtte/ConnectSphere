@@ -15,6 +15,8 @@ import VenueSearchPage from '../features/venues/pages/VenueSearchPage.vue';
 import VenueBookingsPage from '../features/venues/pages/VenueBookingsPage.vue';
 import VenueBookingDetailPage from '../features/venues/pages/VenueBookingDetailPage.vue';
 import VenueBlocksPage from '../features/venues/pages/VenueBlocksPage.vue';
+import VenueCataloguePage from '../features/venues/pages/VenueCataloguePage.vue';
+import VenueCatalogueEditPage from '../features/venues/pages/VenueCatalogueEditPage.vue';
 import VenueSuitabilityPage from '../features/venues/pages/VenueSuitabilityPage.vue';
 
 export const router = createRouter({
@@ -40,6 +42,8 @@ export const router = createRouter({
     { path: '/venue-bookings', component: VenueBookingsPage, meta: { title: 'Venue bookings' } },
     { path: '/venue-bookings/:id', component: VenueBookingDetailPage, meta: { title: 'Venue booking' } },
     { path: '/venue-blocks', component: VenueBlocksPage, meta: { title: 'Venue blocks' } },
+    { path: '/venue-catalogue', component: VenueCataloguePage, meta: { title: 'Venue catalogue' } },
+    { path: '/venue-catalogue/:id', component: VenueCatalogueEditPage, meta: { title: 'Edit venue' } },
     { path: '/:pathMatch(.*)*', component: NotFoundPage, meta: { title: 'Page not found' } },
   ],
   scrollBehavior: () => ({ top: 0 }),

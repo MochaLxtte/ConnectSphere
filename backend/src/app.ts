@@ -17,6 +17,7 @@ import {
 import type { WorkflowRouterDependencies } from './modules/events/workflow-http.js';
 import { createVenueAvailabilityRouter } from './modules/venues/availability-router.js';
 import { createVenueBlockRouter } from './modules/venues/block-router.js';
+import { createVenueCatalogueRouter } from './modules/venues/venue-catalogue-router.js';
 import { createVenueSuitabilityRouter } from './modules/venues/suitability-router.js';
 
 export interface AppDependencies {
@@ -82,6 +83,8 @@ export function createApp({
     app.use('/api/venues', createVenueRouter(workspace));
     // KAN-55: Venue Staff manage operational-unavailability blocks per venue.
     app.use('/api/venues', createVenueBlockRouter(workspace));
+    // KAN-50: Venue Staff view and update the venue catalogue under /api/venues/catalogue.
+    app.use('/api/venues', createVenueCatalogueRouter(workspace));
   }
 
   // Queue/detail reads require verified identity and explicit visibility/decision policies.

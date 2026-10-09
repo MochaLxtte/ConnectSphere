@@ -1013,3 +1013,25 @@ The following are explicit **implementation choices awaiting team/customer confi
 **Source/date:** Irfan, 9 October 2026, while verifying the remaining Sprint 2 items. KAN-6 and KAN-59 belong to Kai Jie's story; their Jira cards were not edited.
 
 **Supersedes:** nothing. It refines the 13 September entry's six mandatory fields by treating blank text as missing and adds the two ordering rules.
+
+## 9 October 2026 — KAN-50 venue catalogue maintenance: scope and implementation choices
+
+**Question IDs:** related to Q-07/Q-08 (operating hours, suitability data) and the "Release boundaries" decision that a placeholder venue catalogue is sufficient. No new customer question is raised.
+
+**Implementation and rationale:** KAN-50 (five points, Irfan) lets Venue Staff keep the catalogue accurate. The 26 September removal deleted the earlier maintenance code, so it is rebuilt against migration 004's `venues` table without a schema change. The following are explicit **implementation choices awaiting team confirmation**, not new agreed acceptance criteria:
+
+- Scope is viewing the active catalogue, opening one venue and updating its location, maximum capacity, facilities, accessibility features (plus the wheelchair-accessible flag), supported room layouts and daily operating hours. Creating, deleting or deactivating venues and changing a venue's name or description are not in KAN-50's criteria; the Jira text says "maintain accurate information". Venues come from the placeholder/seed catalogue. Any extension is refined as a separate story.
+- Catalogue reads and writes are **Venue Staff only**. Event Coordinators keep reading venue data through KAN-12 search and KAN-52 suitability; the calendar roles of KAN-51 are unchanged. The service re-checks the role for direct callers.
+- Routes live under `/api/venues/catalogue` so they cannot be mistaken for `/availability`, `/search-venues`, `/filter-options` or `/:venueId/unavailability`.
+- Updates are partial (PATCH). An omitted field is unchanged; location and either operating-hour endpoint may be set to `null`. Capacity, facilities, accessibility features, layouts and the wheelchair flag cannot be `null`; the three lists may be empty.
+- Facility, accessibility and layout labels follow the KAN-52 rules: trimmed, deduplicated ignoring case, at most 100 characters each and 30 distinct values per list. Capacity is a whole number from 1 to 2,147,483,647 (the database check is `> 0`).
+- Operating hours are `HH:MM` in Singapore time. A null endpoint is unrestricted, as in KAN-12/KAN-52. When both are set, closing must be after opening, matching the database check.
+- Updates run in one transaction that locks the venue row. Concurrent edits to different fields both persist; concurrent edits to the same field resolve last-writer-wins. No version precondition is added because the criteria do not require one. Inactive venues are not listed, reading one by ID reports `404 VENUE_NOT_FOUND`, and updating one is refused with `409 VENUE_INACTIVE`.
+- Search and suitability read the `venues` table live, so a saved change is visible to them on the next request (KAN-50-AC13). Changing capacity or layouts does not modify existing bookings; it only affects later searches and assessments.
+- Per-venue setup and turnaround time (Week 7 customer change 1) is **not** part of this pre-change work. It will be handled through the change procedure after Sprint 2 is settled.
+
+**Scope/evidence:** KAN-50-AC1–AC14, S2-T03/S2-T04, CF-08/TC-08. Executed commands and results belong in [test evidence](../testing/test-evidence.md); this entry alone does not show acceptance.
+
+**Source/date:** Irfan, 9 October 2026, while starting KAN-50 (Jira: In Progress, subtasks KAN-68–KAN-76). A team implementation record, not a reconstructed meeting decision.
+
+**Supersedes:** the historical `venue-input.ts`/`venue-service.ts`/`VenueFormPage.vue` references in the sprint-02 backlog task S2-50-01, which describe code removed on 26 September.
