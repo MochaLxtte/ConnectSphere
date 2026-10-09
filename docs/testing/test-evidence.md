@@ -2,6 +2,21 @@
 
 Record each relevant run with its commit, scope and result. Store concise report exports alongside this document and link the corresponding tests from the [traceability matrix](../requirements/traceability.csv). The [Sprint 1 acceptance test plan](../scrum/sprint-01/sprint-backlog.md#acceptance-test-plan) provides the initial scenario and acceptance-criterion IDs.
 
+## 9 October: venue search page tests (KAN-12)
+
+**AUTO-20261009-KAN12-01 — local automated verification, browser and PostgreSQL tests not executed.** Tested at `151a4c8` on `feat/KAN-12-search-page-tests`, branched from `main` (`14ad0b2`), Node 22.20.0 on Windows. KAN-12's page, query service and PostgreSQL tests were already merged; the page had no tests of its own. No source change was needed.
+
+| Command / environment | Actual result |
+| --- | --- |
+| `npm run check` | Passed: type checks, **405 frontend** (34 new) and **662 backend tests**, both builds. |
+| `npx vitest run src/features/venues/pages/VenueSearchPage.test.ts` (frontend) | Passed: 34 tests. Results and venue details (AC8, AC9, AC12); each of date/time, attendance, location, capacity, layout, accessibility and facilities reaching the query, alone and combined (AC1–AC7, AC10); changing and clearing filters, no-match versus empty catalogue (AC11); incomplete, reversed and equal periods refused before any request (AC14); earlier results hidden and stale responses ignored (AC15); filter-list failure, 401, 403 and retry (AC16); signed-out, session-loading and five other roles never request venue data (AC13). |
+| Mutation check | Temporarily making an equal start and end acceptable and changing the opening-hours rule made 2 of the 34 tests fail; the file was restored (`git status` clean) and all 34 pass. |
+| Coverage | `VenueSearchPage.vue`: 98.1% of statements, 94.9% of branches. The only uncovered line is the sign-in link inside the error panel, which cannot be reached because a cleared session shows the sign-in notice instead. `venues.ts`: 100% of statements, 93.8% of branches. |
+| `tests/e2e/venue-search.spec.ts` (7 tests) | **Not run.** It type-checks, but no Playwright browser is installed on this machine and installing one was not requested. It covers the real server's 401 for both endpoints, narrowing, changing and clearing filters, a reversed period, signed-out and two other roles, and a 375 px screen with no sideways scrolling. |
+| `database/tests/venues/venue-search.integration.test.ts` | Not run (no TEST_DATABASE_URL, Docker or local PostgreSQL); unchanged. |
+
+**Limits:** results in the page tests and browser spec come from fixtures, so real filtering, availability exclusion and role enforcement rely on the existing backend and PostgreSQL tests. Hosted acceptance (S2-T07/T08) and CI are pending.
+
 ## 8 October: PR #27 conflict resolution
 
 **AUTO-20261008-PR27-01 — local merge verification.** Tested the merge of `origin/main` at `1ed0332` into PR #27's `feat/KAN-52-venue-suitability` at `ae54ec7`. The only conflict was this evidence document: the 6 October KAN-51 walkthrough and the 5/4 October integration and suitability records are preserved verbatim. The calendar route/history fix and its regression tests merged without code conflicts.
