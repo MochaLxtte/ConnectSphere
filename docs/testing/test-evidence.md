@@ -4,7 +4,7 @@ Record each relevant run with its commit, scope and result. Store concise report
 
 ## 9 October: booking conflict detection (KAN-54)
 
-**AUTO-20261009-KAN54-01 — local automated verification, PostgreSQL integration not executed.** Tested at `0e373e5` on `feat/KAN-54-conflict-detection-verification`, branched from `main` (`14ad0b2`), Node 22.20.0 on Windows. KAN-54's logic already existed in `booking-service.ts`; this run adds the missing unit tests and two integration cases. No source change was needed.
+**AUTO-20261009-KAN54-01 — local automated verification, including PostgreSQL integration.** Tested at `0e373e5` on `feat/KAN-54-conflict-detection-verification`, branched from `main` (`14ad0b2`), Node 22.20.0 on Windows. KAN-54's logic already existed in `booking-service.ts`; this run adds the missing unit tests and two integration cases. No source change was needed.
 
 | Command / environment | Actual result |
 | --- | --- |
@@ -12,8 +12,8 @@ Record each relevant run with its commit, scope and result. Store concise report
 | `npx vitest run backend/test/venues/booking-conflicts.test.ts` | Passed: 21 tests with a fake connection covering KAN-54-AC1–AC9 and repo-only AC10–AC11: the clash query is scoped to the one venue, counts only approved bookings and blocks, and uses half-open bounds; refusals insert or update nothing and roll back; clash data is read only after the venue lock; approval excludes its own row; rejection skips the check; settled bookings are not reassessed; database exclusion errors map to the same messages and unrelated ones pass through. |
 | Mutation check | Temporarily changing the bounds to `<=`/`>=` and removing the own-row exclusion made 2 of the 21 tests fail; the file was restored (`git status` clean) and all 21 pass. |
 | Coverage | The new file covers every conflict branch in `createVenueBooking` and `decideVenueBooking`. The remaining uncovered lines of `booking-service.ts` are the KAN-8 list and read paths, which other tests cover against PostgreSQL. |
-| `database/tests/venues/venue-bookings.integration.test.ts` (3 new cases) | **Not executed.** `TEST_DATABASE_URL` is unset and this machine has neither Docker nor local PostgreSQL. They type-check and cover an approved booking and a block at another venue (KAN-54-AC3, AC5) and a cancelled booking (KAN-54-AC1, AC4). |
-| Browser (`tests/e2e`) | Not run and no new spec; conflict messages are already covered by the booking panel and detail page tests. |
+| `npm run test:integration` against PostgreSQL 17.11 on this machine (local test database, not the shared Supabase project) | **Passed: 258 tests in 18 files**, including 3 new cases in `venue-bookings.integration.test.ts`. They cover an approved booking and a block at another venue (KAN-54-AC3, AC5) and a cancelled booking (KAN-54-AC1, AC4). |
+| `npx playwright test` (Chromium, local servers) | **71 passed.** No new browser spec; conflict messages are covered by the booking panel and detail page tests. |
 
 **Limits:** hosted acceptance (S2-T15/T16) and CI are pending. Adjacency without a turnover buffer and pending requests not reserving a venue remain team assumptions until the customer confirms them.
 
