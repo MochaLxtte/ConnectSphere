@@ -274,7 +274,7 @@ Ensure that:
 
 As an Event Coordinator or Venue Staff member, I want conflicting venue bookings to be identified so that the same venue is not inappropriately booked for overlapping events.
 
-**Owner / proposed reviewer:** To agree / To agree.
+**Owner / proposed reviewer:** To agree / To agree. On 9 October Irfan added the missing unit tests and two integration cases to the existing logic on `feat/KAN-54-conflict-detection-verification` (local branch, no change to the story card on Jira).
 
 **Acceptance criteria (planning version)**
 
@@ -289,6 +289,8 @@ Ensure that:
 - **KAN-54-AC7:** A venue booking that would create an inappropriate conflict cannot be confirmed.
 - **KAN-54-AC8:** The relevant user is informed when a booking cannot proceed because of a detected conflict.
 - **KAN-54-AC9:** Conflict detection uses the latest confirmed booking and venue-unavailability information.
+- **KAN-54-AC10 (repo-only, 9 October; not yet on Jira):** Only approved bookings and recorded blocks reserve a venue. Pending, rejected and cancelled bookings never cause a conflict, and a booking that is already decided is not assessed again.
+- **KAN-54-AC11 (repo-only, 9 October; not yet on Jira):** When the database itself refuses an overlap at the moment of approval, the user receives the same conflict or unavailable message as the application-level check, and an unrelated database failure is not disguised as a conflict.
 
 **Example scenario**
 
