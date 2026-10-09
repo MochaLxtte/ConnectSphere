@@ -4,12 +4,12 @@ Record each relevant run with its commit, scope and result. Store concise report
 
 ## 9 October: connected workflow test (S2-T23)
 
-**AUTO-20261009-S2T23-01 — written and type-checked; not executed.** Added at `8d7c587` on `test/S2-T23-connected-workflow`, branched from `main` (`14ad0b2`), Node 22.20.0 on Windows. This is an automated stand-in for part of the hosted S2-T23 walkthrough; it does not replace it.
+**AUTO-20261009-S2T23-01 — executed on a local PostgreSQL 17; passed after one fix.** Added at `8d7c587` on `test/S2-T23-connected-workflow`, branched from `main` (`14ad0b2`), Node 22.20.0 on Windows. This is an automated stand-in for part of the hosted S2-T23 walkthrough; it does not replace it.
 
 | Command / environment | Actual result |
 | --- | --- |
 | `npm run check` | Passed: type checks (including the new file), 371 frontend and 662 backend tests, both builds. The new test is an integration test and is not part of this command. |
-| `database/tests/workflow/sprint2-connected.integration.test.ts` (1 test) | **Not executed.** `TEST_DATABASE_URL` is unset and this machine has neither Docker nor local PostgreSQL. It was written without being run, so it may need small fixes when CI runs it first. |
+| `database/tests/workflow/sprint2-connected.integration.test.ts` (1 test) | **Passed** with `npm run test:integration` (**256 tests in 19 files**) on a local PostgreSQL 17 test database. The first run failed: submission returned `NO_AVAILABLE_COORDINATOR` (409) because the test's coordinator was not marked available. This was a test setup error, not a product defect; the test now sets `coordinator_available`. The full browser suite also passed (71 tests). |
 
 **What it checks, through the real Express app with cookie sessions and database role mapping:** an organiser's complete draft is created and submitted (SUBMITTED, assigned to the only coordinator); organiser and venue staff are refused venue search; the coordinator finds the venue, approves the event and requests a booking, which is saved as pending without reserving the venue, changing the event or removing the venue from search; venue staff see it in their queue and approve it; the coordinator reads the same outcome; the event is unchanged; the availability calendar shows the period and search no longer offers the venue; a second request for the same period is refused with `VENUE_BOOKING_CONFLICT` and creates nothing.
 
