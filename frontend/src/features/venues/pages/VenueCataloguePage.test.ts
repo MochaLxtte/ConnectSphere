@@ -99,6 +99,38 @@ describe('KAN-50 venue catalogue list page (AC1, AC14)', () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
+  it('ignores a response that arrives after the page has been left', async () => {
+    let settle: (response: Response) => void = () => undefined;
+    vi.stubGlobal('fetch', vi.fn(() => new Promise<Response>((resolve) => { settle = resolve; })));
+    const view = renderPage();
+    view.unmount();
+    settle(json({ items: [venue()] }));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(screen.queryByText('Harbour Hall')).not.toBeInTheDocument();
+  });
+
+  it('ignores a failure that arrives after the page has been left', async () => {
+    let fail: (reason: Error) => void = () => undefined;
+    vi.stubGlobal('fetch', vi.fn(() => new Promise<Response>((_resolve, reject) => { fail = reject; })));
+    const view = renderPage();
+    view.unmount();
+    fail(new Error('network down'));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('falls back to a generic message when something other than an Error is thrown', async () => {
+    vi.resetModules();
+    vi.doMock('../api/venue-catalogue', () => ({ fetchCatalogueVenues: vi.fn().mockRejectedValue('unexpected') }));
+    const { authSession: fresh } = await import('../../auth/session.js');
+    (fresh as { user: SignedInUser | null }).user = user();
+    const { default: Page } = await import('./VenueCataloguePage.vue');
+    const router = createRouter({ history: createMemoryHistory(), routes: [{ path: '/:p(.*)*', component: Page }] });
+    render(Page, { global: { plugins: [router] } });
+    expect(await screen.findByRole('alert')).toHaveTextContent('The venue catalogue could not be loaded. Please try again.');
+    vi.doUnmock('../api/venue-catalogue');
+  });
+
   it('signs the user out locally when the server reports an expired session', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(
       json({ error: { code: 'AUTHENTICATION_REQUIRED', message: 'Sign in to maintain the venue catalogue.' } }, 401),

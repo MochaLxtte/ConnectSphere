@@ -176,6 +176,47 @@ describe('KAN-50 venue edit page: validation and failures', () => {
     expect(patchCalls(fetchMock)).toHaveLength(0);
   });
 
+  it('explains an over-long location, accessibility entry and layout entry next to each field', async () => {
+    stubApi();
+    await renderPage();
+    await screen.findByRole('heading', { name: 'Harbour Hall' });
+    await fireEvent.update(field('Location'), 'a'.repeat(201));
+    await fireEvent.update(field('Accessibility features'), 'b'.repeat(101));
+    await fireEvent.update(field('Supported room layouts'), 'c'.repeat(101));
+    expect(await screen.findByText('Location must be at most 200 characters.')).toBeInTheDocument();
+    expect(screen.getAllByText('Each entry must be at most 100 characters.')).toHaveLength(2);
+    expect(saveButton()).toBeDisabled();
+  });
+
+  it('shows no description line when the venue has none', async () => {
+    stubApi({ get: json({ venue: { ...saved, description: null } }) });
+    await renderPage();
+    await screen.findByRole('heading', { name: 'Harbour Hall' });
+    expect(screen.queryByText('Main hall')).not.toBeInTheDocument();
+  });
+
+  it('falls back to a generic message when a save fails with something other than an Error', async () => {
+    vi.resetModules();
+    vi.doMock('../api/venue-catalogue', () => ({
+      fetchCatalogueVenue: vi.fn().mockResolvedValue(saved),
+      updateCatalogueVenue: vi.fn().mockRejectedValue('unexpected'),
+    }));
+    const { authSession: fresh } = await import('../../auth/session.js');
+    (fresh as { user: SignedInUser | null }).user = user();
+    const { default: Page } = await import('./VenueCatalogueEditPage.vue');
+    const router = createRouter({
+      history: createMemoryHistory(), routes: [{ path: '/venue-catalogue/:id', component: Page }],
+    });
+    await router.push('/venue-catalogue/venue-a');
+    await router.isReady();
+    render(Page, { global: { plugins: [router] } });
+    await screen.findByRole('heading', { name: 'Harbour Hall' });
+    await fireEvent.update(field('Location'), 'Level 4');
+    await fireEvent.click(saveButton());
+    expect(await screen.findByRole('alert')).toHaveTextContent('The changes could not be saved.');
+    vi.doUnmock('../api/venue-catalogue');
+  });
+
   it('refuses a closing time that is not after the opening time', async () => {
     const fetchMock = stubApi();
     await renderPage();
@@ -235,6 +276,44 @@ describe('KAN-50 venue edit page: validation and failures', () => {
     expect(await screen.findByRole('heading', { name: 'Harbour Hall' })).toBeInTheDocument();
   });
 
+  it('signs the user out locally when loading finds the session has expired', async () => {
+    stubApi({ get: apiError('AUTHENTICATION_REQUIRED', 'Sign in to maintain the venue catalogue.', 401) });
+    await renderPage();
+    await waitFor(() => expect(session.user).toBeNull());
+  });
+
+  it('ignores a response or a failure that arrives after the page has been left', async () => {
+    let settle: (response: Response) => void = () => undefined;
+    vi.stubGlobal('fetch', vi.fn(() => new Promise<Response>((resolve) => { settle = resolve; })));
+    const first = await renderPage();
+    first.unmount();
+    settle(json({ venue: saved }));
+    let fail: (reason: Error) => void = () => undefined;
+    vi.stubGlobal('fetch', vi.fn(() => new Promise<Response>((_resolve, reject) => { fail = reject; })));
+    const second = await renderPage();
+    second.unmount();
+    fail(new Error('network down'));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Harbour Hall' })).not.toBeInTheDocument();
+  });
+
+  it('falls back to a generic message when something other than an Error is thrown', async () => {
+    vi.resetModules();
+    vi.doMock('../api/venue-catalogue', () => ({ fetchCatalogueVenue: vi.fn().mockRejectedValue('unexpected') }));
+    const { authSession: fresh } = await import('../../auth/session.js');
+    (fresh as { user: SignedInUser | null }).user = user();
+    const { default: Page } = await import('./VenueCatalogueEditPage.vue');
+    const router = createRouter({
+      history: createMemoryHistory(), routes: [{ path: '/venue-catalogue/:id', component: Page }],
+    });
+    await router.push('/venue-catalogue/venue-a');
+    await router.isReady();
+    render(Page, { global: { plugins: [router] } });
+    expect(await screen.findByRole('alert')).toHaveTextContent('The venue could not be loaded. Please try again.');
+    vi.doUnmock('../api/venue-catalogue');
+  });
+
   it('signs the user out locally when saving finds the session has expired', async () => {
     stubApi({ patch: () => apiError('AUTHENTICATION_REQUIRED', 'Sign in to maintain the venue catalogue.', 401) });
     await renderPage();
@@ -255,6 +334,14 @@ describe('KAN-50 venue edit page: access (AC14)', () => {
       expect(fetchMock).not.toHaveBeenCalled();
     },
   );
+
+  it('waits for the session to resolve before deciding what to show or request', async () => {
+    session.loading = true;
+    const fetchMock = stubApi();
+    await renderPage();
+    expect(screen.getByRole('status')).toHaveTextContent('Checking your session');
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
 
   it('asks a signed-out visitor to sign in', async () => {
     session.user = null;
