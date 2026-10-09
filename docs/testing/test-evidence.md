@@ -14,6 +14,20 @@ Record each relevant run with its commit, scope and result. Store concise report
 | `database/tests/venues/venue-catalogue.integration.test.ts` (new) | **Passed** with `npm run test:integration` (**288 tests in 19 files**, 33 more than `main`) on a local PostgreSQL 17 test database (not the shared Supabase project). It covers KAN-50-AC1–AC21 against a real schema: active-only ordered listing, persistence and reload of every attribute, several layouts kept on the right venue, partial-update and null semantics, label normalisation, role refusal with the row unchanged, missing/inactive venue, invalid-input rejection (including a single hour change that would reverse the stored pair), concurrent edits to different and to the same field, propagation to venue search filters, search filter options and the suitability context, and existing bookings left unchanged. |
 | `tests/e2e/venue-catalogue.spec.ts` (new) | **Passed: 17 of 17**; the full `npx playwright test` run passed **88 tests** (Chromium, local servers, local database migrated with `npm run db:migrate`). Covers real-server 401 for list and PATCH, sidebar link per role, direct-URL refusal for non-staff and signed-out users, view → edit → save → reload persistence, only-changed-fields payload, client validation, server rejection and the missing-venue message. |
 
+**MAN-20261009-KAN50-01 — interactive check against the shared development database (Venue Staff).** Irfan signed in as the existing Venue Staff test account (password typed by Irfan) with the app running from `feat/KAN-50-maintain-venue-catalog`; Claude drove the page. Test venue: Rooftop Terrace; its original values were recorded first and restored afterwards.
+
+| Step | Observed result |
+| --- | --- |
+| Open the catalogue | All 3 venues listed with location, capacity, layouts and facilities. |
+| Open Rooftop Terrace | Form showed the saved values (location, capacity, facilities, accessibility, wheelchair, layouts, hours). |
+| Capacity 0, then save | Refused: "Enter a whole number from 1 to 2147483647."; stored capacity stayed 120. |
+| Opens 23:00, closes 22:00, then save | Refused: "Closing time must be after opening time."; stored hours stayed 10:00–22:00. |
+| Change location, capacity (125), add a facility, an accessibility feature and a layout, tick wheelchair, opens 09:00; save | "Venue information saved."; reading the venue back showed every change, with name, description and closing time untouched. The catalogue list showed the new location, capacity, layouts and facilities; the other two venues were unchanged. |
+| Restore every original value the same way | Reading back matched the originals exactly (only `updatedAt` differs). |
+| Unauthenticated list and edit calls to the API | Both returned HTTP 401. |
+
+**Not covered yet:** refusal for non-staff roles through the UI, and propagation of an edit into the coordinator's search filters and suitability view (covered by the PostgreSQL integration tests only). Acceptance still belongs to the Product Owner.
+
 **Defect found by these tests and fixed before review:** Vue's `v-model` on a number input yields a number once the text parses, so the first version of the form crashed (`capacity.trim is not a function`) as soon as a capacity was typed. The helpers now accept a string or a number (commit `95534dc`), with unit and page tests for both forms.
 
 **Coverage gap explained:** three statements and three branches in `VenueCatalogueEditPage.vue` (lines 32, 68 and 87) are TypeScript null-guards on `venue.value`. The form renders only after a venue has loaded, so they cannot be reached from the page; they are kept for type narrowing and are not covered by contrived tests.
