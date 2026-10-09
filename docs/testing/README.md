@@ -140,3 +140,28 @@ Run `npm.cmd run dev`, sign in as the assigned coordinator, open the event from 
 For API checks, use the authenticated same-origin session: GET `/api/events/<event-id>/venue-suitability`, then POST to the same route with every explicit field and the returned version; see [the request body/errors](../architecture/api-contract.md#venue-suitability-kan-52-cf-11). Unconfirmed/unresolved input must never manufacture Suitable. Keep cookies and credentials out of evidence.
 
 Automated suites: `backend/test/venues/suitability-input.test.ts`, `suitability-rules.test.ts`, `suitability-router.test.ts`, `database/tests/venues/venue-suitability.integration.test.ts`, `frontend/src/features/venues/pages/VenueSuitabilityPage.test.ts` and `tests/e2e/venue-suitability.spec.ts`. [AUTO-20261004-KAN52-01](test-evidence.md#4-october-venue-suitability) records the passing local runs. Hosted checks, peer review, published CI and [remaining policy acceptance](../requirements/assumptions-and-questions.md#4-october-2026--kan-52-venue-suitability) remain separate from implementation and do not award Done points automatically.
+
+## KAN-50 hosted verification
+
+Use S2-T03/S2-T04 and KAN-50-AC1–AC21. These are instructions, not recorded passes. Record commit, date, tester, environment, synthetic IDs, inputs, expected/actual results and defects in [test evidence](test-evidence.md). No migration is required. Local automated tests do not establish hosted login, authorization or customer acceptance.
+
+Prepare two or three synthetic active venues with known values and one inactive one. Provision mapped accounts (a Supabase user plus an `app_users` row with `supabase_user_id`; accounts are provisioned manually, Q-01) for **two Venue Staff members**, an Event Coordinator, an Event Organiser and a Technical Support Staff member. Use an isolated project or coordinate dashboard fixture changes with Arvin and restore the original values afterwards; a Git branch does not isolate the shared database.
+
+Run `npm.cmd run dev` (with `NODE_EXTRA_CA_CERTS` set if a TLS-intercepting antivirus is installed), sign in as Venue Staff and choose **Venue catalogue** in the sidebar.
+
+| Check / criterion link | Expected result |
+| --- | --- |
+| View — AC1/AC2/AC12; S2-T03 | Every active venue is listed by name with location, capacity, layouts and facilities; the inactive venue is absent. **Edit** opens one venue showing exactly the values stored in the database. |
+| Update each attribute — AC3–AC9/AC11/AC12; S2-T03 | Change location, capacity, facilities, accessibility features, the wheelchair flag, two or more layouts and both operating hours; save. The success message appears, the form shows the saved values, and a full reload and the list page show them too. Only the chosen venue changed; its name and description did not. |
+| Layouts stay with the venue — AC10/AC11; S2-T03 | Give venue A two layouts and venue B different ones; save both. Each venue keeps only its own after a reload. |
+| Search and suitability use the change — AC13/AC20; S2-T03 | As the coordinator, search venues by the new capacity, layout and facility: the edited venue now appears (and stops appearing when capacity is lowered). Open a suitability check for an event and see the new values. An existing approved booking is unchanged. |
+| Validation — AC15–AC17; S2-T04 robustness | Capacity 0, a negative or decimal capacity, closing at or before opening, an entry over 100 characters, more than 30 distinct entries and a blank form are each refused with a clear message and nothing is saved. Entries that differ only by case or surrounding spaces are stored once. |
+| Single hour change — AC16; S2-T04 robustness | With stored hours 08:00–22:00, setting only opening to 23:00 or only closing to 07:00 is refused; clearing one endpoint leaves the other and means no restriction at that end. |
+| Concurrent edits — AC18; S2-T04 robustness | Open the same venue in two Venue Staff sessions. Change capacity in one and facilities in the other, saving each. Reload: both changes are present. Changing the same field in both keeps the last save. |
+| Access — AC14; S2-T04 | Coordinator, organiser and technical support see no Venue catalogue link; opening `/venue-catalogue` or `/venue-catalogue/<id>` directly shows the staff-only message and requests no venue data. `GET`/`PATCH /api/venues/catalogue…` return 403 for them and 401 when signed out. A `PATCH` containing `name` returns 400 and the stored name is unchanged. |
+| Inactive or missing venue — AC19; S2-T04 robustness | Deactivate a synthetic venue in the dashboard: it leaves the list, its direct page shows "not in the active catalogue", and a `PATCH` returns 409 `VENUE_INACTIVE`. Restore it afterwards. |
+| Save failure — AC21; S2-T04 robustness | Interrupt the connection or expire the session while saving: a clear message appears, the entered values stay, and nothing is reported as saved. |
+
+For API checks, use the authenticated same-origin session; see [the routes, body rules and errors](../architecture/api-contract.md#venue-catalogue-maintenance-kan-50-cf-08). Keep cookies and tokens out of evidence.
+
+Automated suites: `backend/test/venues/venue-catalogue-input.test.ts`, `venue-catalogue-service.test.ts`, `venue-catalogue-router.test.ts`, `database/tests/venues/venue-catalogue.integration.test.ts`, the four files under `frontend/src/features/venues/` named `catalogue-form`, `api/venue-catalogue`, `VenueCataloguePage` and `VenueCatalogueEditPage`, and `tests/e2e/venue-catalogue.spec.ts`. [AUTO-20261009-KAN50-01](test-evidence.md#9-october-venue-catalogue-maintenance-kan-50) records which have been executed.
