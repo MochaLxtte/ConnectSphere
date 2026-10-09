@@ -26,7 +26,17 @@ Record each relevant run with its commit, scope and result. Store concise report
 | Restore every original value the same way | Reading back matched the originals exactly (only `updatedAt` differs). |
 | Unauthenticated list and edit calls to the API | Both returned HTTP 401. |
 
-**Not covered yet:** refusal for non-staff roles through the UI, and propagation of an edit into the coordinator's search filters and suitability view (covered by the PostgreSQL integration tests only). Acceptance still belongs to the Product Owner.
+**MAN-20261009-KAN50-02 — follow-up with the organiser and coordinator accounts (same session).** Irfan signed in to each account; Claude drove the page.
+
+| Step | Observed result |
+| --- | --- |
+| As the organiser: sidebar, direct URLs and API (KAN-50-AC14) | No Venue catalogue link. Opening the list and edit URLs showed "The venue catalogue is for venue staff." with no form fields. The list, read and edit API calls (including an attempted capacity change to 1) returned HTTP 403, and the stored capacity stayed 120. |
+| As Venue Staff: temporary edit of Rooftop Terrace (capacity 130, extra facility and layout) | Saved. |
+| As the coordinator: search filter lists, capacity, facility and layout filters, the search page card (KAN-50-AC, search integration) | The filter lists offered the new facility and layout; the capacity filter 129 returned the venue at 130; the facility and layout filters returned only that venue; the card showed the new values. |
+| As the coordinator: suitability context for the event "test 01" | Rooftop Terrace appeared with capacity 130 and the new facility and layout. |
+| As Venue Staff: restore | Reading the venue back matched the original values exactly (only the last-updated time differs). |
+
+**Result:** the Venue Staff-only rule and the propagation of catalogue edits to search and suitability were confirmed by hand. Acceptance still belongs to the Product Owner; hosted CI and peer review remain pending.
 
 **Defect found by these tests and fixed before review:** Vue's `v-model` on a number input yields a number once the text parses, so the first version of the form crashed (`capacity.trim is not a function`) as soon as a capacity was typed. The helpers now accept a string or a number (commit `95534dc`), with unit and page tests for both forms.
 
