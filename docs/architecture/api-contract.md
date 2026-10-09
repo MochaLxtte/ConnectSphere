@@ -524,3 +524,31 @@ Tests live in `backend/test/venues/suitability-input.test.ts`, `suitability-rule
 ## Operational venue blocks (KAN-55, CF-09/CF-14)
 
 Current main provides Venue Staff-only `GET`/`POST /api/venues/:venueId/unavailability` and `DELETE /api/venues/:venueId/unavailability/:blockId`. Creation records an ordered time interval and a mandatory reason against the correct active venue; it refuses overlap with an existing approved booking. The shared `venue_unavailability` records feed the calendar, search, KAN-52 suitability and booking approval. See the [module contract](../../backend/src/modules/venues/README.md#venue-unavailability-blocks--kan-55) and [dated implementation record](../requirements/assumptions-and-questions.md#4-october-2026--kan-55-block-venue-for-operational-unavailability). Block removal is additional implementation behavior recorded there; inclusion in main does not itself establish hosted acceptance. KAN-53 creation is now integrated on this branch; its submission-time checks read the same operational blocks.
+
+## Venue catalogue maintenance (KAN-50, CF-08)
+
+**Status, 9 October 2026:** the backend is implemented on `feat/KAN-50-maintain-venue-catalog` in `backend/src/modules/venues/` (`venue-catalogue-input.ts`, `venue-catalogue-service.ts`, `venue-catalogue-router.ts`) and mounted in `createApp` through the same `workspace` dependencies as the other venue routes. It reads and writes migration 004's `venues` table only; there is no schema change. Local unit and HTTP-boundary tests pass; PostgreSQL integration, browser and hosted checks are recorded separately in [test evidence](../testing/test-evidence.md) once run. Scope choices are in the [9 October decision](../requirements/assumptions-and-questions.md#9-october-2026--kan-50-venue-catalogue-maintenance-scope-and-implementation-choices).
+
+| Method / route | Roles | Success | Errors |
+| --- | --- | --- | --- |
+| `GET /api/venues/catalogue` | VS | `200` `{ items }`: every active venue, by name | `401 AUTHENTICATION_REQUIRED`; `403 ACTION_FORBIDDEN` |
+| `GET /api/venues/catalogue/:venueId` | VS | `200` `{ venue }` | `400 INVALID_VENUE_ID`; `401`; `403`; `404 VENUE_NOT_FOUND` (missing or inactive) |
+| `PATCH /api/venues/catalogue/:venueId` | VS | `200` `{ venue }`: the saved venue | `400 INVALID_VENUE_ID`; `400 INVALID_VENUE_CATALOGUE_INPUT`; `401`; `403`; `404 VENUE_NOT_FOUND`; `409 VENUE_INACTIVE` |
+
+Only Venue Staff may read or change the catalogue. Event Coordinators keep reading venue data through `/api/venues/search-venues`, `/api/venues/filter-options` and venue suitability; Organisers, Attendees, Technical Support Staff and signed-out callers are refused before any venue data is read. Identity comes from the verified session, never from the body or headers. Responses use `Cache-Control: no-store`.
+
+A `venue` has the same shape as a venue search result: `id`, `name`, `description`, `location`, `capacity`, `layouts`, `facilities`, `accessibilityFeatures`, `wheelchairAccessible`, `opensAt`, `closesAt` (daily `HH:MM` in Singapore time; `null` leaves that end unrestricted) and `updatedAt`.
+
+**Update body.** Every field is optional, an omitted field is unchanged, and at least one must be present. Any other key (including `name`, `description`, `isActive` and `id`) is refused.
+
+| Field | Rule |
+| --- | --- |
+| `location` | Text or `null`; trimmed, at most 200 characters; blank becomes `null` |
+| `capacity` | Whole number from 1 to 2,147,483,647; not `null` |
+| `facilities`, `accessibilityFeatures`, `layouts` | Array of text labels, possibly empty; trimmed, deduplicated ignoring case (first spelling kept), at most 100 characters each and 30 distinct values; not `null` |
+| `wheelchairAccessible` | Boolean; not `null` |
+| `opensAt`, `closesAt` | `HH:MM` from `00:00` to `23:59`, or `null`; when both are set (in the body, or against the stored value when only one is sent) closing must be after opening |
+
+The update locks the venue row and runs in one transaction, so concurrent edits are serialised, a field that was not sent is never touched, and layouts stay on the venue they were saved for. Concurrent edits to different fields both persist; the same field is last-writer-wins. Search and suitability read the table live, so a saved change is visible to them on the next request. Changing capacity or layouts does not alter existing bookings. Creating, deleting or deactivating a venue and per-venue setup/turnaround time are not part of this story.
+
+**Verification:** `backend/test/venues/venue-catalogue-input.test.ts`, `venue-catalogue-service.test.ts` and `venue-catalogue-router.test.ts`. PostgreSQL integration and browser coverage (S2-T03/S2-T04) are added under `database/tests/venues/` and `tests/e2e/` and recorded in test evidence when executed.
