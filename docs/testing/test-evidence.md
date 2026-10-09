@@ -13,6 +13,23 @@ Record each relevant run with its commit, scope and result. Store concise report
 
 **What it checks, through the real Express app with cookie sessions and database role mapping:** an organiser's complete draft is created and submitted (SUBMITTED, assigned to the only coordinator); organiser and venue staff are refused venue search; the coordinator finds the venue, approves the event and requests a booking, which is saved as pending without reserving the venue, changing the event or removing the venue from search; venue staff see it in their queue and approve it; the coordinator reads the same outcome; the event is unchanged; the availability calendar shows the period and search no longer offers the venue; a second request for the same period is refused with `VENUE_BOOKING_CONFLICT` and creates nothing.
 
+**MAN-20261009-S2T23-01 — interactive walkthrough against the shared development database.** Irfan signed in to the organiser, coordinator and Venue Staff test accounts in turn (passwords typed by Irfan); Claude drove the pages and sessions. Event "S2-T23 manual walkthrough", 12 Jan 2031 10:00–12:00 Singapore time, expected attendance 60.
+
+| Step | Observed result |
+| --- | --- |
+| Organiser fills the form and submits (KAN-6-AC1, KAN-29-AC1) | The request became SUBMITTED and was assigned automatically to `event_coordinator@connectsphere.com`, not approved. |
+| Coordinator approves the event | Approved (HTTP 201). |
+| Coordinator searches for 12 Jan 2031 10:00–12:00 for 60 people (KAN-12-AC8, AC9) | Harbour Hall and Rooftop Terrace; the 40-seat Orchid Seminar Room was excluded. |
+| Coordinator opens the suitability data (KAN-52-AC1) | Loaded with attendance 60 and all three venues. The assessment itself was not run. |
+| Coordinator requests Rooftop Terrace (KAN-53-AC5, AC8, AC9) | Saved as PENDING; the event stayed APPROVED; the calendar showed nothing booked. |
+| Venue Staff approve the booking on the page (KAN-8-AC3, AC7) | "Venue booking approved."; stored APPROVED with the reason and decision time. |
+| Calendar after approval (KAN-51-AC2) | Rooftop Terrace booked 12 Jan 2031 10:00–12:00. |
+| Coordinator reads the outcome (KAN-8-AC9) | APPROVED with the staff reason; event still APPROVED; the calendar names the event. |
+| Coordinator searches the same period again | Only Harbour Hall; Rooftop Terrace returned for the following two hours. |
+| Second request for the same venue and period (KAN-54) | Refused, HTTP 409 `VENUE_BOOKING_CONFLICT`. |
+
+**Data left in the shared database:** the event request "S2-T23 manual walkthrough" (APPROVED) and **one approved booking** at Rooftop Terrace on 12 Jan 2031 10:00–12:00; the app cannot cancel it. **Not covered:** running the suitability assessment, and a refresh-by-refresh check in the page rather than through the signed-in session. Acceptance still belongs to the Product Owner.
+
 **Not covered:** suitability (KAN-52), the browser UI, refresh behaviour across roles and the real Supabase login. These need the hosted S2-T23 run, which is still pending along with CI.
 
 ## 8 October: PR #27 conflict resolution
