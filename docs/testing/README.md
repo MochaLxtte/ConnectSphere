@@ -141,6 +141,27 @@ For API checks, use the authenticated same-origin session: GET `/api/events/<eve
 
 Automated suites: `backend/test/venues/suitability-input.test.ts`, `suitability-rules.test.ts`, `suitability-router.test.ts`, `database/tests/venues/venue-suitability.integration.test.ts`, `frontend/src/features/venues/pages/VenueSuitabilityPage.test.ts` and `tests/e2e/venue-suitability.spec.ts`. [AUTO-20261004-KAN52-01](test-evidence.md#4-october-venue-suitability) records the passing local runs. Hosted checks, peer review, published CI and [remaining policy acceptance](../requirements/assumptions-and-questions.md#4-october-2026--kan-52-venue-suitability) remain separate from implementation and do not award Done points automatically.
 
+## KAN-59 hosted verification
+
+Use S2-T22, KAN-6-AC2/AC3 and KAN-6-AC5–AC7. These are instructions, not recorded passes. Record commit, date, tester, environment, synthetic IDs, inputs, expected/actual results and defects in [test evidence](test-evidence.md). No migration is required. Local automated tests do not establish hosted login, authorization or customer acceptance.
+
+Provision a mapped Event Organiser, a second organiser, and at least one opted-in coordinator (`coordinator_available = true`) so a valid submission can be allocated. Use an isolated project or coordinate dashboard fixture changes with Arvin and restore them afterwards.
+
+Run `npm.cmd run dev`, sign in as the organiser and use **Submit for review** from `/events/new` and from a reopened saved draft (`/events/:id/edit`). For direct API checks, call `POST /api/events/<draft-id>/submit` from the signed-in browser session (for example with `fetch` from the developer console on the same origin); see [the error table](../architecture/api-contract.md#kan-29-automatic-assignment-on-submission).
+
+| Check / criterion link | Expected result |
+| --- | --- |
+| Missing mandatory fields — AC2; S2-T22 | A draft without name, purpose, start, end, attendance or venue requirements is refused with the missing fields listed (`400 SUBMISSION_INCOMPLETE`). The draft is saved, stays `DRAFT`, has no coordinator, and the form marks each field. |
+| Blank text — AC5; S2-T22 robustness | Through the API, set `name`, `purpose` or `venueRequirements` to `""`, spaces, or a tab/newline and submit: each is treated as missing and refused. In the form, blank text is stored as empty and is also refused. |
+| End not after start — AC6; S2-T22 | Set the end equal to, then before, the start (API; the form blocks it earlier). Submission is refused with `400 SUBMISSION_INVALID` and an `endsAt` message; the draft is unchanged. |
+| Registration window — AC7; S2-T22 | With registration required, set the close equal to or before the open: refused with a `registrationClosesAt` message. With registration not required, the same dates are ignored. A blank capacity submits (no limit). |
+| Several problems at once — AC2/AC5/AC6 | A blank name plus a bad end reports both together. After correcting both, the same request submits and shows `SUBMITTED` with an assigned coordinator after reload. |
+| Optional needs — S2-T22 | Description, accessibility needs and equipment requirements may be left blank or set to "None" / "Not Required"; submission is not blocked. |
+| Access — AC3; S2-T22 | A second organiser gets 404 for the first organiser's draft whether or not it is complete; a coordinator gets 403; signed-out callers get 401. None of them can learn from the response whether the draft is complete. |
+| Open question | An expected attendance of 0 currently submits. Record the Product Owner's or customer's decision. |
+
+Automated suites: `backend/test/events/submit-input.test.ts`, `submit-request.test.ts`, `submitted-requests-router.test.ts`, `database/tests/events/submit-request.integration.test.ts`, `frontend/src/features/events/api/event-requests.test.ts` and `components/EventRequestForm.test.ts`. [AUTO-20261009-KAN59-01](test-evidence.md#9-october-submission-validation-kan-59--s1-def-04) records which have been executed.
+
 ## KAN-50 hosted verification
 
 Use S2-T03/S2-T04 and KAN-50-AC1–AC21. These are instructions, not recorded passes. Record commit, date, tester, environment, synthetic IDs, inputs, expected/actual results and defects in [test evidence](test-evidence.md). No migration is required. Local automated tests do not establish hosted login, authorization or customer acceptance.

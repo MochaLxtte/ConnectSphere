@@ -44,6 +44,15 @@ const selectColumns = `
   created_at AS "createdAt", updated_at AS "updatedAt"
 `;
 
+/** Registration times are read only to validate the submission; they are not part of the response. */
+type LockedEventRow = EventRow & {
+  registrationOpensAt: Date | string | null;
+  registrationClosesAt: Date | string | null;
+};
+
+const lockColumns = `${selectColumns},
+  registration_opens_at AS "registrationOpensAt", registration_closes_at AS "registrationClosesAt"`;
+
 function toEventRecord(row: EventRow): EventRecord {
   return {
     ...row,
@@ -73,8 +82,8 @@ export async function submitEventRequest(
     await client.query("SELECT set_config('app.actor_id', $1, true)", [actor.id]);
 
     // Competing submissions or a concurrent edit must wait here, then see the latest committed state.
-    const requests = await client.query<EventRow>(`
-      SELECT ${selectColumns} FROM event_requests WHERE id = $1 FOR UPDATE
+    const requests = await client.query<LockedEventRow>(`
+      SELECT ${lockColumns} FROM event_requests WHERE id = $1 FOR UPDATE
     `, [eventRequestId]);
     const found = requests.rows[0];
     if (!found) throw new SubmitRequestNotFoundError();
@@ -85,7 +94,11 @@ export async function submitEventRequest(
       ownerId: found.organiserId,
       status: found.status,
     });
-    assertReadyForSubmission(toEventRecord(found));
+    assertReadyForSubmission({
+      ...toEventRecord(found),
+      registrationOpensAt: found.registrationOpensAt === null ? null : iso(found.registrationOpensAt),
+      registrationClosesAt: found.registrationClosesAt === null ? null : iso(found.registrationClosesAt),
+    });
 
     const coordinatorId = await assignInitialCoordinator(client, { id: found.id, coordinatorId: found.coordinatorId });
 
