@@ -101,6 +101,36 @@ Record each relevant run with its commit, scope and result. Store concise report
 
 **Limits:** results in the page tests and browser spec come from fixtures, so real filtering, availability exclusion and role enforcement rely on the existing backend and PostgreSQL tests. Hosted acceptance (S2-T07/T08) and CI are pending.
 
+## 9 October: connected workflow test (S2-T23)
+
+**AUTO-20261009-S2T23-01 — executed on a local PostgreSQL 17; passed after one fix.** Added at `8d7c587` on `test/S2-T23-connected-workflow`, branched from `main` (`14ad0b2`), Node 22.20.0 on Windows. This is an automated stand-in for part of the hosted S2-T23 walkthrough; it does not replace it.
+
+| Command / environment | Actual result |
+| --- | --- |
+| `npm run check` | Passed: type checks (including the new file), 371 frontend and 662 backend tests, both builds. The new test is an integration test and is not part of this command. |
+| `database/tests/workflow/sprint2-connected.integration.test.ts` (1 test) | **Passed** with `npm run test:integration` (**256 tests in 19 files**) on a local PostgreSQL 17 test database. The first run failed: submission returned `NO_AVAILABLE_COORDINATOR` (409) because the test's coordinator was not marked available. This was a test setup error, not a product defect; the test now sets `coordinator_available`. The full browser suite also passed (71 tests). |
+
+**What it checks, through the real Express app with cookie sessions and database role mapping:** an organiser's complete draft is created and submitted (SUBMITTED, assigned to the only coordinator); organiser and venue staff are refused venue search; the coordinator finds the venue, approves the event and requests a booking, which is saved as pending without reserving the venue, changing the event or removing the venue from search; venue staff see it in their queue and approve it; the coordinator reads the same outcome; the event is unchanged; the availability calendar shows the period and search no longer offers the venue; a second request for the same period is refused with `VENUE_BOOKING_CONFLICT` and creates nothing.
+
+**MAN-20261009-S2T23-01 — interactive walkthrough against the shared development database.** Irfan signed in to the organiser, coordinator and Venue Staff test accounts in turn (passwords typed by Irfan); Claude drove the pages and sessions. Event "S2-T23 manual walkthrough", 12 Jan 2031 10:00–12:00 Singapore time, expected attendance 60.
+
+| Step | Observed result |
+| --- | --- |
+| Organiser fills the form and submits (KAN-6-AC1, KAN-29-AC1) | The request became SUBMITTED and was assigned automatically to `event_coordinator@connectsphere.com`, not approved. |
+| Coordinator approves the event | Approved (HTTP 201). |
+| Coordinator searches for 12 Jan 2031 10:00–12:00 for 60 people (KAN-12-AC8, AC9) | Harbour Hall and Rooftop Terrace; the 40-seat Orchid Seminar Room was excluded. |
+| Coordinator opens the suitability data (KAN-52-AC1) | Loaded with attendance 60 and all three venues. The assessment itself was not run. |
+| Coordinator requests Rooftop Terrace (KAN-53-AC5, AC8, AC9) | Saved as PENDING; the event stayed APPROVED; the calendar showed nothing booked. |
+| Venue Staff approve the booking on the page (KAN-8-AC3, AC7) | "Venue booking approved."; stored APPROVED with the reason and decision time. |
+| Calendar after approval (KAN-51-AC2) | Rooftop Terrace booked 12 Jan 2031 10:00–12:00. |
+| Coordinator reads the outcome (KAN-8-AC9) | APPROVED with the staff reason; event still APPROVED; the calendar names the event. |
+| Coordinator searches the same period again | Only Harbour Hall; Rooftop Terrace returned for the following two hours. |
+| Second request for the same venue and period (KAN-54) | Refused, HTTP 409 `VENUE_BOOKING_CONFLICT`. |
+
+**Data left in the shared database:** the event request "S2-T23 manual walkthrough" (APPROVED) and **one approved booking** at Rooftop Terrace on 12 Jan 2031 10:00–12:00; the app cannot cancel it. **Not covered:** running the suitability assessment, and a refresh-by-refresh check in the page rather than through the signed-in session. Acceptance still belongs to the Product Owner.
+
+**Not covered:** suitability (KAN-52), the browser UI, refresh behaviour across roles and the real Supabase login. These need the hosted S2-T23 run, which is still pending along with CI.
+
 ## 8 October: PR #27 conflict resolution
 
 **AUTO-20261008-PR27-01 — local merge verification.** Tested the merge of `origin/main` at `1ed0332` into PR #27's `feat/KAN-52-venue-suitability` at `ae54ec7`. The only conflict was this evidence document: the 6 October KAN-51 walkthrough and the 5/4 October integration and suitability records are preserved verbatim. The calendar route/history fix and its regression tests merged without code conflicts.
