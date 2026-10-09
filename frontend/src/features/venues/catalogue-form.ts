@@ -3,7 +3,8 @@ import type { CatalogueVenue, CatalogueVenueUpdate } from './api/venue-catalogue
 /** Text-box form state for one venue; the backend remains the authority on every rule. */
 export interface CatalogueFormValues {
   location: string;
-  capacity: string;
+  /** A number input's v-model yields a number once the text parses, so both forms occur. */
+  capacity: string | number;
   facilities: string; // one label per line
   accessibilityFeatures: string;
   wheelchairAccessible: boolean;
@@ -53,9 +54,11 @@ function labelError(text: string, noun: string): string | undefined {
   return undefined;
 }
 
+const capacityText = (values: CatalogueFormValues) => String(values.capacity ?? '').trim();
+
 export function validateForm(values: CatalogueFormValues): CatalogueFormErrors {
   const errors: CatalogueFormErrors = {};
-  const capacity = values.capacity.trim();
+  const capacity = capacityText(values);
   if (!/^\d+$/.test(capacity) || Number(capacity) < 1 || Number(capacity) > MAX_CAPACITY) {
     errors.capacity = `Enter a whole number from 1 to ${MAX_CAPACITY}.`;
   }
@@ -85,7 +88,7 @@ export function buildUpdate(venue: CatalogueVenue, values: CatalogueFormValues):
   const update: CatalogueVenueUpdate = {};
   const location = values.location.trim() || null;
   if (location !== venue.location) update.location = location;
-  const capacity = Number(values.capacity.trim());
+  const capacity = Number(capacityText(values));
   if (capacity !== venue.capacity) update.capacity = capacity;
   const facilities = parseLabelLines(values.facilities);
   if (!sameList(facilities, venue.facilities)) update.facilities = facilities;
