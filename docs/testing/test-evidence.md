@@ -4,7 +4,7 @@ Record each relevant run with its commit, scope and result. Store concise report
 
 ## 9 October: submission validation (KAN-59 / S1-DEF-04)
 
-**AUTO-20261009-KAN59-01 — local automated verification, PostgreSQL integration not executed.** Tested at `a8b2983` on `fix/KAN-59-submission-validation`, branched from `main` (`14ad0b2`), with Node 22.20.0 (the repository targets Node 24; `EBADENGINE` warnings only) on Windows. Verified locally before any push.
+**AUTO-20261009-KAN59-01 — local automated verification, including PostgreSQL integration run later the same day.** Tested at `a8b2983` on `fix/KAN-59-submission-validation`, branched from `main` (`14ad0b2`), with Node 22.20.0 (the repository targets Node 24; `EBADENGINE` warnings only) on Windows. Verified locally before any push.
 
 | Command / environment | Actual result |
 | --- | --- |
@@ -15,10 +15,10 @@ Record each relevant run with its commit, scope and result. Store concise report
 | `npx vitest run test/events/submitted-requests-router.test.ts` (backend) | Passed: 60 tests (2 new): `SUBMISSION_INVALID` with `fieldErrors`, and missing plus invalid together; the missing-only response keeps its original shape. |
 | `npx vitest run src/features/events/api/event-requests.test.ts src/features/events/components/EventRequestForm.test.ts` (frontend) | Passed: 23 tests (4 new in the API client, 1 new in the form): typed error parsing, messages beside the inputs, focus on the first error, and fixing then resubmitting without creating a second draft. |
 | Coverage of the changed files | Backend `submit-input.ts`: 100% of statements and branches. `submit-request.ts`: every added line covered; the file's remaining uncovered lines (60, 111, 120) are older defensive branches not touched here. Frontend: no uncovered statement or branch on any line added to `event-requests.ts` or `EventRequestForm.vue`. |
-| `database/tests/events/submit-request.integration.test.ts` (12 new cases) | **Not executed.** `TEST_DATABASE_URL` is unset and this machine has neither Docker nor a local PostgreSQL; the repository forbids cleanup-based tests on the shared Supabase project. The cases type-check and cover real-schema behaviour: blank text of every whitespace kind, end equal to and before the start, reversed registration window only while required, a valid window, attendance 0, all problems in one error then correct and resubmit, and HTTP `SUBMISSION_INCOMPLETE` and `SUBMISSION_INVALID` with the draft unchanged. |
-| Browser (`tests/e2e`) | **Not run and no new spec.** The form's browser behaviour is covered by the component tests above. |
+| `database/tests/events/submit-request.integration.test.ts` (12 new cases) | **Passed** with `npm run test:integration` (**267 tests in 18 files**) on a local PostgreSQL 17 test database (not the shared Supabase project). The cases cover real-schema behaviour: blank text of every whitespace kind, end equal to and before the start, reversed registration window only while required, a valid window, attendance 0, all problems in one error then correct and resubmit, and HTTP `SUBMISSION_INCOMPLETE` and `SUBMISSION_INVALID` with the draft unchanged. |
+| Browser (`tests/e2e`) | `npx playwright test` (Chromium, local servers): **71 passed**, no new spec. The form's browser behaviour is covered by the component tests above. |
 
-**What this does not establish:** a real-PostgreSQL pass, CI, a hosted walkthrough (S2-T22), peer review, or acceptance. The Jira KAN-6 and KAN-59 cards were not edited.
+**What this does not establish:** CI, a hosted walkthrough (S2-T22), peer review, or acceptance. The Jira KAN-6 and KAN-59 cards were not edited.
 
 **Open question:** an expected attendance of 0 is still accepted at submission. See the [9 October decision](../requirements/assumptions-and-questions.md#9-october-2026--kan-59-submission-validation-rules-s1-def-04).
 
