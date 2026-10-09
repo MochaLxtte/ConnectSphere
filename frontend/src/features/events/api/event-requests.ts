@@ -57,7 +57,21 @@ export class SubmissionIncompleteError extends ApiError {
   }
 }
 
-interface ErrorBody { error: { code: string; message: string; missingFields?: unknown } }
+/** 400 SUBMISSION_INVALID (KAN-59): the draft was kept, but these values are not acceptable. */
+export class SubmissionInvalidError extends ApiError {
+  constructor(
+    message: string,
+    public readonly missingFields: string[],
+    public readonly fieldErrors: Record<string, string>,
+  ) {
+    super(message, 400, 'SUBMISSION_INVALID');
+    this.name = 'SubmissionInvalidError';
+  }
+}
+
+interface ErrorBody {
+  error: { code: string; message: string; missingFields?: unknown; fieldErrors?: unknown };
+}
 
 function isErrorBody(value: unknown): value is ErrorBody {
   if (typeof value !== 'object' || value === null || !('error' in value)) return false;
@@ -98,10 +112,24 @@ async function sendJson<T>(
 
   if (!response.ok) {
     if (isErrorBody(data)) {
-      const { code, message, missingFields } = data.error;
+      const { code, message, missingFields, fieldErrors } = data.error;
       if (code === 'SUBMISSION_INCOMPLETE' && Array.isArray(missingFields)) {
         throw new SubmissionIncompleteError(
           message, missingFields.filter((field): field is string => typeof field === 'string'),
+        );
+      }
+      if (code === 'SUBMISSION_INVALID') {
+        const messages: Record<string, string> = {};
+        if (typeof fieldErrors === 'object' && fieldErrors !== null) {
+          for (const [field, value] of Object.entries(fieldErrors)) {
+            if (typeof value === 'string') messages[field] = value;
+          }
+        }
+        throw new SubmissionInvalidError(
+          message,
+          Array.isArray(missingFields)
+            ? missingFields.filter((field): field is string => typeof field === 'string') : [],
+          messages,
         );
       }
       throw new ApiError(message, response.status, code);
