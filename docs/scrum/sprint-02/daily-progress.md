@@ -152,3 +152,7 @@ The mandatory-field validation defect carried from Sprint 1 (Jira subtask KAN-59
 - **Criteria:** KAN-6-AC5–AC7 were added in the repository [sprint backlog](sprint-backlog.md) only; the Jira KAN-6 card needs its owner or the Product Owner to mirror them.
 - **Verification:** `npm run check` passed at `a8b2983`; evidence is in [AUTO-20261009-KAN59-01](../../testing/test-evidence.md#9-october-submission-validation-kan-59--s1-def-04).
 - **Not done:** the 12 PostgreSQL integration cases passed later the same day on a local PostgreSQL 17 (267 tests), but there is no hosted walkthrough (S2-T22), no peer review, CI run or PR. The 43-point baseline is unchanged and no points are claimed.
+
+### 9 October development update — Irfan (KAN-54 verification)
+
+KAN-54 (Detect Venue Booking Conflicts) was already implemented in `booking-service.ts` with PostgreSQL tests but had no unit tests and no case for another venue or a cancelled booking. On `feat/KAN-54-conflict-detection-verification` (local only, from `main` at `14ad0b2`) I added 21 unit tests and 3 integration cases, two repo-only criteria (KAN-54-AC10, AC11) and linked everything in CF-14, TC-14 and S2-T15/T16. No defect was found, so no source changed. Evidence: [AUTO-20261009-KAN54-01](../../testing/test-evidence.md#9-october-booking-conflict-detection-kan-54), register row S2-E25. Not done: PostgreSQL run, hosted check, push, Jira update (card belongs to Ernest).

@@ -35,6 +35,36 @@ Record each relevant run with its commit, scope and result. Store concise report
 
 **Remaining:** the first CI run of the integration cases (record its run ID here); the [hosted check](README.md#kan-59-hosted-verification); team confirmation of the validation rules; peer review. No Jira transition and no change to the **43-point** baseline is claimed; KAN-59 sits inside KAN-6's carried points.
 
+## 9 October: booking conflict detection (KAN-54)
+
+**AUTO-20261009-KAN54-01 — local automated verification, including PostgreSQL integration.** Tested at `0e373e5` on `feat/KAN-54-conflict-detection-verification`, branched from `main` (`14ad0b2`), Node 22.20.0 on Windows. KAN-54's logic already existed in `booking-service.ts`; this run adds the missing unit tests and two integration cases. No source change was needed.
+
+| Command / environment | Actual result |
+| --- | --- |
+| `npm run check` | Passed: type checks, **371 frontend** and **683 backend tests** (21 new), both builds. |
+| `npx vitest run backend/test/venues/booking-conflicts.test.ts` | Passed: 21 tests with a fake connection covering KAN-54-AC1–AC9 and repo-only AC10–AC11: the clash query is scoped to the one venue, counts only approved bookings and blocks, and uses half-open bounds; refusals insert or update nothing and roll back; clash data is read only after the venue lock; approval excludes its own row; rejection skips the check; settled bookings are not reassessed; database exclusion errors map to the same messages and unrelated ones pass through. |
+| Mutation check | Temporarily changing the bounds to `<=`/`>=` and removing the own-row exclusion made 2 of the 21 tests fail; the file was restored (`git status` clean) and all 21 pass. |
+| Coverage | The new file covers every conflict branch in `createVenueBooking` and `decideVenueBooking`. The remaining uncovered lines of `booking-service.ts` are the KAN-8 list and read paths, which other tests cover against PostgreSQL. |
+| `npm run test:integration` against PostgreSQL 17.11 on this machine (local test database, not the shared Supabase project) | **Passed: 258 tests in 18 files**, including 3 new cases in `venue-bookings.integration.test.ts`. They cover an approved booking and a block at another venue (KAN-54-AC3, AC5) and a cancelled booking (KAN-54-AC1, AC4). |
+| `npx playwright test` (Chromium, local servers) | **71 passed.** No new browser spec; conflict messages are covered by the booking panel and detail page tests. |
+
+**MAN-20261009-KAN54-01 — interactive check against the shared development database.** Irfan signed in to the coordinator and Venue Staff test accounts (passwords typed by Irfan); Claude drove the page and the signed-in sessions. The shared database had no approved bookings or blocks, so the test created them at dates in January 2031 on the event "test 01" (already approved). Cleanup is listed at the end.
+
+| Step | Observed result |
+| --- | --- |
+| Coordinator requests Orchid Seminar Room, 5 Jan 2031 10:00–12:00 (A), then an overlapping 11:00–13:00 (B) | Both saved as pending; pending requests do not reserve the venue (KAN-54-AC10). |
+| Venue Staff approve A | Approved. |
+| Venue Staff approve the overlapping B through the page (KAN-54-AC2, AC7, AC8) | Refused with "The venue already has an approved booking during this period. Review the current booking status before trying again."; B stayed pending; then rejected. |
+| Coordinator requests the same venue for an exact overlap, a partial overlap and a period inside A (AC1, AC2, AC6) | All three refused with 409 `VENUE_BOOKING_CONFLICT`; nothing created. The coordinator's booking panel showed "The venue already has an approved booking during this period." (AC8). |
+| Coordinator requests Harbour Hall for the same hours as A (AC3) | Accepted as pending. |
+| Coordinator requests Orchid 12:00–14:00 and 08:00–10:00, directly after and before A (AC4) | Both accepted as pending; no buffer is required. |
+| Venue Staff block Harbour Hall 6 Jan 2031 10:00–12:00; coordinator requests an overlapping period (AC5, AC7, AC8) | Refused with 409 `VENUE_UNAVAILABLE` ("The venue is blocked during this period."); a request directly after the block was accepted. |
+| Coordinator search for the A period, the block period and a later period (AC6, AC9) | Orchid was absent during A, Harbour absent during the block, all venues present later; results followed the latest data. |
+
+**Cleanup and what remains:** the four accepted pending requests were rejected and the block was removed. **One approved booking (A) remains**: Orchid Seminar Room, 5 Jan 2031 10:00–12:00 Singapore time, notes "KAN-54 manual test A (far-future)"; the app has no way to cancel it. Rejected rows remain for B and the four cleanup requests. Two pending bookings from other event requests were already in the queue and were not touched. Acceptance still belongs to the Product Owner.
+
+**Limits:** hosted acceptance (S2-T15/T16) and CI are pending. Adjacency without a turnover buffer and pending requests not reserving a venue remain team assumptions until the customer confirms them.
+
 ## 8 October: PR #27 conflict resolution
 
 **AUTO-20261008-PR27-01 — local merge verification.** Tested the merge of `origin/main` at `1ed0332` into PR #27's `feat/KAN-52-venue-suitability` at `ae54ec7`. The only conflict was this evidence document: the 6 October KAN-51 walkthrough and the 5/4 October integration and suitability records are preserved verbatim. The calendar route/history fix and its regression tests merged without code conflicts.
