@@ -345,6 +345,8 @@ Client navigation is not access control; every page relies on the API responses 
 | `/reviews/:id` | Coordinator review with the planning panels | Linked from the queue |
 | `/reviews/:id/venue-suitability` | KAN-52 event-specific suitability and requirement interpretation | Linked from the assigned coordinator's review; role and relationship checked by the API |
 | `/venue-blocks` | KAN-55 operational block creation, list and removal | VS after session resolution |
+| `/venue-catalogue` | KAN-50 venue catalogue list | VS after session resolution |
+| `/venue-catalogue/:id` | KAN-50 view and edit one venue; only changed fields are saved | VS after session resolution; others see a staff-only message and no venue data is requested |
 | `/venues` | KAN-12 venue search and combined filters | EC after session resolution |
 | `/venue-bookings` | KAN-8 staff pending queue or coordinator outcomes; optional `?eventRequestId=<id>` | VS or EC after session resolution |
 | `/venue-bookings/:id` | KAN-8 request detail and saved decision; writes only for staff with a pending booking | Linked from the booking list; role checked on direct navigation |
