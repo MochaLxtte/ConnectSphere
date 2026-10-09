@@ -8,8 +8,50 @@
   and KAN-8 booking review and decisions, described below.
 - `block-input.ts` / `block-service.ts` / `block-router.ts`: KAN-55 venue-unavailability
   blocks, described below.
+- `venue-catalogue-input.ts` / `venue-catalogue-service.ts` / `venue-catalogue-router.ts`:
+  KAN-50 Venue Staff catalogue maintenance, described below.
 - `suitability-input.ts` / `suitability-rules.ts` / `suitability-service.ts` /
   `suitability-router.ts`: KAN-52 read-only event-specific assessment, described below.
+
+## Venue catalogue maintenance — KAN-50
+
+`venue-catalogue-router.ts` is mounted at `/api/venues` and is Venue Staff only end to end;
+the service re-checks the role for direct callers. Event Coordinators keep reading venue data
+through KAN-12 search and KAN-52 suitability.
+
+| Endpoint | Access and result |
+| --- | --- |
+| `GET /api/venues/catalogue` | Venue Staff only. Returns `{ items }`: every active venue, by name. |
+| `GET /api/venues/catalogue/:venueId` | Venue Staff only. Returns `{ venue }`; a missing or inactive venue is `404 VENUE_NOT_FOUND`. |
+| `PATCH /api/venues/catalogue/:venueId` | Venue Staff only. Updates the supplied fields and returns the saved `{ venue }`. |
+
+### Rules
+
+- Editable fields are `location`, `capacity`, `facilities`, `accessibilityFeatures`,
+  `wheelchairAccessible`, `layouts`, `opensAt` and `closesAt`. Every field is optional, an
+  omitted field is unchanged, at least one is required, and any other key (name, description,
+  active flag, identifiers) is refused with `400 INVALID_VENUE_CATALOGUE_INPUT`.
+- Labels are trimmed and deduplicated ignoring case (at most 100 characters, 30 distinct
+  values per list); capacity is a whole number of at least 1; hours are `HH:MM` Singapore
+  time with `null` meaning unrestricted. A single hour change is checked against the stored
+  value, so closing can never be at or before opening.
+- The update locks the venue row and runs in one transaction. Edits to different fields made
+  at the same time both persist; the same field is last-writer-wins. An inactive venue is
+  refused with `409 VENUE_INACTIVE`.
+- Only `venues` columns are written (migration 004, no new migration). Search, filter options
+  and the suitability context read those columns live, so a saved change is visible on the
+  next request. Existing bookings are not altered. Creating, deleting or deactivating venues
+  and per-venue setup/turnaround time are outside this story.
+
+### Verification
+
+- `backend/test/venues/venue-catalogue-input.test.ts`, `venue-catalogue-service.test.ts` and
+  `venue-catalogue-router.test.ts`: input rules, transaction and role behaviour, HTTP mapping.
+- `database/tests/venues/venue-catalogue.integration.test.ts`: real PostgreSQL persistence,
+  concurrent edits and propagation to search and suitability.
+- `frontend/src/features/venues/` (`catalogue-form.test.ts`, `api/venue-catalogue.test.ts`,
+  `pages/VenueCataloguePage.test.ts`, `pages/VenueCatalogueEditPage.test.ts`) and
+  `tests/e2e/venue-catalogue.spec.ts`.
 
 ## Venue-unavailability blocks — KAN-55
 
