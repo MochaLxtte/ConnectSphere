@@ -14,6 +14,8 @@ beforeAll(async () => {
   fixture = await createWorkflowFixture();
   organiser = await fixture.createUser('EVENT_ORGANISER');
   coordinator = await fixture.createUser('EVENT_COORDINATOR');
+  // Automatic assignment only considers coordinators who are marked available.
+  await fixture.pool.query('UPDATE app_users SET coordinator_available = true WHERE id = $1', [coordinator.id]);
   staff = await fixture.createUser('VENUE_STAFF');
 });
 afterAll(async () => { await fixture?.destroy(); });
