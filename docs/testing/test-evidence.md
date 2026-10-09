@@ -4,7 +4,7 @@ Record each relevant run with its commit, scope and result. Store concise report
 
 ## 9 October: venue search page tests (KAN-12)
 
-**AUTO-20261009-KAN12-01 — local automated verification, browser and PostgreSQL tests not executed.** Tested at `151a4c8` on `feat/KAN-12-search-page-tests`, branched from `main` (`14ad0b2`), Node 22.20.0 on Windows. KAN-12's page, query service and PostgreSQL tests were already merged; the page had no tests of its own. No source change was needed.
+**AUTO-20261009-KAN12-01 — local automated verification, including the browser spec and PostgreSQL integration.** Tested at `151a4c8` on `feat/KAN-12-search-page-tests`, branched from `main` (`14ad0b2`), Node 22.20.0 on Windows. KAN-12's page, query service and PostgreSQL tests were already merged; the page had no tests of its own. No source change was needed.
 
 | Command / environment | Actual result |
 | --- | --- |
@@ -12,8 +12,8 @@ Record each relevant run with its commit, scope and result. Store concise report
 | `npx vitest run src/features/venues/pages/VenueSearchPage.test.ts` (frontend) | Passed: 34 tests. Results and venue details (AC8, AC9, AC12); each of date/time, attendance, location, capacity, layout, accessibility and facilities reaching the query, alone and combined (AC1–AC7, AC10); changing and clearing filters, no-match versus empty catalogue (AC11); incomplete, reversed and equal periods refused before any request (AC14); earlier results hidden and stale responses ignored (AC15); filter-list failure, 401, 403 and retry (AC16); signed-out, session-loading and four other roles never request venue data (AC13). |
 | Mutation check | Temporarily making an equal start and end acceptable and changing the opening-hours rule made 2 of the 34 tests fail; the file was restored (`git status` clean) and all 34 pass. |
 | Coverage | `VenueSearchPage.vue`: 98.1% of statements, 94.9% of branches. The only uncovered line is the sign-in link inside the error panel, which cannot be reached because a cleared session shows the sign-in notice instead. `venues.ts`: 100% of statements, 93.8% of branches. |
-| `tests/e2e/venue-search.spec.ts` (7 tests) | **Not run.** It type-checks, but no Playwright browser is installed on this machine and installing one was not requested. It covers the real server's 401 for both endpoints, narrowing, changing and clearing filters, a reversed period, signed-out and two other roles, and a 375 px screen with no sideways scrolling. |
-| `database/tests/venues/venue-search.integration.test.ts` | Not run (no TEST_DATABASE_URL, Docker or local PostgreSQL); unchanged. |
+| `tests/e2e/venue-search.spec.ts` (7 tests) | **Passed: 7 of 7** with `npx playwright test tests/e2e/venue-search.spec.ts` (Chromium, local servers). The first run had 1 failure from an ambiguous "Sign in" locator in the test (the page has two such links); it was scoped to the page content and the spec then passed. The full browser suite passed (78 tests) on a migrated local PostgreSQL 17. It covers the real server's 401 for both endpoints, narrowing, changing and clearing filters, a reversed period, signed-out and two other roles, and a 375 px screen with no sideways scrolling. |
+| `database/tests/venues/venue-search.integration.test.ts` | Passed with the rest of `npm run test:integration` (**255 tests in 18 files**) on a local PostgreSQL 17 test database; unchanged. |
 
 **Limits:** results in the page tests and browser spec come from fixtures, so real filtering, availability exclusion and role enforcement rely on the existing backend and PostgreSQL tests. Hosted acceptance (S2-T07/T08) and CI are pending.
 
