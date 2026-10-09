@@ -229,6 +229,46 @@ describe('CF-02/CF-03 event request form', () => {
     expect(sentBody(fetchMock, 2)).toEqual({ purpose: 'Hiring' });
   });
 
+  it('KAN-59 shows the server\'s per-field messages for invalid values, keeps the draft and lets the user fix and resubmit', async () => {
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce(jsonResponse(saved({ name: 'Career fair' }), 201))
+      .mockResolvedValueOnce(jsonResponse({
+        error: {
+          code: 'SUBMISSION_INVALID', message: 'Invalid.', missingFields: ['purpose', 'mystery'],
+          fieldErrors: { endsAt: 'The end must be after the start.', unknownField: 'ignored' },
+        },
+      }, 400))
+      .mockResolvedValueOnce(jsonResponse(saved({ name: 'Career fair', purpose: 'Hiring' })))
+      .mockResolvedValueOnce(jsonResponse(saved({ name: 'Career fair' }, 'SUBMITTED')));
+    vi.stubGlobal('fetch', fetchMock);
+    const { emitted } = renderForm();
+    await fireEvent.update(screen.getByLabelText(/^Event name/), 'Career fair');
+
+    await fireEvent.click(submitButton());
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Your draft is saved. Fix the highlighted details, then submit again.',
+    );
+    const ends = screen.getByLabelText(/^Ends/);
+    expect(ends).toHaveAttribute('aria-invalid', 'true');
+    expect(ends).toHaveAccessibleDescription(/The end must be after the start\./);
+    const purpose = screen.getByLabelText(/^Purpose/);
+    expect(purpose).toHaveAttribute('aria-invalid', 'true');
+    expect(purpose).toHaveAccessibleDescription(/Complete this before submitting\./);
+    expect(screen.getByLabelText(/^Event name/)).not.toHaveAttribute('aria-invalid');
+    await waitFor(() => expect(purpose).toHaveFocus());
+    expect(emitted().submitted).toBeUndefined();
+
+    // The draft exists, so the retry patches it rather than creating a second one.
+    await fireEvent.update(purpose, 'Hiring');
+    await fireEvent.update(ends, '2026-10-01T17:00');
+    expect(ends).not.toHaveAttribute('aria-invalid');
+    await fireEvent.click(submitButton());
+    await waitFor(() => expect(emitted().submitted).toEqual([['draft-1']]));
+    expect(fetchMock.mock.calls[2]?.[0]).toBe('/api/events/draft-1');
+    expect(fetchMock.mock.calls.filter((call) => (call[1] as RequestInit).method === 'POST')).toHaveLength(3);
+  });
+
   it('prefills a saved draft in Singapore time and submits it without an unnecessary save', async () => {
     const fetchMock = vi.fn().mockResolvedValue(jsonResponse(saved({}, 'SUBMITTED')));
     vi.stubGlobal('fetch', fetchMock);
