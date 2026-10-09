@@ -65,6 +65,42 @@ Record each relevant run with its commit, scope and result. Store concise report
 
 **Limits:** hosted acceptance (S2-T15/T16) and CI are pending. Adjacency without a turnover buffer and pending requests not reserving a venue remain team assumptions until the customer confirms them.
 
+## 9 October: venue search page tests (KAN-12)
+
+**AUTO-20261009-KAN12-01 — local automated verification, including the browser spec and PostgreSQL integration.** Tested at `151a4c8` on `feat/KAN-12-search-page-tests`, branched from `main` (`14ad0b2`), Node 22.20.0 on Windows. KAN-12's page, query service and PostgreSQL tests were already merged; the page had no tests of its own. No source change was needed.
+
+| Command / environment | Actual result |
+| --- | --- |
+| `npm run check` | Passed: type checks, **405 frontend** (34 new) and **662 backend tests**, both builds. |
+| `npx vitest run src/features/venues/pages/VenueSearchPage.test.ts` (frontend) | Passed: 34 tests. Results and venue details (AC8, AC9, AC12); each of date/time, attendance, location, capacity, layout, accessibility and facilities reaching the query, alone and combined (AC1–AC7, AC10); changing and clearing filters, no-match versus empty catalogue (AC11); incomplete, reversed and equal periods refused before any request (AC14); earlier results hidden and stale responses ignored (AC15); filter-list failure, 401, 403 and retry (AC16); signed-out, session-loading and four other roles never request venue data (AC13). |
+| Mutation check | Temporarily making an equal start and end acceptable and changing the opening-hours rule made 2 of the 34 tests fail; the file was restored (`git status` clean) and all 34 pass. |
+| Coverage | `VenueSearchPage.vue`: 98.1% of statements, 94.9% of branches. The only uncovered line is the sign-in link inside the error panel, which cannot be reached because a cleared session shows the sign-in notice instead. `venues.ts`: 100% of statements, 93.8% of branches. |
+| `tests/e2e/venue-search.spec.ts` (7 tests) | **Passed: 7 of 7** with `npx playwright test tests/e2e/venue-search.spec.ts` (Chromium, local servers). The first run had 1 failure from an ambiguous "Sign in" locator in the test (the page has two such links); it was scoped to the page content and the spec then passed. The full browser suite passed (78 tests) on a migrated local PostgreSQL 17. It covers the real server's 401 for both endpoints, narrowing, changing and clearing filters, a reversed period, signed-out and two other roles, and a 375 px screen with no sideways scrolling. |
+| `database/tests/venues/venue-search.integration.test.ts` | Passed with the rest of `npm run test:integration` (**255 tests in 18 files**) on a local PostgreSQL 17 test database; unchanged. |
+
+**MAN-20261009-KAN12-01 — interactive check against the shared development database (read-only).** Irfan signed in to the coordinator and organiser test accounts (passwords typed by Irfan); Claude drove the search page. Nothing was written. Catalogue: Harbour Hall (capacity 300), Orchid Seminar Room (40), Rooftop Terrace (120); the KAN-54 test booking at Orchid on 5 Jan 2031 10:00–12:00 existed.
+
+| Step | Observed result |
+| --- | --- |
+| Open the page as the coordinator (KAN-12-AC8, AC12) | 3 venues, each named with capacity and details from the catalogue. |
+| Minimum capacity 150 (AC4) | Harbour Hall only. |
+| Expected attendance 100 (AC2) | Harbour Hall and Rooftop Terrace. |
+| Location "Annex" (AC3) | Rooftop Terrace only. |
+| Layout BOARDROOM (AC6) | Orchid Seminar Room only. |
+| Wheelchair accessible (AC5) | Harbour Hall and Orchid Seminar Room. |
+| Accessibility feature HEARING_LOOP alone, then HEARING_LOOP, STEP_FREE_ACCESS and ACCESSIBLE_TOILET together (AC5) | Harbour Hall only in both cases. |
+| Facility STAGE (AC7) | Harbour Hall only. |
+| Attendance 100 with layout THEATRE (AC9, AC10) | Harbour Hall only. |
+| Event period overlapping the approved booking, directly after it, and a free day (AC1, AC10) | Orchid absent during the booking; all 3 venues directly after it and on the free day. |
+| End before start; only a start entered (AC14) | "The end time must be after the start time." and "Enter both a start and an end time, or leave both empty."; the Search button was disabled for the first. |
+| Capacity 5000 (AC11) | "0 venues found" and "No venue matches these filters". |
+| Clear filters (AC11) | All fields emptied and all 3 venues returned. |
+| As the organiser (AC13) | No Search Venues link; the page said "This page is for event coordinators." with no form; the search and filter-options calls returned HTTP 403. |
+
+**Not covered by hand:** AC15 (stale responses) and AC16 (filter-list failure), which need a slow or failing network; the page tests cover them. Acceptance still belongs to the Product Owner.
+
+**Limits:** results in the page tests and browser spec come from fixtures, so real filtering, availability exclusion and role enforcement rely on the existing backend and PostgreSQL tests. Hosted acceptance (S2-T07/T08) and CI are pending.
+
 ## 8 October: PR #27 conflict resolution
 
 **AUTO-20261008-PR27-01 — local merge verification.** Tested the merge of `origin/main` at `1ed0332` into PR #27's `feat/KAN-52-venue-suitability` at `ae54ec7`. The only conflict was this evidence document: the 6 October KAN-51 walkthrough and the 5/4 October integration and suitability records are preserved verbatim. The calendar route/history fix and its regression tests merged without code conflicts.
