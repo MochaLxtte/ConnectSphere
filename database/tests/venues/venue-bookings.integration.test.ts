@@ -570,3 +570,32 @@ describe('KAN-8 runtime cookie authentication and database role mapping', () => 
     expect((await outsider.get('/api/venue-bookings').query({ eventRequestId: created.eventRequestId })).body.items).toEqual([]);
   });
 });
+
+describe('KAN-54 conflict detection scope against PostgreSQL', () => {
+  it('does not treat an approved booking at another venue as a conflict (KAN-54-AC3)', async () => {
+    const elsewhere = await booking();
+    await decide(elsewhere.id, 'APPROVED');
+    const target = await submissionTarget();
+    expect(target.venueId).not.toBe(elsewhere.venueId);
+    const created = await submit(target.eventRequestId, coordinator, { venueId: target.venueId });
+    expect(created.status).toBe('PENDING');
+    await expect(decide(created.id, 'APPROVED')).resolves.toMatchObject({ status: 'APPROVED' });
+  });
+
+  it('does not treat an operational block at another venue as a conflict (KAN-54-AC3, AC5)', async () => {
+    const other = await booking();
+    await fixture.pool.query(`INSERT INTO venue_unavailability(venue_id,starts_at,ends_at,reason)
+      VALUES($1,$2,$3,'Maintenance')`, [other.venueId, startsAt, endsAt]);
+    const target = await submissionTarget();
+    const created = await submit(target.eventRequestId, coordinator, { venueId: target.venueId });
+    await expect(decide(created.id, 'APPROVED')).resolves.toMatchObject({ status: 'APPROVED' });
+  });
+
+  it('ignores a cancelled booking when assessing the same venue and period (KAN-54-AC1, AC4)', async () => {
+    const cancelled = await booking();
+    await fixture.pool.query("UPDATE venue_bookings SET status='CANCELLED' WHERE id=$1", [cancelled.id]);
+    const target = await submissionTarget(cancelled.venueId);
+    const created = await submit(target.eventRequestId, coordinator, { venueId: cancelled.venueId });
+    await expect(decide(created.id, 'APPROVED')).resolves.toMatchObject({ status: 'APPROVED' });
+  });
+});

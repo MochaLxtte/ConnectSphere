@@ -60,7 +60,8 @@ Submission locks the event, then coordinates with other automatic and manual all
 | --- | --- |
 | `200` | Existing flat `EventRecord` response, now with `status: "SUBMITTED"` and the selected non-null `coordinatorId`. |
 | `400 INVALID_EVENT_REQUEST_ID` | The route ID is not a UUID. |
-| `400 SUBMISSION_INCOMPLETE` | Required submission data is missing/invalid; the error also supplies `missingFields`. No allocation occurs. |
+| `400 SUBMISSION_INCOMPLETE` | Required submission data is missing, including blank or whitespace-only name, purpose and venue requirements; the error supplies `missingFields`. No allocation occurs and the request stays a draft. |
+| `400 SUBMISSION_INVALID` | A present value is not acceptable (KAN-59): the end is not after the start, the registration close is not after its open while registration is required, or a date cannot be read. The error supplies `fieldErrors` (field to message) and also `missingFields` (possibly empty). No allocation occurs and the request stays a draft. |
 | `401 AUTHENTICATION_REQUIRED` | No verified session. |
 | `403 SUBMIT_FORBIDDEN` | The verified caller is not an event organiser. |
 | `404 EVENT_REQUEST_NOT_FOUND` | The request is missing or belongs to another organiser; no assignment details are revealed. |

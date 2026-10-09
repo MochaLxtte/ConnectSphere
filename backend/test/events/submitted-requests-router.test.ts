@@ -446,6 +446,38 @@ describe('KAN-6 POST /api/events/:id/submit', () => {
     expect(response.status).toBe(400);
     expect(response.body.error.code).toBe('SUBMISSION_INCOMPLETE');
     expect(response.body.error.missingFields).toEqual(['purpose', 'venueRequirements']);
+    expect(response.body.error).not.toHaveProperty('fieldErrors');
+  });
+
+  it('KAN-59 returns SUBMISSION_INVALID with per-field messages when a value is not acceptable', async () => {
+    const { app } = setup(organiser);
+    submitRequest.mockRejectedValue(new SubmissionValidationError([], [
+      { field: 'endsAt', message: 'The end must be after the start.' },
+      { field: 'registrationClosesAt', message: 'Registration must close after it opens.' },
+    ]));
+    const response = await request(app).post(`/api/events/${requestId}/submit`);
+    expect(response.status).toBe(400);
+    expect(response.body.error.code).toBe('SUBMISSION_INVALID');
+    expect(response.body.error.fieldErrors).toEqual({
+      endsAt: 'The end must be after the start.',
+      registrationClosesAt: 'Registration must close after it opens.',
+    });
+    expect(response.body.error.missingFields).toEqual([]);
+    expect(response.body.error.message).toBe(
+      'The end must be after the start. Registration must close after it opens.',
+    );
+  });
+
+  it('KAN-59 reports missing fields and invalid values together under SUBMISSION_INVALID', async () => {
+    const { app } = setup(organiser);
+    submitRequest.mockRejectedValue(new SubmissionValidationError(
+      ['name'], [{ field: 'endsAt', message: 'The end must be after the start.' }],
+    ));
+    const response = await request(app).post(`/api/events/${requestId}/submit`);
+    expect(response.status).toBe(400);
+    expect(response.body.error.code).toBe('SUBMISSION_INVALID');
+    expect(response.body.error.missingFields).toEqual(['name']);
+    expect(response.body.error.fieldErrors).toEqual({ endsAt: 'The end must be after the start.' });
   });
 
   it('masks a missing request as unavailable', async () => {

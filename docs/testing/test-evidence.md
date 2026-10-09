@@ -2,6 +2,105 @@
 
 Record each relevant run with its commit, scope and result. Store concise report exports alongside this document and link the corresponding tests from the [traceability matrix](../requirements/traceability.csv). The [Sprint 1 acceptance test plan](../scrum/sprint-01/sprint-backlog.md#acceptance-test-plan) provides the initial scenario and acceptance-criterion IDs.
 
+## 9 October: submission validation (KAN-59 / S1-DEF-04)
+
+**AUTO-20261009-KAN59-01 — local automated verification, including PostgreSQL integration run later the same day.** Tested at `a8b2983` on `fix/KAN-59-submission-validation`, branched from `main` (`14ad0b2`), with Node 22.20.0 (the repository targets Node 24; `EBADENGINE` warnings only) on Windows. Verified locally before any push.
+
+| Command / environment | Actual result |
+| --- | --- |
+| `npm run check` | Passed: tools/frontend/backend type checks, **376 frontend tests** in 24 files, **711 backend tests** in 32 files, and both production builds. |
+| Defect reproduction: the old `submit-input.ts` from `14ad0b2` temporarily restored, then `npx vitest run test/events/submit-input.test.ts test/events/submit-request.test.ts` (backend) | **25 of the 58 tests failed**, reproducing the defect: whitespace-only mandatory text, an end not after the start and a reversed registration window were accepted. The fix was then restored exactly (`git status` clean for the file) and all 58 passed. |
+| `npx vitest run test/events/submit-input.test.ts` (backend) | Passed: 37 tests (26 new): blank and whitespace-only name, purpose and venue requirements; end equal to, before and one millisecond after the start; offset versus UTC instants; unreadable dates; registration window ordering only while registration is required; every problem reported together; "None / Not Required" text accepted; attendance 0 still accepted. |
+| `npx vitest run test/events/submit-request.test.ts` (backend) | Passed: 21 new tests with a fake connection: a valid draft commits once; registration times are read under the row lock; invalid drafts refuse without an `UPDATE`, roll back and release the connection; ownership is checked before completeness, so an unrelated organiser learns nothing; a failed rollback discards the connection. |
+| `npx vitest run test/events/submitted-requests-router.test.ts` (backend) | Passed: 60 tests (2 new): `SUBMISSION_INVALID` with `fieldErrors`, and missing plus invalid together; the missing-only response keeps its original shape. |
+| `npx vitest run src/features/events/api/event-requests.test.ts src/features/events/components/EventRequestForm.test.ts` (frontend) | Passed: 23 tests (4 new in the API client, 1 new in the form): typed error parsing, messages beside the inputs, focus on the first error, and fixing then resubmitting without creating a second draft. |
+| Coverage of the changed files | Backend `submit-input.ts`: 100% of statements and branches. `submit-request.ts`: every added line covered; the file's remaining uncovered lines (60, 111, 120) are older defensive branches not touched here. Frontend: no uncovered statement or branch on any line added to `event-requests.ts` or `EventRequestForm.vue`. |
+| `database/tests/events/submit-request.integration.test.ts` (12 new cases) | **Passed** with `npm run test:integration` (**267 tests in 18 files**) on a local PostgreSQL 17 test database (not the shared Supabase project). The cases cover real-schema behaviour: blank text of every whitespace kind, end equal to and before the start, reversed registration window only while required, a valid window, attendance 0, all problems in one error then correct and resubmit, and HTTP `SUBMISSION_INCOMPLETE` and `SUBMISSION_INVALID` with the draft unchanged. |
+| Browser (`tests/e2e`) | `npx playwright test` (Chromium, local servers): **71 passed**, no new spec. The form's browser behaviour is covered by the component tests above. |
+
+**MAN-20261009-KAN59-01 — interactive check against the shared development database.** Irfan signed in as the existing organiser test account in the in-app browser (the password was typed by Irfan) with the app running from `fix/KAN-59-submission-validation`; Claude drove the page and the signed-in session. Test data: one request named "KAN-59 manual test A".
+
+| Step | Observed result |
+| --- | --- |
+| Fill only the name and click Submit for review (KAN-6-AC2, AC3) | Request stayed a DRAFT. Messages "Complete this before submitting." appeared beside Purpose, Starts, Ends, Expected attendance and Venue requirements; the banner said "Your draft is saved. Complete these details before submitting: Purpose, Starts, Ends, Expected attendance…"; focus moved to Purpose. |
+| Fill all fields with an end before the start and submit | The form refused it before saving ("The end must be after the start."), as the form already did before this change. |
+| Call the API directly from the signed-in session: save a whitespace-only purpose and an end before the start, then submit | HTTP 400 `SUBMISSION_INVALID` naming `purpose` as missing and `endsAt` as "The end must be after the start."; the request stayed a DRAFT. This is the server rule that did not exist before. |
+| Open the saved draft, fix purpose and end, submit again | The same draft became SUBMITTED; no duplicate draft was created. |
+
+**Side effect:** the submitted request was assigned automatically to a real coordinator and sits in their review queue; reject or ignore it. **Not covered:** the form hides server-only messages for most cases, so the `SUBMISSION_INVALID` field messages were verified through the API and the component tests rather than the page. Acceptance still belongs to the Product Owner.
+
+**What this does not establish:** CI, a hosted walkthrough (S2-T22), peer review, or acceptance. The Jira KAN-6 and KAN-59 cards were not edited.
+
+**Open question:** an expected attendance of 0 is still accepted at submission. See the [9 October decision](../requirements/assumptions-and-questions.md#9-october-2026--kan-59-submission-validation-rules-s1-def-04).
+
+**Remaining:** the first CI run of the integration cases (record its run ID here); the [hosted check](README.md#kan-59-hosted-verification); team confirmation of the validation rules; peer review. No Jira transition and no change to the **43-point** baseline is claimed; KAN-59 sits inside KAN-6's carried points.
+
+## 9 October: booking conflict detection (KAN-54)
+
+**AUTO-20261009-KAN54-01 — local automated verification, including PostgreSQL integration.** Tested at `0e373e5` on `feat/KAN-54-conflict-detection-verification`, branched from `main` (`14ad0b2`), Node 22.20.0 on Windows. KAN-54's logic already existed in `booking-service.ts`; this run adds the missing unit tests and two integration cases. No source change was needed.
+
+| Command / environment | Actual result |
+| --- | --- |
+| `npm run check` | Passed: type checks, **371 frontend** and **683 backend tests** (21 new), both builds. |
+| `npx vitest run backend/test/venues/booking-conflicts.test.ts` | Passed: 21 tests with a fake connection covering KAN-54-AC1–AC9 and repo-only AC10–AC11: the clash query is scoped to the one venue, counts only approved bookings and blocks, and uses half-open bounds; refusals insert or update nothing and roll back; clash data is read only after the venue lock; approval excludes its own row; rejection skips the check; settled bookings are not reassessed; database exclusion errors map to the same messages and unrelated ones pass through. |
+| Mutation check | Temporarily changing the bounds to `<=`/`>=` and removing the own-row exclusion made 2 of the 21 tests fail; the file was restored (`git status` clean) and all 21 pass. |
+| Coverage | The new file covers every conflict branch in `createVenueBooking` and `decideVenueBooking`. The remaining uncovered lines of `booking-service.ts` are the KAN-8 list and read paths, which other tests cover against PostgreSQL. |
+| `npm run test:integration` against PostgreSQL 17.11 on this machine (local test database, not the shared Supabase project) | **Passed: 258 tests in 18 files**, including 3 new cases in `venue-bookings.integration.test.ts`. They cover an approved booking and a block at another venue (KAN-54-AC3, AC5) and a cancelled booking (KAN-54-AC1, AC4). |
+| `npx playwright test` (Chromium, local servers) | **71 passed.** No new browser spec; conflict messages are covered by the booking panel and detail page tests. |
+
+**MAN-20261009-KAN54-01 — interactive check against the shared development database.** Irfan signed in to the coordinator and Venue Staff test accounts (passwords typed by Irfan); Claude drove the page and the signed-in sessions. The shared database had no approved bookings or blocks, so the test created them at dates in January 2031 on the event "test 01" (already approved). Cleanup is listed at the end.
+
+| Step | Observed result |
+| --- | --- |
+| Coordinator requests Orchid Seminar Room, 5 Jan 2031 10:00–12:00 (A), then an overlapping 11:00–13:00 (B) | Both saved as pending; pending requests do not reserve the venue (KAN-54-AC10). |
+| Venue Staff approve A | Approved. |
+| Venue Staff approve the overlapping B through the page (KAN-54-AC2, AC7, AC8) | Refused with "The venue already has an approved booking during this period. Review the current booking status before trying again."; B stayed pending; then rejected. |
+| Coordinator requests the same venue for an exact overlap, a partial overlap and a period inside A (AC1, AC2, AC6) | All three refused with 409 `VENUE_BOOKING_CONFLICT`; nothing created. The coordinator's booking panel showed "The venue already has an approved booking during this period." (AC8). |
+| Coordinator requests Harbour Hall for the same hours as A (AC3) | Accepted as pending. |
+| Coordinator requests Orchid 12:00–14:00 and 08:00–10:00, directly after and before A (AC4) | Both accepted as pending; no buffer is required. |
+| Venue Staff block Harbour Hall 6 Jan 2031 10:00–12:00; coordinator requests an overlapping period (AC5, AC7, AC8) | Refused with 409 `VENUE_UNAVAILABLE` ("The venue is blocked during this period."); a request directly after the block was accepted. |
+| Coordinator search for the A period, the block period and a later period (AC6, AC9) | Orchid was absent during A, Harbour absent during the block, all venues present later; results followed the latest data. |
+
+**Cleanup and what remains:** the four accepted pending requests were rejected and the block was removed. **One approved booking (A) remains**: Orchid Seminar Room, 5 Jan 2031 10:00–12:00 Singapore time, notes "KAN-54 manual test A (far-future)"; the app has no way to cancel it. Rejected rows remain for B and the four cleanup requests. Two pending bookings from other event requests were already in the queue and were not touched. Acceptance still belongs to the Product Owner.
+
+**Limits:** hosted acceptance (S2-T15/T16) and CI are pending. Adjacency without a turnover buffer and pending requests not reserving a venue remain team assumptions until the customer confirms them.
+
+## 9 October: venue search page tests (KAN-12)
+
+**AUTO-20261009-KAN12-01 — local automated verification, including the browser spec and PostgreSQL integration.** Tested at `151a4c8` on `feat/KAN-12-search-page-tests`, branched from `main` (`14ad0b2`), Node 22.20.0 on Windows. KAN-12's page, query service and PostgreSQL tests were already merged; the page had no tests of its own. No source change was needed.
+
+| Command / environment | Actual result |
+| --- | --- |
+| `npm run check` | Passed: type checks, **405 frontend** (34 new) and **662 backend tests**, both builds. |
+| `npx vitest run src/features/venues/pages/VenueSearchPage.test.ts` (frontend) | Passed: 34 tests. Results and venue details (AC8, AC9, AC12); each of date/time, attendance, location, capacity, layout, accessibility and facilities reaching the query, alone and combined (AC1–AC7, AC10); changing and clearing filters, no-match versus empty catalogue (AC11); incomplete, reversed and equal periods refused before any request (AC14); earlier results hidden and stale responses ignored (AC15); filter-list failure, 401, 403 and retry (AC16); signed-out, session-loading and four other roles never request venue data (AC13). |
+| Mutation check | Temporarily making an equal start and end acceptable and changing the opening-hours rule made 2 of the 34 tests fail; the file was restored (`git status` clean) and all 34 pass. |
+| Coverage | `VenueSearchPage.vue`: 98.1% of statements, 94.9% of branches. The only uncovered line is the sign-in link inside the error panel, which cannot be reached because a cleared session shows the sign-in notice instead. `venues.ts`: 100% of statements, 93.8% of branches. |
+| `tests/e2e/venue-search.spec.ts` (7 tests) | **Passed: 7 of 7** with `npx playwright test tests/e2e/venue-search.spec.ts` (Chromium, local servers). The first run had 1 failure from an ambiguous "Sign in" locator in the test (the page has two such links); it was scoped to the page content and the spec then passed. The full browser suite passed (78 tests) on a migrated local PostgreSQL 17. It covers the real server's 401 for both endpoints, narrowing, changing and clearing filters, a reversed period, signed-out and two other roles, and a 375 px screen with no sideways scrolling. |
+| `database/tests/venues/venue-search.integration.test.ts` | Passed with the rest of `npm run test:integration` (**255 tests in 18 files**) on a local PostgreSQL 17 test database; unchanged. |
+
+**MAN-20261009-KAN12-01 — interactive check against the shared development database (read-only).** Irfan signed in to the coordinator and organiser test accounts (passwords typed by Irfan); Claude drove the search page. Nothing was written. Catalogue: Harbour Hall (capacity 300), Orchid Seminar Room (40), Rooftop Terrace (120); the KAN-54 test booking at Orchid on 5 Jan 2031 10:00–12:00 existed.
+
+| Step | Observed result |
+| --- | --- |
+| Open the page as the coordinator (KAN-12-AC8, AC12) | 3 venues, each named with capacity and details from the catalogue. |
+| Minimum capacity 150 (AC4) | Harbour Hall only. |
+| Expected attendance 100 (AC2) | Harbour Hall and Rooftop Terrace. |
+| Location "Annex" (AC3) | Rooftop Terrace only. |
+| Layout BOARDROOM (AC6) | Orchid Seminar Room only. |
+| Wheelchair accessible (AC5) | Harbour Hall and Orchid Seminar Room. |
+| Accessibility feature HEARING_LOOP alone, then HEARING_LOOP, STEP_FREE_ACCESS and ACCESSIBLE_TOILET together (AC5) | Harbour Hall only in both cases. |
+| Facility STAGE (AC7) | Harbour Hall only. |
+| Attendance 100 with layout THEATRE (AC9, AC10) | Harbour Hall only. |
+| Event period overlapping the approved booking, directly after it, and a free day (AC1, AC10) | Orchid absent during the booking; all 3 venues directly after it and on the free day. |
+| End before start; only a start entered (AC14) | "The end time must be after the start time." and "Enter both a start and an end time, or leave both empty."; the Search button was disabled for the first. |
+| Capacity 5000 (AC11) | "0 venues found" and "No venue matches these filters". |
+| Clear filters (AC11) | All fields emptied and all 3 venues returned. |
+| As the organiser (AC13) | No Search Venues link; the page said "This page is for event coordinators." with no form; the search and filter-options calls returned HTTP 403. |
+
+**Not covered by hand:** AC15 (stale responses) and AC16 (filter-list failure), which need a slow or failing network; the page tests cover them. Acceptance still belongs to the Product Owner.
+
+**Limits:** results in the page tests and browser spec come from fixtures, so real filtering, availability exclusion and role enforcement rely on the existing backend and PostgreSQL tests. Hosted acceptance (S2-T07/T08) and CI are pending.
+
 ## 9 October: connected workflow test (S2-T23)
 
 **AUTO-20261009-S2T23-01 — executed on a local PostgreSQL 17; passed after one fix.** Added at `8d7c587` on `test/S2-T23-connected-workflow`, branched from `main` (`14ad0b2`), Node 22.20.0 on Windows. This is an automated stand-in for part of the hosted S2-T23 walkthrough; it does not replace it.

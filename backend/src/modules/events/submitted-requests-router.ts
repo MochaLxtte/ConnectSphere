@@ -235,8 +235,17 @@ export function createSubmittedRequestsRouter(dependencies: SubmittedRequestsRou
       response.status(200).json(submitted);
     } catch (error) {
       if (error instanceof SubmissionValidationError) {
+        // Missing-only keeps the original code; any invalid value adds per-field messages (KAN-59).
+        const invalid = error.invalidFields.length > 0;
         response.status(400).json({
-          error: { code: 'SUBMISSION_INCOMPLETE', message: error.message, missingFields: error.missingFields },
+          error: {
+            code: invalid ? 'SUBMISSION_INVALID' : 'SUBMISSION_INCOMPLETE',
+            message: error.message,
+            missingFields: error.missingFields,
+            ...(invalid
+              ? { fieldErrors: Object.fromEntries(error.invalidFields.map(({ field, message }) => [field, message])) }
+              : {}),
+          },
         });
         return;
       }
