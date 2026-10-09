@@ -15,6 +15,27 @@ Record each relevant run with its commit, scope and result. Store concise report
 | `tests/e2e/venue-search.spec.ts` (7 tests) | **Passed: 7 of 7** with `npx playwright test tests/e2e/venue-search.spec.ts` (Chromium, local servers). The first run had 1 failure from an ambiguous "Sign in" locator in the test (the page has two such links); it was scoped to the page content and the spec then passed. The full browser suite passed (78 tests) on a migrated local PostgreSQL 17. It covers the real server's 401 for both endpoints, narrowing, changing and clearing filters, a reversed period, signed-out and two other roles, and a 375 px screen with no sideways scrolling. |
 | `database/tests/venues/venue-search.integration.test.ts` | Passed with the rest of `npm run test:integration` (**255 tests in 18 files**) on a local PostgreSQL 17 test database; unchanged. |
 
+**MAN-20261009-KAN12-01 — interactive check against the shared development database (read-only).** Irfan signed in to the coordinator and organiser test accounts (passwords typed by Irfan); Claude drove the search page. Nothing was written. Catalogue: Harbour Hall (capacity 300), Orchid Seminar Room (40), Rooftop Terrace (120); the KAN-54 test booking at Orchid on 5 Jan 2031 10:00–12:00 existed.
+
+| Step | Observed result |
+| --- | --- |
+| Open the page as the coordinator (KAN-12-AC8, AC12) | 3 venues, each named with capacity and details from the catalogue. |
+| Minimum capacity 150 (AC4) | Harbour Hall only. |
+| Expected attendance 100 (AC2) | Harbour Hall and Rooftop Terrace. |
+| Location "Annex" (AC3) | Rooftop Terrace only. |
+| Layout BOARDROOM (AC6) | Orchid Seminar Room only. |
+| Wheelchair accessible (AC5) | Harbour Hall and Orchid Seminar Room. |
+| Accessibility feature HEARING_LOOP alone, then HEARING_LOOP, STEP_FREE_ACCESS and ACCESSIBLE_TOILET together (AC5) | Harbour Hall only in both cases. |
+| Facility STAGE (AC7) | Harbour Hall only. |
+| Attendance 100 with layout THEATRE (AC9, AC10) | Harbour Hall only. |
+| Event period overlapping the approved booking, directly after it, and a free day (AC1, AC10) | Orchid absent during the booking; all 3 venues directly after it and on the free day. |
+| End before start; only a start entered (AC14) | "The end time must be after the start time." and "Enter both a start and an end time, or leave both empty."; the Search button was disabled for the first. |
+| Capacity 5000 (AC11) | "0 venues found" and "No venue matches these filters". |
+| Clear filters (AC11) | All fields emptied and all 3 venues returned. |
+| As the organiser (AC13) | No Search Venues link; the page said "This page is for event coordinators." with no form; the search and filter-options calls returned HTTP 403. |
+
+**Not covered by hand:** AC15 (stale responses) and AC16 (filter-list failure), which need a slow or failing network; the page tests cover them. Acceptance still belongs to the Product Owner.
+
 **Limits:** results in the page tests and browser spec come from fixtures, so real filtering, availability exclusion and role enforcement rely on the existing backend and PostgreSQL tests. Hosted acceptance (S2-T07/T08) and CI are pending.
 
 ## 8 October: PR #27 conflict resolution
