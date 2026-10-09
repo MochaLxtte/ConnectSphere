@@ -12,6 +12,7 @@ const showVenuePlanning = computed(() => !authSession.loading && canViewVenueAva
 const showVenueBookings = computed(() => !authSession.loading &&
   (role.value === 'EVENT_COORDINATOR' || role.value === 'VENUE_STAFF'));
 const showVenueBlocks = computed(() => !authSession.loading && role.value === 'VENUE_STAFF');
+const showVenueCatalogue = computed(() => !authSession.loading && role.value === 'VENUE_STAFF');
 
 onMounted(() => { void restoreSession().catch(() => undefined); });
 
@@ -70,6 +71,9 @@ async function handleSignOut(): Promise<void> {
           >
           <RouterLink v-if="showVenueBlocks" to="/venue-blocks" exact-active-class="is-active" class="nav-link"
             ><AppIcon name="availability" />Venue blocks</RouterLink
+          >
+          <RouterLink v-if="showVenueCatalogue" to="/venue-catalogue" active-class="is-active" class="nav-link"
+            ><AppIcon name="grid" />Venue catalogue</RouterLink
           >
         </template>
       </nav>
