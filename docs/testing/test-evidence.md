@@ -18,6 +18,17 @@ Record each relevant run with its commit, scope and result. Store concise report
 | `database/tests/events/submit-request.integration.test.ts` (12 new cases) | **Passed** with `npm run test:integration` (**267 tests in 18 files**) on a local PostgreSQL 17 test database (not the shared Supabase project). The cases cover real-schema behaviour: blank text of every whitespace kind, end equal to and before the start, reversed registration window only while required, a valid window, attendance 0, all problems in one error then correct and resubmit, and HTTP `SUBMISSION_INCOMPLETE` and `SUBMISSION_INVALID` with the draft unchanged. |
 | Browser (`tests/e2e`) | `npx playwright test` (Chromium, local servers): **71 passed**, no new spec. The form's browser behaviour is covered by the component tests above. |
 
+**MAN-20261009-KAN59-01 — interactive check against the shared development database.** Irfan signed in as the existing organiser test account in the in-app browser (the password was typed by Irfan) with the app running from `fix/KAN-59-submission-validation`; Claude drove the page and the signed-in session. Test data: one request named "KAN-59 manual test A".
+
+| Step | Observed result |
+| --- | --- |
+| Fill only the name and click Submit for review (KAN-6-AC2, AC3) | Request stayed a DRAFT. Messages "Complete this before submitting." appeared beside Purpose, Starts, Ends, Expected attendance and Venue requirements; the banner said "Your draft is saved. Complete these details before submitting: Purpose, Starts, Ends, Expected attendance…"; focus moved to Purpose. |
+| Fill all fields with an end before the start and submit | The form refused it before saving ("The end must be after the start."), as the form already did before this change. |
+| Call the API directly from the signed-in session: save a whitespace-only purpose and an end before the start, then submit | HTTP 400 `SUBMISSION_INVALID` naming `purpose` as missing and `endsAt` as "The end must be after the start."; the request stayed a DRAFT. This is the server rule that did not exist before. |
+| Open the saved draft, fix purpose and end, submit again | The same draft became SUBMITTED; no duplicate draft was created. |
+
+**Side effect:** the submitted request was assigned automatically to a real coordinator and sits in their review queue; reject or ignore it. **Not covered:** the form hides server-only messages for most cases, so the `SUBMISSION_INVALID` field messages were verified through the API and the component tests rather than the page. Acceptance still belongs to the Product Owner.
+
 **What this does not establish:** CI, a hosted walkthrough (S2-T22), peer review, or acceptance. The Jira KAN-6 and KAN-59 cards were not edited.
 
 **Open question:** an expected attendance of 0 is still accepted at submission. See the [9 October decision](../requirements/assumptions-and-questions.md#9-october-2026--kan-59-submission-validation-rules-s1-def-04).
