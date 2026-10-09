@@ -122,7 +122,7 @@ test('KAN-12 a signed-out visitor is asked to sign in and no venue data is reque
   const fixture = await fixtures(page, null);
   await page.goto('/venues');
   await expect(page.getByText('Sign in to search venues.')).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Sign in' })).toBeVisible();
+  await expect(page.locator('#main-content').getByRole('link', { name: 'Sign in' })).toBeVisible();
   await expect(page.getByRole('form', { name: 'Venue filters' })).toHaveCount(0);
   expect(fixture.searches).toHaveLength(0);
 });
