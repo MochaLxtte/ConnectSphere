@@ -46,6 +46,17 @@ describe('KAN-50 catalogue form: validation', () => {
     expect(validateForm({ ...saved(), capacity }).capacity).toBeDefined();
   });
 
+  it('accepts and refuses capacity given as a number, as a number input produces', () => {
+    expect(validateForm({ ...saved(), capacity: 150 })).toEqual({});
+    expect(validateForm({ ...saved(), capacity: 0 }).capacity).toBeDefined();
+    expect(validateForm({ ...saved(), capacity: 2.5 }).capacity).toBeDefined();
+    expect(validateForm({ ...saved(), capacity: MAX_CAPACITY + 1 }).capacity).toBeDefined();
+  });
+
+  it('refuses an emptied number input, which v-model reports as an empty string', () => {
+    expect(validateForm({ ...saved(), capacity: '' }).capacity).toBeDefined();
+  });
+
   it('allows a location at the limit and refuses one character more', () => {
     expect(validateForm({ ...saved(), location: 'a'.repeat(MAX_LOCATION_LENGTH) }).location).toBeUndefined();
     expect(validateForm({ ...saved(), location: 'a'.repeat(MAX_LOCATION_LENGTH + 1) }).location).toBeDefined();
@@ -107,6 +118,11 @@ describe('KAN-50 catalogue form: building the update (AC3-AC9)', () => {
     [{ opensAt: '' }, { opensAt: null }],
   ])('sends only the changed field %j', (change, expected) => {
     expect(buildUpdate(venue, { ...saved(), ...change })).toEqual(expected);
+  });
+
+  it('compares a numeric capacity with the saved value and sends it as a number', () => {
+    expect(buildUpdate(venue, { ...saved(), capacity: 100 })).toEqual({});
+    expect(buildUpdate(venue, { ...saved(), capacity: 120 })).toEqual({ capacity: 120 });
   });
 
   it('sends several changed fields together and leaves the rest out', () => {
