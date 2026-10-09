@@ -54,7 +54,7 @@ function labelError(text: string, noun: string): string | undefined {
   return undefined;
 }
 
-const capacityText = (values: CatalogueFormValues) => String(values.capacity ?? '').trim();
+const capacityText = (values: CatalogueFormValues) => String(values.capacity).trim();
 
 export function validateForm(values: CatalogueFormValues): CatalogueFormErrors {
   const errors: CatalogueFormErrors = {};
