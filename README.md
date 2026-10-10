@@ -85,7 +85,7 @@ The following **historical Sprint 1 workstreams** were agreed on 6 September 202
 
 After database setup, Arvin supports cross-feature integration, end-to-end testing and resolving integration issues with the feature owners.
 
-Read [CONTRIBUTING.md](CONTRIBUTING.md) before the first feature branch. The shared setup uses pre-provisioned Supabase accounts and assigned-coordinator access. Sprint 1 closed with 24 Done points and eight carried points; the [review](docs/scrum/sprint-01/review.md#review-defects-and-carry-over) records the carried defects. Existing code and later fixes still need verification against the selected criteria. Account administration, event field validation, assignment/delegation and later transitions have [open customer questions](docs/requirements/assumptions-and-questions.md). Team assumptions remain distinct from customer clarifications.
+Read [AGENTS.md](AGENTS.md) before the first feature branch: it holds the mandatory workflow and documentation order for people and AI assistants. The shared setup uses pre-provisioned Supabase accounts and assigned-coordinator access. Sprint 1 closed with 24 Done points and eight carried points; the [review](docs/scrum/sprint-01/review.md#review-defects-and-carry-over) records the carried defects. Existing code and later fixes still need verification against the selected criteria. Account administration, event field validation, assignment/delegation and later transitions have [open customer questions](docs/requirements/assumptions-and-questions.md). Team assumptions remain distinct from customer clarifications.
 
 ## Checks
 
@@ -138,7 +138,7 @@ git clone https://github.com/MochaLxtte/ConnectSphere.git
 cd ConnectSphere
 ```
 
-Invite teammates and configure `main` to require PR review and the CI `verify` check once the first workflow has run. Follow [CONTRIBUTING.md](CONTRIBUTING.md) for feature branches and reviews.
+Invite teammates and configure `main` to require PR review and the CI `verify` check once the first workflow has run. Follow [AGENTS.md](AGENTS.md) for feature branches, documentation and reviews.
 
 ## Course deliverables
 
