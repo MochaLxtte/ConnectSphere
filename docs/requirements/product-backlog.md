@@ -4,6 +4,14 @@ This is the canonical release-scope index and the working acceptance criteria fo
 
 **Refinement date:** 21 September 2026. Sprint 1 closed with **32 committed points, 24 Done points and 8 carried points**. Sprint 2 retains **12 PBIs / 43 points: 35 new plus 8 carried**. The future stories and corrective task below are outside that commitment. No additional estimate, owner, sprint commitment or completed acceptance test is established by this refinement.
 
+## Master backlog register
+
+**Status: To fill (any one member; note "Recorded by" below the table).** One row per story or PBI in Jira, completed and pending, so the backlog can be read without Jira (submission folder 1). Estimates are set once and do not change unless a re-estimate is logged; status, sprint and completion date are what change. Update after every planning and review, and when a customer change adds or reopens a story (see [change requests](change-requests.md)). At each sprint close export it as `docs/submission/1/product-backlog.xlsx` (the instructor asked for a spreadsheet view).
+
+| Priority | Jira | Story | Core feature | SP | Status (To Do / In Progress / Done / Reopened) | Sprint(s) | Done date | Owner | Linked change / original story |
+| ---: | --- | --- | --- | ---: | --- | --- | --- | --- | --- |
+| | | | | | | | | | |
+
 ## Release coverage
 
 `CF-01`–`CF-20` are repository traceability identifiers. Each feature maps to a canonical story or a group of complementary stories; overlapping implementation and tests must not be counted as separate delivery.

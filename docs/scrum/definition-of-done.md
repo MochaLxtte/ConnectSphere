@@ -12,3 +12,12 @@ A story is done when:
 - The board, review notes and remaining limitations reflect the actual outcome. Unfinished criteria return to the backlog.
 
 A scaffold stub, UI placeholder, unexecuted test outline, or disabled test does not satisfy a business acceptance criterion.
+
+## Version history
+
+Record every change to this definition, including confirming it unchanged at a sprint boundary, so reviewers can see how it evolved between sprints.
+
+| Version | Date | Sprint | Change | Who agreed / recorded by |
+| --- | --- | --- | --- | --- |
+| 0 (proposed) | To record | 1 | Initial proposal above | To record |
+| | | | | |

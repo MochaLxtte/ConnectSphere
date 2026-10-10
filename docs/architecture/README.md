@@ -64,6 +64,22 @@ Keep controllers thin: parse requests and call services. Services own permission
 
 The backend is currently laid out under `backend/src/modules/`; see its README for paths. Database migrations live at root in `database/` to make shared schema changes visible to all workstreams. Documentation and tests live with their consumers. Add C4 component views when components exist; these context/container views are a baseline, not a completed final design submission.
 
+## C4 components (C3)
+
+**Status: To draw.** One component diagram for the backend API container (modules, services, routers, repositories and their dependencies). Keep it in step with the module table above.
+
+## Class diagram
+
+**Status: To draw.** Main domain classes/types and their relationships (event request, venue, booking, unavailability, users and roles). Required by the course's change-management guide when designs change.
+
+## Sequence diagrams
+
+**Status: To draw.** At least the connected workflow (submit request → assignment → review → venue booking → decision), plus any workflow changed by a customer change request.
+
+## Diagram exports
+
+GitHub's Mermaid rendering is not part of the submission. Save a PNG or PDF of every diagram in `docs/architecture/exports/` (`c1-context`, `c2-containers`, `c3-components`, `class`, `seq-<workflow>`) and re-export after each design change.
+
 ## ERD
 
 Migrations 001–003 provide the Sprint 1 request/authentication foundation. Migration 004 adds the
