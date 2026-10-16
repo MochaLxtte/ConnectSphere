@@ -8,10 +8,16 @@ it to the single line `@AGENTS.md` (personal notes only otherwise). Any older gu
 (`CONTRIBUTING.md`, old `CLAUDE.md` rules, `SPM_MASTER.md`) is replaced by this file. If another
 document disagrees with this one, this one wins; tell the team so the other document gets fixed.
 
-IS212 grades the **Scrum process and its evidence** as heavily as the code. Instructors never open
-Jira or browse GitHub: **the documents in this repo are what gets submitted**. Every piece of work
+IS212 grades the **Scrum process and its evidence** as heavily as the code. Instructors do not inspect
+Jira directly: **the submitted documents must contain the evidence**, alongside the required repository access. Every piece of work
 must leave the trail Jira → branch → code → tests → docs → PR → merged → Jira Done, and every
 Scrum activity (planning, estimation, backlog work, reviews, retrospectives) must leave a record.
+
+Use the project instructions, assessment rubric and customer changes to determine required scope
+and deliverables; use the IS212 teaching materials for story, testing and Scrum conventions.
+Course sources are indexed in `docs/requirements/README.md`. Jira cards contain concise user
+stories and acceptance criteria, with estimates, priority, assignment and sprint in their native
+fields. Keep planning history, evidence and submission commentary in the repository.
 
 ---
 
@@ -21,8 +27,9 @@ Scrum activity (planning, estimation, backlog work, reviews, retrospectives) mus
 2. `git status`. If there is a merge in progress or conflict markers, stop and ask.
 3. `git checkout main && git pull --ff-only origin main`. Create a branch before changing files
    (§7.1).
-4. Find the **current sprint** in `docs/scrum/README.md` (latest row). Below, `sprint-0N` means
-   that folder; earlier sprint folders are closed history (correct factual errors only).
+4. Find the **active sprint** by status in `docs/scrum/README.md`, not simply the latest row.
+   Use a future sprint folder only for its planning. Below, `sprint-0N` means the relevant folder;
+   earlier sprint folders are closed history (correct factual errors only).
 5. Work out which activity the person is asking for using the **activity index (§3)** and follow
    that procedure. If nothing matches, ask which documents they expect to change before starting.
 
@@ -36,12 +43,17 @@ not limit who does what. Every activity is one of three kinds:
 | --- | --- | --- |
 | **Story work** | Whoever is assigned the story in Jira | Does all of §4 for that story, including its documents |
 | **Everyone** | Each member, for themselves | Own row at each Daily Scrum; own retrospective feedback; own estimation vote |
-| **Any one member** | Whoever picks it up first | Says so in the group chat, does it, and writes **"Recorded by: name, date"** in the record |
+| **Any one member** | Whoever picks it up first | Coordinates ownership, completes the record and retains its date and source |
 
 Shared decisions (sprint goal, commitment, estimates, priorities, story acceptance, Definition of
 Done, change classification) may be prepared and recorded by one member, but the record must say
 **who took part and how** (meeting, chat poll, async review). If only one person decided, write
 that honestly; never list people who did not take part.
+
+Use neutral, factual prose. Do not repeat recorder labels or conversational phrases such as
+"at someone's request" throughout the documents or Jira cards. Names belong where they identify
+an actual assignee, participant, decision-maker or test executor. Record preparation method once;
+retain the required AI-assistance disclosure in pull requests.
 
 ## 3. Activity index
 
@@ -127,6 +139,13 @@ branch as the code, before the PR is opened. *(if)* steps apply only when the si
 ## 5. Non-development activities
 
 ### 5.1 Backlog management (any one member)
+Use the course card format: a short title, **User Story** (As a role, I want a goal, so that a
+benefit), and **Acceptance Criteria**. Checklist criteria, Given/When/Then, or a mixture are valid.
+Keep existing criterion IDs stable for traceability. Technical tasks may use an objective rather
+than an invented end-user story. Store estimates and priority in Jira's native fields; use links
+for dependencies and change relationships. Do not append sprint histories or personal attribution
+to descriptions. Preserve the corresponding history and evidence in repository records.
+
 1. New story: create it in Jira first (user story, ACs, core feature `CF-xx`, priority, link to the
    original story or `CR-n` if it comes from a change). Leave points **To agree** (§5.3).
 2. Split a story: create the new cards, link them to the original, move ACs, and log the split in
@@ -161,7 +180,7 @@ branch as the code, before the PR is opened. *(if)* steps apply only when the si
    `docs/scrum/release-burndown.md`, estimates (§5.3).
 4. `sprint-0N/planning.md`: goal, selected stories, owners, reviewers, decisions, how they were made.
 5. `sprint-0N/sprint-backlog.md`: one card per story with ACs and the `S#-Txx` test plan.
-6. `sprint-0N/README.md`: dates, goal, committed scope, recorded by.
+6. `sprint-0N/README.md`: dates, goal, committed scope and decision source.
 7. Start the sprint in Jira; screenshot the board into `sprint-0N/evidence/` as `S#-E01` and register it.
 8. Add the sprint's row to `docs/scrum/README.md`. Final sprint: record the meeting (§5.18).
 
@@ -411,6 +430,7 @@ the team and records their name (§2).
 | `sprint-0N/retrospective.md` | Feedback per member, actions | Everyone + any one member |
 | `sprint-0N/evidence/README.md` + files | Index of screenshots, exports, CI runs, transcripts | If |
 | `docs/scrum/sprint-01/*`, `sprint-02/*` | Closed sprints (same eight records) | Factual corrections and backfilled records only, marked with the date they were added |
+| `docs/scrum/sprint-03/*`, `sprint-04/*` | Current and final planned sprint records, customer-change allocation and evidence | Current sprint updates; future sprint planning records do not claim meetings already occurred |
 
 ### 8.6 Submission (folders 5–7)
 

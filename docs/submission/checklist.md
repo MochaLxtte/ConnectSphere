@@ -1,8 +1,34 @@
 # Submission checklist
 
+**Planning update — 16 October 2026, after reconstruction/rebalance:** the master register now covers all six customer changes and **42 parent items / 174 SP**. The remaining plan is **Sprint 3: 13 items / 63 SP; Sprint 4: 15 items / 63 SP**. Current exports contain all **68 Jira issues** including 26 unpointed subtasks. Customer receipt on **2 October** and the later scope/estimate/sprint changes are traced in the [change register](../requirements/change-requests.md). The earlier 97/29 plan is retained as history. These are planning records; actual implementation, tests, hosted acceptance, historical meeting/DoD evidence, final-sprint recordings and submission deliverables remain outstanding.
+
 Submit **one ZIP containing numbered subfolders 1–7**. The table below maps each required deliverable to the project records and identifies what remains to complete.
 
-The release and evidence ZIP is due **Friday Week 12 at 23:59**, and the final sprint must end by that day. Confirm the calendar date against the course schedule. Other milestones are the Week 7 process consultation, Week 13 interactive Q&A and peer review due Friday Week 14 at 23:59.
+The release and evidence ZIP is due **Friday 6 November 2026 at 23:59, Singapore time**, and the final sprint must end by that day. The 16 October chat confirmed that Week 12 is 2–8 November; the Friday date follows from that week and the course's specified deadline. Other milestones are the Week 7 process consultation, Week 13 interactive Q&A and peer review due Friday Week 14 at 23:59.
+
+**Schedule update — 16 October 2026.** Sprint 3 runs 4–17 October; planning was on 4 October but scope was not finalised. No Sprint 3 work has started according to the chat update, and six members will focus for 16–17 October. Final development Sprint 4 is projected for 18–31 October. Reserve 1–6 November for final verification, evidence, diagrams, slide deck, access checks and packaging; this is a proposed buffer, not an extension of Sprint 4 or evidence that the deliverables are complete. Arrange [final-sprint recordings](../scrum/final-sprint-recordings.md) before 18 October. The 63/63 scope selection above supersedes the earlier proposal; current owners will be chosen by the team.
+
+## Current handover readiness — 16 October 2026
+
+**Ownership update — 16 October 2026.** All 28 unfinished parent items are now unassigned in Jira. Team members will choose their own stories; independent reviewers and the integration lead are **To agree** after ownership is chosen. The scope remains **63 SP per sprint**, averaging **10.5 SP per member per sprint** and **21 SP per member across both**. Aim for roughly 10–11 SP each, retaining whole estimates and dependency order rather than forcing an exact split. Earlier named allocations are historical. Claim a Jira card and sync its sprint record before starting work.
+
+The backlog and sprint plans are ready to share for development after the pending documentation changes are reviewed, committed and pushed. Before parallel coding, confirm the team's estimates and capacity, choose owners/reviewers, create implementation subtasks and coordinate shared contracts/migration order. Actual feature implementation, tests, hosted acceptance and reviews remain to be done. Historical evidence and final submission deliverables below remain outstanding.
+
+## Earlier readiness assessment — 15 October 2026
+
+Documentation has been reconciled for Sprint 3 preparation; the final submission is **not yet complete**. Current Jira statuses, the [backlog workbook/export](1/README.md), [Sprint 2 baseline](../scrum/sprint-02/review.md), [post-sprint audit](../testing/test-evidence.md#15-october-2026-post-sprint-implementation-audit) and [customer changes](../requirements/change-requests.md) now have distinct sources and dates. The dated 21 September/11 October paragraphs below are retained history.
+
+| Next action | Record / evidence needed | Who supplies or decides |
+| --- | --- | --- |
+| Confirm Sprint 2's actual review and disposition | Reviewed build, actual date, participants, story outcomes and any remaining original criteria; record later completion separately | Team / actual review participants; record in [review](../scrum/sprint-02/review.md) |
+| Complete available historical Scrum evidence | Existing planning/estimation/attendance/standup notes, start/end boards and burndown exports; explicitly identify originals that were not retained | Team members who hold the records; use existing sprint records/evidence indexes |
+| Record retrospective agreements | Actual feedback, agreed actions, owners and dates; proposed actions are not agreements | Team / actual participants |
+| Confirm the applicable Definition of Done | Actual prior agreement date, participants and source; applicability to upcoming work | Team; [version history](../scrum/definition-of-done.md) |
+| Finish acceptance evidence and repair known defects | Targeted missing hosted scenarios and reviewed fixes; retain previously passed runs | Story owners/reviewers selected by the team; [planning triage](../scrum/sprint-03/planning.md#pre-planning-baseline-and-defect-triage) |
+| Agree Sprint 3 scope | Distinguish unfinished work, reopened repairs, existing future backlog and CR-1–CR-6; decide estimates, owners, capacity and dates | Team during refinement/planning |
+| Share the reconciled documentation | Review the current diff, then commit/push/merge when authorised | Tristan and a teammate reviewer |
+
+Do not create replacement historical screenshots, invented meeting outcomes or a burndown curve from missing observations. A current rerun may verify current behaviour, but must keep its actual date. Planning can use an explicit baseline with acknowledged evidence gaps; those gaps remain visible for submission. Final-release features, diagrams, deck, recordings and instructor access still follow the checklist below.
 
 ## Required structure and current status
 
@@ -19,6 +45,8 @@ The release and evidence ZIP is due **Friday Week 12 at 23:59**, and the final s
 **Current stage, 21 September:** Sprint 1 closed with 24 Done points and eight carried points. Sprint 2 has a 43-point commitment, including the carry-over. The [product backlog](../requirements/product-backlog.md) maps all 20 release features and records future criteria and archived scope. A [current 51-record Jira snapshot](1/jira-backlog-2026-09-21.csv) is retained and must be refreshed for final submission. The [Sprint 1 review](../scrum/sprint-01/review.md#review-defects-and-carry-over) records the four reported defects; their fixes and retests, wider release acceptance and missing Scrum artifacts remain outstanding. Preserve the dated results and limits in the [test register](../testing/test-evidence.md); backlog refinement does not establish new passing tests. This checklist covers the full Week 12 submission; a GitHub push is not the final release or evidence ZIP.
 
 ## Prepare the numbered folders
+
+**11 October reconciliation:** the [master register](../requirements/product-backlog.md#master-backlog-register), [Excel workbook](1/product-backlog.xlsx) and [60-record Jira export](1/jira-backlog-2026-10-11.csv) now include the current completed and future backlog. KAN-50 catalogue maintenance is merged and its checks are recorded; [current test evidence](../testing/test-evidence.md) supersedes stale implementation/test gaps above. The 21 September paragraph remains a historical snapshot. Jira Sprint 2 is still active, three child verification/review tasks remain open, and the actual Sprint 2 acceptance, retrospective and burndown records are still needed. The Definition of Done has [reported team agreement](../scrum/definition-of-done.md), with agreement details to follow.
 
 Keep editing the project documents at the paths above. From the Git repository root, with an existing commit and `origin` remote, run:
 
@@ -49,8 +77,8 @@ For final submission, review the contents, then ZIP **the seven numbered folders
 
 - [ ] Full backlog export includes completed and pending stories, descriptions and acceptance criteria, readable without Jira.
 - [ ] C4 diagrams match the release and are readable in the included document/image exports.
-- [ ] All 20 core features work as coherent workflows; remaining gaps are resolved or disclosed.
-- [ ] Test cases trace important stories/acceptance criteria to actual results; measured coverage and justified gaps are recorded.
+- [ ] All 20 core features and all six required Week 7 customer changes work as coherent workflows; remaining gaps are resolved or disclosed.
+- [ ] Test cases trace stories and acceptance criteria to actual results. Target 100% coverage as required by the project rubric; where not possible, record measured coverage and explain the uncovered code and reasons.
 - [ ] Every sprint has starting scope, estimation records, an ending board and burndown, review outcomes and retrospective actions.
 - [ ] Final-sprint planning/review/retro/standup recording links work for the instructors; video files are excluded.
 - [ ] The self-contained PDF slide deck uses the prescribed course template.

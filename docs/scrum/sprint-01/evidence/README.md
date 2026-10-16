@@ -1,5 +1,16 @@
 # Sprint 1 evidence register
 
+## Preservation check — 15 October 2026
+
+**Record updated 15 October 2026.** This folder retains the [scaffold Git metadata](2026-09-07-repository-baseline.txt) and the register below. Historical test observations are in [test evidence](../../../testing/test-evidence.md); most original meeting, board, burndown and demo captures are **Not recorded**. The dated register remains a record of what was available then, not a current tracker snapshot.
+
+| ID | Later artifact | Evidence boundary |
+| --- | --- | --- |
+| S1-E20 | [AUTO-20261015-01](../../../testing/test-evidence.md#15-october-2026-post-sprint-implementation-audit); [15 October coverage summary](../../../testing/coverage-reports/2026-10-15-post-sprint-audit.txt) | Later automated verification of the integrated application. It is not a Sprint 1 closure run, hosted acceptance, or evidence that a case passed by 19 September. No historical `sprint-01.txt` coverage summary is retained. |
+| S1-E21 | [Sprint 2 baseline and later delivery register](../../sprint-02/review.md#baseline-and-later-delivery-register--15-october-2026) | Follow-up to carried KAN-6/KAN-33/KAN-34 and their included defect subtasks; Sprint 1 remains 32 committed / 24 Done / 8 carried. |
+
+## Historical register context
+
 Sprint: **6–19 September 2026**, inclusive, Asia/Singapore. Last updated: **21 September 2026**. Sprint 1 review is complete and the sprint is closed in Jira; Sprint 2 is initialized. This register distinguishes the recorded closure outcome from supporting artifacts still to capture.
 
 Closure outcome: **7 Done PBIs / 24 points; 3 carried PBIs / 8 points; original commitment 32 points**. The 24 points comprise 19 business-story points and 5 infrastructure points. The current Jira snapshot corroborates statuses, points and owners. KAN-16 has a recorded resolution at **20 September, 23:06**; the other six Done stories at **21 September, 00:26**. These timestamp fields do not state a timezone and describe later tracker updates, separate from the **19 September review and retrospective**. The original export, closing report and daily burndown remain to be preserved; the snapshot does not reconstruct daily acceptance or completion observations. See the [Jira audit](../../../requirements/assumptions-and-questions.md#21-september-2026--jira-backlog-audit).

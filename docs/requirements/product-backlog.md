@@ -6,11 +6,196 @@ This is the canonical release-scope index and the working acceptance criteria fo
 
 ## Master backlog register
 
-**Status: To fill (any one member; note "Recorded by" below the table).** One row per story or PBI in Jira, completed and pending, so the backlog can be read without Jira (submission folder 1). Estimates are set once and do not change unless a re-estimate is logged; status, sprint and completion date are what change. Update after every planning and review, and when a customer change adds or reopens a story (see [change requests](change-requests.md)). At each sprint close export it as `docs/submission/1/product-backlog.xlsx` (the instructor asked for a spreadsheet view).
+**Ownership update — 16 October 2026.** All 28 unfinished parent items are now unassigned in Jira. Team members will choose their own stories; independent reviewers and the integration lead are **To agree** after ownership is chosen. The scope remains **63 SP per sprint**, averaging **10.5 SP per member per sprint** and **21 SP per member across both**. Aim for roughly 10–11 SP each, retaining whole estimates and dependency order rather than forcing an exact split. Earlier named allocations are historical. Claim a Jira card and sync its sprint record before starting work.
 
-| Priority | Jira | Story | Core feature | SP | Status (To Do / In Progress / Done / Reopened) | Sprint(s) | Done date | Owner | Linked change / original story |
-| ---: | --- | --- | --- | ---: | --- | --- | --- | --- | --- |
-| | | | | | | | | | |
+**Current verified Jira snapshot — 16 October 2026, after reconstruction/rebalance.** **68 issues = 42 parents (41 stories and KAN-60) + 26 subtasks; 174 estimated parent SP = 48 current Jira Done + 63 Sprint 3 To Do + 63 Sprint 4 To Do.** Subtasks add no points. Sprint 3 (id 67) is Active, 4–17 October; Sprint 4 (id 68) is Future, 18–31 October and has not been started. All 28 remaining parents are To Do. This covers completed Sprint 1, Sprint 2 history, both remaining sprints and all six customer changes, with archived optional/duplicate items retained below.
+
+Customer changes were received **2 October**, confirmed in chat on **16 October**; the team intended to retain Sprint 2's original scope and consider them during Sprint 3 planning. The [change register](change-requests.md) distinguishes receipt, source inspection, decisions, new requirements, superseded rules and the KAN-64/80 split. Current [Sprint 3](../scrum/sprint-03/planning.md) and [Sprint 4](../scrum/sprint-04/planning.md) records supersede the earlier 97/29 allocation below. Scope and estimates use the recorded planning method; no six-member vote is recorded. Current ownership follows the later self-selection decision.
+
+Jira Done/resolution dates are administrative values, not proof of acceptance or historical velocity. Sprint 1 retains 32 committed / 24 reported Done / 8 carried; Sprint 2 retains **43 = 35 new + 8 carried**. Its five outstanding stories retain their original 19 points in S3; historical acceptance of the other 24 points remains separately evidenced. The [portable CSV](../submission/1/jira-backlog-2026-10-16.csv) and [workbook](../submission/1/product-backlog.xlsx) use the same current read. No future change forecast is added again beyond the 174-point inventory.
+
+| Priority | Jira | Story | Core feature | SP | Jira status | Sprint(s) | Jira resolution date (+08:00) | Owner | Related Jira item |
+| --- | --- | --- | --- | ---: | --- | --- | --- | --- | --- |
+| High | [KAN-4](https://smu-g7-grp1.atlassian.net/browse/KAN-4) | Save Draft Event Request | CF-03 | 3 | Done | Sprint 1 | 2026-09-21 | Ernest | None recorded |
+| High | [KAN-6](https://smu-g7-grp1.atlassian.net/browse/KAN-6) | Submit an Event Request | CF-02 | 3 | To Do | Sprint 1, Sprint 2, Sprint 3 | Not resolved | Unassigned | relates to: KAN-79 |
+| High | [KAN-8](https://smu-g7-grp1.atlassian.net/browse/KAN-8) | Approve or Reject Venue Booking Request | CF-13 | 3 | Done | Sprint 2 | 2026-10-04 | Tristan | relates to: KAN-78; relates to: KAN-81; relates to: KAN-83; relates to: KAN-82 |
+| High | [KAN-9](https://smu-g7-grp1.atlassian.net/browse/KAN-9) | Check Equipment Availability for an Event | CF-16 | 8 | To Do | Sprint 4 | Not resolved | Unassigned | is blocked by: KAN-18; blocks: KAN-26 |
+| High | [KAN-10](https://smu-g7-grp1.atlassian.net/browse/KAN-10) | Mark Event as Completed | CF-06 | 3 | To Do | Sprint 4 | Not resolved | Unassigned | relates to: KAN-61 |
+| High | [KAN-12](https://smu-g7-grp1.atlassian.net/browse/KAN-12) | Search and Filter Venues | CF-10 | 5 | To Do | Sprint 2, Sprint 3 | Not resolved | Unassigned | relates to: KAN-78 |
+| High | [KAN-14](https://smu-g7-grp1.atlassian.net/browse/KAN-14) | Register for an Event | CF-18 | 5 | To Do | Sprint 4 | Not resolved | Unassigned | relates to: KAN-67; is blocked by: KAN-61; blocks: KAN-17; blocks: KAN-67; relates to: KAN-80 |
+| High | [KAN-15](https://smu-g7-grp1.atlassian.net/browse/KAN-15) | Submit and Review Event Change Requests | CF-07, CF-19 | 5 | To Do | Sprint 4 | Not resolved | Unassigned | relates to: KAN-66; relates to: KAN-64; relates to: KAN-82; relates to: KAN-84; relates to: KAN-80 |
+| Medium | [KAN-16](https://smu-g7-grp1.atlassian.net/browse/KAN-16) | View Event Request Status | CF-06 | 2 | Done | Sprint 1 | 2026-09-20 | Tristan | relates to: KAN-84 |
+| High | [KAN-17](https://smu-g7-grp1.atlassian.net/browse/KAN-17) | Withdraw Attendee Registration | CF-18 | 2 | To Do | Sprint 4 | Not resolved | Unassigned | relates to: KAN-67; is blocked by: KAN-14; relates to: KAN-80 |
+| High | [KAN-18](https://smu-g7-grp1.atlassian.net/browse/KAN-18) | Update Equipment Availability Status | CF-16 | 3 | To Do | Sprint 4 | Not resolved | Unassigned | blocks: KAN-9; relates to: KAN-80 |
+| Highest | [KAN-24](https://smu-g7-grp1.atlassian.net/browse/KAN-24) | Setup Database | Infrastructure | 5 | Done | Sprint 1 | 2026-09-21 | Arvin | None recorded |
+| Highest | [KAN-25](https://smu-g7-grp1.atlassian.net/browse/KAN-25) | User Authorisation and Authentication | CF-01 | 5 | Done | Sprint 1 | 2026-09-21 | Ryan | relates to: KAN-79; relates to: KAN-84 |
+| High | [KAN-26](https://smu-g7-grp1.atlassian.net/browse/KAN-26) | Reserve Equipment | CF-17 | 3 | To Do | Sprint 4 | Not resolved | Unassigned | is blocked by: KAN-9; relates to: KAN-63; blocks: KAN-61; relates to: KAN-84; relates to: KAN-80 |
+| Medium | [KAN-27](https://smu-g7-grp1.atlassian.net/browse/KAN-27) | Request Clarification on an Event Request | CF-04 | 3 | Done | Sprint 1 | 2026-09-21 | Irfan | None recorded |
+| Medium | [KAN-29](https://smu-g7-grp1.atlassian.net/browse/KAN-29) | Automatically Assign Event Coordinator | CF-05 | 3 | Done | Sprint 2 | 2026-10-04 | Tristan | relates to: KAN-65; relates to: KAN-79 |
+| Medium | [KAN-31](https://smu-g7-grp1.atlassian.net/browse/KAN-31) | Create Event Request | CF-02 | 3 | Done | Sprint 1 | 2026-09-21 | Ernest | None recorded |
+| Medium | [KAN-33](https://smu-g7-grp1.atlassian.net/browse/KAN-33) | View Submitted Event Request | CF-04 | 2 | Done | Sprint 1, Sprint 2 | 2026-10-01 | Irfan | None recorded |
+| High | [KAN-34](https://smu-g7-grp1.atlassian.net/browse/KAN-34) | Resume/Edit Draft Event Request | CF-03, CF-07 | 3 | To Do | Sprint 1, Sprint 2, Sprint 3 | Not resolved | Unassigned | None recorded |
+| Medium | [KAN-36](https://smu-g7-grp1.atlassian.net/browse/KAN-36) | Approve/Reject Event Request | CF-04 | 3 | Done | Sprint 1 | 2026-09-21 | Tristan | relates to: KAN-60 |
+| Highest | [KAN-50](https://smu-g7-grp1.atlassian.net/browse/KAN-50) | Maintain Venue Catalog | CF-08 | 5 | To Do | Sprint 2, Sprint 3 | Not resolved | Unassigned | relates to: KAN-77 |
+| Medium | [KAN-51](https://smu-g7-grp1.atlassian.net/browse/KAN-51) | View Venue Availability Calendar | CF-09 | 5 | Done | Sprint 2 | 2026-10-10 | Arvin | relates to: KAN-78; relates to: KAN-81; relates to: KAN-83 |
+| High | [KAN-52](https://smu-g7-grp1.atlassian.net/browse/KAN-52) | Check Venue Suitability | CF-11 | 3 | To Do | Sprint 2, Sprint 3 | Not resolved | Unassigned | relates to: KAN-78; relates to: KAN-82; relates to: KAN-84 |
+| Medium | [KAN-53](https://smu-g7-grp1.atlassian.net/browse/KAN-53) | Submit Venue Booking Request | CF-12 | 3 | Done | Sprint 2 | 2026-10-04 | Kai Jie | relates to: KAN-78; relates to: KAN-81; relates to: KAN-83; relates to: KAN-82 |
+| Medium | [KAN-54](https://smu-g7-grp1.atlassian.net/browse/KAN-54) | Detect Venue Booking Conflicts | CF-14 | 5 | Done | Sprint 2 | 2026-10-10 | Ernest | relates to: KAN-78; relates to: KAN-81; relates to: KAN-83 |
+| Medium | [KAN-55](https://smu-g7-grp1.atlassian.net/browse/KAN-55) | Block Venue for Operational Unavailability | CF-09, CF-14 | 3 | Done | Sprint 2 | 2026-10-04 | Kai Jie | is duplicated by: KAN-21; relates to: KAN-78; relates to: KAN-81 |
+| High | [KAN-60](https://smu-g7-grp1.atlassian.net/browse/KAN-60) | Require a reason when rejecting an event request | CF-04 | 2 | To Do | Sprint 3 | Not resolved | Unassigned | relates to: KAN-36 |
+| High | [KAN-61](https://smu-g7-grp1.atlassian.net/browse/KAN-61) | Confirm Event After Planning Arrangements | CF-06 | 3 | To Do | Sprint 4 | Not resolved | Unassigned | is blocked by: KAN-26; blocks: KAN-14; relates to: KAN-62; relates to: KAN-10; relates to: KAN-84; relates to: KAN-80 |
+| High | [KAN-62](https://smu-g7-grp1.atlassian.net/browse/KAN-62) | Cancel Event and Release Its Arrangements | CF-06, CF-19 | 5 | To Do | Sprint 4 | Not resolved | Unassigned | relates to: KAN-61; relates to: KAN-82; relates to: KAN-80 |
+| High | [KAN-63](https://smu-g7-grp1.atlassian.net/browse/KAN-63) | Submit and Review Event Equipment Requests | CF-15 | 5 | To Do | Sprint 4 | Not resolved | Unassigned | relates to: KAN-26; relates to: KAN-84 |
+| High | [KAN-64](https://smu-g7-grp1.atlassian.net/browse/KAN-64) | Receive Request, Assignment and Venue Notifications | CF-20 | 5 | To Do | Sprint 3 | Not resolved | Unassigned | relates to: KAN-79; relates to: KAN-15; blocks: KAN-80; blocks: KAN-81; blocks: KAN-83 |
+| High | [KAN-65](https://smu-g7-grp1.atlassian.net/browse/KAN-65) | Reassign Event Coordinator | CF-05 | 3 | To Do | Sprint 3 | Not resolved | Unassigned | relates to: KAN-29; relates to: KAN-79 |
+| High | [KAN-66](https://smu-g7-grp1.atlassian.net/browse/KAN-66) | Update Event Information During Planning | CF-07 | 3 | To Do | Sprint 4 | Not resolved | Unassigned | relates to: KAN-15 |
+| High | [KAN-67](https://smu-g7-grp1.atlassian.net/browse/KAN-67) | View Event Registrations | CF-18 | 2 | To Do | Sprint 4 | Not resolved | Unassigned | relates to: KAN-14; relates to: KAN-17; is blocked by: KAN-14 |
+| High | [KAN-77](https://smu-g7-grp1.atlassian.net/browse/KAN-77) | Configure Venue Setup and Turnaround Durations | CF-08; CR-1 | 2 | To Do | Sprint 3 | Not resolved | Unassigned | relates to: KAN-50; relates to: KAN-78 |
+| High | [KAN-78](https://smu-g7-grp1.atlassian.net/browse/KAN-78) | Apply Venue Buffers to Availability and Booking Conflicts | CF-09–CF-14; CR-1 | 8 | To Do | Sprint 3 | Not resolved | Unassigned | relates to: KAN-77; relates to: KAN-51; relates to: KAN-12; relates to: KAN-52; relates to: KAN-53; relates to: KAN-8; relates to: KAN-54; relates to: KAN-55; blocks: KAN-81; blocks: KAN-83 |
+| High | [KAN-79](https://smu-g7-grp1.atlassian.net/browse/KAN-79) | Assign Submitted Events Through a Coordinator Lead Queue | CF-01, CF-02, CF-04, CF-05; CR-5 | 8 | To Do | Sprint 3 | Not resolved | Unassigned | relates to: KAN-29; relates to: KAN-25; relates to: KAN-6; relates to: KAN-65; relates to: KAN-64 |
+| High | [KAN-80](https://smu-g7-grp1.atlassian.net/browse/KAN-80) | Receive Equipment, Lifecycle, Change and Registration Notifications | CF-20 | 3 | To Do | Sprint 4 | Not resolved | Unassigned | is blocked by: KAN-64; relates to: KAN-84; relates to: KAN-18; relates to: KAN-26; relates to: KAN-15; relates to: KAN-61; relates to: KAN-62; relates to: KAN-14; relates to: KAN-17 |
+| High | [KAN-81](https://smu-g7-grp1.atlassian.net/browse/KAN-81) | Recover venue arrangements affected by operational unavailability | CF-09, CF-12, CF-13, CF-14, CF-20; CR-2 | 8 | To Do | Sprint 3 | Not resolved | Unassigned | is blocked by: KAN-64; is blocked by: KAN-78; relates to: KAN-55; relates to: KAN-51; relates to: KAN-53; relates to: KAN-8; relates to: KAN-54; relates to: KAN-83; relates to: KAN-82 |
+| High | [KAN-82](https://smu-g7-grp1.atlassian.net/browse/KAN-82) | Manage each venue arrangement independently for an event | CF-12, CF-13, CF-14, CF-19; CR-3 | 5 | To Do | Sprint 4 | Not resolved | Unassigned | relates to: KAN-53; relates to: KAN-8; relates to: KAN-52; relates to: KAN-15; relates to: KAN-62; relates to: KAN-81; relates to: KAN-83; relates to: KAN-84 |
+| High | [KAN-83](https://smu-g7-grp1.atlassian.net/browse/KAN-83) | Manage temporary venue holds with expiry and automatic release | CF-09, CF-12, CF-13, CF-14, CF-20; CR-4 | 8 | To Do | Sprint 3 | Not resolved | Unassigned | is blocked by: KAN-64; is blocked by: KAN-78; relates to: KAN-53; relates to: KAN-8; relates to: KAN-51; relates to: KAN-54; relates to: KAN-81; relates to: KAN-82 |
+| High | [KAN-84](https://smu-g7-grp1.atlassian.net/browse/KAN-84) | Review operational safety before event preparation | CF-01, CF-06, CF-11, CF-15, CF-17, CF-19, CF-20; CR-6 | 8 | To Do | Sprint 4 | Not resolved | Unassigned | relates to: KAN-25; relates to: KAN-16; relates to: KAN-61; relates to: KAN-63; relates to: KAN-26; relates to: KAN-15; relates to: KAN-52; relates to: KAN-80; relates to: KAN-82 |
+
+<details>
+<summary>Earlier 16 October master snapshot (superseded allocation; preserved history)</summary>
+
+### Earlier 16 October selection — superseded 97/29 allocation
+
+**Current Jira snapshot — 16 October 2026.** Live Jira contains **63 issues: 37 parents (36 stories and KAN-60) plus 26 subtasks**. All parent estimates are populated: **145 SP = 48 SP on 14 current Done parents + 97 SP on 23 To Do parents**. These are current administrative totals, not historical velocity. The [portable CSV](../submission/1/jira-backlog-2026-10-16.csv), [workbook](../submission/1/product-backlog.xlsx) and table below are aligned to the same final Jira read.
+
+Sprint 3 (id 67) is **Active, 4–17 October**, with all **23 selected items / 97 SP** still To Do. Scope, estimates, owners, reviewers and implementation defaults were selected through **the recorded delegated planning method**, not a six-member estimation vote. The [selected plan](../scrum/sprint-03/planning.md#selected-scope-and-release-allocation) and [current story cards](../scrum/sprint-03/sprint-backlog.md) supersede the older proposals below. KAN-15 changes from 2 to 5 SP with a recorded rationale; KAN-60 is the existing correction, counted once; KAN-77/78/79 add CR-1 and CR-5.
+
+Sprint 2 was administratively closed on **16 October at 02:06 Singapore time**. Its original **43 SP (35 new + 8 carried)** remain the historical baseline. KAN-6/34/50/12/52 carry their full original **19 SP** into Sprint 3 for completion and re-verification, with no delivered credit assigned to them in the current disposition. The user reports acceptance was not recorded: neither this change nor the other seven currently Done S2 parents (24 SP) establishes historical acceptance or velocity.
+
+The Jira resolution field below is an administrative timestamp, not an acceptance date. Reopened issues may retain a prior resolution timestamp; status controls the current open/closed interpretation. Table order follows Jira key, not priority rank. Subtasks add no points.
+
+| Priority | Jira | Story | Core feature | SP | Jira status | Sprint(s) | Jira resolution date (+08:00) | Owner | Related Jira item |
+| --- | --- | --- | --- | ---: | --- | --- | --- | --- | --- |
+| High | [KAN-4](https://smu-g7-grp1.atlassian.net/browse/KAN-4) | Save Draft Event Request | CF-03 | 3 | Done | Sprint 1 | 2026-09-21 | Ernest | None recorded |
+| High | [KAN-6](https://smu-g7-grp1.atlassian.net/browse/KAN-6) | Submit an Event Request | CF-02 | 3 | To Do | Sprint 1, Sprint 2, Sprint 3 | Not resolved | Kai Jie | relates to: KAN-79 |
+| High | [KAN-8](https://smu-g7-grp1.atlassian.net/browse/KAN-8) | Approve or Reject Venue Booking Request | CF-13 | 3 | Done | Sprint 2 | 2026-10-04 | Tristan | relates to: KAN-78 |
+| High | [KAN-9](https://smu-g7-grp1.atlassian.net/browse/KAN-9) | Check Equipment Availability for an Event | CF-16 | 8 | To Do | Sprint 3 | Not resolved | Arvin | is blocked by: KAN-18; blocks: KAN-26 |
+| High | [KAN-10](https://smu-g7-grp1.atlassian.net/browse/KAN-10) | Mark Event as Completed | CF-06 | 3 | To Do | Sprint 3 | Not resolved | Kai Jie | relates to: KAN-61 |
+| High | [KAN-12](https://smu-g7-grp1.atlassian.net/browse/KAN-12) | Search and Filter Venues | CF-10 | 5 | To Do | Sprint 2, Sprint 3 | Not resolved | Tristan | relates to: KAN-78 |
+| High | [KAN-14](https://smu-g7-grp1.atlassian.net/browse/KAN-14) | Register for an Event | CF-18 | 5 | To Do | Sprint 3 | Not resolved | Ernest | relates to: KAN-67; is blocked by: KAN-61; blocks: KAN-17; blocks: KAN-67 |
+| High | [KAN-15](https://smu-g7-grp1.atlassian.net/browse/KAN-15) | Submit and Review Event Change Requests | CF-07, CF-19 | 5 | To Do | Sprint 3 | Not resolved | Irfan | relates to: KAN-66; relates to: KAN-64 |
+| Medium | [KAN-16](https://smu-g7-grp1.atlassian.net/browse/KAN-16) | View Event Request Status | CF-06 | 2 | Done | Sprint 1 | 2026-09-20 | Tristan | None recorded |
+| High | [KAN-17](https://smu-g7-grp1.atlassian.net/browse/KAN-17) | Withdraw Attendee Registration | CF-18 | 2 | To Do | Sprint 3 | Not resolved | Ernest | relates to: KAN-67; is blocked by: KAN-14 |
+| High | [KAN-18](https://smu-g7-grp1.atlassian.net/browse/KAN-18) | Update Equipment Availability Status | CF-16 | 3 | To Do | Sprint 3 | Not resolved | Arvin | blocks: KAN-9 |
+| Highest | [KAN-24](https://smu-g7-grp1.atlassian.net/browse/KAN-24) | Setup Database | Infrastructure | 5 | Done | Sprint 1 | 2026-09-21 | Arvin | None recorded |
+| Highest | [KAN-25](https://smu-g7-grp1.atlassian.net/browse/KAN-25) | User Authorisation and Authentication | CF-01 | 5 | Done | Sprint 1 | 2026-09-21 | Ryan | relates to: KAN-79 |
+| High | [KAN-26](https://smu-g7-grp1.atlassian.net/browse/KAN-26) | Reserve Equipment | CF-17 | 3 | To Do | Sprint 3 | Not resolved | Arvin | is blocked by: KAN-9; relates to: KAN-63; blocks: KAN-61 |
+| Medium | [KAN-27](https://smu-g7-grp1.atlassian.net/browse/KAN-27) | Request Clarification on an Event Request | CF-04 | 3 | Done | Sprint 1 | 2026-09-21 | Irfan | None recorded |
+| Medium | [KAN-29](https://smu-g7-grp1.atlassian.net/browse/KAN-29) | Automatically Assign Event Coordinator | CF-05 | 3 | Done | Sprint 2 | 2026-10-04 | Tristan | relates to: KAN-65; relates to: KAN-79 |
+| Medium | [KAN-31](https://smu-g7-grp1.atlassian.net/browse/KAN-31) | Create Event Request | CF-02 | 3 | Done | Sprint 1 | 2026-09-21 | Ernest | None recorded |
+| Medium | [KAN-33](https://smu-g7-grp1.atlassian.net/browse/KAN-33) | View Submitted Event Request | CF-04 | 2 | Done | Sprint 1, Sprint 2 | 2026-10-01 | Irfan | None recorded |
+| High | [KAN-34](https://smu-g7-grp1.atlassian.net/browse/KAN-34) | Resume/Edit Draft Event Request | CF-03, CF-07 | 3 | To Do | Sprint 1, Sprint 2, Sprint 3 | Not resolved | Kai Jie | None recorded |
+| Medium | [KAN-36](https://smu-g7-grp1.atlassian.net/browse/KAN-36) | Approve/Reject Event Request | CF-04 | 3 | Done | Sprint 1 | 2026-09-21 | Tristan | relates to: KAN-60 |
+| Highest | [KAN-50](https://smu-g7-grp1.atlassian.net/browse/KAN-50) | Maintain Venue Catalog | CF-08 | 5 | To Do | Sprint 2, Sprint 3 | Not resolved | Tristan | relates to: KAN-77 |
+| Medium | [KAN-51](https://smu-g7-grp1.atlassian.net/browse/KAN-51) | View Venue Availability Calendar | CF-09 | 5 | Done | Sprint 2 | 2026-10-10 | Arvin | relates to: KAN-78 |
+| High | [KAN-52](https://smu-g7-grp1.atlassian.net/browse/KAN-52) | Check Venue Suitability | CF-11 | 3 | To Do | Sprint 2, Sprint 3 | Not resolved | Tristan | relates to: KAN-78 |
+| Medium | [KAN-53](https://smu-g7-grp1.atlassian.net/browse/KAN-53) | Submit Venue Booking Request | CF-12 | 3 | Done | Sprint 2 | 2026-10-04 | Kai Jie | relates to: KAN-78 |
+| Medium | [KAN-54](https://smu-g7-grp1.atlassian.net/browse/KAN-54) | Detect Venue Booking Conflicts | CF-14 | 5 | Done | Sprint 2 | 2026-10-10 | Ernest | relates to: KAN-78 |
+| Medium | [KAN-55](https://smu-g7-grp1.atlassian.net/browse/KAN-55) | Block Venue for Operational Unavailability | CF-09, CF-14 | 3 | Done | Sprint 2 | 2026-10-04 | Kai Jie | is duplicated by: KAN-21; relates to: KAN-78 |
+| High | [KAN-60](https://smu-g7-grp1.atlassian.net/browse/KAN-60) | Require a reason when rejecting an event request | CF-04 | 2 | To Do | Sprint 3 | Not resolved | Kai Jie | relates to: KAN-36 |
+| High | [KAN-61](https://smu-g7-grp1.atlassian.net/browse/KAN-61) | Confirm Event After Planning Arrangements | CF-06 | 3 | To Do | Sprint 3 | Not resolved | Kai Jie | is blocked by: KAN-26; blocks: KAN-14; relates to: KAN-62; relates to: KAN-10 |
+| High | [KAN-62](https://smu-g7-grp1.atlassian.net/browse/KAN-62) | Cancel Event and Release Its Arrangements | CF-06, CF-19 | 5 | To Do | Sprint 3 | Not resolved | Kai Jie | relates to: KAN-61 |
+| High | [KAN-63](https://smu-g7-grp1.atlassian.net/browse/KAN-63) | Submit and Review Event Equipment Requests | CF-15 | 5 | To Do | Sprint 3 | Not resolved | Arvin | relates to: KAN-26 |
+| High | [KAN-64](https://smu-g7-grp1.atlassian.net/browse/KAN-64) | Notify Relevant Users About Event Workflow Updates | CF-20 | 8 | To Do | Sprint 3 | Not resolved | Irfan | relates to: KAN-79; relates to: KAN-15 |
+| High | [KAN-65](https://smu-g7-grp1.atlassian.net/browse/KAN-65) | Reassign Event Coordinator | CF-05 | 3 | To Do | Sprint 3 | Not resolved | Ryan | relates to: KAN-29; relates to: KAN-79 |
+| High | [KAN-66](https://smu-g7-grp1.atlassian.net/browse/KAN-66) | Update Event Information During Planning | CF-07 | 3 | To Do | Sprint 3 | Not resolved | Ernest | relates to: KAN-15 |
+| High | [KAN-67](https://smu-g7-grp1.atlassian.net/browse/KAN-67) | View Event Registrations | CF-18 | 2 | To Do | Sprint 3 | Not resolved | Ernest | relates to: KAN-14; relates to: KAN-17; is blocked by: KAN-14 |
+| High | [KAN-77](https://smu-g7-grp1.atlassian.net/browse/KAN-77) | Configure Venue Setup and Turnaround Durations | CF-08; CR-1 | 2 | To Do | Sprint 3 | Not resolved | Tristan | relates to: KAN-50; relates to: KAN-78 |
+| High | [KAN-78](https://smu-g7-grp1.atlassian.net/browse/KAN-78) | Apply Venue Buffers to Availability and Booking Conflicts | CF-09–CF-14; CR-1 | 8 | To Do | Sprint 3 | Not resolved | Tristan | relates to: KAN-77; relates to: KAN-51; relates to: KAN-12; relates to: KAN-52; relates to: KAN-53; relates to: KAN-8; relates to: KAN-54; relates to: KAN-55 |
+| High | [KAN-79](https://smu-g7-grp1.atlassian.net/browse/KAN-79) | Assign Submitted Events Through a Coordinator Lead Queue | CF-01, CF-05; CR-5 | 8 | To Do | Sprint 3 | Not resolved | Ryan | relates to: KAN-29; relates to: KAN-25; relates to: KAN-6; relates to: KAN-65; relates to: KAN-64 |
+
+**Release forecast:** four additional Sprint 4 changes (CR-2/3/4/6) have a **29-SP planning forecast**, outside current Jira totals and not yet created as Jira stories. The resulting planning inventory is 174 SP; 48 current Jira Done + 97 selected S3 + 29 forecast S4. It is not a reconstructed release burndown. Original Sprint 1 reported outcome remains **32 committed / 24 Done / 8 carried**.
+
+
+</details>
+
+### Historical master snapshot and initial proposal — 15–16 October 2026
+
+The following original snapshot/proposal is retained for history. Its current-status, unestimated and “To agree” statements are superseded by the current register and selected Sprint 3 plan above.
+
+
+**Planning note — 16 October 2026:** all 34 top-level Jira items were read again for planning; the 15 future items remain To Do. [Sprint 3's broad proposal](../scrum/sprint-03/planning.md#proposed-scope-and-release-split--16-october) covers those items, five repairs and CR-1/CR-5; Sprint 4 is proposed to cover the remaining four changes. Proposed 84/29-point totals and the possible KAN-15 re-estimate are **To agree**. The master register below remains the actual Jira snapshot, not the proposed commitment. Refresh Jira, this register and the workbook together after the team confirms classification, story creation, estimates and selection.
+
+**Current Jira snapshot: 15 October 2026, 18:11 +08:00. Recorded 15 October 2026.** This register includes all 34 retained top-level items: 33 stories and the KAN-60 corrective task. The [Excel workbook](../submission/1/product-backlog.xlsx) includes the full story specifications, delivery evidence and a separate subtask register; the [current portable Jira CSV](../submission/1/jira-backlog-2026-10-15.csv) retains all 60 issues and complete descriptions. The [11 October CSV](../submission/1/jira-backlog-2026-10-11.csv) and dated reconciliation below remain historical snapshots. Refresh the current views together after planning/review or a scope change.
+
+**How to read this table:** status, priority, owner, sprint membership and resolution date are Jira fields as retrieved today. A Jira resolution date is an administrative workflow timestamp, **not a sprint acceptance date**. Current Done status does not reconstruct completion within a sprint window. Blank estimates are **To agree**, not zero; no estimates have been changed. Rows are in key order, not a newly agreed delivery priority. Exact Jira rank and timestamps are retained in the CSV.
+
+| Priority | Jira | Story | Core feature | SP | Jira status | Sprint(s) | Jira resolution date (+08:00) | Owner | Related Jira item |
+| --- | --- | --- | --- | ---: | --- | --- | --- | --- | --- |
+| High | [KAN-4](https://smu-g7-grp1.atlassian.net/browse/KAN-4) | Save Draft Event Request | CF-03 | 3 | Done | Sprint 1 | 2026-09-21 | Ernest | None recorded |
+| High | [KAN-6](https://smu-g7-grp1.atlassian.net/browse/KAN-6) | Submit an Event Request | CF-02 | 3 | Done | Sprint 1, Sprint 2 | 2026-10-04 | Kai Jie | None recorded |
+| High | [KAN-8](https://smu-g7-grp1.atlassian.net/browse/KAN-8) | Approve or Reject Venue Booking Request | CF-13 | 3 | Done | Sprint 2 | 2026-10-04 | Tristan | None recorded |
+| Medium | [KAN-9](https://smu-g7-grp1.atlassian.net/browse/KAN-9) | Check Equipment Availability for an Event | CF-16 | 8 | To Do | Not allocated | Not resolved | Unassigned | None recorded |
+| High | [KAN-10](https://smu-g7-grp1.atlassian.net/browse/KAN-10) | Mark Event as Completed | CF-06 | 3 | To Do | Not allocated | Not resolved | Unassigned | None recorded |
+| High | [KAN-12](https://smu-g7-grp1.atlassian.net/browse/KAN-12) | Search and Filter Venues | CF-10 | 5 | Done | Sprint 2 | 2026-10-10 | Ryan | None recorded |
+| High | [KAN-14](https://smu-g7-grp1.atlassian.net/browse/KAN-14) | Register for an Event | CF-18 | 5 | To Do | Not allocated | Not resolved | Unassigned | relates to: KAN-67 |
+| High | [KAN-15](https://smu-g7-grp1.atlassian.net/browse/KAN-15) | Submit and Review Event Change Requests | CF-07, CF-19 | 2 | To Do | Not allocated | Not resolved | Unassigned | relates to: KAN-66 |
+| Medium | [KAN-16](https://smu-g7-grp1.atlassian.net/browse/KAN-16) | View Event Request Status | CF-06 | 2 | Done | Sprint 1 | 2026-09-20 | Tristan | None recorded |
+| Medium | [KAN-17](https://smu-g7-grp1.atlassian.net/browse/KAN-17) | Withdraw Attendee Registration | CF-18 | 2 | To Do | Not allocated | Not resolved | Unassigned | relates to: KAN-67 |
+| Medium | [KAN-18](https://smu-g7-grp1.atlassian.net/browse/KAN-18) | Update Equipment Availability Status | CF-16 | 3 | To Do | Not allocated | Not resolved | Unassigned | None recorded |
+| Highest | [KAN-24](https://smu-g7-grp1.atlassian.net/browse/KAN-24) | Setup Database | Infrastructure | 5 | Done | Sprint 1 | 2026-09-21 | Arvin | None recorded |
+| Highest | [KAN-25](https://smu-g7-grp1.atlassian.net/browse/KAN-25) | User Authorisation and Authentication | CF-01 | 5 | Done | Sprint 1 | 2026-09-21 | Ryan | None recorded |
+| Medium | [KAN-26](https://smu-g7-grp1.atlassian.net/browse/KAN-26) | Reserve Equipment | CF-17 | 3 | To Do | Not allocated | Not resolved | Unassigned | None recorded |
+| Medium | [KAN-27](https://smu-g7-grp1.atlassian.net/browse/KAN-27) | Request Clarification on an Event Request | CF-04 | 3 | Done | Sprint 1 | 2026-09-21 | Irfan | None recorded |
+| Medium | [KAN-29](https://smu-g7-grp1.atlassian.net/browse/KAN-29) | Automatically Assign Event Coordinator | CF-05 | 3 | Done | Sprint 2 | 2026-10-04 | Tristan | relates to: KAN-65 |
+| Medium | [KAN-31](https://smu-g7-grp1.atlassian.net/browse/KAN-31) | Create Event Request | CF-02 | 3 | Done | Sprint 1 | 2026-09-21 | Ernest | None recorded |
+| Medium | [KAN-33](https://smu-g7-grp1.atlassian.net/browse/KAN-33) | View Submitted Event Request | CF-04 | 2 | Done | Sprint 1, Sprint 2 | 2026-10-01 | Irfan | None recorded |
+| Medium | [KAN-34](https://smu-g7-grp1.atlassian.net/browse/KAN-34) | Resume/Edit Draft Event Request | CF-03, CF-07 | 3 | Done | Sprint 1, Sprint 2 | 2026-10-04 | Kai Jie | None recorded |
+| Medium | [KAN-36](https://smu-g7-grp1.atlassian.net/browse/KAN-36) | Approve/Reject Event Request | CF-04 | 3 | Done | Sprint 1 | 2026-09-21 | Tristan | relates to: KAN-60 |
+| Medium | [KAN-50](https://smu-g7-grp1.atlassian.net/browse/KAN-50) | Maintain Venue Catalog | CF-08 | 5 | Done | Sprint 2 | 2026-10-10 | Irfan | None recorded |
+| Medium | [KAN-51](https://smu-g7-grp1.atlassian.net/browse/KAN-51) | View Venue Availability Calendar | CF-09 | 5 | Done | Sprint 2 | 2026-10-10 | Arvin | None recorded |
+| Medium | [KAN-52](https://smu-g7-grp1.atlassian.net/browse/KAN-52) | Check Venue Suitability | CF-11 | 3 | Done | Sprint 2 | 2026-10-04 | Tristan | None recorded |
+| Medium | [KAN-53](https://smu-g7-grp1.atlassian.net/browse/KAN-53) | Submit Venue Booking Request | CF-12 | 3 | Done | Sprint 2 | 2026-10-04 | Kai Jie | None recorded |
+| Medium | [KAN-54](https://smu-g7-grp1.atlassian.net/browse/KAN-54) | Detect Venue Booking Conflicts | CF-14 | 5 | Done | Sprint 2 | 2026-10-10 | Ernest | None recorded |
+| Medium | [KAN-55](https://smu-g7-grp1.atlassian.net/browse/KAN-55) | Block Venue for Operational Unavailability | CF-09, CF-14 | 3 | Done | Sprint 2 | 2026-10-04 | Kai Jie | is duplicated by: KAN-21 |
+| Medium | [KAN-60](https://smu-g7-grp1.atlassian.net/browse/KAN-60) | Require a reason when rejecting an event request | CF-04 | To agree | To Do | Not allocated | Not resolved | Unassigned | relates to: KAN-36 |
+| Medium | [KAN-61](https://smu-g7-grp1.atlassian.net/browse/KAN-61) | Confirm Event After Planning Arrangements | CF-06 | To agree | To Do | Not allocated | Not resolved | Unassigned | None recorded |
+| Medium | [KAN-62](https://smu-g7-grp1.atlassian.net/browse/KAN-62) | Cancel Event and Release Its Arrangements | CF-06, CF-19 | To agree | To Do | Not allocated | Not resolved | Unassigned | None recorded |
+| Medium | [KAN-63](https://smu-g7-grp1.atlassian.net/browse/KAN-63) | Submit and Review Event Equipment Requests | CF-15 | To agree | To Do | Not allocated | Not resolved | Unassigned | None recorded |
+| Medium | [KAN-64](https://smu-g7-grp1.atlassian.net/browse/KAN-64) | Notify Relevant Users About Event Workflow Updates | CF-20 | To agree | To Do | Not allocated | Not resolved | Unassigned | None recorded |
+| Medium | [KAN-65](https://smu-g7-grp1.atlassian.net/browse/KAN-65) | Reassign Event Coordinator | CF-05 | To agree | To Do | Not allocated | Not resolved | Unassigned | relates to: KAN-29 |
+| Medium | [KAN-66](https://smu-g7-grp1.atlassian.net/browse/KAN-66) | Update Event Information During Planning | CF-07 | To agree | To Do | Not allocated | Not resolved | Unassigned | relates to: KAN-15 |
+| Medium | [KAN-67](https://smu-g7-grp1.atlassian.net/browse/KAN-67) | View Event Registrations | CF-18 | To agree | To Do | Not allocated | Not resolved | Unassigned | relates to: KAN-14; relates to: KAN-17 |
+
+The 34 parents contain **93 estimated points**, with eight items (KAN-60–KAN-67) still unestimated: 19 currently Done parents have 67 points; the 15 future items have 26 estimated points plus the eight unestimated items. These are current release-backlog totals, not sprint velocity.
+
+### Sprint 2 parent and subtask reconciliation — 15 October 2026
+
+Recorded 15 October 2026. Read-only Jira query `project = KAN ORDER BY key ASC` returned all 60 retained issues. All 34 parent metadata rows and full descriptions remain unchanged from 11 October. All 26 subtasks are now **Done**; the three changes below supersede their earlier administrative statuses, without supplying the missing acceptance evidence.
+
+| Subtask | Parent | Current Jira state / resolution (+08:00) | Evidence still to reconcile |
+| --- | --- | --- | --- |
+| [KAN-57](https://smu-g7-grp1.atlassian.net/browse/KAN-57) | KAN-34 | Done; 15 October 2026, 16:11:14 | Both saved-draft registration toggle directions, save/reopen and refresh in hosted `S2-T19`. The retained 10 October comment does not record a later run. |
+| [KAN-58](https://smu-g7-grp1.atlassian.net/browse/KAN-58) | KAN-6 | Done; 15 October 2026, 16:11:26 | `MAN-20261009-KAN59-01` records reopening, correction and submission. The subsequent refresh and remaining `S2-T21` checks are **Not recorded**. |
+| [KAN-76](https://smu-g7-grp1.atlassian.net/browse/KAN-76) | KAN-50 | Done; 15 October 2026, 16:11:39 | PR #33 still has no submitted peer review in the 15 October check. Required AI-assistance disclosure evidence is **Not recorded**. A later review must carry its actual date. |
+
+The original **43-point Sprint 2 commitment** is unchanged. All 12 parents are Done in Jira, but Sprint 2 is still active and only Sprints 1 and 2 exist there. Sprint 3 selection, estimates and acceptance decisions remain **To agree**. Jira resolutions on 4–15 October must not be presented as evidence of completion or acceptance by 3 October. The [Sprint 2 review baseline](../scrum/sprint-02/review.md) separates original scope, later delivery and remaining evidence.
+
+The 15 October code audit (`AUTO-20261015-01`) passed the existing suites while separate reproductions exposed defects in venue editing (KAN-50), submission error display (KAN-6/KAN-59), draft/search date validation (KAN-34/KAN-12), and a zero-attendance suitability inconsistency (KAN-52). Passing existing tests does not close these defects. The [Sprint 3 pre-planning register](../scrum/sprint-03/planning.md#pre-planning-baseline-and-defect-triage) lists repair candidates separately from the six [new customer changes](change-requests.md). Reopening, classification, estimates and owners are **To agree**; no new story, point allocation or historical acceptance is created by this reconciliation.
+
+### Sprint 2 parent and subtask reconciliation — 11 October 2026
+
+**Historical snapshot:** the following entry records the 11 October state. Its To Do values are superseded by the 15 October reconciliation above; its remaining evidence gaps are retained until actual results are supplied.
+
+All 12 Sprint 2 parents are currently Done in Jira, totalling **43 points: 35 new + 8 carry-over**. Jira Sprint 2 is still active. Historical Sprint 1 acceptance remains **24 of 32 points**, with eight carried; neither current statuses nor resolution timestamps replace the [historical review](../scrum/sprint-01/review.md). The Sprint 2 review/retrospective and velocity still require their actual outcomes; see the [Sprint 2 review](../scrum/sprint-02/review.md) and [release burndown](../scrum/release-burndown.md).
+
+KAN-57, KAN-58 and KAN-76 are nested **subtasks**, not extra Sprint 2 stories. Their current To Do statuses were retained because these checks remain outstanding:
+
+| Subtask | Parent / sprint membership | Implemented or verified | Remaining evidence |
+| --- | --- | --- | --- |
+| [KAN-57](https://smu-g7-grp1.atlassian.net/browse/KAN-57) | KAN-34; Sprint 1 and Sprint 2 | Draft registration-field repair and component tests: `AUTO-20261001-DRAFT-01` | Saved values and both No→Yes / Yes→No transitions, including refresh, in the hosted walkthrough (`S2-T19`). Irfan's 10 October Jira comment explicitly leaves hosted acceptance outstanding. |
+| [KAN-58](https://smu-g7-grp1.atlassian.net/browse/KAN-58) | KAN-6; Sprint 1 and Sprint 2 | Saved-draft submission repair and automated checks; `MAN-20261009-KAN59-01` records reopening, correcting and submitting a saved draft | Record the post-submission refresh result required by this subtask; the broader `S2-T21` walkthrough remains incomplete. Irfan's 10 October Jira comment retains the open status. |
+| [KAN-76](https://smu-g7-grp1.atlassian.net/browse/KAN-76) | KAN-50; Sprint 2 | [PR #33](https://github.com/MochaLxtte/ConnectSphere/pull/33) merged; [CI run 37957538659](https://github.com/MochaLxtte/ConnectSphere/actions/runs/37957538659) passed; catalogue manual runs recorded | Peer review and the card's required AI-assistance note remain outstanding. PR #33 had no submitted reviews when checked on 11 October. |
+
+Subtasks are already included in their parent estimates and add no story points. No Jira dates, statuses or sprint memberships were changed by this documentation reconciliation. The agreed calendar remains Sunday starts and Saturday reviews; actual meeting and completion evidence must be recorded separately.
 
 ## Release coverage
 
@@ -18,26 +203,28 @@ This is the canonical release-scope index and the working acceptance criteria fo
 
 | ID | Core feature | Canonical stories |
 | --- | --- | --- |
-| CF-01 | User Authorisation and Authentication | KAN-25; each later story also checks role and event relationship |
-| CF-02 | Event Request Creation | KAN-31, KAN-6; corrective subtasks KAN-58/KAN-59 |
+| CF-01 | User Authorisation and Authentication | KAN-25; each later story also checks role and event relationship, KAN-79, KAN-84 |
+| CF-02 | Event Request Creation | KAN-31, KAN-6; corrective subtasks KAN-58/KAN-59, KAN-79 |
 | CF-03 | Draft Event Requests | KAN-4, KAN-34; corrective subtask KAN-57 |
-| CF-04 | Event Review and Approval | KAN-33, KAN-27, KAN-36; corrective subtask KAN-56 and task KAN-60 |
-| CF-05 | Coordinator Assignment | KAN-29; KAN-65 reassignment |
-| CF-06 | Event Status Management | KAN-16, KAN-61, KAN-62, KAN-10; submission/review/planning actions own their transitions |
+| CF-04 | Event Review and Approval | KAN-33, KAN-27, KAN-36; corrective subtask KAN-56 and task KAN-60, KAN-79 |
+| CF-05 | Coordinator Assignment | KAN-29 original policy; KAN-79 Lead queue replaces it under CR-5; KAN-65 reassignment |
+| CF-06 | Event Status Management | KAN-16, KAN-61, KAN-62, KAN-10; submission/review/planning actions own their transitions, KAN-84 |
 | CF-07 | Event Information Management | KAN-66; KAN-15 handles significant changes |
-| CF-08 | Venue Catalogue | KAN-50, including supported layouts |
-| CF-09 | Venue Availability Calendar | KAN-51; KAN-55 supplies operational unavailability |
-| CF-10 | Venue Search and Filtering | KAN-12 |
-| CF-11 | Venue Suitability Checking | KAN-52 |
-| CF-12 | Venue Booking Request | KAN-53 |
-| CF-13 | Venue Booking Approval | KAN-8 |
-| CF-14 | Booking Conflict Detection | KAN-54, with operational-block protection from KAN-55 |
-| CF-15 | Equipment Request Management | KAN-63: coordinator request and Technical Support Staff review/update |
+| CF-08 | Venue Catalogue | KAN-50, including supported layouts; KAN-77 buffer configuration (CR-1) |
+| CF-09 | Venue Availability Calendar | KAN-51; KAN-55 supplies operational unavailability, KAN-78, KAN-81, KAN-83 |
+| CF-10 | Venue Search and Filtering | KAN-12, KAN-78 |
+| CF-11 | Venue Suitability Checking | KAN-52, KAN-78, KAN-84 |
+| CF-12 | Venue Booking Request | KAN-53, KAN-78, KAN-81, KAN-82, KAN-83 |
+| CF-13 | Venue Booking Approval | KAN-8, KAN-78, KAN-81, KAN-82, KAN-83 |
+| CF-14 | Booking Conflict Detection | KAN-54, with operational-block protection from KAN-55, KAN-78, KAN-81, KAN-82, KAN-83 |
+| CF-15 | Equipment Request Management | KAN-63: coordinator request and Technical Support Staff review/update, KAN-84 |
 | CF-16 | Equipment Availability Checking | KAN-9, KAN-18 |
-| CF-17 | Equipment Reservation | KAN-26 |
+| CF-17 | Equipment Reservation | KAN-26, KAN-84 |
 | CF-18 | Attendee Registration | KAN-14, KAN-17, KAN-67 |
-| CF-19 | Event Change Requests | KAN-15; KAN-62 handles cancellation and arrangement release |
-| CF-20 | Notification System | KAN-64, integrated with the actions in the other stories |
+| CF-19 | Event Change Requests | KAN-15; KAN-62 handles cancellation and arrangement release, KAN-82, KAN-84 |
+| CF-20 | Notification System | KAN-64 (request/venue), KAN-80 (later workflows); CR-specific triggers in KAN-81/82/83/84, KAN-82, KAN-83, KAN-84 |
+
+KAN-78 (CR-1) adds buffered occupancy and regression coverage across CF-09–CF-14, preserving the original stories' history.
 
 KAN-24 is the separate database setup item. It supports these features and is not a twenty-first customer feature. KAN-61 confirmation, KAN-62 cancellation and KAN-10 completion provide explicit lifecycle actions; there is no generic story allowing users to select any status arbitrarily.
 
@@ -87,9 +274,13 @@ KAN-29 uses preconfigured coordinator availability, fewest active events and a c
 | KAN-58 | KAN-6 | Enable and verify saved-draft submission |
 | KAN-59 | KAN-6 | Reject incomplete new-request and saved-draft submissions with field errors |
 
-These subtasks are included in the carried parent estimates, not extra story points. Creating the tasks does not establish that the defects are fixed. Tristan's KAN-29/KAN-8 ownership and Ryan's KAN-12 and Ernest's KAN-51 implementations are recorded in the repository plan; remaining allocations, reviewers and live Jira assignments still need confirmation.
+These subtasks are included in the carried parent estimates, not extra story points. The historical 11 October ownership snapshot was Tristan (KAN-29/KAN-8/KAN-52), Irfan (KAN-50/KAN-33), Arvin (KAN-51), Ryan (KAN-12), Ernest (KAN-54), and Kai Jie (KAN-53/KAN-55/KAN-6/KAN-34). It is not a reconstruction of original planning allocations. Use the [current master register](#master-backlog-register) for subsequent Sprint 3 reassignments. Historical contributions and original story estimates remain unchanged; the reconciliation above separates repair evidence from acceptance gaps.
 
-## Future backlog and corrective work
+## Original future-backlog wording and corrective-work history
+
+**Historical wording preserved from 21 September.** Current points, owners, sprint assignments and active criteria are in the master table and Sprint 3/4 cards above. In particular, the combined KAN-64 wording below is archived after its explicit split; it is not the current five-point acceptance checklist.
+
+**Historical working definitions — 21 September, retained for traceability.** The cards and unestimated/proposal statements below predate Sprint 3 selection. Current selected estimates, owners, original Jira wording and AC101+ refinements are in the [Sprint 3 cards](../scrum/sprint-03/sprint-backlog.md). The current register above supersedes these cards for administrative status and estimates; earlier source requirements remain visible.
 
 The cards below define the remaining scope before selection into a future sprint. Existing estimates shown for older stories were checked in Jira on 21 September and must be reviewed against the refined scope. They are not new estimates or capacity commitments. KAN-60–KAN-67 remain unestimated. The live future backlog contains 15 items: seven older stories with 26 existing points and eight unestimated items. The 26 points are not a complete future-sprint estimate. The refinement questions must be resolved or bounded before a story is considered ready. These working cards summarise the behaviour in Jira; their numbering is not a replacement for the retained sprint criterion IDs.
 

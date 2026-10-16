@@ -1,6 +1,8 @@
 # Sprint 2 retrospective
 
-**Status: Not held / no outcomes recorded.** Plan the retrospective around the **3 October 2026** sprint end; its exact date, time, location, facilitator, participants and note taker remain to be confirmed. Sprint 3 planning is scheduled for Sunday 4 October.
+**Status: Not recorded.** Whether and when the retrospective occurred, its participants, discussion and agreed actions have not been supplied. The planned sprint end was **3 October 2026**; the original cadence projected Sprint 3 planning on 4 October, but its actual date/commitment is **Not recorded**. Absence of a record does not establish that a meeting was not held.
+
+**Record check — 15 October 2026:** use the [baseline and later delivery register](review.md#baseline-and-later-delivery-register--15-october-2026) to distinguish original scope, later repairs and evidence gaps. It provides discussion inputs, not attributed retrospective feedback or agreed causes. Follow up Sprint 1 proposals S1-RETRO-01/02 only if the team confirms their agreement and actual outcome.
 
 ## Preparation and facilitation
 
@@ -20,14 +22,14 @@ These are agenda prompts, not findings or claims about team performance.
 
 | Observation | Supporting event / artifact | Effect on goal or team | Cause discussed by the team | Participants |
 | --- | --- | --- | --- | --- |
-| | | | | |
+| Not recorded | Not recorded | Not assessed | Not recorded | Not recorded |
 
 ## Improvement actions
 
 | Agreed improvement | Owner | Due / review date | Observable success measure | Follow-up evidence |
 | --- | --- | --- | --- | --- |
-| | | | | |
+| To agree | To agree | To agree | To agree | Not recorded |
 
 ## Follow-through
 
-Bring the selected actions into Sprint 3 planning on 4 October, assign time where needed and inspect their effect during the next sprint. Record actual attendance and the decision date when this meeting occurs. No improvement action, owner or success result has been agreed in this template.
+Bring agreed actions into the actual Sprint 3 planning session, assign time where needed and inspect their effect during that sprint. Record the actual participants, decision date and source. An action newly agreed after the Sprint 2 window retains its real agreement date. No improvement action, owner or success result is established by this template.

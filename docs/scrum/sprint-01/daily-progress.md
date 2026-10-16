@@ -1,5 +1,7 @@
 # Sprint 1 daily progress and burndown
 
+**Record check — 15 October 2026:** the dated observations below are preserved. Missing standup participation and daily burndown values are **Not recorded**; they have not been reconstructed from today's Jira state. Later repairs to the four review findings are linked from the [Sprint 2 review register](../sprint-02/review.md#baseline-and-later-delivery-register--15-october-2026).
+
 Sprint: **6–19 September 2026, Asia/Singapore**. Record daily progress, decisions and burndown observations here, with supporting Jira exports and screenshots in the [evidence register](evidence/README.md). Blank values are awaiting an observation; they do not represent zero.
 
 **Closeout update, prepared 21 September:** the Sprint 1 review is complete, Sprint 1 is closed in Jira and Sprint 2 is initialized. The dated development log and missing daily observations below are preserved. The later review summary is recorded separately; it does not establish attendance, daily Done points or an end-of-day burndown observation.

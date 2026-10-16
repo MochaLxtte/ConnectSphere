@@ -1,5 +1,7 @@
 # Sprint 1 estimation and capacity
 
+**Record check — 15 October 2026:** retain the original 32-point estimate and recorded 24 Done / 8 carried outcome. Historical capacity, individual votes/discussion and decision participants are **Not recorded** where the original fields below remain open; do not derive them from later output or commits. The [completion checklist](README.md#documentation-and-evidence-completeness) separates those evidence gaps from the reported closure outcome.
+
 Sprint window: **6–19 September 2026 inclusive**, Asia/Singapore. Planning occurred on **Sunday 6 September**, review and retrospective on **Saturday 19 September**, and Sprint 2 planning on **Sunday 20 September**. As recorded on 21 September, Sprint 1 is closed in Jira and Sprint 2 is initialized. Exact meeting times and attendance remain to be recorded in [planning](planning.md).
 
 **Status: 32-SP baseline preserved; sprint closed with 7 Done PBIs / 24 SP and 3 carried PBIs / 8 SP.** At Sprint Planning on 6 September, the team selected nine user stories totalling **27 SP**, including KAN-27, and **KAN-24 as a separate 5-SP infrastructure backlog item**. The sprint commitment is **10 items and 32 SP**. Estimates used relative sizing with KAN-33 and KAN-16 as 2-point anchors. Historical capacity details and supporting records remain incomplete.

@@ -1,6 +1,6 @@
-# Proposed definition of done
+# Definition of Done
 
-The team should adopt or revise this before committing sprint work. This is a proposal, not evidence of team agreement.
+**Agreement reported; supporting details not recorded.** On 11 October 2026, Tristan confirmed that the team had already agreed to the checklist below and would provide the details. The actual agreement date, participants and method of agreement are **Not recorded**. The checklist is unchanged in this update; 11 October is the date this report was recorded, not an invented adoption date.
 
 A story is done when:
 
@@ -20,4 +20,10 @@ Record every change to this definition, including confirming it unchanged at a s
 | Version | Date | Sprint | Change | Who agreed / recorded by |
 | --- | --- | --- | --- | --- |
 | 0 (proposed) | To record | 1 | Initial proposal above | To record |
-| | | | | |
+| Agreement reported; checklist unchanged | Recorded 11 October 2026; actual agreement date **Not recorded** | Applicability to confirm with agreement details | Tristan reports prior team agreement to the existing checklist. Record the actual date, participants and decision source when supplied. | Agreement reported in chat |
+
+## Sprint 3 planning follow-up
+
+Add the agreement date, who agreed and the meeting/chat reference when Tristan supplies them, and confirm this remains the checklist for Sprint 3. This documentation update does not itself accept a story, establish a missing review, or change historical sprint velocity. Evaluate outstanding criteria using their linked evidence in the [test register](../testing/test-evidence.md) and [sprint reviews](README.md).
+
+**15 October preparation:** agreement details remain **Not recorded**. Keep the checklist unchanged. Assess historical acceptance against the criteria and DoD version actually applicable then; a later process update must not silently re-judge previously accepted stories. A newly discovered original defect is recorded and handled separately in [Sprint 3 triage](sprint-03/planning.md#pre-planning-baseline-and-defect-triage).

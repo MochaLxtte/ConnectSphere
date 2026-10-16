@@ -1,0 +1,44 @@
+ConnectSphere - AUTO-20261015-01
+Actual execution date: 15 October 2026 (Asia/Singapore)
+Recorded by: Codex at Tristan's request
+Source: 3bd64f8, docs/sprint-3-readiness-sync, documentation-only working-tree changes
+
+This is a post-sprint audit. It is NOT Sprint 1 or Sprint 2 close coverage,
+and it does not establish acceptance or completion before 3 October.
+
+Environment: Windows; Node 24.21.0; npm 11.19.0; Vitest 4.1.11;
+Playwright Chromium; disposable local PostgreSQL 17 on localhost.
+Migrations and seed applied locally. Synthetic accounts/authentication fixtures.
+No shared Supabase login or writes. Disposable container removed after testing.
+
+Commands and results (copied from the 15 October command logs):
+  npm.cmd run check                         PASS
+    Frontend: 29 test files, 500 tests
+    Backend:  36 test files, 856 tests
+    Type checking and both builds passed.
+  npm.cmd run test:coverage                 PASS (same unit/component suites)
+  npm.cmd run db:migrate                    PASS (isolated PostgreSQL)
+  npm.cmd run db:seed                       PASS (isolated PostgreSQL)
+  npm.cmd run test:integration              PASS: 20 test files, 304 tests
+  npm.cmd run test:e2e -- --workers=4        PASS: 95 Chromium tests
+
+Unit/component coverage reported by Vitest:
+Workspace       Statements     Branches      Functions       Lines
+Frontend             94.18%       91.09%         96.42%       96.50%
+Backend              79.65%       83.98%         76.00%       80.64%
+
+These are configured code-coverage metrics, not acceptance coverage or a
+combined unit/integration/browser measurement. Frontend auth/router/shell are
+outside the configured metric. No coverage threshold or mutation gate exists.
+
+Independent audit reproductions exposed five product failures despite these
+passing suites: a stale venue-save response, hidden detail-page submission
+errors, impossible-date handling in draft editing and venue search, and zero
+attendance in suitability. See docs/testing/test-evidence.md, AUTO-20261015-01.
+Permanent regression tests and fixed-code retests remain to be implemented.
+The known KAN-60 mandatory rejection-reason gap remains future backlog scope.
+
+Log provenance: check.log, coverage.log, migrate.log, seed.log,
+integration.log and e2e.log from the local connectsphere-audit-20261015
+scratch directory were inspected when preparing this retained summary.
+Raw command logs and reproduction scripts are not submission artifacts.

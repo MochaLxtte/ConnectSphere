@@ -1,5 +1,7 @@
 # Sprint 1 planning and meeting record
 
+**Record check — 15 October 2026:** this is the retained 6 September plan and dated handoff, not the current assignment register. Historical attendance, times, decision participants and working-agreement adoption are **Not recorded** where indicated. Current carry-over outcomes are indexed in the [Sprint 2 review register](../sprint-02/review.md#baseline-and-later-delivery-register--15-october-2026); they do not rewrite this plan.
+
 ## Sprint boundary and goal
 
 | Field | Record |

@@ -1,0 +1,731 @@
+{
+  "recorded_on": "2026-10-16",
+  "purpose": "Current rebalanced Jira administration, not historical starting-board or acceptance evidence",
+  "customer_received_on": "2026-10-02",
+  "receipt_evidence": "Tristan confirmation in chat on 16 October 2026",
+  "branch": "docs/sprint-3-readiness-sync",
+  "source_commit": "3bd64f8817b862285b0ba81332b023c3a45c8776",
+  "counts": {
+    "issues": 68,
+    "parents": 42,
+    "subtasks": 26,
+    "estimated_parent_sp": 174,
+    "current_jira_done_sp": 48,
+    "sprint3_parents": 13,
+    "sprint3_sp": 63,
+    "sprint4_parents": 15,
+    "sprint4_sp": 63
+  },
+  "sprints": [
+    {
+      "id": 1,
+      "state": "closed",
+      "name": "Sprint 1",
+      "startDate": "2026-09-05T16:00:34.660Z",
+      "endDate": "2026-09-19T16:00:00.000Z",
+      "completeDate": "2026-09-20T16:29:55.591Z",
+      "originBoardId": 2,
+      "goal": "Enable an Event Organiser to securely create, save and submit an event request, and allow an Event Coordinator to review and reach an outcome on the request."
+    },
+    {
+      "id": 34,
+      "state": "closed",
+      "name": "Sprint 2",
+      "startDate": "2026-09-19T16:00:55.000Z",
+      "endDate": "2026-10-03T16:00:00.000Z",
+      "completeDate": "2026-10-15T18:06:49.200Z",
+      "originBoardId": 2,
+      "goal": "Enable submitted requests to reach an assigned coordinator, and enable coordinators to identify suitable available venues from a maintained catalogue, request bookings, and receive Venue Staff decisions without conflicting bookings."
+    },
+    {
+      "id": 67,
+      "state": "active",
+      "name": "Sprint 3",
+      "startDate": "2026-10-03T16:00:00.000Z",
+      "endDate": "2026-10-17T15:59:00.000Z",
+      "originBoardId": 2,
+      "goal": "Complete carried request and venue fixes; deliver Lead assignment, buffered venue planning, outage recovery, expiring holds and request/venue notifications. Rebalanced allocation: 63 SP; historical acceptance remains separately evidenced."
+    },
+    {
+      "id": 68,
+      "state": "future",
+      "name": "Sprint 4",
+      "startDate": "2026-10-17T16:00:00.000Z",
+      "endDate": "2026-10-31T15:59:00.000Z",
+      "originBoardId": 2,
+      "goal": "Complete equipment planning, event lifecycle and attendee registration, independent venue arrangements and Safety Officer review; integrate and verify the full Release 1 workflow."
+    }
+  ],
+  "parents": [
+    {
+      "key": "KAN-4",
+      "summary": "Save Draft Event Request",
+      "status": "Done",
+      "points": 3,
+      "owner": "Ernest",
+      "sprints": [
+        {
+          "id": 1,
+          "name": "Sprint 1",
+          "state": "closed"
+        }
+      ],
+      "updated": "2026-09-21T00:26:15.578+0800"
+    },
+    {
+      "key": "KAN-6",
+      "summary": "Submit an Event Request",
+      "status": "To Do",
+      "points": 3,
+      "owner": "Kai Jie",
+      "sprints": [
+        {
+          "id": 1,
+          "name": "Sprint 1",
+          "state": "closed"
+        },
+        {
+          "id": 34,
+          "name": "Sprint 2",
+          "state": "closed"
+        },
+        {
+          "id": 67,
+          "name": "Sprint 3",
+          "state": "active"
+        }
+      ],
+      "updated": "2026-10-16T03:22:30.737+0800"
+    },
+    {
+      "key": "KAN-8",
+      "summary": "Approve or Reject Venue Booking Request",
+      "status": "Done",
+      "points": 3,
+      "owner": "Tristan",
+      "sprints": [
+        {
+          "id": 34,
+          "name": "Sprint 2",
+          "state": "closed"
+        }
+      ],
+      "updated": "2026-10-16T03:26:07.664+0800"
+    },
+    {
+      "key": "KAN-9",
+      "summary": "Check Equipment Availability for an Event",
+      "status": "To Do",
+      "points": 8,
+      "owner": "Tristan",
+      "sprints": [
+        {
+          "id": 68,
+          "name": "Sprint 4",
+          "state": "future"
+        }
+      ],
+      "updated": "2026-10-16T03:22:32.661+0800"
+    },
+    {
+      "key": "KAN-10",
+      "summary": "Mark Event as Completed",
+      "status": "To Do",
+      "points": 3,
+      "owner": "Ryan",
+      "sprints": [
+        {
+          "id": 68,
+          "name": "Sprint 4",
+          "state": "future"
+        }
+      ],
+      "updated": "2026-10-16T03:22:34.484+0800"
+    },
+    {
+      "key": "KAN-12",
+      "summary": "Search and Filter Venues",
+      "status": "To Do",
+      "points": 5,
+      "owner": "Tristan",
+      "sprints": [
+        {
+          "id": 34,
+          "name": "Sprint 2",
+          "state": "closed"
+        },
+        {
+          "id": 67,
+          "name": "Sprint 3",
+          "state": "active"
+        }
+      ],
+      "updated": "2026-10-16T03:22:36.474+0800"
+    },
+    {
+      "key": "KAN-14",
+      "summary": "Register for an Event",
+      "status": "To Do",
+      "points": 5,
+      "owner": "Ernest",
+      "sprints": [
+        {
+          "id": 68,
+          "name": "Sprint 4",
+          "state": "future"
+        }
+      ],
+      "updated": "2026-10-16T03:26:02.243+0800"
+    },
+    {
+      "key": "KAN-15",
+      "summary": "Submit and Review Event Change Requests",
+      "status": "To Do",
+      "points": 5,
+      "owner": "Irfan",
+      "sprints": [
+        {
+          "id": 68,
+          "name": "Sprint 4",
+          "state": "future"
+        }
+      ],
+      "updated": "2026-10-16T03:25:59.388+0800"
+    },
+    {
+      "key": "KAN-16",
+      "summary": "View Event Request Status",
+      "status": "Done",
+      "points": 2,
+      "owner": "Tristan",
+      "sprints": [
+        {
+          "id": 1,
+          "name": "Sprint 1",
+          "state": "closed"
+        }
+      ],
+      "updated": "2026-10-16T03:25:48.449+0800"
+    },
+    {
+      "key": "KAN-17",
+      "summary": "Withdraw Attendee Registration",
+      "status": "To Do",
+      "points": 2,
+      "owner": "Ernest",
+      "sprints": [
+        {
+          "id": 68,
+          "name": "Sprint 4",
+          "state": "future"
+        }
+      ],
+      "updated": "2026-10-16T03:26:03.221+0800"
+    },
+    {
+      "key": "KAN-18",
+      "summary": "Update Equipment Availability Status",
+      "status": "To Do",
+      "points": 3,
+      "owner": "Ernest",
+      "sprints": [
+        {
+          "id": 68,
+          "name": "Sprint 4",
+          "state": "future"
+        }
+      ],
+      "updated": "2026-10-16T03:25:57.192+0800"
+    },
+    {
+      "key": "KAN-24",
+      "summary": "Setup Database",
+      "status": "Done",
+      "points": 5,
+      "owner": "Arvin",
+      "sprints": [
+        {
+          "id": 1,
+          "name": "Sprint 1",
+          "state": "closed"
+        }
+      ],
+      "updated": "2026-09-21T03:10:10.609+0800"
+    },
+    {
+      "key": "KAN-25",
+      "summary": "User Authorisation and Authentication",
+      "status": "Done",
+      "points": 5,
+      "owner": "Ryan",
+      "sprints": [
+        {
+          "id": 1,
+          "name": "Sprint 1",
+          "state": "closed"
+        }
+      ],
+      "updated": "2026-10-16T03:26:08.426+0800"
+    },
+    {
+      "key": "KAN-26",
+      "summary": "Reserve Equipment",
+      "status": "To Do",
+      "points": 3,
+      "owner": "Arvin",
+      "sprints": [
+        {
+          "id": 68,
+          "name": "Sprint 4",
+          "state": "future"
+        }
+      ],
+      "updated": "2026-10-16T03:25:58.341+0800"
+    },
+    {
+      "key": "KAN-27",
+      "summary": "Request Clarification on an Event Request",
+      "status": "Done",
+      "points": 3,
+      "owner": "Irfan",
+      "sprints": [
+        {
+          "id": 1,
+          "name": "Sprint 1",
+          "state": "closed"
+        }
+      ],
+      "updated": "2026-10-01T15:08:55.930+0800"
+    },
+    {
+      "key": "KAN-29",
+      "summary": "Automatically Assign Event Coordinator",
+      "status": "Done",
+      "points": 3,
+      "owner": "Tristan",
+      "sprints": [
+        {
+          "id": 34,
+          "name": "Sprint 2",
+          "state": "closed"
+        }
+      ],
+      "updated": "2026-10-16T03:26:05.202+0800"
+    },
+    {
+      "key": "KAN-31",
+      "summary": "Create Event Request",
+      "status": "Done",
+      "points": 3,
+      "owner": "Ernest",
+      "sprints": [
+        {
+          "id": 1,
+          "name": "Sprint 1",
+          "state": "closed"
+        }
+      ],
+      "updated": "2026-09-21T00:26:14.666+0800"
+    },
+    {
+      "key": "KAN-33",
+      "summary": "View Submitted Event Request",
+      "status": "Done",
+      "points": 2,
+      "owner": "Irfan",
+      "sprints": [
+        {
+          "id": 1,
+          "name": "Sprint 1",
+          "state": "closed"
+        },
+        {
+          "id": 34,
+          "name": "Sprint 2",
+          "state": "closed"
+        }
+      ],
+      "updated": "2026-10-01T15:09:14.391+0800"
+    },
+    {
+      "key": "KAN-34",
+      "summary": "Resume/Edit Draft Event Request",
+      "status": "To Do",
+      "points": 3,
+      "owner": "Kai Jie",
+      "sprints": [
+        {
+          "id": 1,
+          "name": "Sprint 1",
+          "state": "closed"
+        },
+        {
+          "id": 34,
+          "name": "Sprint 2",
+          "state": "closed"
+        },
+        {
+          "id": 67,
+          "name": "Sprint 3",
+          "state": "active"
+        }
+      ],
+      "updated": "2026-10-16T03:22:51.665+0800"
+    },
+    {
+      "key": "KAN-36",
+      "summary": "Approve/Reject Event Request",
+      "status": "Done",
+      "points": 3,
+      "owner": "Tristan",
+      "sprints": [
+        {
+          "id": 1,
+          "name": "Sprint 1",
+          "state": "closed"
+        }
+      ],
+      "updated": "2026-09-21T03:18:11.143+0800"
+    },
+    {
+      "key": "KAN-50",
+      "summary": "Maintain Venue Catalog",
+      "status": "To Do",
+      "points": 5,
+      "owner": "Ernest",
+      "sprints": [
+        {
+          "id": 34,
+          "name": "Sprint 2",
+          "state": "closed"
+        },
+        {
+          "id": 67,
+          "name": "Sprint 3",
+          "state": "active"
+        }
+      ],
+      "updated": "2026-10-16T03:22:53.455+0800"
+    },
+    {
+      "key": "KAN-51",
+      "summary": "View Venue Availability Calendar",
+      "status": "Done",
+      "points": 5,
+      "owner": "Arvin",
+      "sprints": [
+        {
+          "id": 34,
+          "name": "Sprint 2",
+          "state": "closed"
+        }
+      ],
+      "updated": "2026-10-16T03:25:37.939+0800"
+    },
+    {
+      "key": "KAN-52",
+      "summary": "Check Venue Suitability",
+      "status": "To Do",
+      "points": 3,
+      "owner": "Ernest",
+      "sprints": [
+        {
+          "id": 34,
+          "name": "Sprint 2",
+          "state": "closed"
+        },
+        {
+          "id": 67,
+          "name": "Sprint 3",
+          "state": "active"
+        }
+      ],
+      "updated": "2026-10-16T03:25:53.171+0800"
+    },
+    {
+      "key": "KAN-53",
+      "summary": "Submit Venue Booking Request",
+      "status": "Done",
+      "points": 3,
+      "owner": "Kai Jie",
+      "sprints": [
+        {
+          "id": 34,
+          "name": "Sprint 2",
+          "state": "closed"
+        }
+      ],
+      "updated": "2026-10-16T03:26:06.822+0800"
+    },
+    {
+      "key": "KAN-54",
+      "summary": "Detect Venue Booking Conflicts",
+      "status": "Done",
+      "points": 5,
+      "owner": "Ernest",
+      "sprints": [
+        {
+          "id": 34,
+          "name": "Sprint 2",
+          "state": "closed"
+        }
+      ],
+      "updated": "2026-10-16T03:25:38.783+0800"
+    },
+    {
+      "key": "KAN-55",
+      "summary": "Block Venue for Operational Unavailability",
+      "status": "Done",
+      "points": 3,
+      "owner": "Kai Jie",
+      "sprints": [
+        {
+          "id": 34,
+          "name": "Sprint 2",
+          "state": "closed"
+        }
+      ],
+      "updated": "2026-10-16T03:26:05.941+0800"
+    },
+    {
+      "key": "KAN-60",
+      "summary": "Require a reason when rejecting an event request",
+      "status": "To Do",
+      "points": 2,
+      "owner": "Kai Jie",
+      "sprints": [
+        {
+          "id": 67,
+          "name": "Sprint 3",
+          "state": "active"
+        }
+      ],
+      "updated": "2026-10-16T03:22:57.646+0800"
+    },
+    {
+      "key": "KAN-61",
+      "summary": "Confirm Event After Planning Arrangements",
+      "status": "To Do",
+      "points": 3,
+      "owner": "Kai Jie",
+      "sprints": [
+        {
+          "id": 68,
+          "name": "Sprint 4",
+          "state": "future"
+        }
+      ],
+      "updated": "2026-10-16T03:26:00.327+0800"
+    },
+    {
+      "key": "KAN-62",
+      "summary": "Cancel Event and Release Its Arrangements",
+      "status": "To Do",
+      "points": 5,
+      "owner": "Tristan",
+      "sprints": [
+        {
+          "id": 68,
+          "name": "Sprint 4",
+          "state": "future"
+        }
+      ],
+      "updated": "2026-10-16T03:26:01.386+0800"
+    },
+    {
+      "key": "KAN-63",
+      "summary": "Submit and Review Event Equipment Requests",
+      "status": "To Do",
+      "points": 5,
+      "owner": "Arvin",
+      "sprints": [
+        {
+          "id": 68,
+          "name": "Sprint 4",
+          "state": "future"
+        }
+      ],
+      "updated": "2026-10-16T03:25:50.236+0800"
+    },
+    {
+      "key": "KAN-64",
+      "summary": "Receive Request, Assignment and Venue Notifications",
+      "status": "To Do",
+      "points": 5,
+      "owner": "Irfan",
+      "sprints": [
+        {
+          "id": 67,
+          "name": "Sprint 3",
+          "state": "active"
+        }
+      ],
+      "updated": "2026-10-16T03:26:04.293+0800"
+    },
+    {
+      "key": "KAN-65",
+      "summary": "Reassign Event Coordinator",
+      "status": "To Do",
+      "points": 3,
+      "owner": "Ryan",
+      "sprints": [
+        {
+          "id": 67,
+          "name": "Sprint 3",
+          "state": "active"
+        }
+      ],
+      "updated": "2026-10-16T03:23:05.645+0800"
+    },
+    {
+      "key": "KAN-66",
+      "summary": "Update Event Information During Planning",
+      "status": "To Do",
+      "points": 3,
+      "owner": "Ryan",
+      "sprints": [
+        {
+          "id": 68,
+          "name": "Sprint 4",
+          "state": "future"
+        }
+      ],
+      "updated": "2026-10-16T03:23:07.544+0800"
+    },
+    {
+      "key": "KAN-67",
+      "summary": "View Event Registrations",
+      "status": "To Do",
+      "points": 2,
+      "owner": "Ernest",
+      "sprints": [
+        {
+          "id": 68,
+          "name": "Sprint 4",
+          "state": "future"
+        }
+      ],
+      "updated": "2026-10-16T03:23:09.373+0800"
+    },
+    {
+      "key": "KAN-77",
+      "summary": "Configure Venue Setup and Turnaround Durations",
+      "status": "To Do",
+      "points": 2,
+      "owner": "Ernest",
+      "sprints": [
+        {
+          "id": 67,
+          "name": "Sprint 3",
+          "state": "active"
+        }
+      ],
+      "updated": "2026-10-16T03:23:11.199+0800"
+    },
+    {
+      "key": "KAN-78",
+      "summary": "Apply Venue Buffers to Availability and Booking Conflicts",
+      "status": "To Do",
+      "points": 8,
+      "owner": "Tristan",
+      "sprints": [
+        {
+          "id": 67,
+          "name": "Sprint 3",
+          "state": "active"
+        }
+      ],
+      "updated": "2026-10-16T03:25:29.968+0800"
+    },
+    {
+      "key": "KAN-79",
+      "summary": "Assign Submitted Events Through a Coordinator Lead Queue",
+      "status": "To Do",
+      "points": 8,
+      "owner": "Ryan",
+      "sprints": [
+        {
+          "id": 67,
+          "name": "Sprint 3",
+          "state": "active"
+        }
+      ],
+      "updated": "2026-10-16T03:23:16.173+0800"
+    },
+    {
+      "key": "KAN-80",
+      "summary": "Receive Equipment, Lifecycle, Change and Registration Notifications",
+      "status": "To Do",
+      "points": 3,
+      "owner": "Irfan",
+      "sprints": [
+        {
+          "id": 68,
+          "name": "Sprint 4",
+          "state": "future"
+        }
+      ],
+      "updated": "2026-10-16T03:26:03.204+0800"
+    },
+    {
+      "key": "KAN-81",
+      "summary": "Recover venue arrangements affected by operational unavailability",
+      "status": "To Do",
+      "points": 8,
+      "owner": "Irfan",
+      "sprints": [
+        {
+          "id": 67,
+          "name": "Sprint 3",
+          "state": "active"
+        }
+      ],
+      "updated": "2026-10-16T03:25:45.733+0800"
+    },
+    {
+      "key": "KAN-82",
+      "summary": "Manage each venue arrangement independently for an event",
+      "status": "To Do",
+      "points": 5,
+      "owner": "Ryan",
+      "sprints": [
+        {
+          "id": 68,
+          "name": "Sprint 4",
+          "state": "future"
+        }
+      ],
+      "updated": "2026-10-16T03:25:56.314+0800"
+    },
+    {
+      "key": "KAN-83",
+      "summary": "Manage temporary venue holds with expiry and automatic release",
+      "status": "To Do",
+      "points": 8,
+      "owner": "Arvin",
+      "sprints": [
+        {
+          "id": 67,
+          "name": "Sprint 3",
+          "state": "active"
+        }
+      ],
+      "updated": "2026-10-16T03:26:39.838+0800"
+    },
+    {
+      "key": "KAN-84",
+      "summary": "Review operational safety before event preparation",
+      "status": "To Do",
+      "points": 8,
+      "owner": "Kai Jie",
+      "sprints": [
+        {
+          "id": 68,
+          "name": "Sprint 4",
+          "state": "future"
+        }
+      ],
+      "updated": "2026-10-16T03:25:56.298+0800"
+    }
+  ]
+}

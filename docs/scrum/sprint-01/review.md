@@ -1,5 +1,7 @@
 # Sprint 1 review and closure
 
+**Record check — 15 October 2026:** retain the reported **32 committed / 24 Done / 8 carried** outcome and the demonstrated passes and failures below. Exact reviewed-build, participant, acceptance-decision and supporting-artifact details remain **Not recorded** where indicated. Subsequent fixes and Jira updates are in the [Sprint 2 review register](../sprint-02/review.md#baseline-and-later-delivery-register--15-october-2026); they do not alter the 19 September observations.
+
 Sprint: **6–19 September 2026**, inclusive, Asia/Singapore. **Status: review completed and sprint closed in Jira; closure evidence reconciliation remains open.** This record was updated on 21 September from the review outcomes. Keep the original sprint window separate from the meeting and integration dates.
 
 | Meeting detail | Record |
