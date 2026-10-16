@@ -30,6 +30,8 @@ Selected ownership/review: Arvin 19/Kai Jie, Kai Jie 19/Tristan, Ernest 12/Ryan,
 
 **16 October 2026 — self-selection follow-up outside a Daily Scrum.** Stories are unassigned for team members to choose; the earlier named allocation is superseded. Target roughly 10–11 SP each per 63-SP sprint and 21 SP across the 126-SP release remainder, without splitting or changing story estimates merely to equalise loads. Select independent reviewers after ownership and agree an integration lead. Scope, criteria, test outcomes and historical assignments are unchanged. This is a planning update, not a standup or meeting record.
 
+**Documentation update — 17 October 2026, outside a Daily Scrum.** Reconciled the submitted backlog and original Sprint 1/2 criteria with current stories and the recorded customer changes. Added dated criterion crosswalks, 142 unexecuted functional specifications and 19 traceability rows; restored the existing search/suitability no-automatic-event-rejection rules and explicitly mapped the database-diagram check. The workbook preserves its Jira source rows alongside labelled repository supplements. Documentation consistency passed 21/21 checks and native workbook preservation passed 12/12; see [AUTO-20261017-DOCS-01](../../testing/test-evidence.md#17-october-2026--historical-criteria-and-submitted-backlog-reconciliation) and S3-E13. Scope remains 63 SP per remaining sprint. No Jira change, application test, story acceptance or member standup is recorded by this update.
+
 ## Impediments
 
 | Raised | Impediment | Owner | Action | Status |

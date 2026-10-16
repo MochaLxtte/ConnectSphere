@@ -348,3 +348,182 @@ Keep the agreed **32-point baseline** intact: nine user stories at 27 points plu
 The review closed seven PBIs at **24 points**, including KAN-24's five points. KAN-6, KAN-33 and KAN-34 contribute no completed points in Sprint 1 and carry their original eight points into Sprint 2. Link the final board, reviewed build and demonstration evidence to the closure table above.
 
 The [20-feature release scope](../../requirements/README.md) remains broader than this sprint. Sprint 2 selects KAN-29 for assignment and the venue stories mapped there; it also continues the three unfinished Sprint 1 stories. Draft editing covers only part of CF-07. Completed Sprint 1 slices must not be reported as complete release features without verifying their full agreed scope.
+
+## Criterion crosswalk — 17 October 2026
+
+This dated addendum completes the **wording-to-test specification cross-reference for all 79 original functional criteria and the five KAN-24 checks documented on 21 September**. The source is the retained [21 September Jira export](../../submission/1/jira-backlog-2026-09-21.csv), checked against the current Jira descriptions during the 17 October reconciliation. The first criterion counts in the 21 September table identify the original functional bullets; later dated refinements are kept separate below. Source ordinals identify bullet order within that captured description, **not new Jira AC IDs**. Existing local IDs and the earlier dated entries above are unchanged.
+
+The tables expand broad local criteria into concrete assertions; they do not assert that the original review used this exact wording. The criteria/Definition of Done version adopted at Sprint 1 review, criterion-level review acceptance and the reviewed build remain **Not recorded**. The original **32 committed = 24 Done + 8 carried** accounting is unchanged. All newly specified cases are **Not executed**, with new execution evidence **Not recorded**; earlier runs and successful demonstrations retain only their documented coverage. Current repairs and customer changes are not backdated into Sprint 1.
+
+The case IDs below link to [functional test specifications](../../testing/test-cases.csv); [traceability](../../requirements/traceability.csv) supplies current code and real automated test paths. Those paths are regression targets, not a claim that an existing automated test covers every new assertion. Use each case's explicit setup, steps and expected result; record the actual build, environment, fixture IDs and outcome when it is run. Manual tests use synthetic accounts; a person signs in. Preserve original shared-data values and restore them, or list new fixtures for agreed cleanup. Cleanup-based database tests use a disposable test database only.
+
+**Supplementary local identifier added 17 October:** **KAN-24-AC4:** The database diagram reflects the adopted tables and relationships and is maintained with schema changes. This is the existing fifth Jira setup check from 21 September, which had no explicit local criterion. Adding its identifier does not add a new requirement or imply historical acceptance.
+
+### Source criteria and retained local IDs
+
+#### KAN-25
+
+| Source ordinal | Source criterion wording | Local criterion IDs | Test case |
+| ---: | --- | --- | --- |
+| 1 | Can authenticate to the system using a recognised account. | KAN-25-AC1 | TC-01-201 |
+| 2 | Cannot access protected functionality without being authenticated. | KAN-25-AC2 | TC-01-202 |
+| 3 | Is recognised by the system according to the relevant role: Event Organiser, Event Coordinator, Venue Staff, Technical Support Staff, or Attendee. | KAN-25-AC1 | TC-01-203 |
+| 4 | Can only access functionality permitted for their role. | KAN-25-AC3 | TC-01-204 |
+| 5 | Can only access protected event information where their role and relationship to the event permits it. | KAN-25-AC3 | TC-01-205 |
+| 6 | Is denied access when attempting to perform an action for which they are not authorised. | KAN-25-AC3 | TC-01-206 |
+| 7 | Cannot access protected information belonging to unrelated events unless otherwise authorised. | KAN-25-AC3 | TC-01-207 |
+
+#### KAN-31
+
+| Source ordinal | Source criterion wording | Local criterion IDs | Test case |
+| ---: | --- | --- | --- |
+| 1 | Can start a new event request. | KAN-31-AC1 | TC-02-201 |
+| 2 | Can enter the event name. | KAN-31-AC1 | TC-02-202 |
+| 3 | Can enter the purpose and description of the event. | KAN-31-AC1 | TC-02-203 |
+| 4 | Can enter the proposed date and time. | KAN-31-AC1 | TC-02-204 |
+| 5 | Can enter the expected attendance. | KAN-31-AC1 | TC-02-205 |
+| 6 | Can enter venue requirements. | KAN-31-AC1 | TC-02-206 |
+| 7 | Can enter accessibility needs. | KAN-31-AC1 | TC-02-207 |
+| 8 | Can enter equipment requirements. | KAN-31-AC1 | TC-02-208 |
+| 9 | Can indicate registration needs where relevant. | KAN-31-AC1 | TC-02-209 |
+| 10 | Can create more than one event request where required. | KAN-31-AC2 | TC-02-210 |
+| 11 | Does not have the newly created request treated as submitted until they perform the submission action. | KAN-31-AC2 | TC-02-211 |
+| 12 | Users who are not authorised as Event Organisers cannot create an Event Organiser request. | KAN-31-AC1; KAN-31-AC3 | TC-02-212 |
+
+#### KAN-4
+
+| Source ordinal | Source criterion wording | Local criterion IDs | Test case |
+| ---: | --- | --- | --- |
+| 1 | Can save an incomplete event request without submitting it for review. | KAN-4-AC1 | TC-03-201 |
+| 2 | Can identify that the saved request is in Draft status. | KAN-4-AC2 | TC-03-202 |
+| 3 | Can view previously saved draft requests from their event request list. | KAN-4-AC2 | TC-03-203 |
+| 4 | Can distinguish draft requests from requests that have already been submitted. | KAN-4-AC2 | TC-03-204 |
+| 5 | Information entered before saving the draft is retained. | KAN-4-AC1; KAN-4-AC2 | TC-03-205 |
+| 6 | Saving a draft does not submit the event request for review. | KAN-4-AC2 | TC-03-206 |
+| 7 | A draft request is not presented to Event Coordinators as a submitted request awaiting review. | KAN-4-AC2 | TC-03-207 |
+
+#### KAN-34
+
+| Source ordinal | Source criterion wording | Local criterion IDs | Test case |
+| ---: | --- | --- | --- |
+| 1 | Can view event requests that they previously saved as drafts. | KAN-34-AC1 | TC-03-208 |
+| 2 | Can open a draft event request. | KAN-34-AC1 | TC-03-209 |
+| 3 | Can view the information previously saved in the draft. | KAN-34-AC1 | TC-03-210 |
+| 4 | Can edit information in a draft that they are authorised to modify. | KAN-34-AC2 | TC-03-211 |
+| 5 | Can save changes made to the draft. | KAN-34-AC2 | TC-03-212 |
+| 6 | Sees the latest saved information when the draft is reopened. | KAN-34-AC2 | TC-03-213 |
+| 7 | The request remains in Draft status after changes are saved unless it is subsequently submitted. | KAN-34-AC2 | TC-03-214 |
+| 8 | Saving changes to a draft does not automatically submit the request. | KAN-34-AC2 | TC-03-215 |
+| 9 | Users who are not authorised to modify the draft cannot edit it. | KAN-34-AC3 | TC-03-216 |
+
+#### KAN-6
+
+| Source ordinal | Source criterion wording | Local criterion IDs | Test case |
+| ---: | --- | --- | --- |
+| 1 | Can submit an event request once it satisfies the confirmed requirements for submission. | KAN-6-AC1 | TC-02-213 |
+| 2 | Can tell when the event request has been successfully submitted. | KAN-6-AC1 | TC-02-214 |
+| 3 | Is informed of any information that prevents submission where a confirmed validation rule is not satisfied. | KAN-6-AC2 | TC-02-215 |
+| 4 | A successfully submitted request is no longer treated as a draft. | KAN-6-AC1 | TC-02-216 |
+| 5 | A successfully submitted request is identified as Submitted. | KAN-6-AC1 | TC-02-217 |
+| 6 | The information provided by the Event Organiser is retained with the submitted request. | KAN-6-AC1 | TC-02-218 |
+| 7 | A successfully submitted request becomes available to the appropriate Event Coordinator review workflow. | KAN-6-AC1 | TC-02-219 |
+| 8 | A request that does not satisfy confirmed submission rules is not submitted. | KAN-6-AC2 | TC-02-220 |
+
+#### KAN-33
+
+| Source ordinal | Source criterion wording | Local criterion IDs | Test case |
+| ---: | --- | --- | --- |
+| 1 | Can view event requests that have been submitted for review and that they are authorised to access. | KAN-33-AC1 | TC-04-201 |
+| 2 | Can open a submitted event request. | KAN-33-AC2 | TC-04-202 |
+| 3 | Can view the event name, purpose, description, proposed date and time, expected attendance, venue requirements, accessibility needs, equipment requirements, and registration needs where provided. | KAN-33-AC2 | TC-04-203 |
+| 4 | Can distinguish submitted event requests from draft event requests. | KAN-33-AC1; KAN-33-AC2 | TC-04-204 |
+| 5 | Draft event requests are not treated as requests awaiting review. | KAN-33-AC1 | TC-04-205 |
+| 6 | The information displayed reflects the information associated with the submitted request. | KAN-33-AC2 | TC-04-206 |
+| 7 | Users who are not authorised to review the event request cannot access its protected information. | KAN-33-AC3 | TC-04-207 |
+
+#### KAN-36
+
+| Source ordinal | Source criterion wording | Local criterion IDs | Test case |
+| ---: | --- | --- | --- |
+| 1 | Can approve a submitted event request that they are authorised to review. | KAN-36-AC1 | TC-04-208 |
+| 2 | Can reject a submitted event request that they are authorised to review. | KAN-36-AC2 | TC-04-209 |
+| 3 | Cannot approve or reject an event request that remains a draft. | KAN-36-AC3 | TC-04-210 |
+| 4 | When an event request is approved, the approval decision is recorded against the corresponding request. | KAN-36-AC1 | TC-04-211 |
+| 5 | When an event request is approved, its status is updated to Approved. | KAN-36-AC1 | TC-04-212 |
+| 6 | When an event request is rejected, the rejection decision is recorded against the corresponding request. | KAN-36-AC2 | TC-04-213 |
+| 7 | When an event request is rejected, its status is updated to Rejected. | KAN-36-AC2 | TC-04-214 |
+| 8 | The relevant Event Organiser can view the approval or rejection outcome. | KAN-36-AC1; KAN-36-AC2 | TC-04-215 |
+| 9 | A request with a recorded approval or rejection decision is no longer treated as awaiting its initial review decision. | KAN-36-AC1; KAN-36-AC2; KAN-36-AC4 | TC-04-216 |
+| 10 | Users who are not authorised to review the event request cannot approve or reject it. | KAN-36-AC3 | TC-04-217 |
+
+#### KAN-16
+
+| Source ordinal | Source criterion wording | Local criterion IDs | Test case |
+| ---: | --- | --- | --- |
+| 1 | Can view the current status of event requests that they are authorised to access. | KAN-16-AC1 | TC-06-201 |
+| 2 | Can identify a saved but unsubmitted event request as Draft. | KAN-16-AC1 | TC-06-202 |
+| 3 | Can identify a successfully submitted event request as Submitted. | KAN-16-AC1 | TC-06-203 |
+| 4 | Can see when clarification or amendment has been requested. | KAN-16-AC1; KAN-16-AC2 | TC-06-204 |
+| 5 | Can see when an event request has been approved. | KAN-16-AC1; KAN-16-AC2 | TC-06-205 |
+| 6 | Can see when an event request has been rejected. | KAN-16-AC1; KAN-16-AC2 | TC-06-206 |
+| 7 | Can view the review outcome where an approval or rejection decision has been made. | KAN-16-AC2 | TC-06-207 |
+| 8 | The displayed request status reflects the latest successful action performed on the event request. | KAN-16-AC2 | TC-06-208 |
+| 9 | An Event Organiser cannot view protected event request information belonging to an unrelated client unless otherwise authorised. | KAN-16-AC3 | TC-06-209 |
+
+#### KAN-27
+
+| Source ordinal | Source criterion wording | Local criterion IDs | Test case |
+| ---: | --- | --- | --- |
+| 1 | Can request clarification or amendment while reviewing a submitted event request that they are authorised to review. | KAN-27-AC1 | TC-04-218 |
+| 2 | Can identify the information that requires clarification or amendment. | KAN-27-AC1 | TC-04-219 |
+| 3 | Can provide a message explaining what additional or amended information is required. | KAN-27-AC1 | TC-04-220 |
+| 4 | Can submit the clarification or amendment request. | KAN-27-AC1 | TC-04-221 |
+| 5 | The clarification or amendment request is recorded against the corresponding event request. | KAN-27-AC1 | TC-04-222 |
+| 6 | The relevant Event Organiser can see that clarification or amendment has been requested. | KAN-27-AC2 | TC-04-223 |
+| 7 | The relevant Event Organiser can view the clarification or amendment request. | KAN-27-AC2 | TC-04-224 |
+| 8 | The event request clearly indicates that further clarification or amendment is required. | KAN-27-AC1; KAN-27-AC2 | TC-04-225 |
+| 9 | Requesting clarification or amendment does not approve the event request. | KAN-27-AC1 | TC-04-226 |
+| 10 | Requesting clarification or amendment does not reject the event request. | KAN-27-AC1 | TC-04-227 |
+
+#### KAN-24 (five checks added 21 September)
+
+| Source ordinal | Source criterion wording | Local criterion IDs | Test case |
+| ---: | --- | --- | --- |
+| 1 | A teammate can reproduce database setup from a clean checkout using the committed prerequisites, configuration, migration and synthetic seed instructions. The Express API connects to the expected schema over verified TLS. | KAN-24-AC1 | TC-DB-201 |
+| 2 | The adopted schema has the required relationships and constraints. Rerunning setup does not unexpectedly overwrite existing event data. | KAN-24-AC2 | TC-DB-202 |
+| 3 | Application tables retain reviewed privileges/RLS protections and the Supabase Data API is disabled. Express business permissions are verified under the functional stories. | KAN-24-AC2 | TC-DB-203 |
+| 4 | Representative synthetic records can be persisted and retrieved through database integration checks; record commands, tested commit and actual results. | KAN-24-AC3 | TC-DB-204 |
+| 5 | The database diagram reflects the adopted tables and relationships and is maintained with schema changes. | KAN-24-AC4 | TC-DB-205 |
+
+### Supporting implementation cases retained outside the original 79 bullets
+
+These cases make existing local safeguards explicit without inflating the original Jira criterion count. Superseded KAN-33-AC5 remains historical; its old blanket denial of decided requests is not reinstated.
+
+| Story | Local criterion IDs | Scenario | Test case |
+| --- | --- | --- | --- |
+| KAN-25 | KAN-25-AC4 | Sign-out invalidates the prior application session | TC-01-208 |
+| KAN-31 | KAN-31-AC3 | Keep entered creation values after a save failure | TC-02-221 |
+| KAN-4 | KAN-4-AC3 | Prevent overwriting another organiser's saved draft | TC-03-217 |
+| KAN-6 | KAN-6-AC3 | Reject submission by an unrelated actor or from an ineligible state | TC-02-222 |
+| KAN-6 | KAN-6-AC4 | Keep competing submissions consistent | TC-02-223 |
+| KAN-33 | KAN-33-AC4 | Return an empty review queue without error | TC-04-228 |
+| KAN-33 | KAN-33-AC6 | Reject a malformed review detail identifier | TC-04-229 |
+| KAN-36 | KAN-36-AC4 | Reject repeated and opposite saved decisions | TC-04-230 |
+| KAN-27 | KAN-27-AC3 | Reject invalid clarification without a partial write | TC-04-231 |
+
+### Later refinements and customer-change boundaries
+
+| Story / scope | Dated relationship to this crosswalk | Current follow-up |
+| --- | --- | --- |
+| KAN-6 | The original eight submission bullets above are separate from the 21 September validation clarification, later confirmed field rules and the remaining detail-page feedback repair. Current Jira consolidates the original behaviour into stable AC1–AC7 and AC101. | [Sprint 2 historical card](../sprint-02/sprint-backlog.md) and [Sprint 3 KAN-6 card](../sprint-03/sprint-backlog.md#kan-6--submit-an-event-request); existing current-case IDs remain in force. |
+| KAN-34 | The original nine draft-edit bullets above are separate from the 21 September registration-toggle repair and the later impossible-date API repair. Current Jira consolidates the original behaviour into AC1–AC3 and adds AC101. | [Sprint 2 historical card](../sprint-02/sprint-backlog.md) and [Sprint 3 KAN-34 card](../sprint-03/sprint-backlog.md#kan-34--resumeedit-draft-event-request). |
+| KAN-33 | Its seven original bullets exclude the three 21 September post-decision navigation follow-ups. Draft exclusion and authorised detail access remain required. | [Sprint 2 KAN-33 record](../sprint-02/sprint-backlog.md); do not restore superseded KAN-33-AC5. |
+| KAN-36 | Its ten original bullets exclude the four 21 September mandatory-rejection-reason refinements. Existing old tests with an optional reason do not establish compliance with the refined rule. | [Sprint 3 KAN-60](../sprint-03/sprint-backlog.md#kan-60--require-a-reason-when-rejecting-an-event-request); no new Sprint 1 pass or acceptance date is recorded. |
+| Week 7 changes received 2 October | Company permissions, later lifecycle rules and the other customer changes are changes to the release backlog; they do not rewrite the original Sprint 1 criteria or closure decision. | [Change-request register](../../requirements/change-requests.md), [Sprint 3](../sprint-03/sprint-backlog.md) and [Sprint 4](../sprint-04/sprint-backlog.md); re-verify retained original behaviour alongside each applicable change. |
+
+### Reconciliation completion and remaining evidence
+
+- Specification mapping: **79/79 original functional criteria and 5/5 later database checks**, plus nine separately identified local safeguards, now have explicit cases and a retained-ID mapping.
+- Historical adoption, reviewed build, criterion-level acceptance and missing captures: **Not recorded**. Preserve any originals with their actual dates; do not turn this documentation update into a historical test run.
+- New case execution: **Not executed**. Existing dated run records remain unchanged and may be linked only where their recorded scope proves the same scenario.
+- Database protection still requires direct evidence of the Supabase Data API setting; an earlier HTTP 503 alone does not prove that setting. Diagram accuracy now has a specific test specification.

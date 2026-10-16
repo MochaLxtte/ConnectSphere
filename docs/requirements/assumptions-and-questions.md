@@ -1,5 +1,7 @@
 # Assumptions and customer questions
 
+**Reading note — 17 October 2026.** Entries below retain their original dates and decisions. Later customer changes may supersede an earlier rule; use the [change register](change-requests.md) and current sprint cards to identify the applicable version. A historical open question is not reopened merely because its old entry remains visible. The dated submission reconciliation at the end records the latest documentation corrections.
+
 These items are unresolved unless a dated decision is added. The proposed defaults in architecture or code are team choices until validated; they do not replace customer requirements. Discuss customer questions through the clarification process for this team's section.
 
 | ID   | Decision needed                                                                                                                       | Why it matters                                                     | Status |
@@ -1139,3 +1141,16 @@ Source: the chat update and a fresh read of all 68 Jira issues. Only ownership/r
 The current Jira descriptions use the course user-story and acceptance-criteria format, with priority, estimate, sprint and assignment kept in their native fields. Process history remains in the repository. Project scope and deliverables continue to follow the project instructions and rubric, including all 20 core features and six Week 7 changes.
 
 All 299 active criterion IDs are retained. Four condensed criteria in KAN-6/KAN-34 now explicitly retain the original Jira submission feedback, required-data rules, saved-draft access, registration-field behaviour and persistence requirements. This restores omitted wording rather than adding scope; estimates and sprint membership are unchanged. TC-02-09 and TC-03-06 specify the corresponding checks and remain **Not executed**. The 14 Done parent descriptions are unchanged. Source: current Jira cards, course materials and project instructions; see the [course references](README.md#course-and-project-conventions).
+
+## 17 October 2026 — Submission requirements and historical crosswalk reconciliation
+
+The submitted repository and master workbook retain both original requirements and documented customer changes. The original Sprint 1/2 cards are not rewritten to imply that Week 7 changes applied earlier. Their dated crosswalks connect original source criteria to retained local IDs, concrete functional specifications and relevant test files. The applicable criteria/Definition of Done version adopted at historical review remains **Not recorded** where no source was supplied.
+
+Sources: the 21 September and later retained Jira CSVs, the unchanged live 68-issue read on 17 October, the recorded 9 October Product Owner attendance-zero decision, and the Week 4 project instructions/Week 7 change register. The 16 October CSV remains a verbatim dated source. Repository-only corrections are labelled rather than being inserted into that export.
+
+- KAN-12-AC102 and KAN-52-AC102 restore the existing rule that no venue match or an unsuitable venue does not automatically reject an event. The current Jira cleanup omitted those sentences; they are not new scope or customer changes.
+- KAN-24-AC4 makes the existing Jira database-diagram check explicit in the dated Sprint 1 mapping, without renumbering original criteria.
+- Sprint 2's old "repo-only" labels, attendance-zero question and proposed robustness labels are clarified against their later recorded refinements. Original dated notes remain available.
+- All added test cases are specifications, **Not executed**. Existing failure evidence and scoped passing observations are retained. No application tests, hosted acceptance, team vote or historical meeting outcome is created by this document cleanup.
+
+This correction does not alter estimates, assignees, sprint allocations, administrative resolution dates or the six-change release plan. Jira remains unchanged during this pass; the master backlog and workbook identify the two missing Jira sentences for later team reference.

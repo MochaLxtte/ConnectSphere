@@ -1,5 +1,11 @@
 # Sprint 1
 
+## Reconciliation update — 17 October 2026
+
+The [dated criterion crosswalk](sprint-backlog.md#criterion-crosswalk--17-october-2026) now maps **all 79 original functional Jira criteria and five database checks** to retained local IDs and explicit functional test cases. Nine existing local safeguards have separate supporting cases. The [21 September export](../../submission/1/jira-backlog-2026-09-21.csv) preserves the source wording; the crosswalk distinguishes that baseline from later repairs and the customer changes received on 2 October. The new diagram-check identifier, KAN-24-AC4, maps an existing Jira check without renumbering earlier criteria.
+
+The wording-to-case mapping is complete. **Historical evidence remains incomplete:** the adopted criteria/Definition of Done version, reviewed build, criterion-level acceptance, meeting/estimation records and supporting captures are still **Not recorded** where identified below. The new test specifications are **Not executed** and do not change old test results, acceptance dates, current Jira statuses or the **32 committed = 24 Done + 8 carried** outcome. The earlier dated completeness lists below describe their original record state; their requests to create this cross-reference are superseded by this update, while requests for actual evidence remain open.
+
 ## Submission position — 15 October 2026
 
 **Record updated 15 October 2026.** The recorded Sprint 1 outcome remains **32 committed = 24 Done + 8 carried to Sprint 2**. The eight records below are present; the historical evidence package is incomplete. The later status of carried stories does not change this outcome. See the [Sprint 2 baseline and later delivery register](../sprint-02/review.md#baseline-and-later-delivery-register--15-october-2026) for their follow-up.

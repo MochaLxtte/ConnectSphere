@@ -1,5 +1,13 @@
 # Customer change requests
 
+## Reading historical and current requirements — 17 October 2026
+
+The original Sprint 1/2 cards remain the baseline for work and evidence from those sprints. The changes received on **2 October** are traced below to new or refined Sprint 3/4 stories. A later requirement does not retrospectively change an earlier acceptance decision, and receiving/planning a change does not establish that it is implemented. Apply the revised operational rule when its integrated implementation is deployed; retain the original tests as regression checks except where the change explicitly supersedes their expected behaviour.
+
+In particular, original automatic assignment (KAN-29) differs intentionally from the later Lead queue (CR-5/KAN-79); original event-only venue intervals differ intentionally from buffered occupancy (CR-1/KAN-77/78). The map below also records outage recovery, independent venue arrangements, temporary holds and safety review. These are documented requirement changes, not synchronization errors.
+
+The 17 October reconciliation restores two unchanged planning safeguards to the repository: a search with no matching venue and an unsuitable venue assessment must not automatically reject the event. They existed in the 21 September Jira source and remain valid after the Week 7 changes. **KAN-12-AC102** and **KAN-52-AC102** identify them on current repository cards. This is a wording/traceability correction with **zero scope or point increase**, not a seventh customer change. The live Jira descriptions currently omit these sentences; the retained CSV remains an accurate source snapshot rather than being silently edited to look aligned.
+
 Register of customer changes to the original brief. Process follows the course's *Managing Changes – A Guide* (Week 7) and [AGENTS.md §5.9](../../AGENTS.md#59-customer-change-eg-week-7-changes-team-decides).
 
 ## Release reconstruction and balanced allocation — 16 October 2026

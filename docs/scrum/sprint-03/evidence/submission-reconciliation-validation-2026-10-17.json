@@ -1,0 +1,221 @@
+{
+  "run_id": "AUTO-20261017-DOCS-01",
+  "evidence_id": "S3-E13",
+  "date": "2026-10-17",
+  "branch": "docs/backlog-reconciliation",
+  "base_commit": "e724cae97bed70e4cb40fd07ce13fd501168b1ab",
+  "working_tree": "Uncommitted documentation; hashes identify the validated files",
+  "scope": "Submission documentation and workbook reconciliation, not product execution or historical acceptance",
+  "source_recheck": {
+    "date": "2026-10-17",
+    "query": "project = KAN ORDER BY key ASC",
+    "complete": true,
+    "issues": 68,
+    "snapshot_retained": "docs/submission/1/jira-backlog-2026-10-16.csv",
+    "compared_fields": [
+      "summary",
+      "description",
+      "status",
+      "priority",
+      "assignee",
+      "story point estimate",
+      "sprint membership"
+    ],
+    "changed_compared_fields": 0,
+    "jira_modified": false
+  },
+  "documentation": {
+    "date": "2026-10-17",
+    "base_commit": "e724cae97bed70e4cb40fd07ce13fd501168b1ab",
+    "checks": [
+      {
+        "check": "Complete current Jira read",
+        "passed": true
+      },
+      {
+        "check": "Retained Jira CSV matches 17 October source fields",
+        "passed": true
+      },
+      {
+        "check": "Release accounting unchanged",
+        "passed": true
+      },
+      {
+        "check": "Sprint 67 allocation unchanged",
+        "passed": true
+      },
+      {
+        "check": "Sprint 68 allocation unchanged",
+        "passed": true
+      },
+      {
+        "check": "Unique functional case IDs",
+        "passed": true
+      },
+      {
+        "check": "All functional specification columns populated",
+        "passed": true
+      },
+      {
+        "check": "Case results use supported values",
+        "passed": true
+      },
+      {
+        "check": "No replacement characters in functional cases",
+        "passed": true
+      },
+      {
+        "check": "Every appended case has retained criterion and trace links",
+        "passed": true
+      },
+      {
+        "check": "All 191 historical source and supplement mappings resolve to functional cases",
+        "passed": true
+      },
+      {
+        "check": "New cases remain unexecuted",
+        "passed": true
+      },
+      {
+        "check": "Previous execution narratives and evidence preserved",
+        "passed": true
+      },
+      {
+        "check": "Original five failed audit cases remain Fail",
+        "passed": true
+      },
+      {
+        "check": "New implementation and automated-suite paths exist",
+        "passed": true
+      },
+      {
+        "check": "Sprint 3 current card count",
+        "passed": true
+      },
+      {
+        "check": "Sprint 4 current card count",
+        "passed": true
+      },
+      {
+        "check": "Active Sprint 3/4 criteria map to functional cases",
+        "passed": true
+      },
+      {
+        "check": "Current criteria preserve all 299 Jira IDs plus two repository safeguards",
+        "passed": true
+      },
+      {
+        "check": "Current 299 source criteria retain Jira wording beside the two labelled supplements",
+        "passed": true
+      },
+      {
+        "check": "Changed Markdown links and anchors resolve",
+        "passed": true
+      }
+    ],
+    "passed": 21,
+    "total": 21,
+    "errors": [],
+    "counts": {
+      "jira_issues": 68,
+      "parents": 42,
+      "parent_points": 174,
+      "active_criteria": 301,
+      "functional_cases": 398,
+      "new_cases": 142,
+      "traceability_rows": 95,
+      "source_crosswalk_rows": {
+        "sprint1-cases.json": 84,
+        "sprint2-cases.json": 107
+      },
+      "relative_links_checked": 645
+    },
+    "product_tests_executed": false,
+    "jira_modified": false
+  },
+  "workbook": {
+    "original_specification_rows_preserved": 689,
+    "repository_supplements": 3,
+    "historical_story_crosswalk_rows": 19,
+    "new_reconciliation_notes": 4,
+    "sheets": 7,
+    "native_tables": 11,
+    "total_specification_rows": 711,
+    "all_original_formulas_preserved": true,
+    "formula_errors_found": 0,
+    "native_preservation": {
+      "checks": {
+        "package_members_preserved": true,
+        "seven_sheet_order_and_workbook_settings_preserved": true,
+        "charts_and_drawings_preserved": true,
+        "relationship_targets_preserved": true,
+        "nine_unchanged_native_tables_preserved": true,
+        "two_extended_table_properties_preserved": true,
+        "eleven_native_tables_preserved": true,
+        "all_formulas_preserved": true,
+        "all_existing_cell_styles_preserved": true,
+        "views_columns_merges_validation_cf_protection_print_preserved": true,
+        "unmodified_existing_row_heights_preserved": true,
+        "all_original_style_definitions_preserved": true
+      },
+      "passed": 12,
+      "total": 12,
+      "newHash": "6669adce31c417062cb1e58045148d75e3f134b6a1ae72acb9b068509ecc0e41",
+      "restoredOriginalConditionalFillFlags": 4
+    },
+    "changed_views_visually_checked": [
+      "overview",
+      "source notes",
+      "repository supplements",
+      "historical crosswalk references",
+      "reconciliation notes"
+    ],
+    "excel_desktop": "Not executed"
+  },
+  "case_register": {
+    "existing_cases": 256,
+    "new_cases": 142,
+    "total_cases": 398,
+    "new_cases_result": "Not executed",
+    "new_cases_evidence": "Not recorded",
+    "existing_trace_rows": 76,
+    "new_trace_rows": 19,
+    "total_trace_rows": 95,
+    "original_detailed_failed_cases_remain_fail": 5,
+    "legacy_summary_result_narratives": "Preserved in evidence cells when result labels were normalised"
+  },
+  "independent_review": {
+    "result": "No material issues found",
+    "checks": [
+      "All added cases and trace rows match source handoffs",
+      "No missing AC references or duplicate case IDs",
+      "Original Sprint 1/2 backlog content preserved",
+      "No failed case promoted to Pass",
+      "Restored safeguards predate the cleanup"
+    ]
+  },
+  "whitespace": {
+    "command": "git -c core.safecrlf=false diff --check",
+    "exit_code": 0,
+    "result": "Pass"
+  },
+  "sha256": {
+    "docs/submission/1/product-backlog.xlsx": "6669adce31c417062cb1e58045148d75e3f134b6a1ae72acb9b068509ecc0e41",
+    "docs/submission/1/jira-backlog-2026-10-16.csv": "1be380f539efb7b4baffa633c154893a8050cd205721aae60e52a088b01efcad",
+    "docs/requirements/product-backlog.md": "779636cc4ebff8b93d4c5b749daf2e033b7a25d0ccadbd158f35364362c3efc3",
+    "docs/testing/test-cases.csv": "4f977b55b2a0e65789ca2e73fbce9658659bb22045bd4cfd57353ddbff3c99f5",
+    "docs/requirements/traceability.csv": "9777822f1fa30c2b29f54bc1ce58e1b456fa826311865c62627ccbe18e0ded9a",
+    "docs/scrum/sprint-01/sprint-backlog.md": "6222aeaf57f26ebc52a7dc1c2a0f1f9bffd1baed0781e5f66f2dd080d127a472",
+    "docs/scrum/sprint-02/sprint-backlog.md": "d876ce21e6af230784d2d953467aa01f43d728380d22f76c2b883202a56341f6",
+    "docs/scrum/sprint-03/sprint-backlog.md": "33d2bf1f52419c11e74f19fdd65aa3c54c66e7d1360d55f7f4804b7f5ca6ea90",
+    "docs/scrum/sprint-04/sprint-backlog.md": "90fbd8a28415c18f0d254fa73b349686b05745ad2b3dbc8e178ecf6b91c0caee"
+  },
+  "boundaries": {
+    "product_tests_executed": false,
+    "database_changed": false,
+    "application_code_changed": false,
+    "commit_or_push_performed": false,
+    "historical_review_acceptance_or_meetings_reconstructed": false,
+    "historical_evidence_gaps": "Remain Not recorded where sources are unavailable"
+  }
+}

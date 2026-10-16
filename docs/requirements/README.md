@@ -1,5 +1,7 @@
 # Requirements and scope
 
+**Submission reading guide — 17 October 2026.** Start with the [master backlog](product-backlog.md#master-backlog-register) for the current release inventory and the [change register](change-requests.md) for before/after customer requirements. Sprint 1 and Sprint 2 retain their dated baseline cards; their new reconciliation sections map the original requirements to explicit functional cases without changing historical acceptance. Current Sprint 3/4 cards govern later work. The [submission workbook notes](../submission/1/README.md) distinguish the unchanged Jira source snapshot from repository supplements. Differences caused by recorded customer changes are intentional; omissions and unmapped criteria are corrected separately.
+
 **Ownership update — 16 October 2026.** All 28 unfinished parent items are now unassigned in Jira. Team members will choose their own stories; independent reviewers and the integration lead are **To agree** after ownership is chosen. The scope remains **63 SP per sprint**, averaging **10.5 SP per member per sprint** and **21 SP per member across both**. Aim for roughly 10–11 SP each, retaining whole estimates and dependency order rather than forcing an exact split. Earlier named allocations are historical. Claim a Jira card and sync its sprint record before starting work.
 
 The first release covers the 20 core features below. This directory records the release scope, workflow requirements and team decisions.

@@ -58,4 +58,6 @@ These records belong in **folder 4** of the final submission. The [submission ch
 
 ## Record preparation
 
+**17 October submission reconciliation.** The [master backlog](../requirements/product-backlog.md#master-backlog-register) distinguishes the current plan from closed-sprint history and [documented customer changes](../requirements/change-requests.md). Sprint 1/2 criterion crosswalks and functional-case specifications improve traceability without altering original sprint totals or acceptance. Historical snapshots below/within sprint documents retain their date; current metadata comes from the latest labelled register.
+
 Planning, backlog reconciliation and document checks were AI-assisted. Scope and estimate selections used delegated chat planning; no independent six-member vote is recorded. Sources, dates and actual test execution methods are retained. Include the assistance and checks in the pull request.

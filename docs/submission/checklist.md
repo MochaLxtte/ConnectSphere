@@ -1,5 +1,7 @@
 # Submission checklist
 
+**Documentation reconciliation — 17 October 2026.** The submitted [master backlog](1/README.md) distinguishes the verbatim Jira snapshot, repository corrections and documented before/after customer requirements. Sprint 1/2 criterion crosswalks and detailed functional specifications close mapping gaps; they do not establish new test results or historical acceptance. Finish the actual evidence and deliverables in the checklist below before calling the final submission complete. Scope and sprint-point totals are unchanged.
+
 **Planning update — 16 October 2026, after reconstruction/rebalance:** the master register now covers all six customer changes and **42 parent items / 174 SP**. The remaining plan is **Sprint 3: 13 items / 63 SP; Sprint 4: 15 items / 63 SP**. Current exports contain all **68 Jira issues** including 26 unpointed subtasks. Customer receipt on **2 October** and the later scope/estimate/sprint changes are traced in the [change register](../requirements/change-requests.md). The earlier 97/29 plan is retained as history. These are planning records; actual implementation, tests, hosted acceptance, historical meeting/DoD evidence, final-sprint recordings and submission deliverables remain outstanding.
 
 Submit **one ZIP containing numbered subfolders 1–7**. The table below maps each required deliverable to the project records and identifies what remains to complete.

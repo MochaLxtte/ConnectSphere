@@ -1,5 +1,19 @@
 # 1. Final product backlog
 
+## Submission reconciliation — 17 October 2026
+
+Use the [master workbook](product-backlog.xlsx) and [Markdown master register](../../requirements/product-backlog.md#master-backlog-register) as the submitted backlog. They include original Sprint 1/2 work, later completion/carry-over, the current Sprint 3/4 plan, and the six documented customer changes. The [change register](../../requirements/change-requests.md) explains which original rules are retained, extended or superseded. Different historical and current criteria are intentional where that change is documented.
+
+A live read on 17 October returned the same 68 Jira issues and compared fields as the [16 October CSV](jira-backlog-2026-10-16.csv); the CSV retains its original date and contents. Repository supplements are explicitly labelled in the workbook and sprint cards: KAN-12-AC102 and KAN-52-AC102 restore existing no-automatic-event-rejection rules omitted from current Jira, and KAN-24-AC4 identifies the existing database-diagram check. These are documentation corrections, not additional stories or estimates. No Jira cards were changed during this cleanup.
+
+The dated [Sprint 1 crosswalk](../../scrum/sprint-01/sprint-backlog.md) and [Sprint 2 reconciliation](../../scrum/sprint-02/sprint-backlog.md) connect source requirements, stable local criteria and the [functional case register](../../testing/test-cases.csv). The workbook links these detailed mappings rather than duplicating every test procedure. Added cases are specifications with **Not executed** results; existing dated passing/failing observations remain in [test evidence](../../testing/test-evidence.md). Current reconciliation does not supply missing historical review/retrospective records, acceptance, burndown evidence or test runs.
+
+Current parent totals remain **42 items / 174 SP**: 48 administrative Done, 63 selected for Sprint 3 and 63 for Sprint 4. Sprint 1's **32/24/8** reported outcome and Sprint 2's **43 = 35 + 8** commitment remain unchanged. The sections below are the preserved earlier export and validation records; their hashes and criterion counts apply to those versions.
+
+## Reconciliation validation — 17 October 2026
+
+The source export below is retained with its original date. The current workbook's later reconciliation is verified separately here: [17 October validation and hashes](../../scrum/sprint-03/evidence/submission-reconciliation-validation-2026-10-17.json). Documentation checks passed **21/21**, with **398 functional cases / 95 traceability rows**; workbook native preservation passed **12/12**, retaining seven sheets, 11 tables and 689 original specification rows. Three labelled supplements and 19 historical story references have been added. Changed workbook views were visually inspected; Excel desktop was **Not executed**. These checks do not replace product tests or historical acceptance evidence.
+
 ## Current export — 16 October 2026, after backlog reconstruction
 
 The [master workbook](product-backlog.xlsx), [Jira CSV](jira-backlog-2026-10-16.csv) and [Markdown master register](../../requirements/product-backlog.md#master-backlog-register) use the live Jira snapshot after backlog reconstruction, self-selection and course-format cleanup. They include completed Sprint 1 work, Sprint 2 history and the remaining release stories. Project scope and deliverables follow the project instructions and rubric; the [course references](../../requirements/README.md#course-and-project-conventions) explain the story and Scrum formats.

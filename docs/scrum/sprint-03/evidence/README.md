@@ -66,3 +66,11 @@ Current story ownership is unassigned for team selection; reviewers and integrat
 | --- | --- | --- | --- |
 | S3-E11 | [Current ownership snapshot](jira-ownership-state-2026-10-16.json) | Live Jira read on 16 October: all 28 unfinished parent stories are unassigned; Sprint 3 remains 13 parents / 63 SP and Sprint 4 remains 15 parents / 63 SP. Historical Done subtasks KAN-57/KAN-58 also have unassigned metadata. | Assignee metadata changed; story/subtask states, estimates and acceptance did not. Earlier rebalanced snapshot remains preserved. |
 | S3-E12 | [Handover validation](handover-validation-2026-10-16.json) | Course-format Jira/export/card/case checks 17/17; 28 active cards, 299 criteria, 256 cases and 76 traceability rows. Workbook source refresh, saved readback, formulas, preserved formatting and changed views passed. Final link/whitespace results are in the artifact. | Documentation handover only; no new product test or hosted acceptance. |
+
+## Submitted backlog reconciliation — 17 October 2026
+
+| ID | Artifact | Source / result | Limits |
+| --- | --- | --- | --- |
+| S3-E13 | [Reconciliation validation and artifact hashes](submission-reconciliation-validation-2026-10-17.json) | Current Jira fields unchanged from the retained 16 October CSV; documentation checks 21/21 and native workbook preservation checks 12/12. Dated Sprint 1/2 mappings cover 84 and 107 source/supplement entries. Current registers contain 398 cases, 95 traceability rows and 301 active criteria. | The 142 added specifications remain Not executed. This is documentation/export verification, not application tests, historical acceptance or a reconstructed sprint-close artifact. |
+
+See [AUTO-20261017-DOCS-01](../../../testing/test-evidence.md#17-october-2026--historical-criteria-and-submitted-backlog-reconciliation) for the verification scope. The workbook labels repository supplements separately from retained Jira wording, and the [change register](../../../requirements/change-requests.md) explains intentional differences between original and revised requirements.

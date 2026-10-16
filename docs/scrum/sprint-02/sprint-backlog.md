@@ -426,3 +426,77 @@ Criterion ranges include every numbered criterion between their endpoints. A bro
 | S2-T23 | KAN-6-AC1; KAN-29-AC1, KAN-29-AC4, KAN-29-AC6; assignment rule; KAN-12-AC8, KAN-12-AC9; KAN-52-AC1, KAN-52-AC9; KAN-53-AC5, KAN-53-AC8, KAN-53-AC9; KAN-8-AC3, KAN-8-AC7, KAN-8-AC9; KAN-51-AC2 | Hosted acceptance walkthrough | Repaired draft → submission/automatic assignment without event approval → search/suitability → venue booking request without automatic booking approval → staff approval → coordinator decision visibility and changed calendar availability. Retain evidence across roles and refreshes; verify additional story criteria in their dedicated cases. | Partial. AUTO-20261009-S2T23-01 passed the isolated API/PostgreSQL chain. MAN-20261009-S2T23-01 records real test-account submission, assignment, search, booking, staff approval, coordinator outcome and calendar/search changes. Suitability assessment and every cross-role refresh were Not executed; actual review acceptance: Not recorded. |
 
 Each story closes only when its Jira criteria, recorded refinements, appropriate tests, review, integration and evidence satisfy the [Definition of Done](../definition-of-done.md). Record actual results in [test evidence](../../testing/test-evidence.md) and link them from the [Sprint 2 evidence register](evidence/README.md) and [review](review.md). Proposed checks become acceptance requirements only through an explicit refinement decision.
+
+## Acceptance reconciliation — 17 October 2026
+
+This dated reconciliation supplements the earlier records; it does not replace the 20 September–3 October commitment, change its **12 parents / 43 SP**, or claim new test execution or retrospective acceptance. The nine new parents retain **93 original numbered criteria**, with **12 later numbered refinements** (KAN-50 AC15–21, KAN-12 AC14–16 and KAN-54 AC10–11). The carried KAN-6/KAN-33/KAN-34 criteria remain in their [Sprint 1 cards](../sprint-01/sprint-backlog.md) and current completion cards where selected. Their points remain included once in the original 43 SP.
+
+Sources: the preserved [21 September Jira export](../../submission/1/jira-backlog-2026-09-21.csv), [11 October export](../../submission/1/jira-backlog-2026-10-11.csv), [16 October export](../../submission/1/jira-backlog-2026-10-16.csv), unchanged live Jira read on 17 October, and the [dated clarification decisions](../../requirements/assumptions-and-questions.md). The dated exports retain their captured wording; the following corrections distinguish historical labels from the current interpretation.
+
+| Earlier wording or omission | Reconciled interpretation and criterion mapping | Functional specification |
+| --- | --- | --- |
+| KAN-12 AC14–16 and KAN-54 AC10–11 were labelled repo-only on 9 October; the KAN-6 AC5–7 introduction also says not yet on Jira | These refinements are already present in the 11 October and later Jira exports. The older labels describe the 9 October record, not current Jira. Their stable IDs and original dates are retained. | KAN-12 and KAN-54 crosswalk below; KAN-6 uses the Sprint 1/current completion crosswalk. |
+| Attendance 0 remained an open question in the carried submission note | The [9 October Product Owner decision](../../requirements/assumptions-and-questions.md#9-october-2026--kan-59-submission-validation-rules-s1-def-04) permits 0 as a supplied attendance value; missing attendance remains invalid. S2-T22 already reflects this. The current KAN-52-AC101 consistency repair does not introduce a new minimum or rewrite Sprint 2 acceptance. | KAN-6 submission cases; current KAN-52-AC101 / TC-11-07. |
+| KAN-55 reason and invalid-period safeguards appeared as proposed robustness | The 21 September adopted requirements make the operational reason mandatory and refuse invalid periods. KAN-55-AC4 includes rejecting absent/blank reasons; AC2–AC3 require a valid date and ordered start/end. AC5–AC7 retain reason categories, save and correct-venue association. These are existing requirements, not new scope. | TC-14-207 |
+| Competing approval protection appeared as proposed robustness for KAN-54 | KAN-54-AC7 prevents incompatible confirmations even when requests race; AC9 requires rechecking current booking/block information at approval. KAN-53-AC5 submission also refuses an already reserved/blocked period without inserting a conflicting request; approval independently rechecks. These safeguards were already adopted on 21 September. | TC-14-201, TC-14-203, TC-14-204 |
+| The current Jira cleanup omitted the no-automatic-event-rejection sentences from KAN-12 and KAN-52 | Restore the existing 21 September guardrails as **KAN-12-AC102** and **KAN-52-AC102** in the current [Sprint 3 cards](../sprint-03/sprint-backlog.md). These repository supplements add traceable IDs, not scope or points; mirroring the restored sentences to Jira remains pending. | TC-10-210; TC-11-205 |
+
+**Test fixtures and historical boundary.** Use synthetic test accounts and two distinct active venues, with recorded original values and build SHA. O1/O2 are organisers, C1/C2 coordinators, V1/V2 Venue Staff and T1 Technical Support; E1/E2 and A/B are synthetic events/venues. Unless a case says otherwise, use 12 January 2031 in Singapore time, matching venue capabilities and unrestricted hours. Use an isolated database for concurrent requests, direct fixture deletion or failure injection; restore fixtures afterwards and record any remaining shared test data. Do not use production data.
+
+The new cases specify the Sprint 2 baseline and its dated refinements: automatic initial assignment, no turnover buffer and no reservation from pending requests. **CR-1 buffers, CR-4 provisional holds and CR-5 Lead assignment remain prospective requirements in later sprint cards**, so a later build must be tested against its applicable changed rules separately. Do not restore an old workflow in the current product merely to satisfy a historical case. The two no-automatic-rejection guardrails still apply to the current carried stories.
+
+**Functional case crosswalk.** The following 49 specifications cover every one of the 105 numbered criteria for the nine new Sprint 2 parents, plus the two restored guardrails. They use the course test-case fields in [test-cases.csv](../../testing/test-cases.csv); [traceability.csv](../../requirements/traceability.csv) links real automated regression targets. New specifications are **Not executed**, their evidence is **Not recorded**, and acceptance is **Not assessed**. Historical passed/failed observations above and in [test evidence](../../testing/test-evidence.md) are unchanged; an existing automated file is not evidence that these newly specified combinations were executed.
+
+| Story | Stable acceptance criteria | Functional case | Specification |
+| --- | --- | --- | --- |
+| KAN-29 | KAN-29-AC1; KAN-29-AC2; KAN-29-AC3; KAN-29-AC5; KAN-29-AC6 | TC-05-201 | S2 successful submission automatically records exactly one coordinator without deciding the event |
+| KAN-29 | KAN-29-AC4 | TC-05-202 | S2 automatically assigned coordinator can open the submitted event |
+| KAN-29 | KAN-29-AC7 | TC-05-203 | S2 initial assignment persists through ordinary reads and updates |
+| KAN-50 | KAN-50-AC1; KAN-50-AC2 | TC-08-201 | S2 venue catalogue lists venues and opens the correct current record |
+| KAN-50 | KAN-50-AC3; KAN-50-AC4; KAN-50-AC9; KAN-50-AC12 | TC-08-202 | S2 location and capacity updates persist for the selected venue |
+| KAN-50 | KAN-50-AC5; KAN-50-AC6; KAN-50-AC7; KAN-50-AC10; KAN-50-AC11 | TC-08-203 | S2 facility, accessibility and multiple layout updates remain linked to their venue |
+| KAN-50 | KAN-50-AC8; KAN-50-AC16 | TC-08-204 | S2 operating-hour updates validate against the unchanged endpoint |
+| KAN-50 | KAN-50-AC13; KAN-50-AC20 | TC-08-205 | S2 updated venue information reaches planning without changing existing bookings |
+| KAN-50 | KAN-50-AC14; KAN-50-AC15 | TC-08-206 | S2 only authorised editable venue fields may be saved |
+| KAN-50 | KAN-50-AC17 | TC-08-207 | S2 catalogue list and capacity boundaries are normalised and validated |
+| KAN-50 | KAN-50-AC18 | TC-08-208 | S2 concurrent catalogue edits preserve disjoint changes and resolve one-field conflicts |
+| KAN-50 | KAN-50-AC19 | TC-08-209 | S2 save rejects an inactive or missing catalogue record |
+| KAN-50 | KAN-50-AC21 | TC-08-210 | S2 save sends changed fields only and retains input after a failed request |
+| KAN-51 | KAN-51-AC1; KAN-51-AC5 | TC-09-201 | S2 all authorised internal roles can inspect availability for the correct venue |
+| KAN-51 | KAN-51-AC2; KAN-51-AC3; KAN-51-AC4 | TC-09-202 | S2 calendar distinguishes confirmed bookings, operational blocks and free time |
+| KAN-51 | KAN-51-AC6 | TC-09-203 | S2 protected venue calendar denies unauthorised users |
+| KAN-12 | KAN-12-AC1 | TC-10-201 | S2 date/time search excludes an overlapping booking or block and permits free periods |
+| KAN-12 | KAN-12-AC2; KAN-12-AC4 | TC-10-202 | S2 attendance and capacity filters respect the capacity boundary |
+| KAN-12 | KAN-12-AC3; KAN-12-AC5; KAN-12-AC6; KAN-12-AC7 | TC-10-203 | S2 each location, accessibility, layout and facility filter affects results |
+| KAN-12 | KAN-12-AC8; KAN-12-AC9; KAN-12-AC10 | TC-10-204 | S2 combined search uses the latest catalogue values and excludes non-matches |
+| KAN-12 | KAN-12-AC11; KAN-12-AC12 | TC-10-205 | S2 filters can be changed or cleared and result links identify the right venue |
+| KAN-12 | KAN-12-AC13 | TC-10-206 | S2 protected search rejects unauthorised users through UI and API |
+| KAN-12 | KAN-12-AC14 | TC-10-207 | S2 invalid or incomplete periods are stopped before any search request |
+| KAN-12 | KAN-12-AC15 | TC-10-208 | S2 delayed earlier search responses cannot replace a later search |
+| KAN-12 | KAN-12-AC16 | TC-10-209 | S2 missing filter options and no-match results have distinct recoverable feedback |
+| KAN-12 | KAN-12-AC102 | TC-10-210 | Restored search guardrail: no matching venue never rejects the event |
+| KAN-52 | KAN-52-AC1; KAN-52-AC8 | TC-11-201 | S2 suitability accepts a venue meeting the selected event’s confirmed requirements |
+| KAN-52 | KAN-52-AC2; KAN-52-AC3; KAN-52-AC4; KAN-52-AC5; KAN-52-AC7 | TC-11-202 | S2 each unsuitable requirement is identified without false suitability |
+| KAN-52 | KAN-52-AC6 | TC-11-203 | S2 suitability considers confirmed bookings, operational blocks and otherwise free time |
+| KAN-52 | KAN-52-AC9 | TC-11-204 | S2 refreshed suitability uses current event, venue and availability information |
+| KAN-52 | KAN-52-AC102 | TC-11-205 | Restored suitability guardrail: an unsuitable venue never rejects the event |
+| KAN-53 | KAN-53-AC1; KAN-53-AC2; KAN-53-AC3; KAN-53-AC4; KAN-53-AC5; KAN-53-AC6; KAN-53-AC7 | TC-12-201 | S2 assigned coordinator submits the selected event’s venue request with correct details |
+| KAN-53 | KAN-53-AC8; KAN-53-AC9; KAN-53-AC10 | TC-12-202 | S2 submitted requests are visible to Venue Staff as pending rather than decided |
+| KAN-53 | KAN-53-AC11 | TC-12-203 | S2 unrelated coordinators and other users cannot submit event bookings |
+| KAN-8 | KAN-8-AC1; KAN-8-AC2 | TC-13-201 | S2 Venue Staff can list and open pending requests with timing and requirements |
+| KAN-8 | KAN-8-AC3; KAN-8-AC6; KAN-8-AC7; KAN-8-AC8; KAN-8-AC9 | TC-13-202 | S2 approval persists for the correct booking and updates availability |
+| KAN-8 | KAN-8-AC4; KAN-8-AC5; KAN-8-AC10 | TC-13-203 | S2 rejection records its explanation without reserving the venue |
+| KAN-8 | KAN-8-AC11 | TC-13-204 | S2 non-Venue Staff cannot decide a booking |
+| KAN-54 | KAN-54-AC1; KAN-54-AC2; KAN-54-AC6; KAN-54-AC8; KAN-53-AC5 | TC-14-201 | S2 confirmed-booking overlaps are detected with feedback at submission |
+| KAN-54 | KAN-54-AC3; KAN-54-AC4 | TC-14-202 | S2 other venues and non-overlapping intervals do not cause false conflicts |
+| KAN-54 | KAN-54-AC5; KAN-53-AC5 | TC-14-203 | S2 operational blocks prevent conflicting venue requests and approval |
+| KAN-54 | KAN-54-AC7; KAN-54-AC9 | TC-14-204 | S2 approval rechecks fresh data and serialises competing confirmations |
+| KAN-54 | KAN-54-AC10 | TC-14-205 | S2 pending, rejected and cancelled bookings do not reserve the venue |
+| KAN-54 | KAN-54-AC11 | TC-14-206 | S2 database overlap enforcement maps to conflicts without hiding unrelated failures |
+| KAN-55 | KAN-55-AC1; KAN-55-AC2; KAN-55-AC3; KAN-55-AC4; KAN-55-AC5; KAN-55-AC6; KAN-55-AC7 | TC-14-207 | S2 Venue Staff save a valid venue block with its mandatory operational reason |
+| KAN-55 | KAN-55-AC8; KAN-55-AC9; KAN-55-AC10 | TC-14-208 | S2 a saved block is reflected consistently in calendar, search and suitability |
+| KAN-55 | KAN-55-AC11 | TC-14-209 | S2 a saved operational block prevents booking confirmation |
+| KAN-55 | KAN-55-AC12 | TC-14-210 | S2 unaffected periods outside a block remain available |
+| KAN-55 | KAN-55-AC13 | TC-14-211 | S2 only Venue Staff may create operational blocks |
+
+The original S2-T01–S2-T23 run-plan entries and their results remain historical. Use this crosswalk for precise per-criterion specifications and the current sprint cards for later fixes/customer changes; do not infer acceptance from this documentation reconciliation.

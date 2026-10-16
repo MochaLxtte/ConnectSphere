@@ -1,5 +1,11 @@
 # Sprint 2
 
+## Documentation reconciliation — 17 October 2026
+
+The [dated acceptance reconciliation and functional crosswalk](sprint-backlog.md#acceptance-reconciliation--17-october-2026) now map all **93 original criteria for the nine new stories**, their **12 later numbered refinements**, and the two restored no-automatic-event-rejection guardrails to explicit functional specifications. It clarifies the outdated repo-only labels, attendance-zero decision, mandatory block reason/valid period and competing-approval protection while preserving the earlier dated records. New specifications are **Not executed**; this update supplies no new acceptance or run evidence.
+
+The historical commitment remains **12 parents / 43 SP**. Five carried parents retain **19 SP** in Sprint 3; the other seven remain Jira Done at **24 SP**, which does not establish the accepted total at 3 October. Current Sprint 3 ownership is **Unassigned** for self-selection; the owner names in the earlier 16 October table below are a preserved allocation snapshot. Historical acceptance/velocity remain **Not recorded**. Later customer changes are tracked in the current/future sprint cards and do not rewrite Sprint 2 scope.
+
 ## Administrative close and current carry-over — 16 October 2026
 
 **Record updated 16 October 2026.** Jira Sprint 2 (id 34) is **Closed**, with actual administrative completion **16 October 2026 at 02:06 Singapore time**. The original sprint window remains **20 September–3 October** and its commitment remains **43 points: 35 new + 8 carried**. This administrative closure is not a reconstructed 3 October review, retrospective, acceptance decision or velocity.

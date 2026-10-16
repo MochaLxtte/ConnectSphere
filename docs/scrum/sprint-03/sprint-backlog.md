@@ -48,8 +48,8 @@ Every row requires its complete active criterion set plus applicable Definition 
 | S3-T06 | KAN-34: AC1, AC2, AC3, AC101 | TC-03-02, TC-03-03, TC-03-04, TC-03-05, TC-03-06 | **Not executed** / Not recorded |
 | S3-T07 | KAN-60: AC1, AC2, AC3, AC4, AC5, AC101, AC102, AC103 | TC-04-02, TC-04-03, TC-04-04, TC-04-05, TC-04-06 | **Not executed** / Not recorded |
 | S3-T15 | KAN-50: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12, AC13, AC14, AC15, AC16, AC17, AC18, AC19, AC20, AC21, AC101 | TC-08-02, TC-08-03, TC-08-04, TC-08-05, TC-08-06, TC-08-07, TC-08-08, TC-08-09, TC-08-10, TC-08-11, TC-08-12, TC-08-13, TC-08-14 | **Not executed** / Not recorded |
-| S3-T16 | KAN-12: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12, AC13, AC14, AC15, AC16, AC101 | TC-10-02, TC-10-03, TC-10-04, TC-10-05, TC-10-06, TC-10-07, TC-10-08, TC-10-09, TC-10-10, TC-10-11, TC-10-12 | **Not executed** / Not recorded |
-| S3-T17 | KAN-52: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC101 | TC-11-02, TC-11-03, TC-11-04, TC-11-05, TC-11-06, TC-11-07 | **Not executed** / Not recorded |
+| S3-T16 | KAN-12: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12, AC13, AC14, AC15, AC16, AC101, AC102 | TC-10-02, TC-10-03, TC-10-04, TC-10-05, TC-10-06, TC-10-07, TC-10-08, TC-10-09, TC-10-10, TC-10-11, TC-10-12, TC-10-210 | **Not executed** / Not recorded |
+| S3-T17 | KAN-52: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC101, AC102 | TC-11-02, TC-11-03, TC-11-04, TC-11-05, TC-11-06, TC-11-07, TC-11-205 | **Not executed** / Not recorded |
 | S3-T18 | KAN-77: AC1, AC2, AC3, AC4, AC5, AC6 | TC-08-15, TC-08-16, TC-08-17, TC-08-18, TC-08-19, TC-08-20 | **Not executed** / Not recorded |
 | S3-T19 | KAN-78: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8 | TC-14-01, TC-14-02, TC-14-03, TC-14-04, TC-14-05, TC-14-06, TC-14-07 | **Not executed** / Not recorded |
 | S3-T20 | KAN-79: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10 | TC-05-01, TC-05-02, TC-05-03, TC-05-04, TC-05-05, TC-05-06, TC-05-07, TC-05-08, TC-05-09 | **Not executed** / Not recorded |
@@ -398,8 +398,11 @@ Implementation defaults: docs/scrum/sprint-03/planning.md and docs/requirements/
 | **KAN-12-AC15** | Results from an earlier search never replace those of a newer one, and earlier results are hidden while a new search runs so they cannot be mistaken for the new filters. | TC-10-11 |
 | **KAN-12-AC16** | If the layout, facility or accessibility lists cannot be loaded, the other filters still work and the user is told what is missing. A search with no matches explains that no venue meets every filter, which is different from an empty catalogue. | TC-10-12 |
 | **KAN-12-AC101** | Impossible calendar dates are refused with field feedback instead of silently normalising to another date, through both the interface and direct API requests. | TC-10-10 |
+| **KAN-12-AC102** | No venue match does not automatically reject the event request. Search supports the coordinator’s manual planning decision. | TC-10-210 |
 
 **Implementation location:** backend/src/modules/venues/venue-search.ts; frontend/src/features/venues/pages/VenueSearchPage.vue. **Automated test files:** backend/test/venues/venue-search.test.ts; database/tests/venues/venue-search.integration.test.ts; frontend/src/features/venues/pages/VenueSearchPage.test.ts; tests/e2e/venue-search.spec.ts. These are existing baseline locations to extend; no new fixed-code result is claimed.
+
+**17 October reconciliation:** This criterion restores the original 21 September no-automatic-event-rejection guardrail, retained in the historical source below but omitted from the current Jira cleanup. Its stable ID supports traceability; no scope or estimate is added. Jira mirroring remains pending. See the [Sprint 2 reconciliation](../sprint-02/sprint-backlog.md#acceptance-reconciliation--17-october-2026). New specification: **Not executed**; evidence: **Not recorded**.
 
 <details>
 <summary>Preserved Jira description before self-selection (historical ownership)</summary>
@@ -483,8 +486,11 @@ Implementation defaults: docs/scrum/sprint-03/planning.md and docs/requirements/
 | **KAN-52-AC8** | A venue that meets the applicable event requirements is not incorrectly marked unsuitable. | TC-11-02 |
 | **KAN-52-AC9** | The assessment uses the current event requirements, venue information and relevant availability. | TC-11-06 |
 | **KAN-52-AC101** | Expected attendance 0 is a known permitted value and is assessed against venue capacity; it is not treated as missing. Missing attendance remains distinguishable. Other requirements/availability still determine overall suitability. | TC-11-07 |
+| **KAN-52-AC102** | Suitability informs venue selection; an unsuitable venue does not automatically reject the event request. | TC-11-205 |
 
 **Implementation location:** backend/src/modules/venues/suitability-rules.ts; backend/src/modules/venues/suitability-service.ts; frontend/src/features/venues/pages/VenueSuitabilityPage.vue. **Automated test files:** backend/test/venues/suitability-rules.test.ts; database/tests/venues/venue-suitability.integration.test.ts; tests/e2e/venue-suitability.spec.ts. These are existing baseline locations to extend; no new fixed-code result is claimed.
+
+**17 October reconciliation:** This criterion restores the original 21 September no-automatic-event-rejection guardrail, retained in the historical source below but omitted from the current Jira cleanup. Its stable ID supports traceability; no scope or estimate is added. Jira mirroring remains pending. See the [Sprint 2 reconciliation](../sprint-02/sprint-backlog.md#acceptance-reconciliation--17-october-2026). New specification: **Not executed**; evidence: **Not recorded**.
 
 <details>
 <summary>Preserved Jira description before self-selection (historical ownership)</summary>
@@ -1162,8 +1168,8 @@ Each row groups the complete criterion-specific cases for one parent. Normal, bo
 | S3-T13 | KAN-67: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC101, AC102, AC103 | TC-18-12, TC-18-13, TC-18-14, TC-18-15, TC-18-16, TC-18-17 | Event-specific rosters/counts, limited fields, refresh, reassignment and stale-session protection | **Not executed** / Not recorded |
 | S3-T14 | KAN-66: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC101, AC102, AC103 | TC-07-01, TC-07-02, TC-07-03, TC-07-04, TC-07-05 | Role/state/field edit matrix, ordinary/significant boundary and concurrency | **Not executed** / Not recorded |
 | S3-T15 | KAN-50: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12, AC13, AC14, AC15, AC16, AC17, AC18, AC19, AC20, AC21, AC101 | TC-08-02, TC-08-03, TC-08-04, TC-08-05, TC-08-06, TC-08-07, TC-08-08, TC-08-09, TC-08-10, TC-08-11, TC-08-12, TC-08-13, TC-08-14 | All catalogue fields, persistence/propagation, access, data validation and stale-save regression | **Not executed** / Not recorded |
-| S3-T16 | KAN-12: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12, AC13, AC14, AC15, AC16, AC101 | TC-10-02, TC-10-03, TC-10-04, TC-10-05, TC-10-06, TC-10-07, TC-10-08, TC-10-09, TC-10-10, TC-10-11, TC-10-12 | All filters, current results, access, invalid dates, stale response and failed options | **Not executed** / Not recorded |
-| S3-T17 | KAN-52: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC101 | TC-11-02, TC-11-03, TC-11-04, TC-11-05, TC-11-06, TC-11-07 | Applicable suitability requirements, current context, capacity/capabilities, availability and explicit zero | **Not executed** / Not recorded |
+| S3-T16 | KAN-12: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12, AC13, AC14, AC15, AC16, AC101, AC102 | TC-10-02, TC-10-03, TC-10-04, TC-10-05, TC-10-06, TC-10-07, TC-10-08, TC-10-09, TC-10-10, TC-10-11, TC-10-12, TC-10-210 | All filters, current results, access, invalid dates, stale response and failed options | **Not executed** / Not recorded |
+| S3-T17 | KAN-52: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC101, AC102 | TC-11-02, TC-11-03, TC-11-04, TC-11-05, TC-11-06, TC-11-07, TC-11-205 | Applicable suitability requirements, current context, capacity/capabilities, availability and explicit zero | **Not executed** / Not recorded |
 | S3-T18 | KAN-77: AC1, AC2, AC3, AC4, AC5, AC6 | TC-08-15, TC-08-16, TC-08-17, TC-08-18, TC-08-19, TC-08-20 | Authorised bounded durations, additive migration, propagation and field-aware conflicts | **Not executed** / Not recorded |
 | S3-T19 | KAN-78: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8 | TC-14-01, TC-14-02, TC-14-03, TC-14-04, TC-14-05, TC-14-06, TC-14-07 | Effective intervals across consumers, boundaries/blocks, existing flags and concurrent writes | **Not executed** / Not recorded |
 | S3-T20 | KAN-79: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10 | TC-05-01, TC-05-02, TC-05-03, TC-05-04, TC-05-05, TC-05-06, TC-05-07, TC-05-08, TC-05-09 | Trusted Lead role, unassigned queue, allocation/oversight, preservation and integrated rollout | **Not executed** / Not recorded |
