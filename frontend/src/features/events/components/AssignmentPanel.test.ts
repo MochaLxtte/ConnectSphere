@@ -1,8 +1,15 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/vue';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import AssignmentPanel from './AssignmentPanel.vue';
 import type { AssignmentRecord } from '../api/assignments';
+import { authSession, type SignedInUser } from '../../auth/session';
 import { apiError, stubApi } from './test-api';
+
+vi.mock('../../auth/session', async () => {
+  const { reactive } = await import('vue');
+  const state = reactive({ user: { id: 'lead', role: 'EVENT_COORDINATOR_LEAD' }, loading: false });
+  return { authSession: state, clearLocalSession: () => { state.user = null as never; } };
+});
 
 const eventRequestId = 'event-one';
 const base = `/api/events/${eventRequestId}`;
@@ -17,21 +24,24 @@ const active: AssignmentRecord = {
 };
 
 function renderPanel(props: Partial<{
-  status: string; viewerRole: string; isOwner: boolean; currentCoordinatorId: string | null;
+  status: string; viewerRole: string; isOwner: boolean; currentCoordinatorId: string | null; canAssignCoordinator: boolean;
 }> = {}) {
+  (authSession as { user: SignedInUser | null; loading: boolean }).user = { id: 'viewer', role: props.viewerRole ?? 'EVENT_COORDINATOR_LEAD', email: 'viewer@example.test', displayName: 'Viewer' } as SignedInUser;
   return render(AssignmentPanel, {
-    props: { eventRequestId, status: 'SUBMITTED', viewerRole: 'EVENT_COORDINATOR', currentCoordinatorId: null, ...props },
+    props: { eventRequestId, status: 'SUBMITTED', viewerRole: 'EVENT_COORDINATOR_LEAD', currentCoordinatorId: null, canAssignCoordinator: true, ...props },
   });
 }
 
-describe('CF-05 initial assignment and history panel', () => {
-  it.each([['casey', 'Casey'], ['blair', 'Blair']])('initially assigns an unassigned request to %s', async (coordinatorId, name) => {
+describe('KAN-79 Lead initial assignment and read-only history panel', () => {
+  it.each(['SUBMITTED', 'UNDER_REVIEW', 'CLARIFICATION_REQUESTED', 'APPROVED', 'CONFIRMED'])('initially assigns an unassigned active %s request', async (status) => {
+    const coordinatorId = 'casey';
+    const name = 'Casey';
     const api = stubApi({
       [`GET ${base}/assignments`]: { body: { items: [] } },
       'GET /api/events/coordinators': coordinators,
       [`PUT ${base}/coordinator`]: { body: { eventRequestId, assignmentId: 'a1', coordinatorId, previousCoordinatorId: null } },
     });
-    const view = renderPanel();
+    const view = renderPanel({ status });
     const select = await screen.findByRole('combobox', { name: 'Assign to' });
     await waitFor(() => expect(screen.getByRole('option', { name: /Blair/ })).toBeInTheDocument());
     expect(screen.getByRole('option', { name: /Casey/ })).toBeInTheDocument();
@@ -61,12 +71,14 @@ describe('CF-05 initial assignment and history panel', () => {
     await fireEvent.update(select, 'casey');
     await fireEvent.click(screen.getByRole('button', { name: 'Assign coordinator' }));
     expect(await screen.findByRole('alert')).toHaveTextContent('This request already has a coordinator.');
-    expect(view.emitted('changed')).toBeUndefined();
+    expect(view.emitted('changed')).toHaveLength(1);
   });
 
   it.each([
     ['an organiser', { viewerRole: 'EVENT_ORGANISER', isOwner: true }] as const,
-    ...['DRAFT', 'REJECTED', 'CONFIRMED', 'CANCELLED', 'COMPLETED'].map((status) => [status, { status }] as const),
+    ['a regular coordinator', { viewerRole: 'EVENT_COORDINATOR' }] as const,
+    ['server denies allocation', { canAssignCoordinator: false }] as const,
+    ...['DRAFT', 'REJECTED', 'CANCELLED', 'COMPLETED'].map((status) => [status, { status }] as const),
   ])('is read-only for %s', async (_name, props) => {
     const api = stubApi({ [`GET ${base}/assignments`]: { body: { items: [] } } });
     renderPanel(props);
@@ -123,5 +135,38 @@ describe('CF-05 initial assignment and history panel', () => {
     await screen.findByText('Picked up from the queue.');
     expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
     expect(api.writes()).toEqual([]);
+  });
+
+  it('recovers an unavailable coordinator list without exposing invalid allocation', async () => {
+    const api = stubApi({
+      [`GET ${base}/assignments`]: { body: { items: [] } },
+      'GET /api/events/coordinators': apiError(503, 'DATABASE_UNAVAILABLE', 'Database unavailable'),
+    });
+    renderPanel();
+    expect(await screen.findByRole('alert')).toHaveTextContent('available coordinators could not be loaded');
+    expect(screen.getByRole('button', { name: 'Assign coordinator' })).toBeDisabled();
+    api.set('GET /api/events/coordinators', { body: { items: [] } });
+    await fireEvent.click(screen.getByRole('button', { name: 'Refresh assignment' }));
+    expect(await screen.findByText('No event coordinators are currently available.')).toBeInTheDocument();
+    expect(api.writes()).toEqual([]);
+  });
+
+  it('reconciles uncertain writes through history before allowing another assignment', async () => {
+    const api = stubApi({
+      [`GET ${base}/assignments`]: { body: { items: [] } },
+      'GET /api/events/coordinators': coordinators,
+      [`PUT ${base}/coordinator`]: apiError(500, 'INTERNAL_ERROR', 'Unexpected error'),
+    });
+    const view = renderPanel();
+    await fireEvent.update(await screen.findByRole('combobox', { name: 'Assign to' }), 'casey');
+    await fireEvent.click(screen.getByRole('button', { name: 'Assign coordinator' }));
+    expect(await screen.findByRole('alert')).toHaveTextContent('Refresh the assignment before trying again');
+    expect(screen.queryByRole('button', { name: 'Assign coordinator' })).not.toBeInTheDocument();
+    api.set(`GET ${base}/assignments`, { body: { items: [active] } });
+    await fireEvent.click(screen.getByRole('button', { name: 'Refresh assignment' }));
+    expect(await screen.findByText(/is coordinating this request/)).toHaveTextContent('Casey');
+    expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
+    expect(view.emitted('changed')).toHaveLength(1);
+    expect(api.writes()).toHaveLength(1);
   });
 });

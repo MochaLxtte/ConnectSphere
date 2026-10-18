@@ -1,6 +1,6 @@
 import { ApiError, getJson } from '../../../lib/api-client';
 
-/** CF-05: a request no coordinator has picked up yet. */
+/** KAN-79: a submitted request awaiting a Lead's initial allocation. */
 export interface UnassignedRequest {
   id: string;
   name: string | null;
@@ -16,6 +16,29 @@ export interface CoordinatorOption {
   id: string;
   displayName: string;
   email: string;
+}
+
+export interface LeadEventSummary extends UnassignedRequest {
+  coordinatorId: string | null;
+  coordinatorName: string | null;
+}
+
+export interface LeadEventDetail extends LeadEventSummary {
+  purpose: string | null;
+  description: string | null;
+  venueRequirements: string | null;
+  accessibilityNeeds: string | null;
+  equipmentRequirements: string | null;
+  registrationRequired: boolean | null;
+  actions: { canAssignCoordinator: boolean };
+}
+
+export async function fetchLeadEvents(signal?: AbortSignal): Promise<LeadEventSummary[]> {
+  return (await getJson<{ items: LeadEventSummary[] }>('/api/events/oversight', signal)).items;
+}
+
+export function fetchLeadEvent(id: string, signal?: AbortSignal): Promise<LeadEventDetail> {
+  return getJson<LeadEventDetail>(`/api/events/oversight/${encodeURIComponent(id)}`, signal);
 }
 
 export interface AssignmentRecord {

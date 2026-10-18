@@ -5,6 +5,7 @@ import { getSupabaseAccessToken } from './supabase-client.js';
 export type UserRole =
   | 'EVENT_ORGANISER'
   | 'EVENT_COORDINATOR'
+  | 'EVENT_COORDINATOR_LEAD'
   | 'VENUE_STAFF'
   | 'TECHNICAL_SUPPORT_STAFF'
   | 'ATTENDEE';
@@ -28,6 +29,7 @@ export function roleLabel(role: UserRole): string {
   return {
     EVENT_ORGANISER: 'Event organiser',
     EVENT_COORDINATOR: 'Event coordinator',
+    EVENT_COORDINATOR_LEAD: 'Event coordinator Lead',
     VENUE_STAFF: 'Venue staff',
     TECHNICAL_SUPPORT_STAFF: 'Technical support staff',
     ATTENDEE: 'Attendee',

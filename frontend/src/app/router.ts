@@ -7,6 +7,9 @@ import EventDraftEditPage from '../features/events/pages/EventDraftEditPage.vue'
 import NewEventPage from '../features/events/pages/NewEventPage.vue';
 import ReviewAccessPage from '../features/reviews/pages/ReviewAccessPage.vue';
 import UnassignedRequestsPage from '../features/reviews/pages/UnassignedRequestsPage.vue';
+import LeadAccessPage from '../features/reviews/pages/LeadAccessPage.vue';
+import LeadOversightPage from '../features/reviews/pages/LeadOversightPage.vue';
+import LeadRequestPage from '../features/reviews/pages/LeadRequestPage.vue';
 import ReviewQueuePage from '../features/reviews/pages/ReviewQueuePage.vue';
 import ReviewRequestPage from '../features/reviews/pages/ReviewRequestPage.vue';
 import VenueAvailabilityPage from '../features/venues/pages/VenueAvailabilityPage.vue';
@@ -33,9 +36,17 @@ export const router = createRouter({
       path: '/reviews', component: ReviewAccessPage,
       children: [
         { path: '', component: ReviewQueuePage, meta: { title: 'Review queue' } },
-        { path: 'unassigned', component: UnassignedRequestsPage, meta: { title: 'Unassigned requests' } },
         { path: ':id/venue-suitability', component: VenueSuitabilityPage, meta: { title: 'Venue suitability' } },
         { path: ':id', component: ReviewRequestPage, meta: { title: 'Event request review' } },
+      ],
+    },
+    { path: '/reviews/unassigned', redirect: '/lead' },
+    {
+      path: '/lead', component: LeadAccessPage,
+      children: [
+        { path: '', component: UnassignedRequestsPage, meta: { title: 'Assignment queue' } },
+        { path: 'oversight', component: LeadOversightPage, meta: { title: 'Event oversight' } },
+        { path: 'oversight/:id', component: LeadRequestPage, meta: { title: 'Event allocation' } },
       ],
     },
     { path: '/venues', component: VenueSearchPage, meta: { title: 'Venue search' } },

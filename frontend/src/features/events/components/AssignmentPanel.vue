@@ -1,53 +1,127 @@
 <script setup lang="ts">
-import { computed, ref, useId, watch } from 'vue';
-import {
-  assignCoordinator, fetchAssignments, fetchCoordinators, type CoordinatorOption,
-} from '../api/assignments';
+import { computed, onBeforeUnmount, ref, useId, watch } from 'vue';
+import { ApiError } from '../../../lib/api-client';
+import { authSession, clearLocalSession } from '../../auth/session';
+import { assignCoordinator, fetchAssignments, fetchCoordinators, type AssignmentRecord, type CoordinatorOption } from '../api/assignments';
 import { formatEventTime } from '../presentation';
-import { usePanelAction, usePanelList, type WorkflowPanelProps } from './use-workflow-panel';
+import type { WorkflowPanelProps } from './use-workflow-panel';
 
-const props = defineProps<WorkflowPanelProps & { currentCoordinatorId: string | null }>();
+const props = defineProps<WorkflowPanelProps & { currentCoordinatorId: string | null; canAssignCoordinator?: boolean }>();
 const emit = defineEmits<{ changed: [] }>();
-
 const id = useId();
-const { items: assignments, loading, loadError, load } = usePanelList(() => props.eventRequestId, fetchAssignments);
-const { busy, actionError, savedMessage, run } = usePanelAction(async () => {
-  emit('changed');
-  await load();
-});
-
+const assignments = ref<AssignmentRecord[]>([]);
+const loading = ref(true);
+const loadError = ref<string | null>(null);
 const coordinators = ref<CoordinatorOption[]>([]);
 const coordinatorsError = ref<string | null>(null);
 const selected = ref('');
 const note = ref('');
-
+const busy = ref(false);
+const actionError = ref<string | null>(null);
+const savedMessage = ref<string | null>(null);
+const refreshRequired = ref(false);
+let readController: AbortController | undefined;
+let writeController: AbortController | undefined;
+let version = 0;
 const current = computed(() => assignments.value.find((item) => item.unassignedAt === null) ?? null);
-const canAssign = computed(() => props.viewerRole === 'EVENT_COORDINATOR'
-  && ['SUBMITTED', 'UNDER_REVIEW', 'CLARIFICATION_REQUESTED', 'APPROVED'].includes(props.status)
-  && props.currentCoordinatorId === null && current.value === null && !loading.value && !loadError.value);
-
-watch(canAssign, async (allowed) => {
-  if (!allowed || coordinators.value.length > 0) return;
+const lead = computed(() => props.viewerRole === 'EVENT_COORDINATOR_LEAD'
+  && !authSession.loading && authSession.user?.role === 'EVENT_COORDINATOR_LEAD');
+const active = computed(() => ['SUBMITTED', 'UNDER_REVIEW', 'CLARIFICATION_REQUESTED', 'APPROVED', 'CONFIRMED'].includes(props.status));
+const canAssign = computed(() => lead.value && props.canAssignCoordinator === true
+  && active.value && props.currentCoordinatorId === null && current.value === null
+  && !loading.value && !loadError.value && !refreshRequired.value);
+function invalidate() {
+  version += 1;
+  readController?.abort();
+  writeController?.abort();
+  busy.value = false;
+}
+function errorMessage(error: unknown, fallback: string) {
+  return error instanceof Error ? error.message : fallback;
+}
+async function load() {
+  readController?.abort();
+  const controller = new AbortController();
+  readController = controller;
+  loading.value = true;
+  loadError.value = null;
+  coordinators.value = [];
+  coordinatorsError.value = null;
+  if (authSession.loading || !authSession.user || authSession.user.role !== props.viewerRole) return;
   try {
-    coordinators.value = await fetchCoordinators();
-    coordinatorsError.value = null;
-  } catch {
-    coordinatorsError.value = 'The list of coordinators could not be loaded. Refresh the page to try again.';
-  }
-}, { immediate: true });
-
-async function submit() {
-  if (!canAssign.value || !selected.value) return;
-  const name = coordinators.value.find((item) => item.id === selected.value)?.displayName ?? 'The coordinator';
-  const saved = await run(
-    () => assignCoordinator(props.eventRequestId, { coordinatorId: selected.value, note: note.value.trim() || null }),
-    `${name} is now the coordinator for this request.`,
-  );
-  if (saved) {
-    selected.value = '';
-    note.value = '';
+    const records = await fetchAssignments(props.eventRequestId, controller.signal);
+    if (controller.signal.aborted) return;
+    assignments.value = records;
+    if (lead.value && active.value && props.canAssignCoordinator === true && props.currentCoordinatorId === null && !current.value) {
+      try {
+        const options = await fetchCoordinators(controller.signal);
+        if (!controller.signal.aborted) coordinators.value = options;
+      } catch (error) {
+        if (controller.signal.aborted) return;
+        if (error instanceof ApiError && error.status === 401) { clearLocalSession(); return; }
+        coordinatorsError.value = 'The list of available coordinators could not be loaded. Refresh the assignment to try again.';
+      }
+    }
+  } catch (error) {
+    if (controller.signal.aborted) return;
+    if (error instanceof ApiError && error.status === 401) { clearLocalSession(); return; }
+    assignments.value = [];
+    loadError.value = errorMessage(error, 'The assignment could not be loaded. Please try again.');
+  } finally {
+    if (!controller.signal.aborted) loading.value = false;
   }
 }
+async function refreshAssignment() {
+  emit('changed');
+  await load();
+  if (!loading.value && !loadError.value && authSession.user?.role === props.viewerRole) refreshRequired.value = false;
+}
+async function submit() {
+  if (!canAssign.value || busy.value) return;
+  const coordinator = coordinators.value.find((item) => item.id === selected.value);
+  if (!coordinator) return;
+  const currentVersion = version;
+  const controller = new AbortController();
+  writeController = controller;
+  busy.value = true;
+  actionError.value = null;
+  savedMessage.value = null;
+  try {
+    await assignCoordinator(props.eventRequestId, { coordinatorId: coordinator.id, note: note.value.trim() || null }, controller.signal);
+    if (controller.signal.aborted || currentVersion !== version) return;
+    selected.value = '';
+    note.value = '';
+    savedMessage.value = `${coordinator.displayName} is now the coordinator for this request.`;
+    emit('changed');
+    await load();
+  } catch (error) {
+    if (controller.signal.aborted || currentVersion !== version) return;
+    if (error instanceof ApiError && error.status === 401) { clearLocalSession(); return; }
+    actionError.value = errorMessage(error, 'The assignment could not be saved. Refresh before trying again.');
+    if (!(error instanceof ApiError) || error.status === 0 || error.status >= 500 || error.code === 'INVALID_RESPONSE') {
+      refreshRequired.value = true;
+      actionError.value = 'We could not confirm whether the assignment was saved. Refresh the assignment before trying again.';
+    }
+    if (error instanceof ApiError && [404, 409].includes(error.status)) {
+      selected.value = '';
+      emit('changed');
+      await load();
+    }
+  } finally {
+    if (!controller.signal.aborted && currentVersion === version) busy.value = false;
+  }
+}
+watch(() => [props.eventRequestId, props.viewerRole, authSession.loading, authSession.user?.id, authSession.user?.role], () => {
+  invalidate();
+  assignments.value = [];
+  selected.value = '';
+  note.value = '';
+  actionError.value = null;
+  savedMessage.value = null;
+  refreshRequired.value = false;
+  void load();
+}, { immediate: true, flush: 'sync' });
+onBeforeUnmount(invalidate);
 </script>
 
 <template>
@@ -57,9 +131,10 @@ async function submit() {
       <h2 :id="`${id}-title`">Assignment</h2>
     </header>
 
+    <p v-if="actionError" class="panel-error" role="alert">{{ actionError }}</p>
+    <button v-if="refreshRequired" type="button" class="button button-secondary" :disabled="loading || busy" @click="refreshAssignment">Refresh assignment</button>
     <p v-if="savedMessage" class="panel-saved" role="status">{{ savedMessage }}</p>
     <p v-if="loading" role="status">Loading the assignment…</p>
-    <div v-else-if="loadError && savedMessage" />
     <div v-else-if="loadError" role="alert">
       <p class="panel-error">{{ loadError }}</p>
       <button type="button" class="button button-secondary" @click="load">Try again</button>
@@ -76,6 +151,8 @@ async function submit() {
 
       <form v-if="canAssign" :aria-busy="busy" @submit.prevent="submit">
         <p v-if="coordinatorsError" class="panel-error" role="alert">{{ coordinatorsError }}</p>
+        <p v-else-if="coordinators.length === 0" role="status">No event coordinators are currently available.</p>
+        <button v-if="coordinatorsError || coordinators.length === 0" type="button" class="button button-secondary" @click="load">Refresh assignment</button>
         <label :for="`${id}-coordinator`">Assign to</label>
         <select :id="`${id}-coordinator`" v-model="selected" :disabled="busy">
           <option value="" disabled>Choose a coordinator</option>
@@ -85,7 +162,6 @@ async function submit() {
         </select>
         <label :for="`${id}-note`">Note <span class="optional">(optional)</span></label>
         <textarea :id="`${id}-note`" v-model="note" rows="2" maxlength="2000" :disabled="busy" />
-        <p v-if="actionError" class="panel-error" role="alert">{{ actionError }}</p>
         <div class="panel-actions">
           <button type="submit" class="button button-primary" :disabled="busy || !selected">
             {{ busy ? 'Saving…' : 'Assign coordinator' }}

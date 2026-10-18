@@ -89,6 +89,13 @@ onBeforeUnmount(() => controller?.abort());
       <span class="section-caption">Planned workflow</span>
     </div>
     <div class="workflow-grid">
+      <RouterLink v-if="!authSession.loading && authSession.user?.role === 'EVENT_COORDINATOR_LEAD'" to="/lead" class="workflow-card">
+        <span class="step-number">ASSIGN & OVERSEE</span>
+        <span class="workflow-icon"><AppIcon name="user" :size="23" /></span>
+        <h3>Assign event coordinators<AppIcon name="arrow" :size="18" /></h3>
+        <p>Allocate submitted requests and oversee active events.</p>
+        <span class="small-label">Coordinator Lead workspace</span>
+      </RouterLink>
       <RouterLink to="/events/new" class="workflow-card"
         ><span class="step-number">01 / ORGANISE</span
         ><span class="workflow-icon"><AppIcon name="plus" :size="23" /></span>
