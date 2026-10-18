@@ -22,7 +22,12 @@ const row = {
 
 function readDatabase(rows: unknown[] = []) {
   const query = vi.fn().mockResolvedValue({ rows });
-  const connect = vi.fn();
+  const connect = vi.fn().mockResolvedValue({
+    query: vi.fn((sql: string, values?: unknown[]) =>
+      /^(BEGIN|COMMIT|ROLLBACK|SELECT set_config)/.test(sql)
+        ? Promise.resolve({ rows: [] }) : query(sql, values)),
+    release: vi.fn(),
+  });
   return { dependencies: { pool: { query, connect } } as unknown as WorkflowDependencies, query, connect };
 }
 
@@ -117,17 +122,22 @@ describe('KAN-79 Lead-only allocation services', () => {
   });
 
   it.each([
-    { coordinatorId: null, hasActiveAssignment: false, allowed: true },
-    { coordinatorId: null, hasActiveAssignment: true, allowed: false },
-    { coordinatorId: coordinator.id, hasActiveAssignment: true, allowed: false },
-    { coordinatorId: coordinator.id, hasActiveAssignment: false, allowed: false },
-  ])('derives initial assignment capability from current state: %j', async ({ allowed, ...state }) => {
+    { coordinatorId: null, activeAssignmentCount: 0, assignmentCoordinatorId: null, allowed: true, reassign: false },
+    { coordinatorId: null, activeAssignmentCount: 1, assignmentCoordinatorId: coordinator.id, allowed: false, reassign: false },
+    { coordinatorId: coordinator.id, activeAssignmentCount: 1, assignmentCoordinatorId: coordinator.id, allowed: false, reassign: true },
+    { coordinatorId: coordinator.id, activeAssignmentCount: 0, assignmentCoordinatorId: null, allowed: false, reassign: false },
+    { coordinatorId: coordinator.id, activeAssignmentCount: 1, assignmentCoordinatorId: organiser.id, allowed: false, reassign: false },
+    { coordinatorId: coordinator.id, activeAssignmentCount: 2, assignmentCoordinatorId: coordinator.id, allowed: false, reassign: false },
+  ])('KAN-65 derives assignment capabilities only from consistent current state: %j', async ({ allowed, reassign, ...state }) => {
     const detail = { ...row, ...state, purpose: 'Community', description: null,
+      assignmentVersion: state.activeAssignmentCount > 0 ? assignmentId : null,
       venueRequirements: 'Hall', accessibilityNeeds: null, equipmentRequirements: null, registrationRequired: false };
     const { dependencies, query } = readDatabase([detail]);
     const found = await getLeadEventDetail(dependencies, { eventRequestId: eventId, actor: lead });
-    expect(found.actions).toEqual({ canAssignCoordinator: allowed });
-    expect(found).not.toHaveProperty('hasActiveAssignment');
+    expect(found.actions).toEqual({ canAssignCoordinator: allowed, canReassignCoordinator: reassign });
+    expect(found.assignmentVersion).toBe(reassign ? assignmentId : null);
+    expect(found).not.toHaveProperty('activeAssignmentCount');
+    expect(found).not.toHaveProperty('assignmentCoordinatorId');
     expect(found).not.toHaveProperty('review');
     expect(found).not.toHaveProperty('organiserId');
     expect(found.startsAt).toBe('2031-01-12T02:00:00.000Z');

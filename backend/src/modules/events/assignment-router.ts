@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import {
   assignCoordinator, getLeadEventDetail, listAssignments, listCoordinators,
-  listLeadOversight, listUnassignedRequests,
+  listLeadOversight, listUnassignedRequests, reassignCoordinator,
 } from './assignment.js';
 import { param, workflowRoute, type WorkflowRouterDependencies } from './workflow-http.js';
 
@@ -42,6 +42,13 @@ export function createAssignmentRouter(dependencies: AssignmentRouterDependencie
   router.put('/:id/coordinator', workflowRoute(
     dependencies, { signInMessage, roles: leadOnly },
     (actor, request) => assignCoordinator(dependencies, {
+      eventRequestId: param(request, 'id'), actor, input: request.body,
+    }),
+  ));
+
+  router.post('/:id/coordinator/reassign', workflowRoute(
+    dependencies, { signInMessage, roles: leadOnly },
+    (actor, request) => reassignCoordinator(dependencies, {
       eventRequestId: param(request, 'id'), actor, input: request.body,
     }),
   ));

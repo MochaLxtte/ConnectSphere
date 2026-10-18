@@ -1,6 +1,6 @@
 import {
   inActorTransaction, iso, isoOrNull, lockEventRequest, parseObjectBody,
-  readEventRequest, requiredText, requireRelation, setEventStatus, WorkflowError,
+  inEventReadTransaction, requiredText, requireRelation, setEventStatus, WorkflowError,
   type WorkflowActor, type WorkflowDependencies,
 } from './workflow-support.js';
 
@@ -124,20 +124,21 @@ export async function listClarifications(
   { pool }: WorkflowDependencies,
   { eventRequestId, actor }: Command,
 ): Promise<ClarificationRecord[]> {
-  const event = await readEventRequest(pool, eventRequestId);
-  requireRelation(actor, event, ['OWNER', 'ASSIGNED_COORDINATOR']);
-  const found = await pool.query<Omit<ClarificationRecord, 'createdAt' | 'respondedAt'> & {
-    createdAt: Date; respondedAt: Date | null;
-  }>(
-    `SELECT c.id, c.event_request_id AS "eventRequestId", c.requested_by AS "requestedById",
-            u.display_name AS "requestedByName", c.message, c.response,
-            c.created_at AS "createdAt", c.responded_at AS "respondedAt"
-     FROM event_clarifications c JOIN app_users u ON u.id = c.requested_by
-     WHERE c.event_request_id = $1
-     ORDER BY c.created_at ASC, c.id`,
-    [event.id],
-  );
-  return found.rows.map((row) => ({
-    ...row, createdAt: iso(row.createdAt), respondedAt: isoOrNull(row.respondedAt),
-  }));
+  return inEventReadTransaction(pool, actor.id, eventRequestId, async (client, event) => {
+    requireRelation(actor, event, ['OWNER', 'ASSIGNED_COORDINATOR']);
+    const found = await client.query<Omit<ClarificationRecord, 'createdAt' | 'respondedAt'> & {
+      createdAt: Date; respondedAt: Date | null;
+    }>(
+      `SELECT c.id, c.event_request_id AS "eventRequestId", c.requested_by AS "requestedById",
+              u.display_name AS "requestedByName", c.message, c.response,
+              c.created_at AS "createdAt", c.responded_at AS "respondedAt"
+       FROM event_clarifications c JOIN app_users u ON u.id = c.requested_by
+       WHERE c.event_request_id = $1
+       ORDER BY c.created_at ASC, c.id`,
+      [event.id],
+    );
+    return found.rows.map((row) => ({
+      ...row, createdAt: iso(row.createdAt), respondedAt: isoOrNull(row.respondedAt),
+    }));
+  });
 }

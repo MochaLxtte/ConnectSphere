@@ -2,7 +2,7 @@ import type { UserRole } from '../auth/types.js';
 import type { EventStatus } from './types.js';
 import {
   inActorTransaction, iso, isoOrNull, lockEventRequest, optionalText,
-  parseObjectBody, readEventRequest, requestNotFound, requireRelation, UUID_PATTERN, WorkflowError,
+  parseObjectBody, inEventReadTransaction, requestNotFound, requiredText, requireRelation, UUID_PATTERN, WorkflowError,
   type WorkflowActor, type WorkflowDependencies,
 } from './workflow-support.js';
 
@@ -35,7 +35,8 @@ export interface LeadEventDetail extends LeadEventSummary {
   accessibilityNeeds: string | null;
   equipmentRequirements: string | null;
   registrationRequired: boolean | null;
-  actions: { canAssignCoordinator: boolean };
+  assignmentVersion: string | null;
+  actions: { canAssignCoordinator: boolean; canReassignCoordinator: boolean };
 }
 
 type DatedRequestRow<T extends UnassignedRequest> = Omit<T, 'startsAt' | 'endsAt' | 'updatedAt'> & {
@@ -74,6 +75,12 @@ export interface AssignmentInput {
   note: string | null;
 }
 
+export interface ReassignmentInput {
+  coordinatorId: string;
+  reason: string;
+  expectedAssignmentVersion: string;
+}
+
 function requireLead(actor: WorkflowActor): void {
   if (actor.role !== 'EVENT_COORDINATOR_LEAD') {
     throw new WorkflowError('FORBIDDEN', 'ASSIGNMENT_FORBIDDEN', 'Only coordinator Leads can manage assignments.');
@@ -86,6 +93,20 @@ export function parseAssignmentInput(input: unknown): AssignmentInput {
     throw new WorkflowError('INVALID_INPUT', 'INVALID_ASSIGNMENT_INPUT', 'coordinatorId must be a UUID.');
   }
   return { coordinatorId: body.coordinatorId.toLowerCase(), note: optionalText(body, 'note') };
+}
+
+export function parseReassignmentInput(input: unknown): ReassignmentInput {
+  const body = parseObjectBody(input, ['coordinatorId', 'reason', 'expectedAssignmentVersion']);
+  for (const field of ['coordinatorId', 'expectedAssignmentVersion'] as const) {
+    if (typeof body[field] !== 'string' || !UUID_PATTERN.test(body[field])) {
+      throw new WorkflowError('INVALID_INPUT', 'INVALID_ASSIGNMENT_INPUT', `${field} must be a UUID.`);
+    }
+  }
+  return {
+    coordinatorId: (body.coordinatorId as string).toLowerCase(),
+    reason: requiredText(body, 'reason'),
+    expectedAssignmentVersion: (body.expectedAssignmentVersion as string).toLowerCase(),
+  };
 }
 
 /** Newly submitted requests waiting for their initial Lead allocation. */
@@ -133,25 +154,36 @@ export async function getLeadEventDetail(
 ): Promise<LeadEventDetail> {
   requireLead(command.actor);
   const found = await pool.query<DatedRequestRow<Omit<LeadEventDetail, 'actions'>> & {
-    hasActiveAssignment: boolean;
+    activeAssignmentCount: number;
+    assignmentCoordinatorId: string | null;
   }>(
     `SELECT ${oversightColumns}, e.purpose, e.description,
        e.venue_requirements AS "venueRequirements", e.accessibility_needs AS "accessibilityNeeds",
        e.equipment_requirements AS "equipmentRequirements", e.registration_required AS "registrationRequired",
-       EXISTS (SELECT 1 FROM coordinator_assignments a
-               WHERE a.event_request_id = e.id AND a.unassigned_at IS NULL) AS "hasActiveAssignment"
+       a."activeAssignmentCount", a."assignmentVersion", a."assignmentCoordinatorId"
      FROM event_requests e JOIN app_users u ON u.id = e.organiser_id
      LEFT JOIN app_users c ON c.id = e.coordinator_id
+     CROSS JOIN LATERAL (
+       SELECT count(*)::int AS "activeAssignmentCount", min(id::text) AS "assignmentVersion",
+              min(coordinator_id::text) AS "assignmentCoordinatorId"
+       FROM coordinator_assignments WHERE event_request_id = e.id AND unassigned_at IS NULL
+     ) a
      WHERE e.id = $1 AND e.status = ANY($2::text[])`,
     [command.eventRequestId, ACTIVE_STATUSES],
   );
   const row = found.rows[0];
   if (!row) throw requestNotFound();
-  const { hasActiveAssignment, ...detail } = row;
+  const { activeAssignmentCount, assignmentCoordinatorId, assignmentVersion, ...detail } = row;
+  const canReassignCoordinator = detail.coordinatorId !== null && activeAssignmentCount === 1
+    && assignmentCoordinatorId === detail.coordinatorId;
   return {
     ...detail,
     startsAt: isoOrNull(detail.startsAt), endsAt: isoOrNull(detail.endsAt), updatedAt: iso(detail.updatedAt),
-    actions: { canAssignCoordinator: detail.coordinatorId === null && !hasActiveAssignment },
+    assignmentVersion: canReassignCoordinator ? assignmentVersion : null,
+    actions: {
+      canAssignCoordinator: detail.coordinatorId === null && activeAssignmentCount === 0,
+      canReassignCoordinator,
+    },
   };
 }
 
@@ -237,33 +269,117 @@ export async function assignCoordinator(
   });
 }
 
+export interface ReassignmentResult extends AssignmentResult {
+  changed: boolean;
+}
+
+/** KAN-65: replace one recorded assignment while preserving the event and all past decisions. */
+export async function reassignCoordinator(
+  { pool }: WorkflowDependencies,
+  command: { eventRequestId: string; actor: WorkflowActor; input: unknown },
+): Promise<ReassignmentResult> {
+  const { eventRequestId, actor } = command;
+  requireLead(actor);
+  const input = parseReassignmentInput(command.input);
+
+  return inActorTransaction(pool, actor.id, async (client) => {
+    const event = await lockEventRequest(client, eventRequestId);
+    if (event.status === 'DRAFT') throw requestNotFound();
+    if (!ACTIVE_STATUSES.includes(event.status)) {
+      throw new WorkflowError('CONFLICT', 'ASSIGNMENT_NOT_ALLOWED', 'An event request in this status cannot be reassigned.');
+    }
+
+    const history = await client.query<{ id: string; coordinatorId: string }>(
+      `SELECT id, coordinator_id AS "coordinatorId" FROM coordinator_assignments
+       WHERE event_request_id = $1 AND unassigned_at IS NULL FOR UPDATE`,
+      [event.id],
+    );
+    if (event.coordinatorId === null && history.rows.length === 0) {
+      throw new WorkflowError('CONFLICT', 'COORDINATOR_NOT_ASSIGNED', 'This request has no coordinator. Refresh and use initial assignment.');
+    }
+    const previous = history.rows[0];
+    if (history.rows.length !== 1 || !previous || event.coordinatorId === null
+      || previous.coordinatorId !== event.coordinatorId) {
+      throw new WorkflowError('CONFLICT', 'ASSIGNMENT_HISTORY_CONFLICT', 'The current coordinator and assignment history do not match. Reconcile the assignment before changing it.');
+    }
+    // Check before the no-op: a stale A -> B -> A page must never silently succeed.
+    if (previous.id !== input.expectedAssignmentVersion) {
+      throw new WorkflowError('CONFLICT', 'ASSIGNMENT_VERSION_CONFLICT', 'The assignment has changed. Refresh before trying again.');
+    }
+    if (input.coordinatorId === event.coordinatorId) {
+      return {
+        eventRequestId: event.id, assignmentId: previous.id, coordinatorId: event.coordinatorId,
+        previousCoordinatorId: event.coordinatorId, changed: false,
+      };
+    }
+
+    const targets = await client.query<{ role: UserRole; available: boolean }>(
+      'SELECT role, coordinator_available AS available FROM app_users WHERE id = $1 FOR NO KEY UPDATE',
+      [input.coordinatorId],
+    );
+    const target = targets.rows[0];
+    if (!target || target.role !== 'EVENT_COORDINATOR' || !target.available) {
+      throw new WorkflowError('INVALID_INPUT', 'INVALID_COORDINATOR', 'Select an event coordinator who is available for assignment.');
+    }
+
+    // Capture the handover instant after waiting for locks, not at transaction start.
+    // Passing the closed interval directly into the insert retains PostgreSQL precision.
+    const inserted = await client.query<{ id: string }>(
+      `WITH closed_assignment AS (
+         UPDATE coordinator_assignments
+         SET unassigned_at = GREATEST(clock_timestamp(), assigned_at)
+         WHERE id = $1 AND event_request_id = $2 AND unassigned_at IS NULL
+         RETURNING unassigned_at
+       )
+       INSERT INTO coordinator_assignments (event_request_id, coordinator_id, assigned_by, note, assigned_at)
+       SELECT $2, $3, $4, $5, unassigned_at FROM closed_assignment RETURNING id`,
+      [previous.id, event.id, input.coordinatorId, actor.id, input.reason],
+    );
+    const assignment = inserted.rows[0];
+    if (!assignment) throw new Error('The coordinator reassignment history could not be saved.');
+    const updated = await client.query(
+      `UPDATE event_requests SET coordinator_id = $1,
+       updated_at = (SELECT assigned_at FROM coordinator_assignments WHERE id = $3)
+       WHERE id = $2`,
+      [input.coordinatorId, event.id, assignment.id],
+    );
+    if (updated.rowCount !== 1) throw new Error('The coordinator reassignment could not be saved.');
+
+    return {
+      eventRequestId: event.id, assignmentId: assignment.id, coordinatorId: input.coordinatorId,
+      previousCoordinatorId: previous.coordinatorId, changed: true,
+    };
+  });
+}
+
 export async function listAssignments(
   { pool }: WorkflowDependencies,
   command: { eventRequestId: string; actor: WorkflowActor },
 ): Promise<AssignmentRecord[]> {
-  const event = await readEventRequest(pool, command.eventRequestId);
-  // Lead oversight is read-only and limited to active events. Ordinary coordinators
-  // always need the current assignment, including when the request is unassigned.
-  if (command.actor.role === 'EVENT_COORDINATOR_LEAD') {
-    if (!ACTIVE_STATUSES.includes(event.status)) throw requestNotFound();
-  } else {
-    requireRelation(command.actor, event, ['OWNER', 'ASSIGNED_COORDINATOR']);
-  }
-  const found = await pool.query<Omit<AssignmentRecord, 'assignedAt' | 'unassignedAt'> & {
-    assignedAt: Date; unassignedAt: Date | null;
-  }>(
-    `SELECT a.id, a.coordinator_id AS "coordinatorId", c.display_name AS "coordinatorName",
-            a.assignment_method AS "assignmentMethod",
-            a.assigned_by AS "assignedById", b.display_name AS "assignedByName", a.note,
-            a.assigned_at AS "assignedAt", a.unassigned_at AS "unassignedAt"
-     FROM coordinator_assignments a
-     JOIN app_users c ON c.id = a.coordinator_id
-     LEFT JOIN app_users b ON b.id = a.assigned_by
-     WHERE a.event_request_id = $1
-     ORDER BY a.assigned_at DESC, a.id`,
-    [event.id],
-  );
-  return found.rows.map((row) => ({
-    ...row, assignedAt: iso(row.assignedAt), unassignedAt: isoOrNull(row.unassignedAt),
-  }));
+  return inEventReadTransaction(pool, command.actor.id, command.eventRequestId, async (client, event) => {
+    // Lead oversight is read-only and limited to active events. Ordinary coordinators
+    // always need the current assignment, including when the request is unassigned.
+    if (command.actor.role === 'EVENT_COORDINATOR_LEAD') {
+      if (!ACTIVE_STATUSES.includes(event.status)) throw requestNotFound();
+    } else {
+      requireRelation(command.actor, event, ['OWNER', 'ASSIGNED_COORDINATOR']);
+    }
+    const found = await client.query<Omit<AssignmentRecord, 'assignedAt' | 'unassignedAt'> & {
+      assignedAt: Date; unassignedAt: Date | null;
+    }>(
+      `SELECT a.id, a.coordinator_id AS "coordinatorId", c.display_name AS "coordinatorName",
+              a.assignment_method AS "assignmentMethod",
+              a.assigned_by AS "assignedById", b.display_name AS "assignedByName", a.note,
+              a.assigned_at AS "assignedAt", a.unassigned_at AS "unassignedAt"
+       FROM coordinator_assignments a
+       JOIN app_users c ON c.id = a.coordinator_id
+       LEFT JOIN app_users b ON b.id = a.assigned_by
+       WHERE a.event_request_id = $1
+       ORDER BY a.assigned_at DESC, a.id`,
+      [event.id],
+    );
+    return found.rows.map((row) => ({
+      ...row, assignedAt: iso(row.assignedAt), unassignedAt: isoOrNull(row.unassignedAt),
+    }));
+  });
 }

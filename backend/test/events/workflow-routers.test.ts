@@ -3,7 +3,7 @@ import request from 'supertest';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   assignCoordinator, getLeadEventDetail, listAssignments, listCoordinators,
-  listLeadOversight, listUnassignedRequests,
+  listLeadOversight, listUnassignedRequests, reassignCoordinator,
 } from '../../src/modules/events/assignment.js';
 import { createAssignmentRouter } from '../../src/modules/events/assignment-router.js';
 import { listStatusHistory } from '../../src/modules/events/status-history.js';
@@ -15,6 +15,7 @@ import { USER_ROLES } from '../../src/modules/auth/types.js';
 vi.mock('../../src/modules/events/assignment.js', () => ({
   assignCoordinator: vi.fn(), listAssignments: vi.fn(), listCoordinators: vi.fn(), listUnassignedRequests: vi.fn(),
   getLeadEventDetail: vi.fn(), listLeadOversight: vi.fn(),
+  reassignCoordinator: vi.fn(),
 }));
 vi.mock('../../src/modules/events/status-history.js', () => ({ listStatusHistory: vi.fn() }));
 
@@ -49,6 +50,7 @@ beforeEach(() => { vi.resetAllMocks(); });
 const leadRoutes = [
   ['get', '/unassigned'], ['get', '/coordinators'],
   ['get', '/oversight'], ['get', `/oversight/${eventId}`], ['put', `/${eventId}/coordinator`],
+  ['post', `/${eventId}/coordinator/reassign`],
 ] as const;
 const routes = [...leadRoutes, ['get', `/${eventId}/assignments`] as const];
 
@@ -99,6 +101,7 @@ describe('KAN-79 Lead allocation and oversight HTTP boundary', () => {
         expect(response.status).toBe(403);
       }
       expect(assignCoordinator).not.toHaveBeenCalled();
+      expect(reassignCoordinator).not.toHaveBeenCalled();
       expect(listUnassignedRequests).not.toHaveBeenCalled();
       expect(listCoordinators).not.toHaveBeenCalled();
       expect(listLeadOversight).not.toHaveBeenCalled();
@@ -161,6 +164,67 @@ describe('KAN-79 Lead allocation and oversight HTTP boundary', () => {
     const response = await request(app).get(`/api/events/${eventId}/assignments`);
     expect(response.status).toBe(500);
     expect(JSON.stringify(response.body)).not.toContain('secret');
+  });
+});
+
+describe('KAN-65 Lead-only reassignment HTTP boundary', () => {
+  const input = { coordinatorId: coordinator.id, reason: 'Handover', expectedAssignmentVersion: '50000000-0000-4000-8000-000000000001' };
+
+  it('passes the verified Lead and complete optimistic-version command to the service', async () => {
+    const { app, dependencies } = setup(lead);
+    const saved = { eventRequestId: eventId, coordinatorId: coordinator.id, previousCoordinatorId: organiser.id,
+      assignmentId: '60000000-0000-4000-8000-000000000001', changed: true };
+    vi.mocked(reassignCoordinator).mockResolvedValue(saved);
+    const response = await request(app).post(`/api/events/${eventId}/coordinator/reassign`)
+      .set('X-User-Id', organiser.id).send(input);
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(saved);
+    expect(response.headers['cache-control']).toBe('no-store');
+    expect(reassignCoordinator).toHaveBeenCalledExactlyOnceWith(dependencies, { eventRequestId: eventId, actor: lead, input });
+    expect(assignCoordinator).not.toHaveBeenCalled();
+  });
+
+  it('returns a successful unchanged result for a current-assignee request', async () => {
+    const { app } = setup(lead);
+    vi.mocked(reassignCoordinator).mockResolvedValue({ eventRequestId: eventId, coordinatorId: coordinator.id,
+      previousCoordinatorId: coordinator.id, assignmentId: input.expectedAssignmentVersion, changed: false });
+    const response = await request(app).post(`/api/events/${eventId}/coordinator/reassign`).send(input);
+    expect(response.status).toBe(200);
+    expect(response.body.changed).toBe(false);
+  });
+
+  it('refuses an invalid event ID before calling reassignment', async () => {
+    const { app } = setup(lead);
+    const response = await request(app).post('/api/events/invalid/coordinator/reassign').send(input);
+    expect(response.status).toBe(400);
+    expect(response.body.error.code).toBe('INVALID_EVENT_REQUEST_ID');
+    expect(reassignCoordinator).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['INVALID_INPUT', 'INVALID_ASSIGNMENT_INPUT', 400],
+    ['INVALID_INPUT', 'INVALID_INPUT', 400],
+    ['INVALID_INPUT', 'INVALID_COORDINATOR', 400],
+    ['FORBIDDEN', 'ASSIGNMENT_FORBIDDEN', 403],
+    ['NOT_FOUND', 'EVENT_REQUEST_NOT_FOUND', 404],
+    ['CONFLICT', 'COORDINATOR_NOT_ASSIGNED', 409],
+    ['CONFLICT', 'ASSIGNMENT_HISTORY_CONFLICT', 409],
+    ['CONFLICT', 'ASSIGNMENT_VERSION_CONFLICT', 409],
+    ['CONFLICT', 'ASSIGNMENT_NOT_ALLOWED', 409],
+  ] as const)('preserves a %s %s failure as HTTP %s', async (kind, code, status) => {
+    const { app } = setup(lead);
+    vi.mocked(reassignCoordinator).mockRejectedValue(new WorkflowError(kind, code, 'Refresh or correct the request.'));
+    const response = await request(app).post(`/api/events/${eventId}/coordinator/reassign`).send(input);
+    expect(response.status).toBe(status);
+    expect(response.body).toEqual({ error: { code, message: 'Refresh or correct the request.' } });
+  });
+
+  it('conceals persistence failures without disclosing internal details', async () => {
+    const { app } = setup(lead);
+    vi.mocked(reassignCoordinator).mockRejectedValue(new Error('postgres://secret'));
+    const response = await request(app).post(`/api/events/${eventId}/coordinator/reassign`).send(input);
+    expect(response.status).toBe(500);
+    expect(response.body).toEqual({ error: { code: 'INTERNAL_ERROR', message: 'An unexpected error occurred.' } });
   });
 });
 

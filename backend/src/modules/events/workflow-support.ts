@@ -68,6 +68,26 @@ export async function readEventRequest(
   return event;
 }
 
+/** KAN-65: keep authorisation and protected history reads on the same assignment.
+ * A handover waits until the read finishes, or the reader sees the new assignee.
+ */
+export async function inEventReadTransaction<T>(
+  pool: Pick<Pool, 'connect'>,
+  actorId: string,
+  eventRequestId: string,
+  read: (client: PoolClient, event: LockedEventRequest) => Promise<T>,
+): Promise<T> {
+  return inActorTransaction(pool, actorId, async (client) => {
+    const found = await client.query<LockedEventRequest>(
+      `SELECT ${eventColumns} FROM event_requests WHERE id = $1 FOR SHARE`,
+      [eventRequestId],
+    );
+    const event = found.rows[0];
+    if (!event) throw requestNotFound();
+    return read(client, event);
+  });
+}
+
 export type EventRelation = 'OWNER' | 'ASSIGNED_COORDINATOR';
 
 export function relationTo(
