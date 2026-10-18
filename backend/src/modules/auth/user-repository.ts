@@ -1,4 +1,4 @@
-import type { AuthenticatedUser, UserRole } from './types.js';
+import { USER_ROLES, type AuthenticatedUser, type UserRole } from './types.js';
 
 export interface AuthDatabase {
   query<Row extends Record<string, unknown>>(
@@ -15,9 +15,7 @@ interface UserRow extends Record<string, unknown> {
 }
 
 function isUserRole(value: string): value is UserRole {
-  return [
-    'EVENT_ORGANISER', 'EVENT_COORDINATOR', 'VENUE_STAFF', 'TECHNICAL_SUPPORT_STAFF', 'ATTENDEE',
-  ].includes(value);
+  return (USER_ROLES as readonly string[]).includes(value);
 }
 
 /** Resolve a Supabase auth user id (uuid) to the application-owned profile and role. */
