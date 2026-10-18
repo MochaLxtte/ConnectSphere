@@ -1,5 +1,7 @@
 # 1. Final product backlog
 
+**Targeted KAN-79 update — 19 October 2026.** The [workbook](product-backlog.xlsx) and [master register](../../requirements/product-backlog.md) now record KAN-79 as In Progress / Tristan, still 8 SP in Sprint 3, and the three new unestimated subtasks KAN-85/86/87. The 16 October CSV remains an unchanged historical full-project snapshot. Other issues have not been re-exported in this update. Branch implementation and `AUTO-20261019-01` are recorded separately from implementation on main, hosted acceptance and DoD. Parent totals remain 42 / 174 SP; no delivery or velocity credit is added. See S3-E14 for the current verification and pending integration/deployment checks.
+
 ## Submission reconciliation — 17 October 2026
 
 Use the [master workbook](product-backlog.xlsx) and [Markdown master register](../../requirements/product-backlog.md#master-backlog-register) as the submitted backlog. They include original Sprint 1/2 work, later completion/carry-over, the current Sprint 3/4 plan, and the six documented customer changes. The [change register](../../requirements/change-requests.md) explains which original rules are retained, extended or superseded. Different historical and current criteria are intentional where that change is documented.

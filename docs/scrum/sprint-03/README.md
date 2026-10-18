@@ -1,5 +1,7 @@
 # Sprint 3 overview
 
+**KAN-79 implementation update — 19 October 2026.** KAN-79 is assigned to Tristan and In Progress in Jira, with subtasks KAN-85/86/87 In Progress. Its 8 SP and Sprint 3 membership are unchanged. The branch implements trusted Lead access, unassigned submission, oversight and initial allocation; automated verification is recorded as `AUTO-20261019-01`. KAN-65/KAN-64 integration, hosted checks, independent review and acceptance remain outstanding. Other stories retain their last dated snapshot; this is a targeted update, not a fresh project-wide export. Sprint 3 remains administratively Active despite its configured 17 October end; this work is recorded on its actual 19 October date and is not counted as delivery by 17 October.
+
 **Estimation status:** The current 63-SP allocation is a planning baseline. Team confirmation of relative estimates, capacity and the sprint commitment is **To agree**; no planning-poker vote is recorded. The 10 to 11 SP selection target is guidance, not an individual quota. Keep existing estimates until a team-agreed change is logged.
 
 **Current release allocation: 13 parent items / 63 SP.** Sprint window: **4–17 October 2026**. Sprint 3 and Sprint 4 each contain 63 SP; this supersedes the earlier 97/29 allocation while keeping 126 SP remaining across the two sprints.
@@ -9,10 +11,10 @@ Scope and estimates follow the recorded planning decisions. Stories are unassign
 | Field | Current value |
 | --- | --- |
 | Sprint window | 4–17 October 2026 |
-| Jira state | Active (id 67); planning selection, no implementation or acceptance claimed |
+| Jira state | Active (id 67); KAN-79 In Progress on 19 October; acceptance Not assessed |
 | Goal | Deliver reliable request review and Lead assignment, then coherent venue planning with buffered availability, expiring holds, outage recovery and relevant notifications. |
 | Selected scope | 13 parent items / 63 SP; [story cards](sprint-backlog.md) |
-| Unclaimed story pool | 63 SP; target roughly 10–11 SP per member, with whole stories |
+| Unclaimed story pool | 55 SP in the last recorded allocation after KAN-79 (8 SP) was claimed; other ownership not re-audited |
 | Independent review | To agree after each owner is chosen; reviewer must be another member; see [planning](planning.md#selected-backlog) |
 | Integration owner | To agree; coordinate contracts, migration order and combined verification |
 | Actual planning attendance / votes | Not recorded |

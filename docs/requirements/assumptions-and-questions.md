@@ -1154,3 +1154,9 @@ Sources: the 21 September and later retained Jira CSVs, the unchanged live 68-is
 - All added test cases are specifications, **Not executed**. Existing failure evidence and scoped passing observations are retained. No application tests, hosted acceptance, team vote or historical meeting outcome is created by this document cleanup.
 
 This correction does not alter estimates, assignees, sprint allocations, administrative resolution dates or the six-change release plan. Jira remains unchanged during this pass; the master backlog and workbook identify the two missing Jira sentences for later team reference.
+
+## 19 October 2026 — KAN-79 implementation boundaries
+
+Source: live KAN-79 AC1–10 and the implementation plan approved in chat by Tristan. The implementation uses the existing active-status set (Submitted, Under review, Clarification requested, Approved and Confirmed) for Lead oversight/initial allocation; only unassigned Submitted requests enter the new-request queue. Available targets must be trusted `EVENT_COORDINATOR` profiles with `coordinator_available=true`. Lead is a distinct role, not an inherited reviewer or venue-staff role. Existing assigned requests and active history cannot be replaced by the initial-allocation API.
+
+The approval covers the local implementation, tests, documentation and commits, retaining KAN-65/KAN-64 as pending integration dependencies. It does not establish hosted acceptance, an independent review or a new team estimation vote. No new product criterion or estimate is introduced: the safeguards implement AC1–8 and the local portion of AC10. AC9 remains Not executed. Shared migration 007 and account provisioning require coordination with Arvin before rollout; no shared database change was made during this work.

@@ -26,7 +26,7 @@ npm run db:migrate
 npm run db:seed
 ```
 
-A full entity-relationship diagram of the live `public` schema is in
+A full entity-relationship diagram of the repository schema, with the last hosted verification distinguished from pending migrations, is in
 [docs/database-diagram.md](../docs/database-diagram.md); the [architecture record](../docs/architecture/README.md)
 carries a curated view split into the Sprint 1 workflow and the later first-release tables.
 
@@ -36,7 +36,7 @@ Verify the connection using the application's overview page or `GET /api/health/
 
 ## Shared schema and migrations
 
-The migration runner applies active numbered SQL files in order within one transaction, records checksums, and serializes concurrent runners using a database advisory lock. The active sequence is 001-006. On 30 September the unused Firebase migration was retired and the remaining files were renumbered without changing their SQL. New databases do not create its unused identity table. Existing databases keep their tables, data and original history names; the updated runner recognises the exact former filenames in the table below, checks every recorded checksum and skips SQL already applied under either name. It records a current filename only when that migration actually runs. A mismatched old or current checksum stops and rolls back the transaction. The retired Firebase file's checksum is still checked if its exact historical name is recorded; no missing history is fabricated. Run it again to apply only new migrations. Never edit an applied file: add the next numbered migration and coordinate numbering with other developers. Migrations run explicitly, never automatically on API startup. Back up important data before schema changes; this starter has no automatic rollback/down-migration facility.
+The migration runner applies active numbered SQL files in order within one transaction, records checksums, and serializes concurrent runners using a database advisory lock. The active sequence is 001-007. Migration 007 adds the Coordinator Lead role; it has not been applied to shared Supabase by this implementation. On 30 September the unused Firebase migration was retired and the remaining files were renumbered without changing their SQL. New databases do not create its unused identity table. Existing databases keep their tables, data and original history names; the updated runner recognises the exact former filenames in the table below, checks every recorded checksum and skips SQL already applied under either name. It records a current filename only when that migration actually runs. A mismatched old or current checksum stops and rolls back the transaction. The retired Firebase file's checksum is still checked if its exact historical name is recorded; no missing history is fabricated. Run it again to apply only new migrations. Never edit an applied file: add the next numbered migration and coordinate numbering with other developers. Migrations run explicitly, never automatically on API startup. Back up important data before schema changes; this starter has no automatic rollback/down-migration facility.
 
 | Current filename | Recognised former filename |
 | --- | --- |
@@ -46,8 +46,9 @@ The migration runner applies active numbered SQL files in order within one trans
 | `004_core_feature_schema.sql` | `005_core_feature_schema.sql` |
 | `005_equipment_peak_availability.sql` | `006_equipment_peak_availability.sql` |
 | `006_automatic_coordinator_assignment.sql` | `007_automatic_coordinator_assignment.sql` |
+| `007_add_coordinator_lead.sql` | New migration; no former filename |
 
-Use the updated runner after pulling this change. Do not rename or delete database history rows to match the files. The separate dashboard-era `003_add_supabase_auth.sql` record is preserved, but is not an alias for a repository migration. Earlier dated evidence and comments inside unchanged SQL use the original numbering. Future schema changes should start at 007, with a new descriptive filename agreed by the team.
+Use the updated runner after pulling this change. Do not rename or delete database history rows to match the files. The separate dashboard-era `003_add_supabase_auth.sql` record is preserved, but is not an alias for a repository migration. Earlier dated evidence and comments inside unchanged SQL use the original numbering. The new `007_add_coordinator_lead.sql` is distinct from the recognised historical `007_automatic_coordinator_assignment.sql`: migration history is keyed by the entire filename. Future schema changes should start at 008, with a new descriptive filename agreed by the team.
 
 **30 September schema verification:** applying 001-006 to a fresh local PostgreSQL database reproduced the shared project's application schema: 16 tables, 142 columns, 74 constraints, 40 indexes, five triggers and four project functions. All six migration checksums matched the hosted history using the documented filename aliases. The hosted-only `ensure_rls` event trigger and `rls_auto_enable()` helper enable RLS for new public tables; these are environment automation, while our migrations explicitly enable RLS for their tables. See [DB-SCHEMA-20260930-01](../docs/testing/test-evidence.md#30-september-migration-and-hosted-schema-consistency) for the comparison and its boundaries.
 
@@ -76,7 +77,25 @@ Create test login accounts in Supabase Auth, then link each UUID to its applicat
 
 Hosted approval checks verified the `APPROVED` request status and matching review row with the assigned coordinator's application ID. See the [test evidence](../docs/testing/test-evidence.md) for the dated results and remaining hosted acceptance checks.
 
+## KAN-79 Lead assignment rollout
+
+**Implementation record, 19 October 2026:** [007_add_coordinator_lead.sql](migrations/007_add_coordinator_lead.sql) extends `app_users_role_check` to include `EVENT_COORDINATOR_LEAD`. It adds no table or column, does not promote any existing profile and does not modify event assignments or history. Migrations 001-006 and their recognised aliases/checksums stay unchanged. Fresh-install and upgrade checks use an isolated PostgreSQL test database; shared Supabase migration application and hosted acceptance are separate steps.
+
+Deploy the submission-policy change and allocation interface as one coordinated release:
+
+1. Agree migration 007 and the deployment window with the team before applying it to shared Supabase. Confirm which database the migration URL targets and reconcile its existing history; use `npm run db:migrate` to apply only pending files.
+2. Create a test/staff login through trusted Supabase administration and link its UUID to `app_users.supabase_user_id`. Set that mapped application's role to `EVENT_COORDINATOR_LEAD` through the trusted dashboard. Do not use client-editable metadata to grant the role. Existing ordinary profiles are unchanged.
+3. Ensure eligible real `EVENT_COORDINATOR` profiles have their own valid mappings and set `coordinator_available = true` only when ready for assignment. Keep fictional seed profiles opted out. A Lead profile is not an eligible target merely because its availability flag is true.
+4. Deploy the matching backend and frontend together, then sign in as the provisioned Lead and verify `/lead` and `/lead/oversight`. Do this before making the changed submission workflow available to organisers. The health readiness endpoint checks scaffold metadata only; it does not certify migration 007 or the presence of a mapped Lead.
+5. Run the [hosted test cases](../docs/testing/README.md) with coordinated test accounts and record the build, original data, results and any retained fixtures. Never run cleanup-based integration tests against shared Supabase.
+
+A successful new submission becomes `SUBMITTED` with no coordinator, even when every coordinator is unavailable. The Lead queue contains submitted/unassigned requests; oversight covers active `SUBMITTED`, `UNDER_REVIEW`, `CLARIFICATION_REQUESTED`, `APPROVED` and `CONFIRMED` events. An eligible target is an available `EVENT_COORDINATOR`. The transaction locks the event and selected profile, rechecks eligibility and writes `event_requests.coordinator_id` with one active `MANUAL` assignment record containing the Lead's ID and timestamp. The existing unique active-history index remains the final duplicate guard.
+
+Turning availability off excludes future initial allocation; it does not unassign existing events or revoke access. Unexpected assignments on drafts are preserved and reported as `409 DRAFT_ALREADY_ASSIGNED`. Existing assigned events and historical `AUTOMATIC` records keep their actors/timestamps; the new migration does not backfill or reassign them. A repeated/stale allocation returns `409 COORDINATOR_ALREADY_ASSIGNED`. KAN-65 reassignment and KAN-64 organiser/coordinator notifications remain separately implemented dependencies; this rollout does not provide their completed integration acceptance.
+
 ## KAN-29 automatic assignment setup
+
+**Historical setup and policy, superseded for new submissions by KAN-79 on 19 October 2026.** Retain the following 30 September schema evidence and earlier workload rule as history. The availability column and automatic-history representation are still used or preserved, but the application no longer runs automatic allocation or returns `NO_AVAILABLE_COORDINATOR` for submission.
 
 The branch implementation requires [006_automatic_coordinator_assignment.sql](migrations/006_automatic_coordinator_assignment.sql). **The shared project's migration record, checksum, columns and method/actor constraint were verified on 30 September after the migration was applied.** Its schema is ready for KAN-29 manual testing; account availability, hosted workflow results, CI and peer review remain separate checks.
 

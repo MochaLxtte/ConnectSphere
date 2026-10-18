@@ -1,5 +1,7 @@
 # Customer change requests
 
+**CR-5 implementation update — 19 October 2026.** KAN-79 now has a locally tested implementation on `feat/KAN-79-lead-assignment`: new submissions remain unassigned; trusted Leads allocate available coordinators and oversee active requests. Existing assignments and historical KAN-29 records remain intact. Migration 007, backend policy and frontend controls form one rollout unit. This is branch delivery preparation, not shared deployment or acceptance. KAN-65 reassignment and KAN-64 notifications are still pending under AC9. See [AUTO-20261019-01](../testing/test-evidence.md#19-october-2026--kan-79-lead-allocation) and the [hosted guide](../testing/README.md#kan-79-hosted-verification). Receipt on 2 October and the dated planning/history below remain unchanged; no scope or point increase is recorded.
+
 ## Reading historical and current requirements — 17 October 2026
 
 The original Sprint 1/2 cards remain the baseline for work and evidence from those sprints. The changes received on **2 October** are traced below to new or refined Sprint 3/4 stories. A later requirement does not retrospectively change an earlier acceptance decision, and receiving/planning a change does not establish that it is implemented. Apply the revised operational rule when its integrated implementation is deployed; retain the original tests as regression checks except where the change explicitly supersedes their expected behaviour.

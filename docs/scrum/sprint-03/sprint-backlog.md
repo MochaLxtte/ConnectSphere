@@ -1,5 +1,7 @@
 # Sprint 3 backlog and acceptance test plan
 
+**KAN-79 implementation update — 19 October 2026.** KAN-79 is assigned to Tristan and In Progress in Jira, with subtasks KAN-85/86/87 In Progress. Its 8 SP and Sprint 3 membership are unchanged. The branch implements trusted Lead access, unassigned submission, oversight and initial allocation; automated verification is recorded as `AUTO-20261019-01`. KAN-65/KAN-64 integration, hosted checks, independent review and acceptance remain outstanding. Other stories retain their last dated snapshot; this is a targeted update, not a fresh project-wide export. Sprint 3 remains administratively Active despite its configured 17 October end; this work is recorded on its actual 19 October date and is not counted as delivery by 17 October.
+
 **16 October 2026 update.** Selected scope: **13 parents / 63 SP**. Sprint window: **4–17 October 2026**. Jira: **Active (ID 67)**. All selected parents are To Do; tests **Not executed** and acceptance **Not assessed**.
 
 This rebalanced allocation replaces the earlier 97/29 split with **63/63**, without dropping criteria or increasing the 126 remaining release points. Customer changes were received **2 October**, as confirmed on 16 October; Sprint 2 is assessed against its original scope. The five selected carried stories retain **19 SP**; their current unfinished disposition does not invent historical acceptance or reduce Jira estimates to zero.
@@ -20,7 +22,7 @@ This rebalanced allocation replaces the earlier 97/29 split with **63/63**, with
 | [KAN-52](https://smu-g7-grp1.atlassian.net/browse/KAN-52) | Check Venue Suitability | 3 | Unassigned — team member to choose | To agree after owner chosen | Sprint 2 carry-over: full original points | S3-T17 |
 | [KAN-77](https://smu-g7-grp1.atlassian.net/browse/KAN-77) | Configure Venue Setup and Turnaround Durations | 2 | Unassigned — team member to choose | To agree after owner chosen | CR-1 | S3-T18 |
 | [KAN-78](https://smu-g7-grp1.atlassian.net/browse/KAN-78) | Apply Venue Buffers to Availability and Booking Conflicts | 8 | Unassigned — team member to choose | To agree after owner chosen | CR-1 | S3-T19 |
-| [KAN-79](https://smu-g7-grp1.atlassian.net/browse/KAN-79) | Assign Submitted Events Through a Coordinator Lead Queue | 8 | Unassigned — team member to choose | To agree after owner chosen | CR-5 | S3-T20 |
+| [KAN-79](https://smu-g7-grp1.atlassian.net/browse/KAN-79) | Assign Submitted Events Through a Coordinator Lead Queue | 8 | Tristan | To agree | CR-5; In Progress | S3-T20 |
 | [KAN-65](https://smu-g7-grp1.atlassian.net/browse/KAN-65) | Reassign Event Coordinator | 3 | Unassigned — team member to choose | To agree after owner chosen | Existing release backlog | S3-T21 |
 | [KAN-64](https://smu-g7-grp1.atlassian.net/browse/KAN-64) | Receive Request, Assignment and Venue Notifications | 5 | Unassigned — team member to choose | To agree after owner chosen | Explicit original notification split | S3-T22 |
 | [KAN-81](https://smu-g7-grp1.atlassian.net/browse/KAN-81) | Recover venue arrangements affected by operational unavailability | 8 | Unassigned — team member to choose | To agree after owner chosen | Customer change CR-2 | S3-T25 |
@@ -52,7 +54,7 @@ Every row requires its complete active criterion set plus applicable Definition 
 | S3-T17 | KAN-52: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC101, AC102 | TC-11-02, TC-11-03, TC-11-04, TC-11-05, TC-11-06, TC-11-07, TC-11-205 | **Not executed** / Not recorded |
 | S3-T18 | KAN-77: AC1, AC2, AC3, AC4, AC5, AC6 | TC-08-15, TC-08-16, TC-08-17, TC-08-18, TC-08-19, TC-08-20 | **Not executed** / Not recorded |
 | S3-T19 | KAN-78: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8 | TC-14-01, TC-14-02, TC-14-03, TC-14-04, TC-14-05, TC-14-06, TC-14-07 | **Not executed** / Not recorded |
-| S3-T20 | KAN-79: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10 | TC-05-01, TC-05-02, TC-05-03, TC-05-04, TC-05-05, TC-05-06, TC-05-07, TC-05-08, TC-05-09 | **Not executed** / Not recorded |
+| S3-T20 | KAN-79: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10 | TC-05-01, TC-05-02, TC-05-03, TC-05-04, TC-05-05, TC-05-06, TC-05-07, TC-05-08, TC-05-09, TC-05-17–28 | Automated AC1–8/local AC10 pass: AUTO-20261019-01; AC9 and hosted checks **Not executed**; acceptance **Not assessed** |
 | S3-T21 | KAN-65: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC101, AC102, AC103, AC104 | TC-05-10, TC-05-11, TC-05-12, TC-05-13, TC-05-14, TC-05-15, TC-05-16 | **Not executed** / Not recorded |
 | S3-T22 | KAN-64: AC201, AC202, AC203, AC204, AC205, AC206, AC207, AC208, AC209 | TC-20-12, TC-20-13, TC-20-14, TC-20-15, TC-20-16, TC-20-17, TC-20-18, TC-20-19, TC-20-20 | **Not executed** / Not recorded |
 | S3-T25 | KAN-81: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12 | TC-09-01, TC-09-02, TC-09-03, TC-09-04, TC-09-05, TC-09-06, TC-09-07, TC-09-08, TC-09-09, TC-09-10, TC-09-11, TC-09-12 | **Not executed** / Not recorded |
@@ -659,7 +661,7 @@ Delivery requires implementation, automated and hosted acceptance checks, indepe
 
 ### KAN-79 — Assign Submitted Events Through a Coordinator Lead Queue
 
-**Owner:** Unassigned — team member to choose · **Independent reviewer:** To agree after owner chosen · **Estimate:** 8 SP · **Jira status:** To Do · **Acceptance:** Not assessed · **Test group:** S3-T20
+**Owner:** Tristan · **Independent reviewer:** To agree · **Estimate:** 8 SP · **Jira status:** In Progress · **Acceptance:** Not assessed · **Test group:** S3-T20
 
 **User story:** As an Event Coordinator Lead, I want newly submitted requests to enter an unassigned queue that I can oversee and allocate so that responsibility is assigned deliberately and coordinators manage only their own events.
 
@@ -676,7 +678,11 @@ Delivery requires implementation, automated and hosted acceptance checks, indepe
 | **KAN-79-AC9** | Integrate KAN-65 for Lead-only reassignment and KAN-64 for organiser/new-coordinator notifications (plus old coordinator on reassignment), without duplicating their story points. | TC-05-08 |
 | **KAN-79-AC10** | Deploy the submission policy change, trusted Lead access, queue and allocation controls together so new unassigned submissions are not stranded. | TC-05-09 |
 
-**Implementation location:** Not recorded. **Automated test files:** Not recorded. Record real files when implemented; historical schema or removed code is not feature completion.
+**Implementation — 19 October 2026:** `database/migrations/007_add_coordinator_lead.sql`; trusted roles in `backend/src/modules/auth/`; submission, assignment and Lead routes in `backend/src/modules/events/`; `/lead`, `/lead/oversight` and `/lead/oversight/:id` in `frontend/src/features/reviews/pages/`. Initial allocation is separate from KAN-65 reassignment; no notification implementation is claimed.
+
+**Automated evidence:** `backend/test/events/lead-assignment.test.ts`, `backend/test/events/submit-request.test.ts`, `database/tests/events/lead-assignment.integration.test.ts`, `database/tests/events/automatic-assignment.integration.test.ts`, `frontend/src/features/reviews/pages/LeadAccessPage.test.ts`, `frontend/src/features/events/components/AssignmentPanel.test.ts`, and `tests/e2e/lead-assignment.spec.ts`. See `AUTO-20261019-01` and S3-E14. AC1–8 and the local connected portion of AC10 pass automated checks. AC9 integration and hosted AC10 remain **Not executed**; story acceptance remains **Not assessed**. The original KAN-29 history is retained.
+
+**Subtasks:** KAN-85 backend/policy, KAN-86 interface, KAN-87 verification/documentation; all In Progress, no extra story points. Independent reviewer **To agree**. The approved implementation plan retains the 8-SP estimate and leaves KAN-65/KAN-64 integration pending.
 
 <details>
 <summary>Preserved Jira description before self-selection (historical ownership)</summary>
@@ -1172,7 +1178,7 @@ Each row groups the complete criterion-specific cases for one parent. Normal, bo
 | S3-T17 | KAN-52: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC101, AC102 | TC-11-02, TC-11-03, TC-11-04, TC-11-05, TC-11-06, TC-11-07, TC-11-205 | Applicable suitability requirements, current context, capacity/capabilities, availability and explicit zero | **Not executed** / Not recorded |
 | S3-T18 | KAN-77: AC1, AC2, AC3, AC4, AC5, AC6 | TC-08-15, TC-08-16, TC-08-17, TC-08-18, TC-08-19, TC-08-20 | Authorised bounded durations, additive migration, propagation and field-aware conflicts | **Not executed** / Not recorded |
 | S3-T19 | KAN-78: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8 | TC-14-01, TC-14-02, TC-14-03, TC-14-04, TC-14-05, TC-14-06, TC-14-07 | Effective intervals across consumers, boundaries/blocks, existing flags and concurrent writes | **Not executed** / Not recorded |
-| S3-T20 | KAN-79: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10 | TC-05-01, TC-05-02, TC-05-03, TC-05-04, TC-05-05, TC-05-06, TC-05-07, TC-05-08, TC-05-09 | Trusted Lead role, unassigned queue, allocation/oversight, preservation and integrated rollout | **Not executed** / Not recorded |
+| S3-T20 | KAN-79: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10 | TC-05-01, TC-05-02, TC-05-03, TC-05-04, TC-05-05, TC-05-06, TC-05-07, TC-05-08, TC-05-09, TC-05-17–28 | Trusted Lead role, unassigned queue, allocation/oversight, preservation and integrated rollout | Automated AC1–8/local AC10 pass: AUTO-20261019-01; AC9 and hosted checks **Not executed**; acceptance **Not assessed** |
 | S3-T21 | KAN-65: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC101, AC102, AC103, AC104 | TC-05-10, TC-05-11, TC-05-12, TC-05-13, TC-05-14, TC-05-15, TC-05-16 | Lead handover, eligible targets/states, current permissions, audit, no-op and races | **Not executed** / Not recorded |
 | S3-T22 | KAN-64: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC101, AC102, AC103, AC104, AC105, AC106 | TC-20-01, TC-20-02, TC-20-03, TC-20-04, TC-20-05, TC-20-06, TC-20-07, TC-20-08, TC-20-09, TC-20-10, TC-20-11 | Complete original trigger/recipient matrix, inbox/read state, privacy, rollback and deduplication | **Not executed** / Not recorded |
 | S3-T23 | KAN-15: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC101, AC102, AC103, AC104, AC105 | TC-19-01, TC-19-02, TC-19-03, TC-19-04, TC-19-05, TC-19-06, TC-19-07, TC-19-08, TC-19-09 | Owned pending request, review/impact, atomic outcomes, significant fields and cancellation/new-request boundary | **Not executed** / Not recorded |

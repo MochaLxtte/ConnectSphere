@@ -1,5 +1,7 @@
 # Sprint 3 planning
 
+**Ownership update — 19 October 2026.** KAN-79 is claimed by Tristan (8 SP); independent reviewer **To agree**. KAN-65 remains a separate dependency and is not claimed or implemented by this update. Existing allocation and estimate records below retain their dates; no new planning meeting or vote is asserted.
+
 **Estimation status:** The current 63-SP allocation is a planning baseline. Team confirmation of relative estimates, capacity and the sprint commitment is **To agree**; no planning-poker vote is recorded. The 10 to 11 SP selection target is guidance, not an individual quota. Keep existing estimates until a team-agreed change is logged.
 
 **Current selection: 13 parents / 63 SP.** Jira: **Active (id 67)**. Planned window: **4–17 October 2026**. This is the balanced release allocation recorded on 16 October, superseding the earlier 97/29 selection.
