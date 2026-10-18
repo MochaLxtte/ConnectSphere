@@ -13,10 +13,9 @@ import type { SubmittedRequestsRouterDependencies } from '../../src/modules/even
 import { updateOwnedDraft, DraftRequestNotFoundError } from '../../src/modules/events/update-draft.js';
 import { DraftEligibilityError } from '../../src/modules/events/draft-eligibility.js';
 import { DraftUpdateInputError } from '../../src/modules/events/draft-update-input.js';
-import { submitEventRequest, SubmitRequestNotFoundError } from '../../src/modules/events/submit-request.js';
+import { submitEventRequest, SubmitRequestNotFoundError, DraftAssignmentConflictError } from '../../src/modules/events/submit-request.js';
 import { SubmitEligibilityError } from '../../src/modules/events/submit-eligibility.js';
 import { SubmissionValidationError } from '../../src/modules/events/submit-input.js';
-import { AutomaticAssignmentError } from '../../src/modules/events/automatic-assignment.js';
 
 vi.mock('../../src/modules/events/submitted-requests.js', async (importOriginal) => {
   const actual =
@@ -512,13 +511,13 @@ describe('KAN-6 POST /api/events/:id/submit', () => {
     expect(response.body.error.code).toBe('REQUEST_NOT_SUBMITTABLE');
   });
 
-  it('KAN-29 reports unavailable capacity as a retryable assignment conflict', async () => {
+  it('KAN-79 preserves an unexpected existing draft assignment as a conflict', async () => {
     const { app } = setup(organiser);
-    const message = 'No event coordinator is currently available. Your request is still a draft. Please try again later.';
-    submitRequest.mockRejectedValue(new AutomaticAssignmentError('NO_AVAILABLE_COORDINATOR', message));
+    const error = new DraftAssignmentConflictError();
+    submitRequest.mockRejectedValue(error);
     const response = await request(app).post(`/api/events/${requestId}/submit`);
     expect(response.status).toBe(409);
-    expect(response.body).toEqual({ error: { code: 'NO_AVAILABLE_COORDINATOR', message } });
+    expect(response.body).toEqual({ error: { code: 'DRAFT_ALREADY_ASSIGNED', message: error.message } });
     expect(response.headers['cache-control']).toBe('no-store');
   });
 });

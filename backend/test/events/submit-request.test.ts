@@ -1,12 +1,9 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { assignInitialCoordinator } from '../../src/modules/events/automatic-assignment.js';
+import { describe, expect, it, vi } from 'vitest';
 import { SubmitEligibilityError } from '../../src/modules/events/submit-eligibility.js';
 import { SubmissionValidationError } from '../../src/modules/events/submit-input.js';
 import {
-  submitEventRequest, SubmitRequestNotFoundError, type SubmitActor,
+  submitEventRequest, SubmitRequestNotFoundError, DraftAssignmentConflictError, type SubmitActor,
 } from '../../src/modules/events/submit-request.js';
-
-vi.mock('../../src/modules/events/automatic-assignment.js', () => ({ assignInitialCoordinator: vi.fn() }));
 
 const eventId = '10000000-0000-4000-8000-000000000001';
 const organiser: SubmitActor = { id: '20000000-0000-4000-8000-000000000001', role: 'EVENT_ORGANISER' };
@@ -23,7 +20,13 @@ const draftRow = (overrides: Record<string, unknown> = {}) => ({
   registrationOpensAt: null, registrationClosesAt: null, ...overrides,
 });
 
-function fakePool(locked: ReturnType<typeof draftRow> | null, options: { failRollback?: boolean } = {}) {
+function fakePool(locked: ReturnType<typeof draftRow> | null, options: {
+  failRollback?: boolean | string;
+  activeHistory?: boolean;
+  failHistory?: boolean;
+  missingSave?: boolean;
+  failCommit?: boolean;
+} = {}) {
   const statements: string[] = [];
   const release = vi.fn();
   const client = {
@@ -31,10 +34,17 @@ function fakePool(locked: ReturnType<typeof draftRow> | null, options: { failRol
     query: vi.fn(async (sql: string) => {
       statements.push(sql.trim().split(/\s+/).slice(0, 2).join(' '));
       if (/FOR UPDATE/.test(sql)) return { rows: locked ? [locked] : [] };
-      if (/^\s*UPDATE event_requests/.test(sql)) {
-        return { rows: [{ ...locked, status: 'SUBMITTED', coordinatorId }] };
+      if (/SELECT 1 FROM coordinator_assignments/.test(sql)) {
+        if (options.failHistory) throw new Error('History read failed');
+        return { rows: options.activeHistory ? [{ exists: true }] : [] };
       }
-      if (/^ROLLBACK/.test(sql) && options.failRollback) throw new Error('rollback failed');
+      if (/^\s*UPDATE event_requests/.test(sql)) {
+        return { rows: options.missingSave ? [] : [{ ...locked, status: 'SUBMITTED', coordinatorId: null }] };
+      }
+      if (/^ROLLBACK/.test(sql) && options.failRollback) {
+        throw typeof options.failRollback === 'string' ? options.failRollback : new Error('rollback failed');
+      }
+      if (sql === 'COMMIT' && options.failCommit) throw new Error('Commit failed');
       return { rows: [] };
     }),
   };
@@ -55,18 +65,14 @@ async function failure(promise: Promise<unknown>) {
   return null;
 }
 
-beforeEach(() => {
-  vi.mocked(assignInitialCoordinator).mockReset();
-  vi.mocked(assignInitialCoordinator).mockResolvedValue(coordinatorId);
-});
-
-describe('KAN-59 submitting a request: a valid draft (KAN-6-AC1)', () => {
-  it('assigns a coordinator, marks the request SUBMITTED and commits once', async () => {
-    const { pool, statements, release } = fakePool(draftRow());
+describe('KAN-79 submission to the Lead queue; KAN-59/KAN-6 validation retained', () => {
+  it('marks the request SUBMITTED without allocating or consulting available coordinators', async () => {
+    const { pool, statements, release, client } = fakePool(draftRow());
     const saved = await submit(pool);
     expect(saved.status).toBe('SUBMITTED');
-    expect(saved.coordinatorId).toBe(coordinatorId);
-    expect(statements).toEqual(['BEGIN ISOLATION', 'SELECT set_config(\'app.actor_id\',', 'SELECT id,', 'UPDATE event_requests', 'COMMIT']);
+    expect(saved.coordinatorId).toBeNull();
+    expect(statements).toEqual(['BEGIN ISOLATION', 'SELECT set_config(\'app.actor_id\',', 'SELECT id,', 'SELECT 1', 'UPDATE event_requests', 'COMMIT']);
+    expect(client.query.mock.calls.some(([sql]) => /app_users|INSERT INTO coordinator_assignments/.test(sql))).toBe(false);
     expect(release).toHaveBeenCalledOnce();
   });
 
@@ -101,6 +107,7 @@ describe('KAN-59 invalid drafts stay DRAFT and unchanged (S1-DEF-04, KAN-6-AC2)'
     ['a blank purpose', { purpose: '' }, ['purpose'], []],
     ['blank venue requirements', { venueRequirements: '\n' }, ['venueRequirements'], []],
     ['a missing start', { startsAt: null }, ['startsAt'], []],
+    ['a missing end', { endsAt: null }, ['endsAt'], []],
     ['a missing attendance', { expectedAttendance: null }, ['expectedAttendance'], []],
     ['an end equal to the start', { endsAt: new Date('2026-10-01T09:00:00Z') }, [], ['endsAt']],
     ['an end before the start', { endsAt: new Date('2026-09-30T09:00:00Z') }, [], ['endsAt']],
@@ -117,7 +124,6 @@ describe('KAN-59 invalid drafts stay DRAFT and unchanged (S1-DEF-04, KAN-6-AC2)'
     expect(statements).not.toContain('UPDATE event_requests');
     expect(statements).toContain('ROLLBACK');
     expect(statements).not.toContain('COMMIT');
-    expect(assignInitialCoordinator).not.toHaveBeenCalled();
     expect(release).toHaveBeenCalledOnce();
   });
 
@@ -130,7 +136,8 @@ describe('KAN-59 invalid drafts stay DRAFT and unchanged (S1-DEF-04, KAN-6-AC2)'
 });
 
 describe('KAN-59 submission access and failure handling (KAN-6-AC3)', () => {
-  it.each([null, { ...organiser, role: 'EVENT_COORDINATOR' as const }, { ...organiser, role: 'ATTENDEE' as const }])(
+  it.each([null, { ...organiser, role: 'EVENT_COORDINATOR' as const },
+    { ...organiser, role: 'EVENT_COORDINATOR_LEAD' as const }, { ...organiser, role: 'ATTENDEE' as const }])(
     'refuses %j before touching the database', async (actor) => {
       const { pool, rawPool } = fakePool(draftRow());
       const error = await failure(submit(pool, actor as SubmitActor | null));
@@ -169,11 +176,35 @@ describe('KAN-59 submission access and failure handling (KAN-6-AC3)', () => {
     expect(release.mock.calls[0]![0]).toBeInstanceOf(Error);
   });
 
-  it('rolls back when the automatic assignment fails and does not mark the request submitted', async () => {
-    vi.mocked(assignInitialCoordinator).mockRejectedValue(new Error('no coordinator'));
-    const { pool, statements } = fakePool(draftRow());
-    await expect(submit(pool)).rejects.toThrow('no coordinator');
+  it('KAN-79 rolls back when checking existing history fails', async () => {
+    const { pool, statements } = fakePool(draftRow(), { failHistory: true });
+    await expect(submit(pool)).rejects.toThrow('History read failed');
     expect(statements).not.toContain('UPDATE event_requests');
     expect(statements).toContain('ROLLBACK');
+  });
+});
+
+describe('KAN-79 submission consistency and persistence failures', () => {
+  it.each([
+    { coordinatorId, activeHistory: false },
+    { coordinatorId: null, activeHistory: true },
+  ])('preserves unexpected existing draft assignment %j', async ({ coordinatorId, activeHistory }) => {
+    const { pool, statements } = fakePool(draftRow({ coordinatorId }), { activeHistory });
+    await expect(submit(pool)).rejects.toBeInstanceOf(DraftAssignmentConflictError);
+    expect(statements).not.toContain('UPDATE event_requests');
+    expect(statements).toContain('ROLLBACK');
+  });
+
+  it.each([{ missingSave: true }, { failCommit: true }])('rolls back incomplete persistence %j', async (options) => {
+    const { pool, statements, release } = fakePool(draftRow(), options);
+    await expect(submit(pool)).rejects.toThrow();
+    expect(statements).toContain('ROLLBACK');
+    expect(release).toHaveBeenCalledExactlyOnceWith(undefined);
+  });
+
+  it('discards a connection when rollback throws a non-Error value', async () => {
+    const { pool, release } = fakePool(draftRow({ name: null }), { failRollback: 'failed' });
+    await expect(submit(pool)).rejects.toBeInstanceOf(SubmissionValidationError);
+    expect(release).toHaveBeenCalledExactlyOnceWith(expect.any(Error));
   });
 });
