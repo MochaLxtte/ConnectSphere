@@ -89,7 +89,7 @@ for (const scenario of [
       .getByRole('link', { name: 'Review queue', exact: true })).toHaveCount(scenario.reviewLinks);
     await expect(page.getByRole('link', { name: /Review event requests/ })).toHaveCount(scenario.reviewLinks);
     await expect(page.getByRole('navigation', { name: 'Main navigation' })
-      .getByRole('link', { name: 'Unassigned requests', exact: true })).toHaveCount(scenario.reviewLinks);
+      .getByRole('link', { name: 'Unassigned requests', exact: true })).toHaveCount(0);
     await expect(page.getByRole('navigation', { name: 'Main navigation' })
       .getByRole('link', { name: 'Event requests', exact: true })).toHaveCount(scenario.organiserLinks);
     expect(fixture.eventCalls).toEqual([]);
@@ -97,7 +97,7 @@ for (const scenario of [
   });
 }
 
-for (const path of ['/reviews', '/reviews/unassigned', `/reviews/${requestId}`]) {
+for (const path of ['/reviews', `/reviews/${requestId}`]) {
   test(`KAN-25/KAN-33 organiser cannot open ${path} or load review data`, async ({ page }) => {
     const fixture = await reviewFixtures(page, organiser);
     await page.goto(path);
@@ -138,8 +138,7 @@ for (const path of ['/reviews', '/reviews/unassigned', `/reviews/${requestId}`])
     await expect(page.getByRole('navigation', { name: 'Main navigation' })
       .getByRole('link', { name: 'Review queue', exact: true })).toBeVisible();
     const expectedReads = path === '/reviews' ? ['GET /api/events', 'GET /api/events?scope=history']
-      : path === '/reviews/unassigned' ? ['GET /api/events/unassigned', 'GET /api/events/coordinators']
-        : [`GET /api/events/${requestId}`, `GET /api/events/${requestId}/assignments`,
+      : [`GET /api/events/${requestId}`, `GET /api/events/${requestId}/assignments`,
           `GET /api/events/${requestId}/clarifications`,
           `GET /api/events/${requestId}/history`];
     await expect.poll(() => [...fixture.eventCalls].sort()).toEqual(expectedReads.sort());

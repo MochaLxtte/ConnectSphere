@@ -9,14 +9,16 @@ let fixture: WorkflowFixture;
 let organiser: WorkflowActor;
 let coordinator: WorkflowActor;
 let staff: WorkflowActor;
+let lead: WorkflowActor;
 
 beforeAll(async () => {
   fixture = await createWorkflowFixture();
   organiser = await fixture.createUser('EVENT_ORGANISER');
   coordinator = await fixture.createUser('EVENT_COORDINATOR');
-  // Automatic assignment only considers coordinators who are marked available.
+  // KAN-79 Lead allocation only accepts available coordinators.
   await fixture.pool.query('UPDATE app_users SET coordinator_available = true WHERE id = $1', [coordinator.id]);
   staff = await fixture.createUser('VENUE_STAFF');
+  lead = await fixture.createUser('EVENT_COORDINATOR_LEAD');
 });
 afterAll(async () => { await fixture?.destroy(); });
 
@@ -46,7 +48,7 @@ function runtime() {
   return { sessionFor };
 }
 
-describe('S2-T23 connected Sprint 2 workflow through the running API (automated stand-in for the hosted walkthrough)', () => {
+describe('KAN-79 regression of the connected S2-T23 workflow through the running API (automated stand-in for the hosted walkthrough)', () => {
   it('takes a draft to an approved venue booking with the right effects at each step', async () => {
     const venueId = randomUUID();
     await fixture.pool.query('INSERT INTO venues(id,name,capacity) VALUES($1,$2,120)', [venueId, `Venue ${venueId}`]);
@@ -54,6 +56,7 @@ describe('S2-T23 connected Sprint 2 workflow through the running API (automated 
     const organiserSession = await sessionFor(organiser);
     const coordinatorSession = await sessionFor(coordinator);
     const staffSession = await sessionFor(staff);
+    const leadSession = await sessionFor(lead);
     const searchQuery = { startsAt, endsAt, attendance: 60 };
     const foundInSearch = async () => {
       const found = await coordinatorSession.get('/api/venues/search-venues').query(searchQuery);
@@ -67,7 +70,7 @@ describe('S2-T23 connected Sprint 2 workflow through the running API (automated 
         { unavailable: { startsAt: string; endsAt: string }[] };
     };
 
-    // KAN-6 / KAN-29: a complete draft is submitted and assigned automatically, not approved.
+    // KAN-79 supersedes KAN-29: submit unassigned, then allocate through the Lead workflow.
     const created = await organiserSession.post('/api/events').send({
       name: 'Connected workflow fair', purpose: 'Sprint 2 walkthrough', startsAt, endsAt,
       expectedAttendance: 60, venueRequirements: 'A hall for 60 people', registrationRequired: false,
@@ -76,7 +79,11 @@ describe('S2-T23 connected Sprint 2 workflow through the running API (automated 
     const eventId: string = created.body.id;
     const submitted = await organiserSession.post(`/api/events/${eventId}/submit`).send({});
     expect(submitted.status).toBe(200);
-    expect(submitted.body).toMatchObject({ status: 'SUBMITTED', coordinatorId: coordinator.id });
+    expect(submitted.body).toMatchObject({ status: 'SUBMITTED', coordinatorId: null });
+    expect((await coordinatorSession.get(`/api/events/${eventId}`)).status).toBe(404);
+    const allocated = await leadSession.put(`/api/events/${eventId}/coordinator`).send({ coordinatorId: coordinator.id });
+    expect(allocated.status).toBe(200);
+    expect((await fixture.eventRow(eventId)).coordinator_id).toBe(coordinator.id);
 
     // The organiser and venue staff cannot use coordinator venue search; the assigned coordinator can.
     expect((await organiserSession.get('/api/venues/search-venues')).status).toBe(403);

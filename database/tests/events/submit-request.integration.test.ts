@@ -10,6 +10,7 @@ import {
 } from '../../../backend/src/modules/events/submit-request.js';
 import type { EventStatus } from '../../../backend/src/modules/events/types.js';
 import { migrate } from '../../migrate.js';
+import { isAssignedCoordinator } from '../../../backend/src/modules/events/coordinator-access.js';
 
 const testUrl = process.env.TEST_DATABASE_URL;
 if (!testUrl) throw new Error('Set TEST_DATABASE_URL to a dedicated PostgreSQL test database.');
@@ -84,7 +85,7 @@ describe('KAN-6 submission persistence', () => {
     const submitted = await submitEventRequest(dependencies, { eventRequestId, actor: organiser });
 
     expect(submitted.status).toBe('SUBMITTED');
-    expect(submitted.coordinatorId).toBe(coordinator.id);
+    expect(submitted.coordinatorId).toBeNull();
     expect(submitted.name).toBe('Career Fair');
     const state = await readState(eventRequestId);
     expect(state.status).toBe('SUBMITTED');
@@ -153,13 +154,13 @@ describe('KAN-6 submission persistence', () => {
     expect(state.status).toBe('SUBMITTED');
   });
 
-  it('submits through HTTP and appears in the coordinator review queue afterwards', async () => {
+  it('KAN-79 submits through HTTP but stays out of an ordinary coordinator review queue until allocated', async () => {
     const eventRequestId = await createEvent();
     const app = createApp({
       database: pool,
       submittedRequests: {
         pool,
-        canViewRequest: () => true,
+        canViewRequest: isAssignedCoordinator,
         canReviewRequest: () => false,
         authenticate: async () => organiser,
       },
@@ -173,14 +174,14 @@ describe('KAN-6 submission persistence', () => {
       database: pool,
       submittedRequests: {
         pool,
-        canViewRequest: () => true,
+        canViewRequest: isAssignedCoordinator,
         canReviewRequest: () => false,
         authenticate: async () => coordinator,
       },
     });
     const queueResponse = await request(coordinatorApp).get('/api/events');
     expect(queueResponse.status).toBe(200);
-    expect(queueResponse.body.items.map((item: { id: string }) => item.id)).toContain(eventRequestId);
+    expect(queueResponse.body.items.map((item: { id: string }) => item.id)).not.toContain(eventRequestId);
   });
 
   it('hides another organiser\'s draft through HTTP and leaves it unchanged', async () => {
@@ -190,7 +191,7 @@ describe('KAN-6 submission persistence', () => {
       database: pool,
       submittedRequests: {
         pool,
-        canViewRequest: () => true,
+        canViewRequest: isAssignedCoordinator,
         canReviewRequest: () => false,
         authenticate: async () => otherOrganiser,
       },
@@ -216,7 +217,7 @@ async function assignmentState(id: string) {
 const asOrganiser = () => createApp({
   database: pool,
   submittedRequests: {
-    pool, canViewRequest: () => true, canReviewRequest: () => false, authenticate: async () => organiser,
+    pool, canViewRequest: isAssignedCoordinator, canReviewRequest: () => false, authenticate: async () => organiser,
   },
 });
 
@@ -322,7 +323,7 @@ describe('KAN-59 saved drafts with blank or invalid values stay DRAFT (S1-DEF-04
     const app = createApp({
       database: pool,
       submittedRequests: {
-        pool, canViewRequest: () => true, canReviewRequest: () => false, authenticate: async () => otherOrganiser,
+        pool, canViewRequest: isAssignedCoordinator, canReviewRequest: () => false, authenticate: async () => otherOrganiser,
       },
     });
     const response = await request(app).post(`/api/events/${eventRequestId}/submit`);
