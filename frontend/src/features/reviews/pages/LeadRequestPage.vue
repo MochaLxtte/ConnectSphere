@@ -81,7 +81,8 @@ onBeforeUnmount(() => controller?.abort());
     <AssignmentPanel :key="state.detail.id" :event-request-id="state.detail.id"
       :current-coordinator-id="state.detail.coordinatorId" :status="state.detail.status"
       viewer-role="EVENT_COORDINATOR_LEAD" :can-assign-coordinator="state.detail.actions.canAssignCoordinator"
-      @changed="refreshAllocation" />
+      :can-reassign-coordinator="state.detail.actions.canReassignCoordinator" :assignment-version="state.detail.assignmentVersion"
+      :refresh-assignment-context="refreshAllocation" />
   </template>
 </template>
 

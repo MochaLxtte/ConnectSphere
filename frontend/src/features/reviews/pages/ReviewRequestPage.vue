@@ -73,6 +73,9 @@ async function handleSubmit(submission: ReviewSubmission) {
     const code = error && typeof error === 'object' && 'code' in error
       ? String((error as { code: unknown }).code) : 'REQUEST_FAILED';
     feedback.value = { eventRequestId: submission.eventRequestId, state: 'error', code };
+    // KAN-65: a handover may revoke access after this page was opened. Re-read the
+    // protected detail so a denied decision also removes the old coordinator's view.
+    if (['AUTHENTICATION_REQUIRED', 'REVIEW_FORBIDDEN', 'EVENT_REQUEST_NOT_FOUND'].includes(code)) await load();
   }
 }
 

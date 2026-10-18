@@ -60,6 +60,17 @@ async function chooseApproval() {
 }
 
 describe('KAN-33 review request detail page', () => {
+  it('KAN-65 removes stale detail after reassignment denies a review write', async () => {
+    const denied = { error: { code: 'EVENT_REQUEST_NOT_FOUND', message: 'The event request was not found.' } };
+    const fetch = vi.fn().mockResolvedValueOnce(jsonResponse(detail))
+      .mockResolvedValueOnce(jsonResponse(denied, 404)).mockResolvedValue(jsonResponse(denied, 404));
+    vi.stubGlobal('fetch', fetch);
+    await renderDetail(); await chooseApproval();
+    expect(await screen.findByRole('alert')).toHaveTextContent('unavailable or you do not have permission');
+    expect(screen.queryByRole('heading', { name: 'Career fair' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('radio')).not.toBeInTheDocument();
+    expect(fetch.mock.calls.filter(([, init]) => init?.method === 'POST')).toHaveLength(1);
+  });
   it('KAN-8 links the coordinator to booking outcomes for this event', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonResponse(detail)));
     await renderDetail();

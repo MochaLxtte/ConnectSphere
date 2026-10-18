@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/vue';
+import { fireEvent, render, screen, waitFor } from '@testing-library/vue';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createMemoryHistory, createRouter, RouterView } from 'vue-router';
 import { router as appRouter } from '../../../app/router';
@@ -8,6 +8,65 @@ vi.mock('../../auth/session', async () => {
   const { reactive } = await import('vue');
   const state = reactive({ user: null, loading: false });
   return { authSession: state, clearLocalSession: () => { state.user = null; } };
+});
+
+describe('KAN-65 reassignment session and route lifecycle', () => {
+  const record = { id: 'version-one', coordinatorId: 'old', coordinatorName: 'Previous coordinator',
+    assignmentMethod: 'MANUAL', assignedById: 'lead-1', assignedByName: 'Lead One', note: null,
+    assignedAt: '2026-10-19T01:00:00Z', unassignedAt: null };
+  function reads(url: string) {
+    if (url.endsWith('/assignments')) return json({ items: [record] });
+    if (url.startsWith('/api/events/oversight/')) return json({ ...item, id: url.split('/').pop(),
+      name: url.endsWith('/b') ? 'Second event' : item.name, coordinatorId: 'old', coordinatorName: record.coordinatorName,
+      assignmentVersion: record.id, actions: { canAssignCoordinator: false, canReassignCoordinator: true } });
+    return response(url);
+  }
+  async function submitHandover() {
+    await fireEvent.update(await screen.findByRole('combobox', { name: 'Reassign to' }), 'coordinator');
+    await fireEvent.update(screen.getByRole('textbox', { name: 'Reason for reassignment' }), 'Covering leave');
+    await fireEvent.click(screen.getByRole('button', { name: 'Reassign coordinator' }));
+  }
+  it.each([200, 401])('ignores late reassignment HTTP %s after account change and suppresses duplicate clicks', async (status) => {
+    const pending = deferred();
+    const fetch = vi.fn((url: string, init?: RequestInit) => init?.method === 'POST' ? pending.promise : reads(url));
+    vi.stubGlobal('fetch', fetch); await open('/lead/oversight/a'); await submitHandover();
+    await fireEvent.click(screen.getByRole('button', { name: 'Saving…' }));
+    expect(fetch.mock.calls.filter(([, init]) => init?.method === 'POST')).toHaveLength(1);
+    const signal = fetch.mock.calls.find(([, init]) => init?.method === 'POST')![1]!.signal!;
+    session.user = user('EVENT_COORDINATOR_LEAD', 'lead-2');
+    await screen.findByRole('button', { name: 'Reassign coordinator' }); expect(signal.aborted).toBe(true);
+    await settle(pending, status === 200 ? json({ eventRequestId: 'a', assignmentId: 'version-two',
+      coordinatorId: 'coordinator', previousCoordinatorId: 'old', changed: true })
+      : json({ error: { code: 'AUTHENTICATION_REQUIRED', message: 'Expired' } }, 401));
+    expect(session.user?.id).toBe('lead-2'); expect(screen.queryByText(/Reassigned from/)).not.toBeInTheDocument();
+  });
+  it('ignores a saved handover response after navigation to another event', async () => {
+    const pending = deferred();
+    const fetch = vi.fn((url: string, init?: RequestInit) => init?.method === 'POST' ? pending.promise : reads(url));
+    vi.stubGlobal('fetch', fetch); const { router } = await open('/lead/oversight/a'); await submitHandover();
+    await router.push('/lead/oversight/b'); await screen.findByText('Second event');
+    await settle(pending, json({ eventRequestId: 'a', assignmentId: 'version-two', coordinatorId: 'coordinator',
+      previousCoordinatorId: 'old', changed: true }));
+    expect(screen.queryByText(/Reassigned from/)).not.toBeInTheDocument();
+    expect(screen.getByText('Second event')).toBeInTheDocument();
+  });
+  it('clears an expired session on reassignment', async () => {
+    vi.stubGlobal('fetch', vi.fn((url: string, init?: RequestInit) => init?.method === 'POST'
+      ? json({ error: { code: 'AUTHENTICATION_REQUIRED', message: 'Expired' } }, 401) : reads(url)));
+    await open('/lead/oversight/a'); await submitHandover();
+    expect(await screen.findByRole('heading', { name: 'Sign in required' })).toBeInTheDocument();
+  });
+  it('removes the protected detail when access is denied during handover refresh', async () => {
+    let denied = false;
+    vi.stubGlobal('fetch', vi.fn((url: string, init?: RequestInit) => {
+      if (init?.method === 'POST') { denied = true; return json({ error: { code: 'ASSIGNMENT_FORBIDDEN', message: 'Denied' } }, 403); }
+      return denied ? json({ error: { code: 'EVENT_REQUEST_NOT_FOUND', message: 'Unavailable' } }, 404) : reads(url);
+    }));
+    await open('/lead/oversight/a'); await submitHandover();
+    await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('unavailable'));
+    expect(screen.queryByText(item.name)).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Reassign coordinator' })).not.toBeInTheDocument();
+  });
 });
 const session = authSession as { user: SignedInUser | null; loading: boolean };
 function user(role: UserRole = 'EVENT_COORDINATOR_LEAD', id = 'lead-1'): SignedInUser {
