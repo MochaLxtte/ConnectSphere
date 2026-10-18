@@ -77,7 +77,7 @@ Supabase Auth handles sign-in. Express verifies the access token and resolves `a
 
 `GET /api/events/oversight` returns `{ items }` with those same fields plus nullable `coordinatorId` and `coordinatorName`, sorted by newest `updatedAt`, then ID. All Leads share the deployment's active non-draft events: `SUBMITTED`, `UNDER_REVIEW`, `CLARIFICATION_REQUESTED`, `APPROVED`, `CONFIRMED`. Draft, Rejected, Cancelled and Completed records are excluded. An assigned event remains in this oversight view after it leaves the unassigned queue.
 
-`GET /api/events/oversight/:id` returns one flat oversight item plus nullable `purpose`, `description`, `venueRequirements`, `accessibilityNeeds`, `equipmentRequirements`, `registrationRequired`, and `actions: { canAssignCoordinator: boolean }`. It does not return review records, registration rosters or workflow decision actions. The capability is true only when the active event has neither a current coordinator nor an active assignment-history row. The write still rechecks everything; the flag does not guarantee that an eligible target remains available. Missing/out-of-scope events return the same `404 EVENT_REQUEST_NOT_FOUND`.
+`GET /api/events/oversight/:id` returns one flat oversight item plus nullable `purpose`, `description`, `venueRequirements`, `accessibilityNeeds`, `equipmentRequirements`, `registrationRequired`, and allocation capabilities. KAN-65 extends the original shape with `assignmentVersion: string | null` and `actions: { canAssignCoordinator: boolean, canReassignCoordinator: boolean }`. Initial allocation is allowed only when the active event has neither a current coordinator nor an active assignment-history row. Reassignment is allowed only when one active history row matches the current coordinator; its UUID supplies the version, otherwise the version is null. This DTO does not return review records, registration rosters or workflow decision actions. Writes still recheck everything; capabilities do not guarantee that a target remains available. Missing/out-of-scope events return the same `404 EVENT_REQUEST_NOT_FOUND`.
 
 `GET /api/events/coordinators` returns `{ items: [{ id, displayName, email }] }`, restricted to `EVENT_COORDINATOR` profiles with `coordinator_available = true`, sorted by case-insensitive display name then ID. Lead profiles are not eligible targets. All four reads require a Lead; other authenticated roles receive `403 ACTION_FORBIDDEN` before any allocation data is queried.
 
@@ -88,6 +88,45 @@ Supabase Auth handles sign-in. Express verifies the access token and resolves `a
 Success returns `200 { eventRequestId, assignmentId, coordinatorId, previousCoordinatorId: null }`. A second/stale attempt receives `409 COORDINATOR_ALREADY_ASSIGNED`, including selecting the same coordinator again. The winner's assignment and history remain intact. Invalid/unavailable targets return `400 INVALID_COORDINATOR`; a conflicting active history returns `409 ASSIGNMENT_HISTORY_CONFLICT`; an inactive event returns `409 ASSIGNMENT_NOT_ALLOWED`. Draft/missing requests return `404 EVENT_REQUEST_NOT_FOUND`. Database failures roll back both history and linkage.
 
 `GET /api/events/:id/assignments` retains owner/current-coordinator read access and additionally allows Leads for active events. It no longer allows an ordinary coordinator to inspect an unassigned request. Historical `AUTOMATIC` entries preserve their null actor and original times; migration 007 changes none of those records. Initial assignment does not replace an existing assignment. KAN-65 supplies Lead reassignment and KAN-64 supplies organiser/new-coordinator notifications (plus old coordinator for reassignment); those are separate estimates and the combined AC9 acceptance remains pending. No notification delivery is implied by the assignment response.
+
+## KAN-65 coordinator reassignment — 19 October 2026
+
+This extends the Lead allocation workflow above without changing initial-assignment semantics or adding a migration. Migration 007 application and Lead login were reported successful; the [verification record](../testing/test-evidence.md#19-october-2026--kan-65-coordinator-reassignment) separates that setup report from local automated checks and deferred manual acceptance. KAN-64 notification integration remains pending.
+
+`POST /api/events/:id/coordinator/reassign` requires a verified `EVENT_COORDINATOR_LEAD`. The body contains exactly:
+
+```json
+{
+  "coordinatorId": "40000000-0000-4000-8000-000000000001",
+  "reason": "Covering the current coordinator's leave.",
+  "expectedAssignmentVersion": "50000000-0000-4000-8000-000000000001"
+}
+```
+
+Both identifiers must be UUIDs; UUID casing is normalised. `reason` is required plain text, trimmed, nonempty and at most 2,000 characters after trimming. Unknown fields are rejected. The expected version is the current active assignment-history UUID returned by Lead detail, not the coordinator UUID or event `updatedAt`. The event must be in `SUBMITTED`, `UNDER_REVIEW`, `CLARIFICATION_REQUESTED`, `APPROVED` or `CONFIRMED`, with one active history row matching its current coordinator.
+
+The transaction locks the event, then its current assignment row. It checks the version before considering a same-coordinator request, so stale A → B → A changes are rejected. A current-version request targeting the current coordinator returns `changed: false` and preserves all timestamps/history without checking that coordinator's availability; no new assignment occurs. For an actual change, the selected target must still be an available `EVENT_COORDINATOR` when its profile is locked. The old interval closes and the new MANUAL interval starts at one database timestamp captured after the lock waits, preserving PostgreSQL precision. The new row stores the Lead's ID and trimmed reason; its start also becomes the event's `updatedAt`. Current linkage and both history changes commit together. A failure rolls them all back.
+
+Success is `200 { eventRequestId, assignmentId, coordinatorId, previousCoordinatorId, changed }`. `assignmentId` identifies the new active row when changed, or the existing row for an unchanged response; `previousCoordinatorId` is the pre-command coordinator, equal to `coordinatorId` for an unchanged result. No event is duplicated. Status, requirements, existing decisions, clarifications and venue arrangements are retained.
+
+| Response | Meaning |
+| --- | --- |
+| `400 INVALID_EVENT_REQUEST_ID` | The route ID is not a UUID. |
+| `400 INVALID_INPUT` | Non-object/unknown fields, missing/blank reason, wrong reason type or reason exceeding 2,000 trimmed characters. |
+| `400 INVALID_ASSIGNMENT_INPUT` | `coordinatorId` or `expectedAssignmentVersion` is not a UUID. |
+| `400 INVALID_COORDINATOR` | The new target is missing, unavailable or not an Event Coordinator. |
+| `401 AUTHENTICATION_REQUIRED` | No verified session. |
+| `403 ACTION_FORBIDDEN` | The verified actor is not a Lead; the HTTP gate refuses the request before persistence. The service additionally uses `ASSIGNMENT_FORBIDDEN` for direct unauthorised calls. |
+| `404 EVENT_REQUEST_NOT_FOUND` | Missing event or draft; the same response conceals drafts. |
+| `409 ASSIGNMENT_NOT_ALLOWED` | The event is Rejected, Cancelled or Completed. |
+| `409 COORDINATOR_NOT_ASSIGNED` | The event has neither a current coordinator nor active history; refresh and use initial allocation. |
+| `409 ASSIGNMENT_HISTORY_CONFLICT` | Current linkage and active history do not agree, including missing history on an assigned legacy event. Preserve the records and reconcile them explicitly. |
+| `409 ASSIGNMENT_VERSION_CONFLICT` | Another change replaced the expected assignment; refresh before attempting a new handover. |
+| `500 INTERNAL_ERROR` | Unexpected persistence failure; internal details are concealed. Refresh before retrying because the client may not know whether a response was lost after commit. |
+
+Every response uses `Cache-Control: no-store`; malformed JSON and payload-size errors follow the common contract. A handover immediately changes which coordinator may make subsequent protected reads/writes. Review, clarification and venue-submission writes recheck current assignment under the event lock. Assignment, clarification and status-history reads hold `FOR SHARE` on the event through the relationship check and protected data query: a concurrent handover waits for an authorised read to finish, or that read sees the replacement and denies the former coordinator. Other scoped reads use current coordinator linkage. Prior access does not authorise later access, while the owning organiser and Leads retain their existing scopes.
+
+The Lead interface only offers reassignment when its detail version and exactly one active history row agree. It requires a target and reason, disables duplicate saves, refreshes after conflicts and blocks retries after uncertain responses until current state is reconciled. This operation does not generate notifications yet. KAN-64 must add organiser/old/new-coordinator notifications transactionally and suppress notification creation for unchanged results; that combined acceptance check remains pending.
 
 ## KAN-29 automatic assignment on submission
 
@@ -351,7 +390,7 @@ Mount order matters: `app.ts` registers the assignment, clarification and status
 
 `PATCH /api/events/:id` now also accepts the three registration fields (`registrationCapacity` a non-negative whole number or null; the two timestamps ISO 8601 or null). The status-history trigger attributes the initial `DRAFT` row to the organiser.
 
-### Events: coordinator assignment (CF-05 / KAN-79) — `assignment-router.ts`
+### Events: coordinator assignment (CF-05 / KAN-79 / KAN-65) — `assignment-router.ts`
 
 The current Lead contract above supersedes the earlier coordinator self/colleague allocation rule. Active states are Submitted, Under review, Clarification requested, Approved and Confirmed.
 
@@ -360,11 +399,12 @@ The current Lead contract above supersedes the earlier coordinator self/colleagu
 | `GET /api/events/unassigned` | ECL | `200 { items }`: only Submitted requests with no coordinator, oldest update first; basic event summary | `403 ACTION_FORBIDDEN` |
 | `GET /api/events/coordinators` | ECL | `200 { items }`: `id`, `displayName`, `email` for available Event Coordinators only | `403 ACTION_FORBIDDEN` |
 | `GET /api/events/oversight` | ECL | `200 { items }`: active non-draft summaries plus nullable `coordinatorId`/`coordinatorName`, newest update first | `403 ACTION_FORBIDDEN` |
-| `GET /api/events/oversight/:id` | ECL | `200` flat basic allocation detail and `actions.canAssignCoordinator`; no review/booking/roster permissions | `400 INVALID_EVENT_REQUEST_ID`; `403 ACTION_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND` |
+| `GET /api/events/oversight/:id` | ECL | `200` flat basic allocation detail, nullable `assignmentVersion`, `actions.canAssignCoordinator` and `actions.canReassignCoordinator`; no review/booking/roster permissions | `400 INVALID_EVENT_REQUEST_ID`; `403 ACTION_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND` |
 | `PUT /api/events/:id/coordinator` | ECL, active unassigned event | `200 { eventRequestId, assignmentId, coordinatorId, previousCoordinatorId: null }`. Body `{ coordinatorId, note? }`. Saves initial linkage and manual history atomically; no replacement or notifications | `400 INVALID_EVENT_REQUEST_ID`, `INVALID_INPUT`, `INVALID_ASSIGNMENT_INPUT`, `INVALID_COORDINATOR`; `403 ACTION_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND` (missing/draft); `409 ASSIGNMENT_NOT_ALLOWED`, `COORDINATOR_ALREADY_ASSIGNED`, `ASSIGNMENT_HISTORY_CONFLICT` |
+| `POST /api/events/:id/coordinator/reassign` | ECL, active assigned event | `200 { eventRequestId, assignmentId, coordinatorId, previousCoordinatorId, changed }`. Body `{ coordinatorId, reason, expectedAssignmentVersion }`. Atomically replaces the current assignment; unchanged current-target requests write nothing | `400 INVALID_EVENT_REQUEST_ID`, `INVALID_INPUT`, `INVALID_ASSIGNMENT_INPUT`, `INVALID_COORDINATOR`; `403 ACTION_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND`; `409 ASSIGNMENT_NOT_ALLOWED`, `COORDINATOR_NOT_ASSIGNED`, `ASSIGNMENT_HISTORY_CONFLICT`, `ASSIGNMENT_VERSION_CONFLICT` |
 | `GET /api/events/:id/assignments` | EO owner, assigned EC, ECL for active events | `200 { items }`: `id`, `coordinatorId`, `coordinatorName`, `assignmentMethod`, `assignedById`, `assignedByName`, `note`, `assignedAt`, `unassignedAt`, newest first | `400 INVALID_EVENT_REQUEST_ID`; `403 ACTION_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND` |
 
-Migration 006's `assignmentMethod` vocabulary remains `AUTOMATIC` or `MANUAL`; migration 007 only extends the trusted user role. Historical automatic records retain null `assignedById`/`assignedByName` and display their original provenance. New initial Lead allocations use `MANUAL` with the acting Lead's ID. Owner/current-coordinator history is read-only; ordinary coordinators have no unassigned triage exception. KAN-65 and KAN-64 integration remains pending as described in the current contract above.
+Migration 006's `assignmentMethod` vocabulary remains `AUTOMATIC` or `MANUAL`; migration 007 only extends the trusted user role. Historical automatic records retain null `assignedById`/`assignedByName` and display their original provenance. New initial allocations and handovers use `MANUAL` with the acting Lead's ID. Owner/current-coordinator history is read-only; ordinary coordinators have no unassigned triage exception. KAN-65 is implemented without another migration; KAN-64 notification integration and hosted acceptance remain pending as described above.
 
 ### Events: review start and clarification (CF-04, KAN-27) — `clarification-router.ts`
 
@@ -394,7 +434,7 @@ Client navigation is not access control; every page relies on the API responses 
 | `/reviews` | Assigned coordinator review queue | EC after session resolution |
 | `/reviews/unassigned` | Legacy route redirects to `/lead` | Destination requires ECL; ordinary coordinators see no queue data |
 | `/lead`, `/lead/oversight` | Submitted/unassigned allocation queue; active-event oversight | ECL after session resolution |
-| `/lead/oversight/:id` | Basic allocation detail and initial assignment; read-only history | ECL after session resolution; no review/venue/roster controls |
+| `/lead/oversight/:id` | Basic allocation detail, initial assignment and versioned reassignment; recorded history | ECL after session resolution; no review/venue/roster controls |
 | `/reviews/:id` | Coordinator review with the planning panels | Linked from the queue |
 | `/reviews/:id/venue-suitability` | KAN-52 event-specific suitability and requirement interpretation | Linked from the assigned coordinator's review; role and relationship checked by the API |
 | `/venue-blocks` | KAN-55 operational block creation, list and removal | VS after session resolution |

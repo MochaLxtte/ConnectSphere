@@ -1,5 +1,7 @@
 # 1. Final product backlog
 
+**Targeted KAN-65 follow-up — 19 October 2026.** The workbook and master register now include KAN-65 In Progress / Tristan (3 SP) and unestimated subtasks KAN-88/89/90. KAN-79 is included and its reassignment dependency is locally integrated; KAN-64 notifications and manual/hosted acceptance remain pending. Evidence `AUTO-20261019-02` / S3-E15 distinguishes local branch code from main and formal completion. The 16 October CSV stays unchanged; other issue fields retain that labelled snapshot. Inventory remains 42 parents / 174 SP, with six unestimated subtasks added across the two 19 October implementation updates; no points or velocity credit added.
+
 **Targeted KAN-79 update — 19 October 2026.** The [workbook](product-backlog.xlsx) and [master register](../../requirements/product-backlog.md) now record KAN-79 as In Progress / Tristan, still 8 SP in Sprint 3, and the three new unestimated subtasks KAN-85/86/87. The 16 October CSV remains an unchanged historical full-project snapshot. Other issues have not been re-exported in this update. Branch implementation and `AUTO-20261019-01` are recorded separately from implementation on main, hosted acceptance and DoD. Parent totals remain 42 / 174 SP; no delivery or velocity credit is added. See S3-E14 for the current verification and pending integration/deployment checks.
 
 ## Submission reconciliation — 17 October 2026

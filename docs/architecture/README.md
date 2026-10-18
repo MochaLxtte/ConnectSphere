@@ -4,7 +4,9 @@ ConnectSphere uses one Git repository, one Vue frontend, one Express backend, Su
 
 ## C4 system context
 
-The context diagram includes the KAN-79 Coordinator Lead role implemented on this branch on **19 October 2026**. The Safety Officer remains planned under KAN-84. KAN-79 replaces automatic initial allocation with a Lead queue: valid submissions remain unassigned, Leads allocate available coordinators, and ordinary coordinators manage only their assigned events. Separate basic oversight endpoints do not grant Leads review, booking-decision or attendee-roster authority. Existing assignment history is preserved. Migration 007 and a trusted mapped Lead account must accompany deployment of the API and UI. Shared deployment and manual acceptance are **Not executed**; KAN-65 reassignment and KAN-64 notifications remain separate dependencies. See the [change register](../requirements/change-requests.md) and [test evidence](../testing/test-evidence.md). Implemented request workflows also include draft creation/editing, clarification, review decisions and read-only status history. KAN-51 provides the internal availability calendar and KAN-12 venue search is integrated. KAN-8 adds staff booking decisions and assigned-coordinator outcomes. KAN-52 now provides read-only event-specific suitability and KAN-55 provides Venue Staff block management. KAN-53 booking submission is integrated on this branch on 5 October with current reservation/block checks. Catalogue maintenance is implemented; its stale-save defect and four other original-story gaps carry into Sprint 3 for correction and verification. Equipment, registration and notification workflows remain to implement; migration 004 provides supporting tables and guards. The [current sprint plan](../scrum/sprint-03/planning.md) separates existing repairs from new customer requirements. The test evidence register separates local automated results from the hosted Sprint 1 observations below; the diagram does not imply acceptance. Final confirmation, cancellation/completion, reassignment and notification generation are deferred after the 30 September audit. Venue Staff, Technical Support Staff and Attendee accounts still need provisioning in Supabase Auth and linking through `app_users.supabase_user_id`.
+The context diagram includes the KAN-79 Coordinator Lead role and KAN-65 reassignment implemented on this branch on **19 October 2026**. The Safety Officer remains planned under KAN-84. KAN-79 replaces automatic initial allocation with a Lead queue: valid submissions remain unassigned, Leads allocate available coordinators, and ordinary coordinators manage only their assigned events. KAN-65 adds versioned handover with a required reason and retained history; the new coordinator gains assignment-derived access and the old coordinator loses it. Separate basic oversight endpoints do not grant Leads review, booking-decision or attendee-roster authority. Migration 007 and Lead login were reported successful; full shared workflow acceptance remains **Not executed**, and KAN-64 notification integration remains pending. No schema change is added for KAN-65. See the [change register](../requirements/change-requests.md) and [test evidence](../testing/test-evidence.md).
+
+Implemented request workflows also include draft creation/editing, clarification, review decisions and read-only status history. KAN-51 provides the internal availability calendar and KAN-12 venue search is integrated. KAN-8 adds staff booking decisions and assigned-coordinator outcomes. KAN-52 provides read-only event-specific suitability and KAN-55 provides Venue Staff block management. KAN-53 booking submission was integrated on this branch on 5 October with current reservation/block checks. Catalogue maintenance is implemented; its stale-save defect and four other original-story gaps carry into Sprint 3 for correction and verification. Equipment, registration and notification workflows remain to implement; migration 004 provides supporting tables and guards. The [current sprint plan](../scrum/sprint-03/planning.md) separates existing repairs from new customer requirements. The test evidence register separates local automated results from the hosted Sprint 1 observations below; the diagram does not imply acceptance. Final confirmation, cancellation/completion and notification generation remain deferred after the 30 September audit. Venue Staff, Technical Support Staff and Attendee accounts need trusted Supabase Auth provisioning and an `app_users.supabase_user_id` mapping before their workflows can be tested.
 
 The organiser's approved outcome and rejected status/reason remained visible after refresh in the 17 September hosted check (MAN-20260917-01). Reopening a request URL after sign-out showed a sign-in prompt without request details or the review reason (MAN-20260917-02). Draft and Submitted detail statuses and their no-decision messages also passed (MAN-20260917-03). A second organiser received the unavailable/no-permission message for the first organiser's request and saw an empty request list (MAN-20260917-04). Opening `/events` directly after signing out showed a sign-in prompt without request names or statuses (MAN-20260917-05). The request list showed matching Draft, Submitted, Rejected and Approved labels, and Draft/Submitted detail statuses and review messages remained correct after refresh (MAN-20260917-06). The remaining submission-to-status check is in the [test evidence](../testing/test-evidence.md).
 
@@ -12,7 +14,7 @@ The organiser's approved outcome and rejected status/reason remained visible aft
 flowchart LR
   organiser["Event Organiser<br/>Provides requests and manages own events"]
   coordinator["Event Coordinator<br/>Reviews and coordinates assigned events"]
-  lead["Coordinator Lead<br/>Allocates and oversees active events"]
+  lead["Coordinator Lead<br/>Assigns, reassigns and oversees active events"]
   venue["Venue Staff<br/>Maintains venues and decides bookings"]
   technical["Technical Support Staff<br/>Arranges equipment"]
   attendee["Attendee<br/>Registers and withdraws"]
@@ -20,7 +22,7 @@ flowchart LR
   identity["Supabase Auth<br/>External identity service"]
   organiser -->|Requests and changes| system
   coordinator -->|Review and planning| system
-  lead -->|Initial assignment and basic oversight| system
+  lead -->|Initial assignment, handover and basic oversight| system
   venue -->|Venue availability and booking decisions| system
   technical -->|Availability and reservations| system
   attendee -->|Event registration| system
@@ -56,7 +58,7 @@ The browser obtains a Supabase access token through sign-in and exchanges it at 
 | Area          | Responsibility                                                        | Current state                                    |
 | ------------- | --------------------------------------------------------------------- | ------------------------------------------------ |
 | auth          | Identity, session lifecycle, role and event access policies           | Supabase sign-in, token verification, mapped profiles and sessions |
-| events        | Requests, drafts, initial assignment, review and status | Draft creation/edit/submit, shared detail, assigned-coordinator queue and decisions, Lead queue/oversight and initial allocation, review start, clarification and read-only status history. Later lifecycle writes, reassignment and significant changes are deferred. Dated validation is in the test evidence register. |
+| events        | Requests, drafts, assignment/reassignment, review and status | Draft creation/edit/submit, shared detail, assigned-coordinator queue and decisions, Lead queue/oversight and initial allocation, versioned reassignment with retained history, review start, clarification and protected read-only status history. Later lifecycle writes and significant changes are deferred. Dated validation is in the test evidence register. |
 | venues        | Catalogue, suitability, availability, booking decisions and conflicts | Tables and the booking-conflict trigger exist in migration 004. The read-only KAN-51 availability calendar (`GET /api/venues/availability`, `/venues/availability`) is implemented with automated tests for the three internal roles; hosted acceptance and peer review remain. KAN-12 search and KAN-8 pending-booking decisions/outcomes are integrated. KAN-8 rechecks conflicts during approval; KAN-52 assesses latest event/venue data with explicitly interpreted requirements and explained tri-state checks; KAN-55 creates/lists/removes operational blocks. KAN-53 now creates pending bookings after current approved-booking/block checks under the venue lock. KAN-50 catalogue maintenance is implemented; its recorded stale-save repair remains pending; full KAN-54 acceptance, policy review and hosted workflow evidence remain pending |
 | equipment     | Requests, quantity availability, reservations                         | Tables and the pooled-peak trigger exist in migrations 004/005; no services or pages. Planned |
 | registrations | Attendee eligibility, registration and withdrawal                     | Tables and the capacity trigger exist in migration 004; no services or pages. Planned |
@@ -74,7 +76,7 @@ The API is one process. Every protected router resolves the verified session to 
 flowchart LR
   browser["Vue API clients"]
   auth["Auth module<br/>Cookie, token verification and app profile"]
-  allocation["Assignment router<br/>Lead-only queue, oversight and allocation"]
+  allocation["Assignment router<br/>Lead-only queue, oversight, allocation and handover"]
   submit["Submission service<br/>Owned valid draft to unassigned Submitted"]
   events["Event services<br/>Owner or current coordinator permissions"]
   venues["Venue services<br/>Staff and assigned-coordinator policies"]
@@ -99,7 +101,7 @@ flowchart LR
   transactions --> db
 ```
 
-The displayed authentication dependencies are policy checks, not a second sign-in operation. Assignment services use parameterized SQL through the shared pool; queue/oversight reads have no write side effects.
+The displayed authentication dependencies are policy checks, not a second sign-in operation. Assignment services use parameterized SQL through the shared pool; queue/oversight reads have no write side effects. Reassignment checks the active-history version under event/history locks before changing linkage. Assignment, clarification and status-history reads hold a shared event lock across authorisation and their data query; a handover cannot expose newly protected rows through an earlier permission check.
 
 ## Class diagram
 
@@ -124,6 +126,7 @@ classDiagram
     UUID coordinatorId
     UUID assignedBy
     AssignmentMethod assignmentMethod
+    String note
     Date assignedAt
     Date unassignedAt
   }
@@ -132,7 +135,9 @@ classDiagram
     EventStatus status
     string organiserName
     string coordinatorName
+    UUID assignmentVersion
     boolean canAssignCoordinator
+    boolean canReassignCoordinator
   }
   class EventReview {
     UUID reviewedBy
@@ -165,11 +170,11 @@ classDiagram
   Venue "1" --> "0..*" VenueUnavailability : operational blocks
 ```
 
-`coordinatorId` and automatic-history `assignedBy` may be null. A partial unique index permits at most one assignment with null `unassignedAt` per event. New initial allocations are MANUAL with the Lead actor; historical AUTOMATIC rows retain their null actor. Venue relationships are unchanged by KAN-79.
+`coordinatorId`, `assignmentVersion` and automatic-history `assignedBy` may be null. A partial unique index permits at most one assignment with null `unassignedAt` per event. New initial allocations and handovers are MANUAL with the Lead actor; historical AUTOMATIC rows retain their null actor. `assignmentVersion` is the UUID of matching active history rather than a new database column. Handover records its required reason in `note` and uses the same instant for the old end/new start. Venue relationships are unchanged by KAN-79/KAN-65.
 
 ## Sequence diagrams
 
-KAN-79 changes submission and allocation while retaining the existing assigned-coordinator review and venue workflow.
+KAN-79 changes submission and allocation; KAN-65 adds a later explicit handover while retaining the existing assigned-coordinator review and venue workflow.
 
 ```mermaid
 sequenceDiagram
@@ -201,6 +206,27 @@ sequenceDiagram
       API-->>Lead: Saved assignment, retain oversight access
     end
   end
+  opt Later Lead reassignment
+    Lead->>API: Choose replacement, required reason, expected assignment UUID
+    API->>DB: Begin, lock event and active assignment, validate state and version
+    alt Stale version or inconsistent history
+      API->>DB: Roll back
+      API-->>Lead: Conflict, refresh before retrying
+    else Same current coordinator
+      API->>DB: Commit without writes
+      API-->>Lead: Unchanged assignment
+    else New coordinator
+      API->>DB: Lock and validate available coordinator target
+      alt Invalid target
+        API->>DB: Roll back
+        API-->>Lead: Invalid coordinator
+      else Valid handover
+        API->>DB: Close old history and create new history at one timestamp
+        API->>DB: Update current coordinator, commit together
+        API-->>Lead: Saved previous/new coordinator and new assignment version
+      end
+    end
+  end
   Coordinator->>API: Open assigned review queue and decide request
   API->>DB: Recheck current assignment, record review and status atomically
   Coordinator->>API: Request suitable available venue for approved event
@@ -209,7 +235,7 @@ sequenceDiagram
   API->>DB: Recheck conflicts and permissions, persist decision
 ```
 
-Two Lead writes serialize on the event lock. The loser sees the committed assignment and receives `409 COORDINATOR_ALREADY_ASSIGNED`; it cannot overwrite the winner. Any failure rolls back both the history and current assignment. KAN-64 will add transactional notification generation, and KAN-65 will add reassignment using the same current-assignment authority boundary. Those later operations are not shown as implemented here.
+Two Lead writes serialize on the event lock. An initial-allocation loser receives `409 COORDINATOR_ALREADY_ASSIGNED`; a stale handover receives `409 ASSIGNMENT_VERSION_CONFLICT`. Neither overwrites the winner. Valid same-coordinator requests preserve the version and all history. Any persistence failure rolls back the history and linkage together. The coordinator in the later review/venue steps must be the currently assigned coordinator: after handover, the former coordinator is denied. Protected multi-query history reads take a shared event lock, so assignment cannot change between authorisation and fetching those records. KAN-64 transactional notifications remain pending and are not depicted as delivered.
 
 ## Diagram exports
 
@@ -221,7 +247,7 @@ Migrations 001–003 provide the Sprint 1 request/authentication foundation. Mig
 broader first-release tables, 005 corrects the equipment availability guard and 006 adds
 historical automatic coordinator assignment fields. Migration 007 adds the trusted Lead role to the profile constraint without rewriting assignments. The diagram omits
 housekeeping timestamps, migration metadata and the unused legacy auth fields/tables.
-[docs/database-diagram.md](../database-diagram.md) holds the detailed schema reference and its verification dates, including foreign keys this curated view leaves out. The local migration 007 result is verified; its shared deployment remains pending.
+[docs/database-diagram.md](../database-diagram.md) holds the detailed schema reference and its verification dates, including foreign keys this curated view leaves out. Local migration 007 tests passed, and its shared application plus Lead login were subsequently reported successful. Full hosted workflow acceptance remains pending. KAN-65 uses the existing fields and active-row constraint without a new migration.
 
 ### Sprint 1 request workflow
 
@@ -391,7 +417,7 @@ Numbered migrations define the reproducible local and CI schema; coordinate equi
 - Use a direct database connection where the network supports it, or the session pooler on port 5432 for IPv4 development. Connections verify TLS certificates. Compose remains available for optional local databases and isolated tests; GitHub Actions uses its own temporary PostgreSQL service.
 - Coordinate changes against the shared development database. A feature branch isolates code, but it does not isolate Supabase tables or data. Keep schema changes in migrations and agree their order before applying them.
 - Keep credentials out of the repository. Seed profiles have no login credentials; provision Supabase Auth accounts and map them to application profiles through `app_users.supabase_user_id` before sign-in, including the Venue Staff, Technical Support Staff and Attendee accounts the new routes need. `database/seed.ts` also adds fictional venues once migration 004 has run; equipment sample generation is removed. All mounted routes verify the application session.
-- Use current coordinator assignment as the relationship rule. `event_requests.coordinator_id` refers to `app_users.id`, not the Supabase UUID. KAN-79 replaces automatic selection with a Lead-only initial assignment transaction: lock the active event, check it is still unassigned, lock the target profile and recheck its role/availability, then commit history and coordinator together. New submissions need no available coordinator. Existing assignment history is retained, including KAN-29 AUTOMATIC rows. Migration 007 adds the Lead role without rewriting migrations 001–006 or previous acceptance. Review and venue operations continue to require their existing role and event relationship; Lead oversight uses a separate limited projection. KAN-65 reassignment and KAN-64 notifications remain pending dependencies.
+- Use current coordinator assignment as the relationship rule. `event_requests.coordinator_id` refers to `app_users.id`, not the Supabase UUID. KAN-79 replaces automatic selection with a Lead-only initial assignment transaction: lock the active event, check it is still unassigned, lock the target profile and recheck its role/availability, then commit history and coordinator together. New submissions need no available coordinator. KAN-65 permits explicit versioned handover with a reason and nonoverlapping assignment intervals; the version is checked before a same-coordinator no-op. Missing/mismatched legacy history is preserved for reconciliation, never reconstructed with invented provenance. Migration 007 adds the Lead role without rewriting migrations 001–006 or previous acceptance; KAN-65 adds no schema change. Review and venue operations continue to require their existing role and current event relationship; Lead oversight uses a separate limited projection. KAN-64 notification integration remains pending.
 - Keep optional draft values nullable. Do not reuse draft validation as submission validation. Record confirmed required fields in the clarification log.
 - Use the nine statuses defined by migration 004: `DRAFT`, `SUBMITTED`, `UNDER_REVIEW`, `CLARIFICATION_REQUESTED`, `APPROVED`, `REJECTED`, `CONFIRMED`, `CANCELLED` and `COMPLETED`. The six Sprint 1 statuses are unchanged; the migration adds the three later lifecycle states. Implemented transitions are draft submission, review start, clarification and its answer, and initial approval/rejection. Later status values remain readable for compatibility with existing records and KAN-29 workload counting; the application cannot confirm, cancel or complete events. Request approval remains distinct from future final confirmation.
 - A coordinator may record an initial decision from `SUBMITTED` or `UNDER_REVIEW`, so starting a review does not block the decision it precedes. A pending clarification must be answered first, which returns the request to `SUBMITTED`.

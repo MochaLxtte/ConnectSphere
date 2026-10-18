@@ -27,6 +27,7 @@ The normal server also mounts these business routes:
 | `GET /api/events/unassigned`, `GET /api/events/coordinators` | Lead-only submitted/unassigned queue and available Event Coordinator choices. |
 | `GET /api/events/oversight`, `GET /api/events/oversight/:id` | Lead-only active-event oversight and basic allocation details; no review, venue or roster authority. |
 | `PUT /api/events/:id/coordinator` | A Lead initially assigns an available Event Coordinator; event linkage and actor/time history commit together. Existing assignments cannot be replaced. |
+| `POST /api/events/:id/coordinator/reassign` | A Lead reassigns an active event using `{ coordinatorId, reason, expectedAssignmentVersion }`; current linkage and assignment intervals change atomically. A valid current-assignee request returns `changed: false` without writes. |
 | `GET /api/events/:id/assignments` | Read-only assignment history for the owner, assigned coordinator, or a Lead overseeing an active event. |
 | `POST /api/events/:id/reviews` | Record an assigned coordinator's initial decision and matching status in one transaction. |
 | `POST /api/events/:id/clarifications` | Record an assigned coordinator's clarification request. |
@@ -46,6 +47,8 @@ Readiness checks only the scaffold metadata and connection, not every table or f
 
 **KAN-79 rollout, 19 October 2026:** coordinate migration `007_add_coordinator_lead.sql`, a trusted mapped `EVENT_COORDINATOR_LEAD` profile and the matching frontend/backend deployment together. The migration has been verified in isolated tests; this record does not claim it has been applied to shared Supabase. Provision a Lead and verify their queue access before enabling the changed submission flow. Lack of available coordinators no longer blocks submission. Existing assignments and historical automatic-assignment rows remain intact. KAN-65 reassignment and KAN-64 notification delivery remain separate dependencies; the initial-assignment response is not a notification-delivery result. Follow [database setup](../database/README.md#kan-79-lead-assignment-rollout).
 
+**KAN-65 follow-up, 19 October 2026:** reassignment uses the existing active assignment UUID as its version and requires a nonempty reason of at most 2,000 trimmed characters. The event lock serialises competing Leads and coordinator writes; target role/availability are checked under a profile lock. A stale version returns `409 ASSIGNMENT_VERSION_CONFLICT`, and inconsistent legacy linkage/history returns `409 ASSIGNMENT_HISTORY_CONFLICT` without inventing missing history. Assignment, clarification and status-history reads hold a shared event lock across their relationship check and protected query. After a handover, only the new coordinator retains assignment-derived access. No migration is added. Migration 007 application and Lead login were reported successful; manual acceptance is deferred and KAN-64 notification delivery remains pending. The [verification record](../docs/testing/test-evidence.md#19-october-2026--kan-65-coordinator-reassignment) separates these results.
+
 ## Team extension points
 
 - `src/app.ts`: app composition, health endpoints, and error responses. Tests can inject a database without opening a real connection.
@@ -53,7 +56,7 @@ Readiness checks only the scaffold metadata and connection, not every table or f
 - `src/server.ts`: environment loading, listener startup, and graceful shutdown.
 - `src/db/pool.ts`: one shared PostgreSQL pool with bounded connection/query timeouts.
 - `src/modules/auth/`: Supabase token verification, application-user mapping, session routes and six role contracts, including the trusted Coordinator Lead.
-- `src/modules/events/`: draft editing/submission, queue and shared detail, decision validation, access policies and transactional persistence.
+- `src/modules/events/`: draft editing/submission, queue and shared detail, decision validation, Lead assignment/reassignment, access policies and transactional persistence.
 - `src/modules/venues/`: KAN-12 search, KAN-51 availability, KAN-52 suitability, KAN-53 booking submission, KAN-8 decisions and KAN-55 operational blocks, using `workflowRoute` for verified sessions, role gates and error mapping. See the [venue module](src/modules/venues/README.md) for transactional decision rules.
 
 Organisers can read their own requests; coordinators can read non-drafts assigned to their `app_users.id`. Leads have separate allocation and oversight endpoints for `SUBMITTED`, `UNDER_REVIEW`, `CLARIFICATION_REQUESTED`, `APPROVED` and `CONFIRMED` events. A Lead is not an Event Coordinator for shared-detail, review, venue or roster permissions. Initial event approval/rejection requires `SUBMITTED` or `UNDER_REVIEW` status with no recorded decision. The write rechecks assignment and state against a locked row. Venue booking decisions are separate: only Venue Staff may write, and only a `PENDING` booking can change to `APPROVED` or `REJECTED`. Approval requires an `APPROVED` event and active venue; rejection can close a stale pending request. Keep server checks when extending routes; frontend flags are only presentation guidance.

@@ -1,0 +1,61 @@
+{
+  "date": "2026-10-19",
+  "run": "AUTO-20261019-02",
+  "base_commit": "6eb6450",
+  "code_test_commit": "d8f3bc2aee19a608b1a3f57c87e7d5cc7d242d84",
+  "checks": {
+    "case_ids_unique": true,
+    "case_fields_filled": true,
+    "csv_shapes_valid": true,
+    "all_twelve_kan65_criteria_mapped": true,
+    "manual_cases_unexecuted": true,
+    "seventeen_automated_cases_pass": true,
+    "notification_acceptance_pending": true,
+    "trace_cases_exist": true,
+    "trace_files_exist": true,
+    "changed_markdown_file_links": true,
+    "seven_existing_exports": true,
+    "hosted_guide_exists": true,
+    "actual_run_record_exists": true,
+    "no_new_migration": true,
+    "jira_sprint_metadata": true
+  },
+  "case_count": 427,
+  "traceability_rows": 112,
+  "relative_links_checked": 579,
+  "missing_cases": [],
+  "missing_paths": [],
+  "broken_links": [],
+  "workbook_checks": {
+    "seven_sheets_preserved": true,
+    "eleven_tables_preserved": true,
+    "table_names_preserved": true,
+    "expanded_tables": true,
+    "freeze_panes_preserved": true,
+    "merges_preserved": true,
+    "original_formulas_preserved": true,
+    "story_specifications_unchanged": true,
+    "historical_sprint_plan_unchanged": true,
+    "parent_totals_preserved": true,
+    "kan65_status": true,
+    "new_subtasks": true,
+    "no_error_cells": true,
+    "retained_styles": true,
+    "kan64_unchanged": true,
+    "sprint_dates_acceptance_preserved": true
+  },
+  "visual_review": "Four changed diagram exports and six changed workbook regions inspected; no clipping found. Excel desktop Not executed.",
+  "application_results": {
+    "frontend": 604,
+    "backend": 1035,
+    "database": 341,
+    "browser": 132
+  },
+  "acceptance": "Not assessed; KAN-64 notifications and manual/hosted workflow checks pending",
+  "hashes": {
+    "docs/submission/1/product-backlog.xlsx": "f1c5fcf454b7e371a27530292dcc6d4e5cd5c4dca1692ac25988c7cff100b0bf",
+    "docs/testing/test-cases.csv": "760bd795b368dc67e4ca7b8c258a9e8b85ae872228c59f9469eb0cb4600ad794",
+    "docs/requirements/traceability.csv": "0993f88bb6aa3fe274218ce5699d2338a52d9ce6d4999b9c71805ba64694acaf",
+    "docs/testing/coverage-reports/2026-10-19-kan65.txt": "71d81354dd990d7664e138c1076475ca026419044d5abd4d26b45b3058f5428d"
+  }
+}

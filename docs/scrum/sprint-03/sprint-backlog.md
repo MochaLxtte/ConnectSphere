@@ -1,5 +1,7 @@
 # Sprint 3 backlog and acceptance test plan
 
+**KAN-65 follow-up — 19 October 2026.** KAN-65 and subtasks KAN-88/89/90 are In Progress / Tristan; the estimate remains 3 SP. Branch `feat/KAN-65-coordinator-reassignment` includes KAN-79 and implements Lead-only reassignment with a required reason, assignment-version checks, atomic audit history and current-assignment permissions. `AUTO-20261019-02` records local verification. KAN-64 notifications, manual/hosted workflow checks, independent review and acceptance remain pending. The earlier KAN-79 dependency notes below describe that earlier implementation stage. This targeted update does not change sprint scope, historical evidence or velocity.
+
 **KAN-79 implementation update — 19 October 2026.** KAN-79 is assigned to Tristan and In Progress in Jira, with subtasks KAN-85/86/87 In Progress. Its 8 SP and Sprint 3 membership are unchanged. The branch implements trusted Lead access, unassigned submission, oversight and initial allocation; automated verification is recorded as `AUTO-20261019-01`. KAN-65/KAN-64 integration, hosted checks, independent review and acceptance remain outstanding. Other stories retain their last dated snapshot; this is a targeted update, not a fresh project-wide export. Sprint 3 remains administratively Active despite its configured 17 October end; this work is recorded on its actual 19 October date and is not counted as delivery by 17 October.
 
 **16 October 2026 update.** Selected scope: **13 parents / 63 SP**. Sprint window: **4–17 October 2026**. Jira: **Active (ID 67)**. All selected parents are To Do; tests **Not executed** and acceptance **Not assessed**.
@@ -23,7 +25,7 @@ This rebalanced allocation replaces the earlier 97/29 split with **63/63**, with
 | [KAN-77](https://smu-g7-grp1.atlassian.net/browse/KAN-77) | Configure Venue Setup and Turnaround Durations | 2 | Unassigned — team member to choose | To agree after owner chosen | CR-1 | S3-T18 |
 | [KAN-78](https://smu-g7-grp1.atlassian.net/browse/KAN-78) | Apply Venue Buffers to Availability and Booking Conflicts | 8 | Unassigned — team member to choose | To agree after owner chosen | CR-1 | S3-T19 |
 | [KAN-79](https://smu-g7-grp1.atlassian.net/browse/KAN-79) | Assign Submitted Events Through a Coordinator Lead Queue | 8 | Tristan | To agree | CR-5; In Progress | S3-T20 |
-| [KAN-65](https://smu-g7-grp1.atlassian.net/browse/KAN-65) | Reassign Event Coordinator | 3 | Unassigned — team member to choose | To agree after owner chosen | Existing release backlog | S3-T21 |
+| [KAN-65](https://smu-g7-grp1.atlassian.net/browse/KAN-65) | Reassign Event Coordinator | 3 | Tristan | To agree | In Progress; KAN-79 integrated locally | S3-T21 |
 | [KAN-64](https://smu-g7-grp1.atlassian.net/browse/KAN-64) | Receive Request, Assignment and Venue Notifications | 5 | Unassigned — team member to choose | To agree after owner chosen | Explicit original notification split | S3-T22 |
 | [KAN-81](https://smu-g7-grp1.atlassian.net/browse/KAN-81) | Recover venue arrangements affected by operational unavailability | 8 | Unassigned — team member to choose | To agree after owner chosen | Customer change CR-2 | S3-T25 |
 | [KAN-83](https://smu-g7-grp1.atlassian.net/browse/KAN-83) | Manage temporary venue holds with expiry and automatic release | 8 | Unassigned — team member to choose | To agree after owner chosen | Customer change CR-4 | S3-T26 |
@@ -54,8 +56,8 @@ Every row requires its complete active criterion set plus applicable Definition 
 | S3-T17 | KAN-52: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC101, AC102 | TC-11-02, TC-11-03, TC-11-04, TC-11-05, TC-11-06, TC-11-07, TC-11-205 | **Not executed** / Not recorded |
 | S3-T18 | KAN-77: AC1, AC2, AC3, AC4, AC5, AC6 | TC-08-15, TC-08-16, TC-08-17, TC-08-18, TC-08-19, TC-08-20 | **Not executed** / Not recorded |
 | S3-T19 | KAN-78: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8 | TC-14-01, TC-14-02, TC-14-03, TC-14-04, TC-14-05, TC-14-06, TC-14-07 | **Not executed** / Not recorded |
-| S3-T20 | KAN-79: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10 | TC-05-01, TC-05-02, TC-05-03, TC-05-04, TC-05-05, TC-05-06, TC-05-07, TC-05-08, TC-05-09, TC-05-17–28 | Automated AC1–8/local AC10 pass: AUTO-20261019-01; AC9 and hosted checks **Not executed**; acceptance **Not assessed** |
-| S3-T21 | KAN-65: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC101, AC102, AC103, AC104 | TC-05-10, TC-05-11, TC-05-12, TC-05-13, TC-05-14, TC-05-15, TC-05-16 | **Not executed** / Not recorded |
+| S3-T20 | KAN-79: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10 | TC-05-01, TC-05-02, TC-05-03, TC-05-04, TC-05-05, TC-05-06, TC-05-07, TC-05-08, TC-05-09, TC-05-17–28 | Automated AC1–8/local AC10 pass: AUTO-20261019-01; AC9 reassignment locally verified by AUTO-20261019-02; KAN-64 and hosted workflow checks **Not executed**; acceptance **Not assessed** |
+| S3-T21 | KAN-65: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC101, AC102, AC103, AC104 | TC-05-10–16; automated cases linked in traceability | Automated reassignment checks pass: AUTO-20261019-02; KAN-64 notifications and manual/hosted checks **Not executed**; acceptance **Not assessed** |
 | S3-T22 | KAN-64: AC201, AC202, AC203, AC204, AC205, AC206, AC207, AC208, AC209 | TC-20-12, TC-20-13, TC-20-14, TC-20-15, TC-20-16, TC-20-17, TC-20-18, TC-20-19, TC-20-20 | **Not executed** / Not recorded |
 | S3-T25 | KAN-81: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12 | TC-09-01, TC-09-02, TC-09-03, TC-09-04, TC-09-05, TC-09-06, TC-09-07, TC-09-08, TC-09-09, TC-09-10, TC-09-11, TC-09-12 | **Not executed** / Not recorded |
 | S3-T26 | KAN-83: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12 | TC-14-08, TC-14-09, TC-14-10, TC-14-11, TC-14-12, TC-14-13, TC-14-14, TC-14-15, TC-14-16, TC-14-17, TC-14-18, TC-14-19 | **Not executed** / Not recorded |
@@ -730,26 +732,30 @@ Delivery requires implementation, automated and hosted acceptance checks, indepe
 
 ### KAN-65 — Reassign Event Coordinator
 
-**Owner:** Unassigned — team member to choose · **Independent reviewer:** To agree after owner chosen · **Estimate:** 3 SP · **Jira status:** To Do · **Acceptance:** Not assessed · **Test group:** S3-T21
+**Owner:** Tristan · **Independent reviewer:** To agree · **Estimate:** 3 SP · **Jira status:** In Progress · **Acceptance:** Not assessed · **Test group:** S3-T21
 
 **User story:** As an authorised internal user, I want to reassign an event to another Event Coordinator so that responsibility can change when staff responsibilities or availability change.
 
 | Stable criterion | Requirement | Functional case |
 | --- | --- | --- |
-| **KAN-65-AC1** | An authorised user can view the event’s current coordinator and select another Event Coordinator. | TC-05-10 |
-| **KAN-65-AC2** | Successful reassignment records the new coordinator against the correct existing event; only one coordinator is current at a time. | TC-05-10 |
-| **KAN-65-AC3** | The previous coordinator is no longer treated as the main coordinator and loses permissions derived solely from that assignment. | TC-05-11 |
-| **KAN-65-AC4** | The new coordinator can access the event they are authorised to coordinate. | TC-05-11 |
-| **KAN-65-AC5** | Reassignment retains event information and prior decisions, without creating a duplicate event. | TC-05-12 |
-| **KAN-65-AC6** | Relevant authorised users see the current coordinator after saving and refreshing. | TC-05-10 |
-| **KAN-65-AC7** | Users without reassignment authority cannot change the assignment, including by direct API calls. | TC-05-13 |
-| **KAN-65-AC8** | Record the assignment change with actor and time; relevant assignment notifications are covered by KAN-64. | TC-05-12 |
-| **KAN-65-AC101** | Under CR-5, only EVENT_COORDINATOR_LEAD may reassign; this supersedes the earlier self/other-coordinator handover proposal. The role alone does not permit event approval. | TC-05-13 |
-| **KAN-65-AC102** | Allow reassignment in SUBMITTED, UNDER_REVIEW, CLARIFICATION_REQUESTED, APPROVED or CONFIRMED to an available EVENT_COORDINATOR; refuse drafts and terminal events. | TC-05-14 |
-| **KAN-65-AC103** | Require a trimmed nonempty reason and expected assignment version; record prior/new coordinator, actor and time atomically while retaining a single current assignment. | TC-05-15 |
-| **KAN-65-AC104** | Current-assignee requests are unchanged without duplicate history/notifications. KAN-64 notifies the organiser and old/new coordinators; old assignment-derived read/write permissions are revoked immediately. | TC-05-16 |
+| **KAN-65-AC1** | An authorised user can view the event’s current coordinator and select another Event Coordinator. | TC-05-10; TC-05-29, TC-05-43, TC-05-45 |
+| **KAN-65-AC2** | Successful reassignment records the new coordinator against the correct existing event; only one coordinator is current at a time. | TC-05-10; TC-05-30, TC-05-39, TC-05-40, TC-05-45 |
+| **KAN-65-AC3** | The previous coordinator is no longer treated as the main coordinator and loses permissions derived solely from that assignment. | TC-05-11; TC-05-31, TC-05-42, TC-05-45 |
+| **KAN-65-AC4** | The new coordinator can access the event they are authorised to coordinate. | TC-05-11; TC-05-31, TC-05-45 |
+| **KAN-65-AC5** | Reassignment retains event information and prior decisions, without creating a duplicate event. | TC-05-12; TC-05-32, TC-05-40 |
+| **KAN-65-AC6** | Relevant authorised users see the current coordinator after saving and refreshing. | TC-05-10; TC-05-33, TC-05-43 |
+| **KAN-65-AC7** | Users without reassignment authority cannot change the assignment, including by direct API calls. | TC-05-13; TC-05-34, TC-05-44 |
+| **KAN-65-AC8** | Record the assignment change with actor and time; relevant assignment notifications are covered by KAN-64. | TC-05-12; TC-05-35 |
+| **KAN-65-AC101** | Under CR-5, only EVENT_COORDINATOR_LEAD may reassign; this supersedes the earlier self/other-coordinator handover proposal. The role alone does not permit event approval. | TC-05-13; TC-05-34, TC-05-36, TC-05-44 |
+| **KAN-65-AC102** | Allow reassignment in SUBMITTED, UNDER_REVIEW, CLARIFICATION_REQUESTED, APPROVED or CONFIRMED to an available EVENT_COORDINATOR; refuse drafts and terminal events. | TC-05-14; TC-05-30, TC-05-37 |
+| **KAN-65-AC103** | Require a trimmed nonempty reason and expected assignment version; record prior/new coordinator, actor and time atomically while retaining a single current assignment. | TC-05-15; TC-05-35, TC-05-38, TC-05-39, TC-05-40, TC-05-43 |
+| **KAN-65-AC104** | Current-assignee requests are unchanged without duplicate history/notifications. KAN-64 notifies the organiser and old/new coordinators; old assignment-derived read/write permissions are revoked immediately. | TC-05-16; TC-05-31, TC-05-41, TC-05-42 |
 
-**Implementation location:** Not recorded. **Automated test files:** Not recorded. Record real files when implemented; historical schema or removed code is not feature completion.
+**Implementation — 19 October 2026:** `backend/src/modules/events/assignment.ts` and `assignment-router.ts`; protected history reads in `workflow-support.ts`, `clarifications.ts` and `status-history.ts`; `frontend/src/features/events/api/assignments.ts`, `AssignmentPanel.vue` and `LeadRequestPage.vue`. No new migration: the active assignment history UUID is the expected version. Existing event/review/arrangement records are preserved.
+
+**Automated verification:** `backend/test/events/reassignment.test.ts`, `reassignment-access.test.ts`, existing Lead/router suites, `database/tests/events/reassignment.integration.test.ts`, adjacent frontend tests and `tests/e2e/coordinator-reassignment.spec.ts`; see AUTO-20261019-02 and S3-E15. Full suites: 604 frontend, 1,035 backend, 341 database and 132 browser tests pass. Audit/no-op portions of AC8/AC104 pass locally; their KAN-64 notification portions remain Not executed. Manual/hosted acceptance is deferred.
+
+**Subtasks:** KAN-88 backend/access, KAN-89 interface/recovery, KAN-90 verification/documents; all In Progress, unestimated. Original 3 SP retained. Independent review, KAN-64 integration, hosted verification and DoD assessment remain outstanding.
 
 <details>
 <summary>Preserved Jira description before self-selection (historical ownership)</summary>
