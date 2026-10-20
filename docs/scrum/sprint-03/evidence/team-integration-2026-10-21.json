@@ -13,12 +13,14 @@
     "PR37": {
       "ref": "origin/fix/KAN-34-strict-draft-dates",
       "commit": "83030f4ce74471577b9e5b10dc7599200e2cdb30",
-      "included": true
+      "included": true,
+      "last_observed_state": "open, draft"
     },
     "PR38": {
       "ref": "origin/fix/KAN-6-detail-field-errors",
       "commit": "321c9231333df9540c90b80e5e99fcf1204ed06b",
-      "included": true
+      "included": true,
+      "last_observed_state": "closed, unmerged; useful changes retained alongside PR42"
     },
     "PR40": {
       "ref": "origin/docs/ryanc9029-contribution-record",
@@ -47,7 +49,7 @@
     },
     "PR45": {
       "ref": "origin/feat/KAN-77-venue-buffer-durations",
-      "commit": "2612a07675e4b1cb71d777e11fb60bfaf5a4dc6b",
+      "commit": "6d5af103f526a7d77a36707695b7ccd694a6dc46",
       "included": true
     },
     "local_reliability": {
@@ -9020,5 +9022,97 @@
       }
     ],
     "limits": "Draft packaging/readback only; does not establish complete deliverables or acceptance."
+  },
+  "source_ci_followup": {
+    "source_documentation_commit": "6d5af103f526a7d77a36707695b7ccd694a6dc46",
+    "run_id": "AUTO-20261021-KAN77-CI-01",
+    "github_run_id": 39467271524,
+    "github_job_id": 118781811818,
+    "url": "https://github.com/MochaLxtte/ConnectSphere/actions/runs/39467271524",
+    "conclusion": "success",
+    "node": "24.22.0",
+    "checked_out_commit": "ea30f897f5f4067c7b041eb84c887b554b4a2cbf",
+    "source_head": "2612a07675e4b1cb71d777e11fb60bfaf5a4dc6b",
+    "counts": {
+      "frontend": 626,
+      "backend": 1078,
+      "database": 358,
+      "browser": 133
+    },
+    "source_case_claims": {
+      "TC-08-15": {
+        "test_case_id": "TC-08-15",
+        "feature_id": "CF-08",
+        "scenario_outline": "KAN-77: Venue Staff alone edit buffers",
+        "planned_level": "manual",
+        "acceptance_criterion_ids": "KAN-77-AC1",
+        "preconditions_and_steps": "Synthetic fixture definitions and reset/recording rules: docs/scrum/sprint-03/sprint-backlog.md#shared-test-data-and-execution-rules. Required UI/API must be implemented before execution; this is a specification, not a completed run. 1. V saves A setup 30/turnaround 45; C1/O1 retry; compare B and direct API. 2. Compare saved state and the intended result below; reload affected views. 3. Restore permitted synthetic data and record the actual build, steps and outcome.",
+        "expected_result": "Only authorised correct-venue update persists; no other venue is modified.",
+        "result": "Not executed",
+        "evidence": "Not recorded for the specified manual run. 21 October 2026, AUTO-20261021-02: automated coverage passes in backend/test/venues/venue-catalogue-service.test.ts and venue-catalogue-router.test.ts (KAN-77 suites: every non-staff role refused before any query), and PostgreSQL role refusals in database/tests/venues/venue-catalogue.integration.test.ts pass in PR #45 CI run 39467271524. Planned S3-T18."
+      },
+      "TC-08-16": {
+        "test_case_id": "TC-08-16",
+        "feature_id": "CF-08",
+        "scenario_outline": "KAN-77: Duration input boundaries",
+        "planned_level": "integration",
+        "acceptance_criterion_ids": "KAN-77-AC2",
+        "preconditions_and_steps": "Synthetic fixture definitions and reset/recording rules: docs/scrum/sprint-03/sprint-backlog.md#shared-test-data-and-execution-rules. Required UI/API must be implemented before execution; this is a specification, not a completed run. 1. Save 0/1440 then-1/1.5/1441/non-number/missing required field for both values UI/API. 2. Compare saved state and the intended result below; reload affected views. 3. Restore permitted synthetic data and record the actual build, steps and outcome.",
+        "expected_result": "Whole 0..1440 inclusive accepted; invalid values produce field feedback and no partial save.",
+        "result": "Pass",
+        "evidence": "AUTO-20261021-02: parser, service, HTTP, form and page checks pass locally; PostgreSQL refusal cases in database/tests/venues/venue-catalogue.integration.test.ts (KAN-77 suite) pass in PR #45 CI run 39467271524 on head 2612a07 (21 October 2026). Planned S3-T18."
+      },
+      "TC-08-17": {
+        "test_case_id": "TC-08-17",
+        "feature_id": "CF-08",
+        "scenario_outline": "KAN-77: Additive migration preserves history",
+        "planned_level": "integration",
+        "acceptance_criterion_ids": "KAN-77-AC3",
+        "preconditions_and_steps": "Synthetic fixture definitions and reset/recording rules: docs/scrum/sprint-03/sprint-backlog.md#shared-test-data-and-execution-rules. Required UI/API must be implemented before execution; this is a specification, not a completed run. 1. On isolated database with venues/bookings/applied migrations run new migration; compare original rows/history. 2. Compare saved state and the intended result below; reload affected views. 3. Restore permitted synthetic data and record the actual build, steps and outcome.",
+        "expected_result": "Existing venues receive zero buffers; bookings/data and old migration history retained.",
+        "result": "Pass",
+        "evidence": "AUTO-20261021-02: migration 008 upgrade test in database/tests/database.integration.test.ts ('KAN-77 migration gives existing venues zero buffers…') passes in PR #45 CI run 39467271524 on head 2612a07 (21 October 2026). Planned S3-T18."
+      },
+      "TC-08-18": {
+        "test_case_id": "TC-08-18",
+        "feature_id": "CF-08",
+        "scenario_outline": "KAN-77: Saved buffers reach planning consumers",
+        "planned_level": "manual",
+        "acceptance_criterion_ids": "KAN-77-AC4",
+        "preconditions_and_steps": "Synthetic fixture definitions and reset/recording rules: docs/scrum/sprint-03/sprint-backlog.md#shared-test-data-and-execution-rules. Required UI/API must be implemented before execution; this is a specification, not a completed run. 1. Save A 30/45; reload catalogue/detail and authorised planning/calendar inputs. 2. Compare saved state and the intended result below; reload affected views. 3. Restore permitted synthetic data and record the actual build, steps and outcome.",
+        "expected_result": "Correct buffers persist and propagate; B unchanged.",
+        "result": "Not executed",
+        "evidence": "Not recorded for the specified manual run. 21 October 2026, AUTO-20261021-02: component and service checks pass for save, reload and returned values; PostgreSQL propagation to catalogue, search, suitability and calendar (venue-catalogue.integration.test.ts) and browser persistence (tests/e2e/venue-catalogue.spec.ts, KAN-77) pass in PR #45 CI run 39467271524. Planned S3-T18."
+      },
+      "TC-08-19": {
+        "test_case_id": "TC-08-19",
+        "feature_id": "CF-08",
+        "scenario_outline": "KAN-77: Field-aware buffer conflict handling",
+        "planned_level": "manual",
+        "acceptance_criterion_ids": "KAN-77-AC5",
+        "preconditions_and_steps": "Synthetic fixture definitions and reset/recording rules: docs/scrum/sprint-03/sprint-backlog.md#shared-test-data-and-execution-rules. Required UI/API must be implemented before execution; this is a specification, not a completed run. 1. Two V sessions load A; first changes setup 30 then second sends old conflicting setup 45; separately race buffer update with unrelated location update. 2. Compare saved state and the intended result below; reload affected views. 3. Restore permitted synthetic data and record the actual build, steps and outcome.",
+        "expected_result": "Stale conflicting buffer value is refused; unrelated catalogue field change survives and is not overwritten by stale full-row save.",
+        "result": "Not executed",
+        "evidence": "Not recorded for the specified manual run. 21 October 2026, AUTO-20261021-02: stale-buffer refusal, different-field preservation and conflict message pass in service and page tests; PostgreSQL sequential/concurrent cases and the browser conflict flow pass in PR #45 CI run 39467271524. Planned S3-T18."
+      }
+    },
+    "qualification": "Source candidate CI independently verified via job metadata/logs; not a rerun on the combined branch and not hosted acceptance.",
+    "case_scope_assessment": {
+      "TC-08-17": "Pass: complete migration preservation supported by source test and successful CI.",
+      "TC-08-16": "Not executed for complete both-field UI/API matrix; source Pass retained as narrower supporting claim."
+    },
+    "execution_record": {
+      "execution_id": "EX-AUTO-20261021-KAN77-CI-01-TC-08-17",
+      "test_case_id": "TC-08-17",
+      "run_id": "AUTO-20261021-KAN77-CI-01",
+      "actual_result": "The KAN-77 migration-upgrade test passed: existing venues gained zero setup/turnaround defaults; all prior venue values, booking rows and prior migration ledger rows were preserved; a second migration run applied nothing.",
+      "result": "Pass",
+      "remarks": "Imported verified PR45 CI result, separate from the original local run. Source uses 008_venue_buffer_durations.sql; identical SQL is009 in the combined branch. Original Not executed placeholder is retained. TC-08-16 full UI/API matrix is not inferred from these suites.",
+      "executed_by": "GitHub Actions",
+      "date_of_execution": "2026-10-21",
+      "build": "ea30f897f5f4067c7b041eb84c887b554b4a2cbf (CI merge of source2612a07675e4b1cb71d777e11fb60bfaf5a4dc6b into main0ce460cc3f6543506af929e57cfa38bd078b2b66)",
+      "environment": "GitHub Actions Linux; Node24.22.0; disposable PostgreSQL; synthetic migration fixture; no shared Supabase.",
+      "evidence": "AUTO-20261021-KAN77-CI-01; https://github.com/MochaLxtte/ConnectSphere/actions/runs/39467271524; job118781811818; database/tests/database.integration.test.ts: KAN-77 migration gives existing venues zero buffers and preserves bookings and history; S3-E19"
+    }
   }
 }
