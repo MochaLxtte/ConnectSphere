@@ -1,0 +1,245 @@
+{
+  "capturedOn": "2026-10-16",
+  "timeZone": "Asia/Singapore",
+  "source": "Live Atlassian connector after authorised planning changes; Jira board 2 and project KAN",
+  "limits": "Current administrative state, not a historical starting board, review meeting, test execution or acceptance record.",
+  "sprints": [
+    {
+      "id": 1,
+      "name": "Sprint 1",
+      "state": "closed",
+      "startDate": "2026-09-05T16:00:34.660Z",
+      "endDate": "2026-09-19T16:00:00.000Z",
+      "completeDate": "2026-09-20T16:29:55.591Z"
+    },
+    {
+      "id": 34,
+      "name": "Sprint 2",
+      "state": "closed",
+      "startDate": "2026-09-19T16:00:55.000Z",
+      "endDate": "2026-10-03T16:00:00.000Z",
+      "completeDate": "2026-10-15T18:06:49.200Z"
+    },
+    {
+      "id": 67,
+      "name": "Sprint 3",
+      "state": "active",
+      "startDate": "2026-10-03T16:00:00.000Z",
+      "endDate": "2026-10-17T15:59:00.000Z"
+    }
+  ],
+  "inventory": {
+    "issues": 63,
+    "parents": 37,
+    "subtasks": 26,
+    "parentStoryPoints": 145,
+    "doneParents": 14,
+    "doneParentPoints": 48,
+    "sprint3Parents": 23,
+    "sprint3Points": 97,
+    "sprint4ForecastOutsideJira": 29
+  },
+  "sprint3Parents": [
+    {
+      "key": "KAN-6",
+      "summary": "Submit an Event Request",
+      "status": "To Do",
+      "points": 3
+    },
+    {
+      "key": "KAN-9",
+      "summary": "Check Equipment Availability for an Event",
+      "status": "To Do",
+      "points": 8
+    },
+    {
+      "key": "KAN-10",
+      "summary": "Mark Event as Completed",
+      "status": "To Do",
+      "points": 3
+    },
+    {
+      "key": "KAN-12",
+      "summary": "Search and Filter Venues",
+      "status": "To Do",
+      "points": 5
+    },
+    {
+      "key": "KAN-14",
+      "summary": "Register for an Event",
+      "status": "To Do",
+      "points": 5
+    },
+    {
+      "key": "KAN-15",
+      "summary": "Submit and Review Event Change Requests",
+      "status": "To Do",
+      "points": 5
+    },
+    {
+      "key": "KAN-17",
+      "summary": "Withdraw Attendee Registration",
+      "status": "To Do",
+      "points": 2
+    },
+    {
+      "key": "KAN-18",
+      "summary": "Update Equipment Availability Status",
+      "status": "To Do",
+      "points": 3
+    },
+    {
+      "key": "KAN-26",
+      "summary": "Reserve Equipment",
+      "status": "To Do",
+      "points": 3
+    },
+    {
+      "key": "KAN-34",
+      "summary": "Resume/Edit Draft Event Request",
+      "status": "To Do",
+      "points": 3
+    },
+    {
+      "key": "KAN-50",
+      "summary": "Maintain Venue Catalog",
+      "status": "To Do",
+      "points": 5
+    },
+    {
+      "key": "KAN-52",
+      "summary": "Check Venue Suitability",
+      "status": "To Do",
+      "points": 3
+    },
+    {
+      "key": "KAN-60",
+      "summary": "Require a reason when rejecting an event request",
+      "status": "To Do",
+      "points": 2
+    },
+    {
+      "key": "KAN-61",
+      "summary": "Confirm Event After Planning Arrangements",
+      "status": "To Do",
+      "points": 3
+    },
+    {
+      "key": "KAN-62",
+      "summary": "Cancel Event and Release Its Arrangements",
+      "status": "To Do",
+      "points": 5
+    },
+    {
+      "key": "KAN-63",
+      "summary": "Submit and Review Event Equipment Requests",
+      "status": "To Do",
+      "points": 5
+    },
+    {
+      "key": "KAN-64",
+      "summary": "Notify Relevant Users About Event Workflow Updates",
+      "status": "To Do",
+      "points": 8
+    },
+    {
+      "key": "KAN-65",
+      "summary": "Reassign Event Coordinator",
+      "status": "To Do",
+      "points": 3
+    },
+    {
+      "key": "KAN-66",
+      "summary": "Update Event Information During Planning",
+      "status": "To Do",
+      "points": 3
+    },
+    {
+      "key": "KAN-67",
+      "summary": "View Event Registrations",
+      "status": "To Do",
+      "points": 2
+    },
+    {
+      "key": "KAN-77",
+      "summary": "Configure Venue Setup and Turnaround Durations",
+      "status": "To Do",
+      "points": 2
+    },
+    {
+      "key": "KAN-78",
+      "summary": "Apply Venue Buffers to Availability and Booking Conflicts",
+      "status": "To Do",
+      "points": 8
+    },
+    {
+      "key": "KAN-79",
+      "summary": "Assign Submitted Events Through a Coordinator Lead Queue",
+      "status": "To Do",
+      "points": 8
+    }
+  ],
+  "sprint3HistoricalSubtasks": [
+    {
+      "key": "KAN-57",
+      "summary": "S1-DEF-01: Fix registration-dependent fields when editing a saved draft and verify both toggle directions",
+      "status": "Done"
+    },
+    {
+      "key": "KAN-58",
+      "summary": "S1-DEF-03: Enable saved-draft submission",
+      "status": "Done"
+    },
+    {
+      "key": "KAN-59",
+      "summary": "S1-DEF-04: Reject incomplete new-request and saved-draft submissions with field errors",
+      "status": "Done"
+    },
+    {
+      "key": "KAN-68",
+      "summary": "Validate venue catalogue update input (venue-catalogue-input.ts)",
+      "status": "Done"
+    },
+    {
+      "key": "KAN-69",
+      "summary": "Catalogue service: list, view and update venues (Venue Staff only, transactional)",
+      "status": "Done"
+    },
+    {
+      "key": "KAN-70",
+      "summary": "HTTP router + wiring: GET/PATCH /api/venues/catalogue",
+      "status": "Done"
+    },
+    {
+      "key": "KAN-71",
+      "summary": "Backend unit + HTTP-boundary tests (normal, boundary, conflict, failure)",
+      "status": "Done"
+    },
+    {
+      "key": "KAN-72",
+      "summary": "Frontend: venue catalogue list + edit pages, API client and navigation",
+      "status": "Done"
+    },
+    {
+      "key": "KAN-73",
+      "summary": "Frontend component tests",
+      "status": "Done"
+    },
+    {
+      "key": "KAN-74",
+      "summary": "PostgreSQL integration + browser tests (S2-T03, S2-T04)",
+      "status": "Done"
+    },
+    {
+      "key": "KAN-75",
+      "summary": "Documentation and traceability for KAN-50",
+      "status": "Done"
+    },
+    {
+      "key": "KAN-76",
+      "summary": "Code review and merge",
+      "status": "Done"
+    }
+  ],
+  "subtaskNote": "These existing Done subtasks follow their reopened parents into Sprint 3. They record prior work, add no points and do not establish Sprint 3 delivery. New repair work is recorded in the parent criteria."
+}

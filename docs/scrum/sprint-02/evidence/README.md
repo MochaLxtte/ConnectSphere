@@ -1,5 +1,18 @@
 # Sprint 2 evidence register
 
+## 15 October current evidence position
+
+**Record updated 15 October 2026.** All 12 parent stories and KAN-57/KAN-58/KAN-76 subtasks are currently Done in Jira; Sprint 2 remains active. Their latest administrative labels supersede the current-status interpretation of the dated register rows below. No new hosted run accompanies the subtask transitions in the inspected sources, and PR #33 has no submitted peer review in the 15 October check. The [review baseline register](../review.md#baseline-and-later-delivery-register--15-october-2026) is the current story-by-story reference.
+
+| ID | Artifact / source | Scope and limits |
+| --- | --- | --- |
+| S2-E30 | [AUTO-20261015-01](../../../testing/test-evidence.md#15-october-2026-post-sprint-implementation-audit); [coverage summary](../../../testing/coverage-reports/2026-10-15-post-sprint-audit.txt) | Later integrated automated verification and separately reproduced defects. These are 15 October results, not a sprint-close run or hosted acceptance on 3 October. No historical `sprint-02.txt` close-day summary is retained. |
+| S2-E31 | 15 October live Jira/GitHub inspection; [submission export index](../../../submission/1/README.md); [baseline and later delivery register](../review.md#baseline-and-later-delivery-register--15-october-2026) | 12 parents Done; included subtasks KAN-57/KAN-58/KAN-76 Done on 15 October; Sprint 2 active and no Sprint 3 in Jira. Administrative dates do not establish acceptance. KAN-57/KAN-58's latest retained 10 October comments still leave hosted checks outstanding; PR #33 submitted review list is empty. |
+
+Original planning/closing board captures, full burndown/chart, actual meeting attendance and decisions, estimate/capacity records, and agreed retrospective actions are **Not recorded** where the historical register has gaps. Retain existing dated test runs and their limits; subsequent repairs/customer-change work belong in [Sprint 3 planning](../../sprint-03/planning.md), without an inferred commitment.
+
+## Historical evidence context
+
 Sprint 2 covers **20 September–3 October 2026**, Asia/Singapore, with a confirmed starting scope of **43 points: 35 new + 8 carried**. This register identifies what exists and what still needs capture. Documentation drafts, implementation references and scheduled meetings are not executed acceptance evidence.
 
 ## Artifact register
@@ -34,6 +47,15 @@ Sprint 2 covers **20 September–3 October 2026**, Asia/Singapore, with a confir
 | S2-E26 | KAN-12 search page tests, 9 October | [AUTO-20261009-KAN12-01](../../../testing/test-evidence.md#9-october-venue-search-page-tests-kan-12); [progress](../daily-progress.md#9-october-development-update--irfan-kan-12-page-tests) | Source `151a4c8` on `feat/KAN-12-search-page-tests`: `npm run check` passed (405 frontend, 662 backend tests). 34 new page tests; a mutation was caught by 2 of them. The 7-test browser spec passed (78 browser tests in all) and the 255 PostgreSQL integration tests passed on a local PostgreSQL 17. No source change, push, hosted acceptance, CI or Jira change claimed. |
 | S2-E27 | S2-T23 connected workflow integration test, 9 October | [AUTO-20261009-S2T23-01](../../../testing/test-evidence.md#9-october-connected-workflow-test-s2-t23); [progress](../daily-progress.md#9-october-development-update--irfan-s2-t23-connected-workflow-test) | Source `8d7c587` on `test/S2-T23-connected-workflow`: the test passed on a local PostgreSQL 17 (256 integration tests; one test-setup fix was needed) and `npm run check` and the 71 browser tests passed. It does not replace the hosted walkthrough. No push, CI, hosted acceptance or Jira change claimed. |
 
+## 11 October reconciliation of the register
+
+**Record updated 11 October 2026.** Rows S2-E01–S2-E27 retain their dated observations. The current reconciliation below supersedes earlier unexecuted/absent statements only where later recorded evidence supports it; no earlier test date or meeting result is changed.
+
+| Evidence ID | Current source | Reconciled position |
+| --- | --- | --- |
+| S2-E28 | 11 October live Jira snapshot; [master register](../../../requirements/product-backlog.md); [portable exports](../../../submission/1/README.md); [existing AUTO/MAN run reconciliation](../../../testing/test-evidence.md#11-october-reconciliation-of-existing-evidence) | All 12 Sprint 2 parents are Done, 43 points; sprint is active. KAN-57/KAN-58/KAN-76 are included child tasks and remain To Do, not additional pointed stories. Current assignees are in the sprint backlog. KAN-50 and KAN-59 are implemented on main; their PostgreSQL/browser runs already passed. MAN-20261009-KAN50-01/02, MAN-20261009-KAN59-01, MAN-20261009-KAN12-01, MAN-20261009-KAN54-01 and MAN-20261009-S2T23-01 document shared-development checks; the connected run remains partial. This sync runs no tests, records no acceptance and changes no baseline/velocity. |
+| S2-E29 | KAN-50 [PR #33](https://github.com/MochaLxtte/ConnectSphere/pull/33), merge `8f29d35`; [CI run 37957538659](https://github.com/MochaLxtte/ConnectSphere/actions/runs/37957538659) on head `705241f` | Live GitHub check on 11 October: PR merged, CI successful. Peer review and the PR's AI-assistance explanation are Not recorded; KAN-76 stays To Do. The CI result belongs to the recorded PR head and does not supply the missing peer-review or Sprint 2 acceptance decision. |
+
 ## Capture rules
 
 1. Use actual event/observation and capture/export timestamps separately, with the timezone. Later reconstruction must identify its source and gaps.
@@ -67,3 +89,9 @@ Access verified by / date / audience:
 At closure, check that story acceptance, executed tests, board state, scope changes and velocity agree. Record missing evidence explicitly and carry unfinished work into the next planning record. Include these records and retained evidence in submission **folder 4 (Scrum evidence)**; use the shared [submission checklist](../../../submission/checklist.md). Final-sprint recording requirements remain in the [recordings guidance](../../final-sprint-recordings.md); no recording is claimed here.
 
 **5 October follow-up to S2-E06/S2-E20/S2-E21:** the branch now combines KAN-12's published date-filter updates, Kai Jie's KAN-53 creation panel/API and the KAN-52/KAN-8/KAN-55 workflows. The imported 4 October KAN-53 local results remain scoped to that original branch in [AUTO-20261004-KAN53-01](../../../testing/test-evidence.md#4-october-venue-booking-submission). Combined-build results must be recorded separately. Follow [KAN-53 hosted checks](../../../testing/README.md#kan-53-hosted-verification); no hosted acceptance, Jira transition, remote-main update or review outcome is inferred.
+
+## Current administrative close — 16 October 2026
+
+The [current CSV and workbook](../../../submission/1/README.md) were refreshed after Jira Sprint 2 (id 34) was closed at 16 October 02:06 Singapore time and Sprint 3 (id 67) was activated. This is **S2-E30**, a later administrative reconciliation, not a 3 October end-board or review record.
+
+KAN-6/34/50/12/52 are now To Do in Sprint 3 at their original 19 SP. The [review assessment](../review.md#current-evidence-assessment--16-october-2026) records the user's statement that historical acceptance was not recorded and separates the five defects from unchanged/untested criteria. The remaining seven parents / 24 SP are not automatically accepted. Original 43 SP commitment and historical evidence are preserved. No new product tests were run by this planning/documentation activity.

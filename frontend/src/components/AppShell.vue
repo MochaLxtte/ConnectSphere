@@ -8,6 +8,7 @@ import { canViewVenueAvailability } from '../features/venues/access.js';
 const role = computed(() => authSession.user?.role ?? null);
 const showOrganiser = computed(() => role.value === null || role.value === 'EVENT_ORGANISER');
 const showCoordinator = computed(() => !authSession.loading && role.value === 'EVENT_COORDINATOR');
+const showLead = computed(() => !authSession.loading && role.value === 'EVENT_COORDINATOR_LEAD');
 const showVenuePlanning = computed(() => !authSession.loading && canViewVenueAvailability(role.value));
 const showVenueBookings = computed(() => !authSession.loading &&
   (role.value === 'EVENT_COORDINATOR' || role.value === 'VENUE_STAFF'));
@@ -54,12 +55,16 @@ async function handleSignOut(): Promise<void> {
           <RouterLink to="/reviews" exact-active-class="is-active" class="nav-link"
             ><AppIcon name="review" />Review queue</RouterLink
           >
-          <RouterLink to="/reviews/unassigned" exact-active-class="is-active" class="nav-link"
-            ><AppIcon name="user" />Unassigned requests</RouterLink
-          >
           <RouterLink to="/venues" exact-active-class="is-active" class="nav-link"
             ><AppIcon name="review" />Search Venues</RouterLink
           >
+        </template>
+        <template v-if="showLead">
+          <p class="nav-label">For coordinator Leads</p>
+          <RouterLink to="/lead" exact-active-class="is-active" class="nav-link"
+            ><AppIcon name="user" />Assignment queue</RouterLink>
+          <RouterLink to="/lead/oversight" exact-active-class="is-active" class="nav-link"
+            ><AppIcon name="review" />Event oversight</RouterLink>
         </template>
         <template v-if="showVenuePlanning">
           <p class="nav-label">Venue planning</p>

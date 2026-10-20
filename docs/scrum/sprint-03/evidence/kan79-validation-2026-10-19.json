@@ -1,0 +1,57 @@
+{
+  "date": "2026-10-19",
+  "run": "AUTO-20261019-01",
+  "checks": {
+    "case_ids_unique": true,
+    "all_case_fields_filled": true,
+    "csv_shapes_valid": true,
+    "kan79_all_ten_criteria_mapped": true,
+    "kan79_manual_not_executed": true,
+    "kan79_actual_automated_evidence": true,
+    "trace_cases_exist": true,
+    "trace_files_exist": true,
+    "changed_markdown_file_links": true,
+    "seven_diagram_exports": true,
+    "manual_guide_exists": true,
+    "run_record_exists": true
+  },
+  "case_count": 410,
+  "traceability_rows": 101,
+  "relative_file_links_checked": 672,
+  "missing_cases": [],
+  "missing_paths": [],
+  "broken_links": [],
+  "workbook_checks": {
+    "seven_sheets_preserved": true,
+    "eleven_tables_preserved": true,
+    "table_names_preserved": true,
+    "expanded_tables": true,
+    "freeze_panes_preserved": true,
+    "merges_preserved": true,
+    "all_original_formulas_preserved": true,
+    "specifications_unchanged": true,
+    "historical_sprint_plan_unchanged": true,
+    "parent_totals_preserved": true,
+    "kan79_status": true,
+    "subtasks": true,
+    "no_error_cells": true,
+    "retained_styles": true
+  },
+  "visual_review": "Seven generated diagrams and six changed workbook regions inspected. No clipped content found. Excel desktop not executed.",
+  "application_results": {
+    "frontend": 564,
+    "backend": 937,
+    "database": 304,
+    "browser": 119
+  },
+  "acceptance": "Not assessed; KAN-65/KAN-64 and hosted checks pending",
+  "code_commit": "b3329a78174c0f2e30e263b64436dfbd64c5f44b",
+  "sha256": {
+    "docs/submission/1/product-backlog.xlsx": "88f4a76a6865bbb9cd45e7e3a17e39a553788a5dd60b05aa6869b0cf94455e91",
+    "docs/testing/test-cases.csv": "e7299215d8638b7465640681e91c22a5290764c2f0f376d2391d8a4a0c51e30d",
+    "docs/requirements/traceability.csv": "932f5063831cc1819bc55b29f39dfc55d70c9f0a272a048990eb295904171c1a",
+    "docs/testing/coverage-reports/2026-10-19-kan79.txt": "2826249c40db80f090ba82425ea4e63461325a333e76866e71d1268184103a5f"
+  },
+  "submission_prepare": "Pass: draft folders 1\u20137 created; completeness and instructor access require team review.",
+  "test_database_cleanup": "Disposable KAN-79 PostgreSQL container removed after tests; no shared data changed."
+}

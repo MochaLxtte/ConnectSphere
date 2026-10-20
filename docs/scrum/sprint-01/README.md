@@ -1,5 +1,21 @@
 # Sprint 1
 
+## Reconciliation update — 17 October 2026
+
+The [dated criterion crosswalk](sprint-backlog.md#criterion-crosswalk--17-october-2026) now maps **all 79 original functional Jira criteria and five database checks** to retained local IDs and explicit functional test cases. Nine existing local safeguards have separate supporting cases. The [21 September export](../../submission/1/jira-backlog-2026-09-21.csv) preserves the source wording; the crosswalk distinguishes that baseline from later repairs and the customer changes received on 2 October. The new diagram-check identifier, KAN-24-AC4, maps an existing Jira check without renumbering earlier criteria.
+
+The wording-to-case mapping is complete. **Historical evidence remains incomplete:** the adopted criteria/Definition of Done version, reviewed build, criterion-level acceptance, meeting/estimation records and supporting captures are still **Not recorded** where identified below. The new test specifications are **Not executed** and do not change old test results, acceptance dates, current Jira statuses or the **32 committed = 24 Done + 8 carried** outcome. The earlier dated completeness lists below describe their original record state; their requests to create this cross-reference are superseded by this update, while requests for actual evidence remain open.
+
+## Submission position — 15 October 2026
+
+**Record updated 15 October 2026.** The recorded Sprint 1 outcome remains **32 committed = 24 Done + 8 carried to Sprint 2**. The eight records below are present; the historical evidence package is incomplete. The later status of carried stories does not change this outcome. See the [Sprint 2 baseline and later delivery register](../sprint-02/review.md#baseline-and-later-delivery-register--15-october-2026) for their follow-up.
+
+The remaining team inputs are the actual planning/review/retrospective participants and decisions, accepted criteria/Definition of Done version, reviewed build, historical estimation/capacity and standup records, board/burndown artifacts, and agreed retrospective actions. Their absence is **Not recorded**, not a failed feature or evidence of a meeting being skipped. Preserve any available originals with their actual capture dates; current checks cannot replace a missing historical sprint-close run.
+
+The [15 October automated audit](../../testing/test-evidence.md#15-october-2026-post-sprint-implementation-audit) and [coverage artifact](../../testing/coverage-reports/2026-10-15-post-sprint-audit.txt) are later verification only. Proposed repairs and the separate customer-change work belong in [Sprint 3 planning](../sprint-03/planning.md), subject to team selection; no Sprint 3 commitment is made here.
+
+## Historical overview
+
 **Period:** 6–19 September 2026, inclusive (Asia/Singapore). **Planning:** Sunday 6 September. **Review and retrospective:** Saturday 19 September. **Closeout notes updated:** 21 September. Meeting times and attendance remain to be recorded in the planning document.
 
 **Sprint 1 review is complete and the sprint is closed in Jira. Sprint 2 is initialized.** Seven PBIs are Done, giving a closure velocity of **24 points**; KAN-6, KAN-33 and KAN-34 carry forward with **8 points**. This reconciles the original 32-point commitment and matches the current Jira snapshot. Its later resolution timestamps are recorded separately from the 19 September review; they do not establish when each item was accepted during the sprint.

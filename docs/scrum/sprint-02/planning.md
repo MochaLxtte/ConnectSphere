@@ -1,5 +1,7 @@
 # Sprint 2 planning and meeting record
 
+**Record check — 15 October 2026:** the original selection remains 12 PBIs / 43 points. Preserve the dated plan and subsequent decisions below; current implementation/status does not supply missing historical attendance, capacity or estimate votes. Use the [baseline and later delivery register](review.md#baseline-and-later-delivery-register--15-october-2026) for current evidence and dates. The 4 October Sprint 3 start below was a cadence projection; actual Sprint 3 planning/commitment is **Not recorded**. New customer requirements and proposed existing-story repairs are separated in [Sprint 3 planning](../sprint-03/planning.md).
+
 ## Sprint boundary and goal
 
 | Field | Record |
@@ -10,10 +12,10 @@
 | Jira boundary | 20 September 00:00–4 October 00:00; covers the inclusive 3 October final day. This is the sprint boundary, not a recorded meeting time. |
 | Planning date | Sunday 20 September 2026; exact times and location not recorded |
 | Scheduled review / next planning | Saturday 3 October / Sunday 4 October 2026 |
-| Retrospective | Slot to confirm |
+| Retrospective | Actual date/time and outcomes Not recorded |
 | Attendees, absences, facilitator and note taker | Not recorded |
 | Record prepared | 21 September 2026; asynchronous implementation update added 28 September |
-| Supporting meeting/Jira records | To attach in the [evidence register](evidence/README.md) |
+| Supporting meeting/Jira records | Meeting originals Not recorded; available dated Jira exports linked in the [evidence register](evidence/README.md) |
 
 **Sprint goal: Enable submitted requests to reach an assigned coordinator, and enable coordinators to identify suitable available venues from a maintained catalogue, request bookings, and receive Venue Staff decisions without conflicting bookings.**
 
@@ -37,23 +39,27 @@ The nine new story cards retain the **detailed planning version**, with stable r
 
 ## Team and accountabilities
 
+**Record updated 11 October 2026.** The table is the current Jira assignment snapshot. It does not replace the original planning decisions above or identify unrecorded meeting participants. Historical implementation contributors can differ from current assignees.
+
 | Member | Sprint 2 story ownership | Review responsibility | Development availability |
 | --- | --- | --- | --- |
-| Ryan | KAN-12 venue search implementation (5 points), integrated 4 October; formal allocation to confirm | To agree | Not recorded |
-| Ernest | KAN-51 availability calendar implementation (5 points), integrated from his branch on 4 October | To agree | Not recorded |
-| Kai Jie | KAN-6 / KAN-34 carry-over; new stories to agree | To agree | Not recorded |
-| Irfan | KAN-33 carry-over; new stories to agree | To agree | Not recorded |
-| Tristan | KAN-29 automatic assignment (3 points), KAN-8 venue decisions (3 points) and user-requested KAN-52 suitability (3 points): 9 implementation points; no new planning/Jira allocation claimed | To agree | Not recorded |
-| Arvin | To agree | To agree | Not recorded |
+| Ryan | KAN-12 (5 points) | To agree | Not recorded |
+| Ernest | KAN-54 (5 points) | To agree | Not recorded |
+| Kai Jie | KAN-53/KAN-55 (6 new points); KAN-6/KAN-34 (6 carried points); 12 total | To agree | Not recorded |
+| Irfan | KAN-50 (5 new points); KAN-33 (2 carried points); 7 total | To agree | Not recorded |
+| Tristan | KAN-29/KAN-8/KAN-52 (9 new points) | To agree | Not recorded |
+| Arvin | KAN-51 (5 points) | To agree | Not recorded |
 
 Irfan is Product Owner and Arvin is Scrum Master; both also work as developers. Allow time for these responsibilities in the capacity plan. Sprint 1 ownership identifies useful implementation context; it does not establish Sprint 2 allocation. Confirm each member's carry-over, integration and review responsibilities alongside the new stories.
 
-The table records implementation responsibility for KAN-29/KAN-8/KAN-52 and the supplied KAN-12/KAN-51 implementations; Kai Jie also implements KAN-55 in current main. Live Jira assignees have not been changed or rechecked by this work; other allocations and all reviewers remain pending. The original planning decisions above retain their meeting-time context; the dated choices below are implementation details awaiting team/customer acceptance, not reconstructed meeting decisions.
+The 11 October sync reads current Jira assignees without changing them. Reviewers and actual capacity remain To agree / Not recorded. The original planning decisions above retain their meeting-time context; the dated development choices below remain attributed to their original sources.
 
 ## Existing implementation and integration boundaries
 
+**11 October current-state correction:** KAN-50 maintenance and KAN-59 submission validation are now merged. The 9 October AUTO/MAN records include PostgreSQL/browser passes and shared-development runs; see [evidence reconciliation](../../testing/test-evidence.md#11-october-reconciliation-of-existing-evidence). The following dated bullets are history. No new test or sprint acceptance is recorded here.
+
 - **26 September baseline change:** `main` commit `dff42ed` removed the venue services, UI and associated tests so the team can implement the selected venue stories. Migration 004 retains their tables and integrity guards. Earlier descriptions of existing venue pages, broad role access, suitability gaps and booking-note projections are historical inspection findings; they do not describe current implemented features.
-- KAN-29 now uses [automatic selection](../../../backend/src/modules/events/automatic-assignment.ts) inside the [submission transaction](../../../backend/src/modules/events/submit-request.ts). [Migration 006](../../../database/migrations/006_automatic_coordinator_assignment.sql) adds availability defaulting to false and automatic/manual history provenance. Opt in provisioned coordinators explicitly; do not enable fictional seeds.
+- KAN-29 now uses [automatic selection](https://github.com/MochaLxtte/ConnectSphere/blob/8f29d35d528d1bd265e435702b9a2db6aeb7046a/backend/src/modules/events/automatic-assignment.ts) inside the [submission transaction](../../../backend/src/modules/events/submit-request.ts). [Migration 006](../../../database/migrations/006_automatic_coordinator_assignment.sql) adds availability defaulting to false and automatic/manual history provenance. Opt in provisioned coordinators explicitly; do not enable fictional seeds.
 - **28 September implementation choices, awaiting team/customer acceptance:** count `SUBMITTED`, `UNDER_REVIEW`, `CLARIFICATION_REQUESTED`, `APPROVED`, `CONFIRMED`; choose the fewest active events, then ascending application-profile UUID. No eligible candidate returns `409 NO_AVAILABLE_COORDINATOR` without submitting or allocating; the draft stays editable for retry. A preassigned draft returns `409 DRAFT_ALREADY_ASSIGNED` and preserves its data. Assignment does not make an initial review decision.
 - [Manual initial assignment](../../../backend/src/modules/events/assignment.ts) supports the agreed self/other-coordinator option for unassigned requests; automatic availability does not restrict its target list. The 30 September correction removes replacement of an existing coordinator, which belongs to future KAN-65. Automatic history has a null assigning actor; manual history retains the actor. Existing submitted requests are not backfilled or automatically reallocated.
 - **4 October integration:** KAN-12 search, KAN-51 calendar and KAN-8 decisions for existing pending bookings are now integrated. KAN-8 gives staff the current event requirements and preserves the booking period/layout/notes. A later 4 October update integrates KAN-55 block management and implements KAN-52 suitability with explicitly interpreted requirements. KAN-50 maintenance remains absent and KAN-53 submission is not yet integrated into this branch/main; approval-time conflict protection does not complete the full KAN-54 workflow. All migrations remain unchanged.
@@ -102,17 +108,23 @@ The selected nine stories cover the venue workflow. Live Jira was refined on 21 
 | KAN-29 / KAN-65 reassignment | Record the agreed self/other-coordinator option and who can reassign an already assigned request. | KAN-65 now records reassignment as an unestimated future story outside Sprint 2. KAN-29 remains automatic initial assignment; S2-Q02 handover authority remains open. |
 | KAN-51, KAN-53, KAN-54, KAN-55 | Explicitly block booking submission against an already reserved period. Define pending/tentative treatment and document adjacent intervals and timezone with no turnover buffer. Clarify new blocks overlapping existing bookings. | S2-Q04/Q07. Refusing a later confirmation alone does not satisfy the booking-submission rule. |
 | KAN-52, KAN-53, KAN-8 | Define how event facilities/layout/accessibility needs reach suitability checks and the staff booking view; clarify rejection-reason requirements. | S2-Q05/Q10. Facilities and applicable layouts are already required checks, not optional additions. |
-| KAN-6, KAN-33, KAN-34 | Add linked bug/subtask records with reproducible steps and acceptance checks for S1-DEF-01–04, retaining the successful review paths. | Created KAN-56 (KAN-33 / S1-DEF-02), KAN-57 (KAN-34 / S1-DEF-01), and KAN-58/KAN-59 (KAN-6 / S1-DEF-03/04). These unestimated subtasks remain within the carried stories' eight points. KAN-56 has hosted/CI evidence; KAN-57/KAN-58 have component re-verification with hosted acceptance pending; KAN-59 remains open. |
+| KAN-6, KAN-33, KAN-34 | Add linked bug/subtask records with reproducible steps and acceptance checks for S1-DEF-01–04, retaining the successful review paths. | Created KAN-56 (KAN-33 / S1-DEF-02), KAN-57 (KAN-34 / S1-DEF-01), and KAN-58/KAN-59 (KAN-6 / S1-DEF-03/04). These unestimated subtasks remain within the carried stories' eight points. KAN-56 has hosted/CI evidence; KAN-57/KAN-58 have component re-verification with hosted acceptance pending; KAN-59 is now merged with AUTO/MAN-20261009-KAN59-01 evidence. KAN-57/KAN-58 remain To Do in the 11 October Jira snapshot, with their full hosted checks incomplete. |
 | KAN-6 | Write the submission field checklist: event date and attendance are mandatory; optional needs may be None / Not Required. Define remaining fields and conditional registration requirements. | Minimum requirements now settled; connect the checklist to S1-DEF-03/04. |
 | KAN-21 / KAN-55 | Consolidate duplicate operational-block scope, transferring the mandatory-reason rule. | KAN-21 is archived and retains its duplicate link to KAN-55. KAN-55 includes the mandatory reason and retains its three Sprint 2 points. |
 | KAN-12, KAN-52, KAN-53, KAN-8, KAN-54, KAN-55 | Reconcile shorter Jira wording with the detailed planning cards; keep meaningful correctness checks either as explicit criteria or linked test cases. | The pre-edit export had 77 criteria versus 93 planning criteria. Missing correctness checks are now recorded in the six Jira cards. Existing repository IDs and evidence remain stable; detailed cross-referencing and the remaining policy choices are still required. |
 
 The [product backlog](../../requirements/product-backlog.md) consolidates future release work. KAN-60 tracks the rejection-reason correction; KAN-61–KAN-64 cover confirmation, cancellation, equipment-request review and notifications; KAN-65–KAN-67 cover reassignment, ordinary planning edits and registration viewing. KAN-15 includes significant-change submission and review. KAN-19/KAN-22/KAN-23 are archived optional waitlist/human-staffing scope. These refinements do not change the 43-point baseline; future prioritisation, policy decisions and estimates still need team agreement.
 
-Tristan implements KAN-29/KAN-8/KAN-52 (nine new-story points), Ryan implements KAN-12, Ernest implements KAN-51 and Kai Jie implements KAN-55. This is a development responsibility update, not a reconstructed planning decision or Jira assignment. Confirm remaining owners and record reviewers, dependencies and capacity for the full 43-point scope. The 21 September Jira snapshot retains Kai Jie on KAN-6/KAN-34 and Irfan on KAN-33; no new live snapshot is claimed. Simultaneous booking approvals, stale availability and repeated submissions can be supporting implementation/test work rather than extra pointed stories. Any genuine added scope needs an agreed estimate and a scope-change entry.
+**Earlier contributor summary (retained for history; current assignees are above):** Tristan implements KAN-29/KAN-8/KAN-52 (nine new-story points), Ryan implements KAN-12, Ernest implements KAN-51 and Kai Jie implements KAN-55. This is a development responsibility update, not a reconstructed planning decision or Jira assignment. Confirm remaining owners and record reviewers, dependencies and capacity for the full 43-point scope. The 21 September Jira snapshot retains Kai Jie on KAN-6/KAN-34 and Irfan on KAN-33; no new live snapshot is claimed. Simultaneous booking approvals, stale availability and repeated submissions can be supporting implementation/test work rather than extra pointed stories. Any genuine added scope needs an agreed estimate and a scope-change entry.
 
 Record answers and rationale in the [shared clarification log](../../requirements/assumptions-and-questions.md), then update affected criteria, tests, estimates and architecture together.
 
 ## Working agreement and records
 
 Use [daily progress](daily-progress.md) for actual check-ins and adaptations. Daily Scrums are scheduled for 22, 24, 26 and 29 September, and 1 and 3 October. Exact times and attendees are not recorded; the 3 October Daily Scrum and review need separate meeting records. Use reviewed PRs, coordinated database migrations and the shared [Definition of Done](../definition-of-done.md). Record any unresolved adoption details before story acceptance.
+
+## 16 October clarification — customer changes received during Sprint 2
+
+**Record updated 16 October 2026.** The team received the Week 7 customer changes on **2 October 2026**, near the planned 3 October sprint end. The recorded plan was to complete Sprint 2 against its original scope, then consider the changes during Sprint 3 planning. The original **43 SP (35 new + 8 carry-over)** and original acceptance criteria therefore remain the Sprint 2 baseline. This later clarification records receipt and intended handling; it does not supply missing review attendance, acceptance or proof of completion by 3 October. The [change register](../../requirements/change-requests.md) traces the new/replacement requirements and later 63/63 Sprint 3/4 allocation.
+
+**Link maintenance — 19 October 2026:** the removed automatic-allocation helper now links to its historical commit. Earlier requirements, observations and acceptance records are unchanged; CR-5/KAN-79 defines the later replacement policy.

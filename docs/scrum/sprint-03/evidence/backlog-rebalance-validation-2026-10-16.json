@@ -1,0 +1,166 @@
+{
+  "recorded_on": "2026-10-16",
+  "scope": "Documentation, workbook, CSV and backlog consistency only",
+  "product_tests_executed": false,
+  "final_document_link_check": {
+    "relative_links_checked": 933,
+    "errors": 0
+  },
+  "final_whitespace_check": "git -c core.safecrlf=false diff --check passed",
+  "application_source_changes": false,
+  "workbook": {
+    "checks": [
+      {
+        "check": "Seven existing sheets preserved in order",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "check": "All live parent keys present exactly once",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "check": "Live metadata and Singapore dates match every parent",
+        "passed": true,
+        "detail": []
+      },
+      {
+        "check": "Calculated parent counters and SP reconcile",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "check": "Full Jira descriptions and AC source references preserved",
+        "passed": true,
+        "detail": []
+      },
+      {
+        "check": "Repository-only specification history retained",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "check": "All subtasks match live status parent and assignee",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "check": "Four historical exclusions unchanged",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "check": "Sprint 1 and 2 baseline keys and original estimates unchanged",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "check": "Sprint 1 acceptance remains 32 committed 24 accepted 8 carried",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "check": "Sprint 2 original commitment remains 43 = 35 + 8",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "check": "Unknown Sprint 2 historical accepted velocity not invented",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "check": "Sprint 3 selected keys and points match approved plan",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "check": "Sprint 3 planned acceptance not pre-filled",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "check": "Sprint 4 selected keys and points match approved plan",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "check": "Sprint 4 planned acceptance not pre-filled",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "check": "No exported formula error cells",
+        "passed": true,
+        "detail": []
+      },
+      {
+        "check": "Freeze panes preserved",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "check": "Native filter tables retained and plan table added",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "check": "CSV retains all issues and full raw descriptions",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "check": "Earlier 23-item 97-SP selected plan retained as history",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "check": "KAN-64 active AC201-209 distinct from retained archived criteria",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "check": "Current release total contains no duplicate forecast",
+        "passed": true,
+        "detail": null
+      }
+    ],
+    "passed": 23,
+    "total": 23,
+    "errors": []
+  },
+  "criteria_and_cases": {
+    "status": "Pass",
+    "checks": 14,
+    "details": [
+      "original 26 historical aggregate/audit rows unchanged",
+      "all old case IDs retained without reuse",
+      "all new case fields filled and unexecuted",
+      "old combined-notification specs explicitly historical",
+      "old integrated case kept as historical",
+      "Sprint 3 correct active card set",
+      "Sprint 3 total 63 matches live Jira",
+      "Sprint 3 live membership and To Do",
+      "Sprint 4 correct active card set",
+      "Sprint 4 total 63 matches live Jira",
+      "Sprint 4 live membership and To Do",
+      "28 active story cards have AC-to-case-to-trace mapping",
+      "notification split conserves estimate",
+      "new group IDs avoid historical S3-T24 reuse"
+    ],
+    "active_story_cards": 28,
+    "active_criteria_mapped": 299,
+    "test_case_rows": 254,
+    "new_cases": 68,
+    "trace_rows": 76,
+    "product_tests_executed": false
+  },
+  "visual_verification": "All seven workbook sheets and changed source/criterion/allocation regions inspected; native formulas recalculated with temporary source changes restored. Excel desktop not launched.",
+  "sha256": {
+    "docs/submission/1/product-backlog.xlsx": "59d9f1ce0bbca40979d78fa7671ac67482cd1319bdb0f29967223cbdf70c501f",
+    "docs/submission/1/jira-backlog-2026-10-16.csv": "15e8d4f678069c8c1ba80f695d7917e318ccc5b309b30e584de680e7d68cb5a4",
+    "docs/testing/test-cases.csv": "cebfc6d5843a2eefec4b875400dd733c5cb1ca1b1793800cacef62e20b8074eb",
+    "docs/requirements/traceability.csv": "882e1a54bf1f8bbe06f4bf3482d5f31956ae2e831e1209703f10c53f0d5a155c"
+  }
+}

@@ -1,5 +1,7 @@
 # Sprint 1 retrospective
 
+**Record check — 15 October 2026:** the meeting date and source observations below are retained. Individual feedback, actual participants and agreement to the proposed actions remain **Not recorded**. An improvement agreed now should be dated now and followed up in [Sprint 3 planning](../sprint-03/planning.md), rather than being attributed to the historical meeting.
+
 Sprint: **6–19 September 2026**, inclusive, Asia/Singapore. **Retrospective held: 19 September. Writeup prepared: 21 September. Owner: Tristan.** Sprint 1 review is complete and the sprint is closed in Jira. This writeup draws together the review observations and proposed process improvements for Sprint 2. Attendance, participant discussion, voting and agreed root causes have not been recorded.
 
 | Meeting detail | Record |

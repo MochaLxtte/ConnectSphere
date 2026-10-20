@@ -1,0 +1,158 @@
+{
+  "recorded_on": "2026-10-16",
+  "scope": "Course/project alignment, neutral documentation, clean Jira descriptions, self-selection and handover exports",
+  "branch": "docs/sprint-3-readiness-sync",
+  "parent_commit": "3bd64f8817b862285b0ba81332b023c3a45c8776",
+  "product_tests_executed": false,
+  "application_files_changed": false,
+  "jira_export_card_case_checks": {
+    "passed": 17,
+    "checks": [
+      "Complete live Jira read contains 68 unique issues",
+      "All 28 remaining parents unassigned",
+      "Sprint 67: 13 parents and 63 points",
+      "Sprint 68: 15 parents and 63 points",
+      "28 current descriptions match clean course-format drafts",
+      "Jira status estimates sprint priority and assignee unchanged by cleanup",
+      "14 Done parent descriptions unchanged",
+      "Current descriptions omit personal and process narratives",
+      "CSV has all 68 complete descriptions, updated times and live assignees",
+      "Master current register has 28 unassigned parent rows",
+      "256 unique functional cases and 76 traceability rows",
+      "Two restored-rule cases explicitly Not executed",
+      "Sprint 3 card count and unassigned metadata",
+      "Sprint 4 card count and unassigned metadata",
+      "299 unique active criteria match Jira and map to cases and traceability",
+      "All stable criterion IDs appear in current Jira",
+      "42 parents total 174 points; 14 Done parents total 48"
+    ],
+    "active_cards": 28,
+    "active_criteria": 299,
+    "case_rows": 256,
+    "traceability_rows": 76,
+    "product_tests_executed": false
+  },
+  "criteria_restoration": {
+    "stable_criteria_retained": 299,
+    "condensed_rows_reviewed": 7,
+    "rows_expanded": 4,
+    "original_case_rows_preserved": 254,
+    "new_cases": [
+      "TC-02-09",
+      "TC-03-06"
+    ],
+    "new_case_result": "Not executed",
+    "scope_or_estimate_change": false
+  },
+  "workbook": {
+    "oldHash": "82729ad16455310762f287769ce92e55a4795f733ffc71c29e551fbfabe5b4a8",
+    "newHash": "4147978ed0d0802269ca1fbaffc0f2133d1c75f6f12726f1130eed2e7706e95e",
+    "oldSpecificationRows": 1083,
+    "newSpecificationRows": 689,
+    "currentCards": 28,
+    "currentCriteria": 299,
+    "preservedOtherCells": 6080,
+    "currentSpecRows": 383,
+    "formulasUnchanged": true,
+    "parentPoints": 174,
+    "sprintPoints": [
+      63,
+      63
+    ],
+    "excelDesktopCheck": "Not executed",
+    "preservedHistoricalAndSubtaskRows": 306,
+    "sheets": 7,
+    "tables": 11,
+    "nativePreservationChecks": {
+      "package_members_preserved": true,
+      "seven_sheets_order_preserved": true,
+      "drawings_and_charts_preserved": true,
+      "relationship_targets_preserved": true,
+      "ten_other_tables_preserved": true,
+      "specification_table_properties_preserved": true,
+      "eleven_tables_preserved": true,
+      "all_formulas_preserved": true,
+      "other_sheet_cell_styles_preserved": true,
+      "views_columns_merges_validations_cf_print_preserved": true,
+      "other_sheet_row_heights_preserved": true,
+      "historical_source_heights_preserved": true,
+      "historical_source_effective_styles_preserved": true,
+      "all_original_style_definitions_preserved": true
+    },
+    "nativeChecksPassed": 14,
+    "formulaErrorCount": 0,
+    "savedReadbackMatches": true,
+    "visualsChecked": [
+      "Current story and criteria",
+      "Notification split criteria",
+      "Planning baseline note",
+      "Source/history notes"
+    ]
+  },
+  "document_checks": {
+    "changed_files": 59,
+    "markdown_files": 47,
+    "relative_links_checked": 971,
+    "csv": {
+      "docs/requirements/traceability.csv": {
+        "rows": 76,
+        "columns": 8
+      },
+      "docs/submission/1/jira-backlog-2026-10-11.csv": {
+        "rows": 60,
+        "columns": 18
+      },
+      "docs/submission/1/jira-backlog-2026-10-15.csv": {
+        "rows": 60,
+        "columns": 18
+      },
+      "docs/submission/1/jira-backlog-2026-10-16.csv": {
+        "rows": 68,
+        "columns": 18
+      },
+      "docs/testing/test-cases.csv": {
+        "rows": 256,
+        "columns": 9
+      }
+    },
+    "errors": []
+  },
+  "whitespace": {
+    "command": "git -c core.safecrlf=false diff --check",
+    "exit_code": 0,
+    "result": "Pass"
+  },
+  "project_requirement_audit": {
+    "core_features_mapped": 20,
+    "mandatory_customer_changes_mapped": 6,
+    "sources": "Week 4 Project Instructions and rubric; Week 7 Customer Changes; IS212 user-story, estimation, Sprint Backlog and Managing Changes teaching materials",
+    "limits": "Mapping and document consistency do not establish implemented features, executed acceptance, team votes or historical velocity."
+  },
+  "sha256": {
+    "docs/submission/1/product-backlog.xlsx": "4147978ed0d0802269ca1fbaffc0f2133d1c75f6f12726f1130eed2e7706e95e",
+    "docs/submission/1/jira-backlog-2026-10-16.csv": "c4a1547e948951278b130d6f12a7eb7fa286967c7af58c5eb985ea41e97d0b32",
+    "docs/testing/test-cases.csv": "fed4602b51212fe0f8c60fc8bdf202d9858cc15582e5e5bba60c55e865d19653",
+    "docs/requirements/traceability.csv": "8eb3911e9b317580578a8b76871019af08295b7001f564519b8bd5e645694613",
+    "docs/scrum/sprint-03/evidence/jira-ownership-state-2026-10-16.json": "425f3ad3a6ff4727bee0bfadcdaeb700f7e20d272a3d35264938636940da18ea"
+  },
+  "commit_preparation": {
+    "branch": "docs/sprint-3-handover",
+    "recorded_on": "2026-10-16",
+    "staged_files": 59,
+    "whitespace": {
+      "raw_staged_check_exit_code": 2,
+      "source_export_trailing_space_lines": 81,
+      "source_files": [
+        "docs/submission/1/jira-backlog-2026-10-11.csv",
+        "docs/submission/1/jira-backlog-2026-10-15.csv",
+        "docs/submission/1/jira-backlog-2026-10-16.csv"
+      ],
+      "reason": "Preserved Jira Markdown hard line breaks inside quoted CSV Description fields; source text retained exactly.",
+      "remaining_staged_files_check": {
+        "command": "git -c core.safecrlf=false diff --cached --check -- . :(exclude)docs/submission/1/jira-backlog-2026-10-11.csv :(exclude)docs/submission/1/jira-backlog-2026-10-15.csv :(exclude)docs/submission/1/jira-backlog-2026-10-16.csv",
+        "exit_code": 0,
+        "result": "Pass"
+      }
+    }
+  }
+}

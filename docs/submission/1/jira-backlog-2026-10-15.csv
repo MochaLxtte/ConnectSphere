@@ -1,0 +1,856 @@
+Issue key,Summary,Issue Type,Status,Priority,Assignee,Custom field (Story point estimate),Sprint,Description,Parent key,Parent summary,Related issue links,Created,Updated,Jira resolution time,Jira status category changed time,Jira rank,Jira URL
+KAN-4,Save Draft Event Request,Story,Done,High,"WONG SZE KAI, ERNEST _",3,Sprint 1,"**Title**  
+Save Draft Event Request
+
+**User Story**  
+As an Event Organiser, I want to save an incomplete event request as a draft so that I can complete it later without losing my work.
+
+**Acceptance Criteria**
+
+Ensure that the Event Organiser:
+
+* Can save an incomplete event request without submitting it for review.
+* Can identify that the saved request is in Draft status.
+* Can view previously saved draft requests from their event request list.
+* Can distinguish draft requests from requests that have already been submitted.
+
+Ensure that:
+
+* Information entered before saving the draft is retained.
+* Saving a draft does not submit the event request for review.
+* A draft request is not presented to Event Coordinators as a submitted request awaiting review.
+
+",,,,2026-09-06T22:48:15.178+0800,2026-09-21T00:26:15.578+0800,2026-09-21T00:26:15.570+0800,2026-09-21T00:26:15.578+0800,0|i0006q:u,https://smu-g7-grp1.atlassian.net/browse/KAN-4
+KAN-6,Submit an Event Request,Story,Done,High,LEO KAI JIE _,3,Sprint 1; Sprint 2,"**Title**    
+Submit Event Request
+
+**User Story**    
+As an Event Organiser, I want to submit my event request to ConnectSphere so that it can be reviewed and the event planning process can proceed.
+
+**Acceptance Criteria**
+
+Ensure that the Event Organiser:
+
+* Can submit an event request once it satisfies the confirmed requirements for submission.
+* Can tell when the event request has been successfully submitted.
+* Is informed of any information that prevents submission where a confirmed validation rule is not satisfied.
+
+Ensure that:
+
+* A successfully submitted request is no longer treated as a draft.
+* A successfully submitted request is identified as Submitted.
+* The information provided by the Event Organiser is retained with the submitted request.
+* A successfully submitted request becomes available to the appropriate Event Coordinator review workflow.
+* A request that does not satisfy confirmed submission rules is not submitted.
+
+### Submission validation — 21 September 2026
+
+* Event date and expected attendance are mandatory. Missing required values prevent submission and produce useful field-level feedback.
+* Inapplicable accessibility, equipment, registration and special needs can be recorded as None / Not Required.
+* The same submission validation applies to a new request and a saved draft. A failed submission retains the entered data and leaves the request in Draft.
+* An organiser can open their saved draft and submit it successfully once the required information is valid.
+
+**Refinement before acceptance:** Agree the complete required-field list, valid timing/attendance ranges and registration-dependent capacity/date rules. Test both submission paths against that checklist.
+
+**Sprint 1 carry-over:** S1-DEF-03 — saved-draft submission was reported unavailable; S1-DEF-04 — requests with missing mandatory information could submit. Reproduce, repair and record regression evidence before closing this story. Successful demo paths remain valid evidence for those specific paths.
+
+### Server-side validation detail — 9 October 2026 (S1-DEF-04 / KAN-59)
+
+* **KAN-6-AC5:** A mandatory text field (event name, purpose, venue requirements) that is blank or only whitespace is treated as missing by any client; the request stays a draft and the field is listed.
+* **KAN-6-AC6:** An event end that is not after its start is refused at submission with a message for the end field; the request stays a draft.
+* **KAN-6-AC7:** When registration is required and the registration close is not after its open, submission is refused with a message for the close field. A blank capacity still means no limit, and the window is ignored while registration is not required.
+
+Delivered by PR #29 (merged 10 October). Evidence: AUTO-20261009-KAN59-01 and MAN-20261009-KAN59-01 in docs/testing/test-evidence.md. Expected attendance 0 is still accepted: the customer documents set no minimum.",,,,2026-09-06T22:50:47.675+0800,2026-10-10T00:27:48.331+0800,2026-10-04T23:20:49.716+0800,2026-10-04T23:20:49.734+0800,0|i0006q:r,https://smu-g7-grp1.atlassian.net/browse/KAN-6
+KAN-8,Approve or Reject Venue Booking Request,Story,Done,High,"LOW TAO ZHE, TRISTAN _",3,Sprint 2,"### User Story
+
+As a Venue Staff member, I want to approve or reject a pending venue booking request so that venue usage can be managed appropriately.
+
+### Acceptance Criteria
+
+* Venue Staff can view pending venue booking requests.
+* Venue Staff can approve a pending booking request.
+* Venue Staff can reject a pending booking request.
+* The booking decision is recorded against the correct event and venue.
+* When a booking is rejected, Venue Staff can provide relevant information or a reason.
+* The Event Coordinator can view the booking decision.
+* An approved booking affects the venue’s availability for the corresponding period.
+* Unauthorised users cannot approve or reject venue booking requests.
+
+### Acceptance detail — 21 September 2026
+
+* Venue Staff can open a pending request and inspect its event timing and relevant venue requirements before deciding.
+* The saved decision is linked to the correct booking request, event and venue and remains visible after refresh.
+* Rejecting a request does not create or confirm a venue booking.
+* Approval rechecks current venue conflicts under KAN-54 before confirming the booking.
+
+The mandatory rejection-reason clarification applies to event-request rejection in KAN-36. Whether a venue-booking rejection reason is mandatory remains to be agreed; preserve the current ability to provide a reason.",,,,2026-09-06T22:52:38.906+0800,2026-10-04T23:17:26.744+0800,2026-10-04T23:17:26.739+0800,2026-10-04T23:17:26.745+0800,0|i00079:,https://smu-g7-grp1.atlassian.net/browse/KAN-8
+KAN-9,Check Equipment Availability for an Event,Story,To Do,Medium,,8,,"| **User Story** | As a Technical Support Staff member, I want to check whether sufficient suitable equipment is available for an event's requested date and time, so that I can determine if the event's technical requirements can be fulfilled. |
+| --- | --- |
+| **Acceptance Criteria** |
+| Ensure that the Technical Support Staff member:  Can view the requested equipment types, requested quantities, and the event date/time window.  Is shown only equipment that excludes units marked as damaged, undergoing maintenance, or reserved for overlapping bookings.  Can perform the availability check independently of whether the venue booking is confirmed.  Given an event request with equipment requirements, when the available quantity meets or exceeds the requested quantity for all items on that date/time, then the system marks the technical requirements as ""Fulfillable"" with a green confirmation indicator.  Given an event request with equipment requirements, when any requested item has fewer available units than requested, then the system marks the technical requirements as ""Shortfall / Unfulfillable"" and highlights the specific item deficit. |
+",,,,2026-09-06T22:52:44.842+0800,2026-09-06T23:55:47.313+0800,,2026-09-06T22:52:45.029+0800,0|i0004m:,https://smu-g7-grp1.atlassian.net/browse/KAN-9
+KAN-10,Mark Event as Completed,Story,To Do,High,,3,,"### User Story
+
+As an Event Coordinator, I want to mark an event as completed so that its final status is recorded and reserved equipment can be released.
+
+### Acceptance Criteria
+
+* Only a coordinator authorised for the event can perform the completion action.
+* An eligible event transitions to Completed, recorded against the correct event with the actor and time.
+* Completed status persists after refresh and is visible to the relevant organiser and authorised internal users.
+* Completion automatically releases the event’s equipment reservations without releasing another event’s resources or duplicating the release.
+* An unauthorised or invalid transition leaves the event and its reservations unchanged.
+
+### Refinement before selection
+
+Confirm allowed prior states and timing relative to the event end. Proposed boundary: the assigned coordinator completes a Confirmed event after it ends. This still needs team agreement. Define other booking, registration and notification effects consistently with the lifecycle.
+
+21 September 2026: Corrected the copied organiser status-view description. KAN-16 covers status viewing; completion requires separate acceptance. The existing estimate is retained for planning review.",,,,2026-09-06T22:52:48.848+0800,2026-09-21T03:06:03.187+0800,,2026-09-06T22:52:49.136+0800,0|i0002v:,https://smu-g7-grp1.atlassian.net/browse/KAN-10
+KAN-12,Search and Filter Venues,Story,Done,High,"CHUA WEE CHYE, RYAN _",5,Sprint 2,"### User Story
+
+As an Event Coordinator, I want to search and filter venues using an event’s requirements so that I can identify potential venues efficiently.
+
+### Acceptance Criteria
+
+Ensure that the Event Coordinator can search/filter venues using relevant criteria including:
+
+* Date and time.
+* Expected attendance.
+* Location.
+* Capacity.
+* Accessibility.
+* Supported room layout.
+* Required facilities.
+
+Ensure that:
+
+* Search results reflect the current venue catalogue information.
+* Search results correspond to the filters selected.
+* Users not authorised to perform venue planning cannot access protected planning functionality.
+
+### Acceptance detail — 21 September 2026
+
+* The coordinator can change or clear filters and see the updated results.
+* Each result clearly identifies its venue.
+* Venues that fail an applied filter are excluded from its matching results; the system clearly indicates when no venue matches.
+
+No venue match does not automatically reject the event request. Search supports the coordinator’s manual planning decision.
+
+### Acceptance detail — 9 October 2026 (verification)
+
+* **KAN-12-AC14:** An incomplete period (only a start or only an end) or an end that is not after the start is refused with a clear message before any search is sent.
+* **KAN-12-AC15:** Results from an earlier search never replace those of a newer one, and earlier results are hidden while a new search runs so they cannot be mistaken for the new filters.
+* **KAN-12-AC16:** If the layout, facility or accessibility lists cannot be loaded, the other filters still work and the user is told what is missing. A search with no matches explains that no venue meets every filter, which is different from an empty catalogue.
+
+Verified by PR #31 (merged 10 October; 34 page tests and a 7-test browser spec added, no source change). Evidence: AUTO-20261009-KAN12-01 and MAN-20261009-KAN12-01 in docs/testing/test-evidence.md.",,,,2026-09-06T22:53:24.608+0800,2026-10-10T00:29:17.445+0800,2026-10-10T00:29:17.419+0800,2026-10-10T00:29:17.445+0800,0|i000df:,https://smu-g7-grp1.atlassian.net/browse/KAN-12
+KAN-14,Register for an Event,Story,To Do,High,,5,,"### User Story
+
+As an Attendee, I want to view relevant event information and register while registration is open and capacity remains so that I can make an informed choice and secure my place.
+
+### Acceptance Criteria
+
+1. An attendee can view the relevant event details and registration conditions before submitting a registration.
+2. Registration is accepted only for a Confirmed event with registration enabled, within the registration window and with capacity available.
+3. A successful registration is saved against the correct attendee and event, and a confirmation is shown.
+4. The attendee can view their own registration status after reopening or refreshing the page.
+5. Successful registrations count towards capacity immediately; concurrent attempts cannot exceed capacity or claim the same last place.
+6. A full event, closed or not-yet-open registration window, or registration-disabled event gives clear feedback without creating a registration.
+7. The same attendee cannot hold duplicate active registrations for the same event.
+8. An attendee cannot create or access another attendee’s protected registration through the interface or API.
+
+### Refinement notes — 21 September 2026
+
+KAN-17 covers withdrawal and KAN-67 covers authorised organiser/coordinator viewing of event registrations. Waiting lists are optional scope and are not a dependency of this core registration story.
+
+Agree the attendee-visible event fields, required registration details, eligibility and any re-registration policy before implementation/acceptance. Reuse KAN-64 for notification delivery; email is not mandatory.
+
+The existing 5-point estimate is retained for history and must be reviewed after refinement before sprint selection. This future story is outside the 43-point Sprint 2 baseline.",,,relates to: KAN-67,2026-09-06T22:56:37.130+0800,2026-09-21T03:50:25.095+0800,,2026-09-06T22:56:37.421+0800,0|i00037:,https://smu-g7-grp1.atlassian.net/browse/KAN-14
+KAN-15,Submit and Review Event Change Requests,Story,To Do,High,,2,,"### User Story
+
+As an Event Organiser, I want to submit significant changes to my event for review by the authorised Event Coordinator so that feasible changes can be agreed without leaving incompatible arrangements in place.
+
+### Acceptance Criteria
+
+1. An organiser can submit a change request for an event they own, identifying the requested changes; no fixed response deadline or change-request cutoff is imposed.
+2. The request is saved against the correct event as Pending review and does not itself apply the requested changes or silently alter existing arrangements.
+3. The authorised coordinator can open the pending request and compare the current event information with the requested values.
+4. The coordinator can assess effects on venue bookings, equipment and other applicable arrangements before recording an agreed review outcome.
+5. The outcome is saved against the correct change request and is visible to the relevant organiser and coordinator after refresh.
+6. When an accepted change is eligible for application under the agreed policy, the permitted values are applied to the correct event. Rejected changes leave existing event information unchanged.
+7. Significant changes to dates, times, attendance, venue or equipment needs identify affected arrangements for reconsideration; incompatible arrangements must not silently remain valid.
+8. Major changes affecting confirmed arrangements require cancellation and a new request instead of silently changing the confirmed event.
+9. Unauthorised users cannot submit or decide changes for unrelated events through the interface or API.
+10. The relevant coordinator receives a request notification and the organiser receives acknowledgement/outcome information through the selected notification channel.
+
+### Refinement notes — 21 September 2026
+
+This story includes submission and coordinator review. Do not create a duplicate processing story. KAN-34 covers draft editing; KAN-66 covers ordinary permitted planning edits; KAN-62 covers cancellation; KAN-64 supplies notification delivery.
+
+Agree the field/role/lifecycle matrix, accepted/rejected or other review outcomes, significance rules, resource revalidation and concurrent-change handling. Resolve the pre-approval organiser-editing versus coordinator-editing clarification before implementing the boundary. Email is not mandatory.
+
+The existing 2-point estimate is retained for history and must be reviewed after refinement before sprint selection. This future story is outside the 43-point Sprint 2 baseline.",,,relates to: KAN-66,2026-09-06T22:57:01.761+0800,2026-09-21T03:49:54.065+0800,,2026-09-06T22:57:02.106+0800,0|i0002s:,https://smu-g7-grp1.atlassian.net/browse/KAN-15
+KAN-16,View Event Request Status,Story,Done,Medium,"LOW TAO ZHE, TRISTAN _",2,Sprint 1,"**Title**  
+View Event Request Status
+
+**User Story**  
+As an Event Organiser, I want to view the current status and review outcome of my event request so that I know how my request is progressing.
+
+**Acceptance Criteria**
+
+Ensure that the Event Organiser:
+
+* Can view the current status of event requests that they are authorised to access.
+* Can identify a saved but unsubmitted event request as Draft.
+* Can identify a successfully submitted event request as Submitted.
+* Can see when clarification or amendment has been requested.
+* Can see when an event request has been approved.
+* Can see when an event request has been rejected.
+* Can view the review outcome where an approval or rejection decision has been made.
+
+Ensure that:
+
+* The displayed request status reflects the latest successful action performed on the event request.
+* An Event Organiser cannot view protected event request information belonging to an unrelated client unless otherwise authorised.
+
+",,,,2026-09-06T22:57:38.312+0800,2026-09-20T23:06:59.658+0800,2026-09-20T23:06:59.650+0800,2026-09-20T23:06:59.658+0800,0|i00087:,https://smu-g7-grp1.atlassian.net/browse/KAN-16
+KAN-17,Withdraw Attendee Registration,Story,To Do,Medium,,2,,"### User Story
+
+As an Attendee, I want to withdraw my registration for an event I can no longer attend so that I am no longer expected and my place becomes available.
+
+### Acceptance Criteria
+
+1. An attendee can select an eligible registration belonging to them and request withdrawal.
+2. Before saving, the attendee is asked to confirm withdrawal and is informed of the applicable re-registration restrictions.
+3. Confirmed withdrawal is saved against the correct attendee and event; the registration is no longer treated as active.
+4. The attendee can view the withdrawn status after reopening or refreshing the page.
+5. Withdrawal releases the active registration’s capacity contribution once. Repeated attempts cannot release extra capacity or alter unrelated registrations.
+6. An attendee cannot withdraw another attendee’s registration through the interface or API.
+7. A failed or ineligible withdrawal leaves the registration and capacity unchanged and gives clear feedback.
+
+### Refinement notes — 21 September 2026
+
+Agree withdrawal timing/eligible states and whether re-registration is allowed before implementation. The warning must reflect that policy; permanent re-registration prohibition is not assumed.
+
+Coordinate capacity with KAN-14, manager registration visibility with KAN-67 and notifications with KAN-64. Waiting lists are not a dependency.
+
+The existing 2-point estimate is retained for history and must be reviewed after refinement before sprint selection. This future story is outside the 43-point Sprint 2 baseline.",,,relates to: KAN-67,2026-09-06T22:57:52.684+0800,2026-09-21T03:50:25.219+0800,,2026-09-06T22:57:52.928+0800,0|i0005j:,https://smu-g7-grp1.atlassian.net/browse/KAN-17
+KAN-18,Update Equipment Availability Status,Story,To Do,Medium,,3,,"| **User Story** | As a Technical Support Staff member, I want to update the operational status of unavailable equipment so that damaged or maintained equipment is not incorrectly treated as available for event use.  |
+| --- | --- |
+| **Acceptance Criteria** |
+| Technical Support Staff can view the current operational status of equipment. Technical Support Staff can mark equipment as unavailable when it is damaged, undergoing repair or maintenance, or otherwise unavailable for event use. When the equipment's operational status is changed, the updated status is saved. Equipment marked as unavailable is not counted as available when equipment availability is checked for an event. Equipment marked as unavailable cannot be newly reserved for an event while it remains unavailable. Technical Support Staff can update the equipment's operational status when it becomes available for event use again. |
+",,,,2026-09-06T22:58:06.636+0800,2026-09-07T00:18:52.388+0800,,2026-09-06T22:58:06.935+0800,0|i0003o:,https://smu-g7-grp1.atlassian.net/browse/KAN-18
+KAN-24,Setup Database,Story,Done,Highest,TAY YU CHEN ARVIN ,5,Sprint 1,"Set up the database infrastructure required to persist the information needed by the Sprint 1 user stories and generate database diagram
+
+### Acceptance checks — documented 21 September 2026
+
+* A teammate can reproduce database setup from a clean checkout using the committed prerequisites, configuration, migration and synthetic seed instructions. The Express API connects to the expected schema over verified TLS.
+* The adopted schema has the required relationships and constraints. Rerunning setup does not unexpectedly overwrite existing event data.
+* Application tables retain reviewed privileges/RLS protections and the Supabase Data API is disabled. Express business permissions are verified under the functional stories.
+* Representative synthetic records can be persisted and retrieved through database integration checks; record commands, tested commit and actual results.
+* The database diagram reflects the adopted tables and relationships and is maintained with schema changes.
+
+**Evidence:** docs/testing/test-evidence.md — MAN-20260920-01 (clean-checkout setup), MAN-20260920-02 (privileges and non-destructive reruns; Data API setting still needs direct dashboard verification), AUTO-20260920-01 (isolated database integration suite). The ERD is in docs/architecture.
+
+These checks make the infrastructure scope explicit. They retain the Sprint 1 Done record and dated evidence; no new run or historical acceptance date is implied.",,,,2026-09-06T23:19:36.948+0800,2026-09-21T03:10:10.609+0800,2026-09-21T00:26:02.083+0800,2026-09-21T00:26:02.088+0800,0|i0006p:i,https://smu-g7-grp1.atlassian.net/browse/KAN-24
+KAN-25,User Authorisation and Authentication,Story,Done,Highest,"CHUA WEE CHYE, RYAN _",5,Sprint 1,"**Title**  
+User Authorisation and Authentication
+
+**User Story**  
+As a ConnectSphere user, I want to securely access the system so that I can use only the information and functionality appropriate to my role and relationship to an event.
+
+**Acceptance Criteria**
+
+Ensure that the user:
+
+* Can authenticate to the system using a recognised account.
+* Cannot access protected functionality without being authenticated.
+* Is recognised by the system according to the relevant role: Event Organiser, Event Coordinator, Venue Staff, Technical Support Staff, or Attendee.
+* Can only access functionality permitted for their role.
+* Can only access protected event information where their role and relationship to the event permits it.
+* Is denied access when attempting to perform an action for which they are not authorised.
+* Cannot access protected information belonging to unrelated events unless otherwise authorised.
+
+",,,,2026-09-06T23:19:44.564+0800,2026-09-21T00:26:00.596+0800,2026-09-21T00:26:00.578+0800,2026-09-21T00:26:00.597+0800,0|i0006p:,https://smu-g7-grp1.atlassian.net/browse/KAN-25
+KAN-26,Reserve Equipment,Story,To Do,Medium,,3,,"### User Story
+
+As a Technical Support Staff member, I want to reserve equipment for an event being planned so that the required quantities are secured without double-booking.
+
+### Acceptance Criteria
+
+* A reservation records the equipment type, quantity, event and required period.
+* Reserved quantities reduce availability for overlapping periods; reservations cannot exceed available stock.
+* Equipment and venue arrangements can proceed independently. Final event or venue confirmation is not a blanket prerequisite for equipment arrangements.
+* The Event Coordinator is notified when equipment is confirmed reserved.
+* Cancellation or completion automatically releases the event’s equipment reservations. Repeating the transition does not release stock twice.
+* Authorised Technical Support Staff can make manual availability adjustments while maintaining quantity consistency.
+* Unauthorised users cannot create or alter reservations.
+
+### Refinement before selection
+
+Define eligible planning states, tentative versus confirmed reservation states, quantity integrity rules and manual-adjustment permissions. Equipment location does not restrict allocation; no turnover buffer is required. Coordinate availability calculations with KAN-9 and manual stock updates with KAN-18.
+
+Refined 21 September 2026. The existing estimate is retained for planning review; this story remains outside Sprint 2.",,,,2026-09-06T23:20:00.726+0800,2026-09-21T03:07:30.988+0800,,2026-09-06T23:20:00.986+0800,0|i0005v:,https://smu-g7-grp1.atlassian.net/browse/KAN-26
+KAN-27,Request Clarification on an Event Request,Story,Done,Medium,MUHAMMAD IRFAN BIN MUHAMMAD NOOR ,3,Sprint 1,"**Title**  
+Request Clarification on an Event Request
+
+**User Story**  
+As an Event Coordinator, I want to request clarification or amendments for an incomplete or unclear event request so that I can obtain the information needed before event planning proceeds.
+
+**Acceptance Criteria**
+
+Ensure that the Event Coordinator:
+
+* Can request clarification or amendment while reviewing a submitted event request that they are authorised to review.
+* Can identify the information that requires clarification or amendment.
+* Can provide a message explaining what additional or amended information is required.
+* Can submit the clarification or amendment request.
+
+Ensure that:
+
+* The clarification or amendment request is recorded against the corresponding event request.
+* The relevant Event Organiser can see that clarification or amendment has been requested.
+* The relevant Event Organiser can view the clarification or amendment request.
+* The event request clearly indicates that further clarification or amendment is required.
+* Requesting clarification or amendment does not approve the event request.
+* Requesting clarification or amendment does not reject the event request.
+
+",,,,2026-09-06T23:21:49.902+0800,2026-10-01T15:08:55.930+0800,2026-09-21T00:26:12.718+0800,2026-09-21T00:26:12.738+0800,0|i0006q:t,https://smu-g7-grp1.atlassian.net/browse/KAN-27
+KAN-29,Automatically Assign Event Coordinator,Story,Done,Medium,"LOW TAO ZHE, TRISTAN _",3,Sprint 2,"### User Story
+
+As an Event Organiser, I want my submitted event request to be automatically assigned to an available Event Coordinator so that there is a clear internal staff member responsible for coordinating my event.
+
+### Acceptance Criteria
+
+* When an Event Organiser successfully submits an event request, the system automatically assigns an available Event Coordinator.
+* An event is assigned to only one Event Coordinator at a time.
+* The assigned Event Coordinator is recorded against the correct event.
+* The assigned Event Coordinator can view the event request they have been assigned.
+* No manual administrator action is required for the initial assignment.
+* Automatic assignment does not approve or reject the event request.
+* The assignment remains in place unless the Event Coordinator is subsequently reassigned.
+
+### Assignment Rule
+
+Filter to available Event Coordinators → assign the coordinator with the fewest active events → if tied, choose the first by a consistent ID/order.
+
+### Scope and refinement — 21 September 2026
+
+Availability may be preconfigured; an availability-management interface is not required. Retain available-only selection by fewest active events and a consistent ID/order tie-break.
+
+**Before implementation:** Define the stored availability field, active-event statuses and behaviour when no eligible coordinator exists. Cover unequal loads, tied loads and unavailable candidates in tests.
+
+Coordinators may assign requests to themselves or another coordinator. This complements automatic initial assignment; permission to reassign an already-assigned request still needs an explicit rule.",,,relates to: KAN-65,2026-09-06T23:31:24.078+0800,2026-10-10T00:27:51.995+0800,2026-10-04T23:17:25.165+0800,2026-10-04T23:17:25.171+0800,0|i0006q:ui,https://smu-g7-grp1.atlassian.net/browse/KAN-29
+KAN-31,Create Event Request,Story,Done,Medium,"WONG SZE KAI, ERNEST _",3,Sprint 1,"**Title**  
+Create Event Request
+
+**User Story**  
+As an Event Organiser, I want to create an event request containing the relevant event information so that ConnectSphere can assess and plan my event.
+
+**Acceptance Criteria**
+
+Ensure that the Event Organiser:
+
+* Can start a new event request.
+* Can enter the event name.
+* Can enter the purpose and description of the event.
+* Can enter the proposed date and time.
+* Can enter the expected attendance.
+* Can enter venue requirements.
+* Can enter accessibility needs.
+* Can enter equipment requirements.
+* Can indicate registration needs where relevant.
+* Can create more than one event request where required.
+* Does not have the newly created request treated as submitted until they perform the submission action.
+
+Ensure that:
+
+* Users who are not authorised as Event Organisers cannot create an Event Organiser request.
+
+",,,,2026-09-07T00:18:42.636+0800,2026-09-21T00:26:14.666+0800,2026-09-21T00:26:14.658+0800,2026-09-21T00:26:14.666+0800,0|i0006q:s,https://smu-g7-grp1.atlassian.net/browse/KAN-31
+KAN-33,View Submitted Event Request,Story,Done,Medium,MUHAMMAD IRFAN BIN MUHAMMAD NOOR ,2,Sprint 1; Sprint 2,"**Title**  
+View Submitted Event Request
+
+**User Story**  
+As an Event Coordinator, I want to view submitted event requests so that I can review the event information and determine the appropriate next action.
+
+**Acceptance Criteria**
+
+Ensure that the Event Coordinator:
+
+* Can view event requests that have been submitted for review and that they are authorised to access.
+* Can open a submitted event request.
+* Can view the event name, purpose, description, proposed date and time, expected attendance, venue requirements, accessibility needs, equipment requirements, and registration needs where provided.
+* Can distinguish submitted event requests from draft event requests.
+
+Ensure that:
+
+* Draft event requests are not treated as requests awaiting review.
+* The information displayed reflects the information associated with the submitted request.
+* Users who are not authorised to review the event request cannot access its protected information.
+
+‌
+
+### Sprint 1 carry-over — 21 September 2026
+
+**S1-DEF-02:** After approval, the assigned coordinator could no longer find the request to perform the follow-up confirmation check.
+
+* Approved and rejected requests leave the initial-review queue, but remain accessible to their authorised coordinator through a suitable follow-up/history route.
+* The saved outcome is visible after navigation and refresh; a decided request is not presented as awaiting its initial decision.
+* Verify organiser isolation, coordinator assignment restrictions and draft exclusion after the navigation fix.
+
+Complete KAN-42 database integration evidence and KAN-43 code review before closing. Their current In Progress status is retained until that work is evidenced.",,,,2026-09-07T00:22:32.695+0800,2026-10-01T15:09:14.391+0800,2026-10-01T15:09:14.373+0800,2026-10-01T15:09:14.392+0800,0|i0006q:v,https://smu-g7-grp1.atlassian.net/browse/KAN-33
+KAN-34,Resume/Edit Draft Event Request,Story,Done,Medium,LEO KAI JIE _,3,Sprint 1; Sprint 2,"**Title**  
+Resume/Edit Draft Event Request
+
+**User Story**  
+As an Event Organiser, I want to return to a previously saved draft event request and continue editing it so that I can complete my event request before submission.
+
+**Acceptance Criteria**
+
+Ensure that the Event Organiser:
+
+* Can view event requests that they previously saved as drafts.
+* Can open a draft event request.
+* Can view the information previously saved in the draft.
+* Can edit information in a draft that they are authorised to modify.
+* Can save changes made to the draft.
+* Sees the latest saved information when the draft is reopened.
+
+Ensure that:
+
+* The request remains in Draft status after changes are saved unless it is subsequently submitted.
+* Saving changes to a draft does not automatically submit the request.
+* Users who are not authorised to modify the draft cannot edit it.
+
+### Sprint 1 carry-over — 21 September 2026
+
+**S1-DEF-01:** Changing registration from No to Yes while editing a saved draft did not reveal the required registration capacity and date fields.
+
+* Changing the registration choice updates the corresponding form fields and validation consistently with the new-request form.
+* Saving and reopening the draft preserves the registration choice and associated values.
+* Check both No → Yes and Yes → No, then submission through KAN-6. Record the actual field rules and regression results before closing.
+
+",,,,2026-09-07T00:23:17.363+0800,2026-10-10T00:27:50.583+0800,2026-10-04T23:20:45.913+0800,2026-10-04T23:20:45.937+0800,0|i0006q:m,https://smu-g7-grp1.atlassian.net/browse/KAN-34
+KAN-36,Approve/Reject Event Request,Story,Done,Medium,"LOW TAO ZHE, TRISTAN _",3,Sprint 1,"**Title**  
+Approve/Reject Event Request
+
+**User Story**  
+As an Event Coordinator, I want to approve or reject a submitted event request so that appropriate events can proceed to planning while unsuitable requests do not progress further.
+
+**Acceptance Criteria**
+
+Ensure that the Event Coordinator:
+
+* Can approve a submitted event request that they are authorised to review.
+* Can reject a submitted event request that they are authorised to review.
+* Cannot approve or reject an event request that remains a draft.
+
+Ensure that:
+
+* When an event request is approved, the approval decision is recorded against the corresponding request.
+* When an event request is approved, its status is updated to Approved.
+* When an event request is rejected, the rejection decision is recorded against the corresponding request.
+* When an event request is rejected, its status is updated to Rejected.
+* The relevant Event Organiser can view the approval or rejection outcome.
+* A request with a recorded approval or rejection decision is no longer treated as awaiting its initial review decision.
+* Users who are not authorised to review the event request cannot approve or reject it.
+
+‌
+
+### Acceptance refinement — 21 September 2026
+
+* Rejecting an event request requires a short explanation. Empty or whitespace-only reasons are refused by both the interface and API.
+* The rejection reason is saved against the correct request and decision and can be viewed by the relevant Event Organiser after refresh.
+* Approval does not require a reason.
+* Invalid rejection input leaves the status and review records unchanged.
+
+The Sprint 1 Done record and its original demonstration results are retained. The current UI/API accept an optional reason; the mandatory-reason correction requires separate implementation and regression evidence. This refinement is not a new historical test pass.",,,relates to: KAN-60,2026-09-07T00:29:10.302+0800,2026-09-21T03:18:11.143+0800,2026-09-21T00:26:11.645+0800,2026-09-21T00:26:11.664+0800,0|i0007r:,https://smu-g7-grp1.atlassian.net/browse/KAN-36
+KAN-37,Implement scoped list/detail queries (submitted-requests.ts),Subtask,Done,Medium,MUHAMMAD IRFAN BIN MUHAMMAD NOOR ,,Sprint 1; Sprint 2,"Backend query functions for the coordinator review queue and detail view: listReviewableRequests and getReviewableRequestDetail. Requires an explicit canViewRequest visibility policy (no default grant, since KAN-29/Q-02 are unresolved). Scoped to SUBMITTED/UNDER_REVIEW/CLARIFICATION_REQUESTED; drafts and decided requests excluded.
+
+Implementation: backend/src/modules/events/submitted-requests.ts  
+Branch: feat/KAN-33-view-submitted",KAN-33,View Submitted Event Request,,2026-09-11T17:39:20.658+0800,2026-09-11T17:39:40.612+0800,2026-09-11T17:39:40.581+0800,2026-09-11T17:39:40.612+0800,0|i000a7:,https://smu-g7-grp1.atlassian.net/browse/KAN-37
+KAN-38,Implement queue/detail HTTP endpoints (submitted-requests-router.ts),Subtask,Done,Medium,MUHAMMAD IRFAN BIN MUHAMMAD NOOR ,,Sprint 1; Sprint 2,"GET /api/events (queue) and GET /api/events/:id (detail). Requires authenticate(request) + canViewRequest dependencies; mounted disabled until KAN-25 supplies real auth. Detail route defers via next() for a non-coordinator actor since KAN-34/KAN-16 also propose GET /:id - see the dated route-collision note in docs/requirements/assumptions-and-questions.md.
+
+Implementation: backend/src/modules/events/submitted-requests-router.ts  
+Branch: feat/KAN-33-view-submitted",KAN-33,View Submitted Event Request,,2026-09-11T17:39:45.456+0800,2026-09-11T17:39:46.133+0800,2026-09-11T17:39:46.127+0800,2026-09-11T17:39:46.133+0800,0|i000af:,https://smu-g7-grp1.atlassian.net/browse/KAN-38
+KAN-39,Backend unit tests (query + HTTP boundary),Subtask,Done,Medium,MUHAMMAD IRFAN BIN MUHAMMAD NOOR ,,Sprint 1; Sprint 2,"25 tests covering normal/boundary/conflict/failure: empty queue, visibility-policy filtering, draft masking, already-decided masking, non-coordinator pass-through, invalid UUID, unauthenticated, forbidden. All passing; typecheck clean.
+
+Tests: backend/test/events/submitted-requests.test.ts, backend/test/events/submitted-requests-router.test.ts  
+Branch: feat/KAN-33-view-submitted",KAN-33,View Submitted Event Request,,2026-09-11T17:39:50.221+0800,2026-09-11T17:39:50.826+0800,2026-09-11T17:39:50.819+0800,2026-09-11T17:39:50.826+0800,0|i000an:,https://smu-g7-grp1.atlassian.net/browse/KAN-39
+KAN-40,"Frontend queue + detail pages, wired to KAN-36 decision panel",Subtask,Done,Medium,MUHAMMAD IRFAN BIN MUHAMMAD NOOR ,,Sprint 1; Sprint 2,"ReviewQueuePage.vue (replaces placeholder) and new ReviewRequestPage.vue showing all AC-required fields, mounting Tristan's ReviewDecisionPanel.vue for the approve/reject action. canReview is currently hardcoded true pending KAN-25 - documented as a known gap in sprint-backlog.md, does not affect server-side enforcement.
+
+Implementation: frontend/src/features/reviews/pages/ReviewQueuePage.vue, frontend/src/features/reviews/pages/ReviewRequestPage.vue, frontend/src/features/reviews/api/submitted-requests.ts  
+Branch: feat/KAN-33-view-submitted",KAN-33,View Submitted Event Request,,2026-09-11T17:39:55.119+0800,2026-09-11T17:39:55.815+0800,2026-09-11T17:39:55.810+0800,2026-09-11T17:39:55.815+0800,0|i000av:,https://smu-g7-grp1.atlassian.net/browse/KAN-40
+KAN-41,Frontend component tests,Subtask,Done,Medium,MUHAMMAD IRFAN BIN MUHAMMAD NOOR ,,Sprint 1; Sprint 2,"17 component tests (Testing Library) covering: queue list rendering, empty state, retryable error state, detail field rendering, masked not-found error, and a full decision-submission flow through the mounted KAN-36 panel. All passing; typecheck clean; build succeeds.
+
+Tests: frontend/src/features/reviews/pages/ReviewQueuePage.test.ts, frontend/src/features/reviews/pages/ReviewRequestPage.test.ts  
+Branch: feat/KAN-33-view-submitted",KAN-33,View Submitted Event Request,,2026-09-11T17:39:59.959+0800,2026-09-11T17:40:00.618+0800,2026-09-11T17:40:00.612+0800,2026-09-11T17:40:00.618+0800,0|i000b3:,https://smu-g7-grp1.atlassian.net/browse/KAN-41
+KAN-42,Integration tests against real Postgres (S1-T18-T20),Subtask,Done,Medium,MUHAMMAD IRFAN BIN MUHAMMAD NOOR ,,Sprint 1; Sprint 2,"Database-integration and browser-level scenarios from the Sprint 1 acceptance test plan (S1-T18, S1-T19, S1-T20). Blocked: waiting on Supabase org invite to reach the shared dev project, and no local Docker install yet for an isolated test database. Unit-level coverage exists in the meantime (see the backend/frontend test subtasks).
+
+Branch: feat/KAN-33-view-submitted",KAN-33,View Submitted Event Request,,2026-09-11T17:40:04.912+0800,2026-10-01T15:09:06.134+0800,2026-10-01T15:09:06.116+0800,2026-10-01T15:09:06.135+0800,0|i000bb:,https://smu-g7-grp1.atlassian.net/browse/KAN-42
+KAN-43,Code review,Subtask,Done,Medium,MUHAMMAD IRFAN BIN MUHAMMAD NOOR ,,Sprint 1; Sprint 2,"Review by Ryan or Tristan per the sprint backlog's proposed reviewer assignment. Also needs team agreement on the GET /api/events/:id route-collision assumption (raised with Tristan) before KAN-34/KAN-16 add their own GET /:id handlers.
+
+Branch: feat/KAN-33-view-submitted (pushed to origin, not yet a PR - waiting on feat/KAN-36-event-decisions to merge first, since this branch is built on top of it)",KAN-33,View Submitted Event Request,,2026-09-11T17:40:09.432+0800,2026-10-01T15:09:08.326+0800,2026-10-01T15:09:08.307+0800,2026-10-01T15:09:08.326+0800,0|i000bj:,https://smu-g7-grp1.atlassian.net/browse/KAN-43
+KAN-44,"Implement clarification validation/eligibility (clarification-input.ts, clarification-eligibility.ts)",Subtask,Done,Medium,MUHAMMAD IRFAN BIN MUHAMMAD NOOR ,,Sprint 1,"Non-empty message validation (KAN-27-AC1/AC3) and assigned-coordinator + reviewable-state eligibility check, mirroring review-input.ts/review-eligibility.ts. Branch: feat/KAN-27-request-clarification",KAN-27,Request Clarification on an Event Request,,2026-09-20T21:53:54.029+0800,2026-09-20T21:59:25.049+0800,2026-09-20T21:59:25.026+0800,2026-09-20T21:59:25.049+0800,0|i000br:,https://smu-g7-grp1.atlassian.net/browse/KAN-44
+KAN-45,Implement atomic clarification persistence (clarification-decision.ts),Subtask,Done,Medium,MUHAMMAD IRFAN BIN MUHAMMAD NOOR ,,Sprint 1,"Lock the event_requests row, recheck eligibility, insert into event_clarifications and transition status to CLARIFICATION_REQUESTED atomically, mirroring review-decision.ts. Branch: feat/KAN-27-request-clarification",KAN-27,Request Clarification on an Event Request,,2026-09-20T21:53:59.720+0800,2026-09-20T21:59:29.568+0800,2026-09-20T21:59:29.545+0800,2026-09-20T21:59:29.568+0800,0|i000bz:,https://smu-g7-grp1.atlassian.net/browse/KAN-45
+KAN-46,Implement POST /api/events/:id/clarifications HTTP handler + wire into app.ts/runtime-app.ts,Subtask,Done,Medium,MUHAMMAD IRFAN BIN MUHAMMAD NOOR ,,Sprint 1,HTTP boundary router mirroring review-router.ts; wire authenticate + isAssignedCoordinator policy into runtime-app.ts alongside reviews/submittedRequests. Branch: feat/KAN-27-request-clarification,KAN-27,Request Clarification on an Event Request,,2026-09-20T21:54:04.893+0800,2026-09-20T21:59:34.004+0800,2026-09-20T21:59:33.981+0800,2026-09-20T21:59:34.004+0800,0|i000c7:,https://smu-g7-grp1.atlassian.net/browse/KAN-46
+KAN-47,Backend unit + HTTP-boundary tests for clarification validation/eligibility/router,Subtask,Done,Medium,MUHAMMAD IRFAN BIN MUHAMMAD NOOR ,,Sprint 1,"Mirror review-input.test.ts, review-eligibility.test.ts, review-router.test.ts coverage (normal/boundary/conflict/failure per CLAUDE.md rule 3). Branch: feat/KAN-27-request-clarification",KAN-27,Request Clarification on an Event Request,,2026-09-20T21:54:09.702+0800,2026-09-20T21:59:38.332+0800,2026-09-20T21:59:38.315+0800,2026-09-20T21:59:38.332+0800,0|i000cf:,https://smu-g7-grp1.atlassian.net/browse/KAN-47
+KAN-48,Extend shared event detail + frontend: request-clarification UI (coordinator) and clarification display (organiser),Subtask,Done,Medium,MUHAMMAD IRFAN BIN MUHAMMAD NOOR ,,Sprint 1,"Add clarification field + canRequestClarification action to event-request-detail.ts; add request form to the coordinator review page and clarification banner to EventRequestDetailPage.vue (organiser), connecting to KAN-16 status display per AC2.",KAN-27,Request Clarification on an Event Request,,2026-09-20T21:54:14.558+0800,2026-09-20T22:09:06.443+0800,2026-09-20T22:09:06.427+0800,2026-09-20T22:09:06.444+0800,0|i000cn:,https://smu-g7-grp1.atlassian.net/browse/KAN-48
+KAN-49,Integration tests against real Postgres + code review,Subtask,Done,Medium,MUHAMMAD IRFAN BIN MUHAMMAD NOOR ,,Sprint 1,"database/tests/events/clarification-decision.integration.test.ts, same Supabase/Docker-access blocker as KAN-42/KAN-33. Code review by Ryan or Tristan per sprint-backlog.md's proposed reviewer.",KAN-27,Request Clarification on an Event Request,,2026-09-20T21:54:19.282+0800,2026-09-21T00:28:44.150+0800,2026-09-21T00:28:44.126+0800,2026-09-21T00:28:44.151+0800,0|i000cv:,https://smu-g7-grp1.atlassian.net/browse/KAN-49
+KAN-50,Maintain Venue Catalog,Story,Done,Medium,MUHAMMAD IRFAN BIN MUHAMMAD NOOR ,5,Sprint 2,"### User Story
+
+As a Venue Staff member, I want to maintain accurate information about ConnectSphere venues so that Event Coordinators and Venue Staff can use reliable venue information when planning events.
+
+### Acceptance Criteria
+
+Ensure that Venue Staff can:
+
+* View the venues recorded in the venue catalogue.
+* View the current information recorded for a venue.
+* Record and update a venue's location.
+* Record and update a venue's maximum capacity.
+* Record and update the facilities available at a venue.
+* Record and update accessibility information for a venue.
+* Record and update one or more supported room layouts for a venue.
+* Record and update relevant operating information for a venue.
+* Save changes made to venue information.
+
+Ensure that:
+
+* Supported room layouts remain associated with the correct venue.
+* A venue can support more than one room layout where applicable.
+* Updated venue information is displayed when the venue is subsequently viewed.
+* Updated venue information is available to the venue search and suitability-checking functionality.
+* Users who are not authorised to maintain venue information cannot modify the venue catalogue.
+
+### Acceptance detail — 9 October 2026
+
+* A save that supplies no field, or a field Venue Staff may not change (name, description, active status, identifiers), is refused with a validation error and the venue is unchanged.
+* Changing only one operating-hour endpoint is checked against the saved value; a result where closing is at or before opening is refused. A blank endpoint means no restriction at that end of the day.
+* Facility, accessibility and layout entries are trimmed, case-insensitive duplicates are removed, each entry is at most 100 characters and each list holds at most 30 distinct values. Capacity is a whole number of at least 1.
+* When two Venue Staff edit different fields of the same venue at the same time, both changes are kept; the same field resolves to the last save.
+* A venue that is inactive or no longer exists is reported as not in the active catalogue, and nothing is changed.
+* Changing capacity or supported layouts does not alter existing bookings; it applies to later searches and suitability assessments.
+* Only the fields that were actually changed are sent on save, and a failed save keeps the entered values for correction.
+
+**Refinement:** Creating, deleting or deactivating venues and per-venue setup/turnaround time (Week 7 customer change 1) are not part of this story's pre-change scope.",,,,2026-09-21T00:37:05.468+0800,2026-10-10T00:29:08.339+0800,2026-10-10T00:29:08.321+0800,2026-10-10T00:29:08.339+0800,0|i000d3:,https://smu-g7-grp1.atlassian.net/browse/KAN-50
+KAN-51,View Venue Availability Calendar,Story,Done,Medium,TAY YU CHEN ARVIN ,5,Sprint 2,"### User Story
+
+As an authorised internal user (Event Coordinator, Venue Staff, Technical Support Staff), I want to view venue availability across relevant dates and times so that I can identify when a venue may be requested.
+
+### Acceptance Criteria
+
+* Authorised internal users can view venue availability for relevant dates and times.
+* Confirmed venue bookings are reflected as unavailable during the corresponding period.
+* Recorded periods of venue unavailability are reflected.
+* Available and unavailable periods can be distinguished.
+* Availability information corresponds to the correct venue.
+* Unauthorised users cannot access protected venue-planning information.
+
+",,,,2026-09-21T00:38:31.016+0800,2026-10-10T00:29:49.131+0800,2026-10-10T00:29:49.112+0800,2026-10-10T00:29:49.131+0800,0|i000db:,https://smu-g7-grp1.atlassian.net/browse/KAN-51
+KAN-52,Check Venue Suitability,Story,Done,Medium,"LOW TAO ZHE, TRISTAN _",3,Sprint 2,"### User Story
+
+As an Event Coordinator, I want to check whether a venue appears suitable for an event so that I can avoid selecting a venue that does not meet important event requirements.
+
+### Acceptance Criteria
+
+* A venue can be assessed using the relevant requirements of an event.
+* A venue is not treated as suitable when expected attendance exceeds its capacity.
+* A venue is not treated as suitable when a required facility is unavailable.
+* Required accessibility needs are considered where applicable.
+* Required room layouts are considered where applicable.
+* Venue availability is considered when determining suitability.
+* The Event Coordinator can identify why a venue has been marked unsuitable.
+
+### Acceptance detail — 21 September 2026
+
+* A venue that meets the applicable event requirements is not incorrectly marked unsuitable.
+* The assessment uses the current event requirements, venue information and relevant availability.
+
+Suitability informs venue selection; an unsuitable venue does not automatically reject the event request. Confirm any additional suitability rules before implementation and keep reasons understandable to the coordinator.",,,,2026-09-21T00:39:17.282+0800,2026-10-04T23:18:40.137+0800,2026-10-04T23:18:40.132+0800,2026-10-04T23:18:40.138+0800,0|i0007i:,https://smu-g7-grp1.atlassian.net/browse/KAN-52
+KAN-53,Submit Venue Booking Request,Story,Done,Medium,LEO KAI JIE _,3,Sprint 2,"### User Story
+
+As an Event Coordinator, I want to submit a venue booking request for an event so that Venue Staff can assess whether the requested venue can be made available.
+
+### Acceptance Criteria
+
+* An authorised Event Coordinator can select a venue for an event they manage.
+* The booking request contains the relevant event date and time.
+* The booking request contains relevant venue requirements needed for review.
+* The booking request remains associated with the corresponding event.
+* A submitted booking request becomes available to Venue Staff for review.
+* Submitting a request does not automatically approve the booking.
+* An unauthorised user cannot submit a booking request for the event.
+
+### Acceptance detail — 21 September 2026
+
+* The coordinator can create and submit the booking request for the selected venue and event.
+* The persisted request is associated with the correct venue as well as the correct event.
+* A submitted request is identifiable as pending a decision, distinct from approved or rejected requests.
+* Submission is refused when the requested venue period overlaps an existing reservation or recorded unavailability. No conflicting request is persisted, and the coordinator receives useful feedback.
+* Availability is checked again at approval to protect against changes after submission and concurrent requests.
+
+**Refinement:** Define which pending/tentative states reserve a slot, eligible event states, and interval boundary rules with KAN-54. No turnover buffer is required. Do not treat pending requests as confirmed bookings without that explicit policy.",,,,2026-09-21T00:51:49.965+0800,2026-10-04T23:24:19.690+0800,2026-10-04T23:24:19.672+0800,2026-10-04T23:24:19.691+0800,0|i000dr:,https://smu-g7-grp1.atlassian.net/browse/KAN-53
+KAN-54,Detect Venue Booking Conflicts,Story,Done,Medium,"WONG SZE KAI, ERNEST _",5,Sprint 2,"### User Story
+
+As an Event Coordinator or Venue Staff member, I want incompatible or overlapping venue bookings to be detected so that inappropriate double-booking is prevented.
+
+### Acceptance Criteria
+
+* Existing confirmed bookings are considered when another booking is requested.
+* Two incompatible bookings for the same venue with overlapping times are identified as conflicting.
+* A confirmed booking causes the venue to be treated as unavailable for conflicting periods.
+* A non-overlapping booking is not incorrectly flagged as conflicting.
+* Recorded venue-unavailability periods are considered.
+* A booking that would create an invalid conflict cannot be confirmed.
+* The user is informed when a booking cannot proceed because of a conflict.
+
+### Acceptance detail — 21 September 2026
+
+* Overlapping bookings for different venues are not treated as a conflict solely because their times overlap.
+* Conflict checks use the current bookings and recorded venue-unavailability data.
+* A booking request for an already reserved or unavailable venue period is rejected at submission, with useful feedback and no persisted conflicting request.
+* Approval checks availability again and prevents two concurrent operations from confirming incompatible bookings for the same venue.
+
+**Refinement:** Agree the pending/tentative hold policy and exact interval-boundary convention with KAN-53/KAN-55. No turnover buffer is required. Cover overlaps, non-overlaps, different venues, operational blocks and concurrent approval attempts.
+
+### Acceptance detail — 9 October 2026 (verification)
+
+* **KAN-54-AC10:** Only approved bookings and recorded blocks reserve a venue. Pending, rejected and cancelled bookings never cause a conflict, and a booking that is already decided is not assessed again.
+* **KAN-54-AC11:** When the database itself refuses an overlap at the moment of approval, the user receives the same conflict or unavailable message as the application-level check, and an unrelated database failure is not disguised as a conflict.
+
+Verified by PR #30 (merged 10 October; 21 unit tests and 3 PostgreSQL cases added, no source change). Evidence: AUTO-20261009-KAN54-01 and MAN-20261009-KAN54-01 in docs/testing/test-evidence.md.",,,,2026-09-21T00:52:43.195+0800,2026-10-10T00:29:12.233+0800,2026-10-10T00:29:12.217+0800,2026-10-10T00:29:12.233+0800,0|i000e7:,https://smu-g7-grp1.atlassian.net/browse/KAN-54
+KAN-55,Block Venue for Operational Unavailability,Story,Done,Medium,LEO KAI JIE _,3,Sprint 2,"### User Story
+
+As a Venue Staff member, I want to block a venue for a period when it is unavailable so that Event Coordinators do not incorrectly treat the venue as available for event use.
+
+### Acceptance Criteria
+
+Ensure that Venue Staff can:
+
+* Select a venue that needs to be made unavailable.
+* Specify the date and time period during which the venue is unavailable.
+* Record the venue as unavailable for reasons such as maintenance, renovation, safety restrictions, internal activities, or other operational reasons.
+* Save the venue unavailability period.
+
+Ensure that:
+
+* The blocked period is associated with the correct venue.
+* A blocked venue is shown as unavailable in the Venue Availability Calendar for the recorded period.
+* A blocked venue is not treated as available when searching for venues during an overlapping period.
+* A blocked venue is not treated as suitable for an event whose required date and time overlaps with the blocked period.
+* A venue booking cannot be confirmed for a period that conflicts with a recorded venue block.
+* A venue remains available outside the recorded blocked period.
+* Users who are not authorised as Venue Staff cannot create venue-unavailability blocks.
+
+### Consolidated scope — 21 September 2026
+
+KAN-55 is the authoritative operational-unavailability story, including the maintenance scope previously recorded in KAN-21. Deliver and count this scope once.
+
+* Venue Staff enter a reason when creating a block. A missing or blank reason is rejected; the reason is retained with the correct venue and period.
+* The period records a start and end date/time. Invalid or reversed periods are refused with clear feedback.
+* New booking submissions for an already blocked period are refused as well as conflicting booking approvals.
+
+**Open decision:** Agree how a new operational block overlapping an existing booking should be handled. Do not silently cancel or displace the existing booking. The precise refusal/escalation policy and pending-hold behaviour need confirmation before implementation.",,,is duplicated by: KAN-21,2026-09-21T00:56:50.632+0800,2026-10-04T23:24:21.602+0800,2026-10-04T23:24:21.583+0800,2026-10-04T23:24:21.602+0800,0|i000ef:,https://smu-g7-grp1.atlassian.net/browse/KAN-55
+KAN-56,S1-DEF-02: Restore authorised coordinator access to decided requests and verify regression,Subtask,Done,Medium,MUHAMMAD IRFAN BIN MUHAMMAD NOOR ,,Sprint 1; Sprint 2,"Reported at the Sprint 1 review on 19 September 2026: after approval, the request disappeared from the coordinator view, preventing follow-up navigation.
+
+Reproduce using a submitted request assigned to the signed-in coordinator: approve it, return to the list, and attempt to reopen its saved details. Record the build, request state and route.
+
+Acceptance checks:
+
+* Decided requests leave the initial-review queue but remain accessible to their authorised coordinator through a follow-up/history route.
+* Reopening and refreshing retains the saved decision and status.
+* A decided request is not offered another initial decision.
+* Unrelated users remain denied; coordinator draft exclusion and current-assignment permissions remain intact.
+
+Do not conflate restoring access with implementing final event confirmation, tracked separately in KAN-61. Preserve the successful Sprint 1 review paths and attach reproduction, regression and review evidence to KAN-33. This subtask is included in the carried parent estimate; it adds no separate story points.
+
+### Implementation refinements — 29 September 2026 (Irfan)
+
+Edge cases found while implementing, added as checks (mirrored in docs/scrum/sprint-02/sprint-backlog.md):
+
+* The history route also lists requests that have moved on to CONFIRMED, CANCELLED or COMPLETED, so a request stays reachable after follow-up steps.
+* History follows the current assignment only: requests assigned to another coordinator, or unassigned, are never listed, and a reassigned coordinator loses access (open policy under Q-02).
+* Organisers cannot use the coordinator history scope (400 INVALID_EVENT_LIST_SCOPE); their own all-status list is unchanged.
+* A failure loading the history does not hide the pending queue, and vice versa.
+
+Implementation: GET /api/events?scope=history plus a Decided requests section on /reviews. Branch feat/KAN-33-decided-request-access. Evidence: AUTO-20260929-01 (automated), MAN-20260929-01 (hosted walkthrough, pending) in docs/testing/test-evidence.md.",KAN-33,View Submitted Event Request,,2026-09-21T02:49:33.721+0800,2026-10-01T15:09:03.781+0800,2026-10-01T15:09:03.757+0800,2026-10-01T15:09:03.781+0800,0|i000en:,https://smu-g7-grp1.atlassian.net/browse/KAN-56
+KAN-57,S1-DEF-01: Fix registration-dependent fields when editing a saved draft and verify both toggle directions,Subtask,Done,Medium,,,Sprint 1; Sprint 2,"Reported at the Sprint 1 review on 19 September 2026: changing registration from No to Yes while editing a saved draft did not reveal the capacity and registration-date fields.
+
+Reproduce: save a draft with registration disabled, reopen it, change registration to Yes and inspect the dependent controls. Record build, route and saved values.
+
+Acceptance checks:
+
+* Enabling registration reveals the relevant capacity/date controls consistently with the new-request form.
+* Saving and reopening retains the registration selection and entered values.
+* Test both No-to-Yes and Yes-to-No changes, including refresh.
+* Conditional validation is consistent on creation, editing and KAN-6 submission; invalid submission retains draft data.
+* Agree the exact conditional requirements before treating unconfirmed rules as acceptance policy.
+
+Attach reproduction, regression and review evidence to KAN-34. This subtask is included in the carried parent estimate; it adds no separate story points.",KAN-34,Resume/Edit Draft Event Request,,2026-09-21T02:50:14.143+0800,2026-10-15T16:11:14.305+0800,2026-10-15T16:11:14.289+0800,2026-10-15T16:11:14.306+0800,0|i000ev:,https://smu-g7-grp1.atlassian.net/browse/KAN-57
+KAN-58,S1-DEF-03: Enable saved-draft submission,Subtask,Done,Medium,,,Sprint 1; Sprint 2,"Reported in the Sprint 1 review on 19 September: a saved draft could not be converted into a submitted event request. Reproduce the affected path, provide the submit action for an authorised organiser, apply the same validation as a new request, retain data on validation failure, and verify Draft → Submitted persists after refresh. Record the tested build and regression evidence under KAN-6. This subtask is included in the carried KAN-6 estimate; no additional story points.",KAN-6,Submit an Event Request,,2026-09-21T02:51:54.049+0800,2026-10-15T16:11:26.566+0800,2026-10-15T16:11:26.549+0800,2026-10-15T16:11:26.567+0800,0|i000f3:,https://smu-g7-grp1.atlassian.net/browse/KAN-58
+KAN-59,S1-DEF-04: Reject incomplete new-request and saved-draft submissions with field errors,Subtask,Done,Medium,MUHAMMAD IRFAN BIN MUHAMMAD NOOR ,,Sprint 1; Sprint 2,"Reported at the Sprint 1 review on 19 September 2026: some requests submitted without mandatory information and without expected validation feedback. DEMO-04 passed a separate demonstrated validation case; preserve that result while reproducing the failing inputs and route.
+
+Acceptance checks:
+
+* Omit event date and attendance separately through new-request submission, reopened saved-draft submission and direct API calls. Each submission is refused with useful field-level feedback.
+* Agree and exercise the remaining mandatory fields, timing/attendance bounds and conditional registration checklist.
+* Inapplicable optional accessibility, equipment, registration and special needs may be None / Not Required; do not make all optional fields mandatory.
+* Invalid attempts retain draft status and entered data, and create no submitted request or partial related state.
+* Valid controls still submit successfully and persist after refresh.
+
+Record input fields, role, route, build, expected/actual response and persisted status. Link regression and review evidence to KAN-6 and coordinate saved-draft submission with KAN-58. This subtask is included in the carried parent estimate; it adds no separate story points.",KAN-6,Submit an Event Request,,2026-09-21T02:52:03.729+0800,2026-10-10T00:28:36.936+0800,2026-10-10T00:28:23.604+0800,2026-10-10T00:28:23.629+0800,0|i000fb:,https://smu-g7-grp1.atlassian.net/browse/KAN-59
+KAN-60,Require a reason when rejecting an event request,Task,To Do,Medium,,,,"Follow-up to KAN-36, refined on 21 September 2026. The current approval/rejection UI and API allow an empty reason, but event-request rejection requires a short explanation.
+
+Acceptance checks:
+
+* Reject missing, empty and whitespace-only rejection reasons in the API and UI.
+* Persist the reason against the correct review and show it to the owning organiser after refresh.
+* Leave status and review records unchanged when validation fails.
+* Continue allowing approval without a reason.
+* Add input, endpoint and UI regression coverage and record the tested build.
+
+Keep KAN-36’s historical Sprint 1 Done record intact. This correction is unestimated future backlog work; it is not included in the current 43-point Sprint 2 commitment.",,,relates to: KAN-36,2026-09-21T02:53:41.219+0800,2026-09-21T03:18:11.114+0800,,2026-09-21T02:53:41.494+0800,0|i000fj:,https://smu-g7-grp1.atlassian.net/browse/KAN-60
+KAN-61,Confirm Event After Planning Arrangements,Story,To Do,Medium,,,,"### User Story
+
+As an Event Coordinator, I want to confirm an event once its required arrangements are ready so that the organiser knows the event can proceed.
+
+### Proposed Acceptance Criteria — refine before selection
+
+1. Only a coordinator authorised for the event can confirm it.
+2. Initial event-request approval under KAN-36 is distinct from final confirmation.
+3. Confirmation checks the required venue and equipment arrangements. Unmet prerequisites prevent the transition with useful feedback; an applicable Not Required equipment choice does not block confirmation.
+4. Confirmation is recorded against the correct event with actor and time, persists after refresh and is visible to the organiser.
+5. Unauthorised, invalid and repeated transitions do not corrupt status or resource records.
+6. Optional human technical-support requests or staff scheduling are not prerequisites of this first-release confirmation workflow.
+
+### Open decisions
+
+Agree exact eligible prior states and the venue/equipment readiness checklist. Define registration-opening and notification effects. Coordinate venue booking KAN-8, equipment KAN-26, status display KAN-16, registration KAN-14 and notifications KAN-64.
+
+Refined 21 September 2026 to keep core confirmation independent of optional human staffing. Existing implementation is not acceptance evidence. Unestimated future backlog; not included in Sprint 2’s 43 points.",,,,2026-09-21T03:11:23.107+0800,2026-09-21T03:48:06.235+0800,,2026-09-21T03:11:23.345+0800,0|i000fr:,https://smu-g7-grp1.atlassian.net/browse/KAN-61
+KAN-62,Cancel Event and Release Its Arrangements,Story,To Do,Medium,,,,"User Story  
+As an authorised event manager, I want to cancel an eligible event and release its arrangements so that obsolete bookings and resources do not remain committed.
+
+Proposed Acceptance Criteria
+
+1. Only a user authorised for the event can cancel it in an eligible state.
+2. Cancellation is recorded against the correct event with actor, time and any explanation required by the agreed policy, and remains visible after refresh.
+3. Equipment reservations are released automatically on cancellation, without double-releasing quantities or affecting unrelated events.
+4. Venue bookings, registrations and notifications are handled consistently with the agreed cancellation policy; incompatible arrangements are not silently left as valid.
+5. Repeated, invalid or unauthorised cancellation attempts do not corrupt status or related resource records.
+6. Major changes affecting confirmed arrangements can follow cancellation plus a new event request under KAN-15.
+
+Refinement before selection  
+Agree who may request versus perform cancellation, permitted prior states, whether a reason is mandatory, and the venue-booking/registration/notification effects. Coordinate KAN-26 resource release, KAN-64 notifications and KAN-61 confirmation. Keep a cancellation record rather than deleting the event and its history.
+
+Refined 21 September 2026. Unestimated future backlog outside Sprint 2’s 43-point commitment. Existing implementation requires validation against the agreed policy.",,,,2026-09-21T03:11:55.295+0800,2026-09-21T03:38:04.832+0800,,2026-09-21T03:11:55.554+0800,0|i000fz:,https://smu-g7-grp1.atlassian.net/browse/KAN-62
+KAN-63,Submit and Review Event Equipment Requests,Story,To Do,Medium,,,,"### User Story
+
+As an Event Coordinator, I want to record an event’s equipment request and have Technical Support Staff review and update its arrangements so that suitable equipment can be provided.
+
+### Acceptance Criteria
+
+1. An authorised coordinator can create and save an equipment request for an event they manage, specifying equipment types, quantities, the relevant event period and technical requirements.
+2. The request remains associated with the correct event and is available to the appropriate Technical Support Staff.
+3. Technical Support Staff can open relevant equipment requests and inspect the requested types, quantities, timing and technical requirements.
+4. Authorised Technical Support Staff can update equipment-arrangement information and save a review outcome against the correct request.
+5. The latest saved request and permitted review outcome remain visible to the relevant coordinator and staff after refresh.
+6. Availability checks consider current requested quantities and overlapping reservations through KAN-9. An outcome does not silently reserve unavailable equipment.
+7. Accepted arrangements connect to KAN-26 reservation without duplicate reservations or double-counted quantities.
+8. Updates do not modify equipment requests or reservations belonging to unrelated events.
+9. Unauthorised users cannot create, modify, review or access protected equipment arrangements for the event.
+10. Venue and equipment planning can proceed independently. Events with no equipment needs may use Not Required under the agreed event requirements.
+
+### Refinement before selection
+
+Agree eligible event/request states, edit permissions, review outcomes, partial fulfilment and whether acceptance creates a reservation immediately. Record how authorised later changes interact with existing reservations. Equipment quantities and resource release are owned jointly with KAN-9, KAN-18 and KAN-26; do not count duplicate work.
+
+This story covers both equipment-request recording and staff review/update. Human technical-support staffing is separate from equipment management and is not a prerequisite.
+
+Refined 21 September 2026. Unestimated future backlog outside Sprint 2’s 43-point commitment. Existing implementation requires criterion-linked validation.",,,,2026-09-21T03:12:34.760+0800,2026-09-21T03:37:16.333+0800,,2026-09-21T03:12:34.994+0800,0|i000g7:,https://smu-g7-grp1.atlassian.net/browse/KAN-63
+KAN-64,Notify Relevant Users About Event Workflow Updates,Story,To Do,Medium,,,,"### User Story
+
+As a relevant organiser, internal staff member or attendee, I want to receive notifications about significant workflow updates that affect me so that I can understand what happened and take any required action.
+
+### Acceptance Criteria
+
+1. The relevant organiser is notified when an event request is successfully submitted, clarification or amendment is requested, or the request is approved or rejected.
+2. Relevant users are notified when a coordinator is assigned or reassigned to their event.
+3. Relevant internal users receive notifications for venue booking decisions, significant changes affecting arrangements, and equipment confirmation or unavailability.
+4. Relevant users receive notifications for final event confirmation or cancellation.
+5. Relevant attendees and authorised event managers receive significant registration or withdrawal updates as appropriate. Registered attendees are notified of event changes that affect them.
+6. Each notification identifies the correct event, and the correct request or registration where applicable, with enough information to understand the change and any action required.
+7. Only relevant authorised recipients can access a notification and its protected details. Unrelated events or users do not receive it.
+8. A notification reflects a successfully recorded business outcome. Failed or rolled-back operations do not produce success notifications.
+9. The notification channel is a release implementation choice; email is not mandatory.
+
+### Delivery tasks and refinement
+
+Break implementation and tests into event-request updates, internal planning updates and registration updates. These are three trigger groups within this story, not three additional pointed stories. Reuse notification behaviour required by KAN-15, KAN-26 and other workflow stories.
+
+Before estimation, agree a trigger/recipient/channel matrix, delivery and retry behaviour, duplicate handling, retention and read-state needs. Inspect existing in-app notifications and test actual coverage rather than assuming completion from code presence. Changes in recipient assignment must not leak protected event information.
+
+Refined 21 September 2026. Unestimated future backlog outside Sprint 2’s 43-point commitment.",,,,2026-09-21T03:13:13.909+0800,2026-09-21T03:35:37.966+0800,,2026-09-21T03:13:14.263+0800,0|i000gf:,https://smu-g7-grp1.atlassian.net/browse/KAN-64
+KAN-65,Reassign Event Coordinator,Story,To Do,Medium,,,,"User Story  
+As an authorised internal user, I want to reassign an event to another Event Coordinator so that responsibility can change when staff responsibilities or availability change.
+
+Acceptance Criteria
+
+1. An authorised user can view the event’s current coordinator and select another Event Coordinator.
+2. Successful reassignment records the new coordinator against the correct existing event; only one coordinator is current at a time.
+3. The previous coordinator is no longer treated as the main coordinator and loses permissions derived solely from that assignment.
+4. The new coordinator can access the event they are authorised to coordinate.
+5. Reassignment retains event information and prior decisions, without creating a duplicate event.
+6. Relevant authorised users see the current coordinator after saving and refreshing.
+7. Users without reassignment authority cannot change the assignment, including by direct API calls.
+8. Record the assignment change with actor and time; relevant assignment notifications are covered by KAN-64.
+
+Refinement before selection  
+KAN-29 covers automatic initial assignment. Coordinators may assign to themselves or other coordinators, but authority to take over an already-assigned event is still to agree. Define eligible event states, selectable/available coordinator rules and concurrent-handover behaviour. Do not assume all internal roles may reassign.
+
+Added 21 September 2026. Unestimated, unassigned future backlog outside Sprint 2’s 43 points.",,,relates to: KAN-29,2026-09-21T03:38:54.273+0800,2026-09-21T03:49:17.368+0800,,2026-09-21T03:38:54.643+0800,0|i000gn:,https://smu-g7-grp1.atlassian.net/browse/KAN-65
+KAN-66,Update Event Information During Planning,Story,To Do,Medium,,,,"User Story  
+As an authorised event manager, I want to update relevant event information during planning so that the event record remains accurate as arrangements are made.
+
+Acceptance Criteria
+
+1. An authorised user can view current information for an event they are permitted to manage.
+2. The user can edit and save the fields permitted for their role, relationship to the event and lifecycle stage.
+3. Updated values remain associated with the correct event and are visible after reopening and refreshing.
+4. Unauthorised users cannot modify the event through the interface or direct API.
+5. Ordinary edits retain unaffected event information and do not incorrectly change existing arrangements or unrelated events.
+6. The system distinguishes ordinary edits from significant changes under the agreed field and lifecycle rules.
+7. Date, time, expected attendance, venue requirements and equipment requirements are assessed as potentially significant rather than automatically treated as harmless edits.
+8. Significant changes use the KAN-15 change-review process and cannot silently leave incompatible venue or equipment arrangements treated as valid. Major changes affecting confirmed arrangements follow the agreed cancellation/new-request rule.
+
+Refinement before selection  
+Agree the editable field-by-role-by-stage matrix, validation and concurrency policy. Customer discussions allow organiser edits before approval but restrict general event editing to coordinators; the exact boundary remains open. KAN-34 covers drafts, this story covers ordinary planning edits, and KAN-15 owns significant-change processing. Define audit details and relevant notifications with KAN-64.
+
+Added 21 September 2026. Unestimated, unassigned future backlog outside Sprint 2’s 43 points.",,,relates to: KAN-15,2026-09-21T03:39:54.633+0800,2026-09-21T03:49:54.161+0800,,2026-09-21T03:39:54.900+0800,0|i000gv:,https://smu-g7-grp1.atlassian.net/browse/KAN-66
+KAN-67,View Event Registrations,Story,To Do,Medium,,,,"User Story  
+As an Event Organiser or Event Coordinator, I want to view registration information for events I manage so that I can understand current attendee registrations.
+
+Acceptance Criteria
+
+1. An authorised organiser or current coordinator can open registration information for an event they own or manage.
+2. The displayed registrations and counts correspond to the correct event.
+3. Active and withdrawn registrations can be distinguished where applicable.
+4. Registration information and counts reflect successful attendee registration or withdrawal when refreshed.
+5. An event with no registrations shows a clear empty result rather than unrelated or stale registrations.
+6. Users cannot view protected registration information for unrelated events, including through direct API calls.
+7. The information exposed is limited to the fields needed by that authorised role under the agreed disclosure rules.
+
+Refinement before selection  
+Agree the personal/contact fields each manager may see and the treatment of withdrawn records. An export feature is not implied. Coordinate KAN-14 registration, KAN-17 withdrawal and KAN-65 reassignment so access follows the current event relationship. Record the refresh expectation and test against a second unrelated organiser/coordinator.
+
+Added 21 September 2026. Unestimated, unassigned future backlog outside Sprint 2’s 43 points.",,,relates to: KAN-14; relates to: KAN-17,2026-09-21T03:41:21.183+0800,2026-09-21T03:50:25.254+0800,,2026-09-21T03:41:21.422+0800,0|i000h3:,https://smu-g7-grp1.atlassian.net/browse/KAN-67
+KAN-68,Validate venue catalogue update input (venue-catalogue-input.ts),Subtask,Done,Medium,MUHAMMAD IRFAN BIN MUHAMMAD NOOR ,,Sprint 2,"Runtime validation of the Venue Staff catalogue update body: location, capacity, facilities, accessibility features, wheelchair flag, supported room layouts, operating hours. Unknown fields rejected; label rules match the suitability/search rules. Covers KAN-50-AC3–AC8, AC11.",KAN-50,Maintain Venue Catalog,,2026-10-09T17:41:22.078+0800,2026-10-09T17:45:17.779+0800,2026-10-09T17:45:17.754+0800,2026-10-09T17:45:17.780+0800,0|i000h5:,https://smu-g7-grp1.atlassian.net/browse/KAN-68
+KAN-69,"Catalogue service: list, view and update venues (Venue Staff only, transactional)",Subtask,Done,Medium,MUHAMMAD IRFAN BIN MUHAMMAD NOOR ,,Sprint 2,"venue-catalogue-service.ts: list active venues, view one venue, update supplied fields in one transaction with a row lock so layouts stay on the correct venue and concurrent edits cannot be lost. Venue Staff only (re-checked in the service). Covers KAN-50-AC1–AC2, AC9–AC10, AC12, AC14.",KAN-50,Maintain Venue Catalog,,2026-10-09T17:41:25.425+0800,2026-10-09T17:48:24.082+0800,2026-10-09T17:48:24.062+0800,2026-10-09T17:48:24.083+0800,0|i000he:,https://smu-g7-grp1.atlassian.net/browse/KAN-69
+KAN-70,HTTP router + wiring: GET/PATCH /api/venues/catalogue,Subtask,Done,Medium,MUHAMMAD IRFAN BIN MUHAMMAD NOOR ,,Sprint 2,"venue-catalogue-router.ts mounted with the other venue routers: GET /api/venues/catalogue, GET /api/venues/catalogue/:venueId, PATCH /api/venues/catalogue/:venueId. 401/403/400/404/409 handling via workflowRoute. Covers KAN-50-AC14 at the HTTP boundary.",KAN-50,Maintain Venue Catalog,,2026-10-09T17:41:27.272+0800,2026-10-09T17:48:26.134+0800,2026-10-09T17:48:26.116+0800,2026-10-09T17:48:26.134+0800,0|i000hf:,https://smu-g7-grp1.atlassian.net/browse/KAN-70
+KAN-71,"Backend unit + HTTP-boundary tests (normal, boundary, conflict, failure)",Subtask,Done,Medium,MUHAMMAD IRFAN BIN MUHAMMAD NOOR ,,Sprint 2,"backend/test/venues/venue-catalogue-\*.test.ts: input validation, service authorization/transaction behaviour and router status mapping, each named with KAN-50 and its AC ids. Coverage gaps, if any, explained in test-evidence.",KAN-50,Maintain Venue Catalog,,2026-10-09T17:41:29.235+0800,2026-10-09T17:48:28.022+0800,2026-10-09T17:48:28.004+0800,2026-10-09T17:48:28.022+0800,0|i000hn:,https://smu-g7-grp1.atlassian.net/browse/KAN-71
+KAN-72,"Frontend: venue catalogue list + edit pages, API client and navigation",Subtask,Done,Medium,MUHAMMAD IRFAN BIN MUHAMMAD NOOR ,,Sprint 2,"Venue Staff pages to view the catalogue, open a venue and save changes (location, capacity, facilities, accessibility, layouts, operating hours), with loading/error/validation states and a sidebar link visible to Venue Staff only. Covers KAN-50-AC1–AC9, AC12.",KAN-50,Maintain Venue Catalog,,2026-10-09T17:41:31.009+0800,2026-10-09T17:55:11.270+0800,2026-10-09T17:55:11.252+0800,2026-10-09T17:55:11.270+0800,0|i000i2:,https://smu-g7-grp1.atlassian.net/browse/KAN-72
+KAN-73,Frontend component tests,Subtask,Done,Medium,MUHAMMAD IRFAN BIN MUHAMMAD NOOR ,,Sprint 2,"Component tests beside the new pages: list states, form pre-population, validation feedback, save success/failure, forbidden state for non-staff.",KAN-50,Maintain Venue Catalog,,2026-10-09T17:41:33.512+0800,2026-10-09T17:55:13.299+0800,2026-10-09T17:55:13.278+0800,2026-10-09T17:55:13.299+0800,0|i000i9:,https://smu-g7-grp1.atlassian.net/browse/KAN-73
+KAN-74,"PostgreSQL integration + browser tests (S2-T03, S2-T04)",Subtask,Done,Medium,MUHAMMAD IRFAN BIN MUHAMMAD NOOR ,,Sprint 2,"database/tests/venues/venue-catalogue.integration.test.ts: persistence, multi-layout association, propagation to venue search (KAN-12) and suitability (KAN-52), role refusal through the runtime app, concurrent edits. Browser spec in tests/e2e. Runs in CI (no local Docker).",KAN-50,Maintain Venue Catalog,,2026-10-09T17:41:35.540+0800,2026-10-10T00:28:27.326+0800,2026-10-10T00:28:27.306+0800,2026-10-10T00:28:27.326+0800,0|i000in:,https://smu-g7-grp1.atlassian.net/browse/KAN-74
+KAN-75,Documentation and traceability for KAN-50,Subtask,Done,Medium,MUHAMMAD IRFAN BIN MUHAMMAD NOOR ,,Sprint 2,"Decision log entries, api-contract section, sprint-02 backlog (AC/edge cases, S2-T03/T04 status), traceability.csv, test-evidence run row, evidence register, daily-progress row, and the story-point justification.",KAN-50,Maintain Venue Catalog,,2026-10-09T17:41:37.434+0800,2026-10-09T18:08:08.588+0800,2026-10-09T18:08:08.567+0800,2026-10-09T18:08:08.589+0800,0|i000it:,https://smu-g7-grp1.atlassian.net/browse/KAN-75
+KAN-76,Code review and merge,Subtask,Done,Medium,MUHAMMAD IRFAN BIN MUHAMMAD NOOR ,,Sprint 2,"PR with Jira id, ACs addressed, checks run, assumptions and an AI-assistance note; reviewer to be agreed (Ryan or Tristan). Story moves to Done only when the Definition of Done is met, including CI and hosted check evidence.",KAN-50,Maintain Venue Catalog,,2026-10-09T17:41:39.626+0800,2026-10-15T16:11:39.213+0800,2026-10-15T16:11:39.193+0800,2026-10-15T16:11:39.213+0800,0|i000j6:,https://smu-g7-grp1.atlassian.net/browse/KAN-76

@@ -1,0 +1,21 @@
+KAN-79 automated verification — 19 October 2026 (Asia/Singapore)
+Run: AUTO-20261019-01
+Code/test commit: b3329a78174c0f2e30e263b64436dfbd64c5f44b
+Branch: feat/KAN-79-lead-assignment; base 7a23714
+Environment: Windows / Node 24 / isolated PostgreSQL 17 / Playwright Chromium
+
+npm run check: PASS (564 frontend, 937 backend; typechecks and builds)
+npm run test:coverage: PASS (same counts)
+Frontend: statements 94.70%, branches 91.73%, functions 96.60%, lines 97.09%
+Backend: statements 84.43%, branches 88.19%, functions 81.27%, lines 85.14%
+Core changed backend policy and frontend allocation API: 100% all four metrics.
+New Lead/assignment pages: 100% lines/functions; branches 92.59–93.33% (exact per-file values in test-evidence.md).
+Coverage limits: defensive branches, existing unrelated gaps, existing auth/nav exclusion glob.
+
+npm run test:integration: PASS 304 tests / 21 files
+npm run test:e2e -- --workers=4: PASS 119 tests (27 new KAN-79 browser scenarios)
+First-run failures: cross-host clock assertion corrected to PostgreSQL clock; initial KAN-16 navigation timeout passed on unchanged full rerun.
+
+No shared Supabase writes, hosted acceptance, peer review or remote CI verified.
+Pending: migration 007 rollout, trusted Lead accounts, MAN run, KAN-65/KAN-64 integration.
+No retrospective sprint acceptance or delivered points inferred.

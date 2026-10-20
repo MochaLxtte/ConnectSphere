@@ -1,6 +1,8 @@
 # ConnectSphere Database Diagram
 
-Current structure of the Supabase `public` schema, verified on 30 September 2026. It contains 14 application tables and two support tables.
+Repository schema through migration 007, updated on 19 October 2026. The last recorded shared Supabase structure verification was on 30 September for migrations 001-006. Migration 007 expands the allowed application roles and leaves the 14 application tables, two support tables, columns and relationships below unchanged. Its application to shared Supabase is not recorded by this implementation.
+
+**19 October follow-up:** migration 007 application and Coordinator Lead login were subsequently reported successful. This does not replace the earlier structural verification or establish manual workflow acceptance. KAN-65 uses the existing assignment fields and adds no schema migration or relationship; see the [verification record](testing/test-evidence.md#19-october-2026--kan-65-coordinator-reassignment).
 
 `PK` marks primary keys, `FK` marks foreign keys, and `UK` marks a single-column unique key. Columns labelled `nullable` accept NULL; all other columns are `NOT NULL`. `text_array` represents PostgreSQL `text[]`.
 
@@ -241,8 +243,11 @@ erDiagram
 
 - `event_requests.organiser_id` and `coordinator_id` reference application profiles in `app_users`. A request can have no coordinator while it is a draft or remains unassigned.
 - `app_users.supabase_user_id` is a nullable, unique login mapping. It has no declared database foreign key to `auth.users`.
-- `app_users.coordinator_available` is required and defaults to `false`.
+- Migration `007_add_coordinator_lead.sql` extends `app_users.role` to allow `EVENT_COORDINATOR_LEAD` alongside `EVENT_ORGANISER`, `EVENT_COORDINATOR`, `VENUE_STAFF`, `TECHNICAL_SUPPORT_STAFF` and `ATTENDEE`. Lead privileges come from trusted application-profile provisioning, not client-editable authentication metadata.
+- `app_users.coordinator_available` is required and defaults to `false`. KAN-79 permits an initial assignment only to an available `EVENT_COORDINATOR`; changing availability does not remove an existing assignment.
 - Assignment history permits multiple rows per request, with at most one active row (`unassigned_at IS NULL`). `assignment_method` defaults to `MANUAL`: manual rows require `assigned_by`, while `AUTOMATIC` rows require it to be NULL.
+- KAN-79 leaves new submissions unassigned and records the Lead's application ID when an initial manual assignment is made. The event linkage and history write commit together. Previously assigned events and historical automatic records remain unchanged; KAN-65 reassignment and KAN-64 notifications are separate dependencies.
+- KAN-65 now permits explicit Lead reassignment using the active history row's UUID as `expectedAssignmentVersion`. It requires the current linkage and exactly one active history row to agree. The old row's `unassigned_at` and the new row's `assigned_at` share one database timestamp; the new MANUAL row stores the Lead and required reason in `assigned_by`/`note`. History and `event_requests.coordinator_id` change atomically. Same-coordinator requests with a current version do not write; stale versions and inconsistent legacy history fail without replacing records. KAN-64 notification integration and hosted acceptance remain pending.
 - `event_reviews.event_request_id` has no unique constraint; its one-to-many relationship reflects the database structure. The review service prevents repeated initial decisions.
 - Registrations are unique per `(event_request_id, attendee_id)` pair. Neither foreign key is individually unique.
 - User email addresses, venue names and equipment-type names have case-insensitive unique indexes using `lower(...)`.

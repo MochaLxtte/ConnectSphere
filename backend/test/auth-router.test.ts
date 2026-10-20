@@ -197,3 +197,40 @@ describe('KAN-25 Supabase authentication endpoints', () => {
     expect(logger.error).toHaveBeenCalledTimes(2);
   });
 });
+
+describe('KAN-79 trusted coordinator Lead provisioning', () => {
+  it('returns the Lead role only from the verified identity mapped to the trusted application profile', async () => {
+    const { app, query } = setup({ role: 'EVENT_COORDINATOR_LEAD' });
+    const login = await request(app).post('/api/auth/login').send({ accessToken: 'valid-access-token' });
+    expect(login.status).toBe(200);
+    expect(login.body.user).toMatchObject({ id: user.id, role: 'EVENT_COORDINATOR_LEAD' });
+    const session = await request(app).get('/api/auth/me').set('Cookie', 'connectsphere_session=valid-access-token');
+    expect(session.body.user.role).toBe('EVENT_COORDINATOR_LEAD');
+    expect(query).toHaveBeenCalledWith(expect.stringContaining('WHERE supabase_user_id = $1'), [supabaseUid]);
+  });
+
+  it('does not trust a Lead claim in login input, metadata or headers', async () => {
+    const { app, query, supabaseAuth } = setup();
+    const forged = await request(app).post('/api/auth/login').send({
+      accessToken: 'valid-access-token', role: 'EVENT_COORDINATOR_LEAD',
+    });
+    expect(forged.status).toBe(400);
+    expect(query).not.toHaveBeenCalled();
+    expect(supabaseAuth.verifyAccessToken).not.toHaveBeenCalled();
+    vi.mocked(supabaseAuth.verifyAccessToken).mockResolvedValue({
+      uid: supabaseUid, exp: now + 3600, user_metadata: { role: 'EVENT_COORDINATOR_LEAD' },
+    } as Awaited<ReturnType<SupabaseSessionAuth['verifyAccessToken']>>);
+    const session = await request(app).get('/api/auth/me')
+      .set('Cookie', 'connectsphere_session=valid-access-token').set('X-User-Role', 'EVENT_COORDINATOR_LEAD');
+    expect(session.body.user.role).toBe('EVENT_ORGANISER');
+  });
+
+  it('re-resolves a downgraded Lead profile using the same still-valid session', async () => {
+    const { app, query } = setup({ role: 'EVENT_COORDINATOR_LEAD' });
+    expect((await request(app).get('/api/auth/me')
+      .set('Cookie', 'connectsphere_session=valid-access-token')).body.user.role).toBe('EVENT_COORDINATOR_LEAD');
+    query.mockResolvedValue({ rows: [{ ...user, role: 'EVENT_COORDINATOR' }] });
+    expect((await request(app).get('/api/auth/me')
+      .set('Cookie', 'connectsphere_session=valid-access-token')).body.user.role).toBe('EVENT_COORDINATOR');
+  });
+});

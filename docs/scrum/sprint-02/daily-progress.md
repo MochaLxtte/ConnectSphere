@@ -1,10 +1,12 @@
 # Sprint 2 daily progress and burndown
 
+**Record check — 15 October 2026:** the log preserves original dates. Entries from 4 October onward are follow-up development after the planned 3 October boundary; their presence in this folder does not backdate delivery. Missing Daily Scrum and burndown cells mean **Not recorded**. The [review register](review.md#baseline-and-later-delivery-register--15-october-2026) separates current Jira state, later verification and missing acceptance/closure decisions.
+
 Sprint 2 runs **20 September–3 October 2026**, Asia/Singapore. The starting baseline is **43 points across 12 PBIs**, comprising 35 new points and 8 carried points. Record actual observations below; an empty cell means not recorded, not zero work or a missed meeting.
 
 ## Cadence
 
-Daily Scrums are scheduled **three times each week: Tuesday, Thursday and Saturday**. The Sprint 2 dates are **22, 24, 26 and 29 September; 1 and 3 October**. Exact times and participants remain to be recorded. Sprint Review is scheduled for Saturday 3 October; that day's Daily Scrum and review need separate records. Sprint 3 planning and the next sprint start fall on Sunday 4 October.
+Daily Scrums were scheduled **three times each week: Tuesday, Thursday and Saturday**. The Sprint 2 dates are **22, 24, 26 and 29 September; 1 and 3 October**. Actual times and participants are **Not recorded**. Sprint Review was scheduled for Saturday 3 October; that day's Daily Scrum and review need separate records. The original cadence projected Sprint 3 planning/start on Sunday 4 October; the actual date and commitment are **Not recorded**.
 
 ## Daily log
 
@@ -176,3 +178,21 @@ KAN-50 (Maintain Venue Catalogue, five points) was assigned to Irfan in Jira on 
 - **Criteria:** seven edge cases found during the build were added to the Jira card as "Acceptance detail — 9 October 2026" and mirrored as KAN-50-AC15–AC21 in the [sprint backlog](sprint-backlog.md). The five-point estimate was kept; the [justification](estimation-and-capacity.md) is recorded.
 - **Verification:** `npm run check` passed at `d193aaa` (461 frontend and 786 backend tests, both builds). The KAN-50 backend files have 100% coverage and the frontend files 100% of lines; the three unreachable guards are explained in [AUTO-20261009-KAN50-01](../../testing/test-evidence.md#9-october-venue-catalogue-maintenance-kan-50). Writing the page tests exposed a real defect (a number input's `v-model` yields a number, which crashed the form), fixed before review.
 - **Not done:** the PostgreSQL integration (288) and browser (88) tests passed later the same day on a local PostgreSQL 17 (the impediments above no longer apply); no hosted walkthrough, peer review, CI run, PR or Jira Done transition for KAN-50. KAN-74 stays In Progress until CI runs them. The 43-point baseline is unchanged and no points are claimed.
+
+### 15 October documentation reconciliation and later audit
+
+**Record updated 15 October 2026.** This is an asynchronous documentation update, not a Daily Scrum or retrospective. The original 43-point commitment and all dated observations are retained. The [review baseline register](review.md#baseline-and-later-delivery-register--15-october-2026) now separates evidence at the 3 October boundary from later delivery and current Jira administration. All 12 parents and KAN-57/KAN-58/KAN-76 are Done in the live inspection; Sprint 2 remains active. Missing hosted checks, peer review, actual review/retrospective decisions and historical burndown are not supplied by those labels.
+
+[AUTO-20261015-01](../../testing/test-evidence.md#15-october-2026-post-sprint-implementation-audit) records later automated regression verification and separate defect reproductions. The [Sprint 3 planning preparation](../sprint-03/planning.md) separates proposed repairs to existing behavior from the new customer changes. No sprint scope, estimate, acceptance outcome, meeting attendance or Jira state was changed by this documentation reconciliation.
+
+### 16 October current evidence assessment and administrative close
+
+**Record updated 16 October 2026.** This is a current evidence/administration update, not a Daily Scrum or a replacement 3 October review. Jira Sprint 2 id 34 was administratively closed at **02:06 Singapore time on 16 October**. Original scope remains **43 SP = 35 new + 8 carried** and the original dates remain 20 September–3 October.
+
+Tristan requested current completion/re-verification carry-over for KAN-6 (3), KAN-34 (3), KAN-50 (5), KAN-12 (5) and KAN-52 (3): **19 full original points**. They are now To Do in active Sprint 3 id 67; current owners are Kai Jie for KAN-6/KAN-34 and Tristan for KAN-50/KAN-12/KAN-52. Their original Jira estimates are preserved. The five receive zero delivered credit in the current disposition; the other seven parents / 24 points remain administratively Done but are not automatically accepted. Historical Sprint 2 velocity remains **Not recorded**.
+
+The [review record](review.md) distinguishes actual earlier tests, the 15 October reproduced failures and missing historical acceptance. No new application or hosted test was executed by this closeout update. The verified Sprint 3 inventory has 23 parent items / 97 SP, all To Do, including these five; no parent or carry-over points are counted twice in the release inventory. The daily burndown rows above remain untouched because this late administrative update does not supply their missing observations.
+
+## 16 October clarification — customer changes received during Sprint 2
+
+**Record updated 16 October 2026.** The team received the Week 7 customer changes on **2 October 2026**, near the planned 3 October sprint end. The recorded plan was to complete Sprint 2 against its original scope, then consider the changes during Sprint 3 planning. The original **43 SP (35 new + 8 carry-over)** and original acceptance criteria therefore remain the Sprint 2 baseline. This later clarification records receipt and intended handling; it does not supply missing review attendance, acceptance or proof of completion by 3 October. The [change register](../../requirements/change-requests.md) traces the new/replacement requirements and later 63/63 Sprint 3/4 allocation.

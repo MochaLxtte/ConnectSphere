@@ -1,5 +1,7 @@
 # Sprint 2 estimation and capacity
 
+**Record check — 15 October 2026:** preserve **35 new + 8 carried = 43 committed points** and the original estimates. All 12 parents are currently Done in Jira, but accepted points by the 3 October boundary and the actual review outcome are **Not recorded**; do not use 43 as a verified velocity. Historical estimate discussion/votes, capacity and allocation-decision participants remain **Not recorded**. The [review register](review.md#baseline-and-later-delivery-register--15-october-2026) separates later work and administrative dates for Sprint 3 planning.
+
 ## Agreed story estimates and comparative rationale
 
 The selected nine new stories total **35 points**. The estimates and priorities below are recorded scope inputs. The comparative rationale is **proposed**, to be reviewed in refinement; an estimation method, votes, participants and discussion have not been recorded for Sprint 2.
@@ -34,14 +36,16 @@ The confirmed Sprint 2 baseline is **35 new points + 8 retained carry-over point
 
 The target of roughly **six points per member** describes the 35 new points across six members: `35 ÷ 6 ≈ 5.8`. It is a distribution guide, not an individual assignment or a points-to-hours conversion. Including carry-over, total planned scope averages `43 ÷ 6 ≈ 7.2` points per member before considering uneven availability and specialist work.
 
+**Record updated 11 October 2026.** Current assignments below are reconciled from Jira; the original six-point target, estimates and unknown actual capacity are unchanged. No retrospective estimate vote or planning decision is inferred.
+
 | Member | Available development hours | Carry-over / integration allocation | New-story allocation | Review / ceremony allowance |
 | --- | --- | --- | --- | --- |
-| Ryan | Not recorded | To agree | KAN-12 search implementation, 5 points; formal allocation to confirm | Not recorded |
-| Ernest | Not recorded | To agree | KAN-51 calendar implementation, 5 points | Not recorded |
-| Kai Jie | Not recorded | KAN-6 / KAN-34 retained in Jira; integration allocation to agree | To agree | Not recorded |
-| Irfan | Not recorded | KAN-33 retained in Jira; integration allocation to agree | To agree | Not recorded |
-| Tristan | Not recorded | Integration with current team branches and KAN-8 outcome/calendar testing | KAN-29, KAN-8 and user-requested KAN-52, 3 points each: 9 points of implementation responsibility; formal allocation to confirm | Not recorded |
-| Arvin | Not recorded | To agree | To agree | Not recorded |
+| Ryan | Not recorded | Not recorded | KAN-12, 5 points | Not recorded |
+| Ernest | Not recorded | Not recorded | KAN-54, 5 points | Not recorded |
+| Kai Jie | Not recorded | KAN-6 / KAN-34, 6 points; integration hours Not recorded | KAN-53 / KAN-55, 6 points | Not recorded |
+| Irfan | Not recorded | KAN-33, 2 points; integration hours Not recorded | KAN-50, 5 points | Not recorded |
+| Tristan | Not recorded | Integration hours Not recorded | KAN-29 / KAN-8 / KAN-52, 9 points | Not recorded |
+| Arvin | Not recorded | Not recorded | KAN-51, 5 points | Not recorded |
 
 Record leave, coursework deadlines, working days, coordination, test execution and Scrum role responsibilities before judging feasibility. Arvin is Scrum Master and Irfan is Product Owner; both also develop, so include time for these duties within their availability. Points indicate relative scope; availability is recorded in hours separately. Sprint 1 closed with seven PBIs Done and 24 accepted points, leaving these three stories at 8 points. This is one observed sprint, not a stable capacity forecast; the 43-point Sprint 2 baseline exceeds that observed outcome and needs an explicit feasibility check.
 
@@ -50,13 +54,13 @@ Record leave, coursework deadlines, working days, coordination, test execution a
 | Item | Record |
 | --- | --- |
 | Estimation date/time, participants and method | Not recorded |
-| Reference stories and differing estimates | To record; Sprint 1 used KAN-33/KAN-16 as two-point references, but no Sprint 2 method is assumed |
+| Reference stories and differing estimates | Not recorded; Sprint 1 used KAN-33/KAN-16 as two-point references, but no Sprint 2 method is assumed |
 | Questions affecting estimates | Team/customer acceptance of KAN-29's implemented availability/active-status/fallback choices; calendar detail visibility, suitability matching, concurrency, operational-block behavior and defect reproduction. Assignment ordering and the three calendar roles are settled. |
 | Final carry-over estimate decision | Original 8 points retained: KAN-6 at 3, KAN-33 at 2 and KAN-34 at 3 |
 | Final Sprint 2 point baseline | Confirmed: 43 points across 12 PBIs |
-| Ownership and reviewers | Carry-over owners in the 21 September snapshot: Kai Jie (KAN-6/KAN-34), Irfan (KAN-33). Tristan implements KAN-29/KAN-8/KAN-52 (nine new-story points), Ryan implements KAN-12, Ernest implements KAN-51 and Kai Jie implements KAN-55. This records development responsibility without inventing a revised planning commitment. Other allocations and all reviewers remain to confirm. No live Jira assignment change or verification is claimed. |
-| Capacity decision and scope trade-offs | To record after availability and carry-over work are understood |
-| Actual accepted points / unfinished points | Not yet assessed; complete at [review](review.md) |
+| Ownership and reviewers | Current Jira assignees checked 11 October: Ryan KAN-12; Ernest KAN-54; Kai Jie KAN-53/KAN-55/KAN-6/KAN-34; Irfan KAN-50/KAN-33; Tristan KAN-29/KAN-8/KAN-52; Arvin KAN-51. Reviewers To agree; original allocation decision participants/method Not recorded. |
+| Capacity decision and scope trade-offs | Not recorded |
+| Actual accepted points / unfinished points | Not assessed; actual decision to record in [review](review.md) |
 
 At review, calculate accepted points only for stories meeting the Definition of Done. Show new work and carry-over separately, with the actual baseline and any dated changes. Partial implementation and successful individual test cases do not earn partial story points.
 

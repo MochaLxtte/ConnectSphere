@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, reactive, ref } from 'vue';
+import { onBeforeUnmount, reactive, ref, watch } from 'vue';
 import AppIcon from '../../../components/AppIcon.vue';
 import { ApiError } from '../../../lib/api-client';
 import { authSession, clearLocalSession } from '../../auth/session';
@@ -9,112 +9,126 @@ import {
 } from '../../events/api/assignments';
 import { eventStatusLabel, formatEventTime } from '../../events/presentation';
 
-type LoadState =
-  | { status: 'loading' }
+type LoadState = { status: 'loading' }
   | { status: 'error'; message: string }
   | { status: 'ready'; items: UnassignedRequest[]; coordinators: CoordinatorOption[] };
-
 const state = ref<LoadState>({ status: 'loading' });
 const selection = reactive<Record<string, string>>({});
 const busyId = ref<string | null>(null);
 const rowError = ref<{ id: string; message: string } | null>(null);
-const saved = ref<{ id: string; name: string; coordinatorName: string; mine: boolean } | null>(null);
+const saved = ref<{ id: string; name: string; coordinatorName: string } | null>(null);
+const notice = ref('');
+const refreshRequired = ref(false);
 let controller: AbortController | undefined;
+let writeController: AbortController | undefined;
+let version = 0;
 
-async function load() {
+function invalidate() {
+  version += 1;
   controller?.abort();
+  writeController?.abort();
+  busyId.value = null;
+}
+async function load(message = '') {
+  invalidate();
+  state.value = { status: 'loading' };
+  saved.value = null;
+  rowError.value = null;
+  notice.value = message;
+  refreshRequired.value = false;
+  for (const key of Object.keys(selection)) delete selection[key];
+  if (authSession.loading || authSession.user?.role !== 'EVENT_COORDINATOR_LEAD') return;
   const current = new AbortController();
   controller = current;
-  state.value = { status: 'loading' };
   try {
     const [items, coordinators] = await Promise.all([
       fetchUnassignedRequests(current.signal), fetchCoordinators(current.signal),
     ]);
     if (current.signal.aborted) return;
-    const me = authSession.user?.id;
-    const fallback = coordinators.some((item) => item.id === me) ? me! : '';
-    for (const item of items) selection[item.id] ??= fallback;
+    for (const item of items) selection[item.id] = '';
     state.value = { status: 'ready', items, coordinators };
   } catch (error) {
-    if (!current.signal.aborted) {
-      if (error instanceof ApiError && error.status === 401) clearLocalSession();
-      state.value = {
-        status: 'error',
-        message: error instanceof Error ? error.message : 'Unassigned requests could not be loaded. Please try again.',
-      };
-    }
+    if (current.signal.aborted) return;
+    if (error instanceof ApiError && error.status === 401) { clearLocalSession(); return; }
+    state.value = { status: 'error', message: error instanceof Error ? error.message : 'Unassigned requests could not be loaded. Please try again.' };
   }
 }
-
 async function assign(item: UnassignedRequest) {
-  if (state.value.status !== 'ready' || busyId.value) return;
+  if (state.value.status !== 'ready' || busyId.value || refreshRequired.value || authSession.loading || authSession.user?.role !== 'EVENT_COORDINATOR_LEAD') return;
   const coordinatorId = selection[item.id];
-  if (!coordinatorId) return;
+  const coordinator = state.value.coordinators.find((option) => option.id === coordinatorId);
+  if (!coordinator) return;
+  const currentVersion = version;
+  const current = new AbortController();
+  writeController = current;
   busyId.value = item.id;
   rowError.value = null;
   saved.value = null;
-  const current = controller;
+  notice.value = '';
   try {
-    await assignCoordinator(item.id, { coordinatorId });
-    if (current?.signal.aborted) return;
-    const coordinator = state.value.coordinators.find((option) => option.id === coordinatorId);
-    saved.value = {
-      id: item.id, name: item.name ?? 'Untitled event request',
-      coordinatorName: coordinator?.displayName ?? 'the coordinator',
-      mine: coordinatorId === authSession.user?.id,
-    };
+    await assignCoordinator(item.id, { coordinatorId: coordinator.id }, current.signal);
+    if (current.signal.aborted || currentVersion !== version) return;
+    saved.value = { id: item.id, name: item.name ?? 'Untitled event request', coordinatorName: coordinator.displayName };
     state.value = { ...state.value, items: state.value.items.filter((other) => other.id !== item.id) };
   } catch (error) {
-    if (current?.signal.aborted) return;
-    if (error instanceof ApiError && error.status === 401) clearLocalSession();
-    const taken = error instanceof ApiError && error.status === 404;
-    rowError.value = {
-      id: item.id,
-      message: taken
-        ? 'Another coordinator has already picked up this request. Refresh the list.'
-        : error instanceof Error ? error.message : 'The assignment could not be saved. Please try again.',
-    };
+    if (current.signal.aborted || currentVersion !== version) return;
+    if (error instanceof ApiError && error.status === 401) { clearLocalSession(); return; }
+    if (error instanceof ApiError && [404, 409].includes(error.status)) {
+      const message = error.code === 'ASSIGNMENT_HISTORY_CONFLICT'
+        ? `${error.message} The assignment queue has been refreshed; open the allocation to inspect its history.`
+        : 'This request has changed or was assigned by another Lead. The assignment queue has been refreshed.';
+      await load(message);
+      return;
+    }
+    rowError.value = { id: item.id, message: error instanceof Error ? error.message : 'The assignment could not be saved. Refresh before trying again.' };
+    if (!(error instanceof ApiError) || error.status === 0 || error.status >= 500 || error.code === 'INVALID_RESPONSE') {
+      refreshRequired.value = true;
+      rowError.value.message = 'We could not confirm whether the assignment was saved. Refresh the queue before trying again.';
+    }
   } finally {
-    busyId.value = null;
+    if (!current.signal.aborted && currentVersion === version) busyId.value = null;
   }
 }
-
-onMounted(load);
-onBeforeUnmount(() => controller?.abort());
+watch(() => [authSession.loading, authSession.user?.id, authSession.user?.role], () => { void load(); }, { immediate: true, flush: 'sync' });
+onBeforeUnmount(invalidate);
 </script>
 
 <template>
   <section class="page-heading">
-    <p class="eyebrow">For coordinators</p>
-    <h1>Unassigned requests</h1>
-    <p class="page-description">Pick up submitted event requests or assign them to a colleague.</p>
+    <p class="eyebrow">For coordinator Leads</p>
+    <h1>Assignment queue</h1>
+    <p class="page-description">Assign submitted requests to an available event coordinator. Assignment does not approve or reject the event.</p>
   </section>
 
   <section class="panel unassigned-panel" aria-labelledby="unassigned-title">
+    <div class="queue-toolbar"><RouterLink to="/lead/oversight" class="text-link">View all active events</RouterLink><button type="button" class="button button-secondary" :disabled="state.status === 'loading' || busyId !== null" @click="load()">Refresh</button></div>
+    <p v-if="notice" role="status">{{ notice }}</p>
     <h2 id="unassigned-title" class="sr-only">Event requests without a coordinator</h2>
 
     <p v-if="saved" class="assignment-saved" role="status">
-      “{{ saved.name }}” is now assigned to {{ saved.mine ? 'you' : saved.coordinatorName }}.
-      <RouterLink v-if="saved.mine" :to="`/reviews/${saved.id}`" class="text-link">Open the request</RouterLink>
+      “{{ saved.name }}” is now assigned to {{ saved.coordinatorName }}.
+      <RouterLink :to="`/lead/oversight/${saved.id}`" class="text-link">Open allocation</RouterLink>
     </p>
 
     <p v-if="state.status === 'loading'" role="status">Loading unassigned requests…</p>
 
     <div v-else-if="state.status === 'error'" role="alert">
       <p>{{ state.message }}</p>
-      <button type="button" class="button button-secondary" @click="load">Try again</button>
+      <button type="button" class="button button-secondary" @click="load()">Try again</button>
     </div>
 
     <div v-else-if="state.items.length === 0" class="feature-placeholder">
       <div class="empty-illustration"><AppIcon name="review" :size="38" /></div>
-      <h2>Every request has a coordinator</h2>
+      <h2>No requests are awaiting assignment</h2>
       <p>Newly submitted event requests without a coordinator will appear here.</p>
     </div>
 
-    <ul v-else class="unassigned-list">
+    <template v-else>
+    <p v-if="state.coordinators.length === 0" role="status">No event coordinators are currently available. Refresh after availability has been updated.</p>
+    <ul class="unassigned-list">
       <li v-for="item in state.items" :key="item.id" class="unassigned-item">
         <div class="unassigned-summary">
-          <span class="unassigned-name">{{ item.name ?? 'Untitled event request' }}</span>
+          <RouterLink :to="`/lead/oversight/${item.id}`" class="unassigned-name">{{ item.name ?? 'Untitled event request' }}</RouterLink>
           <span class="unassigned-meta">
             {{ eventStatusLabel(item.status) }} · {{ item.organiserName }} · {{ formatEventTime(item.startsAt) }}
             <template v-if="item.expectedAttendance !== null"> · {{ item.expectedAttendance }} expected</template>
@@ -122,19 +136,20 @@ onBeforeUnmount(() => controller?.abort());
         </div>
         <form class="unassigned-actions" :aria-busy="busyId === item.id" @submit.prevent="assign(item)">
           <label class="sr-only" :for="`assign-${item.id}`">Coordinator for {{ item.name ?? 'untitled event request' }}</label>
-          <select :id="`assign-${item.id}`" v-model="selection[item.id]" :disabled="busyId !== null">
+          <select :id="`assign-${item.id}`" v-model="selection[item.id]" :disabled="busyId !== null || refreshRequired">
             <option value="" disabled>Choose a coordinator</option>
             <option v-for="option in state.coordinators" :key="option.id" :value="option.id">
-              {{ option.id === authSession.user?.id ? `Me (${option.displayName})` : option.displayName }}
+              {{ option.displayName }}
             </option>
           </select>
-          <button type="submit" class="button button-primary" :disabled="busyId !== null || !selection[item.id]">
+          <button type="submit" class="button button-primary" :disabled="busyId !== null || refreshRequired || !selection[item.id]">
             {{ busyId === item.id ? 'Assigning…' : 'Assign' }}
           </button>
         </form>
         <p v-if="rowError?.id === item.id" class="unassigned-error" role="alert">{{ rowError.message }}</p>
       </li>
     </ul>
+    </template>
   </section>
 </template>
 
@@ -144,6 +159,7 @@ onBeforeUnmount(() => controller?.abort());
   position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden;
   clip-path: inset(50%); white-space: nowrap; border: 0;
 }
+.queue-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; gap: 16px; }
 .unassigned-panel { padding: 24px; }
 .unassigned-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
 .unassigned-item {

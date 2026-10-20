@@ -66,8 +66,8 @@ beforeEach(() => {
 });
 
 describe('KAN-25/KAN-33/KAN-36 coordinator page access', () => {
-  for (const path of [...paths, '/reviews/unassigned']) {
-    it.each(['EVENT_ORGANISER', 'VENUE_STAFF', 'TECHNICAL_SUPPORT_STAFF', 'ATTENDEE'] as const)(
+  for (const path of paths) {
+    it.each(['EVENT_ORGANISER', 'EVENT_COORDINATOR_LEAD', 'VENUE_STAFF', 'TECHNICAL_SUPPORT_STAFF', 'ATTENDEE'] as const)(
       `does not request or render review data for %s at ${path}`, async (role) => {
         session.user = user(role);
         // Even a successful shared-API response must not expose coordinator UI to another role.
@@ -221,90 +221,5 @@ describe('KAN-25/KAN-33/KAN-36 coordinator page access', () => {
     expect(await screen.findByRole('heading', { name: 'Sign in required' })).toBeInTheDocument();
     expect(screen.queryByText(detail.name)).not.toBeInTheDocument();
     expect(screen.queryByRole('radio')).not.toBeInTheDocument();
-  });
-});
-
-describe('CF-05 unassigned request access', () => {
-  const unassigned = (name = detail.name) => ({ items: [{
-    id: detail.id, name, status: 'SUBMITTED', organiserName: 'Test organiser',
-    startsAt: null, endsAt: null, expectedAttendance: 25, updatedAt: '2026-09-20T00:00:00Z',
-  }] });
-
-  it('waits for a verified coordinator and removes the list on sign-out', async () => {
-    session.user = user();
-    session.loading = true;
-    const fetchMock = vi.fn().mockImplementation(async (path: string) => jsonResponse(
-      path === '/api/events/unassigned' ? unassigned() : { items: [user()] },
-    ));
-    vi.stubGlobal('fetch', fetchMock);
-    await openReview('/reviews/unassigned');
-
-    expect(screen.getByRole('status')).toHaveTextContent('Checking your session');
-    expect(fetchMock).not.toHaveBeenCalled();
-    session.loading = false;
-    expect(await screen.findByText(detail.name)).toBeInTheDocument();
-    expect(fetchMock.mock.calls.map(([path]) => path).sort()).toEqual([
-      '/api/events/coordinators', '/api/events/unassigned',
-    ]);
-
-    session.user = null;
-    await screen.findByRole('heading', { name: 'Sign in required' });
-    expect(screen.queryByText(detail.name)).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'Assign' })).not.toBeInTheDocument();
-    expect(fetchMock).toHaveBeenCalledTimes(2);
-  });
-
-  it('aborts old account reads and ignores a late failure after changing coordinators', async () => {
-    session.user = user();
-    const oldRead = deferredResponse();
-    const newRead = deferredResponse();
-    const fetchMock = vi.fn().mockImplementation((path: string, _init?: RequestInit) => {
-      if (path === '/api/events/coordinators') return Promise.resolve(jsonResponse({ items: [user()] }));
-      return session.user?.id === 'coordinator-1' ? oldRead.promise : newRead.promise;
-    });
-    vi.stubGlobal('fetch', fetchMock);
-    await openReview('/reviews/unassigned');
-    const oldSignal = (fetchMock.mock.calls[0]![1] as RequestInit).signal!;
-
-    session.user = user('EVENT_COORDINATOR', 'coordinator-2');
-    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(4));
-    expect(oldSignal.aborted).toBe(true);
-    await settle(newRead, jsonResponse(unassigned('New coordinator request')));
-    expect(await screen.findByText('New coordinator request')).toBeInTheDocument();
-
-    await settle(oldRead, jsonResponse({ error: { code: 'AUTHENTICATION_REQUIRED', message: 'Expired' } }, 401));
-    expect(session.user?.id).toBe('coordinator-2');
-    expect(screen.getByText('New coordinator request')).toBeInTheDocument();
-    expect(screen.queryByText(detail.name)).not.toBeInTheDocument();
-  });
-
-  it('aborts pending reads when the account becomes an organiser', async () => {
-    session.user = user();
-    const pending = deferredResponse();
-    const fetchMock = vi.fn().mockImplementation((path: string, _init?: RequestInit) => path === '/api/events/unassigned'
-      ? pending.promise : Promise.resolve(jsonResponse({ items: [user()] })));
-    vi.stubGlobal('fetch', fetchMock);
-    await openReview('/reviews/unassigned');
-    const signal = (fetchMock.mock.calls[0]![1] as RequestInit).signal!;
-
-    session.user = user('EVENT_ORGANISER', 'organiser-1');
-    await screen.findByRole('heading', { name: 'Coordinator access only' });
-    expect(signal.aborted).toBe(true);
-    await settle(pending, jsonResponse(unassigned()));
-    expect(screen.queryByText(detail.name)).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'Assign' })).not.toBeInTheDocument();
-    expect(fetchMock).toHaveBeenCalledTimes(2);
-  });
-
-  it('returns to sign-in when the active unassigned read reports an expired session', async () => {
-    session.user = user();
-    vi.stubGlobal('fetch', vi.fn().mockImplementation(async (path: string) => path === '/api/events/unassigned'
-      ? jsonResponse({ error: { code: 'AUTHENTICATION_REQUIRED', message: 'Sign in again.' } }, 401)
-      : jsonResponse({ items: [user()] })));
-    await openReview('/reviews/unassigned');
-
-    expect(await screen.findByRole('heading', { name: 'Sign in required' })).toBeInTheDocument();
-    expect(session.user).toBeNull();
-    expect(screen.queryByText(detail.name)).not.toBeInTheDocument();
   });
 });

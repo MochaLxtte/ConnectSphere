@@ -3,7 +3,6 @@ import type { AuthenticatedUser } from '../auth/types.js';
 import type { EventRecord } from './types.js';
 import { assertReadyForSubmission } from './submit-input.js';
 import { assertCanSubmit, SubmitEligibilityError } from './submit-eligibility.js';
-import { assignInitialCoordinator } from './automatic-assignment.js';
 
 export type SubmitActor = Pick<AuthenticatedUser, 'id' | 'role'>;
 
@@ -23,6 +22,15 @@ export class SubmitRequestNotFoundError extends Error {
   constructor() {
     super('The event request does not exist.');
     this.name = 'SubmitRequestNotFoundError';
+  }
+}
+
+export class DraftAssignmentConflictError extends Error {
+  readonly code = 'DRAFT_ALREADY_ASSIGNED';
+
+  constructor() {
+    super('This draft already has a coordinator assignment. Ask the team to check its assignment before submitting.');
+    this.name = 'DraftAssignmentConflictError';
   }
 }
 
@@ -63,7 +71,7 @@ function toEventRecord(row: EventRow): EventRecord {
   };
 }
 
-/** Submit and allocate an owned, complete draft in one transaction (KAN-6 / KAN-29). */
+/** KAN-79: submit an owned, complete draft to the Lead queue without allocating it. */
 export async function submitEventRequest(
   { pool }: SubmitRequestDependencies,
   { eventRequestId, actor }: SubmitCommand,
@@ -100,13 +108,21 @@ export async function submitEventRequest(
       registrationClosesAt: found.registrationClosesAt === null ? null : iso(found.registrationClosesAt),
     });
 
-    const coordinatorId = await assignInitialCoordinator(client, { id: found.id, coordinatorId: found.coordinatorId });
+    // Keep unexpected prepared assignments intact for investigation. Submission never
+    // closes history or silently removes a coordinator to force the new queue policy.
+    const existingAssignment = await client.query(
+      'SELECT 1 FROM coordinator_assignments WHERE event_request_id = $1 AND unassigned_at IS NULL',
+      [found.id],
+    );
+    if (found.coordinatorId !== null || existingAssignment.rows.length > 0) {
+      throw new DraftAssignmentConflictError();
+    }
 
     const updated = await client.query<EventRow>(`
-      UPDATE event_requests SET status = 'SUBMITTED', coordinator_id = $2, updated_at = now()
+      UPDATE event_requests SET status = 'SUBMITTED', updated_at = now()
       WHERE id = $1
       RETURNING ${selectColumns}
-    `, [eventRequestId, coordinatorId]);
+    `, [eventRequestId]);
     const saved = updated.rows[0];
     if (!saved) throw new Error('The event request could not be submitted.');
 
