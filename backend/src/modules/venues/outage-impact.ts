@@ -122,6 +122,61 @@ export async function listRecoveryArrangements(
   }));
 }
 
+/** One outage recorded against a booking, as shown with that booking (KAN-81-AC6, phase 2). */
+export interface BookingRecovery {
+  impactId: string;
+  status: RecoveryStatus;
+  outageStartsAt: string;
+  outageEndsAt: string;
+  outageReason: string;
+}
+
+/**
+ * A correlated subquery for a venue_bookings row aliased `b`: every outage impact on the booking,
+ * earliest outage first. json_agg renders timestamps in the session time zone, so callers pass the
+ * result through serializeRecovery.
+ */
+export const BOOKING_RECOVERY_SQL = `COALESCE((
+  SELECT json_agg(json_build_object('impactId', i.id, 'status', i.status,
+    'outageStartsAt', i.outage_starts_at, 'outageEndsAt', i.outage_ends_at, 'outageReason', i.outage_reason)
+    ORDER BY i.outage_starts_at, i.id)
+  FROM venue_outage_impacts i WHERE i.venue_booking_id = b.id), '[]'::json)`;
+
+export const serializeRecovery = (items: BookingRecovery[]): BookingRecovery[] => items.map((item) => ({
+  impactId: item.impactId, status: item.status, outageStartsAt: iso(item.outageStartsAt),
+  outageEndsAt: iso(item.outageEndsAt), outageReason: item.outageReason,
+}));
+
+/** Who to tell about one outage's open impacts: each affected booking with its event's current coordinator. */
+export interface OutageNotificationTarget {
+  eventId: string;
+  eventName: string | null;
+  organiserId: string;
+  coordinatorId: string | null;
+  bookingId: string;
+  venueName: string;
+  bookingStartsAt: Date;
+  bookingEndsAt: Date;
+}
+
+export async function listOutageNotificationTargets(
+  client: Pick<PoolClient, 'query'>, blockId: string,
+): Promise<OutageNotificationTarget[]> {
+  const found = await client.query<OutageNotificationTarget>(
+    `SELECT e.id AS "eventId", e.name AS "eventName", e.organiser_id AS "organiserId",
+       e.coordinator_id AS "coordinatorId", b.id AS "bookingId", v.name AS "venueName",
+       b.starts_at AS "bookingStartsAt", b.ends_at AS "bookingEndsAt"
+     FROM venue_outage_impacts i
+     JOIN venue_bookings b ON b.id = i.venue_booking_id
+     JOIN event_requests e ON e.id = b.event_request_id
+     JOIN venues v ON v.id = b.venue_id
+     WHERE i.unavailability_id = $1 AND i.status = 'RECOVERY_REQUIRED'
+     ORDER BY e.id, b.starts_at, b.id`,
+    [blockId],
+  );
+  return found.rows;
+}
+
 const STATUSES: readonly RecoveryStatus[] = ['RECOVERY_REQUIRED', 'RESOLVED', 'CLEARED'];
 
 /** The optional ?status= filter on the recovery list. */

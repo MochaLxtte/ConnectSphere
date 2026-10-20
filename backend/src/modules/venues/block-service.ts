@@ -4,8 +4,10 @@ import {
 } from '../events/workflow-support.js';
 import { parseBlockSubmission } from './block-input.js';
 import {
-  clearOutageImpacts, listBlockImpacts, recordOutageImpacts, type AffectedArrangement,
+  clearOutageImpacts, listBlockImpacts, listOutageNotificationTargets, recordOutageImpacts, type AffectedArrangement,
 } from './outage-impact.js';
+import { recordNotifications } from '../notifications/notify.js';
+import { outageRecoveryNotifications } from '../notifications/trigger-matrix.js';
 
 export interface VenueBlock {
   id: string;
@@ -68,7 +70,8 @@ export async function listVenueBlocks(
  *
  * KAN-81-AC2 (CR-2) replaces KAN-55's refusal of a block that overlaps an APPROVED booking: the
  * outage is saved and every affected arrangement is flagged for recovery in the same transaction
- * (AC3/AC4). The venue row lock is the same one booking submission and approval take, so an outage
+ * (AC3/AC4), together with one notice per affected event to its current coordinator (AC5), so a
+ * rolled-back outage leaves neither. The venue row lock is the same one booking submission and approval take, so an outage
  * and an approval for that venue never interleave (AC10). Booking rows are not locked or updated.
  */
 export async function createVenueBlock(
@@ -92,6 +95,10 @@ export async function createVenueBlock(
       blockId, venueId, startsAt: submission.startsAt, endsAt: submission.endsAt,
       reason: submission.reason, actorId: actor.id,
     });
+    await recordNotifications(client, outageRecoveryNotifications(
+      await listOutageNotificationTargets(client, blockId),
+      { blockId, startsAt: submission.startsAt, endsAt: submission.endsAt, reason: submission.reason },
+    ));
     const saved = await client.query<BlockRow>(`${blockSelect} WHERE u.id = $1`, [blockId]);
     return serialize(saved.rows[0]!, affected);
   });
