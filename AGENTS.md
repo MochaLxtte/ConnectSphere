@@ -123,10 +123,10 @@ branch as the code, before the PR is opened. *(if)* steps apply only when the si
 | 6 | Write code and tests: normal, boundary, conflict and failure cases; suite names include `KAN-xx`; aim for 100% coverage of the code you add | code (§7) |
 | 7 | *(if)* An edge case or decision the card did not cover: add it as a new AC on the Jira card **and** the repo card; log the decision | Jira, `sprint-backlog.md`, `assumptions-and-questions.md` |
 | 8 | Run `npm run check` and `npm run test:coverage` (integration/E2E when API, database or user flows changed) | — |
-| 9 | Write or update the functional test cases for each AC | `docs/testing/test-cases.csv` (§6.1) |
+| 9 | Write or update reusable test specifications for each AC: scenario, preconditions, steps, data and expected result; keep execution outcomes separate | `docs/testing/test-cases.csv` (§6.1) |
 | 10 | Link feature → story → AC → test case → real test file paths | `docs/requirements/traceability.csv` |
-| 11 | Record the actual runs: ID, date, commit SHA, environment, command or manual steps, result, coverage gaps and why | `docs/testing/test-evidence.md` |
-| 12 | Update the acceptance test status (`S#-Txx`) | `sprint-0N/sprint-backlog.md` |
+| 11 | Append supported case-level execution results; record run ID, date, commit SHA, environment, command or manual steps, result and coverage gaps. Leave unperformed cases Not executed | `docs/testing/test-executions.csv` (case results), `docs/testing/test-evidence.md` (run narratives and suite results) |
+| 12 | Update the acceptance test status (`S#-Txx`) using the relevant execution evidence; an automated suite pass alone does not establish hosted acceptance | `sprint-0N/sprint-backlog.md` |
 | 13 | *(if)* Captured screenshots, CI runs or exports: register them | `sprint-0N/evidence/README.md` |
 | 14 | *(if)* Endpoints, schema, modules or setup changed: update contracts, diagrams, module/setup READMEs; re-export diagram images | `docs/architecture/*`, `docs/database-diagram.md`, `database/README.md`, `backend/`/`frontend/` READMEs, module READMEs |
 | 15 | Add a dated development note (what finished, evidence IDs, what remains) | `sprint-0N/daily-progress.md` § Development updates |
@@ -243,8 +243,11 @@ it, otherwise in the sprint's scope change log. Then follow §4.
    signs in themselves; AI assistants never type passwords.
 2. Record original values before changing shared data and restore them afterwards; list any test
    data left behind in the run record.
-3. Record the run as `MAN-YYYYMMDD-NN` in `docs/testing/test-evidence.md` (steps, data, result),
-   update the matching `test-cases.csv` row and `S#-Txx` status, and register screenshots.
+3. Record the run as `MAN-YYYYMMDD-NN` in `docs/testing/test-evidence.md` (steps, data, result).
+   Append one `test-executions.csv` row per case and attempt, linking the specification's
+   `test_case_id`, run ID, actual result, status, executor, execution date, build, environment and
+   evidence. Update `S#-Txx` status and register screenshots. Change `test-cases.csv` only when
+   the specification changes; keep earlier runs and failures when recording a retest.
 4. If it fails: reopen or create a defect (§5.10) and tell the story owner.
 
 ### 5.13 Customer question, decision or assumption (any one member)
@@ -291,23 +294,78 @@ tests using `traceability.csv`, and explain how the team handled the Week 7 chan
 
 ## 6. Rules and formats
 
-### 6.1 Functional test cases (`docs/testing/test-cases.csv`)
+### 6.1 Test specifications and execution records
 
-Fill every column; "Not executed" is allowed only before the run. Module-level case lists (such as
-`backend/test/venues/venue-search-test-cases.md`) are supporting detail only; every AC must still
-have a row here.
+Follow the Week 4 test case template: a reusable specification is written once and updated when
+requirements change; an execution record is added for each run. Maintain these during development.
+Final submission packaging copies the testing records and traceability into folder 3; it does not
+replace recording evidence when tests happen.
+
+**Specifications — `docs/testing/test-cases.csv`.** Every AC must link to a relevant case here.
+Module-level case lists (such as `backend/test/venues/venue-search-test-cases.md`) are supporting
+detail. Fill every column; use **Not recorded** for unavailable source details or optional author
+and creation-date metadata. Do not invent setup, test data or authors when migrating old cases.
+Preserve existing case IDs and explain historical or superseded cases in `specification_notes`.
+The retained `TC-01` to `TC-20` rows are historical feature-level summaries, not runnable cases;
+their aggregate outcomes stay in the archive and run narratives rather than becoming execution
+rows. Use the detailed cases linked from traceability for execution and acceptance checks.
 
 | Column | Example |
 | --- | --- |
 | `test_case_id` | `TC-10-03` (feature number, case number) |
 | `feature_id` | `CF-10` |
 | `scenario_outline` | Coordinator searches with an end date before the start date |
-| `planned_level` | manual / e2e / integration / unit / regression |
+| `planned_level` | integration (existing mixed labels are retained until their test boundaries are assessed) |
 | `acceptance_criterion_ids` | `KAN-12-AC14` |
-| `preconditions_and_steps` | Signed in as coordinator. 1. Open /venues/search 2. Set start 10 Jan, end 9 Jan 3. Search |
+| `preconditions` | Signed in as coordinator; test venue exists |
+| `test_steps` | 1. Open /venues/search 2. Enter the dates in test_data 3. Search |
+| `test_data` | Start: 10 Jan 2027; end: 9 Jan 2027 |
 | `expected_result` | Search refused with an end-date message; no results shown |
-| `result` | Pass / Fail / Not executed |
+| `created_by` | Not recorded |
+| `date_of_creation` | Not recorded |
+| `specification_notes` | Boundary scenario; use an isolated test fixture |
+
+**Executions — `docs/testing/test-executions.csv`.** Keep one row per case/run/attempt where
+the evidence supports that detail. Append retests; do not overwrite earlier outcomes. A
+**Not executed** row is a planning placeholder, not a performed run: its actual result, run ID,
+executor, execution date, build and environment remain **Not recorded** until supported by evidence.
+Keep that placeholder as historical preparation when appending a real execution. Do not treat
+its row number or the documentation migration date as an execution date.
+
+| Column | Meaning / example |
+| --- | --- |
+| `execution_id` | Stable unique `EX-...` row identifier; distinct from the run ID |
+| `test_case_id` | Existing specification ID, e.g. `TC-10-03` |
+| `run_id` | `MAN-20261012-01` or an existing historical run ID; Not recorded if unavailable |
+| `actual_result` | What was observed; Not recorded for an unperformed case or an old result without observed detail |
+| `result` | Pass / Fail / Not executed / Blocked |
+| `remarks` | Limitations, blockers, cleanup, retained test data, attempt details or source provenance |
+| `executed_by` | Actual executor; Not recorded if unavailable |
+| `date_of_execution` | Actual date; Not recorded if unavailable |
+| `build` | Tested commit SHA or build identifier; Not recorded if unavailable |
+| `environment` | Actual environment and relevant substitutes; Not recorded if unavailable |
 | `evidence` | `MAN-20261012-01` |
+
+Use **Blocked** only when a recorded obstacle prevented execution, explaining it in `remarks`.
+A pending or future test without a recorded blocker remains **Not executed**. Preserve reported
+historical outcomes and their limitations; do not infer missing metadata from commit timestamps.
+
+**Run detail — `docs/testing/test-evidence.md`.** Retain commands, suite totals, coverage,
+environment details, screenshots and failures/retests here. A suite-wide Pass does not establish
+that every linked case passed. Add case-level Pass/Fail only when the source identifies the case
+or its specific scenario and observed result. Preserve older run ID formats and original records.
+The unchanged migration snapshot `docs/testing/archive/test-cases-2026-10-21.csv` is historical
+source evidence, not the current specification or execution register.
+Counts of recorded case outcomes do not establish complete feature coverage or hosted acceptance;
+check their scope, source limitations and the relevant Definition of Done.
+
+**Test selection.** Cover normal, boundary, conflict and failure scenarios at the appropriate
+levels: unit for isolated rules, integration for collaborating components and real database
+behaviour, and E2E for important complete user journeys. State mocked boundaries: a browser test
+with substituted API responses does not prove a live integrated workflow. Manual/automated is
+an execution method; regression is a purpose that applies across levels, not a separate level.
+Avoid duplicating every low-level assertion as a manual case: link meaningful AC-level cases to
+the actual automated test files through traceability.
 
 ### 6.2 IDs
 
@@ -316,9 +374,10 @@ have a row here.
 | `KAN-xx`, `KAN-xx-ACn` | Jira story, acceptance criterion | Jira, `sprint-backlog.md` |
 | `CF-01`…`CF-20` | Core feature from the project instructions | `docs/requirements/README.md`, traceability |
 | `CR-n` | Customer change request | `change-requests.md` |
-| `TC-xx-nn` | Functional test case | `test-cases.csv` |
+| `TC-xx-nn` | Reusable test specification | `test-cases.csv` |
+| `EX-...` | Unique execution-register row (including explicit Not executed placeholders) | `test-executions.csv` |
 | `S#-Txx` | Sprint acceptance test (e.g. `S3-T04`) | `sprint-backlog.md` |
-| `AUTO-YYYYMMDD-NN`, `MAN-YYYYMMDD-NN` | Automated / manual test run | `test-evidence.md` |
+| `AUTO-YYYYMMDD-NN`, `MAN-YYYYMMDD-NN` | Automated / manual test run; preserve existing historical ID formats | `test-evidence.md`, linked from `test-executions.csv` where case evidence exists |
 | `S#-Exx` | Registered evidence artifact | `sprint-0N/evidence/README.md` |
 
 ### 6.3 Writing records
@@ -406,10 +465,12 @@ the team and records their name (§2).
 
 | Document | Holds | Who |
 | --- | --- | --- |
-| `docs/testing/test-cases.csv` | Functional test cases per AC | Required |
+| `docs/testing/test-cases.csv` | Reusable specifications per AC: preconditions, steps, data and expected results | Required |
+| `docs/testing/test-executions.csv` | Case-level actual results per run/attempt; explicit Not executed placeholders | Required |
 | `docs/requirements/traceability.csv` | Feature → story → AC → test case → test file | Required |
-| `docs/testing/test-evidence.md` | Every real run and coverage gaps | Required |
-| `docs/testing/README.md` | Test environments and hosted check scripts | If (new hosted check) |
+| `docs/testing/test-evidence.md` | Run narratives, suite results, source limitations and coverage gaps | Required |
+| `docs/testing/archive/test-cases-2026-10-21.csv` | Unchanged pre-standardisation register retained as historical source evidence | Never edit; current records live in the separate registers |
+| `docs/testing/README.md` | Register workflow, test levels, environments and hosted check scripts | If (testing workflow or hosted check changes) |
 | `docs/testing/coverage-reports/` | Coverage summary per sprint | Any one member, sprint close |
 
 ### 8.5 Scrum records (folder 4)

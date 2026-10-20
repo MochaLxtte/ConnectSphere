@@ -164,6 +164,7 @@ function expectedWeek(named: { fair?: boolean; dinner?: boolean } = {}) {
     items: [
       {
         id: venue.hall, name: 'Hall A', location: 'Level 1', capacity: 300, opensAt: '08:00', closesAt: '22:00',
+        setupMinutes: 0, turnaroundMinutes: 0,
         unavailable: [
           {
             id: period.fairBooking, kind: 'BOOKING', startsAt: sgt('05T10:00'), endsAt: sgt('05T12:00'),
@@ -174,6 +175,7 @@ function expectedWeek(named: { fair?: boolean; dinner?: boolean } = {}) {
       },
       {
         id: venue.room, name: 'Room B', location: null, capacity: 40, opensAt: null, closesAt: null,
+        setupMinutes: 0, turnaroundMinutes: 0,
         unavailable: [
           // Returned whole rather than clipped to the window.
           { id: period.polishing, kind: 'BLOCKED', startsAt: sgt('04T18:00'), endsAt: sgt('05T09:00'), reason: 'Floor polishing' },

@@ -3,6 +3,8 @@ import type { AuthenticatedUser } from '../auth/types.js';
 import type { EventRecord } from './types.js';
 import { assertReadyForSubmission } from './submit-input.js';
 import { assertCanSubmit, SubmitEligibilityError } from './submit-eligibility.js';
+import { recordNotifications } from '../notifications/notify.js';
+import { submissionNotifications } from '../notifications/trigger-matrix.js';
 
 export type SubmitActor = Pick<AuthenticatedUser, 'id' | 'role'>;
 
@@ -125,6 +127,9 @@ export async function submitEventRequest(
     `, [eventRequestId]);
     const saved = updated.rows[0];
     if (!saved) throw new Error('The event request could not be submitted.');
+
+    // KAN-64-AC201/AC207: written in this transaction, so a failed submission leaves none.
+    await recordNotifications(client, submissionNotifications(saved));
 
     await client.query('COMMIT');
     return toEventRecord(saved);

@@ -25,7 +25,8 @@ const venueJson = `jsonb_build_object(
   'id', v.id, 'name', v.name, 'capacity', v.capacity, 'facilities', v.facilities,
   'accessibilityFeatures', v.accessibility_features, 'layouts', v.layouts,
   'wheelchairAccessible', v.wheelchair_accessible,
-  'opensAt', v.opens_at::text, 'closesAt', v.closes_at::text)`;
+  'opensAt', v.opens_at::text, 'closesAt', v.closes_at::text,
+  'setupMinutes', v.setup_minutes, 'turnaroundMinutes', v.turnaround_minutes)`;
 
 function requireCoordinator(actor: WorkflowActor): void {
   if (actor.role !== 'EVENT_COORDINATOR') {

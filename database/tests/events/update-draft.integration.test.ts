@@ -182,3 +182,51 @@ describe('KAN-34 draft update persistence', () => {
     expect(await readState(eventRequestId)).toEqual(before);
   });
 });
+
+describe('KAN-34-AC101 strict calendar-date draft validation', () => {
+  const app = createApp({
+    database: pool,
+    submittedRequests: {
+      pool,
+      canViewRequest: () => true,
+      canReviewRequest: () => false,
+      authenticate: async () => organiser,
+    },
+  });
+
+  async function readStartsAt(id: string): Promise<string | null> {
+    const result = await pool.query('SELECT starts_at AS "startsAt" FROM event_requests WHERE id = $1', [id]);
+    const startsAt = result.rows[0].startsAt as Date | null;
+    return startsAt === null ? null : startsAt.toISOString();
+  }
+
+  it.each(['2026-02-30T09:00:00Z', '2027-02-29T09:00:00Z', '2026-13-01T09:00:00Z'])(
+    'refuses %s as a validation error and leaves the draft unchanged',
+    async (startsAt) => {
+      const eventRequestId = await createEvent();
+      const before = await readState(eventRequestId);
+
+      const response = await request(app).patch(`/api/events/${eventRequestId}`).send({ startsAt, name: 'Changed' });
+
+      expect(response.status).toBe(400);
+      expect(response.body.error).toEqual({
+        code: 'INVALID_DRAFT_UPDATE', message: 'startsAt must be an ISO 8601 date-time string or null.',
+      });
+      expect(await readState(eventRequestId)).toEqual(before);
+      expect(await readStartsAt(eventRequestId)).toBeNull();
+    },
+  );
+
+  it.each([
+    ['2028-02-29T09:00:00Z', '2028-02-29T09:00:00.000Z'],
+    ['2028-02-29T17:00:00+08:00', '2028-02-29T09:00:00.000Z'],
+  ])('saves the real date-time %s', async (startsAt, stored) => {
+    const eventRequestId = await createEvent();
+
+    const response = await request(app).patch(`/api/events/${eventRequestId}`).send({ startsAt });
+
+    expect(response.status).toBe(200);
+    expect(response.body.startsAt).toBe(stored);
+    expect(await readStartsAt(eventRequestId)).toBe(stored);
+  });
+});

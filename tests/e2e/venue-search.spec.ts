@@ -1,4 +1,5 @@
 import { expect, test, type Page } from './browser-fixtures.js';
+import { fulfilNotificationBell } from './workspace-fixtures.js';
 
 const coordinatorId = '12000000-0000-4000-8000-000000000001';
 const hall = {
@@ -46,6 +47,8 @@ async function fixtures(page: Page, role: string | null = 'EVENT_COORDINATOR') {
     } else if (role === 'EVENT_COORDINATOR' && request.method() === 'GET' && url.pathname === '/api/venues/search-venues') {
       searches.push(url.searchParams);
       await route.fulfill({ json: { items: matching(url.searchParams) } });
+    } else if (await fulfilNotificationBell(route, request)) {
+      // Answered: the top-bar notification bell (KAN-64).
     } else {
       unexpected.push(`${request.method()} ${url.pathname}`);
       await route.fulfill({ status: 501, json: error('UNEXPECTED_TEST_REQUEST', 'No fixture configured.') });

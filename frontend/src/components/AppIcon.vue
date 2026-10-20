@@ -13,7 +13,8 @@ withDefaults(
       | 'refresh'
       | 'user'
       | 'leaf'
-      | 'availability';
+      | 'availability'
+      | 'bell';
     size?: number;
   }>(),
   { size: 20 },
@@ -32,6 +33,7 @@ const paths = {
   user: 'M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0 M4 21v-2a8 8 0 0 1 16 0v2',
   leaf: 'M20 3C7 2 2 8 5 15s15 5 15-12z M5 21L16 9 M10 16v-5',
   availability: 'M4 5h16v16H4z M8 3v4 M16 3v4 M4 10h16 M9 15.5l2 2 4-4',
+  bell: 'M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9 M10 21a2 2 0 0 0 4 0',
 } as const;
 </script>
 

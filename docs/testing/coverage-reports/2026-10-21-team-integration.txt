@@ -1,0 +1,26 @@
+AUTO-20261021-INTEGRATION-01
+Date: 21 October 2026, Asia/Singapore
+Build: 4835a261fb0350ef2b9a4507abda2843fd8aa80c
+Command: npm run test:coverage
+Windows; Node.js 24.21.0; Vitest 4.1.11
+First workspace: frontend; second: backend
+
+Test Files  35 passed (35)
+Tests  676 passed (676)
+All files          |   94.95 |    92.26 |    96.9 |   97.34 |
+Statements   : 94.95% ( 2316/2439 )
+Branches     : 92.26% ( 2826/3063 )
+Functions    : 96.9% ( 564/582 )
+Lines        : 97.34% ( 1944/1997 )
+Test Files  43 passed (43)
+Tests  1165 passed (1165)
+All files          |   86.31 |    89.51 |   84.87 |   86.92 |
+Statements   : 86.31% ( 1343/1556 )
+Branches     : 89.51% ( 990/1106 )
+Functions    : 84.87% ( 247/291 )
+Lines        : 86.92% ( 1223/1407 )
+
+Notification state.ts: 100% statements (14/14), branches (11/11), functions (3/3), lines (13/13).
+NotificationInbox.vue: 94.31% statements (83/88), 93.69% branches (104/111), 100% functions (17/17), 100% lines (71/71).
+Uncovered compound early-return and error/refresh alternatives remain; no claim of exhaustive schedules.
+Integration and browser outcomes are recorded separately; this is unit/component coverage, not hosted acceptance.

@@ -35,10 +35,6 @@ const futureRoutes = [
   ['post', `/api/registrations/events/${eventId}/register`, 'ATTENDEE'],
   ['post', `/api/registrations/events/${eventId}/withdraw`, 'ATTENDEE'],
   ['get', `/api/registrations/events/${eventId}/attendees`, 'EVENT_ORGANISER'],
-  ['get', '/api/notifications', 'EVENT_ORGANISER'],
-  ['get', '/api/notifications/unread-count', 'EVENT_ORGANISER'],
-  ['post', '/api/notifications/read-all', 'EVENT_ORGANISER'],
-  ['post', `/api/notifications/${recordId}/read`, 'EVENT_ORGANISER'],
 ] as const satisfies ReadonlyArray<readonly ['get' | 'post' | 'patch', string, UserRole]>;
 
 describe('Sprint 1 and Sprint 2 application scope', () => {

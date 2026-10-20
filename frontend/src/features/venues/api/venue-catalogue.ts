@@ -13,6 +13,9 @@ export interface CatalogueVenue {
   wheelchairAccessible: boolean;
   opensAt: string | null; // "HH:MM" Singapore time; null = unrestricted
   closesAt: string | null;
+  /** KAN-77: whole minutes needed before and after each booking (0-1440). */
+  setupMinutes: number;
+  turnaroundMinutes: number;
   updatedAt: string;
 }
 
@@ -26,6 +29,11 @@ export interface CatalogueVenueUpdate {
   layouts?: string[];
   opensAt?: string | null;
   closesAt?: string | null;
+  /** A changed buffer is sent with the value it replaces, so a stale edit is refused (409). */
+  setupMinutes?: number;
+  expectedSetupMinutes?: number;
+  turnaroundMinutes?: number;
+  expectedTurnaroundMinutes?: number;
 }
 
 const base = '/api/venues/catalogue' as const;

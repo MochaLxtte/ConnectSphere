@@ -158,3 +158,47 @@ test('KAN-16 denied detail access shows a generic message without request data',
   await expectReadOnly(page);
   expect(fixture.unexpectedRequests).toEqual([]);
 });
+
+test('KAN-6-AC101 saved-draft submission shows the server\'s field errors and keeps the draft', async ({ page }) => {
+  const draft = { ...requestDetail, status: 'DRAFT', review: null, actions: { canEditDraft: true, canMakeInitialDecision: false } };
+  const submissions: string[] = [];
+  const unexpectedRequests: string[] = [];
+  // Fail closed: only the reads this page makes and one submission, answered with a validation failure.
+  await page.route((url) => url.pathname.startsWith('/api/'), async (route) => {
+    const request = route.request();
+    const url = new URL(request.url());
+    if (request.method() === 'GET' && url.pathname === '/api/auth/me') {
+      await route.fulfill({ json: { user } });
+    } else if (request.method() === 'GET' && url.pathname === `/api/events/${requestId}`) {
+      await route.fulfill({ json: draft });
+    } else if (request.method() === 'POST' && url.pathname === `/api/events/${requestId}/submit`) {
+      submissions.push(url.pathname);
+      await route.fulfill({ status: 400, json: { error: {
+        code: 'SUBMISSION_INVALID', message: 'The end must be after the start.',
+        missingFields: ['purpose'], fieldErrors: { endsAt: 'The end must be after the start.' },
+      } } });
+    } else if (!(await fulfilWorkspaceRead(route, request))) {
+      unexpectedRequests.push(`${request.method()} ${url.pathname}${url.search}`);
+      await route.fulfill({ status: 501, json: {
+        error: { code: 'UNEXPECTED_TEST_REQUEST', message: 'No response fixture was configured.' },
+      } });
+    }
+  });
+
+  await page.goto(`/events/${requestId}`);
+  await page.getByRole('button', { name: 'Submit for review', exact: true }).click();
+
+  const alert = page.getByRole('alert');
+  await expect(alert).toContainText('Edit the draft to fix these details before submitting.');
+  await expect(alert.getByRole('listitem')).toHaveText([
+    /Purpose:\s*Complete this before submitting\./,
+    /Ends:\s*The end must be after the start\./,
+  ]);
+  // Still a draft with its values and both actions available; nothing was submitted twice.
+  await expect(page.getByText('Draft', { exact: true })).toBeVisible();
+  await expect(page.getByText('Bring neighbours together', { exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Submit for review', exact: true })).toBeEnabled();
+  await expect(page.getByRole('link', { name: 'Edit draft', exact: true })).toBeVisible();
+  expect(submissions).toHaveLength(1);
+  expect(unexpectedRequests).toEqual([]);
+});

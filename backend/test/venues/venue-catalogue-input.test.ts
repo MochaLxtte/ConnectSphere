@@ -5,6 +5,8 @@ import {
   MAX_LABELS,
   MAX_LOCATION_LENGTH,
   MAX_VENUE_CAPACITY,
+  MAX_BUFFER_MINUTES,
+  parseVenueCatalogueRequest,
   parseVenueCatalogueUpdate,
 } from '../../src/modules/venues/venue-catalogue-input.js';
 
@@ -177,4 +179,60 @@ describe('KAN-50 operating-hours ordering helper', () => {
       expect(codeOf(() => assertOperatingHoursOrdered(opens, closes))).toBe('INVALID_VENUE_CATALOGUE_INPUT');
     },
   );
+});
+
+describe('KAN-77 venue buffer duration input', () => {
+  it.each([0, 1, 30, 1439, MAX_BUFFER_MINUTES])('accepts %d minutes with its expected value (AC2, AC5)', (minutes) => {
+    expect(parseVenueCatalogueRequest({ setupMinutes: minutes, expectedSetupMinutes: 0 })).toEqual({
+      update: { setupMinutes: minutes }, expected: { setupMinutes: 0 },
+    });
+    expect(parseVenueCatalogueRequest({ turnaroundMinutes: minutes, expectedTurnaroundMinutes: 15 })).toEqual({
+      update: { turnaroundMinutes: minutes }, expected: { turnaroundMinutes: 15 },
+    });
+  });
+
+  it('accepts both buffers alongside other catalogue fields and keeps them separate from expectations', () => {
+    expect(parseVenueCatalogueRequest({
+      capacity: 80, setupMinutes: 30, expectedSetupMinutes: 0, turnaroundMinutes: 45, expectedTurnaroundMinutes: 10,
+    })).toEqual({
+      update: { capacity: 80, setupMinutes: 30, turnaroundMinutes: 45 },
+      expected: { setupMinutes: 0, turnaroundMinutes: 10 },
+    });
+  });
+
+  it('returns no expectations for an edit that does not change a buffer', () => {
+    expect(parseVenueCatalogueRequest({ capacity: 80 })).toEqual({ update: { capacity: 80 }, expected: {} });
+    expect(parseVenueCatalogueUpdate({ setupMinutes: 5, expectedSetupMinutes: 0 })).toEqual({ setupMinutes: 5 });
+  });
+
+  it.each([-1, MAX_BUFFER_MINUTES + 1, 1.5, Number.NaN, Number.POSITIVE_INFINITY, '30', null, true, [30]])(
+    'rejects %j as a buffer value with field feedback and saves nothing (AC2)',
+    (value) => {
+      for (const [field, expectedKey] of [['setupMinutes', 'expectedSetupMinutes'], ['turnaroundMinutes', 'expectedTurnaroundMinutes']] as const) {
+        expect(() => parseVenueCatalogueRequest({ [field]: value, [expectedKey]: 0 }))
+          .toThrow(`${field} must be a whole number of minutes from 0 to ${MAX_BUFFER_MINUTES}.`);
+        expect(codeOf(() => parseVenueCatalogueRequest({ [field]: value, [expectedKey]: 0 })))
+          .toBe('INVALID_VENUE_CATALOGUE_INPUT');
+      }
+    },
+  );
+
+  it.each([-1, MAX_BUFFER_MINUTES + 1, 2.5, '0', null])('rejects %j as an expected buffer value', (value) => {
+    expect(() => parseVenueCatalogueRequest({ setupMinutes: 10, expectedSetupMinutes: value }))
+      .toThrow(`expectedSetupMinutes must be a whole number of minutes from 0 to ${MAX_BUFFER_MINUTES}.`);
+  });
+
+  it('requires the expected value whenever a buffer is changed (AC5)', () => {
+    expect(() => parseVenueCatalogueRequest({ setupMinutes: 10 }))
+      .toThrow('expectedSetupMinutes is required when changing setupMinutes.');
+    expect(() => parseVenueCatalogueRequest({ turnaroundMinutes: 10, capacity: 5 }))
+      .toThrow('expectedTurnaroundMinutes is required when changing turnaroundMinutes.');
+  });
+
+  it('refuses an expected value sent without its buffer, including as the only key', () => {
+    expect(() => parseVenueCatalogueRequest({ capacity: 5, expectedSetupMinutes: 0 }))
+      .toThrow('expectedSetupMinutes may only be sent together with setupMinutes.');
+    expect(() => parseVenueCatalogueRequest({ expectedTurnaroundMinutes: 0 }))
+      .toThrow('Provide at least one field to update.');
+  });
 });

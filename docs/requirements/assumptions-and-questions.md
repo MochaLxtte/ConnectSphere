@@ -1168,3 +1168,37 @@ Source: current Jira KAN-65 AC1–8/AC101–104 and the implementation plan appr
 The expected assignment version is the UUID of the single active `coordinator_assignments` row, avoiding a new schema field and detecting A→B→A stale pages. A valid same-current-assignee request is unchanged without a history write; the version is checked first. Inconsistent/missing current history is refused for reconciliation rather than silently repaired. Reassignment closes the old interval and inserts its replacement at one PostgreSQL timestamp, preserving actor/reason and existing event decisions/arrangements. Protected multi-query history reads hold a shared event-row lock until authorization and data retrieval finish; mutations serialize on the event row. These implement existing concurrency/access criteria rather than adding product scope.
 
 The user reported that migration 007 was applied in Supabase and Coordinator Lead login works. This is setup confirmation only; no manual workflow test is recorded, no credentials were handled, and no shared database mutation was performed during this KAN-65 implementation. Hosted/manual checks, KAN-64 notifications, independent review and formal acceptance remain outstanding.
+
+## 20 October 2026 — KAN-34 draft date-time format
+
+Source: implementation decision for KAN-34-AC101, made by Kai Jie in chat with an AI assistant while repairing the HTTP 500 on impossible draft dates. This was not a team discussion or customer clarification.
+
+Decision: draft date-times (`startsAt`, `endsAt`, `registrationOpensAt`, `registrationClosesAt`) are accepted only as ISO 8601 date-times with an explicit `Z` or `±HH:MM` offset and a real calendar date. This applies the existing [API convention](../architecture/api-contract.md) that HTTP dates carry an offset; values without one were previously accepted and interpreted in the database session's timezone. The browser form already sends UTC values from `toISOString()`, and no existing test or fixture sent an offset-free value, so no product behaviour in the application is expected to change. Other API clients sending offset-free values now receive a 400 validation error. Existing criteria and estimates are unchanged.
+
+## 21 October 2026 — KAN-64 notification inbox: trigger matrix and implementation choices
+
+Source: live KAN-64 AC201–AC209 and the developer's instruction on 21 October to implement it. This record is a **proposal to agree**: no team vote, Product Owner decision or independent review is recorded. The 5-SP estimate and the criteria are unchanged.
+
+**Trigger and recipient matrix (AC208), To agree:**
+
+| Trigger (acting user) | Recipients |
+| --- | --- |
+| Request submitted (organiser) | the organiser, as an acknowledgement |
+| Clarification requested (coordinator) | the organiser |
+| Initial approval or rejection (coordinator) | the organiser |
+| Initial assignment (Lead) | the organiser and the new coordinator |
+| Reassignment (Lead) | the organiser and the new coordinator, plus the previous coordinator, who gets a minimal notice with no event details |
+| Venue booking decision (Venue Staff) | the organiser, the event's current coordinator and the deciding Venue Staff member, as an acknowledgement |
+
+**Venue Staff recipients:** AC203 says "relevant Venue Staff". The developer chose the deciding staff member only; other Venue Staff are not notified. Revisit if the team wants every staff member to see decisions.
+
+**Implementation choices that follow the criteria:** migration 008 adds `venue_booking_id` and `dedupe_key` to `notifications` with a unique index on recipient and key (AC205, AC207). The key is the notification type plus the id of the review, clarification, assignment-history row or booking, so a repeat is a no-op. Notifications are written in the business transaction. Access is re-checked on each read (AC206): the organiser must own the event, a coordinator must currently be assigned and the event must not be a draft, Venue Staff may open venue bookings. The previous-coordinator notice is the only one visible without event access and contains no event name. The inbox shows at most the newest 100. AC209 is a boundary only; KAN-80 owns the remaining original triggers and the change stories own CR-2, CR-4 and CR-6.
+
+**Not done:** email, push and external delivery are out of scope (AC204). Notifying Leads of new submissions is not in the criteria and was not added. Migration 008 has not been applied to shared Supabase and must be agreed with the team first.
+
+## 21 October 2026 — KAN-77 buffer concurrency and AC6 dependency
+
+Source: KAN-77 implementation plan approved in chat by Kai Jie, the story owner, on 21 October 2026. These are implementation decisions within the existing S3-P01/S3-P08 policy, not customer clarifications or a team vote.
+
+1. **Field-aware buffer concurrency (KAN-77-AC5).** A request that changes `setupMinutes` or `turnaroundMinutes` must also send the value the editor loaded (`expectedSetupMinutes` / `expectedTurnaroundMinutes`). Under the venue row lock, a mismatch returns `409 VENUE_BUFFER_CONFLICT` and nothing in the request is written. This compares values, so no version column was added. A value changed and then changed back is accepted, because the editor saw the same value that is stored. Edits to non-buffer fields keep KAN-50's rule. A request that changes no buffer is never refused for buffer changes made meanwhile.
+2. **AC6 deferred to KAN-78 (option a).** KAN-77-AC1–AC5 are implemented. AC6, re-evaluating non-ended bookings and reporting affected-booking warnings after a duration change, needs KAN-78's shared buffered-interval calculation, which is not yet built. AC6 stays **Not executed**, KAN-77 stays In Progress, and its 2-SP estimate is unchanged. Until KAN-78, saved buffers are returned to catalogue, search, suitability and calendar callers but change no interval, filter or conflict result.

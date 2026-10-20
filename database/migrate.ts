@@ -20,6 +20,9 @@ const priorMigrationNames: Readonly<Record<string, string>> = {
   '004_core_feature_schema.sql': '005_core_feature_schema.sql',
   '005_equipment_peak_availability.sql': '006_equipment_peak_availability.sql',
   '006_automatic_coordinator_assignment.sql': '007_automatic_coordinator_assignment.sql',
+  // The independently developed KAN-77 branch also used 008. Keep any exact
+  // local ledger entry while the integrated sequence reserves 008 for notifications.
+  '009_venue_buffer_durations.sql': '008_venue_buffer_durations.sql',
 };
 
 export async function migrate(connectionString: string): Promise<string[]> {
