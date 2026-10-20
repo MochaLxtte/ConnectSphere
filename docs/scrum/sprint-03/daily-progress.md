@@ -78,6 +78,8 @@ Not executed. No application/schema, estimate, acceptance or Jira status changed
 checks and KAN-64 remain pending. This records actual 21 October work, not delivery within
 the configured 4–17 October sprint window.
 
+**21 October 2026 — KAN-52 zero-attendance repair (Ernest), outside a Daily Scrum.** Branch `fix/KAN-52-zero-attendance-suitability` repairs the audit failure TC-11-01 (KAN-52-AC101): an expected attendance of 0 is now assessed against venue capacity instead of being treated as unknown, while missing attendance stays distinguishable and other checks still decide the outcome. Automated layers passed (check, coverage, 342 PostgreSQL tests, 132 browser tests: AUTO-20261021-KAN52-01). Remaining: manual/hosted S3-T17 run, independent peer review, CI on the pushed branch and the Jira status/assignment, none of which this work changed. No estimate change (3 SP unchanged). This is not a member's standup row.
+
 ## Impediments
 
 | Raised | Impediment | Owner | Action | Status |

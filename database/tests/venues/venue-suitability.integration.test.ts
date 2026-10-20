@@ -201,6 +201,28 @@ describe('KAN-52 current-data venue suitability against PostgreSQL', () => {
     expect(result.checks.filter(check => check.status === 'UNKNOWN').map(check => check.key)).toEqual(['capacity', 'availability']);
   });
 
+  it('KAN-52-AC101 assesses a stored attendance of 0 against capacity and keeps missing attendance distinguishable', async () => {
+    const pair = await setup();
+    await fixture.pool.query('UPDATE event_requests SET expected_attendance=0 WHERE id=$1', [pair.eventId]);
+    const context = await getVenueSuitabilityContext(fixture.dependencies, { actor: coordinator, eventId: pair.eventId });
+    expect(context.event.expectedAttendance).toBe(0);
+    const zero = await assess(pair.eventId, await inputFor(pair.eventId, pair.venueId));
+    expect(zero.outcome).toBe('SUITABLE');
+    expect(zero.checks.find(check => check.key === 'capacity'))
+      .toEqual({ key: 'capacity', status: 'PASS', message: 'Expected attendance (0) fits the venue capacity (50).' });
+
+    // Other requirements still decide the outcome: a conflicting approved booking makes 0 unsuitable.
+    await addBooking(pair, 'APPROVED');
+    const booked = await assess(pair.eventId, await inputFor(pair.eventId, pair.venueId));
+    expect(booked.outcome).toBe('UNSUITABLE');
+    expect(booked.checks.find(check => check.key === 'capacity')?.status).toBe('PASS');
+
+    await fixture.pool.query('UPDATE event_requests SET expected_attendance=NULL WHERE id=$1', [pair.eventId]);
+    const missing = await assess(pair.eventId, await inputFor(pair.eventId, pair.venueId));
+    expect(missing.checks.find(check => check.key === 'capacity')?.status).toBe('UNKNOWN');
+    expect(missing.checks.find(check => check.key === 'capacity')?.message).toContain('no expected attendance');
+  });
+
   it('returns an empty active catalogue normally when no venue is active', async () => {
     const pair = await setup();
     await fixture.pool.query('UPDATE venues SET is_active=false');

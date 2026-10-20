@@ -265,6 +265,22 @@ describe('KAN-52 venue suitability page', () => {
     expect(screen.getByText('Expected attendance is missing.')).toBeInTheDocument();
   });
 
+  it('KAN-52-AC101 shows an expected attendance of 0 as a value, not as "Not provided"', async () => {
+    const zero = { ...context, event: { ...context.event, expectedAttendance: 0 } };
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValueOnce(json(zero)).mockResolvedValueOnce(json({ assessment: {
+      ...result, checks: result.checks.map((item) => item.key === 'capacity'
+        ? { ...item, message: 'Expected attendance (0) fits the venue capacity (200).' } : item),
+    } })));
+    await open();
+    await check();
+
+    expect(await screen.findByRole('heading', { name: 'Suitable' })).toBeInTheDocument();
+    const attendance = screen.getByText('Expected attendance', { selector: 'dt' }).parentElement!;
+    expect(within(attendance).getByText('0')).toBeInTheDocument();
+    expect(within(attendance).queryByText('Not provided')).not.toBeInTheDocument();
+    expect(screen.getByText('Expected attendance (0) fits the venue capacity (200).')).toBeInTheDocument();
+  });
+
   it('shows a useful empty catalogue state without a requirement form', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValueOnce(json({ ...context, venues: [] })));
     await open();
