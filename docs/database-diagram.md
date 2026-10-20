@@ -34,6 +34,7 @@ erDiagram
     event_requests ||..o{ event_status_history : "event_request_id"
     event_requests |o..o{ notifications : "event_request_id"
     app_users ||..o{ notifications : "recipient_id"
+    venue_bookings |o..o{ notifications : "venue_booking_id"
     app_users |o..o{ venue_bookings : "decided_by"
     event_requests ||..o{ venue_bookings : "event_request_id"
     app_users ||..o{ venue_bookings : "requested_by"
@@ -213,6 +214,8 @@ erDiagram
         uuid id PK
         uuid recipient_id FK
         uuid event_request_id FK "nullable"
+        uuid venue_booking_id FK "nullable, migration 008"
+        text dedupe_key "nullable, unique with recipient_id, migration 008"
         text type
         text title
         text message
@@ -248,6 +251,7 @@ erDiagram
 - Assignment history permits multiple rows per request, with at most one active row (`unassigned_at IS NULL`). `assignment_method` defaults to `MANUAL`: manual rows require `assigned_by`, while `AUTOMATIC` rows require it to be NULL.
 - KAN-79 leaves new submissions unassigned and records the Lead's application ID when an initial manual assignment is made. The event linkage and history write commit together. Previously assigned events and historical automatic records remain unchanged; KAN-65 reassignment and KAN-64 notifications are separate dependencies.
 - KAN-65 now permits explicit Lead reassignment using the active history row's UUID as `expectedAssignmentVersion`. It requires the current linkage and exactly one active history row to agree. The old row's `unassigned_at` and the new row's `assigned_at` share one database timestamp; the new MANUAL row stores the Lead and required reason in `assigned_by`/`note`. History and `event_requests.coordinator_id` change atomically. Same-coordinator requests with a current version do not write; stale versions and inconsistent legacy history fail without replacing records. KAN-64 notification integration and hosted acceptance remain pending.
+- KAN-64 migration 008 adds `notifications.venue_booking_id` (nullable, `ON DELETE SET NULL`) and `notifications.dedupe_key` (nullable, non-blank). A unique index on `(recipient_id, dedupe_key)` makes a repeated outcome a no-op; rows written before the migration have no key and never conflict. It is applied only to local test databases so far, not to shared Supabase.
 - `event_reviews.event_request_id` has no unique constraint; its one-to-many relationship reflects the database structure. The review service prevents repeated initial decisions.
 - Registrations are unique per `(event_request_id, attendee_id)` pair. Neither foreign key is individually unique.
 - User email addresses, venue names and equipment-type names have case-insensitive unique indexes using `lower(...)`.

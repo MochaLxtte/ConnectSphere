@@ -166,9 +166,10 @@ concurrent approvals that committed while waiting. Status and all decision metad
 are saved in one transaction. Existing database conflict triggers remain a second guard;
 their known conflict errors also become 409 responses. Failure rolls back the decision.
 
-This feature does not change event status, send notifications, or add cancellation/reassignment
-workflows. It uses the existing `venue_bookings` schema; no new migration or historical SQL
-change is required. The separate KAN-51 calendar reads approved bookings from the same table.
+This feature does not change event status or add cancellation/reassignment
+workflows. Since KAN-64 a decision also writes in-app notifications in the same transaction
+(organiser, current coordinator and the deciding staff member). It uses the existing
+`venue_bookings` schema; no new migration or historical SQL change is required for bookings. The separate KAN-51 calendar reads approved bookings from the same table.
 
 ### Verification
 
