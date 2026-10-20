@@ -1,5 +1,8 @@
 export type ReviewDecision = 'APPROVED' | 'REJECTED';
 
+/** KAN-60: matches the server's shared limit for trimmed workflow explanations. */
+export const REVIEW_REASON_MAX_LENGTH = 2000;
+
 export interface SavedReview {
   reviewId: string;
   eventRequestId: string;

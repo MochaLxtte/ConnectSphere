@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, useId, watch } from 'vue';
+import { REVIEW_REASON_MAX_LENGTH } from '../types';
 import type { ReviewDecision, ReviewFeedback, ReviewRequestSummary, ReviewSubmission } from '../types';
 
 const props = defineProps<{
@@ -16,7 +17,12 @@ const emit = defineEmits<{
 const id = useId();
 const decision = ref<ReviewDecision | null>(null);
 const reason = ref('');
+const reasonError = ref<string | null>(null);
+const reasonField = ref<HTMLTextAreaElement | null>(null);
 const submissionPending = ref(false);
+// KAN-60: a rejection needs an explanation; approval keeps the reason optional.
+const reasonRequired = computed(() => decision.value === 'REJECTED');
+const trimmedReasonLength = computed(() => reason.value.trim().length);
 const feedback = computed(() =>
   props.feedback?.eventRequestId === props.request.id ? props.feedback : null,
 );
@@ -49,14 +55,33 @@ const errorMessage = computed(() => {
 watch(() => props.request.id, () => {
   decision.value = null;
   reason.value = '';
+  reasonError.value = null;
   submissionPending.value = false;
 }, { flush: 'sync' });
+watch([decision, reason], () => { reasonError.value = null; });
+
+/** Mirror the server's KAN-60 checks so the organiser-facing explanation is never blank. */
+function validateReason(): string | null {
+  if (trimmedReasonLength.value > REVIEW_REASON_MAX_LENGTH) {
+    return `Reason must be at most ${REVIEW_REASON_MAX_LENGTH} characters.`;
+  }
+  if (reasonRequired.value && trimmedReasonLength.value === 0) {
+    return 'Enter a reason to reject this event request.';
+  }
+  return null;
+}
 watch(() => [props.request.id, props.feedback] as const, ([requestId, value]) => {
   if (value?.eventRequestId === requestId) submissionPending.value = value.state === 'saving';
 }, { immediate: true, flush: 'sync' });
 
 function submitDecision() {
   if (!canSubmit.value || !decision.value) return;
+  const problem = validateReason();
+  if (problem) {
+    reasonError.value = problem;
+    reasonField.value?.focus();
+    return;
+  }
   // Close the gap before the parent renders its saving state, preventing duplicate clicks.
   submissionPending.value = true;
   emit('submit', {
@@ -111,9 +136,25 @@ function submitDecision() {
             <span><strong>Reject request</strong><span>Do not progress this request</span></span>
           </label>
         </div>
-        <label :for="`${id}-reason`" class="reason-label">Reason <span>(optional)</span></label>
-        <textarea :id="`${id}-reason`" v-model="reason" rows="4" :aria-describedby="`${id}-reason-hint`" />
-        <p :id="`${id}-reason-hint`" class="decision-hint">Add an explanation to accompany the decision.</p>
+        <label :for="`${id}-reason`" class="reason-label">
+          Reason <span>{{ reasonRequired ? '(required)' : '(optional)' }}</span>
+        </label>
+        <textarea
+          :id="`${id}-reason`"
+          ref="reasonField"
+          v-model="reason"
+          rows="4"
+          :aria-required="reasonRequired"
+          :aria-invalid="reasonError !== null"
+          :aria-describedby="reasonError ? `${id}-reason-error ${id}-reason-hint` : `${id}-reason-hint`"
+        />
+        <p v-if="reasonError" :id="`${id}-reason-error`" class="decision-error reason-error" role="alert">{{ reasonError }}</p>
+        <p :id="`${id}-reason-hint`" class="decision-hint">
+          {{ reasonRequired
+            ? 'Explain why the request is rejected. The organiser will see this reason.'
+            : 'Add an explanation to accompany the decision.' }}
+          <span class="reason-count">{{ trimmedReasonLength }} / {{ REVIEW_REASON_MAX_LENGTH }}</span>
+        </p>
       </fieldset>
       <p v-if="errorCode && !saving" class="decision-error" role="alert">{{ errorMessage }}</p>
       <footer class="decision-actions">
@@ -169,6 +210,9 @@ textarea:focus-visible, input:focus-visible { outline: 3px solid #90a950; outlin
 .rejected-outcome { border-left-color: #954537; background: #fcf1ee; }
 .decision-error { color: #8a332b; font-size: 14px; line-height: 1.6; margin-top: 16px; }
 .decision-feedback .decision-error { margin-top: 0; }
+.reason-error { margin-top: 6px; }
+.decision-panel textarea[aria-invalid='true'] { border-color: #8a332b; }
+.reason-count { display: block; margin-top: 2px; font-variant-numeric: tabular-nums; }
 .decision-feedback .button { margin-top: 12px; }
 @media (max-width: 520px) {
   .decision-panel { padding: 20px; }
