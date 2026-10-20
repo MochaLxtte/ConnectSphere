@@ -133,7 +133,7 @@ branch as the code, before the PR is opened. *(if)* steps apply only when the si
 | 16 | Commit in small steps naming the story: `feat(KAN-xx): ...`, `test(KAN-xx): ...`, `docs(KAN-xx): ...` | git |
 | 17 | Open the PR with the template fully ticked; request a reviewer who is not the author | GitHub (`.github/pull_request_template.md`) |
 | 18 | Move the card to In Review | Jira |
-| 19 | After review and merge: subtasks Done; story Done **only** when the Definition of Done is met (hosted check included) | Jira |
+| 19 | After approval and **before merging**, the author records the reviewer and approval date (reviewer column and development note), then merges. After merge: subtasks Done; story Done **only** when the Definition of Done is met (hosted check included) | `sprint-backlog.md`, `daily-progress.md`, Jira |
 | 20 | Update the story's status, sprint and Done date | `docs/requirements/product-backlog.md` § Master backlog register |
 
 ## 5. Non-development activities
@@ -205,7 +205,8 @@ to descriptions. Preserve the corresponding history and evidence in repository r
    `S#-E03`) and register them.
 2. Fill the burndown data table in `sprint-0N/daily-progress.md` and the outcome in `sprint-0N/README.md`.
 3. Add the sprint's row to `docs/scrum/release-burndown.md` and redraw the chart.
-4. Update the master register in `product-backlog.md`; export it as
+4. Update the master register in `product-backlog.md`, including each merged story's PR, merge commit
+   and date (from `git log --merges` and GitHub, not separate post-merge PRs); export it as
    `docs/submission/1/product-backlog.xlsx`; refresh the Jira CSV export in `docs/submission/1/`
    and its README.
 5. Save the `npm run test:coverage` summary as `docs/testing/coverage-reports/sprint-0N.txt` and register it.
@@ -236,7 +237,12 @@ it, otherwise in the sprint's scope change log. Then follow §4.
 2. Check the code against the card's ACs and the Definition of Done; run `npm run check` locally if
    in doubt.
 3. Leave the review on GitHub (approve or request changes, with reasons). The GitHub review is the
-   record; a self-merge without review must be stated in the PR text.
+   record; the reviewer does not open a PR to record it. The author records it before merging
+   (§4 step 19) and merge details are collected at sprint close (§5.8).
+4. Self-merge without review is allowed only for **records-only** PRs: documentation that records
+   what already happened, with no code, tests, scope, estimate, acceptance criterion or process
+   change. The PR text must say it was self-merged and why. Everything else, including changes to
+   this file, needs another member's review.
 
 ### 5.12 Manual or hosted acceptance testing (any one member)
 1. Use only the shared development database with test accounts; never production data. The person
