@@ -55,6 +55,29 @@ Selected ownership/review: Arvin 19/Kai Jie, Kai Jie 19/Tristan, Ernest 12/Ryan,
 
 The KAN-12 commits were merged to `main` through [PR #26](https://github.com/MochaLxtte/ConnectSphere/pull/26) on 7 October. Two commit-hygiene gaps are retained as found and history is not rewritten: the authentication commits do not name a KAN id (`AGENTS.md` §7.1), and `venue-search.test.ts` was committed under the `docs(KAN-12)` commit `a7e7bca`. The 12–13 September commits fall in Sprint 1, the 3 October commits in Sprint 2 and the 4 October commits on the first day of Sprint 3 (see the [sprint table](../README.md)); the Sprint 1 and 2 records are not edited. No application test was run for this note and no story status or points change. This is not a member's Daily Scrum row.
 
+**21 October 2026 — test documentation outside a Daily Scrum.** Standardised the existing case
+register into reusable specifications and separate execution records following the Week 4 template.
+Preserved all 427 IDs, original source content and dated evidence; 407 detailed-case records retain
+30 automated passes, five audit failures and 372 Not executed placeholders. The 20 historical
+feature summaries are excluded from execution counts. Added three missing journey mappings and
+updated AGENTS.md, testing/submission guidance and the PR checklist. `AUTO-20261021-DOCS-01` / S3-E17
+records 18/18 documentation checks and successful submission packaging. No application or hosted
+tests were run and no acceptance status or sprint points changed. This is actual 21 October
+documentation work while Sprint 3 remains administratively Active, not work backdated into its
+configured 4–17 October window or a member's standup row.
+
+
+**21 October 2026 — test reliability repair outside a Daily Scrum.** Fixed the KAN-79
+conflict-test locator race using a held queue refresh; strengthened refresh-completion and
+KAN-79/KAN-65 logout assertions. Reviewed the assigned KAN-8/16/29/36/65/79 tests plus earlier
+KAN-52 work. AUTO-20261021-KAN79-01 retains the failing reproduction; runs 02–07 / S3-E18 record
+30 focused browser repetitions, 396 full-browser executions, 1,639 unit/component tests,
+341 isolated PostgreSQL tests, coverage and focused case evidence. Added nine regression
+specifications with separate actual attempts and traceability; unperformed cases remain
+Not executed. No application/schema, estimate, acceptance or Jira status changed. Hosted
+checks and KAN-64 remain pending. This records actual 21 October work, not delivery within
+the configured 4–17 October sprint window.
+
 ## Impediments
 
 | Raised | Impediment | Owner | Action | Status |

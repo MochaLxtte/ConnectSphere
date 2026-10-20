@@ -77,6 +77,8 @@ describe('KAN-79 Lead assignment queue', () => {
     api.set('GET /api/events/unassigned', { body: { items: [] } });
     await fireEvent.click(screen.getAllByRole('button', { name: 'Assign' })[0]!);
     expect(await screen.findByText(/assigned by another Lead/)).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'No requests are awaiting assignment' })).toBeInTheDocument();
+    expect(api.calls.filter((call) => call.key === 'GET /api/events/unassigned')).toHaveLength(2);
     expect(screen.queryByText('Career fair')).not.toBeInTheDocument();
   });
 

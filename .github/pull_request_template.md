@@ -14,13 +14,16 @@ Acceptance criteria addressed: KAN-xx-AC1, ...
 ## Documentation (AGENTS.md §4, in order)
 
 Required for story work
+
 - [ ] `sprint-0N/sprint-backlog.md`: ACs match Jira, new edge-case ACs added (step 7), `S#-Txx` status (step 12)
-- [ ] `docs/testing/test-cases.csv`: steps, expected, result, evidence ID (step 9)
-- [ ] `docs/requirements/traceability.csv` (step 10)
-- [ ] `docs/testing/test-evidence.md`: run ID, commit SHA, result, coverage gaps (step 11)
+- [ ] `docs/testing/test-cases.csv`: reusable scenarios, preconditions, steps, test data and expected results (step 9)
+- [ ] `docs/requirements/traceability.csv`: feature → story → AC → specification → actual test files (step 10)
+- [ ] `docs/testing/test-executions.csv`: case-level actual results, run references and metadata; retests appended and unperformed tests Not executed (step 11)
+- [ ] `docs/testing/test-evidence.md`: run ID, commit SHA, environment, commands, suite results and coverage gaps; no case or hosted Pass inferred from suite totals (step 11)
 - [ ] `sprint-0N/daily-progress.md`: development note (step 15)
 
 If applicable
+
 - [ ] Estimate change logged (step 4)
 - [ ] Decision log (step 7)
 - [ ] Evidence register (step 13)
