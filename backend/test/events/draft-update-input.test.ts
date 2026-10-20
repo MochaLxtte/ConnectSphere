@@ -152,3 +152,43 @@ describe('CF-02 draft creation input', () => {
     },
   );
 });
+
+describe('KAN-34-AC101 strict calendar-date draft validation', () => {
+  const dateFields = ['startsAt', 'endsAt', 'registrationOpensAt', 'registrationClosesAt'] as const;
+
+  it.each([
+    '2026-02-30T09:00:00Z', '2027-02-29T09:00:00Z', '2026-04-31T09:00:00Z', '2026-13-01T09:00:00Z',
+    '2026-00-10T09:00:00Z', '2026-01-32T09:00:00Z', '2026-01-00T09:00:00Z', '1900-02-29T09:00:00Z',
+  ])('rejects the impossible calendar date %s', (startsAt) => {
+    expect(() => parseDraftUpdateInput({ startsAt })).toThrow(
+      'startsAt must be an ISO 8601 date-time string or null.',
+    );
+  });
+
+  it.each([
+    '2026-10-01T24:00:00Z', '2026-10-01T09:60:00Z', '2026-10-01T09:00:60Z',
+    '2026-10-01T09:00:00+24:00', '2026-10-01T09:00:00+08:60',
+  ])('rejects the impossible time or offset %s', (startsAt) => {
+    expect(() => parseDraftUpdateInput({ startsAt })).toThrow(DraftUpdateInputError);
+  });
+
+  it.each([
+    '2026-10-01T09:00:00', '2026-10-01', '2026-10-01 09:00:00Z', 'October 1, 2026 09:00 UTC',
+    ' 2026-10-01T09:00:00Z', '2026-10-01T09:00:00Z ', '+002026-10-01T09:00:00Z', '2026-10-01T09:00:00.000+0800', '2026-10-01t09:00:00z',
+  ])('rejects a value that is not an ISO 8601 date-time with an offset: %j', (startsAt) => {
+    expect(() => parseDraftUpdateInput({ startsAt })).toThrow(DraftUpdateInputError);
+  });
+
+  it.each([
+    '2028-02-29T09:00:00Z', '2000-02-29T09:00:00Z', '2028-02-29T17:00:00+08:00', '2026-12-31T23:59:59.999Z',
+    '2026-10-01T09:00Z', '2026-10-01T09:00:00.000Z', '2026-10-01T09:00:00-05:30',
+  ])('accepts the real date-time %s', (startsAt) => {
+    expect(parseDraftUpdateInput({ startsAt })).toEqual({ startsAt });
+  });
+
+  it.each(dateFields)('applies the calendar check to %s on update and create', (field) => {
+    const message = `${field} must be an ISO 8601 date-time string or null.`;
+    expect(() => parseDraftUpdateInput({ [field]: '2027-02-29T09:00:00Z' })).toThrow(message);
+    expect(() => parseDraftCreateInput({ [field]: '2027-02-29T09:00:00Z' })).toThrow(message);
+  });
+});
