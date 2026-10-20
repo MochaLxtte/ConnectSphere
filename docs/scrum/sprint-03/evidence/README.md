@@ -92,3 +92,9 @@ Workbook source: KAN-79 and KAN-85/86/87 live Jira fields from 19 October, with 
 The workbook retains its labelled 16 October full-project source and prior 19 October KAN-79 update. This targeted update adds KAN-65 ownership/status/branch evidence and three unestimated subtasks; other source fields, specifications, historical acceptance and estimates remain preserved. Four changed diagram exports and six changed workbook regions were visually inspected. Native workbook validation passed 16/16 checks. Final case/traceability/link checks and artifact hashes are retained in the linked validation file. Excel desktop and manual/hosted testing are Not executed.
 
 KAN-65 code/test commit: `d8f3bc2aee19a608b1a3f57c87e7d5cc7d242d84`. Documentation checks passed 15/15, covering 427 cases, 112 traceability rows and 579 file links. The isolated test container was removed after the passing runs; no shared Supabase cleanup occurred.
+
+## PR #34 CI and merge — 20 October 2026
+
+| ID | Artifact | Source / result | Limits |
+| --- | --- | --- | --- |
+| S3-E16 | [GitHub Actions CI run 39159683818](https://github.com/MochaLxtte/ConnectSphere/actions/runs/39159683818) and [PR #34](https://github.com/MochaLxtte/ConnectSphere/pull/34) | CI `verify` passed on 19 October 03:38 Singapore time for head `36d410d5aa67e6bc42669d68ea94627bd0080ce3`, the commit merged. PR approved by Irfan and merged into `main` as `3ddba2b` on 20 October 23:01 Singapore time. | Approval relied on CI and merge state; template, AC and Definition of Done review Not executed. Manual/hosted acceptance and KAN-64 notifications Not executed; acceptance Not assessed. No velocity credit. |
