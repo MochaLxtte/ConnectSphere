@@ -38,6 +38,8 @@ Selected ownership/review: Arvin 19/Kai Jie, Kai Jie 19/Tristan, Ernest 12/Ryan,
 
 **20 October 2026 — KAN-79 and KAN-65 merged outside a Daily Scrum.** [PR #34](https://github.com/MochaLxtte/ConnectSphere/pull/34) was approved by Irfan and merged into `main` as `3ddba2b` at 23:01 Singapore time. The approval was based on the passing CI `verify` run for head `36d410d` (S3-E16) and a conflict-free merge state; a check of the PR template against the diff and of the code against the ACs and Definition of Done (`AGENTS.md` §5.11 steps 1–2) was **Not executed**. The merge also brought the `docs/team-agents-guide` commits and the 16–17 October documentation reconciliation into `main`. Manual/hosted workflow checks and KAN-64 notifications remain **Not executed**, so neither story meets the Definition of Done; KAN-79 (8 SP) and KAN-65 (3 SP) deliver no points and remain In Progress in the repository records. Jira status, subtask and comment updates are **Not recorded**. This is not a member Daily Scrum row.
 
+**20 October 2026 — KAN-34 development outside a Daily Scrum.** Repaired KAN-34-AC101 on `fix/KAN-34-strict-draft-dates`: draft date-times must be ISO 8601 with an offset and a real calendar date, so impossible dates return a 400 validation error instead of HTTP 500. `AUTO-20261020-01`: `npm run check` and `npm run test:coverage` pass, with `draft-update-input.ts` at 100% lines, branches and functions. The integration case awaits CI; AC1–AC3 hosted checks (S3-T06), independent review and acceptance remain outstanding. KAN-34 stays at 3 SP with no velocity credit.
+
 ## Impediments
 
 | Raised | Impediment | Owner | Action | Status |

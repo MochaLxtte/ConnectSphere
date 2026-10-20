@@ -390,6 +390,8 @@ Mount order matters: `app.ts` registers the assignment, clarification and status
 
 `PATCH /api/events/:id` now also accepts the three registration fields (`registrationCapacity` a non-negative whole number or null; the two timestamps ISO 8601 or null). The status-history trigger attributes the initial `DRAFT` row to the organiser.
 
+**Draft date-times, 20 October 2026 (KAN-34-AC101):** on `POST /api/events` and `PATCH /api/events/:id`, `startsAt`, `endsAt`, `registrationOpensAt` and `registrationClosesAt` must be `null` or `YYYY-MM-DDTHH:mm[:ss[.ffffff]]` followed by `Z` or `±HH:MM`, naming a real calendar date (leap years included). Anything else, including impossible dates such as `2026-02-30T09:00:00Z` and values without an offset, returns `400 INVALID_DRAFT_INPUT` (create) or `400 INVALID_DRAFT_UPDATE` (edit) with the field named in the message, and the stored draft is unchanged.
+
 ### Events: coordinator assignment (CF-05 / KAN-79 / KAN-65) — `assignment-router.ts`
 
 The current Lead contract above supersedes the earlier coordinator self/colleague allocation rule. Active states are Submitted, Under review, Clarification requested, Approved and Confirmed.

@@ -49,7 +49,7 @@ Every row requires its complete active criterion set plus applicable Definition 
 | Test | Story / active criteria | Functional cases | Result / evidence |
 | --- | --- | --- | --- |
 | S3-T05 | KAN-6: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC101 | TC-02-02, TC-02-03, TC-02-04, TC-02-05, TC-02-06, TC-02-07, TC-02-08, TC-02-09 | **Not executed** / Not recorded |
-| S3-T06 | KAN-34: AC1, AC2, AC3, AC101 | TC-03-02, TC-03-03, TC-03-04, TC-03-05, TC-03-06 | **Not executed** / Not recorded |
+| S3-T06 | KAN-34: AC1, AC2, AC3, AC101 | TC-03-02, TC-03-03, TC-03-04, TC-03-05, TC-03-06 | **Not executed** as a complete group. 20 October 2026: KAN-34-AC101 parser checks pass in `AUTO-20261020-01`; its TC-03-05 integration case awaits CI. AC1–AC3 manual/hosted cases Not executed. |
 | S3-T07 | KAN-60: AC1, AC2, AC3, AC4, AC5, AC101, AC102, AC103 | TC-04-02, TC-04-03, TC-04-04, TC-04-05, TC-04-06 | **Not executed** / Not recorded |
 | S3-T15 | KAN-50: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12, AC13, AC14, AC15, AC16, AC17, AC18, AC19, AC20, AC21, AC101 | TC-08-02, TC-08-03, TC-08-04, TC-08-05, TC-08-06, TC-08-07, TC-08-08, TC-08-09, TC-08-10, TC-08-11, TC-08-12, TC-08-13, TC-08-14 | **Not executed** / Not recorded |
 | S3-T16 | KAN-12: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12, AC13, AC14, AC15, AC16, AC101, AC102 | TC-10-02, TC-10-03, TC-10-04, TC-10-05, TC-10-06, TC-10-07, TC-10-08, TC-10-09, TC-10-10, TC-10-11, TC-10-12, TC-10-210 | **Not executed** / Not recorded |
@@ -165,6 +165,8 @@ Implementation defaults: docs/scrum/sprint-03/planning.md and docs/requirements/
 | **KAN-34-AC101** | Impossible calendar dates, including non-existent month/day combinations and invalid leap days, are refused by the API as validation errors rather than HTTP 500; the saved draft remains unchanged. | TC-03-05 |
 
 **Implementation location:** backend/src/modules/events/draft-update-input.ts; backend/src/modules/events/update-draft.ts; frontend/src/features/events/pages/EventDraftEditPage.vue. **Automated test files:** backend/test/events/draft-update-input.test.ts; database/tests/events/update-draft.integration.test.ts; frontend/src/features/events/pages/EventDraftEditPage.test.ts. These are existing baseline locations to extend; no new fixed-code result is claimed.
+
+**KAN-34-AC101 repair — 20 October 2026.** Branch `fix/KAN-34-strict-draft-dates`. `draft-update-input.ts` now accepts only ISO 8601 date-times with a `Z` or `±HH:MM` offset whose calendar date exists, for all four draft date fields on create and edit; previously `Date.parse` rolled dates such as 30 February forward and PostgreSQL refused the write with HTTP 500. Parser tests pass in `AUTO-20261020-01`; the HTTP/PostgreSQL case is written but Not executed locally. The offset requirement is recorded in [assumptions and questions](../../requirements/assumptions-and-questions.md#20-october-2026--kan-34-draft-date-time-format). Hosted checks, independent review and acceptance remain outstanding.
 
 <details>
 <summary>Preserved Jira description before self-selection (historical ownership)</summary>
