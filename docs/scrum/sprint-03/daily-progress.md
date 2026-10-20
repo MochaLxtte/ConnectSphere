@@ -44,6 +44,17 @@ Selected ownership/review: Arvin 19/Kai Jie, Kai Jie 19/Tristan, Ernest 12/Ryan,
 
 **20 October 2026 — KAN-6 development outside a Daily Scrum.** Repaired KAN-6-AC101 on `fix/KAN-6-detail-field-errors`: saved-draft submission from the detail page now lists the server's per-field errors instead of a generic uncertain-result message, keeping the draft and its actions. `AUTO-20261020-02`: `npm run check` and `npm run test:coverage` pass, and the new component suite failed before the repair. TC-02-03 manual comparison and other S3-T05 hosted checks, independent review and acceptance remain outstanding. KAN-6 stays at 3 SP with no velocity credit.
 
+**21 October 2026 — attribution of Ryan's earlier commits outside a Daily Scrum.** Source: `git log --all --author=ryanc9029` on the repository and `gh pr list --author ryanc9029`, checked 21 October. The record lists 18 commits by `ryanc9029` between 12 September and 4 October, all contained in `main`; they changed 43 files, with the line totals inflated by `package-lock.json` churn from the Firebase-to-Supabase switch. Commits made under any other git identity are **Not recorded**. Jira assignee history, review outcomes and test runs for this work are **Not recorded** and are not inferred from authorship.
+
+| Date | Work | Commits |
+| --- | --- | --- |
+| 12 September | Authentication on Firebase: environment keys, login/logout/`me` endpoints, migration `003_add_firebase_identities.sql`, session creation and login page, dependencies, auth README, database integration test | `cfbd94c`, `660d1c4`, `ec8ccab`, `988d06e`, `950e5fc`, `643f0ae`, `3550ce9` |
+| 13 September | Authentication switched to Supabase (`supabase.ts`, `supabase-client.ts`); the Firebase environment-key and integration-test commits were reverted; Supabase keys and auth README added | `3d5bd49`, `0f05d54`, `4f5620d`, `90d8a5c`, `bc824ec` |
+| 3 October | KAN-12 venue search: routes and router links, backend search and router (`venue-search.ts`, `venue-router.ts`), frontend `VenueSearchPage.vue` and API client | `f920791`, `7c1ca1e`, `16b59f0` |
+| 4 October | KAN-12: stricter date-range search, module test-case list, design note `venue-search.md` and `venue-search.test.ts` | `fa26f8e`, `44224c3`, `a7e7bca` |
+
+The KAN-12 commits were merged to `main` through [PR #26](https://github.com/MochaLxtte/ConnectSphere/pull/26) on 7 October. Two commit-hygiene gaps are retained as found and history is not rewritten: the authentication commits do not name a KAN id (`AGENTS.md` §7.1), and `venue-search.test.ts` was committed under the `docs(KAN-12)` commit `a7e7bca`. The 12–13 September commits fall in Sprint 1, the 3 October commits in Sprint 2 and the 4 October commits on the first day of Sprint 3 (see the [sprint table](../README.md)); the Sprint 1 and 2 records are not edited. No application test was run for this note and no story status or points change. This is not a member's Daily Scrum row.
+
 ## Impediments
 
 | Raised | Impediment | Owner | Action | Status |
