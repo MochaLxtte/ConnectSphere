@@ -2,7 +2,7 @@
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import AppIcon from '../../../components/AppIcon.vue';
 import { ApiError } from '../../../lib/api-client';
-import { clearLocalSession } from '../../auth/session.js';
+import { authSession, clearLocalSession } from '../../auth/session.js';
 import { formatEventTime } from '../../events/presentation';
 import {
   fetchNotifications, markAllNotificationsRead, markNotificationRead, type NotificationItem,
@@ -20,6 +20,11 @@ const markingAll = ref(false);
 const failure = ref('');
 const confirmation = ref('');
 let controller: AbortController | undefined;
+// List refreshes may replace their own request, but writes belong to this mounted account.
+const lifetime = new AbortController();
+const ownerId = authSession.user?.id;
+const isCurrentAccount = () => !lifetime.signal.aborted && !authSession.loading
+  && authSession.user?.id === ownerId;
 
 const items = computed(() => (state.value.status === 'ready' ? state.value.items : []));
 const unreadTotal = computed(() => items.value.filter((item) => !item.read).length);
@@ -37,6 +42,7 @@ function handleFailure(error: unknown, fallback: string): string {
 }
 
 async function load(quiet = false) {
+  if (!isCurrentAccount()) return;
   controller?.abort();
   const current = new AbortController();
   controller = current;
@@ -44,11 +50,11 @@ async function load(quiet = false) {
   if (!quiet) state.value = { status: 'loading' };
   try {
     const loaded = await fetchNotifications(current.signal);
-    if (current.signal.aborted) return;
+    if (current.signal.aborted || !isCurrentAccount()) return;
     state.value = { status: 'ready', items: loaded };
     void refreshUnreadCount(current.signal);
   } catch (error) {
-    if (current.signal.aborted) return;
+    if (current.signal.aborted || !isCurrentAccount()) return;
     state.value = {
       status: 'error', message: handleFailure(error, 'Your notifications could not be loaded. Please try again.')
         || 'Sign in to view your notifications.',
@@ -57,18 +63,18 @@ async function load(quiet = false) {
 }
 
 async function markRead(item: NotificationItem) {
-  if (busyId.value || markingAll.value || item.read) return;
+  if (!isCurrentAccount() || busyId.value || markingAll.value || item.read) return;
   busyId.value = item.id;
   failure.value = '';
   confirmation.value = '';
   const current = controller;
   try {
-    const updated = await markNotificationRead(item.id);
-    if (current?.signal.aborted || state.value.status !== 'ready') return;
+    const updated = await markNotificationRead(item.id, lifetime.signal);
+    if (!isCurrentAccount() || current?.signal.aborted || state.value.status !== 'ready') return;
     state.value = { status: 'ready', items: state.value.items.map((other) => (other.id === updated.id ? updated : other)) };
-    void refreshUnreadCount();
+    void refreshUnreadCount(lifetime.signal);
   } catch (error) {
-    if (current?.signal.aborted) return;
+    if (!isCurrentAccount() || current?.signal.aborted) return;
     failure.value = handleFailure(error, 'The notification could not be marked as read. Please try again.');
     if (error instanceof ApiError && error.status === 404) await load(true);
   } finally {
@@ -77,15 +83,17 @@ async function markRead(item: NotificationItem) {
 }
 
 async function markAllRead() {
-  if (busyId.value || markingAll.value || unreadTotal.value === 0) return;
+  if (!isCurrentAccount() || busyId.value || markingAll.value || unreadTotal.value === 0) return;
   markingAll.value = true;
   failure.value = '';
   confirmation.value = '';
   try {
-    const updated = await markAllNotificationsRead();
+    const updated = await markAllNotificationsRead(lifetime.signal);
+    if (!isCurrentAccount()) return;
     confirmation.value = updated === 1 ? '1 notification marked as read.' : `${updated} notifications marked as read.`;
     await load(true);
   } catch (error) {
+    if (!isCurrentAccount()) return;
     failure.value = handleFailure(error, 'The notifications could not be marked as read. Please try again.');
   } finally {
     markingAll.value = false;
@@ -97,7 +105,10 @@ function linkLabel(item: NotificationItem): string {
 }
 
 onMounted(() => { void load(); });
-onBeforeUnmount(() => controller?.abort());
+onBeforeUnmount(() => {
+  lifetime.abort();
+  controller?.abort();
+});
 </script>
 
 <template>

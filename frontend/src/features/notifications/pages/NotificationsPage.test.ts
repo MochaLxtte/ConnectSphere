@@ -213,6 +213,77 @@ describe('KAN-64-AC204/AC205 inbox content', () => {
 });
 
 describe('KAN-64-AC204 read state', () => {
+  it.each([200, 401])('ignores a pending bulk-read %s response after the account changes', async (status) => {
+    const pending = deferred();
+    const { fetchMock, calls } = stubApi({
+      items: () => [item({ title: session.user?.id === 'user-1' ? 'Previous account notice' : 'New account notice' })],
+    });
+    const original = fetchMock.getMockImplementation()!;
+    fetchMock.mockImplementation((input, init) => String(input).endsWith('/read-all')
+      ? pending.promise : original(input, init));
+    await open();
+    await screen.findByText('Previous account notice');
+    await fireEvent.click(screen.getByRole('button', { name: 'Mark all as read' }));
+    const writeSignal = fetchMock.mock.calls.find(([url]) => String(url).endsWith('/read-all'))![1]?.signal;
+
+    session.user = user('EVENT_ORGANISER', 'user-2');
+    await screen.findByText('New account notice');
+    const loadsBeforeCompletion = calls.filter((call) => call === 'GET /api/notifications').length;
+    await settle(pending, status === 200 ? json({ updated: 1 }) : apiError(401, 'AUTHENTICATION_REQUIRED'));
+
+    expect(session.user?.id).toBe('user-2');
+    expect(screen.getByText('New account notice')).toBeInTheDocument();
+    expect(calls.filter((call) => call === 'GET /api/notifications')).toHaveLength(loadsBeforeCompletion);
+    expect(screen.queryByText('1 notification marked as read.')).not.toBeInTheDocument();
+    expect(writeSignal?.aborted).toBe(true);
+  });
+
+  it('discards an old account unread-count response started after marking one notification', async () => {
+    const pendingCount = deferred();
+    let countReads = 0;
+    const { fetchMock } = stubApi({
+      items: () => [item({ title: session.user?.id === 'user-1' ? 'Previous account notice' : 'New account notice' })],
+    });
+    const original = fetchMock.getMockImplementation()!;
+    fetchMock.mockImplementation((input, init) => {
+      if (String(input).endsWith('/unread-count')) {
+        countReads += 1;
+        if (countReads === 2) return pendingCount.promise;
+        return Promise.resolve(json({ unreadCount: session.user?.id === 'user-1' ? 1 : 2 }));
+      }
+      return original(input, init);
+    });
+    await open();
+    await waitFor(() => expect(notificationCount.unread).toBe(1));
+    await fireEvent.click(screen.getByRole('button', { name: 'Mark as read: Previous account notice' }));
+    await waitFor(() => expect(countReads).toBe(2));
+
+    session.user = user('EVENT_ORGANISER', 'user-2');
+    await screen.findByText('New account notice');
+    await waitFor(() => expect(notificationCount.unread).toBe(2));
+    await settle(pendingCount, json({ unreadCount: 99 }));
+    expect(notificationCount.unread).toBe(2);
+  });
+
+  it.each([200, 401])('ignores a pending bulk-read %s response after leaving the inbox', async (status) => {
+    const pending = deferred();
+    const { fetchMock, calls } = stubApi({ items: [item()] });
+    const original = fetchMock.getMockImplementation()!;
+    fetchMock.mockImplementation((input, init) => String(input).endsWith('/read-all')
+      ? pending.promise : original(input, init));
+    const router = await open();
+    await screen.findByText('Event request approved');
+    await fireEvent.click(screen.getByRole('button', { name: 'Mark all as read' }));
+
+    // Leave the route while keeping the same account, so the lifetime guard is required.
+    await router.push('/missing-inbox-route');
+    await waitFor(() => expect(screen.queryByRole('button', { name: 'Mark all as read' })).not.toBeInTheDocument());
+    const loadsBeforeCompletion = calls.filter((call) => call === 'GET /api/notifications').length;
+    await settle(pending, status === 200 ? json({ updated: 1 }) : apiError(401, 'AUTHENTICATION_REQUIRED'));
+    expect(session.user?.id).toBe('user-1');
+    expect(calls.filter((call) => call === 'GET /api/notifications')).toHaveLength(loadsBeforeCompletion);
+  });
+
   it('marks one notification read in place and refreshes the count', async () => {
     let unread = 2;
     const { writes } = stubApi({
