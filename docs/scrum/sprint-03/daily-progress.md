@@ -38,6 +38,17 @@ Selected ownership/review: Arvin 19/Kai Jie, Kai Jie 19/Tristan, Ernest 12/Ryan,
 
 **20 October 2026 — KAN-79 and KAN-65 merged outside a Daily Scrum.** [PR #34](https://github.com/MochaLxtte/ConnectSphere/pull/34) was approved by Irfan and merged into `main` as `3ddba2b` at 23:01 Singapore time. The approval was based on the passing CI `verify` run for head `36d410d` (S3-E16) and a conflict-free merge state; a check of the PR template against the diff and of the code against the ACs and Definition of Done (`AGENTS.md` §5.11 steps 1–2) was **Not executed**. The merge also brought the `docs/team-agents-guide` commits and the 16–17 October documentation reconciliation into `main`. Manual/hosted workflow checks and KAN-64 notifications remain **Not executed**, so neither story meets the Definition of Done; KAN-79 (8 SP) and KAN-65 (3 SP) deliver no points and remain In Progress in the repository records. Jira status, subtask and comment updates are **Not recorded**. This is not a member Daily Scrum row.
 
+**21 October 2026 — attribution of Ryan's earlier commits outside a Daily Scrum.** Source: `git log --all --author=ryanc9029` on the repository and `gh pr list --author ryanc9029`, checked 21 October. The record lists 18 commits by `ryanc9029` between 12 September and 4 October, all contained in `main`; they changed 43 files, with the line totals inflated by `package-lock.json` churn from the Firebase-to-Supabase switch. Commits made under any other git identity are **Not recorded**. Jira assignee history, review outcomes and test runs for this work are **Not recorded** and are not inferred from authorship.
+
+| Date | Work | Commits |
+| --- | --- | --- |
+| 12 September | Authentication on Firebase: environment keys, login/logout/`me` endpoints, migration `003_add_firebase_identities.sql`, session creation and login page, dependencies, auth README, database integration test | `cfbd94c`, `660d1c4`, `ec8ccab`, `988d06e`, `950e5fc`, `643f0ae`, `3550ce9` |
+| 13 September | Authentication switched to Supabase (`supabase.ts`, `supabase-client.ts`); the Firebase environment-key and integration-test commits were reverted; Supabase keys and auth README added | `3d5bd49`, `0f05d54`, `4f5620d`, `90d8a5c`, `bc824ec` |
+| 3 October | KAN-12 venue search: routes and router links, backend search and router (`venue-search.ts`, `venue-router.ts`), frontend `VenueSearchPage.vue` and API client | `f920791`, `7c1ca1e`, `16b59f0` |
+| 4 October | KAN-12: stricter date-range search, module test-case list, design note `venue-search.md` and `venue-search.test.ts` | `fa26f8e`, `44224c3`, `a7e7bca` |
+
+The KAN-12 commits were merged to `main` through [PR #26](https://github.com/MochaLxtte/ConnectSphere/pull/26) on 7 October. Two commit-hygiene gaps are retained as found and history is not rewritten: the authentication commits do not name a KAN id (`AGENTS.md` §7.1), and `venue-search.test.ts` was committed under the `docs(KAN-12)` commit `a7e7bca`. The 12–13 September commits fall in Sprint 1, the 3 October commits in Sprint 2 and the 4 October commits on the first day of Sprint 3 (see the [sprint table](../README.md)); the Sprint 1 and 2 records are not edited. No application test was run for this note and no story status or points change. This is not a member's Daily Scrum row.
+
 ## Impediments
 
 | Raised | Impediment | Owner | Action | Status |
