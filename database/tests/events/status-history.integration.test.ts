@@ -50,7 +50,9 @@ describe('KAN-16 status history persistence and access', () => {
       expect(times).toEqual([...times].sort());
       expect(times.every((time) => new Date(time).toISOString() === time)).toBe(true);
     }
-    expect(await fixture.notifications(eventRequestId)).toEqual([]);
+    // KAN-64-AC201: the clarification request is the only step in this workflow that notifies.
+    expect((await fixture.notifications(eventRequestId)).map((row) => [row.type, row.recipient_id]))
+      .toEqual([['CLARIFICATION_REQUESTED', organiser.id]]);
   });
 
   it('hides history from unrelated users and reports missing requests in the same way', async () => {

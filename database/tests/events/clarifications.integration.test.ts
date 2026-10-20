@@ -49,7 +49,12 @@ describe('CF-04 clarification persistence', () => {
       { from_status: 'UNDER_REVIEW', to_status: 'CLARIFICATION_REQUESTED', changed_by: coordinator.id },
       { from_status: 'CLARIFICATION_REQUESTED', to_status: 'SUBMITTED', changed_by: organiser.id },
     ]);
-    expect(await fixture.notifications(eventRequestId)).toEqual([]);
+    // KAN-64-AC201: only the clarification request notifies, and only the organiser; starting the review and
+    // answering do not.
+    expect(await fixture.notifications(eventRequestId)).toEqual([{
+      recipient_id: organiser.id, type: 'CLARIFICATION_REQUESTED',
+      message: expect.stringContaining('Which hall do you need?'),
+    }]);
 
     for (const actor of [organiser, coordinator]) {
       expect(await listClarifications(fixture.dependencies, { eventRequestId, actor })).toEqual([{

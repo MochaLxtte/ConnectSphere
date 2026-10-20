@@ -3,6 +3,7 @@ import { computed, onMounted } from 'vue';
 import AppIcon from './AppIcon.vue';
 import { authSession, restoreSession, roleLabel, signOut } from '../features/auth/session.js';
 import { canViewVenueAvailability } from '../features/venues/access.js';
+import NotificationBell from '../features/notifications/components/NotificationBell.vue';
 
 // Organiser entry points remain visible to visitors; staff links require a resolved session.
 const role = computed(() => authSession.user?.role ?? null);
@@ -98,13 +99,16 @@ async function handleSignOut(): Promise<void> {
         <div class="breadcrumb">
           Workspace <span>/</span> <strong>{{ $route.meta.title || 'Overview' }}</strong>
         </div>
-        <div v-if="authSession.user" class="account-summary">
-          <span><strong>{{ authSession.user.displayName }}</strong><small>{{ roleLabel(authSession.user.role) }}</small></span>
-          <button class="sign-out-button" type="button" @click="handleSignOut">Sign out</button>
+        <div class="topbar-actions">
+          <NotificationBell v-if="authSession.user" />
+          <div v-if="authSession.user" class="account-summary">
+            <span><strong>{{ authSession.user.displayName }}</strong><small>{{ roleLabel(authSession.user.role) }}</small></span>
+            <button class="sign-out-button" type="button" @click="handleSignOut">Sign out</button>
+          </div>
+          <RouterLink v-else to="/login" class="sign-in-link"
+            ><AppIcon name="user" :size="16" />Sign in<AppIcon name="arrow" :size="16"
+          /></RouterLink>
         </div>
-        <RouterLink v-else to="/login" class="sign-in-link"
-          ><AppIcon name="user" :size="16" />Sign in<AppIcon name="arrow" :size="16"
-        /></RouterLink>
       </header>
       <main id="main-content" class="main-content" tabindex="-1"><slot /></main>
       <footer class="main-footer">

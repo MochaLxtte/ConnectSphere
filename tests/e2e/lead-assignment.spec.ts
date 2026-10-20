@@ -1,4 +1,5 @@
 import { expect, test, type Page } from './browser-fixtures.js';
+import { fulfilNotificationBell } from './workspace-fixtures.js';
 
 const eventId = '10000000-0000-4000-8000-000000000079';
 const coordinatorId = '10000000-0000-4000-8000-000000000029';
@@ -69,6 +70,8 @@ async function fixtures(page: Page, options: Options = {}) {
       } finally {
         settleWrite();
       }
+    } else if (await fulfilNotificationBell(route, req)) {
+      // Answered: the top-bar notification bell (KAN-64).
     } else {
       unexpected.push(`${method} ${path}`);
       await route.fulfill({ status: 501, json: { error: { code: 'UNEXPECTED_TEST_REQUEST', message: 'No API fixture configured.' } } });

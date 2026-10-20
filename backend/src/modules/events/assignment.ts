@@ -1,5 +1,7 @@
 import type { UserRole } from '../auth/types.js';
 import type { EventStatus } from './types.js';
+import { recordNotifications } from '../notifications/notify.js';
+import { assignmentNotifications } from '../notifications/trigger-matrix.js';
 import {
   inActorTransaction, iso, isoOrNull, lockEventRequest, optionalText,
   parseObjectBody, inEventReadTransaction, requestNotFound, requiredText, requireRelation, UUID_PATTERN, WorkflowError,
@@ -238,8 +240,8 @@ export async function assignCoordinator(
 
     // Lock the selected profile after the event. A concurrent availability/role change
     // must finish before eligibility is checked; unrelated allocations need not wait.
-    const targets = await client.query<{ role: UserRole; available: boolean }>(
-      'SELECT role, coordinator_available AS available FROM app_users WHERE id = $1 FOR NO KEY UPDATE',
+    const targets = await client.query<{ role: UserRole; available: boolean; displayName: string }>(
+      'SELECT role, coordinator_available AS available, display_name AS "displayName" FROM app_users WHERE id = $1 FOR NO KEY UPDATE',
       [input.coordinatorId],
     );
     const target = targets.rows[0];
@@ -259,6 +261,11 @@ export async function assignCoordinator(
       [input.coordinatorId, event.id],
     );
     if (updated.rowCount !== 1) throw new Error('The coordinator assignment could not be saved.');
+
+    // KAN-64-AC202/AC207: the organiser and the new coordinator, in the allocation's transaction.
+    await recordNotifications(client, assignmentNotifications(
+      event, { id: assignment.id, coordinatorId: input.coordinatorId, coordinatorName: target.displayName }, null, false,
+    ));
 
     return {
       eventRequestId: event.id,
@@ -313,8 +320,8 @@ export async function reassignCoordinator(
       };
     }
 
-    const targets = await client.query<{ role: UserRole; available: boolean }>(
-      'SELECT role, coordinator_available AS available FROM app_users WHERE id = $1 FOR NO KEY UPDATE',
+    const targets = await client.query<{ role: UserRole; available: boolean; displayName: string }>(
+      'SELECT role, coordinator_available AS available, display_name AS "displayName" FROM app_users WHERE id = $1 FOR NO KEY UPDATE',
       [input.coordinatorId],
     );
     const target = targets.rows[0];
@@ -344,6 +351,13 @@ export async function reassignCoordinator(
       [input.coordinatorId, event.id, assignment.id],
     );
     if (updated.rowCount !== 1) throw new Error('The coordinator reassignment could not be saved.');
+
+    // KAN-64-AC202/AC207: the previous coordinator gets only a minimal notice. An unchanged
+    // repeat returned early above and so notifies no one.
+    await recordNotifications(client, assignmentNotifications(
+      event, { id: assignment.id, coordinatorId: input.coordinatorId, coordinatorName: target.displayName },
+      previous.coordinatorId, true,
+    ));
 
     return {
       eventRequestId: event.id, assignmentId: assignment.id, coordinatorId: input.coordinatorId,

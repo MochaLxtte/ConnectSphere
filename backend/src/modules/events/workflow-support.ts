@@ -35,10 +35,12 @@ export interface LockedEventRequest {
   organiserId: string;
   coordinatorId: string | null;
   status: EventStatus;
+  /** Used in notification text (KAN-64); nullable because drafts may be unnamed. */
+  name: string | null;
 }
 
 const eventColumns = `
-  id, organiser_id AS "organiserId", coordinator_id AS "coordinatorId", status
+  id, organiser_id AS "organiserId", coordinator_id AS "coordinatorId", status, name
 `;
 
 /** Competing writers wait on this row lock, then inspect the latest committed state. */

@@ -1091,3 +1091,37 @@ applicable. No Jira status, story estimate, sprint acceptance or historical comp
 **Limitations:** the manual and hosted S3-T05 cases (TC-02-02, -03, -04, -06, -09) were **Not executed**; no hosted Supabase session was used. Peer review, pushed-build CI and merge are pending. The developer's own `npm run dev` processes on ports 3000/5173 were in a stopped state, so the browser suite ran with a temporary configuration on ports 3100/5273 that was deleted afterwards and is not committed.
 
 **Integration reference correction — 21 October 2026:** this source branch used `AUTO-20261021-02`. The combined branch qualifies it as `AUTO-20261021-KAN6-02` to distinguish independent source runs; the source execution dates, build, results and limitations above are retained.
+
+## 21 October 2026 — KAN-64 in-app notification inbox
+
+**Run ID: AUTO-20261021-KAN64-03.** Branch `feat/KAN-64-notification-inbox`, base `aaee549` (main after PR #35). The tested working tree is committed without further code changes as `0e96114`. Execution: 21 October Asia/Singapore (exact start and end times Not recorded). Environment: macOS arm64, Node.js 20.18.0 as reported by `node -v` (Vite warns that it prefers 20.19+; the build and tests still ran), Vitest, Playwright Chromium and a PostgreSQL 17 container from `npm run db:up`, using the dedicated `connectsphere_test` database. Tests use synthetic data; shared Supabase and real login were not used. Migration 008 was applied only to the isolated test schemas the integration suite creates; the shared database was not changed.
+
+| Command / check | Actual result |
+| --- | --- |
+| `npm run check` | Pass: tools, backend and frontend type checks; 635 frontend tests (34 files) and 1079 backend tests (43 files); both production builds |
+| `npm run test:coverage` | Pass: the same 635 and 1079 tests; figures below |
+| `npm run test:integration` with `TEST_DATABASE_URL` | Pass: 356 tests, 23 files, including the new 15-test notification suite |
+| Browser suite (`playwright test`) on spare ports (see limitations) | 144 passed, 0 failed, including the 12 new `notifications.spec.ts` tests. The known intermittent KAN-79 stale-conflict test happened to pass in this run |
+
+**Coverage:** frontend 94.89% statements / 92.13% branches / 96.87% functions / 97.33% lines; backend 86.04% / 89.26% / 84.66% / 86.65%. Backend `notifications/inbox.ts`, `notify.ts` and `trigger-matrix.ts` are 100% on lines and functions; `inbox-router.ts` is 100% lines and functions with 45 of 49 branches. Frontend `state.ts`, `api/notifications.ts` and `NotificationsPage.vue` are 100% on all four metrics; `NotificationBell.vue` 100% / 87.5% / 100% / 100% and `NotificationInbox.vue` 94.8% / 93.54% / 100% / 100%. The frontend coverage configuration did not list `src/features/notifications`, so one line was added to include it. Unit coverage does not merge browser or integration execution; no 100% whole-project claim is made.
+
+**Behaviour verified (AC201 to AC208):** each outcome writes its notifications inside the same transaction as the business change. Submission acknowledges the organiser; a clarification request, an approval and a rejection reach the organiser; the first assignment reaches the organiser and the new coordinator; a reassignment reaches the organiser and the new coordinator and sends the previous coordinator a minimal notice with no event details and no link; a venue booking decision reaches the organiser, the event's current coordinator and the deciding Venue Staff member only. A unique key on recipient and outcome means a retry or an unchanged repeated action adds nothing. A rolled-back action (checked with temporary database triggers) leaves neither the change nor a notification. Every inbox query is scoped to the signed-in caller and re-checks what that caller may still see on every read; unreadable and absent notifications give the same 404. The bell shows the unread count, refreshes every 60 seconds while the page is visible, and the inbox lists newest first (limit 100) with mark one and mark all read. The top bar and inbox fit 320, 360 and 390 px without horizontal scrolling (probed on six routes).
+
+**Mutation check:** the shared visibility rule in `inbox.ts` was broken on purpose and the PostgreSQL privacy tests failed as intended; the rule was then restored and the suite passed again.
+
+**Existing tests changed on purpose:** unit, PostgreSQL and browser tests that asserted "no notifications are created" now assert the new rows (`submit-request`, `lead-assignment`, `reassignment`, assignment, automatic-assignment, clarification, status-history, reassignment and venue-booking suites). `backend/test/sprint-scope.test.ts` no longer lists the four notification routes as absent. Three existing browser specs needed a stub for the bell's `GET /api/notifications/unread-count`, because their fixtures refuse unexpected `/api/` requests; a shared helper `fulfilNotificationBell` was added.
+
+**Earlier failures and resolution:** `LockedEventRequest` lacked the event name, which was added to its type, columns and test fixture. Some message wording and type errors in new tests were corrected. A 320 px overflow in the top bar (6 px) failed the new browser test; a narrower bell, smaller gap and a wrapping breadcrumb at 400 px and below fixed it. No assertion or timeout was relaxed.
+
+**Limitations and acceptance boundary:** the manual and hosted S3-T22 cases were **Not executed**; no hosted Supabase session was used. Migration 008 is **not applied** to shared Supabase and must be coordinated with the team first. The trigger/recipient matrix is a team implementation assumption marked **To agree** in the decision log. AC209 (equipment, significant-change, final confirmation/cancellation and registration triggers) belongs to KAN-80 and is not implemented here. Peer review, pushed-build CI and merge are pending; Jira status Not recorded. The developer's own `npm run dev` processes on ports 3000/5173 were in a stopped state, so the browser suite ran with a temporary configuration on ports 3100/5273 that was deleted afterwards and is not committed.
+
+**Integration reference correction — 21 October 2026:** this source branch used `AUTO-20261021-03`. The combined branch qualifies it as `AUTO-20261021-KAN64-03` to distinguish independent source runs; the source execution dates, build, results and limitations above are retained.
+
+**Case-scope reconciliation — 21 October 2026.** The source CSV marked TC-20-18 and
+TC-20-19 Pass. Inspection of the named tests supports sequential deduplication,
+event-review/assignment rollback and actor acknowledgements, but does not establish
+the complete specifications: TC-20-18 requires concurrent retries and venue-decision
+rollback after insertion; TC-20-19 requires overlapping recipient identities.
+Their full-case execution placeholders therefore remain **Not executed**. The source
+claims remain in provenance; only the supported TC-20-17 privacy result is imported
+as a case-level Pass.

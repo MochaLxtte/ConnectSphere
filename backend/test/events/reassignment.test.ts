@@ -3,6 +3,8 @@ import { USER_ROLES } from '../../src/modules/auth/types.js';
 import { parseReassignmentInput, reassignCoordinator } from '../../src/modules/events/assignment.js';
 import type { EventStatus } from '../../src/modules/events/types.js';
 import type { WorkflowActor, WorkflowDependencies } from '../../src/modules/events/workflow-support.js';
+import { REASSIGNED_AWAY_MESSAGE } from '../../src/modules/notifications/trigger-matrix.js';
+import { notificationRows } from '../support/notification-rows.js';
 
 const eventId = '10000000-0000-4000-8000-000000000001';
 const lead: WorkflowActor = { id: '20000000-0000-4000-8000-000000000001', role: 'EVENT_COORDINATOR_LEAD' };
@@ -17,7 +19,7 @@ const input = { coordinatorId, reason: '  Workload handover  ', expectedAssignme
 function transaction(options: {
   event?: typeof event | null;
   history?: { id: string; coordinatorId: string }[];
-  target?: { role: string; available: boolean } | null;
+  target?: { role: string; available: boolean; displayName?: string } | null;
   missingInsert?: boolean;
   updatedRows?: number;
   failStatement?: string;
@@ -34,7 +36,7 @@ function transaction(options: {
       return { rows: options.history ?? [{ id: previousId, coordinatorId: previousCoordinatorId }] };
     }
     if (sql.includes('FROM app_users')) {
-      return { rows: options.target === null ? [] : [options.target ?? { role: 'EVENT_COORDINATOR', available: true }] };
+      return { rows: options.target === null ? [] : [options.target ?? { role: 'EVENT_COORDINATOR', available: true, displayName: 'Casey' }] };
     }
     if (sql.includes('INSERT INTO coordinator_assignments')) return { rows: options.missingInsert ? [] : [{ id: assignmentId }] };
     if (sql.startsWith('UPDATE event_requests')) return { rows: [], rowCount: options.updatedRows ?? 1 };
@@ -100,7 +102,15 @@ describe('KAN-65 atomic Lead reassignment', () => {
       expect(writes[1]).not.toContain('status =');
       expect(sql().findIndex((sql) => sql.includes('FROM event_requests') && sql.includes('FOR UPDATE')))
         .toBeLessThan(sql().findIndex((sql) => sql.includes('FOR NO KEY UPDATE')));
-      expect(sql().some((sql) => /notifications|event_reviews|venue_bookings|event_clarifications/.test(sql))).toBe(false);
+      expect(sql().some((sql) => /event_reviews|venue_bookings|event_clarifications/.test(sql))).toBe(false);
+      // KAN-64-AC202: organiser and new coordinator are told; the previous coordinator gets only the minimal notice.
+      const notified = notificationRows(query.mock.calls);
+      expect(notified.map((row) => [row.recipientId, row.type])).toEqual([
+        [event.organiserId, 'COORDINATOR_REASSIGNED'], [coordinatorId, 'COORDINATOR_REASSIGNED'],
+        [previousCoordinatorId, 'COORDINATOR_REASSIGNED_AWAY'],
+      ]);
+      expect(notified[2]!.message).toBe(REASSIGNED_AWAY_MESSAGE);
+      expect(notified.every((row) => row.dedupeKey.endsWith(`:${assignmentId}`))).toBe(true);
       expect(sql()).toContain('COMMIT');
       expect(sql()).not.toContain('ROLLBACK');
       expect(release).toHaveBeenCalledExactlyOnceWith(undefined);

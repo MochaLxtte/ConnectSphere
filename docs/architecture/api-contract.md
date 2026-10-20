@@ -378,7 +378,7 @@ Conventions shared by every route below:
 - Request bodies reject unknown fields. Timestamps are ISO 8601; intervals are half-open `[startsAt, endsAt)`, so back-to-back periods do not overlap.
 - An event, booking or request the caller has no permitted relationship to returns the same 404 as a missing one. "Owner" means the organiser whose `app_users.id` equals `organiser_id`; "assigned coordinator" means `coordinator_id` equals the caller's `app_users.id`. Coordinators never see drafts. Lead oversight is a separate permitted read scope over active non-draft events and does not create an assigned-coordinator relationship.
 - Role abbreviations: EO Event Organiser, EC Event Coordinator, ECL Event Coordinator Lead, VS Venue Staff, TS Technical Support Staff, AT Attendee.
-- List responses are `{ "items": [...] }` unless stated. Retained workflows do not generate notifications; delivery is future KAN-64 work.
+- List responses are `{ "items": [...] }` unless stated. Request, clarification, review, assignment and venue-decision workflows write in-app notifications in the same transaction (KAN-64, see [Notifications](#notifications-kan-64-cf-20)); the later-workflow triggers are future KAN-80 work.
 
 Mount order matters: `app.ts` registers the assignment, clarification and status-history routers on `/api/events` before the shared detail router, so `/unassigned`, `/coordinators` and `/oversight` are not read as event IDs.
 
@@ -576,7 +576,7 @@ The staff page at `/venue-bookings` opens `/venue-bookings/:id`; the assigned co
 
 The write uses one transaction, locks the booking row and rechecks `PENDING`. Approval also locks the event then venue, verifies `APPROVED`/active eligibility, and queries conflicts **after** obtaining the venue lock so competing approvals see the latest committed reservation. Periods use `[startsAt, endsAt)` with no turnover buffer; pending/rejected/cancelled rows do not reserve the venue. Rejection can close a stale pending request without requiring event/venue approval eligibility. The existing database trigger remains a final integrity guard; future booking/block writers must coordinate their venue locking and tests with this path.
 
-A successful write changes only this booking's status, decision actor/time/reason and update timestamp. It preserves the event/venue associations and booking period, and does not transition the event or generate notifications. KAN-51 reads the new approved period on refresh; rejected bookings remain absent. Repeated/competing decisions never overwrite the original outcome. An uncertain client response requires a read before retrying; the UI automatically reloads on 409 and offers a read-only retry after uncertain transport failures.
+A successful write changes only this booking's status, decision actor/time/reason and update timestamp. It preserves the event/venue associations and booking period, and does not transition the event. It writes the venue-decision notifications in the same transaction (KAN-64). KAN-51 reads the new approved period on refresh; rejected bookings remain absent. Repeated/competing decisions never overwrite the original outcome. An uncertain client response requires a read before retrying; the UI automatically reloads on 409 and offers a read-only retry after uncertain transport failures.
 
 Verification lives in `backend/test/venues/booking-input.test.ts`, `backend/test/venues/venue-bookings-router.test.ts`, `database/tests/venues/venue-bookings.integration.test.ts`, the two booking page component suites and `tests/e2e/venue-bookings.spec.ts`. Follow the [manual guide](../testing/README.md#kan-8-hosted-verification) with provisioned accounts and coordinated synthetic fixtures. Approval-time conflict coverage does not accept KAN-53 submission or all KAN-54/KAN-55 criteria.
 
@@ -649,3 +649,16 @@ A `venue` has the same shape as a venue search result: `id`, `name`, `descriptio
 The update locks the venue row and runs in one transaction, so concurrent edits are serialised, a field that was not sent is never touched, and layouts stay on the venue they were saved for. Concurrent edits to different fields both persist; the same field is last-writer-wins. Search and suitability read the table live, so a saved change is visible to them on the next request. Changing capacity or layouts does not alter existing bookings. Creating, deleting or deactivating a venue and per-venue setup/turnaround time are not part of this story.
 
 **Verification:** `backend/test/venues/venue-catalogue-input.test.ts`, `venue-catalogue-service.test.ts` and `venue-catalogue-router.test.ts`. PostgreSQL integration and browser coverage (S2-T03/S2-T04) are added under `database/tests/venues/` and `tests/e2e/` and recorded in test evidence when executed.
+
+## Notifications (KAN-64, CF-20)
+
+Mounted at `/api/notifications` for every signed-in role. There is no way to name another recipient: each query uses the verified caller. Every response sets `Cache-Control: no-store`.
+
+| Route | Result |
+| --- | --- |
+| `GET /api/notifications` | `200 { items }`, newest first, at most 100. Each item: `id`, `type`, `title`, `message`, `read`, `readAt`, `createdAt`, `event` (`{ id, name }` or null), `booking` (`{ id }` or null), `link` (an application path or null) |
+| `GET /api/notifications/unread-count` | `200 { unreadCount }` |
+| `POST /api/notifications/read-all` | `200 { updated }` for the caller's visible unread notifications |
+| `POST /api/notifications/:id/read` | `200 { notification }`. Idempotent: an already-read notification keeps its original `readAt`. `400 INVALID_NOTIFICATION_ID` for a malformed id; `404 NOTIFICATION_NOT_FOUND` for an absent, someone else's or no-longer-visible notification (all indistinguishable) |
+
+Visibility is re-checked on every read. An organiser sees notices for their own events; a coordinator for events they currently coordinate that are not drafts; Venue Staff for venue bookings. `event`, `booking` and `link` are null once the caller may no longer open the target. The `COORDINATOR_REASSIGNED_AWAY` notice stays visible to the previous coordinator and names nothing. Types: `REQUEST_SUBMITTED`, `CLARIFICATION_REQUESTED`, `REVIEW_APPROVED`, `REVIEW_REJECTED`, `COORDINATOR_ASSIGNED`, `COORDINATOR_REASSIGNED`, `COORDINATOR_REASSIGNED_AWAY`, `VENUE_BOOKING_APPROVED`, `VENUE_BOOKING_REJECTED`. The trigger/recipient matrix is **To agree** in the [decision log](../requirements/assumptions-and-questions.md). Verification: `backend/test/notifications/`, `database/tests/notifications/notification-inbox.integration.test.ts`, the two notification frontend suites and `tests/e2e/notifications.spec.ts`; see AUTO-20261021-03 in the [test evidence](../testing/test-evidence.md).
