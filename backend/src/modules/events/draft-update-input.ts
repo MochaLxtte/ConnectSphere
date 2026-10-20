@@ -36,7 +36,15 @@ const allowedFields = new Set<string>([
 const maxCount = 2_147_483_647;
 
 function isIsoDateTime(value: string): boolean {
-  return value.trim() !== '' && !Number.isNaN(Date.parse(value));
+  const match = /^(\d{4})-(\d{2})-(\d{2})T\d{2}:\d{2}(?::\d{2}(?:\.\d{1,3})?)?(?:Z|[+-]\d{2}:\d{2})$/.exec(value);
+  if (!match || !Number.isFinite(Date.parse(value))) return false;
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const calendar = new Date(0);
+  calendar.setUTCFullYear(year, month - 1, day);
+  return calendar.getUTCFullYear() === year && calendar.getUTCMonth() === month - 1
+    && calendar.getUTCDate() === day;
 }
 
 /** Validate a PATCH body only; ownership and workflow-state eligibility are checked separately. */

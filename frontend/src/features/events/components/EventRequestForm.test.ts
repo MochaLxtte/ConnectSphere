@@ -57,6 +57,28 @@ beforeEach(() => {
 });
 
 describe('CF-02/CF-03 event request form', () => {
+  it('KAN-34 preserves No to Yes registration edits when the saved draft is reopened', async () => {
+    const original = saved({ registrationRequired: false });
+    const changed = saved({ registrationRequired: true, registrationCapacity: 25,
+      registrationOpensAt: '2026-10-01T01:00:00.000Z', registrationClosesAt: '2026-10-02T01:00:00.000Z' });
+    const fetchMock = vi.fn().mockResolvedValue(jsonResponse(changed));
+    vi.stubGlobal('fetch', fetchMock);
+    const view = renderForm(original);
+    await fireEvent.click(screen.getByRole('radio', { name: 'Registration required' }));
+    await fireEvent.update(screen.getByLabelText(/^Registration capacity/), '25');
+    await fireEvent.update(screen.getByLabelText(/^Registration opens/), '2026-10-01T09:00');
+    await fireEvent.update(screen.getByLabelText(/^Registration closes/), '2026-10-02T09:00');
+    await fireEvent.click(saveButton());
+    await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('Draft saved.'));
+    expect(sentBody(fetchMock, 0)).toEqual({ registrationRequired: true, registrationCapacity: 25,
+      registrationOpensAt: changed.registrationOpensAt, registrationClosesAt: changed.registrationClosesAt });
+    view.unmount();
+    renderForm(changed);
+    expect(screen.getByRole('radio', { name: 'Registration required' })).toBeChecked();
+    expect(screen.getByLabelText(/^Registration capacity/)).toHaveValue(25);
+    expect(screen.getByLabelText(/^Registration opens/)).toHaveValue('2026-10-01T09:00');
+    expect(saveButton()).toBeDisabled();
+  });
   it('labels every event field and only asks for registration settings when registration is required', async () => {
     renderForm();
 

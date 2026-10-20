@@ -2,6 +2,18 @@ import { describe, expect, it } from 'vitest';
 import { parseDraftCreateInput, parseDraftUpdateInput, DraftUpdateInputError } from '../../src/modules/events/draft-update-input.js';
 
 describe('KAN-34 draft update input', () => {
+  it.each(['2026-02-30', '2026-02-29', '1900-02-29', '2026-04-31', '2026-00-01', '2026-13-01', '2026-01-00'])(
+    'KAN-34-AC101 refuses impossible date %s for every editable date', (day) => {
+      for (const field of ['startsAt', 'endsAt', 'registrationOpensAt', 'registrationClosesAt']) {
+        expect(() => parseDraftUpdateInput({ [field]: `${day}T10:00:00+08:00` })).toThrow(DraftUpdateInputError);
+      }
+    },
+  );
+  it.each(['2028-02-29T10:00:00+08:00', '2000-02-29T00:00:00Z', '2026-04-30T23:59:59.999Z', '0099-01-01T12:30Z'])(
+    'KAN-34-AC101 accepts real calendar dates without changing their offset: %s', (startsAt) => {
+      expect(parseDraftUpdateInput({ startsAt })).toEqual({ startsAt });
+    },
+  );
   it('accepts a single valid field', () => {
     expect(parseDraftUpdateInput({ name: 'Career Fair' })).toEqual({ name: 'Career Fair' });
   });
