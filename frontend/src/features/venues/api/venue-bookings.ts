@@ -28,7 +28,27 @@ export interface VenueBooking {
   expectedAttendance: number | null;
   venueRequirements: string | null;
   accessibilityNeeds: string | null;
+  /** KAN-81: operational outages recorded against this booking, earliest first. */
+  recovery: BookingRecovery[];
 }
+
+export type RecoveryStatus = 'RECOVERY_REQUIRED' | 'RESOLVED' | 'CLEARED';
+
+export interface BookingRecovery {
+  impactId: string;
+  status: RecoveryStatus;
+  outageStartsAt: string;
+  outageEndsAt: string;
+  outageReason: string;
+}
+
+export function recoveryStatusLabel(status: RecoveryStatus): string {
+  return { RECOVERY_REQUIRED: 'Recovery required', RESOLVED: 'Resolved', CLEARED: 'Cleared' }[status];
+}
+
+/** KAN-81-AC12: a booking still has an outage that nobody has resolved or removed. */
+export const needsRecovery = (booking: Pick<VenueBooking, 'recovery'>): boolean =>
+  booking.recovery.some((item) => item.status === 'RECOVERY_REQUIRED');
 
 export function venueBookingStatusLabel(status: VenueBookingStatus): string {
   return { PENDING: 'Pending', APPROVED: 'Approved', REJECTED: 'Rejected', CANCELLED: 'Cancelled' }[status];

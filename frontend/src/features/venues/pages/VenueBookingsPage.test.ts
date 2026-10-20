@@ -25,6 +25,7 @@ const booking: VenueBooking = {
   eventStartsAt: '2026-10-05T02:00:00Z', eventEndsAt: '2026-10-05T04:00:00Z',
   purpose: 'Hiring', description: 'Annual fair', expectedAttendance: 200,
   venueRequirements: 'Large hall', accessibilityNeeds: 'Wheelchair access',
+  recovery: [],
 };
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status });
 function deferred() {

@@ -3,7 +3,7 @@ import { computed, onBeforeUnmount, ref, useId, watch } from 'vue';
 import { ApiError } from '../../../lib/api-client';
 import { authSession, clearLocalSession } from '../../auth/session.js';
 import {
-  fetchVenueBookings, submitVenueBooking, venueBookingStatusLabel, type VenueBooking,
+  fetchVenueBookings, needsRecovery, submitVenueBooking, venueBookingStatusLabel, type VenueBooking,
 } from '../../venues/api/venue-bookings';
 import { emptyFilters, searchVenues, type VenueResult } from '../../venues/api/venues';
 import { formatEventTime, fromSingaporeInputValue } from '../presentation';
@@ -187,7 +187,9 @@ onBeforeUnmount(() => { contextVersion++; abortPending(); });
           <div class="item-heading">
             <span class="item-label">{{ item.venueName }}</span>
             <span class="tag" :class="tagClass(item.status)">{{ venueBookingStatusLabel(item.status) }}</span>
+            <span v-if="needsRecovery(item)" class="tag tag-recovery">Recovery required</span>
           </div>
+          <p v-if="needsRecovery(item)" class="panel-error">The venue is unavailable for part of this booking. Open it from Venue bookings to see the outage and arrange a replacement venue.</p>
           <p class="panel-meta">{{ formatEventTime(item.startsAt) }} to {{ formatEventTime(item.endsAt) }}</p>
           <p v-if="item.layout">Layout: {{ item.layout }}</p>
           <p v-if="item.notes">Notes: {{ item.notes }}</p>
@@ -240,3 +242,6 @@ onBeforeUnmount(() => { contextVersion++; abortPending(); });
 </template>
 
 <style src="./workflow-panel.css"></style>
+<style scoped>
+.tag-recovery { background: #fbeee6; color: #853e37; }
+</style>
