@@ -1162,3 +1162,79 @@ This section only links work that already happened to the current document set. 
 **Integration reference correction — 21 October 2026:** this source branch used `AUTO-20261021-02`. The combined branch qualifies it as `AUTO-20261021-KAN77-02` to distinguish independent source runs; the source execution dates, build, results and limitations above are retained.
 
 **Integration migration reference correction — 21 October 2026:** the preceding KAN-77 source run used `008_venue_buffer_durations.sql`. In the combined branch it is `009_venue_buffer_durations.sql`, with identical SQL and an exact-checksum filename alias for existing developer history. KAN-64 keeps `008_notification_inbox.sql`; source execution claims remain attached to their original build. No shared database migration was applied.
+
+## 21 October 2026 — combined team branch verification
+
+**Activity:** local branch integration under AGENTS.md §7.1. Branch `feat/sprint-3-integration`
+contains current main `0ce460c`, PRs #37, #38, #40, #41, #42, #43, #44 and #45,
+and local test/documentation head `599fee6`. PR #45's follow-up `2612a07` was included
+as `967938d`; it makes the same availability-response assertion change already verified
+in `70e6e41`, and that merge has no file-content difference from its first parent.
+PRs #37/#38 were still drafts when inspected. Inclusion is not independent review or acceptance.
+Exact source heads, test titles, attempt results, timestamps and report hashes are retained in
+[S3-E19](../scrum/sprint-03/evidence/team-integration-2026-10-21.json).
+
+**Environment:** Windows, Node.js 24.21.0, Vitest 4.1.11, local Chromium/Playwright and
+disposable PostgreSQL 17 (`connectsphere-team-integration`, loopback port 55490).
+Browser servers used spare ports 3089/5189 with API fixtures for authenticated workflows;
+running-server checks cover the unauthenticated boundary. No shared Supabase data, real
+passwords or hosted acceptance were used. Runs occurred on 21 October in Singapore
+(report UTC dates are 20 October).
+
+| Run ID | Command / purpose | Actual result and build |
+| --- | --- | --- |
+| AUTO-20261021-INTEGRATION-01 | `npm run check`; `npm run test:coverage` | Pass on `4835a26`: type checks and both builds; 676 frontend tests / 35 files and 1,165 backend tests / 43 files. Coverage below. |
+| AUTO-20261021-INTEGRATION-RED-01 | Focused notification component/state regression reproduction | 21 passed, six failed before the lifecycle repair. Exact HEAD was Not recorded; the reproduction used the merged notification implementation plus the new regression tests. The six failures are retained as execution records. |
+| AUTO-20261021-INTEGRATION-02 | Focused notification API, page, bell and state tests | 39 passed after the repair, including eight newly specified lifecycle cases. Exact run HEAD was Not recorded; the final tested working-tree changes were subsequently committed in `2cc762f`. An intermediate 37-pass run preceded two additional unmount variants; it is not a substitute for the final 39-case report. |
+| AUTO-20261021-INTEGRATION-03 | Initial database setup and integration before KAN-77 | Fresh 001–008 migration/fictional seed and 362 PostgreSQL tests passed at `cb8443b`; retained as earlier scope, not evidence for venue buffers. |
+| AUTO-20261021-INTEGRATION-04 | `npm run test -w @connectsphere/frontend -- src/features/events/pages/EventRequestDetailPage.test.ts` (JSON reporter) | 36 passed on `70e6e41`; exact-title proof for TC-02-10, with both source PRs' server-error behaviours retained. |
+| AUTO-20261021-INTEGRATION-RED-02 | Full PostgreSQL suite after adding venue buffers | 379 passed, one failed on `4835a26`. The strict availability-response expectation omitted the newly returned zero buffer fields. The response diff and failure title are retained. |
+| AUTO-20261021-INTEGRATION-05 | `npm run test:integration` (JSON reporter, disposable database) | 380 passed / 23 files on `70e6e41`. Migration 009 upgraded the local 001–008 database; fresh, historical and original-filename migration fixtures passed. The availability test now asserts both buffer fields and preserves the full-object, period and role checks. |
+| AUTO-20261021-INTEGRATION-06 | `npx playwright test --config dist/team-integration/playwright.config.ts --workers=4` | 147 passed, zero failed, zero retries, one full run. Started from `4835a26`; `70e6e41` was committed during the run, changing only the database test expectation, not application or browser-test files. The runner's completion metadata records `70e6e41`. |
+
+**Coverage:** frontend statements 94.95% (2316/2439), branches 92.26% (2826/3063),
+functions 96.9% (564/582), lines 97.34% (1944/1997); backend statements 86.31%
+(1343/1556), branches 89.51% (990/1106), functions 84.87% (247/291), lines
+86.92% (1223/1407). The changed unread-count state module is 100% across all four metrics.
+`NotificationInbox.vue` is 94.31% statements, 93.69% branches and 100% functions/lines;
+some compound early-return and error/refresh guard alternatives remain uncovered. The
+new cases exercise old-account successes/401s, destroyed views, late unread-count responses
+and reset/account changes; they do not claim all concurrency schedules are covered.
+Database-only behaviour is verified separately by PostgreSQL tests and is not folded into
+the unit coverage percentage. See the [retained coverage summary](coverage-reports/2026-10-21-team-integration.txt).
+
+**Integration repairs and conflict decisions**
+
+- KAN-6: combine PR #38's server-message fallback with PR #42's missing-first, deduplicated
+  field list and registration-capacity label. Retain both sources' regression cases and add TC-02-10.
+- KAN-64: prevent a pending bulk-read response or stale unread-count request from acting on
+  a replacement account or destroyed view. Cancellation and account/version checks keep an
+  old 401 from clearing the new session. TC-20-30–37 retain six observed failures plus
+  eight successful final attempts; failures are not overwritten.
+- Migration collision: keep `008_notification_inbox.sql`; rename the byte-identical venue
+  migration to `009_venue_buffer_durations.sql`. The exact-checksum alias accepts an
+  already-applied source `008_venue_buffer_durations.sql` without replaying its columns,
+  deleting its history or fabricating an applied 009 row. TC-DB-206 covers that upgrade,
+  idempotence and rejection of an altered alias checksum.
+- Preserve separate test specifications/executions, all source rows and earlier failed/manual
+  placeholders. Disambiguate independent source run IDs with KAN-qualified aliases while
+  retaining their original IDs/builds in provenance. PR #44's earlier calendar observations
+  support its capabilities but do not pass the complete later TC-09-201–203 matrix.
+
+**Records and limits:** the current registers contain 446 specifications, 134 traceability rows
+and 476 execution rows: 92 Pass, 12 Fail and 372 Not executed. Six new failures and ten
+new passes were appended from exact test-title evidence; aggregate suite totals do not pass
+the remaining specifications. Existing complete notification concurrency/overlapping-recipient
+cases TC-20-18/19 and hosted TC-20-20 remain Not executed. KAN-79/KAN-65 notification
+transactions and privacy now have isolated automated evidence, but their complete hosted
+acceptance remains Not executed. KAN-64's recipient matrix is still **To agree**. KAN-77
+AC6 and buffered interval/conflict behaviour depend on KAN-78 and remain incomplete.
+Migrations 008/009 were not applied to shared Supabase; coordinate both before deployment.
+No Jira Done change, sprint acceptance or velocity credit is inferred.
+
+The current API/schema/module/setup documents were reconciled, and C3, class, Lead sequence
+and planning ERD PNGs were regenerated and visually inspected. Render/source hashes are
+retained with S3-E19. The local disposable container is removed after verification; no
+shared test data is left behind. No push, remote merge or PR creation is performed by this run.
+
+**Documentation validation:** 36/36 structural checks pass, including source ancestry, preserved execution metadata/placeholders, unique migration prefixes, CSV schemas/references and 628 local Markdown file links. `npm run submission:prepare` succeeds; all five checked specification/execution/traceability/archive/coverage copies in folder 3 match their repository bytes. This is draft packaging, not a complete submission. The task-owned local PostgreSQL container was removed after the suites.

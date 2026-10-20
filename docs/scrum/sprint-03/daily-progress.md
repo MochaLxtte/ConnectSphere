@@ -86,6 +86,21 @@ the configured 4–17 October sprint window.
 
 **21 October 2026 — KAN-77 development outside a Daily Scrum.** Implemented KAN-77-AC1–AC5 on `feat/KAN-77-venue-buffer-durations`: migration 008 adds setup and turnaround minutes (0–1440, default 0). Venue Staff edit them in the catalogue, stale buffer edits return `409 VENUE_BUFFER_CONFLICT`, and catalogue, search, suitability and calendar responses include both values. `AUTO-20261021-KAN77-02`: `npm run check` and coverage pass, and the changed backend services are at 100%. PostgreSQL and browser suites await CI. AC6 is deferred until KAN-78 exists. Migration 008 needs team agreement before it is applied to shared Supabase. KAN-77 stays In Progress at 2 SP.
 
+**21 October 2026 — team branch integration outside a Daily Scrum.**
+Combined latest main, PRs #37/#38/#40–45 and the local KAN-79 reliability/test-documentation
+commits on `feat/sprint-3-integration`. The KAN-6 overlapping fixes retain both behaviours;
+notification late-response guards now isolate account/view lifetimes. Notifications keep migration
+008; venue buffers use unchanged SQL under 009 with a checked historical-name alias.
+PR #45's later availability-contract test correction is also included.
+`AUTO-20261021-INTEGRATION-01/05/06` pass 676 frontend, 1,165 backend, 380 PostgreSQL
+and 147 browser tests (zero retries); [S3-E19](evidence/README.md) retains exact attempts,
+failures, coverage and source heads. Ten supporting specifications and sixteen execution rows
+were appended; manual placeholders and earlier failures remain. Current contracts and four
+diagram exports were reconciled. PRs #37/#38 are included as drafts, not accepted work.
+Next: push this branch for independent review; coordinate shared migrations 008/009 and
+execute the hosted cases. Recipient matrix To agree; KAN-78/AC6 incomplete.
+No hosted acceptance, Jira status change, sprint completion or velocity credit is recorded.
+
 ## Impediments
 
 | Raised | Impediment | Owner | Action | Status |
