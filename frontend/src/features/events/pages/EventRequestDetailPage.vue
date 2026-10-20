@@ -4,7 +4,8 @@ import { useRoute } from 'vue-router';
 import { ApiError } from '../../../lib/api-client';
 import { authSession, clearLocalSession } from '../../auth/session.js';
 import {
-  fetchEventRequestDetail, submitRequest, SubmissionIncompleteError, type EventRequestDetail,
+  fetchEventRequestDetail, submitRequest, SubmissionIncompleteError, SubmissionInvalidError,
+  type EventRequestDetail,
 } from '../api/event-requests';
 import { eventStatusLabel, formatEventTime } from '../presentation';
 import EventPlanningPanels from '../components/EventPlanningPanels.vue';
@@ -19,12 +20,23 @@ const requestId = computed(() => String(route.params.id ?? ''));
 const state = ref<LoadState>({ status: 'loading' });
 const submitting = ref(false);
 const submitError = ref('');
+const submitProblems = ref<string[]>([]);
 let controller: AbortController | undefined;
 
 const submitFieldLabels = new Map([
   ['name', 'Event name'], ['purpose', 'Purpose'], ['startsAt', 'Starts'], ['endsAt', 'Ends'],
   ['expectedAttendance', 'Expected attendance'], ['venueRequirements', 'Venue requirements'],
+  ['registrationOpensAt', 'Registration opens'], ['registrationClosesAt', 'Registration closes'],
 ]);
+
+/** KAN-6-AC101: the detail page has no inputs, so name each field next to the server's message. */
+function invalidSubmissionProblems(error: SubmissionInvalidError): string[] {
+  const label = (field: string) => submitFieldLabels.get(field) ?? field;
+  return [
+    ...error.missingFields.map((field) => `${label(field)}: Complete this before submitting.`),
+    ...Object.entries(error.fieldErrors).map(([field, message]) => `${label(field)}: ${message}`),
+  ];
+}
 
 function showSignIn() {
   controller?.abort();
@@ -42,6 +54,7 @@ async function load() {
   state.value = { status: 'loading' };
   submitting.value = false;
   submitError.value = '';
+  submitProblems.value = [];
   try {
     const request = await fetchEventRequestDetail(requestId.value, current.signal);
     if (!current.signal.aborted) state.value = { status: 'ready', request };
@@ -78,6 +91,7 @@ async function submitForReview() {
   const current = controller;
   submitting.value = true;
   submitError.value = '';
+  submitProblems.value = [];
   try {
     await submitRequest(state.value.request.id, current?.signal);
     // Show the persisted status and actions rather than assuming them.
@@ -91,6 +105,11 @@ async function submitForReview() {
     } else if (error instanceof SubmissionIncompleteError) {
       const missing = error.missingFields.map((field) => submitFieldLabels.get(field) ?? field);
       submitError.value = `Edit the draft to complete these details before submitting: ${missing.join(', ')}.`;
+    } else if (error instanceof SubmissionInvalidError) {
+      submitProblems.value = invalidSubmissionProblems(error);
+      submitError.value = submitProblems.value.length > 0
+        ? 'Edit the draft to fix these details before submitting:'
+        : `Edit the draft to fix these details before submitting: ${error.message}`;
     } else if (error instanceof ApiError && error.status === 409 &&
         ['NO_AVAILABLE_COORDINATOR', 'DRAFT_ALREADY_ASSIGNED'].includes(error.code)) {
       submitError.value = error.message;
@@ -157,7 +176,12 @@ onBeforeUnmount(() => controller?.abort());
         <button type="button" class="button button-primary" :disabled="submitting" @click="submitForReview">
           {{ submitting ? 'Submitting…' : 'Submit for review' }}
         </button>
-        <p v-if="submitError" class="draft-error" role="alert">{{ submitError }}</p>
+        <div v-if="submitError" class="draft-error" role="alert">
+          <p>{{ submitError }}</p>
+          <ul v-if="submitProblems.length > 0">
+            <li v-for="problem in submitProblems" :key="problem">{{ problem }}</li>
+          </ul>
+        </div>
       </div>
     </section>
 
@@ -199,6 +223,7 @@ dd { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
 .draft-actions .button { font-size: 14px; padding: 11px 16px; }
 .draft-actions button:disabled { cursor: not-allowed; opacity: 0.6; }
 .draft-error { flex-basis: 100%; color: #8a332b; font-size: 14px; }
+.draft-error ul { margin: 4px 0 0; padding-left: 20px; }
 .outcome-fields dt:not(:first-child) { margin-top: 20px; }
 .outcome-fields dd { margin-top: 6px; }
 .outcome-value { display: inline-block; border-radius: 20px; padding: 6px 12px; font-weight: 650; }
