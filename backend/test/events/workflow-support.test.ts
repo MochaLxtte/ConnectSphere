@@ -9,7 +9,7 @@ const organiser: WorkflowActor = { id: '10000000-0000-4000-8000-000000000001', r
 const coordinator: WorkflowActor = { id: '20000000-0000-4000-8000-000000000001', role: 'EVENT_COORDINATOR' };
 const event: LockedEventRequest = {
   id: '30000000-0000-4000-8000-000000000001', organiserId: organiser.id, coordinatorId: coordinator.id,
-  status: 'APPROVED',
+  status: 'APPROVED', name: 'Open day',
 };
 
 describe('workflow access rules', () => {

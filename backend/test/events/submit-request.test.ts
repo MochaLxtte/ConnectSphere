@@ -4,6 +4,7 @@ import { SubmissionValidationError } from '../../src/modules/events/submit-input
 import {
   submitEventRequest, SubmitRequestNotFoundError, DraftAssignmentConflictError, type SubmitActor,
 } from '../../src/modules/events/submit-request.js';
+import { notificationRows } from '../support/notification-rows.js';
 
 const eventId = '10000000-0000-4000-8000-000000000001';
 const organiser: SubmitActor = { id: '20000000-0000-4000-8000-000000000001', role: 'EVENT_ORGANISER' };
@@ -26,6 +27,7 @@ function fakePool(locked: ReturnType<typeof draftRow> | null, options: {
   failHistory?: boolean;
   missingSave?: boolean;
   failCommit?: boolean;
+  failNotification?: boolean;
 } = {}) {
   const statements: string[] = [];
   const release = vi.fn();
@@ -45,6 +47,7 @@ function fakePool(locked: ReturnType<typeof draftRow> | null, options: {
         throw typeof options.failRollback === 'string' ? options.failRollback : new Error('rollback failed');
       }
       if (sql === 'COMMIT' && options.failCommit) throw new Error('Commit failed');
+      if (/INSERT INTO notifications/.test(sql) && options.failNotification) throw new Error('Notification failed');
       return { rows: [] };
     }),
   };
@@ -71,9 +74,32 @@ describe('KAN-79 submission to the Lead queue; KAN-59/KAN-6 validation retained'
     const saved = await submit(pool);
     expect(saved.status).toBe('SUBMITTED');
     expect(saved.coordinatorId).toBeNull();
-    expect(statements).toEqual(['BEGIN ISOLATION', 'SELECT set_config(\'app.actor_id\',', 'SELECT id,', 'SELECT 1', 'UPDATE event_requests', 'COMMIT']);
+    expect(statements).toEqual(['BEGIN ISOLATION', 'SELECT set_config(\'app.actor_id\',', 'SELECT id,', 'SELECT 1', 'UPDATE event_requests', 'INSERT INTO', 'COMMIT']);
     expect(client.query.mock.calls.some(([sql]) => /app_users|INSERT INTO coordinator_assignments/.test(sql))).toBe(false);
     expect(release).toHaveBeenCalledOnce();
+  });
+
+  it('KAN-64-AC201 acknowledges the submission to the organiser inside the same transaction', async () => {
+    const { pool, client, statements } = fakePool(draftRow());
+    await submit(pool);
+    expect(notificationRows(client.query.mock.calls)).toEqual([{
+      recipientId: organiser.id, eventRequestId: eventId, venueBookingId: null, type: 'REQUEST_SUBMITTED',
+      title: 'Event request submitted', dedupeKey: `REQUEST_SUBMITTED:${eventId}`,
+      message: 'Your event request “Career Fair” was submitted. It is waiting to be allocated to a coordinator.',
+    }]);
+    expect(statements.indexOf('INSERT INTO')).toBeLessThan(statements.indexOf('COMMIT'));
+  });
+
+  it('KAN-64-AC207 sends no notification when the submission is refused or rolls back', async () => {
+    for (const pool of [fakePool(draftRow({ name: '   ' })), fakePool(draftRow({ status: 'SUBMITTED' })), fakePool(null)]) {
+      await submit(pool.pool).catch(() => undefined);
+      expect(notificationRows(pool.client.query.mock.calls)).toEqual([]);
+    }
+    const failing = fakePool(draftRow(), { failNotification: true });
+    await expect(submit(failing.pool)).rejects.toThrow('Notification failed');
+    expect(failing.statements).toContain('ROLLBACK');
+    expect(failing.statements).not.toContain('COMMIT');
+    expect(failing.release).toHaveBeenCalledOnce();
   });
 
   it('reads the registration times under the row lock so the window can be validated', async () => {
