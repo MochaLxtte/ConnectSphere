@@ -1213,3 +1213,8 @@ Source: KAN-81 plan approved in chat by Kai Jie, the story owner, on 21 October 
 4. **Flags in their own table.** Migration 010's `venue_outage_impacts` holds the flags and a copy of the outage period and reason. The `venue_bookings_conflict` trigger re-checks every update to an `APPROVED` booking against blocks, so an affected booking row must not be updated. Phase 3 and KAN-82 must account for this when changing affected bookings.
 5. **Removal.** Removing a block marks only its own open flags `CLEARED` and keeps them as history. A booking still covered by another outage stays flagged by that outage. Nothing is re-approved.
 6. **Uncertain writes (AC12).** The blocks page treats a 4xx with a server message as a definite refusal. A network failure, unreadable response or 5xx is uncertain: the page refreshes current state and says so, without retrying.
+
+
+## 21 October 2026 — KAN-81 stale-refusal review correction
+
+Source: PR47 review and Arvin's instruction to fix the findings and merge. A definite 4xx refusal does not establish that the cached staff view is current: 404/409 create/remove results now refresh both blocks and recovery while preserving the server message and save input. No write is retried automatically. This supplements phase-1 decision 6; the AC wording, phased scope and 8-SP estimate are unchanged. New TC-09-13–17 expose phase-1 verification without claiming completion of TC-09-01–12. Jira's To Do/In Progress mismatch was corrected to In Progress, retaining Kai Jie as assignee.

@@ -1,0 +1,134 @@
+Run: AUTO-20261021-KAN81-FIX-01
+Build: 18ac27d4e26580ef5f8aca519e5cd8ecbc2d1d51 (tested working tree committed unchanged)
+Environment: Windows; Node 24.21.0; Vitest 4.1.11
+Command: npm run test:coverage
+
+
+> connectsphere@0.1.0 test:coverage
+> npm run test:coverage --workspaces
+
+
+> @connectsphere/frontend@0.1.0 test:coverage
+> vitest run --coverage
+
+
+ RUN  v4.1.11 C:/Users/arvin/Downloads/GitHub/ConnectSphere-review-pr47/frontend
+      Coverage enabled with v8
+
+
+ Test Files  35 passed (35)
+      Tests  690 passed (690)
+   Start at  04:10:16
+   Duration  18.28s (transform 16.05s, setup 49.94s, import 27.50s, tests 75.65s, environment 63.70s)
+
+ % Coverage report from v8
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-------------------|---------|----------|---------|---------|-------------------
+All files          |   95.19 |    92.54 |   97.12 |   97.63 |                   
+ features/events   |   58.33 |    53.84 |      60 |   68.42 |                   
+  presentation.ts  |   58.33 |    53.84 |      60 |   68.42 | 32-37             
+ ...res/events/api |    96.1 |    94.33 |     100 |   98.57 |                   
+  ...t-requests.ts |   92.85 |    90.32 |     100 |   97.43 | 137               
+ ...nts/components |   93.35 |    90.43 |   91.47 |   96.27 |                   
+  ...mentPanel.vue |      95 |    96.58 |     100 |     100 | 55,75-82,104,109  
+  ...tionPanel.vue |   93.47 |    86.15 |   94.11 |   97.29 | 67                
+  ...ingPanels.vue |   11.11 |        0 |       0 |   14.28 | 9-18,26-28        
+  ...questForm.vue |   96.33 |     89.9 |   93.02 |   96.19 | ...37,351,357,383 
+  ...kingPanel.vue |   94.25 |    92.13 |   90.47 |   97.36 | 121,226-229       
+  test-api.ts      |   93.75 |       80 |     100 |     100 | 12-13             
+  ...flow-panel.ts |   85.45 |       50 |    87.5 |   93.18 | 18,83-84          
+ ...s/events/pages |      92 |    88.97 |   97.61 |   95.17 |                   
+  ...tEditPage.vue |    92.1 |     87.5 |     100 |   96.77 | 64                
+  ...etailPage.vue |   88.88 |     85.9 |   94.11 |   91.89 | 82-87,123         
+  ...uestsPage.vue |   97.05 |    95.34 |     100 |     100 | 35,46             
+ ...ons/components |   95.79 |    92.91 |     100 |     100 |                   
+  ...ationBell.vue |     100 |     87.5 |     100 |     100 | 31,40             
+  ...tionInbox.vue |   94.31 |    93.69 |     100 |     100 | ...45,57,73,77,86 
+ .../reviews/pages |   95.16 |    92.87 |   98.07 |   96.89 |                   
+  ...sightPage.vue |     100 |    93.33 |     100 |     100 | 23,49             
+  ...questPage.vue |     100 |    92.77 |     100 |     100 | 30-40,64,74,78    
+  ...QueuePage.vue |     100 |    97.36 |     100 |     100 | 32                
+  ...questPage.vue |    86.2 |    88.11 |      90 |    87.5 | 49-55,61          
+  ...uestsPage.vue |    95.6 |    93.06 |     100 |     100 | 53-60,71,75,77-83 
+ ...s/system/pages |   97.22 |    84.21 |      90 |   96.96 |                   
+  ...boardPage.vue |   97.22 |    84.21 |      90 |   96.96 | 107               
+ features/venues   |     100 |    98.26 |     100 |     100 |                   
+  availability.ts  |     100 |    96.36 |     100 |     100 | 134,192           
+ ...res/venues/api |     100 |     90.9 |     100 |     100 |                   
+  venue-blocks.ts  |     100 |       50 |     100 |     100 | 66                
+  venues.ts        |     100 |    93.75 |     100 |     100 | 46                
+ ...ues/components |   98.96 |    89.36 |     100 |     100 |                   
+  ...yCalendar.vue |   98.46 |    89.39 |     100 |     100 | 30,34,52,60-78    
+  ...kTimeline.vue |     100 |    89.28 |     100 |     100 | 87,90-92          
+ ...s/venues/pages |   96.69 |    94.88 |   99.37 |   99.29 |                   
+  ...locksPage.vue |   93.05 |    89.74 |     100 |   97.61 | 71,90-91          
+  ...etailPage.vue |      96 |    93.36 |     100 |     100 | ...76-177,189-193 
+  ...kingsPage.vue |   97.67 |    95.23 |     100 |     100 | 32,41,91          
+  ...eEditPage.vue |   98.01 |    98.02 |     100 |     100 | 36,73,97          
+  ...earchPage.vue |   98.07 |    94.87 |   96.42 |   98.92 | 227               
+  ...ilityPage.vue |   97.72 |    96.19 |     100 |     100 | ...16,132,140,188 
+ lib               |   86.48 |    85.18 |     100 |   91.17 |                   
+  api-client.ts    |   86.48 |    85.18 |     100 |   91.17 | 53,106,116        
+-------------------|---------|----------|---------|---------|-------------------
+
+=============================== Coverage summary ===============================
+Statements   : 95.19% ( 2359/2478 )
+Branches     : 92.54% ( 2882/3114 )
+Functions    : 97.12% ( 574/591 )
+Lines        : 97.63% ( 1982/2030 )
+================================================================================
+
+> @connectsphere/backend@0.1.0 test:coverage
+> vitest run --coverage
+
+
+ RUN  v4.1.11 C:/Users/arvin/Downloads/GitHub/ConnectSphere-review-pr47/backend
+      Coverage enabled with v8
+
+
+ Test Files  44 passed (44)
+      Tests  1205 passed (1205)
+   Start at  04:10:35
+   Duration  5.50s (transform 8.08s, setup 0ms, import 32.14s, tests 8.54s, environment 12ms)
+
+ % Coverage report from v8
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-------------------|---------|----------|---------|---------|-------------------
+All files          |   88.22 |    90.51 |   87.86 |    88.8 |                   
+ src               |    90.9 |    88.46 |      75 |   90.19 |                   
+  app.ts           |   96.15 |    95.83 |     100 |   95.83 | 106-107           
+  runtime-app.ts   |       0 |        0 |       0 |       0 | 19-26             
+ src/config        |   83.33 |      100 |      50 |   83.33 |                   
+  env.ts           |   83.33 |      100 |      50 |   83.33 | 14-18             
+ src/db            |   78.94 |      100 |   33.33 |   78.94 |                   
+  pool.ts          |       0 |      100 |       0 |       0 | 15-29             
+ src/modules/auth  |   82.35 |    76.92 |   81.25 |   80.76 |                   
+  router.ts        |   95.31 |      100 |    90.9 |   94.82 | 19-20,39          
+  supabase.ts      |      20 |    29.41 |   33.33 |      20 | 29-49             
+ ...modules/events |   85.01 |    88.42 |   86.66 |   85.52 |                   
+  ...ion-router.ts |   63.63 |      100 |      20 |   63.63 | 17,22,29,40       
+  ...ifications.ts |   13.63 |        0 |   33.33 |    11.9 | 38-118            
+  create-draft.ts  |   92.85 |     62.5 |     100 |   95.65 | 62                
+  ...est-detail.ts |     100 |    87.09 |     100 |     100 | 87-90             
+  ...w-decision.ts |    9.67 |        0 |      50 |   10.71 | 51-119            
+  ...sts-router.ts |   98.31 |    97.26 |     100 |   98.31 | 206,264           
+  update-draft.ts  |   22.85 |    22.22 |      50 |   23.33 | 89-140            
+  workflow-http.ts |      96 |    94.44 |     100 |     100 | 71                
+  ...ow-support.ts |   89.61 |    91.83 |    87.5 |   91.17 | 64-70,159-163     
+ ...modules/venues |   91.46 |    92.23 |   89.92 |   92.95 |                   
+  ...ng-service.ts |   79.45 |    73.46 |   63.63 |   84.37 | ...01,121,130,171 
+  ...lity-rules.ts |    98.3 |    99.15 |     100 |     100 | 55                
+  ...ty-service.ts |    6.89 |        0 |       0 |       8 | 32-102            
+  ...ngs-router.ts |   92.85 |       50 |   83.33 |   92.85 | 21                
+  venue-router.ts  |      75 |      100 |   33.33 |      75 | 20,25             
+  venue-search.ts  |    92.3 |    88.88 |     100 |   98.43 | 128               
+-------------------|---------|----------|---------|---------|-------------------
+
+=============================== Coverage summary ===============================
+Statements   : 88.22% ( 1408/1596 )
+Branches     : 90.51% ( 1012/1118 )
+Functions    : 87.86% ( 268/305 )
+Lines        : 88.8% ( 1277/1438 )
+================================================================================

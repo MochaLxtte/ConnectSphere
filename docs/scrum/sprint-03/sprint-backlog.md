@@ -1401,3 +1401,8 @@ The rows below are proposed workflow groups, all **Not executed** for this scope
 | S3-PROP-T10 | Combined release journey | Hosted login → submit → Lead assignment → review → venue/equipment planning → confirm → register/change/withdraw → complete/cancel | manual hosted/e2e | Not executed | Actual accounts, build and outcomes required |
 
 </details>
+
+
+### KAN-81 phase-1 review follow-up — 21 October 2026
+
+S3-T25 remains **Not executed as a complete group; acceptance Not assessed**. TC-09-13–16 pass their scoped phase-1 PostgreSQL cases in `AUTO-20261021-KAN81-CI-01`; TC-09-17 retains the failed review reproduction and passes the corrected 21-case page suite in `AUTO-20261021-KAN81-FIX-01`. See S3-E20 and the appended case executions. The staff UI now refreshes blocks/recovery after stale 404/409 refusals without retrying and preserves input/server error messages. Check and coverage pass (690 frontend, 1,205 backend). Original TC-09-01–12 and all incomplete coordinator/notification/replacement/buffer/hold/readiness/hosted criteria remain unaccepted. Jira is now In Progress, Kai Jie, 8 SP; no velocity credit. Earlier “await CI” notes remain dated local history; the verified original-head CI is recorded in the follow-up narrative.
