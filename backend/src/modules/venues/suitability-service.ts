@@ -1,3 +1,4 @@
+import { occupyingBookingSql } from './occupancy.js';
 import { createHash } from 'node:crypto';
 import {
   requestNotFound, WorkflowError, type WorkflowActor, type WorkflowDependencies,
@@ -84,7 +85,7 @@ export async function checkVenueSuitability(
     venue: (SuitabilityVenue & { isActive: boolean }) | null; booked: boolean; blocked: boolean;
   }>(`SELECT ${eventColumns},
     CASE WHEN v.id IS NULL THEN NULL ELSE ${venueJson} || jsonb_build_object('isActive', v.is_active) END AS venue,
-    EXISTS(SELECT 1 FROM venue_bookings b WHERE b.venue_id = v.id AND b.status = 'APPROVED'
+    EXISTS(SELECT 1 FROM venue_bookings b WHERE b.venue_id = v.id AND ${occupyingBookingSql('b')}
       AND b.starts_at < e.ends_at AND b.ends_at > e.starts_at) AS booked,
     EXISTS(SELECT 1 FROM venue_unavailability u WHERE u.venue_id = v.id
       AND u.starts_at < e.ends_at AND u.ends_at > e.starts_at) AS blocked

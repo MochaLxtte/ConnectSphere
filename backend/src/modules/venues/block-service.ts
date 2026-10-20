@@ -1,4 +1,5 @@
 import type { PoolClient } from 'pg';
+import { releaseHold } from './booking-service.js';
 import {
   inActorTransaction, iso, WorkflowError, type WorkflowActor, type WorkflowDependencies,
 } from '../events/workflow-support.js';
@@ -81,6 +82,21 @@ export async function createVenueBlock(
     const venue = await lockActiveVenue(client, venueId);
     if (!venue) throw new WorkflowError('NOT_FOUND', 'VENUE_NOT_FOUND', 'The venue was not found.');
     if (!venue.isActive) conflict('VENUE_INACTIVE', 'This venue is no longer active.');
+
+    // KAN-83-AC10: an operational block invalidates any live hold it overlaps. Each hold is
+    // released with the block's reason and its coordinator is notified; approved bookings are kept
+    // and flagged for recovery below (KAN-81). Hold writers lock booking -> venue, so rows another writer has
+    // locked are skipped instead of waited for: that writer then needs this venue lock, sees the
+    // committed block and refuses itself (no deadlock, no hold surviving the block).
+    const held = await client.query<{ id: string }>(
+      `SELECT id FROM venue_bookings WHERE venue_id = $1 AND status = 'HELD'
+        AND hold_expires_at > clock_timestamp() AND starts_at < $3 AND ends_at > $2
+        ORDER BY id FOR UPDATE SKIP LOCKED`,
+      [venueId, submission.startsAt, submission.endsAt],
+    );
+    for (const hold of held.rows) {
+      await releaseHold(client, hold.id, actor.id, `Venue unavailable: ${submission.reason}`);
+    }
 
     const inserted = await client.query<{ id: string }>(
       `INSERT INTO venue_unavailability (venue_id, starts_at, ends_at, reason, created_by)

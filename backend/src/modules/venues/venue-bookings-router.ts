@@ -2,7 +2,8 @@ import { Router } from 'express';
 import { param, workflowRoute, type WorkflowRouterDependencies } from '../events/workflow-http.js';
 import { parseBookingFilter } from './booking-input.js';
 import {
-  createVenueBooking, decideVenueBooking, getVenueBooking, listVenueBookings,
+  cancelVenueHold, createVenueBooking, decideVenueBooking, getVenueBooking, listVenueBookings,
+  placeVenueHold,
 } from './booking-service.js';
 
 export function createVenueBookingsRouter(dependencies: WorkflowRouterDependencies): Router {
@@ -26,6 +27,21 @@ export function createVenueBookingsRouter(dependencies: WorkflowRouterDependenci
     roles: ['VENUE_STAFF'], uuidParams: { id: 'INVALID_VENUE_BOOKING_ID' },
   }, async (actor, request) => ({
     booking: await decideVenueBooking(dependencies,
+      { actor, bookingId: param(request, 'id'), input: request.body }),
+  })));
+  // KAN-83: explicit Venue Staff hold with a deadline, and cancellation with a reason.
+  router.post('/:id/hold', workflowRoute(dependencies, {
+    signInMessage: 'Sign in to place a venue hold.',
+    roles: ['VENUE_STAFF'], uuidParams: { id: 'INVALID_VENUE_BOOKING_ID' },
+  }, async (actor, request) => ({
+    booking: await placeVenueHold(dependencies,
+      { actor, bookingId: param(request, 'id'), input: request.body }),
+  })));
+  router.post('/:id/hold/cancel', workflowRoute(dependencies, {
+    signInMessage: 'Sign in to cancel a venue hold.',
+    roles: ['VENUE_STAFF'], uuidParams: { id: 'INVALID_VENUE_BOOKING_ID' },
+  }, async (actor, request) => ({
+    booking: await cancelVenueHold(dependencies,
       { actor, bookingId: param(request, 'id'), input: request.body }),
   })));
   return router;

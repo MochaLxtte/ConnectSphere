@@ -136,11 +136,11 @@ export function assessVenueSuitability(
     add('availability', 'UNKNOWN', 'Valid event timing and venue opening hours are needed to check availability.');
   } else {
     const failures = [!hours ? 'the event extends outside the venue opening hours' : '',
-      conflicts.booked ? 'an approved booking overlaps the event period' : '',
+      conflicts.booked ? 'an approved booking or live venue hold overlaps the event period' : '',
       conflicts.blocked ? 'an operational block overlaps the event period' : ''].filter(Boolean);
     add('availability', failures.length ? 'FAIL' : 'PASS', failures.length
       ? `The venue is unavailable: ${failures.join('; ')}.`
-      : 'The event period is within opening hours and has no overlapping approved booking or operational block.');
+      : 'The event period is within opening hours and has no overlapping approved booking, live venue hold or operational block.');
   }
 
   add('requirements', input.requirementsConfirmed && input.unresolvedRequirements === null ? 'PASS' : 'UNKNOWN',

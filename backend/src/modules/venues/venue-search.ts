@@ -1,3 +1,4 @@
+import { occupyingBookingSql } from './occupancy.js';
 import {
   iso, WorkflowError,
   type WorkflowActor, type WorkflowDependencies,
@@ -60,11 +61,10 @@ export interface VenueFilterOptions {
 }
 
 /**
- * Only APPROVED bookings make a venue unavailable. This matches the database's
- * venue_bookings_conflict trigger, which only guards APPROVED rows, so PENDING requests
- * can overlap and do not hold the venue.
+ * APPROVED bookings and, since KAN-83, live holds make a venue unavailable (occupancy.ts). This
+ * matches the venue_bookings_conflict trigger, so PENDING requests can overlap and do not hold
+ * the venue.
  */
-const BLOCKING_BOOKING_STATUS = 'APPROVED';
 const MAX_COUNT = 2_147_483_647;
 const MAX_TEXT_LENGTH = 100;
 const MAX_LIST_ITEMS = 30;
@@ -189,7 +189,7 @@ const SEARCH_SQL = `
     AND ($7::timestamptz IS NULL OR NOT EXISTS (
           SELECT 1 FROM venue_bookings b
           WHERE b.venue_id = v.id
-            AND b.status = '${BLOCKING_BOOKING_STATUS}'
+            AND ${occupyingBookingSql('b')}
             AND b.starts_at < $8::timestamptz
             AND b.ends_at > $7::timestamptz))
     AND ($7::timestamptz IS NULL OR NOT EXISTS (
