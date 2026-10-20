@@ -2,6 +2,26 @@
 
 Record each relevant run with its commit, scope and result. Store concise report exports alongside this document and link the corresponding tests from the [traceability matrix](../requirements/traceability.csv). The [Sprint 1 acceptance test plan](../scrum/sprint-01/sprint-backlog.md#acceptance-test-plan) provides the initial scenario and acceptance-criterion IDs.
 
+**Register format — 21 October 2026.** Reusable setup, steps, inputs and expected outcomes now live in
+[test specifications](test-cases.csv). Append case-level actual results to
+[test-executions.csv](test-executions.csv), retaining this document for run details, suite totals,
+coverage, failures and retests. The [unchanged original register](archive/test-cases-2026-10-21.csv)
+preserves the combined format and all its wording. This reorganisation is not a new product test run.
+
+The 427 retained IDs comprise 407 detailed scenarios and 20 historical feature summaries
+(`TC-01`–`TC-20`). The execution register imports the 30 explicitly recorded automated case passes
+and five individual audit failures; 372 detailed cases remain **Not executed** placeholders.
+The five failed feature summaries refer to those same five failures and are not extra executions.
+Earlier partial manual checks and suite results remain in their original narratives below; newly
+specified cases do not inherit passes from those records. Optional case authors, creation dates and
+executors remain **Not recorded** where the original sources did not identify them.
+
+Imported execution IDs ending `-R01` identify migrated case records, not the first attempt in the
+original run. IDs ending `-P01` identify planning placeholders, with no run/date/build/environment or
+observed result. Append a new uniquely identified row for each later attempt, and keep the original
+placeholder/history. The 19 October narratives retain their initial failures and successful reruns;
+the available source does not support fabricating additional case-specific attempt records.
+
 ## 15 October 2026 post-sprint implementation audit
 
 **AUTO-20261015-01 — Recorded 15 October 2026.** The audit tested application source at `3bd64f8` on `docs/sprint-3-readiness-sync`, with documentation changes already in the working tree. It changed no application source. The date is after Sprint 2's 3 October boundary; these results do not establish earlier completion, review acceptance or velocity. The [pre-planning baseline and defect triage](../scrum/sprint-03/planning.md#pre-planning-baseline-and-defect-triage) separates existing defects, unfinished acceptance and new customer changes.
@@ -833,3 +853,43 @@ The interface requires a replacement and reason, agrees detail/history versions 
 **Changed-code coverage gaps:** AssignmentPanel's remaining uncovered statements include defensive submit exits normally prevented by hidden/disabled controls and existing aborted-read, 401 and non-Error fallbacks. Tests assert that blocked controls cannot submit rather than directly invoke an unreachable Vue handler. LeadRequestPage's remaining branches are existing null-value rendering and error fallbacks. ReviewRequestPage's lower total mainly reflects its existing quiet-refresh helper (child workflow panels are stubbed in page tests); the added access-denial refresh is covered. The existing coverage configuration excludes some shell/auth files and does not merge browser/integration execution into unit coverage; no 100% whole-project claim is made.
 
 **Documentation/artifact checks:** 15/15 functional-case, traceability and document checks passed (427 cases, 112 traceability rows, 579 changed-document file links); native workbook checks passed 16/16. Four updated diagram exports and six changed workbook regions were visually inspected. `npm run submission:prepare` passed; generated draft folders still require the team's evidence-completeness review. The disposable KAN-65 PostgreSQL container was removed after testing. See [S3-E15 validation](../scrum/sprint-03/evidence/kan65-validation-2026-10-19.json). No shared database cleanup was performed.
+
+## 21 October 2026 — Test documentation standardisation
+
+**Run ID: AUTO-20261021-DOCS-01.** Documentation working tree on
+`docs/test-case-standardisation`, based on `aaee5498e8140526e6005c4fe5fce0bf95d95f40`.
+Environment: Windows, bundled Python standard library, Git and the existing Node submission script.
+Preparation used AI-assisted restructuring and independent source-preservation reviews; the format
+change, including AGENTS.md, was approved by Tristan in chat on 21 October. This is a documentation
+verification run, not a product test or an acceptance decision.
+
+- Preserved all **427 specification IDs** and original feature, scenario, level, criterion and
+  expected-result fields. Separated preconditions, steps and input data using existing source
+  wording; unknown authors/creation dates remain **Not recorded**.
+- Retained the original combined register byte-for-byte in the
+  [21 October archive](archive/test-cases-2026-10-21.csv). The 20 feature-level summaries have no
+  execution rows. The 407 detailed-case records retain **30 automated Pass**, **5 audit Fail**
+  and **372 Not executed**; no original detailed result or evidence cell was changed.
+- Preserved every earlier dated narrative, including failed initial attempts, successful reruns
+  and partial manual checks. Existing case-specific passes were imported from the case register,
+  not inferred from aggregate suite totals. Unperformed placeholders contain no run/date/build,
+  environment or actual outcome.
+- Added three missing traceability mappings: current `TC-14-20` / S3-T27, planned `TC-06-32` /
+  S4-T16 and explicitly superseded `TC-06-19` / S3-T24. All **427 IDs** now map through **115
+  traceability rows**, preserving the 112 original rows. New mappings claim no execution.
+- `python -X utf8 dist/test-docs-work/validate.py` passed **18/18 documentation checks** for
+  source preservation, schemas, IDs, outcomes, metadata, all 20 core features, file links and
+  whitespace. The temporary validator is a local verification helper; its retained results,
+  scope and CSV hashes are in [S3-E17](../scrum/sprint-03/evidence/test-documentation-validation-2026-10-21.json).
+  The first validator draft treated the five existing `TC-DB-*` infrastructure cases as
+  invalid/missing core-feature mappings; that validator assumption was corrected without
+  changing the existing infrastructure specifications.
+- `npm run submission:prepare` passed. Readback confirmed folder 3 contains byte-identical
+  specification, execution, traceability and archived registers. Final package review and
+  evidence completeness remain separate from a successful packaging command.
+
+**Not executed for this documentation change:** application unit/component, database integration,
+browser, coverage and hosted acceptance tests. No application code, database, Jira fields, story
+acceptance, sprint totals or historical completion dates changed. The remaining Not executed cases
+include future and historical-baseline specifications as well as manual checks; their count is not
+a count of missing implementations. Commit and push remain for separate authorisation.

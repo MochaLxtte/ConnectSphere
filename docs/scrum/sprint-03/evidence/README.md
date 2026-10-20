@@ -98,3 +98,9 @@ KAN-65 code/test commit: `d8f3bc2aee19a608b1a3f57c87e7d5cc7d242d84`. Documentati
 | ID | Artifact | Source / result | Limits |
 | --- | --- | --- | --- |
 | S3-E16 | [GitHub Actions CI run 39159683818](https://github.com/MochaLxtte/ConnectSphere/actions/runs/39159683818) and [PR #34](https://github.com/MochaLxtte/ConnectSphere/pull/34) | CI `verify` passed on 19 October 03:38 Singapore time for head `36d410d5aa67e6bc42669d68ea94627bd0080ce3`, the commit merged. PR approved by Irfan and merged into `main` as `3ddba2b` on 20 October 23:01 Singapore time. | Approval relied on CI and merge state; template, AC and Definition of Done review Not executed. Manual/hosted acceptance and KAN-64 notifications Not executed; acceptance Not assessed. No velocity credit. |
+
+## Test documentation standardisation — 21 October 2026
+
+| ID | Artifact | Source / result | Limits |
+| --- | --- | --- | --- |
+| S3-E17 | [Validation results and CSV hashes](test-documentation-validation-2026-10-21.json), [AUTO-20261021-DOCS-01](../../../testing/test-evidence.md#21-october-2026--test-documentation-standardisation), [original register](../../../testing/archive/test-cases-2026-10-21.csv) | 18/18 documentation checks; all 427 IDs retained and linked through 115 traceability rows. Separate execution records preserve 30 automated passes, five detailed audit failures and 372 Not executed placeholders; 20 feature summaries excluded from run counts. Submission packaging/readback passed. | Documentation working tree based on `aaee549`; no new application or manual runs, no invented metadata or acceptance. Original failure/retest narratives remain historical. |

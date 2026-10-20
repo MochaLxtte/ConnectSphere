@@ -1,0 +1,190 @@
+{
+  "run_id": "AUTO-20261021-DOCS-01",
+  "date": "2026-10-21",
+  "branch": "docs/test-case-standardisation",
+  "base_commit": "aaee5498e8140526e6005c4fe5fce0bf95d95f40",
+  "tested_state": "Uncommitted documentation working tree; not a product execution or acceptance run",
+  "environment": "Windows, bundled Python standard library, Git",
+  "command": "python -X utf8 dist/test-docs-work/validate.py",
+  "checks": [
+    {
+      "name": "Original register retained byte-for-byte",
+      "result": "Pass",
+      "detail": "760bd795b368dc67e4ca7b8c258a9e8b85ae872228c59f9469eb0cb4600ad794"
+    },
+    {
+      "name": "Specification IDs and order retained",
+      "result": "Pass",
+      "detail": {
+        "rows": 427,
+        "unique": 427
+      }
+    },
+    {
+      "name": "Specification schema follows the agreed template",
+      "result": "Pass",
+      "detail": [
+        "test_case_id",
+        "feature_id",
+        "scenario_outline",
+        "planned_level",
+        "acceptance_criterion_ids",
+        "preconditions",
+        "test_steps",
+        "test_data",
+        "expected_result",
+        "created_by",
+        "date_of_creation",
+        "specification_notes"
+      ]
+    },
+    {
+      "name": "Execution schema follows the agreed template",
+      "result": "Pass",
+      "detail": [
+        "execution_id",
+        "test_case_id",
+        "run_id",
+        "actual_result",
+        "result",
+        "remarks",
+        "executed_by",
+        "date_of_execution",
+        "build",
+        "environment",
+        "evidence"
+      ]
+    },
+    {
+      "name": "Specifications have complete cells and stable source fields",
+      "result": "Pass",
+      "detail": "Feature, scenario, planned level, criteria and expected outcomes unchanged; unavailable optional metadata labelled."
+    },
+    {
+      "name": "Execution records are complete and uniquely identified",
+      "result": "Pass",
+      "detail": {
+        "rows": 407,
+        "unique": 407
+      }
+    },
+    {
+      "name": "Detailed-case outcomes and evidence preserved",
+      "result": "Pass",
+      "detail": {
+        "Fail": 5,
+        "Not executed": 372,
+        "Pass": 30
+      }
+    },
+    {
+      "name": "Feature summaries excluded from run counts",
+      "result": "Pass",
+      "detail": "20 summary IDs retained; five failing aggregate summaries do not create extra failed runs."
+    },
+    {
+      "name": "Unperformed cases have no invented run metadata",
+      "result": "Pass",
+      "detail": {
+        "planning_placeholders": 372
+      }
+    },
+    {
+      "name": "Only the recorded five product failures retained",
+      "result": "Pass",
+      "detail": "No suite-wide Pass overrides these failures."
+    },
+    {
+      "name": "Imported execution dates and builds match original run narratives",
+      "result": "Pass",
+      "detail": {
+        "imported_outcomes": 35,
+        "new_application_runs": 0
+      }
+    },
+    {
+      "name": "All core features retain detailed specifications",
+      "result": "Pass",
+      "detail": [
+        "CF-01",
+        "CF-02",
+        "CF-03",
+        "CF-04",
+        "CF-05",
+        "CF-06",
+        "CF-07",
+        "CF-08",
+        "CF-09",
+        "CF-10",
+        "CF-11",
+        "CF-12",
+        "CF-13",
+        "CF-14",
+        "CF-15",
+        "CF-16",
+        "CF-17",
+        "CF-18",
+        "CF-19",
+        "CF-20",
+        "Infrastructure"
+      ]
+    },
+    {
+      "name": "Traceability covers every retained specification without dangling cases",
+      "result": "Pass",
+      "detail": {
+        "traceability_rows": 115,
+        "covered_ids": 427
+      }
+    },
+    {
+      "name": "Original traceability rows preserved",
+      "result": "Pass",
+      "detail": {
+        "preserved_rows": 112,
+        "added_rows": 3
+      }
+    },
+    {
+      "name": "Original dated run narratives preserved verbatim",
+      "result": "Pass",
+      "detail": "Original suite results, failed attempts, reruns and source limitations retained."
+    },
+    {
+      "name": "Performed case records refer to existing run narratives",
+      "result": "Pass",
+      "detail": [
+        "AUTO-20261015-01",
+        "AUTO-20261019-01",
+        "AUTO-20261019-02"
+      ]
+    },
+    {
+      "name": "Changed Markdown file links resolve",
+      "result": "Pass",
+      "detail": {
+        "checked": 331,
+        "missing": []
+      }
+    },
+    {
+      "name": "Whitespace and conflict-marker check",
+      "result": "Pass",
+      "detail": "git diff --check passed"
+    }
+  ],
+  "checks_passed": 18,
+  "checks_total": 18,
+  "register_hashes_sha256": {
+    "docs/testing/test-cases.csv": "96665ec2350bf8fc53c3756218a6545d3a41fecc39377ee7aa7d202b57a2f53c",
+    "docs/testing/test-executions.csv": "fdbb792708ac610802c4f0cd4542593ddb9e198ca886477189dce22cbdfa9cc9",
+    "docs/testing/archive/test-cases-2026-10-21.csv": "760bd795b368dc67e4ca7b8c258a9e8b85ae872228c59f9469eb0cb4600ad794",
+    "docs/requirements/traceability.csv": "ab80783668888eeb6cf3800beb1fec0ae4eadab9db6afb5355a38885c3debad5"
+  },
+  "limitations": [
+    "No application unit, integration, browser, coverage or hosted acceptance tests run.",
+    "Imported automated outcomes remain bounded by their existing case/run evidence; no new passes inferred.",
+    "Not executed records include future, historical-baseline and manual scenarios, not only implementation gaps.",
+    "Original source/optional metadata not recorded remains unavailable; no dates or executors invented."
+  ]
+}

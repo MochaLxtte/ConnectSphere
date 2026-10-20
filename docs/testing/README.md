@@ -1,5 +1,71 @@
 # Testing and evidence
 
+## Current test-document structure — 21 October 2026
+
+Maintain the test specification once and keep a separate execution record for each run, following the Week 4 **Test Case Template**. The specification says what should happen; the execution records say what was actually observed. Maintain the current records below during development.
+
+| Record | Purpose |
+| --- | --- |
+| [test-cases.csv](test-cases.csv) | Specifications with stable case IDs, requirement links, preconditions, steps, data and expected results. No result or run evidence columns. |
+| [test-executions.csv](test-executions.csv) | Case-level results and evidence: one row per case, run and attempt. Unperformed cases have **Not executed** placeholders, which are not test runs. |
+| [test-evidence.md](test-evidence.md) | Run narratives, commands, suite totals, environment details, limitations, cleanup and evidence links. Aggregate suite results remain here when case-level execution cannot be established. |
+| [traceability.csv](../requirements/traceability.csv) | Core feature → story → acceptance criterion → case → relevant automated test file. A file link alone is not evidence that a case passed. |
+| [Archived combined register](archive/test-cases-2026-10-21.csv) | Unchanged snapshot of the earlier specification/result format. Retained as a historical source; do not enter new cases or results here. |
+
+The dated notes under **Reading the case and evidence registers — 17 October 2026** below describe that earlier combined format. References there to result/evidence cells refer to the archived register. Current results belong in `test-executions.csv`.
+
+### Specification template
+
+Create a row for each independently verifiable scenario and link all relevant ACs. Reuse stable IDs and existing content; if a legacy scenario lacks a concrete input, record **Not recorded** until it is specified rather than inventing data used by an earlier run.
+
+| Course template field | CSV field | What to record |
+| --- | --- | --- |
+| Test Case ID | `test_case_id` | Stable `TC-<feature>-<case>` ID. |
+| Test Scenario | `scenario_outline` | One concise objective or behaviour. |
+| Pre-conditions | `preconditions` | Required role, application state, fixture setup, dependencies and baseline/build restrictions. |
+| Test Steps | `test_steps` | Ordered actions that another tester can repeat, or an explicit automated test/fixture reference. |
+| Test Data | `test_data` | Concrete synthetic inputs, account aliases, boundary values and fixture identifiers; never passwords or tokens. |
+| Expected Result | `expected_result` | Observable response, UI or saved-state outcome, including what must remain unchanged. |
+| Created By* | `created_by` | Actual author if known; otherwise **Not recorded**. |
+| Date of Creation* | `date_of_creation` | Actual creation date if known; otherwise **Not recorded**. A format migration is not the original creation date. |
+| Traceability and scope | `feature_id`, `acceptance_criterion_ids`, `planned_level`, `specification_notes` | CF/AC links, intended test level, automation/manual method and any historical, superseded or aggregate status. |
+
+`*` Author/date fields are optional metadata in the course template. They remain explicit columns here so unknown values are visible. Existing `planned_level` wording is retained during standardisation; when refining it, distinguish the unit/integration/E2E level from execution method (manual/automated) and scenario purpose (for example regression) in `specification_notes`.
+
+### Execution-record template
+
+Append a record when a case is attempted, including a blocked attempt where a prerequisite prevents completion. Keep earlier failures and add a separate retest; never replace a failed attempt with its later Pass.
+
+| Course template field | CSV field | What to record |
+| --- | --- | --- |
+| Record and case references | `execution_id`, `test_case_id`, `run_id` | Unique execution row, stable case ID and the actual `AUTO-…`/`MAN-…` run in `test-evidence.md`. Use the ID rules in [AGENTS.md](../../AGENTS.md#62-ids). |
+| Actual Result | `actual_result` | Observed response and persisted/UI state, rather than a copy of the expected result. |
+| Pass/Fail/Not Executed/Blocked | `result` | **Pass**, **Fail**, **Not executed** or **Blocked**. Pass requires evidence for the complete specified case. |
+| Remarks | `remarks` | Failure/defect link, blocked prerequisite, partial scope, retest relationship, exclusions or source limitations. |
+| Executed By* | `executed_by` | Actual executor if known; otherwise **Not recorded**. |
+| Date of Execution* | `date_of_execution` | Actual run date/time if known; otherwise **Not recorded**. Never use a documentation-edit date as a run date. |
+| Build, environment and evidence | `build`, `environment`, `evidence` | Tested commit/build, environment/browser and traceable report, run narrative or artifact. Missing historical metadata is **Not recorded**. |
+
+**Not executed** placeholders are planning records: they have no observed outcome or execution date. Keep them separate from actual attempts when counting runs or calculating pass rates. **Blocked** means a real attempted check could not proceed; name its blocking condition. For a legacy outcome with missing detail, retain the recorded outcome and source, mark missing details **Not recorded**, and do not infer a new execution.
+
+The retained `TC-01`–`TC-20` rows are aggregate feature summaries, not additional individual test runs. They have no execution-register rows: their mixed historical outcomes remain in the archive and dated run narratives. Their summary results are not added to detailed-case pass/fail counts; in particular, the five failing aggregate summaries refer to the same five defects as the detailed audit cases, not five additional failures. Likewise, a passing suite total does not turn every linked case into a Pass. Historical tests stay tied to their historical requirements/builds; current acceptance must use the applicable customer-change criteria.
+
+### Coverage required by IS212
+
+Submission folder 3 must cover **all 20 core features**, including applicable customer changes, with traceable tests for important user stories and acceptance criteria. Maintain an appropriate combination of levels:
+
+| Level | Cases to document | Existing implementation and evidence boundary |
+| --- | --- | --- |
+| Unit / isolated component | Validation, state transitions, calculations, boundary values, error handling and component behaviour. | Backend pure-function/service tests under `backend/test/` and isolated frontend `*.test.ts` tests. State the mocked dependencies; these do not prove database persistence or a complete user journey. |
+| Integration | HTTP authorization, role/ownership scope, component contracts, persistence, transaction rollback, races and competing reservations. | HTTP tests with mocked repositories prove that boundary only. Real PostgreSQL tests under `database/tests/` verify database interactions against an isolated test database; record any substituted authentication or external services. |
+| End-to-end | A small set of critical connected user journeys across roles, including refresh, persisted outcomes, denied access and recovery. | `tests/e2e/` browser tests that stub API responses verify browser behaviour with fixtures. They do not prove live backend/database/authentication integration. Record true integrated or hosted journeys separately with their actual environment and dependencies. |
+
+Normal, boundary, conflict, failure and regression describe **scenario coverage**, not interchangeable test levels. For example, a permission-denial regression may need unit policy checks, a real HTTP/database integration check and a browser check for useful feedback. Document the boundaries each proves.
+
+Every applicable AC needs coverage in the specification register and traceability matrix; add distinct cases where different inputs or outcomes need separate verification. Automated test names and source files can provide detailed executable steps, so there is no need to duplicate every `it()` assertion into a separate manual document. Functional testing can be manual or automated. Record relevant negative cases, invalid inputs, concurrency, unavailable dependencies and post-change regressions as well as happy paths. Additional performance, accessibility or security checks should follow the relevant requirements and risks, not an invented claim that every possible test has been performed.
+
+Course basis: [requirements source index](../requirements/README.md); **Week 4 Project Instructions**, deliverable 3 and testing rubric; **Week 4 Test Cases and Software Architecture**, pages 16, 21–22, 30, 32 and 42; **Week 9 Automated Testing 2 and Continuous Delivery**, pages 19–21 and 26–27. The template's fields and specification/run separation matter; its colours are not required submission formatting.
+
 ## Reading the case and evidence registers — 17 October 2026
 
 The [functional case register](test-cases.csv) contains specifications; the [traceability register](../requirements/traceability.csv) connects them to requirement IDs and relevant automated suites. The dated Sprint 1/2 crosswalks preserve the original source requirements and distinguish later customer changes. New detailed historical-requirement cases use the `TC-<feature>-201+` range; this range does not add scope or imply that the cases ran during the original sprint.
@@ -41,9 +107,9 @@ KAN-25 uses Supabase Auth. Express verifies the session and maps the Supabase id
 
 ## Business-test planning
 
-[test-cases.csv](test-cases.csv) indexes scenario outlines for all 20 release features. Rows with linked partial evidence do not establish full feature acceptance; remaining outlines must be refined into concrete preconditions, actions, expected outcomes and acceptance-criterion links. Questions such as interval boundaries and registration eligibility must reference a recorded decision.
+[test-cases.csv](test-cases.csv) indexes specifications for all 20 release features. Partial evidence in [test-executions.csv](test-executions.csv) does not establish full feature acceptance; remaining outlines must be refined into concrete preconditions, actions, test data, expected outcomes and acceptance-criterion links. Questions such as interval boundaries and registration eligibility must reference a recorded decision.
 
-The original `TC-01`–`TC-20` rows remain aggregate feature summaries with their dated evidence. Case-specific rows such as `TC-08-01` identify individual regression scenarios, steps and expected results. The 15 October additions record five observed **Fail** results and one future KAN-60 **Not executed** scenario; they do not claim that permanent regression tests or fixed-code retests already exist. Existing test files in [traceability.csv](../requirements/traceability.csv) are labelled as regression targets where a new case is still missing.
+The original `TC-01`–`TC-20` rows remain aggregate feature summaries; their historical outcomes are retained in the archive and dated run narratives, with no execution-register rows. Case-specific rows such as `TC-08-01` identify individual regression scenarios, steps and expected results. The 15 October additions record five observed **Fail** results and one future KAN-60 **Not executed** scenario; they do not claim that permanent regression tests or fixed-code retests already exist. Existing test files in [traceability.csv](../requirements/traceability.csv) are labelled as regression targets where a new case is still missing.
 
 Use the [product backlog](../requirements/product-backlog.md) for future-story scope and dependencies. KAN-65 reassignment, KAN-66 planning edits and KAN-67 registration viewing require their own acceptance evidence. Historical KAN-34 draft-edit results do not accept KAN-66; retained draft evidence belongs to TC-03 and its original result entries.
 
@@ -51,11 +117,7 @@ Sprint 1 has [33 proposed acceptance scenarios](../scrum/sprint-01/sprint-backlo
 
 Sprint 2 has a [criterion-linked acceptance plan](../scrum/sprint-02/sprint-backlog.md#acceptance-test-plan) covering the nine new Jira stories and three carried stories. New-story criteria use `KAN-<number>-AC<number>` labels; proposed robustness and policy checks are identified separately. The plan is not an executed test report. Keep actual results linked to their tested build and retain failed/retested paths from the Sprint 1 review.
 
-Choose the test level for the behavior being verified:
-
-- Unit tests for domain validation, permitted state transitions and suitability calculations.
-- Integration tests for authorization on real requests, transaction boundaries, persistence, rollback and competing reservations.
-- A small set of browser tests for complete user workflows and important failure feedback.
+Choose the test level for the behaviour being verified using [the level and evidence boundaries above](#coverage-required-by-is212). A fixture-based browser test and a live hosted workflow have different coverage, even when both use the same browser tool.
 
 Reservation and registration limits need competing-request tests against PostgreSQL, not only sequential happy-path tests or mocked repositories. Significant event-change tests should verify the resulting reservations, registrations and notifications together. Test user access to records belonging to someone else, even when both users have the same role.
 
@@ -63,9 +125,13 @@ Add the actual test file and acceptance-criterion ID to [traceability.csv](../re
 
 ## Recording a test run
 
-Keep concise evidence containing the date, commit SHA, environment, command or manual steps, actual result, report link, and any failures or exclusions. Link CI runs and store exports needed for the course submission. Do not commit credentials, attendee data, `node_modules`, or bulky generated browser artifacts.
+Keep concise evidence containing the date, commit SHA, environment, command or manual steps, actual result, report link, and any failures or exclusions. Add the actual run narrative to [test-evidence.md](test-evidence.md), then append a row to [test-executions.csv](test-executions.csv) for each case whose execution can be supported. Use separate rows for separate attempts and retests; retain the original failure. Keep aggregate command/suite results in the narrative when they cannot be attributed to a particular case. Update the matching `S#-Txx` status only for the scope actually checked. Link CI runs and store exports needed for the course submission. Do not commit credentials, attendee data, `node_modules`, or bulky generated browser artifacts.
 
-Test documents, the traceability matrix and curated results are assembled into **submission folder 3**; Sprint 1 scenario details remain linked in folder 4. Executable test code is included with the software in folder 6. See the [submission checklist](../submission/checklist.md).
+Test specifications, execution records, the traceability matrix and curated run evidence are assembled into **submission folder 3**; Sprint 1 scenario details remain linked in folder 4. Maintain these source documents now; final formatting/export and packaging can wait until submission. `npm run submission:prepare` copies `docs/testing/` and `docs/requirements/traceability.csv` into folder 3, so do not maintain a second numbered folder by hand. Executable test code is included with the software in folder 6. See the [submission checklist](../submission/checklist.md). Packaging does not execute tests or establish acceptance.
+
+Paths inside CSV cells remain repository-relative for source traceability. In the submission package,
+resolve those paths from folder `6/`, which contains the repository copy. Markdown navigation links
+are rewritten by the packaging script. The archived CSV is retained unchanged as source evidence.
 
 The excellent course rubric asks for 100% coverage unless infeasible and explained. Agree what coverage measures apply, report the measured result, and explain gaps. Line coverage alone cannot demonstrate all requirements or concurrency behavior; the release traceability matrix must also be complete.
 
@@ -92,7 +158,7 @@ Run `npm.cmd run dev` for a local candidate against the agreed development datab
 
 **Remaining dependency — TC-05-08 / AC9: Not executed.** The original KAN-79 delivery refused replacement and left both KAN-65 and KAN-64 integration pending. The 19 October KAN-65 follow-up now verifies initial allocation followed by Lead reassignment, retained history and transferred access locally (`TC-05-45`, `AUTO-20261019-02`). KAN-64 assignment/handover notifications and complete hosted acceptance remain pending. Initial-assignment or handover passes alone do not satisfy the complete criterion.
 
-**Execution record.** For each actual run, add `MAN-YYYYMMDD-NN` to [test-evidence.md](test-evidence.md) with the date/time (Singapore time), executor, build SHA, URL/environment/browser, group and TC IDs, preconditions, exact synthetic inputs, numbered steps, expected versus actual result, HTTP outcome and saved-state checks. Record each case as Pass, Fail or Not executed, link redacted screenshots, update the corresponding CSV and S3-T20 result, and register captured evidence in the applicable sprint evidence index. An API error alone is insufficient: inspect event/status/assignment rows for unintended writes. Restore only changes covered by the recorded team agreement, confirm restoration, and list every synthetic row left behind. Do not delete shared data without that agreement.
+**Execution record.** For each actual run, add `MAN-YYYYMMDD-NN` to [test-evidence.md](test-evidence.md) with the date/time (Singapore time), executor, build SHA, URL/environment/browser, group and TC IDs, preconditions, exact synthetic inputs, numbered steps, expected versus actual result, HTTP outcome and saved-state checks. Append supported case results to [test-executions.csv](test-executions.csv) as Pass, Fail or Blocked; leave unperformed cases as Not executed. Link redacted screenshots, update S3-T20 for the scope checked, and register captured evidence in the applicable sprint evidence index. An API error alone is insufficient: inspect event/status/assignment rows for unintended writes. Restore only changes covered by the recorded team agreement, confirm restoration, and list every synthetic row left behind. Do not delete shared data without that agreement.
 
 ## KAN-65 hosted verification
 
@@ -114,7 +180,7 @@ Use separate browser profiles for L1/L2/C1/C2. Open `/lead/oversight/:id` as Lea
 | K65-M06 — No-op and notifications; TC-05-16; AC104 | 1. As L1 use the API to send the current coordinator and current version with a valid reason. 2. Compare event timestamps, active version and all history rows before/after. 3. After KAN-64 integration exists, repeat successful/failed/no-op handovers and inspect organiser, previous/new coordinator and unrelated-user inboxes. | A current-target request returns `changed: false`; no timestamps/history change. Notification recipient/deduplication checks in step 3 remain **Not executed** until KAN-64 is delivered; no blanket AC104 pass is claimed. |
 | K65-M07 — Uncertain save and historical integrity; TC-05-15 with automated TC-05-40/43 | 1. In an isolated candidate/fixture environment interrupt a response after submitting and use Refresh assignment before retrying. 2. Inspect an agreed inconsistent/missing-history fixture through Lead detail and attempt a handover. 3. Use the isolated automated integration suite for controlled insertion/update failures and concurrent availability/role changes. | An uncertain save is disabled until refresh reconciles saved state. Missing/mismatched history is refused with `409 ASSIGNMENT_HISTORY_CONFLICT`; an unassigned event uses initial allocation instead (`COORDINATOR_NOT_ASSIGNED`). Automated rollback tests leave the old assignment and related data intact. Do not inject database failures, damage history or globally change availability in shared Supabase. |
 
-**Record and restore.** For each completed group, record `MAN-YYYYMMDD-NN` with executor, date/time, SHA/environment, concrete account aliases and application/event/assignment IDs, original values, numbered steps, expected/actual outcomes, HTTP responses and saved-state checks. Update only the cases actually run, S3-T21 and the sprint evidence index; preserve failed attempts and add separate retests. Notification-dependent groups and KAN-79 AC9 stay incomplete until their connected checks run. Restore only team-approved synthetic changes, confirm the result and list rows left behind. Returning an event to its earlier coordinator through a valid handover adds a real audit entry; do not erase that history to make the test appear never to have happened. Do not delete shared test data without the recorded agreement.
+**Record and restore.** For each completed group, record `MAN-YYYYMMDD-NN` in [test-evidence.md](test-evidence.md) with executor, date/time, SHA/environment, concrete account aliases and application/event/assignment IDs, original values, numbered steps, expected/actual outcomes, HTTP responses and saved-state checks. Append records to [test-executions.csv](test-executions.csv) only for supported case outcomes, and update S3-T21 and the sprint evidence index; preserve failed attempts and add separate retests. Notification-dependent groups and KAN-79 AC9 stay incomplete until their connected checks run. Restore only team-approved synthetic changes, confirm the result and list rows left behind. Returning an event to its earlier coordinator through a valid handover adds a real audit entry; do not erase that history to make the test appear never to have happened. Do not delete shared test data without the recorded agreement.
 
 ## KAN-29 hosted verification
 
@@ -141,7 +207,7 @@ Use an isolated project for controlled workloads, preassigned drafts and no-avai
 | K29-M09 | Submit an isolated valid draft with an existing coordinator or active assignment row. | `409 DRAFT_ALREADY_ASSIGNED`; original draft/history preserved and UI permits edit/save. Reconcile test fixtures without clearing real history. |
 | K29-M10 | Submit an incomplete owned draft; attempt another organiser's draft; attempt submission as coordinator. | Respectively `400 SUBMISSION_INCOMPLETE`, `404 EVENT_REQUEST_NOT_FOUND`, `403 SUBMIT_FORBIDDEN`; no allocation/status change. |
 
-API checks use the browser's same-origin authenticated session and fictional request IDs. For every refusal, inspect both `event_status_history` and `coordinator_assignments` before/after; an HTTP error alone does not prove no write occurred. Record Passed, Failed or Not run per ID and restore temporary flags. CI, peer review and policy acceptance remain separate evidence.
+API checks use the browser's same-origin authenticated session and fictional request IDs. For every refusal, inspect both `event_status_history` and `coordinator_assignments` before/after; an HTTP error alone does not prove no write occurred. Record case outcomes in [test-executions.csv](test-executions.csv) using Pass, Fail, Not executed or Blocked, link the historical-baseline run narrative and restore temporary flags. CI, peer review and policy acceptance remain separate evidence.
 
 ## KAN-53 hosted verification
 

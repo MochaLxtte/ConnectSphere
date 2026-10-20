@@ -38,6 +38,17 @@ Selected ownership/review: Arvin 19/Kai Jie, Kai Jie 19/Tristan, Ernest 12/Ryan,
 
 **20 October 2026 — KAN-79 and KAN-65 merged outside a Daily Scrum.** [PR #34](https://github.com/MochaLxtte/ConnectSphere/pull/34) was approved by Irfan and merged into `main` as `3ddba2b` at 23:01 Singapore time. The approval was based on the passing CI `verify` run for head `36d410d` (S3-E16) and a conflict-free merge state; a check of the PR template against the diff and of the code against the ACs and Definition of Done (`AGENTS.md` §5.11 steps 1–2) was **Not executed**. The merge also brought the `docs/team-agents-guide` commits and the 16–17 October documentation reconciliation into `main`. Manual/hosted workflow checks and KAN-64 notifications remain **Not executed**, so neither story meets the Definition of Done; KAN-79 (8 SP) and KAN-65 (3 SP) deliver no points and remain In Progress in the repository records. Jira status, subtask and comment updates are **Not recorded**. This is not a member Daily Scrum row.
 
+**21 October 2026 — test documentation outside a Daily Scrum.** Standardised the existing case
+register into reusable specifications and separate execution records following the Week 4 template.
+Preserved all 427 IDs, original source content and dated evidence; 407 detailed-case records retain
+30 automated passes, five audit failures and 372 Not executed placeholders. The 20 historical
+feature summaries are excluded from execution counts. Added three missing journey mappings and
+updated AGENTS.md, testing/submission guidance and the PR checklist. `AUTO-20261021-DOCS-01` / S3-E17
+records 18/18 documentation checks and successful submission packaging. No application or hosted
+tests were run and no acceptance status or sprint points changed. This is actual 21 October
+documentation work while Sprint 3 remains administratively Active, not work backdated into its
+configured 4–17 October window or a member's standup row.
+
 ## Impediments
 
 | Raised | Impediment | Owner | Action | Status |
