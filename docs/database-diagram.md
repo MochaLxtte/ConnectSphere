@@ -43,6 +43,8 @@ erDiagram
     venues ||..o{ venue_bookings : "venue_id"
     app_users |o..o{ venue_unavailability : "created_by"
     venues ||..o{ venue_unavailability : "venue_id"
+    venue_unavailability |o..o{ venue_outage_impacts : "unavailability_id"
+    venue_bookings ||..o{ venue_outage_impacts : "venue_booking_id"
 
     app_users {
         uuid id PK
@@ -144,6 +146,20 @@ erDiagram
         text reason "nullable"
         uuid created_by FK "nullable"
         timestamptz created_at
+    }
+
+    venue_outage_impacts {
+        uuid id PK
+        uuid unavailability_id FK "nullable, migration 010"
+        uuid venue_booking_id FK
+        uuid venue_id FK
+        timestamptz outage_starts_at
+        timestamptz outage_ends_at
+        text outage_reason
+        text status "RECOVERY_REQUIRED RESOLVED CLEARED"
+        uuid recorded_by FK "nullable"
+        timestamptz created_at
+        timestamptz updated_at
     }
 
     venue_bookings {

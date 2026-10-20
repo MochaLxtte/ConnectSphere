@@ -101,6 +101,8 @@ Next: push this branch for independent review; coordinate shared migrations 008/
 execute the hosted cases. Recipient matrix To agree; KAN-78/AC6 incomplete.
 No hosted acceptance, Jira status change, sprint completion or velocity credit is recorded.
 
+**21 October 2026 — KAN-81 phase 1 development outside a Daily Scrum.** Implemented outage recovery phase 1 on `feat/KAN-81-outage-recovery`, rebased on the sprint 3 integration (`4d36883`): outages over approved bookings are saved and the affected arrangements flagged (migration 010), removal clears only that outage's flags, and Venue Staff get a recovery list. `AUTO-20261021-08`: check and coverage pass; PostgreSQL and browser suites await CI. Phases 2 (notifications, coordinator view) and 3 (replacements) follow. Migration 010 needs team agreement before shared Supabase. KAN-81 stays In Progress at 8 SP.
+
 ## Impediments
 
 | Raised | Impediment | Owner | Action | Status |

@@ -1246,3 +1246,24 @@ shared test data is left behind. No push, remote merge or PR creation is perform
 **CI follow-up — 21 October 2026 (Asia/Singapore), PR #45.** First run [39466720873](https://github.com/MochaLxtte/ConnectSphere/actions/runs/39466720873) on head `26c78a2`: `npm run check` and coverage passed. `npm run test:integration` failed 1 of 358: the existing KAN-51 calendar test compares whole venue objects and did not expect the new `setupMinutes`/`turnaroundMinutes` fields (AC4 behaviour, not a defect). The other 357 passed, including the migration 008 upgrade test and the 16-case KAN-77 suite. CI stopped before browser tests. Commit `2612a07` added the two fields to that expectation. Re-run [39467271524](https://github.com/MochaLxtte/ConnectSphere/actions/runs/39467271524) on head `2612a07` passed every step: 626 frontend and 1,078 backend tests, integration **358/358**, and browser **133/133**, including both new KAN-77 browser tests. TC-08-16 and TC-08-17 are now Pass at their planned integration level. TC-08-15/18/19 manual cases and AC6 remain Not executed.
 
 **Combined-register scope assessment:** TC-08-17 receives a separate CI Pass execution: the named migration test compares all pre-existing venues, bookings and migration-history rows and verifies idempotence. TC-08-16 retains its complete-specification Not executed placeholder: source CI proves parser/form matrices and selected PostgreSQL/component/browser variants, but not the specification’s complete both-field UI/API boundary/invalid/no-partial-save matrix. Its source Pass claim is preserved above as narrower supporting evidence. No manual result changes. Final registers now contain 446 specifications,134 traceability rows and477 execution rows (93 Pass,12 Fail,372 Not executed). PR #38 is now closed unmerged; its useful behaviour remains integrated alongside #42.
+
+## 21 October 2026 — KAN-81 phase 1 outage recovery
+
+**Run ID: AUTO-20261021-08.** Branch `feat/KAN-81-outage-recovery`, code commits `2f74ede11c3537ed615406bd6d82e8ecd71f837c` (backend), `2f47413` (frontend) and `9e0758f` (PostgreSQL/browser tests), with the tested working tree committed without code changes, based on `4d36883` (sprint 3 integration, PR #46). Actual execution date: 21 October 2026, Asia/Singapore. Environment: Windows, Node.js 24, Vitest. No isolated PostgreSQL database was available locally and shared Supabase was not used. Migration 010 was not applied to any shared database.
+
+| Command / check | Actual result |
+| --- | --- |
+| `npm run check` | Pass: type checks, 686 frontend tests in 35 files and 1,205 backend tests in 44 files, both builds |
+| `npm run test:coverage` | Pass: the same tests |
+| `npm run test:integration` | **Not executed** locally: 18 KAN-81 PostgreSQL cases, the updated KAN-55 case and migration 010 in all migration expectations typecheck and await CI |
+| `npm run test:e2e` | **Not executed** locally (Playwright would start against shared Supabase without migrations 008–010); one KAN-81 browser test awaits CI |
+
+**New tests:** backend 40 (outage-impact and block-service 31, HTTP 9) and frontend 10 (blocks page). Updated for the new contract: three KAN-55 HTTP/page fixtures and one KAN-55 integration case (old overlap refusal superseded by CR-2).
+
+**Coverage:** `outage-impact.ts`, `block-service.ts`, `block-router.ts` and `block-input.ts` 100% lines, branches and functions. `VenueBlocksPage.vue` 100% functions and 97.6% lines; its uncovered lines (venue-list failure and block-list 401) are pre-existing KAN-55 code. Workspace totals: frontend 95.19% statements / 92.53% branches / 97.11% functions / 97.63% lines; backend 88.22% / 90.51% / 87.86% / 88.80%.
+
+**Verified behaviour (unit/component):** only Venue Staff create, remove or list recovery. Invalid period or blank reason is refused before a connection opens. Creation locks the venue, inserts the block, records impacts with an idempotent insert and commits, without reading or updating booking rows for a refusal. Removal locks the venue, clears only that block's open flags, deletes the block and reports cleared bookings; a missing block rolls back. The recovery filter accepts only the three states. The page shows affected arrangements and their state per block, a cross-venue recovery list, counts in save/remove messages and, after a network/5xx/unreadable response, refreshes instead of retrying.
+
+**Gaps:** PostgreSQL behaviour (overlap boundaries, ended/pending/rejected/cancelled/other-venue exclusions, unchanged booking/event/history, idempotency and rollback, removal with overlapping outages, AC9 planning effects and both AC10 orders) is written and awaits CI. AC5, AC7, AC8, coordinator-side AC6/AC12, hold cases and the readiness half of AC9 are Not executed. Execution rows for TC-09-xx are added after CI runs the planned integration level.
+
+**Acceptance boundary:** KAN-81 stays In Progress at 8 SP with no velocity credit.

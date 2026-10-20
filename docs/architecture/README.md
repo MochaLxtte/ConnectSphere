@@ -366,6 +366,8 @@ erDiagram
   VENUE_BOOKINGS o|--o{ NOTIFICATIONS : outcome
   VENUES ||--o{ VENUE_BOOKINGS : "booked as"
   VENUES ||--o{ VENUE_UNAVAILABILITY : blocks
+  VENUE_UNAVAILABILITY |o--o{ VENUE_OUTAGE_IMPACTS : affects
+  VENUE_BOOKINGS ||--o{ VENUE_OUTAGE_IMPACTS : "flagged by"
   EQUIPMENT_TYPES ||--o{ EQUIPMENT_REQUESTS : "drawn from"
   APP_USERS ||--o{ EVENT_REGISTRATIONS : attends
   APP_USERS ||--o{ NOTIFICATIONS : receives
@@ -389,6 +391,12 @@ erDiagram
     timestamptz starts_at
     timestamptz ends_at
     text reason "nullable"
+  }
+  VENUE_OUTAGE_IMPACTS {
+    uuid id PK
+    uuid unavailability_id FK "nullable, KAN-81"
+    uuid venue_booking_id FK
+    text status "RECOVERY_REQUIRED RESOLVED CLEARED"
   }
   VENUE_BOOKINGS {
     uuid id PK
