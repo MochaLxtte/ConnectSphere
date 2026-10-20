@@ -13,12 +13,13 @@ const harbour = {
   id: '30000000-0000-4000-8000-000000000011', name: 'Harbour Hall', description: null,
   location: 'Level 1, Main Building', capacity: 300, layouts: ['Theatre'], facilities: ['Projector'],
   accessibilityFeatures: ['Ramp'], wheelchairAccessible: true, opensAt: '08:00', closesAt: '22:00',
-  updatedAt: '2026-10-01T00:00:00.000Z',
+  setupMinutes: 0, turnaroundMinutes: 0, updatedAt: '2026-10-01T00:00:00.000Z',
 };
 const orchid = {
   id: '30000000-0000-4000-8000-000000000012', name: 'Orchid Seminar Room', description: null,
   location: null, capacity: 40, layouts: [], facilities: [], accessibilityFeatures: [],
-  wheelchairAccessible: false, opensAt: null, closesAt: null, updatedAt: '2026-10-01T00:00:00.000Z',
+  wheelchairAccessible: false, opensAt: null, closesAt: null, setupMinutes: 0, turnaroundMinutes: 0,
+  updatedAt: '2026-10-01T00:00:00.000Z',
 };
 
 interface Options { patchError?: { status: number; code: string; message: string } }
@@ -233,4 +234,44 @@ test('KAN-50 a venue that is not in the active catalogue shows a clear message a
   await expect(page.getByRole('alert')).toContainText('This venue is not in the active catalogue.');
   await expect(page.getByRole('link', { name: 'Back to the catalogue' })).toHaveAttribute('href', '/venue-catalogue');
   await expect(page.getByRole('button', { name: 'Save changes' })).toHaveCount(0);
+});
+
+test('KAN-77 venue staff set setup and turnaround minutes that persist after reload', async ({ page }) => {
+  const fixture = await catalogueFixtures(page, account('VENUE_STAFF'));
+  await page.goto(`/venue-catalogue/${harbour.id}`);
+  await expect(page.getByRole('heading', { name: 'Harbour Hall', level: 1 })).toBeVisible();
+  await expect(field(page, 'Setup before each booking (minutes)')).toHaveValue('0');
+  await expect(field(page, 'Turnaround after each booking (minutes)')).toHaveValue('0');
+
+  await field(page, 'Setup before each booking (minutes)').fill('1441');
+  await expect(page.getByRole('alert')).toContainText('Enter a whole number of minutes from 0 to 1440.');
+  await expect(page.getByRole('button', { name: 'Save changes' })).toBeDisabled();
+
+  await field(page, 'Setup before each booking (minutes)').fill('30');
+  await field(page, 'Turnaround after each booking (minutes)').fill('1440');
+  await page.getByRole('button', { name: 'Save changes' }).click();
+
+  await expect(page.getByText('Venue information saved.')).toBeVisible();
+  expect(fixture.patches).toEqual([{ id: harbour.id, body: {
+    setupMinutes: 30, expectedSetupMinutes: 0, turnaroundMinutes: 1440, expectedTurnaroundMinutes: 0,
+  } }]);
+  await page.reload();
+  await expect(field(page, 'Setup before each booking (minutes)')).toHaveValue('30');
+  await expect(field(page, 'Turnaround after each booking (minutes)')).toHaveValue('1440');
+  expect(fixture.unexpectedRequests).toEqual([]);
+});
+
+test('KAN-77 a stale buffer edit is explained and offers a reload without losing the typed value', async ({ page }) => {
+  await catalogueFixtures(page, account('VENUE_STAFF'), {
+    patchError: { status: 409, code: 'VENUE_BUFFER_CONFLICT', message: 'Another change was saved.' },
+  });
+  await page.goto(`/venue-catalogue/${harbour.id}`);
+  await field(page, 'Setup before each booking (minutes)').fill('20');
+  await page.getByRole('button', { name: 'Save changes' }).click();
+
+  await expect(page.getByText(/Someone else changed the setup or turnaround time/)).toBeVisible();
+  await expect(field(page, 'Setup before each booking (minutes)')).toHaveValue('20');
+  await page.getByRole('button', { name: 'Reload current values' }).click();
+  await expect(field(page, 'Setup before each booking (minutes)')).toHaveValue('0');
+  await expect(page.getByText(/Someone else changed/)).toHaveCount(0);
 });
