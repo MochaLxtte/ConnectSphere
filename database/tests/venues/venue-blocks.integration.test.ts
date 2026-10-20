@@ -77,14 +77,16 @@ describe('KAN-55 venue-unavailability blocks against PostgreSQL', () => {
     await expect(create(venueId, staff)).rejects.toMatchObject({ code: 'VENUE_INACTIVE' });
   });
 
-  it('refuses a block overlapping an existing approved booking without displacing it', async () => {
+  // The original KAN-55 refusal of this case is superseded by CR-2 / KAN-81-AC2 (21 October 2026).
+  it('KAN-81-AC2 saves a block overlapping an approved booking and flags it without displacing it', async () => {
     const venueId = await venue();
     const bookingId = await approvedBooking(venueId);
-    await expect(create(venueId, staff)).rejects.toMatchObject({ code: 'VENUE_BOOKING_CONFLICT' });
+    const saved = await create(venueId, staff);
+    expect(saved.affected).toEqual([expect.objectContaining({ bookingId, status: 'RECOVERY_REQUIRED' })]);
     expect((await fixture.pool.query('SELECT status FROM venue_bookings WHERE id = $1', [bookingId])).rows[0].status)
       .toBe('APPROVED');
     expect((await fixture.pool.query('SELECT count(*)::int AS count FROM venue_unavailability WHERE venue_id = $1', [venueId])).rows[0].count)
-      .toBe(0);
+      .toBe(1);
   });
 
   it('allows an adjacent block that does not overlap an approved booking', async () => {
