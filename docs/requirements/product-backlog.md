@@ -595,3 +595,7 @@ KAN-78 (8 SP) and KAN-34 (3 SP) are In Progress / Arvin in Jira on `feat/kan-78-
 ### 21 October — reviewer selection follow-up
 
 Independent reviewer for KAN-78 and KAN-34: Leo Kai Jie, selected by Arvin in chat. Review execution and approval remain Not recorded. Story status, estimates and sprint membership are unchanged.
+
+## 21 October — KAN-78 / KAN-34 review handoff
+
+KAN-78 (8 SP) and KAN-34 (3 SP), Arvin, are now **In Review** in Jira; both transitions were confirmed by the Jira response. [PR #48](https://github.com/MochaLxtte/ConnectSphere/pull/48) targets main from `feat/kan-78-kan-34`, source `2d138be`. Leo Kai Jie (`NahIts-Leo`) is requested on GitHub. Review and hosted acceptance remain Not executed; no Done date, estimate, sprint or delivered credit changed.

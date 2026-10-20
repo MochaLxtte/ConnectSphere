@@ -163,9 +163,11 @@ Implementation defaults: docs/scrum/sprint-03/planning.md and docs/requirements/
 
 ### KAN-34 — Resume/Edit Draft Event Request
 
-**Owner:** Arvin · **Independent reviewer:** Leo Kai Jie · **Estimate:** 3 SP · **Jira status:** In Progress · **Acceptance:** Not assessed · **Test group:** S3-T06
+**Owner:** Arvin · **Independent reviewer:** Leo Kai Jie · **Estimate:** 3 SP · **Jira status:** In Review · **Acceptance:** Not assessed · **Test group:** S3-T06
 
 **21 October implementation:** Arvin; reviewer Leo Kai Jie selected in chat. Local verification AUTO-20261021-01/02 predates main integration; new verification follows before PR. KAN-78 database extension is migration 010 after shared 008/009. Hosted acceptance Not executed.
+
+**21 October PR handoff:** [PR #48](https://github.com/MochaLxtte/ConnectSphere/pull/48) targets main; Leo Kai Jie (`NahIts-Leo`) requested. Jira transition to In Review confirmed. AUTO-20261021-90 source is committed as `2d138be`; review/hosted acceptance remain Not executed.
 
 **User story:** As an Event Organiser, I want to return to a previously saved draft event request and continue editing it so that I can complete my event request before submission.
 
@@ -618,9 +620,11 @@ Delivery requires implementation, automated and hosted acceptance checks, indepe
 
 ### KAN-78 — Apply Venue Buffers to Availability and Booking Conflicts
 
-**Owner:** Arvin · **Independent reviewer:** Leo Kai Jie · **Estimate:** 8 SP · **Jira status:** In Progress · **Acceptance:** Not assessed · **Test group:** S3-T19
+**Owner:** Arvin · **Independent reviewer:** Leo Kai Jie · **Estimate:** 8 SP · **Jira status:** In Review · **Acceptance:** Not assessed · **Test group:** S3-T19
 
 **21 October implementation:** Arvin; reviewer Leo Kai Jie selected in chat. Local verification AUTO-20261021-01/02 predates main integration; new verification follows before PR. KAN-78 database extension is migration 010 after shared 008/009. Hosted acceptance Not executed.
+
+**21 October PR handoff:** [PR #48](https://github.com/MochaLxtte/ConnectSphere/pull/48) targets main; Leo Kai Jie (`NahIts-Leo`) requested. Jira transition to In Review confirmed. AUTO-20261021-90 source is committed as `2d138be`; review/hosted acceptance remain Not executed.
 
 **User story:** As an Event Coordinator or Venue Staff member, I want venue availability and booking decisions to include setup and turnaround time so that adjacent events leave enough operational time.
 

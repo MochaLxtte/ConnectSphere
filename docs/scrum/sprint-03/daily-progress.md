@@ -154,3 +154,7 @@ Arvin authorised local commits in chat. Implementation/test source: `0b08802` (K
 ## 21 October — KAN-78 / KAN-34 PR reconciliation
 
 Arvin authorised pushing and opening a main-target PR and moving both Jira parents to In Review. Main `4d36883` is reconciled without discarding KAN-64 notifications, KAN-77 buffer settings or the strict draft-date fix. Shared migrations 008/009 remain unchanged; KAN-78 extends them with migration 010. The existing buffer editor now surfaces affected-booking warnings after save. AUTO-20261021-90 passed: 678 frontend, 1,180 backend, 395 PostgreSQL and 149 Chromium tests, types and builds. Reviewer: Leo Kai Jie (`NahIts-Leo`). Hosted acceptance and independent PR review remain Not executed. No point, sprint or Done credit change.
+
+## 21 October — PR #48 opened and Jira moved to review
+
+Under Arvin's approval, the branch was pushed and [PR #48](https://github.com/MochaLxtte/ConnectSphere/pull/48) opened against main. GitHub confirms reviewer request for Leo Kai Jie (`NahIts-Leo`). Jira confirms KAN-78 and KAN-34 are In Review. Reconciled implementation/test source `2d138be` retains AUTO-20261021-90 results; this status-documentation update is not a new test run. GitHub Actions started. Approval, hosted acceptance and shared application of migration 010 remain Not executed.
