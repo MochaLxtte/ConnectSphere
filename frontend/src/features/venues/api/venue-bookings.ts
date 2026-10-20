@@ -1,6 +1,7 @@
 import { getJson, postJson } from '../../../lib/api-client';
 
-export type VenueBookingStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'CANCELLED';
+/** KAN-83: HELD is a live temporary hold; EXPIRED is a hold whose deadline passed without approval. */
+export type VenueBookingStatus = 'PENDING' | 'HELD' | 'APPROVED' | 'REJECTED' | 'CANCELLED' | 'EXPIRED';
 export type VenueBookingDecision = 'APPROVED' | 'REJECTED';
 
 /** Booking timing is saved on the request; event requirements are the latest event values. */
@@ -28,10 +29,21 @@ export interface VenueBooking {
   expectedAttendance: number | null;
   venueRequirements: string | null;
   accessibilityNeeds: string | null;
+  /** KAN-83 hold deadline and audit; kept after approval, expiry, rejection or cancellation. */
+  holdExpiresAt: string | null;
+  heldBy: string | null;
+  heldAt: string | null;
+  expiredAt: string | null;
+  cancelledBy: string | null;
+  cancelledAt: string | null;
+  cancellationReason: string | null;
 }
 
 export function venueBookingStatusLabel(status: VenueBookingStatus): string {
-  return { PENDING: 'Pending', APPROVED: 'Approved', REJECTED: 'Rejected', CANCELLED: 'Cancelled' }[status];
+  return {
+    PENDING: 'Pending', HELD: 'Held', APPROVED: 'Approved', REJECTED: 'Rejected', CANCELLED: 'Cancelled',
+    EXPIRED: 'Hold expired',
+  }[status];
 }
 
 /** The API scopes staff to pending requests and coordinators to their currently assigned events. */
@@ -67,4 +79,16 @@ export async function decideVenueBooking(
   return (await postJson<{ booking: VenueBooking }>(`/api/venue-bookings/${encodeURIComponent(id)}/decision`, {
     decision, reason: reason.trim() || null,
   }, signal)).booking;
+}
+
+/** KAN-83-AC1: Venue Staff place a hold that lasts until `expiresAt` (an ISO instant). */
+export async function placeVenueHold(id: string, expiresAt: string, signal?: AbortSignal): Promise<VenueBooking> {
+  return (await postJson<{ booking: VenueBooking }>(`/api/venue-bookings/${encodeURIComponent(id)}/hold`,
+    { expiresAt }, signal)).booking;
+}
+
+/** KAN-83-AC10: Venue Staff release a live hold with a reason. */
+export async function cancelVenueHold(id: string, reason: string, signal?: AbortSignal): Promise<VenueBooking> {
+  return (await postJson<{ booking: VenueBooking }>(`/api/venue-bookings/${encodeURIComponent(id)}/hold/cancel`,
+    { reason: reason.trim() }, signal)).booking;
 }

@@ -3,10 +3,10 @@ import { computed, onBeforeUnmount, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { ApiError } from '../../../lib/api-client';
 import { authSession, clearLocalSession } from '../../auth/session.js';
-import { eventStatusLabel, formatEventTime } from '../../events/presentation';
+import { eventStatusLabel, formatEventTime, fromSingaporeInputValue } from '../../events/presentation';
 import { singaporeDateKey } from '../availability';
 import {
-  decideVenueBooking, fetchVenueBooking, venueBookingStatusLabel,
+  cancelVenueHold, decideVenueBooking, fetchVenueBooking, placeVenueHold, venueBookingStatusLabel,
   type VenueBooking, type VenueBookingDecision,
 } from '../api/venue-bookings';
 
@@ -28,8 +28,29 @@ const saving = ref(false);
 const needsRefresh = ref(false);
 const feedback = ref<{ kind: 'saved' | 'error'; message: string } | null>(null);
 const reasonError = computed(() => reason.value.trim().length > 2000 ? 'Use at most 2,000 characters for the reason.' : '');
+// KAN-83: a pending request or a live hold can be decided; approving a hold completes it.
+const decidable = computed(() => state.value.status === 'ready'
+  && (state.value.booking.status === 'PENDING' || state.value.booking.status === 'HELD'));
+const holdDeadline = ref('');
+const cancelReason = ref('');
+const holdDeadlineIso = computed(() => fromSingaporeInputValue(holdDeadline.value));
+// Local checks only explain obvious mistakes; the server decides with its own clock (KAN-83-AC12).
+const holdError = computed(() => {
+  // Browsers clear an incomplete datetime-local value, so a non-null ISO value is all that can arrive.
+  if (!holdDeadlineIso.value || state.value.status !== 'ready') return '';
+  return Date.parse(holdDeadlineIso.value) > Date.parse(state.value.booking.startsAt)
+    ? 'The hold deadline must be no later than the start of the booked period.' : '';
+});
+const canHold = computed(() => state.value.status === 'ready' && staff.value
+  && state.value.booking.status === 'PENDING' && state.value.booking.eventStatus === 'APPROVED'
+  && holdDeadlineIso.value !== null && !holdError.value && !saving.value && !needsRefresh.value);
+const cancelReasonError = computed(() => cancelReason.value.trim().length > 2000
+  ? 'Use at most 2,000 characters for the reason.' : '');
+const canCancelHold = computed(() => state.value.status === 'ready' && staff.value
+  && state.value.booking.status === 'HELD' && cancelReason.value.trim().length > 0
+  && !cancelReasonError.value && !saving.value && !needsRefresh.value);
 const canSubmit = computed(() => state.value.status === 'ready' && staff.value
-  && state.value.booking.status === 'PENDING' && decision.value !== null
+  && decidable.value && decision.value !== null
   && (decision.value !== 'APPROVED' || state.value.booking.eventStatus === 'APPROVED')
   && !saving.value && !needsRefresh.value && !reasonError.value);
 let readController: AbortController | undefined;
@@ -64,22 +85,27 @@ async function load() {
   }
 }
 
-async function submit() {
-  if (!canSubmit.value || !decision.value) return;
+/**
+ * One write at a time. A conflict reloads the saved booking; an uncertain outcome never retries
+ * automatically and asks for a refresh instead (KAN-83-AC12).
+ */
+async function write(
+  action: (signal: AbortSignal) => Promise<VenueBooking>, saved: (booking: VenueBooking) => string, noun = 'decision',
+) {
   const version = viewVersion;
   const current = new AbortController();
   writeController = current;
   saving.value = true;
   feedback.value = null;
   try {
-    const booking = await decideVenueBooking(bookingId.value, decision.value, reason.value, current.signal);
+    const booking = await action(current.signal);
     if (current.signal.aborted || version !== viewVersion) return;
     state.value = { status: 'ready', booking };
-    feedback.value = {
-      kind: 'saved', message: booking.status === 'APPROVED' ? 'Venue booking approved.' : 'Venue booking rejected.',
-    };
+    feedback.value = { kind: 'saved', message: saved(booking) };
     decision.value = null;
     reason.value = '';
+    holdDeadline.value = '';
+    cancelReason.value = '';
   } catch (error) {
     if (current.signal.aborted || version !== viewVersion) return;
     if (error instanceof ApiError && error.status === 401) {
@@ -94,18 +120,40 @@ async function submit() {
     if (error instanceof ApiError && error.status === 409) {
       feedback.value = { kind: 'error', message: `${error.message} Review the current booking status before trying again.` };
       decision.value = null;
-      // Read the competing saved decision or changed eligibility; never retry the write automatically.
+      // Read the competing saved change or changed eligibility; never retry the write automatically.
       await load();
     } else if (error instanceof ApiError && error.status === 400) {
       feedback.value = { kind: 'error', message: error.message };
     } else {
       needsRefresh.value = true;
       feedback.value = { kind: 'error',
-        message: 'We could not confirm whether your decision was recorded. Refresh the booking before trying again.' };
+        message: `We could not confirm whether your ${noun} was recorded. Refresh the booking before trying again.` };
     }
   } finally {
     if (version === viewVersion) saving.value = false;
   }
+}
+
+async function submit() {
+  if (!canSubmit.value || !decision.value) return;
+  const chosen = decision.value;
+  await write((signal) => decideVenueBooking(bookingId.value, chosen, reason.value, signal),
+    (booking) => booking.status === 'APPROVED' ? 'Venue booking approved.' : 'Venue booking rejected.');
+}
+
+async function placeHold() {
+  if (!canHold.value || !holdDeadlineIso.value) return;
+  const expiresAt = holdDeadlineIso.value;
+  await write((signal) => placeVenueHold(bookingId.value, expiresAt, signal),
+    (booking) => `Venue held until ${formatEventTime(booking.holdExpiresAt)}. Approve it before then, or it is released.`,
+    'hold');
+}
+
+async function cancelHold() {
+  if (!canCancelHold.value) return;
+  const why = cancelReason.value;
+  await write((signal) => cancelVenueHold(bookingId.value, why, signal), () => 'Venue hold cancelled and released.',
+    'hold cancellation');
 }
 
 function refresh() {
@@ -113,6 +161,8 @@ function refresh() {
   feedback.value = null;
   decision.value = null;
   reason.value = '';
+  holdDeadline.value = '';
+  cancelReason.value = '';
   void load();
 }
 
@@ -123,6 +173,8 @@ function resetView() {
   state.value = { status: 'idle' };
   decision.value = null;
   reason.value = '';
+  holdDeadline.value = '';
+  cancelReason.value = '';
   saving.value = false;
   needsRefresh.value = false;
   feedback.value = null;
@@ -203,26 +255,76 @@ onBeforeUnmount(resetView);
           <dl>
             <div><dt>Reason or information</dt><dd>{{ state.booking.decisionReason ?? 'No reason provided.' }}</dd></div>
             <div><dt>Recorded on</dt><dd>{{ formatEventTime(state.booking.decidedAt) }}</dd></div>
+            <div v-if="state.booking.holdExpiresAt"><dt>Earlier hold deadline</dt><dd>{{ formatEventTime(state.booking.holdExpiresAt) }}</dd></div>
           </dl>
           <p class="booking-caption">{{ state.booking.status === 'APPROVED' ? 'This booking reserves the venue for the requested period.' : 'This booking does not reserve the venue.' }}</p>
         </template>
-        <p v-else-if="state.booking.status === 'CANCELLED'" class="booking-caption">This booking has been cancelled and is not awaiting a decision.</p>
-        <p v-else-if="!staff" class="booking-caption">Venue staff have not recorded an approval or rejection yet.</p>
-        <p v-else-if="needsRefresh" class="booking-caption">Refresh the booking to check its current status before making another decision.</p>
-        <form v-else @submit.prevent="submit">
-          <p class="booking-caption">Approval reserves the venue for this period. It does not change the event's status.</p>
-          <p v-if="state.booking.eventStatus !== 'APPROVED'" class="booking-error">The event is not approved, so this booking cannot be approved. You can still reject it.</p>
-          <fieldset :disabled="saving" class="decision-fields">
-            <legend>Choose a decision</legend>
-            <label><input v-model="decision" type="radio" value="APPROVED" :disabled="state.booking.eventStatus !== 'APPROVED'" /> Approve booking</label>
-            <label><input v-model="decision" type="radio" value="REJECTED" /> Reject booking</label>
-            <label for="booking-reason" class="reason-label">Reason or information (optional)</label>
-            <textarea id="booking-reason" v-model="reason" rows="4" maxlength="2000" aria-describedby="booking-reason-help booking-reason-error" />
-            <p id="booking-reason-help" class="booking-caption">Up to 2,000 characters. The event coordinator can see this with the decision.</p>
-            <p v-if="reasonError" id="booking-reason-error" role="alert" class="booking-error">{{ reasonError }}</p>
-          </fieldset>
-          <button type="submit" class="button button-primary" :disabled="!canSubmit">{{ saving ? 'Saving decision…' : 'Record decision' }}</button>
-        </form>
+        <template v-else-if="state.booking.status === 'EXPIRED'">
+          <p class="booking-outcome expired">Hold expired</p>
+          <dl>
+            <div><dt>Hold deadline</dt><dd>{{ formatEventTime(state.booking.holdExpiresAt) }}</dd></div>
+            <div v-if="state.booking.expiredAt"><dt>Released on</dt><dd>{{ formatEventTime(state.booking.expiredAt) }}</dd></div>
+          </dl>
+          <p class="booking-caption">The hold reached its deadline without approval, so the venue period was released. It cannot be approved or renewed; the coordinator can submit a new request.</p>
+        </template>
+        <template v-else-if="state.booking.status === 'CANCELLED'">
+          <p class="booking-caption">This booking has been cancelled and is not awaiting a decision.</p>
+          <dl v-if="state.booking.cancellationReason">
+            <div><dt>Cancellation reason</dt><dd>{{ state.booking.cancellationReason }}</dd></div>
+            <div><dt>Cancelled on</dt><dd>{{ formatEventTime(state.booking.cancelledAt) }}</dd></div>
+          </dl>
+        </template>
+        <template v-else>
+          <section v-if="state.booking.status === 'HELD'" class="hold-summary" aria-labelledby="hold-title">
+            <h3 id="hold-title">Temporary hold</h3>
+            <p class="booking-outcome held">Held until {{ formatEventTime(state.booking.holdExpiresAt) }}</p>
+            <dl>
+              <div><dt>Hold placed</dt><dd>{{ formatEventTime(state.booking.heldAt) }}</dd></div>
+            </dl>
+            <p class="booking-caption">The venue period is reserved until this deadline. It becomes a confirmed booking only if venue staff approve it before then; otherwise it is released automatically. The server checks the deadline when a change is saved, so refresh before acting near the deadline.</p>
+          </section>
+          <p v-if="!staff" class="booking-caption">Venue staff have not recorded an approval or rejection yet.</p>
+          <p v-else-if="needsRefresh" class="booking-caption">Refresh the booking to check its current status before making another decision.</p>
+          <template v-else>
+            <form @submit.prevent="submit">
+              <p class="booking-caption">{{ state.booking.status === 'HELD' ? 'Approval converts the hold into the confirmed booking for this period.' : 'Approval reserves the venue for this period.' }} It does not change the event's status.</p>
+              <p v-if="state.booking.eventStatus !== 'APPROVED'" class="booking-error">The event is not approved, so this booking cannot be approved. You can still reject it.</p>
+              <fieldset :disabled="saving" class="decision-fields">
+                <legend>Choose a decision</legend>
+                <label><input v-model="decision" type="radio" value="APPROVED" :disabled="state.booking.eventStatus !== 'APPROVED'" /> Approve booking</label>
+                <label><input v-model="decision" type="radio" value="REJECTED" /> Reject booking</label>
+                <label for="booking-reason" class="reason-label">Reason or information (optional)</label>
+                <textarea id="booking-reason" v-model="reason" rows="4" maxlength="2000" aria-describedby="booking-reason-help booking-reason-error" />
+                <p id="booking-reason-help" class="booking-caption">Up to 2,000 characters. The event coordinator can see this with the decision.</p>
+                <p v-if="reasonError" id="booking-reason-error" role="alert" class="booking-error">{{ reasonError }}</p>
+              </fieldset>
+              <button type="submit" class="button button-primary" :disabled="!canSubmit">{{ saving ? 'Saving decision…' : 'Record decision' }}</button>
+            </form>
+
+            <form v-if="state.booking.status === 'PENDING' && state.booking.eventStatus === 'APPROVED'" class="hold-form" aria-labelledby="place-hold-title" @submit.prevent="placeHold">
+              <h3 id="place-hold-title">Place a temporary hold</h3>
+              <p class="booking-caption">A hold reserves this period until the deadline while the booking is finalised. If it is not approved by then, it is released automatically.</p>
+              <fieldset :disabled="saving" class="decision-fields">
+                <label for="hold-deadline" class="reason-label">Hold deadline (Singapore time)</label>
+                <input id="hold-deadline" v-model="holdDeadline" type="datetime-local" required aria-describedby="hold-deadline-help hold-deadline-error" />
+                <p id="hold-deadline-help" class="booking-caption">Must be in the future and no later than the booking start ({{ formatEventTime(state.booking.startsAt) }}).</p>
+                <p v-if="holdError" id="hold-deadline-error" role="alert" class="booking-error">{{ holdError }}</p>
+              </fieldset>
+              <button type="submit" class="button button-secondary" :disabled="!canHold">{{ saving ? 'Saving…' : 'Place hold' }}</button>
+            </form>
+
+            <form v-if="state.booking.status === 'HELD'" class="hold-form" aria-labelledby="cancel-hold-title" @submit.prevent="cancelHold">
+              <h3 id="cancel-hold-title">Cancel hold</h3>
+              <fieldset :disabled="saving" class="decision-fields">
+                <label for="cancel-hold-reason" class="reason-label">Reason for cancelling (required)</label>
+                <textarea id="cancel-hold-reason" v-model="cancelReason" rows="3" maxlength="2000" aria-describedby="cancel-hold-help cancel-hold-error" />
+                <p id="cancel-hold-help" class="booking-caption">Releases only this hold. The coordinator is notified with this reason.</p>
+                <p v-if="cancelReasonError" id="cancel-hold-error" role="alert" class="booking-error">{{ cancelReasonError }}</p>
+              </fieldset>
+              <button type="submit" class="button button-secondary" :disabled="!canCancelHold">{{ saving ? 'Saving…' : 'Cancel hold' }}</button>
+            </form>
+          </template>
+        </template>
       </section>
     </div>
   </template>
@@ -245,6 +347,12 @@ onBeforeUnmount(resetView);
 .booking-error { color: #853e37; line-height: 1.6; font-size: 14px; margin-top: 12px; }
 .booking-outcome { display: inline-block; background: #edf5e9; color: #365d2e; padding: 8px 14px; border-radius: 20px; margin-top: 24px; font-weight: 600; }
 .booking-outcome.rejected { background: #fbeeed; color: #853e37; }
+.booking-outcome.held { background: #fdf3e1; color: #7a5212; }
+.booking-outcome.expired { background: #f2f3ed; color: #52614e; }
+.hold-summary { margin-top: 24px; }
+.hold-summary h3, .hold-form h3 { font-size: 16px; }
+.hold-form { margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border); }
+.decision-fields input[type='datetime-local'] { box-sizing: border-box; width: 100%; max-width: 100%; border: 1px solid var(--border); border-radius: 6px; padding: 10px; font: inherit; }
 .decision-fields { border: 0; padding: 0; margin: 24px 0; min-width: 0; }
 .decision-fields legend { font-size: 14px; font-weight: 600; margin-bottom: 12px; }
 .decision-fields label { display: block; margin-bottom: 12px; font-size: 14px; }
