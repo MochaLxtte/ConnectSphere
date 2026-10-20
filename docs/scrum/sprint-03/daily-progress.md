@@ -38,6 +38,8 @@ Selected ownership/review: Arvin 19/Kai Jie, Kai Jie 19/Tristan, Ernest 12/Ryan,
 
 **20 October 2026 — KAN-79 and KAN-65 merged outside a Daily Scrum.** [PR #34](https://github.com/MochaLxtte/ConnectSphere/pull/34) was approved by Irfan and merged into `main` as `3ddba2b` at 23:01 Singapore time. The approval was based on the passing CI `verify` run for head `36d410d` (S3-E16) and a conflict-free merge state; a check of the PR template against the diff and of the code against the ACs and Definition of Done (`AGENTS.md` §5.11 steps 1–2) was **Not executed**. The merge also brought the `docs/team-agents-guide` commits and the 16–17 October documentation reconciliation into `main`. Manual/hosted workflow checks and KAN-64 notifications remain **Not executed**, so neither story meets the Definition of Done; KAN-79 (8 SP) and KAN-65 (3 SP) deliver no points and remain In Progress in the repository records. Jira status, subtask and comment updates are **Not recorded**. This is not a member Daily Scrum row.
 
+**21 October 2026 — KAN-53 and KAN-55 evidence backfill outside a Daily Scrum.** Mapped existing automated tests to every KAN-53 and KAN-55 criterion and recorded the run as `AUTO-20261021-01`: local unit and component suites plus the `main` CI run 39447691109 on `aaee549` for PostgreSQL and browser layers. TC-12 now passes at integration level, and dated backfill notes were added to Sprint 2's S2-T11/T12/T17/T18. Gaps: KAN-55 has no blocks-page browser test or concurrent block/approval test. Hosted/manual cases remain Not executed, and Sprint 2 acceptance for both stories remains Not recorded. No code, Jira status or points changed.
+
 ## Impediments
 
 | Raised | Impediment | Owner | Action | Status |

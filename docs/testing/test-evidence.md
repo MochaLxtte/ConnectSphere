@@ -833,3 +833,40 @@ The interface requires a replacement and reason, agrees detail/history versions 
 **Changed-code coverage gaps:** AssignmentPanel's remaining uncovered statements include defensive submit exits normally prevented by hidden/disabled controls and existing aborted-read, 401 and non-Error fallbacks. Tests assert that blocked controls cannot submit rather than directly invoke an unreachable Vue handler. LeadRequestPage's remaining branches are existing null-value rendering and error fallbacks. ReviewRequestPage's lower total mainly reflects its existing quiet-refresh helper (child workflow panels are stubbed in page tests); the added access-denial refresh is covered. The existing coverage configuration excludes some shell/auth files and does not merge browser/integration execution into unit coverage; no 100% whole-project claim is made.
 
 **Documentation/artifact checks:** 15/15 functional-case, traceability and document checks passed (427 cases, 112 traceability rows, 579 changed-document file links); native workbook checks passed 16/16. Four updated diagram exports and six changed workbook regions were visually inspected. `npm run submission:prepare` passed; generated draft folders still require the team's evidence-completeness review. The disposable KAN-65 PostgreSQL container was removed after testing. See [S3-E15 validation](../scrum/sprint-03/evidence/kan65-validation-2026-10-19.json). No shared database cleanup was performed.
+
+## 21 October 2026 — KAN-53 and KAN-55 automated evidence mapping (backfill for S2-T11/T12/T17/T18)
+
+**Run ID: AUTO-20261021-01.** Branch `docs/KAN-53-KAN-55-evidence` at `main` commit `aaee549`, with no code changes. Actual execution date: 21 October 2026, Asia/Singapore. Local environment: Windows, Node.js 24, Vitest. PostgreSQL and browser layers are taken from the existing GitHub Actions run [39447691109](https://github.com/MochaLxtte/ConnectSphere/actions/runs/39447691109) on the same commit `aaee549` (push to `main`, 20 October 2026 15:21 UTC), whose disposable PostgreSQL service is not shared Supabase. This entry runs and maps existing tests; it adds no tests and records no hosted or manual result.
+
+| Command / check | Actual result |
+| --- | --- |
+| Local: `npm test -w @connectsphere/backend --` the six KAN-53/KAN-55/KAN-8 venue booking and block input, conflict and HTTP-boundary files in `backend/test/venues/` | Pass: 126 tests in 6 files |
+| Local: `npm test -w @connectsphere/frontend -- VenueBookingPanel.test.ts VenueBlocksPage.test.ts` | Pass: 34 tests in 2 files |
+| Local: `npm run check` | Pass: 604 frontend and 1,035 backend tests, type checks, both builds |
+| CI 39447691109: `npm run test:integration` | Pass: 341 tests in 22 files, including `venue-bookings` (47), `venue-blocks` (11), `venue-availability` (6), `venue-search` (9), `venue-suitability` (33) and `sprint2-connected` (1) |
+| CI 39447691109: `npm run test:e2e` | Pass: 132 browser tests, including all 7 in `venue-booking-submission.spec.ts` (controlled API fixtures) |
+
+**KAN-53 criterion mapping** (`database/tests/venues/venue-bookings.integration.test.ts` unless stated):
+
+| Criteria | Automated tests |
+| --- | --- |
+| AC1–AC7, AC9, AC10 | "creates a pending booking associated with the correct event and venue (AC1-AC7, AC9, AC10)"; "allows several pending requests for the same event and venue without auto-approving any (AC9)"; `VenueBookingPanel.test.ts` |
+| AC8 | "becomes visible to venue staff review and to the coordinator, but not before approval (AC8)"; "shows staff pending requests with timing and requirements…"; browser "submitted booking reaches venue staff and its approved/rejected outcome returns to the coordinator" |
+| AC11 | "refuses submission by an unrelated or unassigned coordinator with the same not-found response (AC11)"; organiser/venue staff/technical support/attendee role refusals; runtime "enforces mapped roles, current assignment and private errors"; HTTP-boundary role and unrelated-coordinator cases; browser "running API requires login" and "organiser detail does not mount the private booking panel" |
+| S2-T12 robustness | Ineligible event states (rejected/cancelled/completed), missing/inactive venue, forged `decidedBy` refused by `booking-input.test.ts`, conflicting approved booking or operational block refused with no row and no event change, adjacent periods allowed, submission racing a committed approval or block (lock-wait test), browser conflict feedback and uncertain-result refresh without a second write |
+
+**KAN-55 criterion mapping:**
+
+| Criteria | Automated tests |
+| --- | --- |
+| AC1–AC7 | `venue-blocks.integration.test.ts` "creates a block associated with the correct venue and records the reason (AC1-AC7)", list and delete cases; `block-input.test.ts` (date normalisation, trimmed reason, 2,000-character limit, invalid input); `VenueBlocksPage.test.ts` create/reload/list |
+| AC8 | `venue-availability.integration.test.ts` "shows confirmed bookings and blocked periods on the correct active venue to each internal role" and "reflects approved, cancelled and newly blocked periods on the next read" |
+| AC9 | `venue-search.integration.test.ts` "KAN-12/KAN-51 search excludes operational blocks and allows adjacent periods" |
+| AC10 | `venue-suitability.integration.test.ts` availability check FAIL naming the operational block, with half-open adjacency |
+| AC11 | `venue-bookings.integration.test.ts` "rejects approval overlapping an operational block without writing any decision" and submission refusal over a block |
+| AC12 | Adjacent-period cases in the blocks, search, suitability and bookings suites |
+| AC13 | `venue-blocks.integration.test.ts` role refusals for organiser, coordinator, technical support and attendee (create and delete); `block-router.test.ts` role and authentication cases |
+
+**Gaps (Not executed):** KAN-55 has no browser (e2e) test of the blocks page, so its UI is covered at component level only. There is no automated test of a block being created concurrently with a booking approval; both orders are tested sequentially. AC5's example reasons are free text, so only representative values (maintenance, renovation) are exercised. For both stories the hosted/manual cases (TC-12-201–203, TC-14-201/203/207–211) remain **Not executed** and need a signed-in run under AGENTS.md §5.12.
+
+**Acceptance boundary:** this maps existing automated evidence to the criteria. It does not record a Sprint 2 review decision; acceptance for KAN-53 and KAN-55 remains **Not recorded**, and their Jira Done status and points are unchanged.
