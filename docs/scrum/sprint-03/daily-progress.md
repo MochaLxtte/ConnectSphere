@@ -40,6 +40,8 @@ Selected ownership/review: Arvin 19/Kai Jie, Kai Jie 19/Tristan, Ernest 12/Ryan,
 
 **21 October 2026 — KAN-53 and KAN-55 evidence backfill outside a Daily Scrum.** Mapped existing automated tests to every KAN-53 and KAN-55 criterion and recorded the run as `AUTO-20261021-01`: local unit and component suites plus the `main` CI run 39447691109 on `aaee549` for PostgreSQL and browser layers. TC-12 now passes at integration level, and dated backfill notes were added to Sprint 2's S2-T11/T12/T17/T18. Gaps: KAN-55 has no blocks-page browser test or concurrent block/approval test. Hosted/manual cases remain Not executed, and Sprint 2 acceptance for both stories remains Not recorded. No code, Jira status or points changed.
 
+**20 October 2026 — KAN-34 development outside a Daily Scrum.** Repaired KAN-34-AC101 on `fix/KAN-34-strict-draft-dates`: draft date-times must be ISO 8601 with an offset and a real calendar date, so impossible dates return a 400 validation error instead of HTTP 500. `AUTO-20261020-01`: `npm run check` and `npm run test:coverage` pass, with `draft-update-input.ts` at 100% lines, branches and functions. The integration case awaits CI; AC1–AC3 hosted checks (S3-T06), independent review and acceptance remain outstanding. KAN-34 stays at 3 SP with no velocity credit.
+
 ## Impediments
 
 | Raised | Impediment | Owner | Action | Status |
