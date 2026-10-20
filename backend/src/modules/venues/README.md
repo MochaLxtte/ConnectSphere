@@ -205,6 +205,12 @@ UNSUITABLE for a definite failure, otherwise NEEDS_REVIEW for any unknown, other
 SUITABLE. Capacity, full-interval Singapore opening hours, active state, all approved
 reservations and operational blocks are read fresh. Adjacent intervals do not overlap.
 
+Expected attendance `0` is a known value, as submission accepts it (KAN-52-AC101): the capacity
+check passes it against capacity like any count. A missing attendance, or an unusable value such as a
+negative or fractional number, leaves the capacity check UNKNOWN with a different message, so the two
+stay distinguishable. A zero-attendance event is never SUITABLE on that basis alone: other failing or
+unknown checks still decide the overall result.
+
 The source version hashes relevant event values, so direct dashboard changes are detected
 even without an updated timestamp. A mismatch gives `409 SUITABILITY_CONTEXT_CHANGED`;
 the UI reloads and resets interpretation. A valid result remains an observation at check
