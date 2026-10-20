@@ -24,6 +24,8 @@ const booking: VenueBooking = {
   eventStartsAt: '2026-10-05T02:30:00Z', eventEndsAt: '2026-10-05T03:30:00Z',
   purpose: 'Hiring', description: 'Annual fair', expectedAttendance: 200,
   venueRequirements: 'Large hall', accessibilityNeeds: 'Wheelchair access',
+  holdExpiresAt: null, heldBy: null, heldAt: null, expiredAt: null,
+  cancelledBy: null, cancelledAt: null, cancellationReason: null,
 };
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status });
 const errorResponse = (status: number, code: string, message = 'The booking could not be updated.') =>

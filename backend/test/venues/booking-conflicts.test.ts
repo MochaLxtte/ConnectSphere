@@ -14,7 +14,11 @@ interface Scenario {
   eventStatus?: string;
   venueActive?: boolean;
   booked?: boolean;
+  /** KAN-83: another booking's live hold overlaps. */
+  held?: boolean;
   blocked?: boolean;
+  /** KAN-83: whether this booking's own hold is still live when the clock is read. */
+  holdLive?: boolean;
   bookingStatus?: string;
   /** Error thrown by the booking UPDATE, standing in for a database exclusion constraint. */
   updateError?: unknown;
@@ -26,7 +30,8 @@ const bookingRow = {
   layout: null, notes: null, decidedBy: null, decidedAt: null, decisionReason: null,
   createdAt: new Date(startsAt), updatedAt: new Date(startsAt), eventStartsAt: null, eventEndsAt: null,
   purpose: null, description: null, expectedAttendance: null, venueRequirements: null,
-  accessibilityNeeds: null,
+  accessibilityNeeds: null, holdExpiresAt: null, heldBy: null, heldAt: null, expiredAt: null,
+  cancelledBy: null, cancelledAt: null, cancellationReason: null,
 };
 
 /** Routes each statement by its SQL so tests can see what was asked, in what order. */
@@ -42,8 +47,11 @@ function fakePool(scenario: Scenario = {}) {
       }
       if (/FROM venue_bookings WHERE id = \$1 FOR UPDATE/.test(sql)) {
         return { rows: [{ status: scenario.bookingStatus ?? 'PENDING', eventRequestId: eventId, venueId,
-          startsAt: new Date(startsAt), endsAt: new Date(endsAt) }] };
+          startsAt: new Date(startsAt), endsAt: new Date(endsAt),
+          holdExpiresAt: scenario.bookingStatus === 'HELD' ? new Date('2026-11-30T00:00:00.000Z') : null }] };
       }
+      if (/AS "holdLive"/.test(sql)) return { rows: [{ holdLive: scenario.holdLive ?? true }] };
+      if (/AS live$/.test(sql.trim())) return { rows: [{ live: scenario.holdLive ?? true }] };
       if (/SELECT status FROM event_requests/.test(sql)) {
         return { rows: [{ status: scenario.eventStatus ?? 'APPROVED' }] };
       }
@@ -51,7 +59,8 @@ function fakePool(scenario: Scenario = {}) {
         return { rows: [{ isActive: scenario.venueActive ?? true }] };
       }
       if (/AS booked/.test(sql)) {
-        return { rows: [{ booked: scenario.booked ?? false, blocked: scenario.blocked ?? false }] };
+        return { rows: [{ booked: scenario.booked ?? false, held: scenario.held ?? false,
+          blocked: scenario.blocked ?? false }] };
       }
       if (/^\s*INSERT INTO venue_bookings/.test(sql)) return { rows: [{ id: bookingId }] };
       if (/^\s*UPDATE venue_bookings/.test(sql) && scenario.updateError) throw scenario.updateError;
@@ -76,13 +85,15 @@ describe('KAN-54 conflict assessment when a booking is requested (AC1, AC2, AC5,
     const { pool, find } = fakePool();
     await submit(pool);
     const clash = find(/AS booked/)!;
-    expect(clash.params).toEqual([venueId, startsAt, endsAt]);
+    expect(clash.params).toEqual([venueId, null, startsAt, endsAt]);
     // AC3: scoped to one venue, so an overlapping period elsewhere can never count.
-    expect(clash.sql.match(/venue_id = \$1/g)).toHaveLength(2);
+    expect(clash.sql.match(/venue_id = \$1/g)).toHaveLength(3);
     // AC1/AC6: only confirmed (approved) bookings reserve a venue.
     expect(clash.sql).toMatch(/status = 'APPROVED'/);
+    // KAN-83-AC4: another request's live hold also reserves the venue until its deadline.
+    expect(clash.sql).toMatch(/status = 'HELD' AND b\.hold_expires_at > clock_timestamp\(\)/);
     // AC4: half-open interval, so back-to-back periods do not overlap.
-    expect(clash.sql.match(/starts_at < \$3 AND ends_at > \$2/g)).toHaveLength(2);
+    expect(clash.sql.match(/starts_at < \$4 AND (b\.)?ends_at > \$3/g)).toHaveLength(3);
   });
 
   it('creates the pending booking when nothing clashes (AC3, AC4)', async () => {
@@ -135,9 +146,9 @@ describe('KAN-54 conflict assessment when Venue Staff approve a booking (AC1, AC
     await decide(pool);
     const clash = find(/AS booked/)!;
     expect(clash.params).toEqual([venueId, bookingId, new Date(startsAt), new Date(endsAt)]);
-    expect(clash.sql).toMatch(/id <> \$2/);
+    expect(clash.sql).toMatch(/id IS DISTINCT FROM \$2::uuid/);
     expect(clash.sql).toMatch(/status = 'APPROVED'/);
-    expect(clash.sql.match(/starts_at < \$4 AND ends_at > \$3/g)).toHaveLength(2);
+    expect(clash.sql.match(/starts_at < \$4 AND (b\.)?ends_at > \$3/g)).toHaveLength(3);
   });
 
   it('approves when nothing clashes (AC3, AC4)', async () => {
