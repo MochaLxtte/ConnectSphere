@@ -53,6 +53,32 @@ through KAN-12 search and KAN-52 suitability.
   `pages/VenueCataloguePage.test.ts`, `pages/VenueCatalogueEditPage.test.ts`) and
   `tests/e2e/venue-catalogue.spec.ts`.
 
+## Venue setup and turnaround durations — KAN-77
+
+Venue Staff record `setupMinutes` and `turnaroundMinutes` for each venue through the KAN-50
+catalogue (`PATCH /api/venues/catalogue/:venueId`, `/venue-catalogue/:id`). Migration 008 stores them
+on `venues`, defaulting to 0.
+
+### Rules
+
+- Each is a whole number of minutes from 0 to 1440, never null; the input parser and a database
+  `CHECK` enforce the same range.
+- A changed buffer must be sent with `expectedSetupMinutes` / `expectedTurnaroundMinutes`, the
+  value the editor loaded. Under the existing row lock, a mismatch refuses the whole request with
+  `409 VENUE_BUFFER_CONFLICT` and writes nothing. Other fields keep KAN-50's rules, so a request
+  that changes no buffer is never refused for buffer changes made meanwhile.
+- Catalogue, search (`venue-search.ts`), suitability context (`suitability-service.ts`) and the
+  availability calendar (`availability.ts`) return both values. They do not yet change any
+  interval, search filter, suitability result or conflict check: KAN-78 applies the buffers, and
+  KAN-77-AC6's re-evaluation of existing bookings waits for it.
+
+### Verification
+
+Unit/HTTP: `backend/test/venues/venue-catalogue-input.test.ts`, `venue-catalogue-service.test.ts`,
+`venue-catalogue-router.test.ts` (KAN-77 suites). PostgreSQL: `database/tests/venues/venue-catalogue.integration.test.ts`
+and the migration test in `database/tests/database.integration.test.ts`. Browser:
+`tests/e2e/venue-catalogue.spec.ts`. Results are recorded as `AUTO-20261021-02` in the test evidence.
+
 ## Venue-unavailability blocks — KAN-55
 
 `block-router.ts` is mounted at `/api/venues` and is Venue Staff only end to end; the

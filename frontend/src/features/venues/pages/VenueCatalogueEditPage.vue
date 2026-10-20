@@ -4,7 +4,9 @@ import { useRoute } from 'vue-router';
 import { ApiError } from '../../../lib/api-client';
 import { authSession, clearLocalSession } from '../../auth/session.js';
 import { fetchCatalogueVenue, updateCatalogueVenue, type CatalogueVenue } from '../api/venue-catalogue';
-import { buildUpdate, toFormValues, validateForm, type CatalogueFormValues } from '../catalogue-form';
+import {
+  buildUpdate, MAX_BUFFER_MINUTES, toFormValues, validateForm, type CatalogueFormValues,
+} from '../catalogue-form';
 
 type LoadState =
   | { status: 'idle' }
@@ -22,10 +24,12 @@ const venue = ref<CatalogueVenue | null>(null);
 const form = reactive<CatalogueFormValues>({
   location: '', capacity: '', facilities: '', accessibilityFeatures: '',
   wheelchairAccessible: false, layouts: '', opensAt: '', closesAt: '',
+  setupMinutes: '', turnaroundMinutes: '',
 });
 const busy = ref(false);
 const actionError = ref('');
 const savedMessage = ref('');
+const bufferConflict = ref(false);
 let controller: AbortController | undefined;
 
 const errors = computed(() => validateForm(form));
@@ -46,6 +50,7 @@ async function load() {
   venue.value = null;
   actionError.value = '';
   savedMessage.value = '';
+  bufferConflict.value = false;
   try {
     show(await fetchCatalogueVenue(venueId.value, current.signal));
     if (!current.signal.aborted) state.value = { status: 'ready' };
@@ -69,6 +74,7 @@ async function save() {
   busy.value = true;
   actionError.value = '';
   savedMessage.value = '';
+  bufferConflict.value = false;
   try {
     show(await updateCatalogueVenue(venue.value.id, changes.value));
     savedMessage.value = 'Venue information saved.';
@@ -77,7 +83,11 @@ async function save() {
       clearLocalSession();
       return;
     }
-    actionError.value = error instanceof Error ? error.message : 'The changes could not be saved.';
+    // KAN-77-AC5: nothing was saved; keep the typed values so they can be reapplied after a reload.
+    bufferConflict.value = error instanceof ApiError && error.code === 'VENUE_BUFFER_CONFLICT';
+    actionError.value = bufferConflict.value
+      ? 'Someone else changed the setup or turnaround time after you opened this venue, so nothing was saved. Reload to see the current values, then make your change again.'
+      : error instanceof Error ? error.message : 'The changes could not be saved.';
   } finally {
     busy.value = false;
   }
@@ -134,6 +144,9 @@ onBeforeUnmount(() => controller?.abort());
       <p v-if="venue.description" class="venue-description">{{ venue.description }}</p>
       <p v-if="savedMessage" class="panel-saved" role="status">{{ savedMessage }}</p>
       <p v-if="actionError" class="field-error" role="alert">{{ actionError }}</p>
+      <button v-if="bufferConflict" type="button" class="button button-secondary" @click="load">
+        Reload current values
+      </button>
 
       <div class="field">
         <label for="venue-location">Location</label>
@@ -195,6 +208,28 @@ onBeforeUnmount(() => controller?.abort());
         </div>
         <p class="field-hint">Leave a time blank for no restriction at that end of the day.</p>
         <p v-if="errors.closesAt" id="venue-closes-error" class="field-error" role="alert">{{ errors.closesAt }}</p>
+      </fieldset>
+
+      <fieldset class="field" :disabled="busy">
+        <legend>Setup and turnaround time</legend>
+        <div class="field-grid">
+          <div class="field">
+            <label for="venue-setup">Setup before each booking (minutes)</label>
+            <input id="venue-setup" v-model="form.setupMinutes" type="number" min="0" :max="MAX_BUFFER_MINUTES"
+              step="1" inputmode="numeric" :aria-invalid="!!errors.setupMinutes" aria-describedby="venue-setup-error" />
+            <p v-if="errors.setupMinutes" id="venue-setup-error" class="field-error" role="alert">{{ errors.setupMinutes }}</p>
+          </div>
+          <div class="field">
+            <label for="venue-turnaround">Turnaround after each booking (minutes)</label>
+            <input id="venue-turnaround" v-model="form.turnaroundMinutes" type="number" min="0" :max="MAX_BUFFER_MINUTES"
+              step="1" inputmode="numeric" :aria-invalid="!!errors.turnaroundMinutes"
+              aria-describedby="venue-turnaround-error" />
+            <p v-if="errors.turnaroundMinutes" id="venue-turnaround-error" class="field-error" role="alert">
+              {{ errors.turnaroundMinutes }}
+            </p>
+          </div>
+        </div>
+        <p class="field-hint">Use 0 for none. At most {{ MAX_BUFFER_MINUTES }} minutes (24 hours) each.</p>
       </fieldset>
 
       <div class="actions">

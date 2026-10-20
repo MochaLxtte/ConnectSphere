@@ -20,6 +20,9 @@ export interface SuitabilityVenue {
   wheelchairAccessible: boolean;
   opensAt: string | null;
   closesAt: string | null;
+  /** KAN-77: planning input only; KAN-78 applies the buffers to availability. */
+  setupMinutes: number;
+  turnaroundMinutes: number;
 }
 
 export interface SuitabilityCheck {

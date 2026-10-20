@@ -11,6 +11,9 @@ export interface CatalogueFormValues {
   layouts: string;
   opensAt: string; // "HH:MM" or ""
   closesAt: string;
+  /** KAN-77: number inputs, so these may also arrive as numbers. */
+  setupMinutes: string | number;
+  turnaroundMinutes: string | number;
 }
 
 export type CatalogueFormErrors = Partial<Record<keyof CatalogueFormValues, string>>;
@@ -19,6 +22,9 @@ export const MAX_CAPACITY = 2_147_483_647;
 export const MAX_LOCATION_LENGTH = 200;
 export const MAX_LABEL_LENGTH = 100;
 export const MAX_LABELS = 30;
+export const MAX_BUFFER_MINUTES = 1440;
+const BUFFER_FIELDS = ['setupMinutes', 'turnaroundMinutes'] as const;
+const EXPECTED_KEY = { setupMinutes: 'expectedSetupMinutes', turnaroundMinutes: 'expectedTurnaroundMinutes' } as const;
 
 const joinLines = (labels: string[]) => labels.join('\n');
 
@@ -32,6 +38,8 @@ export function toFormValues(venue: CatalogueVenue): CatalogueFormValues {
     layouts: joinLines(venue.layouts),
     opensAt: venue.opensAt ?? '',
     closesAt: venue.closesAt ?? '',
+    setupMinutes: String(venue.setupMinutes),
+    turnaroundMinutes: String(venue.turnaroundMinutes),
   };
 }
 
@@ -71,6 +79,13 @@ export function validateForm(values: CatalogueFormValues): CatalogueFormErrors {
   if (values.opensAt && values.closesAt && values.closesAt <= values.opensAt) {
     errors.closesAt = 'Closing time must be after opening time.';
   }
+  // KAN-77-AC2: required whole minutes; "0" means no buffer, so a blank box is not zero.
+  for (const field of BUFFER_FIELDS) {
+    const text = String(values[field]).trim();
+    if (!/^\d+$/.test(text) || Number(text) > MAX_BUFFER_MINUTES) {
+      errors[field] = `Enter a whole number of minutes from 0 to ${MAX_BUFFER_MINUTES}.`;
+    }
+  }
   for (const key of Object.keys(errors) as (keyof CatalogueFormValues)[]) {
     if (errors[key] === undefined) delete errors[key];
   }
@@ -103,5 +118,13 @@ export function buildUpdate(venue: CatalogueVenue, values: CatalogueFormValues):
   if (opensAt !== venue.opensAt) update.opensAt = opensAt;
   const closesAt = values.closesAt || null;
   if (closesAt !== venue.closesAt) update.closesAt = closesAt;
+  // KAN-77-AC5: a changed buffer carries the loaded value, so the server can refuse a stale edit.
+  for (const field of BUFFER_FIELDS) {
+    const minutes = Number(String(values[field]).trim());
+    if (minutes !== venue[field]) {
+      update[field] = minutes;
+      update[EXPECTED_KEY[field]] = venue[field];
+    }
+  }
   return update;
 }

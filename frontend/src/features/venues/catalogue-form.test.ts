@@ -1,14 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import type { CatalogueVenue } from './api/venue-catalogue';
 import {
-  buildUpdate, MAX_CAPACITY, MAX_LABEL_LENGTH, MAX_LABELS, MAX_LOCATION_LENGTH,
+  buildUpdate, MAX_BUFFER_MINUTES, MAX_CAPACITY, MAX_LABEL_LENGTH, MAX_LABELS, MAX_LOCATION_LENGTH,
   parseLabelLines, toFormValues, validateForm, type CatalogueFormValues,
 } from './catalogue-form';
 
 const venue: CatalogueVenue = {
   id: 'venue-a', name: 'Harbour Hall', description: null, location: 'Block B', capacity: 100,
   layouts: ['Theatre', 'Classroom'], facilities: ['Projector'], accessibilityFeatures: ['Ramp'],
-  wheelchairAccessible: true, opensAt: '08:00', closesAt: '22:00', updatedAt: '2026-10-01T00:00:00.000Z',
+  wheelchairAccessible: true, opensAt: '08:00', closesAt: '22:00', setupMinutes: 0, turnaroundMinutes: 0,
+  updatedAt: '2026-10-01T00:00:00.000Z',
 };
 const saved = (): CatalogueFormValues => toFormValues(venue);
 
@@ -17,6 +18,7 @@ describe('KAN-50 catalogue form: loading a venue (AC2, AC12)', () => {
     expect(saved()).toEqual({
       location: 'Block B', capacity: '100', facilities: 'Projector', accessibilityFeatures: 'Ramp',
       wheelchairAccessible: true, layouts: 'Theatre\nClassroom', opensAt: '08:00', closesAt: '22:00',
+      setupMinutes: '0', turnaroundMinutes: '0',
     });
     expect(toFormValues({ ...venue, location: null, opensAt: null, closesAt: null, layouts: [] }))
       .toMatchObject({ location: '', opensAt: '', closesAt: '', layouts: '' });
@@ -138,5 +140,35 @@ describe('KAN-50 catalogue form: building the update (AC3-AC9)', () => {
     const bare = { ...venue, location: null, opensAt: null, closesAt: null };
     expect(buildUpdate(bare, { ...toFormValues(bare), location: 'New wing', opensAt: '08:30' }))
       .toEqual({ location: 'New wing', opensAt: '08:30' });
+  });
+});
+
+describe('KAN-77 catalogue form: buffer durations', () => {
+  it.each(['0', '1', '45', String(MAX_BUFFER_MINUTES), ' 30 '])('accepts %j minutes (AC2)', (minutes) => {
+    expect(validateForm({ ...saved(), setupMinutes: minutes, turnaroundMinutes: minutes })).toEqual({});
+  });
+
+  it.each(['', '-1', '1.5', 'abc', '1e2', String(MAX_BUFFER_MINUTES + 1)])(
+    'refuses %j with field feedback for each buffer (AC2)', (minutes) => {
+      const message = `Enter a whole number of minutes from 0 to ${MAX_BUFFER_MINUTES}.`;
+      expect(validateForm({ ...saved(), setupMinutes: minutes, turnaroundMinutes: minutes }))
+        .toEqual({ setupMinutes: message, turnaroundMinutes: message });
+    },
+  );
+
+  it('accepts and refuses buffers given as numbers, as a number input produces', () => {
+    expect(validateForm({ ...saved(), setupMinutes: 15, turnaroundMinutes: 0 })).toEqual({});
+    expect(validateForm({ ...saved(), setupMinutes: 2000 })).toHaveProperty('setupMinutes');
+  });
+
+  it('sends a changed buffer with the value it replaces and nothing else (AC5)', () => {
+    expect(buildUpdate({ ...venue, setupMinutes: 10 }, { ...toFormValues({ ...venue, setupMinutes: 10 }), setupMinutes: '25' }))
+      .toEqual({ setupMinutes: 25, expectedSetupMinutes: 10 });
+    expect(buildUpdate(venue, { ...saved(), turnaroundMinutes: 60 }))
+      .toEqual({ turnaroundMinutes: 60, expectedTurnaroundMinutes: 0 });
+  });
+
+  it('leaves unchanged buffers out, including whitespace around the same value', () => {
+    expect(buildUpdate(venue, { ...saved(), setupMinutes: ' 0 ', capacity: '120' })).toEqual({ capacity: 120 });
   });
 });

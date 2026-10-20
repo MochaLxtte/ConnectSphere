@@ -47,6 +47,9 @@ export interface VenueResult {
   wheelchairAccessible: boolean;
   opensAt: string | null;
   closesAt: string | null;
+  /** KAN-77: venue setup and turnaround minutes; KAN-78 applies them to occupancy. */
+  setupMinutes: number;
+  turnaroundMinutes: number;
   updatedAt: string;
 }
 
@@ -172,6 +175,7 @@ const SEARCH_SQL = `
          to_char(v.opens_at, 'HH24:MI') AS "opensAt",
          to_char(v.closes_at, 'HH24:MI') AS "closesAt",
          v.opens_at::text AS "openingStartsAt", v.closes_at::text AS "openingEndsAt",
+         v.setup_minutes AS "setupMinutes", v.turnaround_minutes AS "turnaroundMinutes",
          v.updated_at AS "updatedAt"
   FROM venues v
   WHERE v.is_active

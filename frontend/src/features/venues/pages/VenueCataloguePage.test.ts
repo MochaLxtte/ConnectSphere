@@ -18,7 +18,8 @@ const json = (body: unknown, status = 200) => new Response(JSON.stringify(body),
 const venue = (overrides: Partial<CatalogueVenue> = {}): CatalogueVenue => ({
   id: 'venue-a', name: 'Harbour Hall', description: null, location: 'Block B', capacity: 200,
   layouts: ['Theatre', 'Classroom'], facilities: ['Projector'], accessibilityFeatures: [],
-  wheelchairAccessible: true, opensAt: '08:00', closesAt: '22:00', updatedAt: '2026-10-01T00:00:00.000Z', ...overrides,
+  wheelchairAccessible: true, opensAt: '08:00', closesAt: '22:00', setupMinutes: 0, turnaroundMinutes: 0,
+  updatedAt: '2026-10-01T00:00:00.000Z', ...overrides,
 });
 
 function renderPage() {

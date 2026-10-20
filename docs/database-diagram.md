@@ -127,6 +127,8 @@ erDiagram
         boolean wheelchair_accessible
         time opens_at "nullable"
         time closes_at "nullable"
+        integer setup_minutes "0-1440, migration 008"
+        integer turnaround_minutes "0-1440, migration 008"
         boolean is_active
         timestamptz created_at
         timestamptz updated_at
