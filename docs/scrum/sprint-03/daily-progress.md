@@ -80,6 +80,8 @@ the configured 4–17 October sprint window.
 
 **21 October 2026 — KAN-52 zero-attendance repair (Ernest), outside a Daily Scrum.** Branch `fix/KAN-52-zero-attendance-suitability` repairs the audit failure TC-11-01 (KAN-52-AC101): an expected attendance of 0 is now assessed against venue capacity instead of being treated as unknown, while missing attendance stays distinguishable and other checks still decide the outcome. Automated layers passed (check, coverage, 342 PostgreSQL tests, 132 browser tests: AUTO-20261021-KAN52-01). Remaining: manual/hosted S3-T17 run, independent peer review, CI on the pushed branch and the Jira status/assignment, none of which this work changed. No estimate change (3 SP unchanged). This is not a member's standup row.
 
+**21 October 2026 — KAN-6 saved-draft submission feedback (Ernest), outside a Daily Scrum.** Branch `fix/KAN-6-detail-submission-field-errors` repairs the audit failure TC-02-01 (KAN-6-AC101): the saved-draft detail page now shows the server's per-field errors, both missing and invalid, instead of a generic message, and keeps the draft. AC1–AC7 were already enforced and covered, so no backend change was needed. Automated layers passed (AUTO-20261021-KAN6-02). One unrelated KAN-79 browser test (`lead-assignment.spec.ts`, stale assignment conflict) fails intermittently in full runs, also on untouched `main`; it is recorded in the evidence and not changed here. Remaining: manual/hosted S3-T05 run, peer review, CI on the pushed branch and Jira status/assignment, none of which this work changed. No estimate change (3 SP unchanged). This is not a member's standup row.
+
 ## Impediments
 
 | Raised | Impediment | Owner | Action | Status |

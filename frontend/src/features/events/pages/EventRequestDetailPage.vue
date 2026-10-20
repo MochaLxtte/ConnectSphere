@@ -20,22 +20,24 @@ const requestId = computed(() => String(route.params.id ?? ''));
 const state = ref<LoadState>({ status: 'loading' });
 const submitting = ref(false);
 const submitError = ref('');
-const submitProblems = ref<string[]>([]);
+/** KAN-6-AC101: the server's per-field messages, shown beside the summary. */
+const submitProblems = ref<{ field: string; label: string; message: string }[]>([]);
 let controller: AbortController | undefined;
 
 const submitFieldLabels = new Map([
   ['name', 'Event name'], ['purpose', 'Purpose'], ['startsAt', 'Starts'], ['endsAt', 'Ends'],
   ['expectedAttendance', 'Expected attendance'], ['venueRequirements', 'Venue requirements'],
-  ['registrationOpensAt', 'Registration opens'], ['registrationClosesAt', 'Registration closes'],
+  ['registrationCapacity', 'Registration capacity'], ['registrationOpensAt', 'Registration opens'],
+  ['registrationClosesAt', 'Registration closes'],
 ]);
 
-/** KAN-6-AC101: the detail page has no inputs, so name each field next to the server's message. */
-function invalidSubmissionProblems(error: SubmissionInvalidError): string[] {
-  const label = (field: string) => submitFieldLabels.get(field) ?? field;
-  return [
-    ...error.missingFields.map((field) => `${label(field)}: Complete this before submitting.`),
-    ...Object.entries(error.fieldErrors).map(([field, message]) => `${label(field)}: ${message}`),
-  ];
+/** Missing fields first, then invalid values, each with the server's message when it sent one. */
+function problemsFor(missingFields: string[], messages: Record<string, string>) {
+  const fields = [...new Set([...missingFields, ...Object.keys(messages)])];
+  return fields.map((field) => ({
+    field, label: submitFieldLabels.get(field) ?? field,
+    message: messages[field] ?? 'Complete this before submitting.',
+  }));
 }
 
 function showSignIn() {
@@ -105,10 +107,12 @@ async function submitForReview() {
     } else if (error instanceof SubmissionIncompleteError) {
       const missing = error.missingFields.map((field) => submitFieldLabels.get(field) ?? field);
       submitError.value = `Edit the draft to complete these details before submitting: ${missing.join(', ')}.`;
+      submitProblems.value = problemsFor(error.missingFields, {});
     } else if (error instanceof SubmissionInvalidError) {
-      submitProblems.value = invalidSubmissionProblems(error);
+      // The draft and its saved values are untouched; nothing is reloaded or cleared here.
+      submitProblems.value = problemsFor(error.missingFields, error.fieldErrors);
       submitError.value = submitProblems.value.length > 0
-        ? 'Edit the draft to fix these details before submitting:'
+        ? 'Edit the draft to fix these details before submitting.'
         : `Edit the draft to fix these details before submitting: ${error.message}`;
     } else if (error instanceof ApiError && error.status === 409 &&
         ['NO_AVAILABLE_COORDINATOR', 'DRAFT_ALREADY_ASSIGNED'].includes(error.code)) {
@@ -178,8 +182,8 @@ onBeforeUnmount(() => controller?.abort());
         </button>
         <div v-if="submitError" class="draft-error" role="alert">
           <p>{{ submitError }}</p>
-          <ul v-if="submitProblems.length > 0">
-            <li v-for="problem in submitProblems" :key="problem">{{ problem }}</li>
+          <ul v-if="submitProblems.length > 0" class="draft-problems">
+            <li v-for="problem in submitProblems" :key="problem.field"><strong>{{ problem.label }}:</strong> {{ problem.message }}</li>
           </ul>
         </div>
       </div>
@@ -223,7 +227,7 @@ dd { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
 .draft-actions .button { font-size: 14px; padding: 11px 16px; }
 .draft-actions button:disabled { cursor: not-allowed; opacity: 0.6; }
 .draft-error { flex-basis: 100%; color: #8a332b; font-size: 14px; }
-.draft-error ul { margin: 4px 0 0; padding-left: 20px; }
+.draft-problems { margin: 8px 0 0; padding-left: 20px; display: grid; gap: 4px; line-height: 1.5; }
 .outcome-fields dt:not(:first-child) { margin-top: 20px; }
 .outcome-fields dd { margin-top: 6px; }
 .outcome-value { display: inline-block; border-radius: 20px; padding: 6px 12px; font-weight: 650; }

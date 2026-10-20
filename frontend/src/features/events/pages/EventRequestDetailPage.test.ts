@@ -356,6 +356,120 @@ describe('KAN-16 organiser event request details', () => {
       expect(screen.getByRole('link', { name: 'Edit draft' })).toBeInTheDocument();
     });
 
+    describe('KAN-6-AC101 server field errors on saved-draft submission', () => {
+      const invalid = (fieldErrors: Record<string, string>, missingFields: string[] = []) => jsonResponse({
+        error: { code: 'SUBMISSION_INVALID', message: 'Invalid.', missingFields, fieldErrors },
+      }, 400);
+      const problems = () => within(screen.getByRole('alert')).getAllByRole('listitem').map((item) => item.textContent!.replace(/\s+/g, ' ').trim());
+
+      it('shows each invalid value\'s own message and keeps the draft, its data and its actions', async () => {
+        const fetchMock = vi.fn()
+          .mockResolvedValueOnce(jsonResponse(draft))
+          .mockResolvedValueOnce(invalid({
+            endsAt: 'The end must be after the start.',
+            registrationClosesAt: 'Registration must close after it opens.',
+          }));
+        vi.stubGlobal('fetch', fetchMock);
+        await renderDetail();
+
+        await fireEvent.click(await screen.findByRole('button', { name: 'Submit for review' }));
+
+        expect(await screen.findByRole('alert')).toHaveTextContent('Edit the draft to fix these details before submitting.');
+        expect(problems()).toEqual([
+          'Ends: The end must be after the start.',
+          'Registration closes: Registration must close after it opens.',
+        ]);
+        // Nothing was reloaded or cleared: still a draft with the entered values and both actions.
+        expect(fetchMock).toHaveBeenCalledTimes(2);
+        expect(field('Status')).toHaveTextContent('Draft');
+        expect(field('Purpose')).toHaveTextContent('Hiring');
+        expect(field('Expected attendance')).toHaveTextContent('200');
+        expect(screen.getByRole('button', { name: 'Submit for review' })).toBeEnabled();
+        expect(screen.getByRole('link', { name: 'Edit draft' })).toHaveAttribute('href', '/events/a/edit');
+      });
+
+      it('lists missing and invalid fields together, missing first', async () => {
+        vi.stubGlobal('fetch', vi.fn()
+          .mockResolvedValueOnce(jsonResponse(draft))
+          .mockResolvedValueOnce(invalid({ endsAt: 'The end must be after the start.' }, ['purpose', 'venueRequirements'])));
+        await renderDetail();
+
+        await fireEvent.click(await screen.findByRole('button', { name: 'Submit for review' }));
+        await screen.findByRole('alert');
+
+        expect(problems()).toEqual([
+          'Purpose: Complete this before submitting.',
+          'Venue requirements: Complete this before submitting.',
+          'Ends: The end must be after the start.',
+        ]);
+      });
+
+      it('also gives missing-only failures a message per field', async () => {
+        vi.stubGlobal('fetch', vi.fn()
+          .mockResolvedValueOnce(jsonResponse(draft))
+          .mockResolvedValueOnce(jsonResponse({
+            error: { code: 'SUBMISSION_INCOMPLETE', message: 'Incomplete.', missingFields: ['name', 'expectedAttendance'] },
+          }, 400)));
+        await renderDetail();
+
+        await fireEvent.click(await screen.findByRole('button', { name: 'Submit for review' }));
+        await screen.findByRole('alert');
+
+        expect(problems()).toEqual([
+          'Event name: Complete this before submitting.',
+          'Expected attendance: Complete this before submitting.',
+        ]);
+      });
+
+      it('lists an overlapping missing and invalid field once with its server message', async () => {
+        vi.stubGlobal('fetch', vi.fn()
+          .mockResolvedValueOnce(jsonResponse(draft))
+          .mockResolvedValueOnce(invalid({
+            endsAt: 'The end must be after the start.',
+            registrationCapacity: 'Enter a valid registration capacity.',
+          }, ['purpose', 'registrationCapacity', 'purpose'])));
+        await renderDetail();
+
+        await fireEvent.click(await screen.findByRole('button', { name: 'Submit for review' }));
+        await screen.findByRole('alert');
+
+        expect(problems()).toEqual([
+          'Purpose: Complete this before submitting.',
+          'Registration capacity: Enter a valid registration capacity.',
+          'Ends: The end must be after the start.',
+        ]);
+      });
+
+      it('falls back to the raw field name for a field the page has no label for', async () => {
+        vi.stubGlobal('fetch', vi.fn()
+          .mockResolvedValueOnce(jsonResponse(draft))
+          .mockResolvedValueOnce(invalid({ someFutureField: 'Check this value.' })));
+        await renderDetail();
+
+        await fireEvent.click(await screen.findByRole('button', { name: 'Submit for review' }));
+        await screen.findByRole('alert');
+
+        expect(problems()).toEqual(['someFutureField: Check this value.']);
+      });
+
+      it('clears the field errors and shows Submitted once a corrected draft is resubmitted', async () => {
+        vi.stubGlobal('fetch', vi.fn()
+          .mockResolvedValueOnce(jsonResponse(draft))
+          .mockResolvedValueOnce(invalid({ endsAt: 'The end must be after the start.' }))
+          .mockResolvedValueOnce(jsonResponse({ ...draft, status: 'SUBMITTED' }))
+          .mockResolvedValueOnce(jsonResponse(detail)));
+        await renderDetail();
+
+        await fireEvent.click(await screen.findByRole('button', { name: 'Submit for review' }));
+        await screen.findByRole('alert');
+        await fireEvent.click(screen.getByRole('button', { name: 'Submit for review' }));
+
+        await waitFor(() => expect(field('Status')).toHaveTextContent('Submitted'));
+        expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+        expect(screen.queryByRole('button', { name: 'Submit for review' })).not.toBeInTheDocument();
+      });
+    });
+
     describe('KAN-6-AC101 saved-draft submission shows server field errors', () => {
       const invalid = (body: Record<string, unknown>) => jsonResponse({
         error: { code: 'SUBMISSION_INVALID', message: 'Invalid.', ...body },
@@ -379,8 +493,8 @@ describe('KAN-16 organiser event request details', () => {
         await fireEvent.click(screen.getByRole('button', { name: 'Submit for review' }));
 
         const alert = await screen.findByRole('alert');
-        expect(alert).toHaveTextContent('Edit the draft to fix these details before submitting:');
-        expect(within(alert).getAllByRole('listitem').map((item) => item.textContent)).toEqual([
+        expect(alert).toHaveTextContent('Edit the draft to fix these details before submitting.');
+        expect(within(alert).getAllByRole('listitem').map((item) => item.textContent!.replace(/\s+/g, ' ').trim())).toEqual([
           'Ends: The end must be after the start.',
           'Registration closes: Registration must close after it opens.',
         ]);
@@ -403,7 +517,7 @@ describe('KAN-16 organiser event request details', () => {
         await fireEvent.click(await screen.findByRole('button', { name: 'Submit for review' }));
 
         const alert = await screen.findByRole('alert');
-        expect(within(alert).getAllByRole('listitem').map((item) => item.textContent)).toEqual([
+        expect(within(alert).getAllByRole('listitem').map((item) => item.textContent!.replace(/\s+/g, ' ').trim())).toEqual([
           'Purpose: Complete this before submitting.',
           'Starts: Enter a valid date and time.',
         ]);
