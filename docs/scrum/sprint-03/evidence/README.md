@@ -98,3 +98,11 @@ KAN-65 code/test commit: `d8f3bc2aee19a608b1a3f57c87e7d5cc7d242d84`. Documentati
 | ID | Artifact | Source / result | Limits |
 | --- | --- | --- | --- |
 | S3-E16 | [GitHub Actions CI run 39159683818](https://github.com/MochaLxtte/ConnectSphere/actions/runs/39159683818) and [PR #34](https://github.com/MochaLxtte/ConnectSphere/pull/34) | CI `verify` passed on 19 October 03:38 Singapore time for head `36d410d5aa67e6bc42669d68ea94627bd0080ce3`, the commit merged. PR approved by Irfan and merged into `main` as `3ddba2b` on 20 October 23:01 Singapore time. | Approval relied on CI and merge state; template, AC and Definition of Done review Not executed. Manual/hosted acceptance and KAN-64 notifications Not executed; acceptance Not assessed. No velocity credit. |
+
+## 21 October — KAN-78 / KAN-34 local verification
+
+S3-E-KAN78-01: [AUTO-20261021-01](../../../testing/test-evidence.md#21-october-2026--kan-78-buffered-venue-intervals-and-kan-34-draft-dates). Reproducible test files are linked from the story cards and traceability register. Architecture exports are under `docs/architecture/exports/`. Results are local automated evidence; no CI, independent review or hosted acceptance is claimed. Final implementation SHA: Not recorded (uncommitted working tree).
+
+Retained final command output: [check](AUTO-20261021-01-check.txt), [coverage](AUTO-20261021-01-coverage.txt), [PostgreSQL integration](AUTO-20261021-01-integration.txt), [Chromium](AUTO-20261021-01-browser.txt). Earlier failed attempts are described in the run record; these files hold the final passing runs.
+
+AUTO-20261021-02: [backend coverage output](AUTO-20261021-02-coverage.txt) records the pre-commit timestamp precision regression fix: 1,050 backend tests passed; type checking passed.

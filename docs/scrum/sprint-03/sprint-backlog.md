@@ -49,13 +49,13 @@ Every row requires its complete active criterion set plus applicable Definition 
 | Test | Story / active criteria | Functional cases | Result / evidence |
 | --- | --- | --- | --- |
 | S3-T05 | KAN-6: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC101 | TC-02-02, TC-02-03, TC-02-04, TC-02-05, TC-02-06, TC-02-07, TC-02-08, TC-02-09 | **Not executed** / Not recorded |
-| S3-T06 | KAN-34: AC1, AC2, AC3, AC101 | TC-03-02, TC-03-03, TC-03-04, TC-03-05, TC-03-06 | **Not executed** / Not recorded |
+| S3-T06 | KAN-34: AC1, AC2, AC3, AC101 | TC-03-02, TC-03-03, TC-03-04, TC-03-05, TC-03-06 | Local automated Pass — AUTO-20261021-01; hosted acceptance Not executed |
 | S3-T07 | KAN-60: AC1, AC2, AC3, AC4, AC5, AC101, AC102, AC103 | TC-04-02, TC-04-03, TC-04-04, TC-04-05, TC-04-06 | **Not executed** / Not recorded |
 | S3-T15 | KAN-50: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12, AC13, AC14, AC15, AC16, AC17, AC18, AC19, AC20, AC21, AC101 | TC-08-02, TC-08-03, TC-08-04, TC-08-05, TC-08-06, TC-08-07, TC-08-08, TC-08-09, TC-08-10, TC-08-11, TC-08-12, TC-08-13, TC-08-14 | **Not executed** / Not recorded |
 | S3-T16 | KAN-12: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12, AC13, AC14, AC15, AC16, AC101, AC102 | TC-10-02, TC-10-03, TC-10-04, TC-10-05, TC-10-06, TC-10-07, TC-10-08, TC-10-09, TC-10-10, TC-10-11, TC-10-12, TC-10-210 | **Not executed** / Not recorded |
 | S3-T17 | KAN-52: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC101, AC102 | TC-11-02, TC-11-03, TC-11-04, TC-11-05, TC-11-06, TC-11-07, TC-11-205 | **Not executed** / Not recorded |
 | S3-T18 | KAN-77: AC1, AC2, AC3, AC4, AC5, AC6 | TC-08-15, TC-08-16, TC-08-17, TC-08-18, TC-08-19, TC-08-20 | **Not executed** / Not recorded |
-| S3-T19 | KAN-78: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8 | TC-14-01, TC-14-02, TC-14-03, TC-14-04, TC-14-05, TC-14-06, TC-14-07 | **Not executed** / Not recorded |
+| S3-T19 | KAN-78: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8 | TC-14-01, TC-14-02, TC-14-03, TC-14-04, TC-14-05, TC-14-06, TC-14-07 | Local automated Pass — AUTO-20261021-01; KAN-77 editor/hosted acceptance Not executed |
 | S3-T20 | KAN-79: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10 | TC-05-01, TC-05-02, TC-05-03, TC-05-04, TC-05-05, TC-05-06, TC-05-07, TC-05-08, TC-05-09, TC-05-17–28 | Automated AC1–8/local AC10 pass: AUTO-20261019-01; AC9 reassignment locally verified by AUTO-20261019-02; KAN-64 and hosted workflow checks **Not executed**; acceptance **Not assessed** |
 | S3-T21 | KAN-65: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC101, AC102, AC103, AC104 | TC-05-10–16; automated cases linked in traceability | Automated reassignment checks pass: AUTO-20261019-02; KAN-64 notifications and manual/hosted checks **Not executed**; acceptance **Not assessed** |
 | S3-T22 | KAN-64: AC201, AC202, AC203, AC204, AC205, AC206, AC207, AC208, AC209 | TC-20-12, TC-20-13, TC-20-14, TC-20-15, TC-20-16, TC-20-17, TC-20-18, TC-20-19, TC-20-20 | **Not executed** / Not recorded |
@@ -153,7 +153,11 @@ Implementation defaults: docs/scrum/sprint-03/planning.md and docs/requirements/
 
 ### KAN-34 — Resume/Edit Draft Event Request
 
-**Owner:** Unassigned — team member to choose · **Independent reviewer:** To agree after owner chosen · **Estimate:** 3 SP · **Jira status:** To Do · **Acceptance:** Not assessed · **Test group:** S3-T06
+**Owner:** Arvin · **Independent reviewer:** Leo Kai Jie · **Estimate:** 3 SP · **Jira status:** In Progress · **Acceptance:** Not assessed · **Test group:** S3-T06
+
+**21 October 2026:** Jira wording checked directly; implementation approved in chat. Branch `feat/kan-78-kan-34`; subtasks KAN-96/97. Existing estimate retained; independent reviewer To agree.
+
+**21 October 2026 reviewer selection:** Arvin selected Leo Kai Jie in chat as independent reviewer. Review acceptance, execution and GitHub approval remain Not recorded.
 
 **User story:** As an Event Organiser, I want to return to a previously saved draft event request and continue editing it so that I can complete my event request before submission.
 
@@ -558,7 +562,7 @@ Implementation defaults: docs/scrum/sprint-03/planning.md and docs/requirements/
 | **KAN-77-AC5** | Buffer saves send only changed fields and use field-aware concurrency checks: unrelated catalogue-field edits are preserved, while a conflicting stale edit to the same buffer field is refused without overwriting the newer value. This new buffer-field rule does not replace KAN-50's existing policy for other catalogue fields. | TC-08-19 |
 | **KAN-77-AC6** | A successful duration change triggers the linked CR1-B re-evaluation of non-ended bookings and reports affected-booking warnings without deleting or silently cancelling bookings. | TC-08-20 |
 
-**Implementation location:** Not recorded. **Automated test files:** Not recorded. Record real files when implemented; historical schema or removed code is not feature completion.
+**Implementation location:** backend/src/modules/venues/{booking-service,availability,venue-search,suitability-service,suitability-rules}.ts; database/migrations/008_venue_occupied_intervals.sql. **Automated test files:** database/tests/venues/venue-buffers.integration.test.ts; backend/test/venues/{booking-conflicts,suitability-rules,venue-search}.test.ts; tests/e2e/venue-bookings.spec.ts. Local verification: AUTO-20261021-01; independent review and hosted acceptance remain Not executed.
 
 <details>
 <summary>Preserved Jira description before self-selection (historical ownership)</summary>
@@ -602,7 +606,11 @@ Delivery requires implementation, automated and hosted acceptance checks, indepe
 
 ### KAN-78 — Apply Venue Buffers to Availability and Booking Conflicts
 
-**Owner:** Unassigned — team member to choose · **Independent reviewer:** To agree after owner chosen · **Estimate:** 8 SP · **Jira status:** To Do · **Acceptance:** Not assessed · **Test group:** S3-T19
+**Owner:** Arvin · **Independent reviewer:** Leo Kai Jie · **Estimate:** 8 SP · **Jira status:** In Progress · **Acceptance:** Not assessed · **Test group:** S3-T19
+
+**21 October 2026:** Jira wording checked directly; implementation approved in chat. Branch `feat/kan-78-kan-34`; subtasks KAN-94/95. Existing estimate retained; independent reviewer To agree.
+
+**21 October 2026 reviewer selection:** Arvin selected Leo Kai Jie in chat as independent reviewer. Review acceptance, execution and GitHub approval remain Not recorded.
 
 **User story:** As an Event Coordinator or Venue Staff member, I want venue availability and booking decisions to include setup and turnaround time so that adjacent events leave enough operational time.
 

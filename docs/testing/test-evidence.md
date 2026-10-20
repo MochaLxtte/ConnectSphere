@@ -833,3 +833,30 @@ The interface requires a replacement and reason, agrees detail/history versions 
 **Changed-code coverage gaps:** AssignmentPanel's remaining uncovered statements include defensive submit exits normally prevented by hidden/disabled controls and existing aborted-read, 401 and non-Error fallbacks. Tests assert that blocked controls cannot submit rather than directly invoke an unreachable Vue handler. LeadRequestPage's remaining branches are existing null-value rendering and error fallbacks. ReviewRequestPage's lower total mainly reflects its existing quiet-refresh helper (child workflow panels are stubbed in page tests); the added access-denial refresh is covered. The existing coverage configuration excludes some shell/auth files and does not merge browser/integration execution into unit coverage; no 100% whole-project claim is made.
 
 **Documentation/artifact checks:** 15/15 functional-case, traceability and document checks passed (427 cases, 112 traceability rows, 579 changed-document file links); native workbook checks passed 16/16. Four updated diagram exports and six changed workbook regions were visually inspected. `npm run submission:prepare` passed; generated draft folders still require the team's evidence-completeness review. The disposable KAN-65 PostgreSQL container was removed after testing. See [S3-E15 validation](../scrum/sprint-03/evidence/kan65-validation-2026-10-19.json). No shared database cleanup was performed.
+
+## 21 October 2026 — KAN-78 buffered venue intervals and KAN-34 draft dates
+
+**AUTO-20261021-01.** Executor: Codex in Arvin's approved implementation session. Branch: `feat/kan-78-kan-34`; base HEAD `aaee5498e8140526e6005c4fe5fce0bf95d95f40` plus uncommitted working-tree changes. No implementation commit exists yet. Local Windows, Node 24.21.0, Chromium and isolated PostgreSQL 17.11 on loopback port 55478; each integration file used a disposable schema. The shared Supabase database and existing development servers were not used for these checks.
+
+| Command / check | Actual result |
+| --- | --- |
+| `npm run check` | Pass: type checks, 605 frontend + 1,049 backend tests, both builds |
+| `npm run test:coverage` | Pass: frontend 94.84% statements / 91.53% branches / 97.19% lines; backend 85.46% / 88.49% / 86.03% |
+| `npm run test:integration` | Pass: 23 files / 356 tests, including 11 KAN-78 real-database cases and strict-date HTTP/persistence tests |
+| Playwright: draft editing, venue bookings, availability, search, suitability and booking submission | Pass: 48 Chromium cases, two workers; isolated API 3078 and web 5178 |
+
+Browser response fixtures verify rendering, navigation, registration toggle/save/reload and occupied-time/warning displays; real database rules are verified separately by integration tests. Authentication-required browser cases also contact the normal API startup on the isolated ports. This is not hosted acceptance.
+
+KAN-34 refuses impossible dates on all four editable date fields before writes; valid leap days and explicit clears remain supported. Earlier TC-03-01's 15 October failure remains historical; TC-03-301 is the permanent repaired-code regression. Existing ownership/state and registration-edit regressions were rerun.
+
+KAN-78 checks one occupied-interval rule across five consumers; exact adjacency, buffer-only blocks, opening hours/cross-day limits, live warnings for both sides, unchanged historical rows, zero durations, unrelated venues, access/privacy and concurrent approvals/buffer edits passed. SQL functions and triggers are not instrumented by V8; their behavioural coverage comes from PostgreSQL integration cases. Unit coverage does not instrument every database-backed serialization/warning branch or every existing page path; no claim of 100% new-code coverage is made. The full integration run initially exposed old response/ledger fixtures and transient KAN-65 timing failures under concurrent load. Fixtures were updated for migration 008/additive response fields; the unchanged KAN-65 suite passed 37/37 alone, and the final full suite passed 356/356.
+
+No shared data was created or left behind. Migration 008 was applied only to the disposable local test schemas. KAN-77's settings editor, team coordination/group-chat notice, independent review, hosted checks, final commit SHA and merge remain outstanding; no Done/velocity credit is claimed. The 8/3 SP estimates remain unchanged. No customer requirement was added.
+
+## 21 October 2026 — KAN-78 review follow-up
+
+**AUTO-20261021-02.** The pre-commit packet review found that PostgreSQL Date values could lose milliseconds when passed to Date.parse in the extra search opening-hours check. Search now normalises occupied endpoints through iso() first. A permanent regression checks a 10:00:00.600 occupied start against 10:00:00.500 opening time. Backend coverage run passed 39 files / 1,050 tests; lines 86.03%, branches 88.58%. Backend type checking passed. Environment and uncommitted base SHA are unchanged from AUTO-20261021-01. No SQL, API contract or browser behaviour was changed beyond preserving timestamp precision; earlier integration and browser runs remain applicable. Independent human review and hosted acceptance remain Not executed.
+
+## 21 October 2026 — committed verification source
+
+The source and tests exercised by AUTO-20261021-01/02 are now committed as `0b08802` (KAN-34), `2396cce` (KAN-78 implementation) and `afea8cf` (KAN-78 tests). The combined implementation/test tree is `afea8cf`. Earlier uncommitted-state descriptions accurately record the state when the runs occurred; no test rerun is claimed solely for committing identical content. The documentation commit follows these source commits. Push, PR, Leo Kai Jie's independent review and hosted acceptance remain Not executed.

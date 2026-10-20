@@ -144,11 +144,18 @@ classDiagram
     Decision decision
   }
   class Venue {
+    integer setupMinutes
+    integer turnaroundMinutes
     UUID id
     number capacity
     boolean active
   }
   class VenueBooking {
+    integer reservedSetupMinutes
+    integer reservedTurnaroundMinutes
+    Date occupiedStartsAt
+    Date occupiedEndsAt
+    string[] warnings
     UUID eventRequestId
     UUID venueId
     BookingStatus status
@@ -230,9 +237,11 @@ sequenceDiagram
   Coordinator->>API: Open assigned review queue and decide request
   API->>DB: Recheck current assignment, record review and status atomically
   Coordinator->>API: Request suitable available venue for approved event
-  API->>DB: Validate current event and venue, insert pending booking
+  API->>DB: Lock event and venue and check current occupied interval, hours and blocks
+  API->>DB: Insert pending booking without reserving time
   Staff->>API: Decide venue booking
-  API->>DB: Recheck conflicts and permissions, persist decision
+  API->>DB: Lock booking, event and venue and recheck current buffers and occupied conflicts
+  API->>DB: Snapshot buffers and persist approval atomically
 ```
 
 Two Lead writes serialize on the event lock. An initial-allocation loser receives `409 COORDINATOR_ALREADY_ASSIGNED`; a stale handover receives `409 ASSIGNMENT_VERSION_CONFLICT`. Neither overwrites the winner. Valid same-coordinator requests preserve the version and all history. Any persistence failure rolls back the history and linkage together. The coordinator in the later review/venue steps must be the currently assigned coordinator: after handover, the former coordinator is denied. Protected multi-query history reads take a shared event lock, so assignment cannot change between authorisation and fetching those records. KAN-64 transactional notifications remain pending and are not depicted as delivered.
@@ -329,6 +338,8 @@ erDiagram
   APP_USERS ||--o{ EVENT_REGISTRATIONS : attends
   APP_USERS ||--o{ NOTIFICATIONS : receives
   VENUES {
+    integer setup_minutes
+    integer turnaround_minutes
     uuid id PK
     text name UK
     integer capacity
@@ -348,6 +359,8 @@ erDiagram
     text reason "nullable"
   }
   VENUE_BOOKINGS {
+    integer reserved_setup_minutes
+    integer reserved_turnaround_minutes
     uuid id PK
     uuid event_request_id FK
     uuid venue_id FK
@@ -430,3 +443,7 @@ Record significant changes in the [decision log](../requirements/assumptions-and
 Customer changes received 2 October are represented by KAN-77/78/79/81/82/83/84; the complete [design/test impact register](../requirements/change-requests.md#design-and-test-impact-planned-work) and Sprint 3/4 cards allocate the work. This is planned design work, not a claim that new roles, APIs, migrations or diagram exports already exist.
 
 Implementers must update C3/class/sequence/data/API views for venue buffers, outage recovery, timed holds and its scheduler, Lead authorization, independent arrangements, revision-bound safety and preparation, plus notification integration. Preserve existing diagrams as the current implementation until code changes; add numbered migrations rather than editing applied history. Re-export affected diagrams in the same story PR. Safety review remains separate from event confirmation: readiness permits review, while preparation requires both a confirmed event and current safety approval, avoiding a circular prerequisite.
+
+## KAN-78 occupied interval evaluation — 21 October 2026
+
+The API's venue module now shares SQL occupied-interval calculation across search, calendar, suitability and booking writes. Migration 008 centralises occupied endpoints and operating-hour eligibility. The internal view selects current durations for live bookings and approval snapshots for ended/completed history. Computed warnings identify both affected overlaps and operational violations after buffer edits; no background job or booking cancellation is introduced. Existing API/module boundaries stay the same. KAN-77's configuration editor remains a separate dependency. The updated class, planning ERD and workflow sequence PNGs accompany this source.

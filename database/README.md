@@ -144,3 +144,9 @@ TEST_DATABASE_URL=postgresql://connectsphere:connectsphere_local@127.0.0.1:5432/
 The local service does not use TLS. Tests create and drop an isolated schema in the dedicated test database, never reset the public schema. GitHub Actions provisions its own PostgreSQL service and does not need Supabase credentials. To use a dedicated hosted test database instead, include its own verified TLS settings in `TEST_DATABASE_URL`.
 
 For optional local application development, set `DATABASE_URL=postgresql://connectsphere:connectsphere_local@127.0.0.1:5432/connectsphere` and leave `MIGRATION_DATABASE_URL` blank, then run migrations, seeds and the app normally. Update the URL if the local port or credentials change. `npm run db:down` stops the Compose service and retains its named volume. Changing Compose credentials after a volume is initialised does not change the existing PostgreSQL users. There is no automatic reset command.
+
+## Migration 008 — KAN-78 occupied venue intervals
+
+Adds zero-default 0..1440-minute venue durations, reservation snapshot fields, SQL occupied start/end/hour helpers, an internal booking-interval view, live warning evaluation and booking/block integrity guards. Existing migrations and booking rows are preserved. The shared venue lock serialises current buffer changes and reservation decisions. Ended/completed rows retain approval snapshots; warnings for live bookings are computed without mutating history.
+
+Run `npm run db:migrate` only against the intended development database after the team has been told. This session applied migration 008 only to disposable local PostgreSQL test schemas. Shared Supabase application is **Not executed**. Coordinate the column names/migration with KAN-77 before merging its separately owned editor; do not create duplicate buffer columns. Tests use explicit `TEST_DATABASE_URL` and must never target shared data.

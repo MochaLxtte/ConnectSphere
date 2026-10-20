@@ -216,3 +216,11 @@ for policy boundaries and [testing guidance](../../../../docs/testing/README.md#
 for remaining hosted checks. Unit/HTTP tests are `backend/test/venues/suitability-*.test.ts`;
 PostgreSQL tests are `database/tests/venues/venue-suitability.integration.test.ts`.
 Record executed results separately in the shared test register.
+
+## KAN-78 buffered planning — 21 October 2026
+
+Migration 008 supplies SQL occupied-interval functions, `venue_booking_intervals`, approval snapshots and `venue_booking_warnings(uuid)`. Search, availability, suitability, booking submission/approval and block creation consume these rules. Views/functions returning booking data are internal, with public/anon/authenticated access revoked. The API enforces existing roles and current assignment.
+
+Calendar bars use occupied times and return event timing separately. Booking detail and the staff queue expose live overlap/block/hour warnings; the queue also includes affected approved bookings. Warnings are computed, so KAN-77's future editor gets current re-evaluation after a venue-row update without changing bookings. It should use the same venue lock and consume the warning function. KAN-77's editor and field-aware stale-save rules remain separate work.
+
+Verification: `database/tests/venues/venue-buffers.integration.test.ts` covers the calculator across consumers, boundaries, blocks/hours, preserved history, existing conflicts, privacy and races. `tests/e2e/venue-bookings.spec.ts` verifies occupied-time/warning display. See AUTO-20261021-01; hosted acceptance remains Not executed.

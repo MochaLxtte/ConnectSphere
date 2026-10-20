@@ -587,3 +587,11 @@ Before selecting future work, refine the open rules with the Product Owner, esti
 The release walkthrough should connect submission, assignment, review, venue booking, equipment arrangements, confirmation, registration and significant change/cancellation. Tests must show that event timing and current arrangements remain consistent across those steps. The [traceability register](traceability.csv) maps stories to implementation and tests; it does not replace executed acceptance evidence.
 
 Export the final Jira backlog with completed and pending stories for submission. Keep the product backlog, sprint snapshots and historical acceptance records distinguishable; later refinements must not rewrite the original sprint baseline or invent completion dates.
+
+## 21 October 2026 — targeted KAN-78 / KAN-34 implementation snapshot
+
+KAN-78 (8 SP) and KAN-34 (3 SP) are In Progress / Arvin in Jira on `feat/kan-78-kan-34`; Sprint 3 membership is unchanged. Subtasks: KAN-94/95 under KAN-78; KAN-96/97 under KAN-34. Local automated verification passed (AUTO-20261021-01). Independent review, hosted acceptance and Done date remain Not recorded / Not executed as applicable. KAN-77 remains separately assigned to Kai Jie; this branch supplies shared buffer storage/evaluation, not its editor. Earlier allocations and historical acceptance are preserved.
+
+### 21 October — reviewer selection follow-up
+
+Independent reviewer for KAN-78 and KAN-34: Leo Kai Jie, selected by Arvin in chat. Review execution and approval remain Not recorded. Story status, estimates and sprint membership are unchanged.
