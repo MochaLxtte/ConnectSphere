@@ -177,6 +177,28 @@ export async function listOutageNotificationTargets(
   return found.rows;
 }
 
+/** KAN-81-AC7/AC8: whether a booking still has an outage that nobody has resolved or removed. */
+export async function hasOpenRecovery(client: Pick<PoolClient, 'query'>, bookingId: string): Promise<boolean> {
+  const found = await client.query<{ open: boolean }>(
+    `SELECT EXISTS(SELECT 1 FROM venue_outage_impacts WHERE venue_booking_id = $1 AND status = 'RECOVERY_REQUIRED') AS open`,
+    [bookingId],
+  );
+  return found.rows[0]?.open === true;
+}
+
+/**
+ * KAN-81-AC8: an approved replacement resolves the original's open flags and cancels the original. The
+ * row stays as history. The conflict trigger fires only for APPROVED rows, so cancelling is allowed
+ * even while the original overlaps an outage. The caller holds the original's row lock.
+ */
+export async function resolveReplacedBooking(client: Pick<PoolClient, 'query'>, originalBookingId: string): Promise<void> {
+  await client.query(
+    `UPDATE venue_outage_impacts SET status = 'RESOLVED', updated_at = now()
+     WHERE venue_booking_id = $1 AND status = 'RECOVERY_REQUIRED'`, [originalBookingId]);
+  await client.query(
+    `UPDATE venue_bookings SET status = 'CANCELLED', updated_at = now() WHERE id = $1`, [originalBookingId]);
+}
+
 const STATUSES: readonly RecoveryStatus[] = ['RECOVERY_REQUIRED', 'RESOLVED', 'CLEARED'];
 
 /** The optional ?status= filter on the recovery list. */

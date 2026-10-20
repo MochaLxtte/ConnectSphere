@@ -13,6 +13,8 @@ export interface BookingSubmissionInput {
   endsAt: string;
   layout: string | null;
   notes: string | null;
+  /** KAN-81-AC7: the outage-affected booking of the same event that this request replaces. */
+  replacesBookingId: string | null;
 }
 
 // Require an explicit instant, independent of the server's time zone. Millisecond precision
@@ -43,7 +45,7 @@ function requiredDateTime(body: Record<string, unknown>, field: string): string 
 
 /** KAN-53: a coordinator selects a venue and timing for an event they are authorised to coordinate. */
 export function parseBookingSubmission(input: unknown): BookingSubmissionInput {
-  const body = parseObjectBody(input, ['venueId', 'startsAt', 'endsAt', 'layout', 'notes']);
+  const body = parseObjectBody(input, ['venueId', 'startsAt', 'endsAt', 'layout', 'notes', 'replacesBookingId']);
   const venueId = body.venueId;
   if (typeof venueId !== 'string' || !UUID_PATTERN.test(venueId)) {
     throw new WorkflowError('INVALID_INPUT', 'INVALID_VENUE_ID', 'venueId must be a UUID.');
@@ -53,10 +55,15 @@ export function parseBookingSubmission(input: unknown): BookingSubmissionInput {
   if (Date.parse(endsAt) <= Date.parse(startsAt)) {
     throw new WorkflowError('INVALID_INPUT', 'INVALID_BOOKING_PERIOD', 'endsAt must be after startsAt.');
   }
+  const replaces = body.replacesBookingId;
+  if (replaces !== undefined && replaces !== null && (typeof replaces !== 'string' || !UUID_PATTERN.test(replaces))) {
+    throw new WorkflowError('INVALID_INPUT', 'INVALID_REPLACED_BOOKING_ID', 'replacesBookingId must be a UUID or null.');
+  }
   return {
     venueId, startsAt, endsAt,
     layout: optionalText(body, 'layout'),
     notes: optionalText(body, 'notes'),
+    replacesBookingId: typeof replaces === 'string' ? replaces : null,
   };
 }
 
