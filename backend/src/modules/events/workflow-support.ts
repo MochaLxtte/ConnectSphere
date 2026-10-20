@@ -175,7 +175,8 @@ export function parseObjectBody(input: unknown, allowedKeys: readonly string[]):
   return body;
 }
 
-const MAX_TEXT_LENGTH = 2000;
+/** Shared limit for workflow explanations (reasons, notes, messages); KAN-60 reuses it for review reasons. */
+export const MAX_TEXT_LENGTH = 2000;
 
 export function requiredText(body: Record<string, unknown>, field: string): string {
   const value = body[field];
