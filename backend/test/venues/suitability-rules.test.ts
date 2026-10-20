@@ -11,7 +11,7 @@ const event: SuitabilityEvent = {
 };
 const venue: SuitabilityVenue & { isActive: boolean } = {
   id: 'venue', name: 'Hall', capacity: 50, facilities: ['Projector'], accessibilityFeatures: ['Hearing loop'],
-  layouts: ['Theatre'], wheelchairAccessible: true, opensAt: '08:00:00', closesAt: '22:00:00', isActive: true,
+  layouts: ['Theatre'], wheelchairAccessible: true, opensAt: '08:00:00', closesAt: '22:00:00', setupMinutes: 0, turnaroundMinutes: 0, isActive: true,
 };
 const input: VenueSuitabilityInput = {
   venueId: venue.id, requirementsVersion: 'a'.repeat(64), facilities: ['projector'], accessibility: ['HEARING LOOP'],
