@@ -20,7 +20,7 @@ const makeBooking = (overrides: Partial<VenueBooking> = {}): VenueBooking => ({
   description: 'Orientation and activities', expectedAttendance: 80,
   venueRequirements: 'A seated hall', accessibilityNeeds: 'Step-free access',
   decidedBy: null, decidedAt: null, decisionReason: null,
-  createdAt: '2026-10-01T01:00:00.000Z', updatedAt: '2026-10-01T01:00:00.000Z', ...overrides,
+  createdAt: '2026-10-01T01:00:00.000Z', updatedAt: '2026-10-01T01:00:00.000Z', recovery: [], ...overrides,
 });
 
 async function bookingFixtures(page: Page, role: Role | null, options: {

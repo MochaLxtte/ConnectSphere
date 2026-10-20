@@ -3,8 +3,11 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import type { WorkflowActor } from '../../../backend/src/modules/events/workflow-support.js';
 import { listVenueAvailability } from '../../../backend/src/modules/venues/availability.js';
 import { createVenueBlock, deleteVenueBlock, listVenueBlocks } from '../../../backend/src/modules/venues/block-service.js';
-import { createVenueBooking, decideVenueBooking } from '../../../backend/src/modules/venues/booking-service.js';
-import { listRecoveryArrangements, recordOutageImpacts } from '../../../backend/src/modules/venues/outage-impact.js';
+import { createVenueBooking, decideVenueBooking, getVenueBooking, listVenueBookings } from '../../../backend/src/modules/venues/booking-service.js';
+import { listNotifications } from '../../../backend/src/modules/notifications/inbox.js';
+import { recordNotifications } from '../../../backend/src/modules/notifications/notify.js';
+import { outageRecoveryNotifications } from '../../../backend/src/modules/notifications/trigger-matrix.js';
+import { listOutageNotificationTargets, listRecoveryArrangements, recordOutageImpacts } from '../../../backend/src/modules/venues/outage-impact.js';
 import { parseVenueSearchQuery, searchVenues } from '../../../backend/src/modules/venues/venue-search.js';
 import { createWorkflowFixture, type WorkflowFixture } from '../events/workflow-fixture.js';
 
@@ -258,5 +261,81 @@ describe('KAN-81 outage effects on planning and approval (AC9, AC10)', () => {
     }
     expect(await attempt).toMatchObject({ code: 'VENUE_UNAVAILABLE' });
     expect((await bookingRow(pending.id)).status).toBe('PENDING');
+  });
+});
+
+describe('KAN-81 phase 2: coordinator notice and recovery view against PostgreSQL (AC5, AC6)', () => {
+  it('notifies each affected event’s current coordinator once, in the outage transaction (AC5)', async () => {
+    const venueId = await venue();
+    const first = await booking(venueId, at('03:00'), at('04:00'));
+    const second = await booking(venueId, at('05:00'), at('05:30'));
+    const saved = await create(venueId);
+
+    for (const affected of [first, second]) {
+      expect(await fixture.notifications(affected.eventRequestId)).toEqual([
+        expect.objectContaining({ recipient_id: coordinator.id, type: 'VENUE_OUTAGE_RECOVERY_REQUIRED' }),
+      ]);
+    }
+    const stored = await fixture.pool.query(
+      `SELECT venue_booking_id, dedupe_key FROM notifications WHERE event_request_id = $1`, [first.eventRequestId]);
+    expect(stored.rows).toEqual([{
+      venue_booking_id: first.id, dedupe_key: `VENUE_OUTAGE_RECOVERY_REQUIRED:${saved.id}:${first.eventRequestId}`,
+    }]);
+    const [notice] = await fixture.notifications(first.eventRequestId);
+    expect(notice!.message).toContain('Reason: Burst pipe');
+  });
+
+  it('sends nothing for an outage that affects no booking, and nothing twice when reprocessed', async () => {
+    const venueId = await venue();
+    const unaffected = await booking(venueId, at('07:00'), at('08:00'));
+    await create(venueId);
+    expect(await fixture.notifications(unaffected.eventRequestId)).toEqual([]);
+
+    const affected = await booking(venueId, at('03:00'), at('04:00'));
+    const saved = await create(venueId, { startsAt: at('02:30'), endsAt: at('03:30'), reason: 'Gas leak' });
+    const again = outageRecoveryNotifications(await listOutageNotificationTargets(fixture.pool, saved.id),
+      { blockId: saved.id, startsAt: at('02:30'), endsAt: at('03:30'), reason: 'Gas leak' });
+    expect(await recordNotifications(fixture.pool, again)).toBe(0);
+    expect(await fixture.notifications(affected.eventRequestId)).toHaveLength(1);
+  });
+
+  it('shows the recovery state to the assigned coordinator and Venue Staff, and to no one else (AC6)', async () => {
+    const venueId = await venue();
+    const affected = await booking(venueId, at('03:00'), at('04:00'));
+    const saved = await create(venueId);
+    const expected = [{
+      impactId: saved.affected[0]!.impactId, status: 'RECOVERY_REQUIRED',
+      outageStartsAt: outage.startsAt, outageEndsAt: outage.endsAt, outageReason: 'Burst pipe',
+    }];
+
+    expect((await getVenueBooking(fixture.dependencies, { bookingId: affected.id, actor: coordinator })).recovery)
+      .toEqual(expected);
+    expect((await getVenueBooking(fixture.dependencies, { bookingId: affected.id, actor: staff })).recovery)
+      .toEqual(expected);
+    const listed = await listVenueBookings(fixture.dependencies, { actor: coordinator, eventRequestId: affected.eventRequestId });
+    expect(listed.map((item) => item.recovery)).toEqual([expected]);
+    const other = await fixture.createUser('EVENT_COORDINATOR');
+    await expect(getVenueBooking(fixture.dependencies, { bookingId: affected.id, actor: other }))
+      .rejects.toMatchObject({ code: 'VENUE_BOOKING_NOT_FOUND' });
+  });
+
+  it('links the coordinator’s inbox notice to the protected booking page (AC5, AC6)', async () => {
+    const venueId = await venue();
+    const affected = await booking(venueId, at('03:00'), at('04:00'));
+    await create(venueId);
+    const inbox = await listNotifications(fixture.dependencies, coordinator);
+    expect(inbox.find((item) => item.booking?.id === affected.id)).toMatchObject({
+      type: 'VENUE_OUTAGE_RECOVERY_REQUIRED', link: `/venue-bookings/${affected.id}`,
+    });
+  });
+
+  it('shows a removed outage as cleared on the booking, without deleting the notice', async () => {
+    const venueId = await venue();
+    const affected = await booking(venueId, at('03:00'), at('04:00'));
+    const saved = await create(venueId);
+    await deleteVenueBlock(fixture.dependencies, { actor: staff, blockId: saved.id });
+    expect((await getVenueBooking(fixture.dependencies, { bookingId: affected.id, actor: coordinator })).recovery)
+      .toEqual([expect.objectContaining({ status: 'CLEARED' })]);
+    expect(await fixture.notifications(affected.eventRequestId)).toHaveLength(1);
   });
 });
