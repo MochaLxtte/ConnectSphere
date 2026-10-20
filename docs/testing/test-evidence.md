@@ -870,3 +870,24 @@ The interface requires a replacement and reason, agrees detail/history versions 
 **Gaps (Not executed):** KAN-55 has no browser (e2e) test of the blocks page, so its UI is covered at component level only. There is no automated test of a block being created concurrently with a booking approval; both orders are tested sequentially. AC5's example reasons are free text, so only representative values (maintenance, renovation) are exercised. For both stories the hosted/manual cases (TC-12-201–203, TC-14-201/203/207–211) remain **Not executed** and need a signed-in run under AGENTS.md §5.12.
 
 **Acceptance boundary:** this maps existing automated evidence to the criteria. It does not record a Sprint 2 review decision; acceptance for KAN-53 and KAN-55 remains **Not recorded**, and their Jira Done status and points are unchanged.
+
+## 21 October 2026 — KAN-77 venue setup and turnaround durations
+
+**Run ID: AUTO-20261021-02.** Branch `feat/KAN-77-venue-buffer-durations`, code commits `1c6851f2f10959a4b555868d0944a092f1f7b747` (backend), `0de505b` (frontend) and `d26f294` (PostgreSQL/browser tests), with the tested working tree committed without code changes, based on `0ce460c`. Actual execution date: 21 October 2026, Asia/Singapore. Environment: Windows, Node.js 24, Vitest. No isolated PostgreSQL test database was available (no Docker, blank `TEST_DATABASE_URL`), and shared Supabase was not used for tests. Migration 008 was not applied to any shared database.
+
+| Command / check | Actual result |
+| --- | --- |
+| `npm run check` | Pass: type checks (tools, backend, frontend), 626 frontend tests in 32 files, 1,078 backend tests in 39 files, both production builds |
+| `npm run test:coverage` | Pass: the same tests |
+| `npm run test:integration` | **Not executed** locally: the migration 008 upgrade test, the 16-case KAN-77 PostgreSQL suite and the updated migration lists in `database.integration.test.ts` typecheck and await the PR's CI |
+| `npm run test:e2e` | **Not executed** locally: Playwright would start against shared Supabase, which lacks migration 008. The two new KAN-77 browser tests and updated catalogue fixtures await CI |
+
+**New tests:** backend 43 (input 23, service 14, HTTP 6); frontend 22 (form 14, edit page 8). Seven existing fixtures gained the two fields, and one KAN-50 form-shape assertion now includes them.
+
+**Coverage:** `venue-catalogue-input.ts` 100% lines (74/74), branches (80/80) and functions (10/10); `venue-catalogue-service.ts` 100% (31/31, 16/16, 10/10); `availability.ts` 100%. Frontend `catalogue-form.ts` and the catalogue API client 100%; `VenueCatalogueEditPage.vue` 100% lines and functions, 98.02% branches. Its three uncovered branches are pre-existing KAN-50 defensive guards. `suitability-service.ts` has no unit tests; its two added SQL fields are covered by the PostgreSQL suite. Workspace totals: frontend 94.84% statements / 92.15% branches / 96.67% functions / 97.17% lines; backend 85.56% / 88.72% / 83.33% / 86.14%.
+
+**Verified behaviour (unit/component):** only Venue Staff reach the buffer update. Every other role is refused before any query. Values 0–1440 are accepted. Negatives, 1441, fractions, NaN, infinity, text, null, arrays and a missing expected value are refused with field feedback before a connection opens. A changed buffer is written only when its expected value matches the locked row. A stale value returns `409 VENUE_BUFFER_CONFLICT` and the transaction rolls back with no update. When one buffer is stale and the other is not, the whole request is refused. Edits without buffers are never refused for buffer changes. The edit page shows saved values, sends only changed buffers with their loaded values, explains invalid values per field and disables Save. After a conflict it keeps the typed value and offers a reload that clears the message.
+
+**Gaps:** AC6 **Not executed** (depends on KAN-78; see the [21 October decision](../requirements/assumptions-and-questions.md#21-october-2026--kan-77-buffer-concurrency-and-ac6-dependency)); its only check confirms existing bookings are unchanged. PostgreSQL, migration-upgrade and browser layers await CI. Manual/hosted cases TC-08-15/18/19 are Not executed and need migration 008 applied to shared Supabase first. The `docs/architecture/exports/erd-planning.png` re-export was **Not executed**: a Mermaid CLI render did not match the existing export's styling and layout, so the image was left unchanged. The Mermaid source and `docs/database-diagram.md` are updated.
+
+**Acceptance boundary:** KAN-77 stays In Progress at 2 SP with no velocity credit. Independent review, hosted checks and formal acceptance remain outstanding.

@@ -40,6 +40,8 @@ Selected ownership/review: Arvin 19/Kai Jie, Kai Jie 19/Tristan, Ernest 12/Ryan,
 
 **21 October 2026 — KAN-53 and KAN-55 evidence backfill outside a Daily Scrum.** Mapped existing automated tests to every KAN-53 and KAN-55 criterion and recorded the run as `AUTO-20261021-01`: local unit and component suites plus the `main` CI run 39447691109 on `aaee549` for PostgreSQL and browser layers. TC-12 now passes at integration level, and dated backfill notes were added to Sprint 2's S2-T11/T12/T17/T18. Gaps: KAN-55 has no blocks-page browser test or concurrent block/approval test. Hosted/manual cases remain Not executed, and Sprint 2 acceptance for both stories remains Not recorded. No code, Jira status or points changed.
 
+**21 October 2026 — KAN-77 development outside a Daily Scrum.** Implemented KAN-77-AC1–AC5 on `feat/KAN-77-venue-buffer-durations`: migration 008 adds setup and turnaround minutes (0–1440, default 0). Venue Staff edit them in the catalogue, stale buffer edits return `409 VENUE_BUFFER_CONFLICT`, and catalogue, search, suitability and calendar responses include both values. `AUTO-20261021-02`: `npm run check` and coverage pass, and the changed backend services are at 100%. PostgreSQL and browser suites await CI. AC6 is deferred until KAN-78 exists. Migration 008 needs team agreement before it is applied to shared Supabase. KAN-77 stays In Progress at 2 SP.
+
 ## Impediments
 
 | Raised | Impediment | Owner | Action | Status |
