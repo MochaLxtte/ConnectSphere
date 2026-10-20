@@ -1301,3 +1301,20 @@ shared test data is left behind. No push, remote merge or PR creation is perform
 **Gaps:** PostgreSQL cases (notice per event, dedupe on reprocessing, recovery visible to staff and assigned coordinator but not another coordinator, inbox link, cleared state after removal) await CI; execution rows will be added after CI. AC7/AC8 (phase 3), holds and readiness remain Not executed. KAN-81 stays In Progress.
 
 **CI follow-up — 21 October 2026, PR #49 (KAN-81 phase 2).** Run [39492721585](https://github.com/MochaLxtte/ConnectSphere/actions/runs/39492721585) (`AUTO-20261021-KAN81-P2-CI-01`, merge `92097c3` of head `8688bf6`) passed check, coverage (696 frontend, 1,210 backend) and migration/seed, but integration failed **402/403**: the new reprocessing case inserted an approved booking into a period it had just blocked at the same venue, which the `venue_bookings_conflict` trigger correctly refused. Browser tests did not run. Commit `f87b59d` moved that case to a second venue; feature code was unchanged. Run [39493384129](https://github.com/MochaLxtte/ConnectSphere/actions/runs/39493384129) (`AUTO-20261021-KAN81-P2-CI-02`, merge `0dd8fb5`) passed every step: integration **403/403** (`venue-outage-recovery` 23/23) and browser **148/148**. Case results are recorded as scoped TC-09-18 (Fail, then Pass), TC-09-19 and TC-09-20 in `test-executions.csv`; the broader TC-09-05/06/12 remain unexecuted.
+
+## 21 October 2026 — KAN-81 phase 3 replacement bookings
+
+**Run ID: AUTO-20261021-10.** Branch `feat/KAN-81-phase-3-replacements`, stacked on phase 2, code commits `e8310367face54ecbec4ef71de4369a6957b5129` (backend), `ac9639e` (frontend) and `981f8ab` (PostgreSQL tests and fixtures), with the tested working tree committed without code changes. Actual execution date: 21 October 2026, Asia/Singapore. Environment: Windows, Node.js 24, Vitest. No isolated PostgreSQL database locally; shared Supabase not used. Migration 011 not applied to any shared database.
+
+| Command / check | Actual result |
+| --- | --- |
+| `npm run check` | Pass: type checks, 702 frontend tests in 35 files and 1,228 backend tests in 44 files, both builds |
+| `npm run test:coverage` | Pass: the same tests |
+| `npm run test:integration` | **Not executed** locally: 13 phase 3 PostgreSQL cases and migration 011 in every migration expectation await CI |
+| `npm run test:e2e` | **Not executed** locally; booking browser fixtures gained `replacesBookingId: null`. No phase 3 browser test was added. |
+
+**New tests:** backend 18 (input parsing; request checks and refusals; approval lock order, resolution, cancellation and refusal; rejection) and frontend 6 (replacement choice and request body, omitted field, refusal reload, list marker, booking page link).
+
+**Coverage:** `booking-input.ts` and `outage-impact.ts` 100% lines and branches. In `booking-service.ts` every changed line and branch is covered; its remaining uncovered lines are pre-existing read and error paths covered by PostgreSQL suites. Workspace totals: frontend 95.27% statements / 92.65% branches / 97.16% functions / 97.64% lines; backend 88.65% / 90.84% / 88.60% / 89.12%.
+
+**Gaps:** PostgreSQL cases (link and pending state, approval resolving and cancelling, rejection and retry, second replacement and removed outage refused, concurrent approvals, objective-check refusals, unassigned coordinator) await CI. There is no phase 3 browser test; the panel and page are covered at component level. `docs/architecture/exports/erd-planning.png` was re-rendered from the updated planning Mermaid block with the phase 1 settings (Mermaid CLI 12.0.0, neutral theme, white background, size 2600, scale 2; SHA-256 `ad82ed1d29edd413d4d78fc9baf166389cf67ac662714a87697b9541116b9c9e`) and visually checked: the new `replaces_booking_id` field and "replaced by" self-relationship appear, with no clipping. Holds (KAN-83), buffered intervals (KAN-78) and readiness (KAN-61/CR-6) remain outside KAN-81's implemented scope. KAN-81 stays In Progress.
