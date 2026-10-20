@@ -42,6 +42,8 @@ Selected ownership/review: Arvin 19/Kai Jie, Kai Jie 19/Tristan, Ernest 12/Ryan,
 
 **20 October 2026 — KAN-34 development outside a Daily Scrum.** Repaired KAN-34-AC101 on `fix/KAN-34-strict-draft-dates`: draft date-times must be ISO 8601 with an offset and a real calendar date, so impossible dates return a 400 validation error instead of HTTP 500. `AUTO-20261020-01`: `npm run check` and `npm run test:coverage` pass, with `draft-update-input.ts` at 100% lines, branches and functions. The integration case awaits CI; AC1–AC3 hosted checks (S3-T06), independent review and acceptance remain outstanding. KAN-34 stays at 3 SP with no velocity credit.
 
+**20 October 2026 — KAN-6 development outside a Daily Scrum.** Repaired KAN-6-AC101 on `fix/KAN-6-detail-field-errors`: saved-draft submission from the detail page now lists the server's per-field errors instead of a generic uncertain-result message, keeping the draft and its actions. `AUTO-20261020-02`: `npm run check` and `npm run test:coverage` pass, and the new component suite failed before the repair. TC-02-03 manual comparison and other S3-T05 hosted checks, independent review and acceptance remain outstanding. KAN-6 stays at 3 SP with no velocity credit.
+
 ## Impediments
 
 | Raised | Impediment | Owner | Action | Status |
