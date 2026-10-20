@@ -283,6 +283,7 @@ svg {
 .sign-in-link:hover {
   background: #edf1e6;
 }
+.topbar-actions { display: flex; align-items: center; gap: 14px; }
 .account-summary {
   display: flex;
   align-items: center;
@@ -1121,6 +1122,8 @@ h1 {
 }
 
 @media (max-width: 400px) {
+  .topbar-actions { gap: 8px; }
+  .breadcrumb { flex-wrap: wrap; gap: 2px 8px; min-width: 0; }
   .sidebar {
     padding-left: 15px;
     padding-right: 15px;

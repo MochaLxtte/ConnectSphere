@@ -3,6 +3,8 @@ import {
   inEventReadTransaction, requiredText, requireRelation, setEventStatus, WorkflowError,
   type WorkflowActor, type WorkflowDependencies,
 } from './workflow-support.js';
+import { recordNotifications } from '../notifications/notify.js';
+import { clarificationNotifications } from '../notifications/trigger-matrix.js';
 
 /**
  * CF-04 / KAN-27 clarifications (Q-04 provisional transitions):
@@ -63,6 +65,7 @@ export async function requestClarification(
       [event.id, actor.id, message],
     );
     await setEventStatus(client, event.id, 'CLARIFICATION_REQUESTED');
+    await recordNotifications(client, clarificationNotifications(event, { id: inserted.rows[0]!.id, message }));
     return {
       clarificationId: inserted.rows[0]!.id,
       eventRequestId: event.id,

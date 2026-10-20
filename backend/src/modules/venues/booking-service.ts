@@ -5,6 +5,8 @@ import {
   type WorkflowActor, type WorkflowDependencies,
 } from '../events/workflow-support.js';
 import { parseBookingDecision, parseBookingSubmission } from './booking-input.js';
+import { recordNotifications } from '../notifications/notify.js';
+import { bookingDecisionNotifications } from '../notifications/trigger-matrix.js';
 
 export type VenueBookingStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'CANCELLED';
 
@@ -157,7 +159,10 @@ export async function createVenueBooking(
   });
 }
 
-/** No event status, notifications or other booking rows change as part of a booking decision. */
+/**
+ * No event status or other booking rows change as part of a booking decision. KAN-64-AC203/AC207: its
+ * notifications are written in the same transaction, so a refused or rolled-back decision sends none.
+ */
 export async function decideVenueBooking(
   { pool }: WorkflowDependencies,
   { bookingId, actor, input }: { bookingId: string; actor: WorkflowActor; input: unknown },
@@ -209,6 +214,23 @@ export async function decideVenueBooking(
       await client.query(`UPDATE venue_bookings SET status = $1, decided_by = $2,
         decided_at = now(), decision_reason = $3, updated_at = now() WHERE id = $4`,
       [decision.decision, actor.id, decision.reason, bookingId]);
+
+      // Share-lock the event so the coordinator notified is the one assigned when this commits.
+      const context = await client.query<{
+        name: string | null; organiserId: string; coordinatorId: string | null; venueName: string;
+      }>(`SELECT e.name, e.organiser_id AS "organiserId", e.coordinator_id AS "coordinatorId",
+          v.name AS "venueName"
+        FROM venue_bookings b JOIN event_requests e ON e.id = b.event_request_id
+        JOIN venues v ON v.id = b.venue_id WHERE b.id = $1 FOR SHARE OF e`, [bookingId]);
+      const notified = context.rows[0];
+      if (!notified) throw new Error('The booking decision notifications could not be prepared.');
+      await recordNotifications(client, bookingDecisionNotifications(
+        { id: booking.eventRequestId, name: notified.name, organiserId: notified.organiserId,
+          coordinatorId: notified.coordinatorId },
+        { id: bookingId, decision: decision.decision, reason: decision.reason, venueName: notified.venueName,
+          startsAt: booking.startsAt, endsAt: booking.endsAt },
+        actor.id,
+      ));
       return readBooking(client, bookingId, actor);
     });
   } catch (error) {
