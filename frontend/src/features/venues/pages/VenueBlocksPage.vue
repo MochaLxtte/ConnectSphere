@@ -4,7 +4,10 @@ import { ApiError } from '../../../lib/api-client';
 import { authSession, clearLocalSession } from '../../auth/session.js';
 import { formatEventTime, fromSingaporeInputValue } from '../../events/presentation';
 import { fetchVenueAvailability } from '../api/availability';
-import { createVenueBlock, deleteVenueBlock, fetchVenueBlocks, type VenueBlock } from '../api/venue-blocks';
+import {
+  createVenueBlock, deleteVenueBlock, fetchRecoveryArrangements, fetchVenueBlocks,
+  type RecoveryArrangement, type RecoveryStatus, type VenueBlock,
+} from '../api/venue-blocks';
 
 type VenueOption = { id: string; name: string };
 type BlocksState =
@@ -12,9 +15,25 @@ type BlocksState =
   | { status: 'loading' }
   | { status: 'error'; message: string }
   | { status: 'ready'; items: VenueBlock[] };
+type RecoveryState =
+  | { status: 'loading' }
+  | { status: 'error'; message: string }
+  | { status: 'ready'; items: RecoveryArrangement[] };
 
-/** KAN-55: Venue Staff record operational-unavailability blocks for one venue at a time. */
+/**
+ * KAN-55: Venue Staff record operational-unavailability blocks for one venue at a time.
+ * KAN-81: a block may overlap approved bookings; those arrangements are listed as needing recovery.
+ */
 const isStaff = computed(() => !authSession.loading && authSession.user?.role === 'VENUE_STAFF');
+
+const recoveryLabels: Record<RecoveryStatus, string> = {
+  RECOVERY_REQUIRED: 'Recovery required', RESOLVED: 'Resolved', CLEARED: 'Cleared',
+};
+const bookingCount = (count: number) => `${count} approved booking${count === 1 ? '' : 's'}`;
+
+/** KAN-81-AC12: a 4xx with a server message is a definite refusal; anything else may have been applied. */
+const uncertain = (error: unknown) => !(error instanceof ApiError) || error.status === 0
+  || error.status >= 500 || error.code === 'INVALID_RESPONSE';
 
 const venues = ref<VenueOption[]>([]);
 const venuesError = ref('');
@@ -26,7 +45,9 @@ const reason = ref('');
 const busy = ref(false);
 const actionError = ref('');
 const savedMessage = ref('');
+const recovery = ref<RecoveryState>({ status: 'loading' });
 let controller: AbortController | undefined;
+let recoveryController: AbortController | undefined;
 
 const timeError = computed(() => {
   if (!startsAt.value && !endsAt.value) return '';
@@ -75,6 +96,40 @@ async function loadBlocks() {
   }
 }
 
+/** KAN-81-AC6/AC12: every arrangement still needing recovery, across venues. */
+async function loadRecovery() {
+  recoveryController?.abort();
+  const current = new AbortController();
+  recoveryController = current;
+  recovery.value = { status: 'loading' };
+  try {
+    const items = await fetchRecoveryArrangements('RECOVERY_REQUIRED', current.signal);
+    if (!current.signal.aborted) recovery.value = { status: 'ready', items };
+  } catch (error) {
+    if (current.signal.aborted) return;
+    recovery.value = {
+      status: 'error',
+      message: error instanceof Error ? error.message : 'Recovery arrangements could not be loaded.',
+    };
+  }
+}
+
+/** After an uncertain or completed write, show current state rather than retrying the mutation. */
+async function refreshAfterWrite() {
+  await Promise.all([loadBlocks(), loadRecovery()]);
+}
+
+function writeFailed(error: unknown, action: 'saved' | 'removed'): boolean {
+  if (error instanceof ApiError && error.status === 401) {
+    clearLocalSession();
+    return false;
+  }
+  actionError.value = uncertain(error)
+    ? `We could not confirm whether the block was ${action}. The list below has been refreshed; check it before trying again.`
+    : error instanceof Error ? error.message : `The block could not be ${action}.`;
+  return true;
+}
+
 async function submit() {
   if (!selectedVenueId.value || timeError.value || !startsAt.value || !endsAt.value || !reason.value.trim() || busy.value) return;
   const from = fromSingaporeInputValue(startsAt.value);
@@ -84,14 +139,16 @@ async function submit() {
   actionError.value = '';
   savedMessage.value = '';
   try {
-    await createVenueBlock(selectedVenueId.value, { startsAt: from, endsAt: to, reason: reason.value.trim() });
-    savedMessage.value = 'The venue block was saved.';
+    const saved = await createVenueBlock(selectedVenueId.value, { startsAt: from, endsAt: to, reason: reason.value.trim() });
+    savedMessage.value = saved.affected.length === 0
+      ? 'The venue block was saved.'
+      : `The venue block was saved. It affects ${bookingCount(saved.affected.length)}, now marked as needing recovery.`;
     startsAt.value = '';
     endsAt.value = '';
     reason.value = '';
-    await loadBlocks();
+    await refreshAfterWrite();
   } catch (error) {
-    actionError.value = error instanceof Error ? error.message : 'The block could not be saved.';
+    if (writeFailed(error, 'saved') && uncertain(error)) await refreshAfterWrite();
   } finally {
     busy.value = false;
   }
@@ -103,11 +160,13 @@ async function remove(blockId: string) {
   actionError.value = '';
   savedMessage.value = '';
   try {
-    await deleteVenueBlock(selectedVenueId.value, blockId);
-    savedMessage.value = 'The venue block was removed.';
-    await loadBlocks();
+    const cleared = await deleteVenueBlock(selectedVenueId.value, blockId);
+    savedMessage.value = cleared.length === 0
+      ? 'The venue block was removed.'
+      : `The venue block was removed. Its recovery flag was cleared for ${bookingCount(cleared.length)}.`;
+    await refreshAfterWrite();
   } catch (error) {
-    actionError.value = error instanceof Error ? error.message : 'The block could not be removed.';
+    if (writeFailed(error, 'removed') && uncertain(error)) await refreshAfterWrite();
   } finally {
     busy.value = false;
   }
@@ -118,12 +177,15 @@ watch(
   () => {
     if (authSession.loading) return;
     if (!isStaff.value) {
+      recoveryController?.abort();
       venues.value = [];
       selectedVenueId.value = '';
       state.value = { status: 'idle' };
+      recovery.value = { status: 'loading' };
       return;
     }
     void loadVenues();
+    void loadRecovery();
   },
   { immediate: true, flush: 'sync' },
 );
@@ -132,7 +194,10 @@ watch(selectedVenueId, () => {
   actionError.value = '';
   void loadBlocks();
 });
-onBeforeUnmount(() => controller?.abort());
+onBeforeUnmount(() => {
+  controller?.abort();
+  recoveryController?.abort();
+});
 </script>
 
 <template>
@@ -202,10 +267,44 @@ onBeforeUnmount(() => controller?.abort());
           <li v-for="item in state.items" :key="item.id">
             <p class="block-period">{{ formatEventTime(item.startsAt) }} – {{ formatEventTime(item.endsAt) }}</p>
             <p class="block-reason">{{ item.reason }}</p>
+            <p v-if="item.affected.length === 0" class="block-notice">No approved bookings are affected.</p>
+            <ul v-else class="affected-list" :aria-label="`Bookings affected by this block`">
+              <li v-for="affected in item.affected" :key="affected.impactId">
+                <span>{{ affected.eventName?.trim() || 'Untitled event' }} ·
+                  {{ formatEventTime(affected.bookingStartsAt) }} – {{ formatEventTime(affected.bookingEndsAt) }}</span>
+                <span class="recovery-status" :class="`recovery-status--${affected.status.toLowerCase()}`">
+                  {{ recoveryLabels[affected.status] }}
+                </span>
+              </li>
+            </ul>
             <button type="button" class="button button-secondary" :disabled="busy" @click="remove(item.id)">Remove</button>
           </li>
         </ul>
       </template>
+    </section>
+
+    <section class="panel blocks-panel recovery-panel" aria-labelledby="recovery-heading">
+      <h2 id="recovery-heading">Bookings needing recovery</h2>
+      <p class="block-notice">
+        Approved bookings at any venue that overlap an operational block. Their events and bookings are kept;
+        the assigned coordinator arranges a replacement.
+      </p>
+      <p v-if="recovery.status === 'loading'" role="status">Loading bookings needing recovery…</p>
+      <div v-else-if="recovery.status === 'error'" role="alert">
+        <p class="field-error">{{ recovery.message }}</p>
+        <button type="button" class="button button-secondary" @click="loadRecovery">Try again</button>
+      </div>
+      <p v-else-if="recovery.items.length === 0" class="block-notice">No bookings currently need recovery.</p>
+      <ul v-else class="block-list">
+        <li v-for="item in recovery.items" :key="item.impactId">
+          <p class="block-period">{{ item.eventName?.trim() || 'Untitled event' }} — {{ item.venueName }}</p>
+          <p class="block-reason">
+            Booked {{ formatEventTime(item.bookingStartsAt) }} – {{ formatEventTime(item.bookingEndsAt) }}.
+            Blocked {{ formatEventTime(item.outageStartsAt) }} – {{ formatEventTime(item.outageEndsAt) }}: {{ item.outageReason }}
+          </p>
+          <span class="recovery-status recovery-status--recovery_required">{{ recoveryLabels[item.status] }}</span>
+        </li>
+      </ul>
     </section>
   </template>
 </template>
@@ -237,6 +336,13 @@ onBeforeUnmount(() => controller?.abort());
 .block-list li { border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
 .block-period { font-weight: 600; font-size: 14px; }
 .block-reason { font-size: 13px; color: #59685e; margin: 6px 0 12px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.recovery-panel { margin-top: 24px; }
+.affected-list { list-style: none; padding: 0; margin: 0 0 12px; display: grid; gap: 6px; font-size: 13px; }
+.affected-list li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; overflow-wrap: anywhere; }
+.recovery-status { display: inline-block; border-radius: 12px; padding: 2px 10px; font-size: 12px; font-weight: 600; }
+.recovery-status--recovery_required { background: #fbeee6; color: #853e37; }
+.recovery-status--resolved { background: #edf5e9; color: #365d2e; }
+.recovery-status--cleared { background: #eef0ee; color: #59685e; }
 @media (max-width: 600px) {
   .blocks-panel { padding: 20px; }
   .field-grid { grid-template-columns: 1fr; }
