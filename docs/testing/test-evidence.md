@@ -833,3 +833,21 @@ The interface requires a replacement and reason, agrees detail/history versions 
 **Changed-code coverage gaps:** AssignmentPanel's remaining uncovered statements include defensive submit exits normally prevented by hidden/disabled controls and existing aborted-read, 401 and non-Error fallbacks. Tests assert that blocked controls cannot submit rather than directly invoke an unreachable Vue handler. LeadRequestPage's remaining branches are existing null-value rendering and error fallbacks. ReviewRequestPage's lower total mainly reflects its existing quiet-refresh helper (child workflow panels are stubbed in page tests); the added access-denial refresh is covered. The existing coverage configuration excludes some shell/auth files and does not merge browser/integration execution into unit coverage; no 100% whole-project claim is made.
 
 **Documentation/artifact checks:** 15/15 functional-case, traceability and document checks passed (427 cases, 112 traceability rows, 579 changed-document file links); native workbook checks passed 16/16. Four updated diagram exports and six changed workbook regions were visually inspected. `npm run submission:prepare` passed; generated draft folders still require the team's evidence-completeness review. The disposable KAN-65 PostgreSQL container was removed after testing. See [S3-E15 validation](../scrum/sprint-03/evidence/kan65-validation-2026-10-19.json). No shared database cleanup was performed.
+
+## 20 October 2026 — KAN-6 detail-page submission field errors
+
+**Run ID: AUTO-20261020-02.** Branch `fix/KAN-6-detail-field-errors`, code commit `2553c75c3d8f43d47bf718ec08c23bf46c81919c` (tested working tree committed without code changes), based on `aaee549`. Actual execution date: 20 October 2026, Asia/Singapore. Environment: Windows, Node.js 24, Vitest with jsdom and Testing Library. Tests use synthetic fetch responses; no database, shared Supabase or real login was used.
+
+| Command / check | Actual result |
+| --- | --- |
+| `npm test -w @connectsphere/frontend -- src/features/events/pages/EventRequestDetailPage.test.ts` before the repair | Fail as expected: 3 of the 4 new KAN-6-AC101 tests failed (the generic "could not confirm" message was shown instead of field errors); the fourth, corrected resubmission, already passed |
+| Same file after the repair | Pass: 30 tests |
+| `npm run check` | Pass: tools/backend/frontend type checks, 608 frontend tests in 32 files, 1,035 backend tests in 39 files, both production builds |
+| `npm run test:coverage` | Pass: the same 608 frontend and 1,035 backend tests |
+| `npm run test:integration`, `npm run test:e2e` | **Not executed** locally: no API, schema or database change; CI runs both suites on the PR |
+
+**Coverage:** `EventRequestDetailPage.vue` rose from 87.34% statements / 85.10% branches / 92.85% functions / 90.62% lines to 89.01% / 85.71% / 94.73% / 92.00%; all added lines are covered. The remaining uncovered lines are the existing quiet-refresh helper after a panel save (child panels are stubbed in page tests) and the existing generic fallback for unexpected submission errors. Workspace totals: frontend 94.82% / 92.10% / 96.69% / 97.15%; backend 85.34% / 88.54% / 83.07% / 85.92%.
+
+**Verified behaviour:** a `SUBMISSION_INVALID` response on saved-draft submission shows "Edit the draft to fix these details before submitting:" with one list item per problem, labelled with the detail page's field names (including registration open/close). Missing fields are listed with "Complete this before submitting." and invalid values with the server's message. An unknown field is shown by its key, and the server message is shown when no details are returned. The Draft status, displayed values, Edit draft link and enabled Submit button are retained, and the list clears when the corrected draft is submitted. Existing incomplete, 401, 404/409 and KAN-29 coordinator cases still pass unchanged.
+
+**Acceptance boundary:** component-level evidence only. TC-02-03 (manual comparison of new-request and saved-draft paths against the real API) and the other S3-T05 cases remain **Not executed**; independent review and formal acceptance are **Not assessed**. KAN-6 stays In Progress at 3 SP with no velocity credit; actual 20 October work is not delivery by the configured 17 October sprint end.
