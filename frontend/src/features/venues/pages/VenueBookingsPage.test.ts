@@ -52,7 +52,7 @@ describe('KAN-8 venue booking requests list', () => {
     await open();
     expect(await screen.findByRole('link', { name: 'Career fair · Harbour Hall' }))
       .toHaveAttribute('href', '/venue-bookings/booking-a');
-    expect(screen.getByRole('heading', { name: 'Pending venue requests' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Pending requests and affected bookings' })).toBeInTheDocument();
     expect(screen.getByText('Pending')).toBeInTheDocument();
     expect(screen.getByText(/5 Oct 2026, 10:00 am/)).toBeInTheDocument();
     expect(fetchMock).toHaveBeenCalledExactlyOnceWith('/api/venue-bookings', expect.objectContaining({ signal: expect.any(AbortSignal) }));
@@ -75,7 +75,7 @@ describe('KAN-8 venue booking requests list', () => {
     session.user = user(role);
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(json({ items: [] })));
     await open();
-    expect(await screen.findByRole('heading', { name: role === 'VENUE_STAFF' ? 'No pending venue requests' : 'No venue booking requests yet' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: role === 'VENUE_STAFF' ? 'No pending requests or affected bookings' : 'No venue booking requests yet' })).toBeInTheDocument();
   });
 
   it.each(['EVENT_ORGANISER', 'TECHNICAL_SUPPORT_STAFF', 'ATTENDEE'] as const)('does not read booking data for %s', async (role) => {
@@ -117,7 +117,7 @@ describe('KAN-8 venue booking requests list', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent('Unable to reach the API');
     expect(screen.queryByText('Career fair · Harbour Hall')).not.toBeInTheDocument();
     await fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
-    expect(await screen.findByRole('heading', { name: 'No pending venue requests' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'No pending requests or affected bookings' })).toBeInTheDocument();
     expect(fetchMock).toHaveBeenCalledTimes(3);
   });
 

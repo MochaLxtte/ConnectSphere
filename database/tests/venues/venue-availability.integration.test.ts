@@ -112,7 +112,7 @@ beforeAll(async () => {
 
   await pool.query(
     `INSERT INTO venues (id, name, location, capacity, opens_at, closes_at, is_active) VALUES
-      ($1, 'Hall A', 'Level 1', 300, '08:00', '22:00', true),
+      ($1, 'Hall A', 'Level 1', 300, NULL, NULL, true),
       ($2, 'Room B', NULL, 40, NULL, NULL, true),
       ($3, 'Retired C', 'Annex', 80, NULL, NULL, false)`,
     [venue.hall, venue.room, venue.retired],
@@ -141,6 +141,8 @@ beforeAll(async () => {
   // An inactive venue is never listed, whatever it holds.
   await addBooking(venue.retired, event.fair, 'APPROVED', sgt('05T10:00'), sgt('05T12:00'));
   await addBlock(venue.retired, sgt('08T09:00'), sgt('08T17:00'), 'Retired');
+  // Preserve the historical out-of-hours bookings; new approvals enforce current hours.
+  await pool.query("UPDATE venues SET opens_at='08:00',closes_at='22:00' WHERE id=$1", [venue.hall]);
 });
 
 afterAll(async () => {
@@ -158,7 +160,7 @@ afterAll(async () => {
 
 /** What every calendar reader sees; only the assigned coordinator's own event names differ. */
 function expectedWeek(named: { fair?: boolean; dinner?: boolean } = {}) {
-  return {
+  const result = {
     from: '2026-10-04T16:00:00.000Z',
     to: '2026-10-11T16:00:00.000Z',
     items: [
@@ -186,6 +188,13 @@ function expectedWeek(named: { fair?: boolean; dinner?: boolean } = {}) {
       },
     ],
   };
+  for (const item of result.items) {
+    Object.assign(item, { setupMinutes: 0, turnaroundMinutes: 0 });
+    for (const period of item.unavailable) if (period.kind === 'BOOKING') {
+      Object.assign(period, { eventStartsAt: period.startsAt, eventEndsAt: period.endsAt, warnings: [] });
+    }
+  }
+  return result;
 }
 
 describe('KAN-51 venue availability calendar with PostgreSQL', () => {
@@ -240,7 +249,7 @@ describe('KAN-51 venue availability calendar with PostgreSQL', () => {
     expect(response.status).toBe(200);
     const hall = response.body.items.find((item: { id: string }) => item.id === venue.hall);
     expect(hall.unavailable).toEqual([
-      { id: period.pending, kind: 'BOOKING', startsAt: sgt('05T14:00'), endsAt: sgt('05T16:00'), event: null },
+      { id: period.pending, kind: 'BOOKING', startsAt: sgt('05T14:00'), endsAt: sgt('05T16:00'), event: null, eventStartsAt: sgt('05T14:00'), eventEndsAt: sgt('05T16:00'), warnings: [] },
       { id: period.maintenance, kind: 'BLOCKED', startsAt: sgt('06T09:00'), endsAt: sgt('06T18:00'), reason: 'Maintenance' },
       { id: inspection, kind: 'BLOCKED', startsAt: sgt('09T13:00'), endsAt: sgt('09T15:00'), reason: null },
     ]);

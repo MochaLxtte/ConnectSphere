@@ -84,7 +84,7 @@ describe('KAN-8 atomic venue booking decisions against PostgreSQL', () => {
     expect(await getVenueBooking(fixture.dependencies, { actor: coordinator, bookingId: created.id })).toEqual(saved);
     expect((await calendar()).find(venue => venue.id === created.venueId)?.unavailable).toEqual(
       decision === 'APPROVED' ? [{
-        id: created.id, kind: 'BOOKING', startsAt, endsAt,
+        id: created.id, kind: 'BOOKING', startsAt, endsAt, eventStartsAt: startsAt, eventEndsAt: endsAt, warnings: [],
         event: { id: created.eventRequestId, name: 'Open day' },
       }] : [],
     );

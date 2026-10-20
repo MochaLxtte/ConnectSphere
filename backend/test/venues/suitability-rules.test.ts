@@ -21,6 +21,12 @@ const now = '2026-10-04T00:00:00.000Z';
 const clear = { booked: false, blocked: false };
 
 describe('KAN-52 suitability assessment', () => {
+  it('KAN-78 checks the occupied interval rather than only event time', () => {
+    const result = assessVenueSuitability(event,
+      { ...venue, opensAt: '10:00', setupMinutes: 30, turnaroundMinutes: 45 }, input, clear, now);
+    expect(result).toMatchObject({ occupiedStartsAt: '2026-12-01T01:30:00.000Z', occupiedEndsAt: '2026-12-01T04:45:00.000Z' });
+    expect(result.checks.find(c => c.key === 'availability')).toMatchObject({ status: 'FAIL' });
+  });
   it('passes exact capacity and every required case-insensitive value without changing inputs', () => {
     const before = JSON.stringify({ event, venue, input });
     expect(assessVenueSuitability(event, venue, input, clear, now)).toMatchObject({

@@ -72,6 +72,17 @@ describe('AC1: search and filter by event requirements', () => {
 });
 
 describe('AC2: results reflect the current venue catalogue', () => {
+  it('KAN-78 preserves PostgreSQL Date milliseconds at an occupied opening-hours boundary', async () => {
+    const startsAt = '2030-12-01T02:00:00.600Z';
+    const endsAt = '2030-12-01T03:00:00.600Z';
+    const { deps } = fakeDeps([venue({
+      occupiedStartsAt: new Date(startsAt), occupiedEndsAt: new Date(endsAt),
+      opensAt: '10:00:00.500', closesAt: '12:00:00',
+    })]);
+    const results = await searchVenues(deps, coordinator, parseVenueSearchQuery({ startsAt, endsAt }));
+    expect(results).toHaveLength(1);
+    expect(results[0]).toMatchObject({ occupiedStartsAt: startsAt, occupiedEndsAt: endsAt });
+  });
   it('TC-VS-04 [AC2, positive] reads active venues from the database on every search, with no caching', async () => {
     const { deps, query } = fakeDeps([venue({ id: 'old' })], [venue({ id: 'new' })]);
     const first = await searchVenues(deps, coordinator, noFilters);
@@ -105,8 +116,8 @@ describe('AC3: results correspond to the filters selected', () => {
     expect(query.mock.calls[0]![1]!.slice(-2)).toEqual([sgt('2026-10-20T14:00'), sgt('2026-10-20T16:00')]);
     const sql = String(query.mock.calls[0]![0]);
     expect(sql).toContain("status = 'APPROVED'");
-    expect(sql).toMatch(/FROM venue_bookings b[\s\S]*b\.starts_at < \$8[\s\S]*b\.ends_at > \$7/);
-    expect(sql).toMatch(/FROM venue_unavailability u[\s\S]*u\.starts_at < \$8[\s\S]*u\.ends_at > \$7/);
+    expect(sql).toMatch(/FROM venue_booking_intervals b[\s\S]*b\.occupied_starts_at < venue_occupied_end[\s\S]*b\.occupied_ends_at > venue_occupied_start/);
+    expect(sql).toMatch(/FROM venue_unavailability u[\s\S]*u\.starts_at < venue_occupied_end[\s\S]*u\.ends_at > venue_occupied_start/);
     expect(sql).not.toMatch(/public\./);
   });
 

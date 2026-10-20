@@ -13,6 +13,7 @@ const endsAt = '2026-12-01T06:00:00.000Z';
 interface Scenario {
   eventStatus?: string;
   venueActive?: boolean;
+  withinHours?: boolean;
   booked?: boolean;
   blocked?: boolean;
   bookingStatus?: string;
@@ -51,11 +52,11 @@ function fakePool(scenario: Scenario = {}) {
         return { rows: [{ isActive: scenario.venueActive ?? true }] };
       }
       if (/AS booked/.test(sql)) {
-        return { rows: [{ booked: scenario.booked ?? false, blocked: scenario.blocked ?? false }] };
+        return { rows: [{ withinHours: scenario.withinHours ?? true, booked: scenario.booked ?? false, blocked: scenario.blocked ?? false }] };
       }
       if (/^\s*INSERT INTO venue_bookings/.test(sql)) return { rows: [{ id: bookingId }] };
       if (/^\s*UPDATE venue_bookings/.test(sql) && scenario.updateError) throw scenario.updateError;
-      if (/FROM venue_bookings b JOIN/.test(sql)) return { rows: [bookingRow] };
+      if (/FROM venue_booking_intervals b JOIN/.test(sql)) return { rows: [bookingRow] };
       return { rows: [] };
     }),
   };
@@ -72,17 +73,22 @@ const decide = (pool: never, decision: 'APPROVED' | 'REJECTED' = 'APPROVED') =>
   decideVenueBooking({ pool }, { bookingId, actor: staff, input: { decision } });
 
 describe('KAN-54 conflict assessment when a booking is requested (AC1, AC2, AC5, AC6, AC7, AC8, AC9)', () => {
+  it('KAN-78 refuses occupied time outside operating hours before writing a pending request', async () => {
+    const { pool, wrote } = fakePool({ withinHours: false });
+    await expect(submit(pool)).rejects.toMatchObject({ code: 'VENUE_OUTSIDE_OPERATING_HOURS' });
+    expect(wrote(/^\s*INSERT INTO venue_bookings/)).toBe(false);
+  });
   it('asks only about approved bookings and blocks of the requested venue, for the requested period', async () => {
     const { pool, find } = fakePool();
     await submit(pool);
     const clash = find(/AS booked/)!;
-    expect(clash.params).toEqual([venueId, startsAt, endsAt]);
+    expect(clash.params).toEqual([venueId, startsAt, endsAt, null]);
     // AC3: scoped to one venue, so an overlapping period elsewhere can never count.
-    expect(clash.sql.match(/venue_id = \$1/g)).toHaveLength(2);
+    expect(clash.sql.match(/venue_id = v.id/g)).toHaveLength(2);
     // AC1/AC6: only confirmed (approved) bookings reserve a venue.
     expect(clash.sql).toMatch(/status = 'APPROVED'/);
     // AC4: half-open interval, so back-to-back periods do not overlap.
-    expect(clash.sql.match(/starts_at < \$3 AND ends_at > \$2/g)).toHaveLength(2);
+    expect(clash.sql).toContain('b.occupied_starts_at < occupied.e AND b.occupied_ends_at > occupied.s');
   });
 
   it('creates the pending booking when nothing clashes (AC3, AC4)', async () => {
@@ -95,7 +101,7 @@ describe('KAN-54 conflict assessment when a booking is requested (AC1, AC2, AC5,
     const { pool, wrote } = fakePool({ booked: true });
     await expect(submit(pool)).rejects.toMatchObject({
       kind: 'CONFLICT', code: 'VENUE_BOOKING_CONFLICT',
-      message: 'The venue already has an approved booking during this period.',
+      message: 'The venue already has an approved booking during the occupied period.',
     });
     expect(wrote(/^\s*INSERT INTO venue_bookings/)).toBe(false);
     expect(wrote(/^ROLLBACK/)).toBe(true);
@@ -105,7 +111,7 @@ describe('KAN-54 conflict assessment when a booking is requested (AC1, AC2, AC5,
   it('refuses an overlap with an operational block and creates nothing (AC5, AC7, AC8)', async () => {
     const { pool, wrote } = fakePool({ blocked: true });
     await expect(submit(pool)).rejects.toMatchObject({
-      kind: 'CONFLICT', code: 'VENUE_UNAVAILABLE', message: 'The venue is blocked during this period.',
+      kind: 'CONFLICT', code: 'VENUE_UNAVAILABLE', message: 'The venue is blocked during the occupied period.',
     });
     expect(wrote(/^\s*INSERT INTO venue_bookings/)).toBe(false);
   });
@@ -134,10 +140,10 @@ describe('KAN-54 conflict assessment when Venue Staff approve a booking (AC1, AC
     const { pool, find } = fakePool();
     await decide(pool);
     const clash = find(/AS booked/)!;
-    expect(clash.params).toEqual([venueId, bookingId, new Date(startsAt), new Date(endsAt)]);
-    expect(clash.sql).toMatch(/id <> \$2/);
+    expect(clash.params).toEqual([venueId, new Date(startsAt), new Date(endsAt), bookingId]);
+    expect(clash.sql).toMatch(/id <> \$4/);
     expect(clash.sql).toMatch(/status = 'APPROVED'/);
-    expect(clash.sql.match(/starts_at < \$4 AND ends_at > \$3/g)).toHaveLength(2);
+    expect(clash.sql).toContain('b.occupied_starts_at < occupied.e AND b.occupied_ends_at > occupied.s');
   });
 
   it('approves when nothing clashes (AC3, AC4)', async () => {
@@ -151,7 +157,7 @@ describe('KAN-54 conflict assessment when Venue Staff approve a booking (AC1, AC
     const { pool, wrote } = fakePool({ booked: true });
     await expect(decide(pool)).rejects.toMatchObject({
       kind: 'CONFLICT', code: 'VENUE_BOOKING_CONFLICT',
-      message: 'The venue already has an approved booking during this period.',
+      message: 'The venue already has an approved booking during the occupied period.',
     });
     expect(wrote(/^\s*UPDATE venue_bookings/)).toBe(false);
     expect(wrote(/^ROLLBACK/)).toBe(true);
@@ -205,12 +211,16 @@ describe('KAN-54 conflict assessment when Venue Staff approve a booking (AC1, AC
 
 describe('KAN-54 database exclusion constraints are the last line of defence (AC2, AC5, AC7, AC8)', () => {
   const exclusion = (constraint: string) => Object.assign(new Error('exclusion'), { code: '23P01', constraint });
+  it('KAN-78 maps the database occupied-hours guard to clear conflict feedback', async () => {
+    await expect(decide(fakePool({ updateError: exclusion('venue_bookings_within_hours') }).pool))
+      .rejects.toMatchObject({ code: 'VENUE_OUTSIDE_OPERATING_HOURS' });
+  });
 
   it('reports a booking overlap caught by the database as the same conflict', async () => {
     const { pool } = fakePool({ updateError: exclusion('venue_bookings_no_overlap') });
     await expect(decide(pool)).rejects.toMatchObject({
       kind: 'CONFLICT', code: 'VENUE_BOOKING_CONFLICT',
-      message: 'The venue already has an approved booking during this period.',
+      message: 'The venue already has an approved booking during the occupied period.',
     });
   });
 
