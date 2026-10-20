@@ -32,6 +32,9 @@ export interface AvailabilityWindow {
 export interface BookedPeriod {
   id: string;
   kind: 'BOOKING';
+  eventStartsAt?: string;
+  eventEndsAt?: string;
+  warnings?: string[];
   startsAt: string;
   endsAt: string;
   /** Only for the event's currently assigned coordinator; null for every other reader. */
@@ -96,23 +99,25 @@ export function parseAvailabilityWindow(query: Record<string, unknown>): Availab
 
 // One statement, so the venue list and every venue's periods come from the same snapshot.
 const AVAILABILITY_SQL = `
-  SELECT v.id, v.name, v.location, v.capacity,
+  SELECT v.setup_minutes AS "setupMinutes", v.turnaround_minutes AS "turnaroundMinutes", v.id, v.name, v.location, v.capacity,
          to_char(v.opens_at, 'HH24:MI') AS "opensAt",
          to_char(v.closes_at, 'HH24:MI') AS "closesAt",
          COALESCE((
            SELECT json_agg(p ORDER BY p."startsAt", p.kind, p.id)
            FROM (
-             SELECT b.id, 'BOOKING' AS kind, b.starts_at AS "startsAt", b.ends_at AS "endsAt",
+             SELECT b.id, 'BOOKING' AS kind, b.occupied_starts_at AS "startsAt", b.occupied_ends_at AS "endsAt",
+                    b.starts_at AS "eventStartsAt", b.ends_at AS "eventEndsAt",
+                    venue_booking_warnings(b.id) AS warnings,
                     NULL::text AS reason,
                     CASE WHEN $3::text = 'EVENT_COORDINATOR' AND e.coordinator_id = $4::uuid
                            AND e.status <> 'DRAFT'
                          THEN json_build_object('id', e.id, 'name', e.name) END AS event
-             FROM venue_bookings b
+             FROM venue_booking_intervals b
              JOIN event_requests e ON e.id = b.event_request_id
              WHERE b.venue_id = v.id AND b.status = 'APPROVED'
-               AND b.starts_at < $2::timestamptz AND b.ends_at > $1::timestamptz
+               AND b.occupied_starts_at < $2::timestamptz AND b.occupied_ends_at > $1::timestamptz
              UNION ALL
-             SELECT u.id, 'BLOCKED', u.starts_at, u.ends_at, u.reason, NULL::json
+             SELECT u.id, 'BLOCKED', u.starts_at, u.ends_at, NULL::timestamptz, NULL::timestamptz, ARRAY[]::text[], u.reason, NULL::json
              FROM venue_unavailability u
              WHERE u.venue_id = v.id
                AND u.starts_at < $2::timestamptz AND u.ends_at > $1::timestamptz
@@ -125,6 +130,9 @@ const AVAILABILITY_SQL = `
 interface PeriodRow {
   id: string;
   kind: 'BOOKING' | 'BLOCKED';
+  eventStartsAt?: string;
+  eventEndsAt?: string;
+  warnings?: string[];
   // json_agg renders timestamps in the session time zone; they are normalised below.
   startsAt: string;
   endsAt: string;
@@ -146,7 +154,9 @@ function requireCalendarRole(actor: WorkflowActor): void {
 function toPeriod(row: PeriodRow): UnavailablePeriod {
   const period = { id: row.id, startsAt: iso(row.startsAt), endsAt: iso(row.endsAt) };
   return row.kind === 'BOOKING'
-    ? { ...period, kind: 'BOOKING', event: row.event }
+    ? { ...period, kind: 'BOOKING', event: row.event,
+      ...(row.eventStartsAt ? { eventStartsAt: iso(row.eventStartsAt), eventEndsAt: iso(row.eventEndsAt!) } : {}),
+      ...(row.warnings ? { warnings: row.warnings } : {}) }
     : { ...period, kind: 'BLOCKED', reason: row.reason };
 }
 

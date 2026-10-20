@@ -68,8 +68,8 @@ export async function createVenueBlock(
     if (!venue.rows[0].isActive) conflict('VENUE_INACTIVE', 'This venue is no longer active.');
 
     const clash = await client.query<{ booked: boolean }>(
-      `SELECT EXISTS(SELECT 1 FROM venue_bookings WHERE venue_id = $1 AND status = 'APPROVED'
-        AND starts_at < $3 AND ends_at > $2) AS booked`,
+      `SELECT EXISTS(SELECT 1 FROM venue_booking_intervals WHERE venue_id = $1 AND status = 'APPROVED'
+        AND occupied_starts_at < $3 AND occupied_ends_at > $2) AS booked`,
       [venueId, submission.startsAt, submission.endsAt],
     );
     if (clash.rows[0]!.booked) {

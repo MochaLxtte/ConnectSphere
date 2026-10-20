@@ -4,6 +4,9 @@ import { getJson } from '../../../lib/api-client';
 export interface BookedPeriod {
   id: string;
   kind: 'BOOKING';
+  eventStartsAt?: string;
+  eventEndsAt?: string;
+  warnings?: string[];
   startsAt: string;
   endsAt: string;
   /** Only sent to the event's assigned coordinator; null for every other reader. */

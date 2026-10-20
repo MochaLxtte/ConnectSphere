@@ -25,6 +25,7 @@ const venueJson = `jsonb_build_object(
   'id', v.id, 'name', v.name, 'capacity', v.capacity, 'facilities', v.facilities,
   'accessibilityFeatures', v.accessibility_features, 'layouts', v.layouts,
   'wheelchairAccessible', v.wheelchair_accessible,
+  'setupMinutes', v.setup_minutes, 'turnaroundMinutes', v.turnaround_minutes,
   'opensAt', v.opens_at::text, 'closesAt', v.closes_at::text)`;
 
 function requireCoordinator(actor: WorkflowActor): void {
@@ -83,10 +84,12 @@ export async function checkVenueSuitability(
     venue: (SuitabilityVenue & { isActive: boolean }) | null; booked: boolean; blocked: boolean;
   }>(`SELECT ${eventColumns},
     CASE WHEN v.id IS NULL THEN NULL ELSE ${venueJson} || jsonb_build_object('isActive', v.is_active) END AS venue,
-    EXISTS(SELECT 1 FROM venue_bookings b WHERE b.venue_id = v.id AND b.status = 'APPROVED'
-      AND b.starts_at < e.ends_at AND b.ends_at > e.starts_at) AS booked,
+    EXISTS(SELECT 1 FROM venue_booking_intervals b WHERE b.venue_id = v.id AND b.status = 'APPROVED'
+      AND b.occupied_starts_at < venue_occupied_end(e.ends_at, v.turnaround_minutes)
+      AND b.occupied_ends_at > venue_occupied_start(e.starts_at, v.setup_minutes)) AS booked,
     EXISTS(SELECT 1 FROM venue_unavailability u WHERE u.venue_id = v.id
-      AND u.starts_at < e.ends_at AND u.ends_at > e.starts_at) AS blocked
+      AND u.starts_at < venue_occupied_end(e.ends_at, v.turnaround_minutes)
+      AND u.ends_at > venue_occupied_start(e.starts_at, v.setup_minutes)) AS blocked
     FROM event_requests e LEFT JOIN venues v ON v.id = $2
     WHERE e.id = $1 AND e.coordinator_id = $3 AND e.status <> 'DRAFT'`,
   [eventId, requirements.venueId, actor.id]);
