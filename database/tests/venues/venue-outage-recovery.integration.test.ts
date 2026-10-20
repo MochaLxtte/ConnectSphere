@@ -291,8 +291,10 @@ describe('KAN-81 phase 2: coordinator notice and recovery view against PostgreSQ
     await create(venueId);
     expect(await fixture.notifications(unaffected.eventRequestId)).toEqual([]);
 
-    const affected = await booking(venueId, at('03:00'), at('04:00'));
-    const saved = await create(venueId, { startsAt: at('02:30'), endsAt: at('03:30'), reason: 'Gas leak' });
+    // A second venue: approved bookings cannot be inserted into the first venue's blocked period.
+    const secondVenue = await venue();
+    const affected = await booking(secondVenue, at('03:00'), at('04:00'));
+    const saved = await create(secondVenue, { startsAt: at('02:30'), endsAt: at('03:30'), reason: 'Gas leak' });
     const again = outageRecoveryNotifications(await listOutageNotificationTargets(fixture.pool, saved.id),
       { blockId: saved.id, startsAt: at('02:30'), endsAt: at('03:30'), reason: 'Gas leak' });
     expect(await recordNotifications(fixture.pool, again)).toBe(0);
