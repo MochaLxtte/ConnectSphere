@@ -34,6 +34,7 @@ const bookingCount = (count: number) => `${count} approved booking${count === 1 
 /** KAN-81-AC12: a 4xx with a server message is a definite refusal; anything else may have been applied. */
 const uncertain = (error: unknown) => !(error instanceof ApiError) || error.status === 0
   || error.status >= 500 || error.code === 'INVALID_RESPONSE';
+const stale = (error: unknown) => error instanceof ApiError && (error.status === 404 || error.status === 409);
 
 const venues = ref<VenueOption[]>([]);
 const venuesError = ref('');
@@ -114,7 +115,7 @@ async function loadRecovery() {
   }
 }
 
-/** After an uncertain or completed write, show current state rather than retrying the mutation. */
+/** After a stale, uncertain or completed write, show current state without retrying the mutation. */
 async function refreshAfterWrite() {
   await Promise.all([loadBlocks(), loadRecovery()]);
 }
@@ -148,7 +149,7 @@ async function submit() {
     reason.value = '';
     await refreshAfterWrite();
   } catch (error) {
-    if (writeFailed(error, 'saved') && uncertain(error)) await refreshAfterWrite();
+    if (writeFailed(error, 'saved') && (uncertain(error) || stale(error))) await refreshAfterWrite();
   } finally {
     busy.value = false;
   }
@@ -166,7 +167,7 @@ async function remove(blockId: string) {
       : `The venue block was removed. Its recovery flag was cleared for ${bookingCount(cleared.length)}.`;
     await refreshAfterWrite();
   } catch (error) {
-    if (writeFailed(error, 'removed') && uncertain(error)) await refreshAfterWrite();
+    if (writeFailed(error, 'removed') && (uncertain(error) || stale(error))) await refreshAfterWrite();
   } finally {
     busy.value = false;
   }

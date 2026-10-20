@@ -247,15 +247,59 @@ describe('KAN-81 outage recovery on the venue blocks page', () => {
     expect(fetchMock.mock.calls.filter(([, init]) => init?.method === 'POST')).toHaveLength(1);
   });
 
-  it('shows a definite refusal message without the uncertain-result wording', async () => {
-    vi.stubGlobal('fetch', fetchRouter({
-      create: { status: 409, body: { error: { code: 'VENUE_INACTIVE', message: 'This venue is no longer active.' } } },
-    }));
+  it.each([404, 409])('refreshes blocks and recovery after a stale removal (%s) without retrying (AC12)', async (status) => {
+    const fetchMock = fetchRouter({
+      blocks: [{ body: { items: [{ ...block, affected: [affected] }] } }, { body: { items: [] } }],
+      recovery: [{ body: { items: [recoveryItem] } }, { body: { items: [] } }],
+      remove: { status, body: { error: { code: 'VENUE_BLOCK_NOT_FOUND', message: 'This block is no longer available.' } } },
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    render(VenueBlocksPage);
+    await selectVenue();
+    await screen.findByText('Career fair — Harbour Hall');
+    await fireEvent.click(await screen.findByRole('button', { name: 'Remove' }));
+
+    expect(await screen.findByText('This block is no longer available.')).toBeInTheDocument();
+    expect(await screen.findByText('No blocks are recorded for this venue yet.')).toBeInTheDocument();
+    expect(await screen.findByText('No bookings currently need recovery.')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Remove' })).not.toBeInTheDocument();
+    expect(screen.queryByText(/could not confirm/)).not.toBeInTheDocument();
+    expect(fetchMock.mock.calls.filter(([, init]) => init?.method === 'DELETE')).toHaveLength(1);
+  });
+
+  it.each([404, 409])('refreshes blocks and recovery after a stale save (%s) while retaining input (AC12)', async (status) => {
+    const fetchMock = fetchRouter({
+      blocks: [{ body: { items: [] } }, { body: { items: [{ ...block, affected: [affected] }] } }],
+      recovery: [{ body: { items: [] } }, { body: { items: [recoveryItem] } }],
+      create: { status, body: { error: { code: 'VENUE_INACTIVE', message: 'This venue is no longer active.' } } },
+    });
+    vi.stubGlobal('fetch', fetchMock);
     render(VenueBlocksPage);
     await selectVenue();
     await fillAndSave();
+
     expect(await screen.findByText('This venue is no longer active.')).toBeInTheDocument();
+    expect(await screen.findByRole('list', { name: 'Bookings affected by this block' })).toHaveTextContent('Career fair');
+    expect(await screen.findByText('Career fair — Harbour Hall')).toBeInTheDocument();
+    expect(screen.getByLabelText('Reason')).toHaveValue('Scheduled maintenance');
     expect(screen.queryByText(/could not confirm/)).not.toBeInTheDocument();
+    expect(fetchMock.mock.calls.filter(([, init]) => init?.method === 'POST')).toHaveLength(1);
+  });
+
+  it('preserves validation errors and input without refreshing or retrying the write', async () => {
+    const fetchMock = fetchRouter({
+      create: { status: 400, body: { error: { code: 'INVALID_INPUT', message: 'Please check the block details.' } } },
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    render(VenueBlocksPage);
+    await selectVenue();
+    await fillAndSave();
+    expect(await screen.findByText('Please check the block details.')).toBeInTheDocument();
+    expect(screen.queryByText(/could not confirm/)).not.toBeInTheDocument();
+    expect(screen.getByLabelText('Reason')).toHaveValue('Scheduled maintenance');
+    expect(fetchMock.mock.calls.filter(([, init]) => init?.method === 'POST')).toHaveLength(1);
+    expect(fetchMock.mock.calls.filter(([path, init]) => path.includes('/unavailability') && !init?.method)).toHaveLength(1);
+    expect(fetchMock.mock.calls.filter(([path]) => path.startsWith('/api/venues/recovery'))).toHaveLength(1);
   });
 
   it('after an uncertain removal, refreshes rather than retrying, and signs out on 401', async () => {
