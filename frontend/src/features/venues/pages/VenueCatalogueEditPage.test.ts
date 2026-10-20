@@ -20,7 +20,8 @@ const apiError = (code: string, message: string, status: number) => json({ error
 const saved: CatalogueVenue = {
   id: 'venue-a', name: 'Harbour Hall', description: 'Main hall', location: 'Block B', capacity: 100,
   layouts: ['Theatre'], facilities: ['Projector'], accessibilityFeatures: ['Ramp'],
-  wheelchairAccessible: true, opensAt: '08:00', closesAt: '22:00', updatedAt: '2026-10-01T00:00:00.000Z',
+  wheelchairAccessible: true, opensAt: '08:00', closesAt: '22:00', setupMinutes: 0, turnaroundMinutes: 0,
+  updatedAt: '2026-10-01T00:00:00.000Z',
 };
 
 /** GET returns the venue; PATCH echoes the saved venue merged with the sent fields unless overridden. */
@@ -349,5 +350,79 @@ describe('KAN-50 venue edit page: access (AC14)', () => {
     await renderPage();
     expect(screen.getByRole('alert')).toHaveTextContent('Sign in to maintain the venue catalogue.');
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+});
+
+describe('KAN-77 venue edit page: buffer durations', () => {
+  it('shows the saved buffers and saves a changed one with its loaded value (AC4, AC5)', async () => {
+    const fetchMock = stubApi({ get: json({ venue: { ...saved, setupMinutes: 15, turnaroundMinutes: 30 } }) });
+    await renderPage();
+    await screen.findByRole('heading', { name: 'Harbour Hall' });
+    expect(field(/Setup before each booking/).value).toBe('15');
+    expect(field(/Turnaround after each booking/).value).toBe('30');
+
+    await fireEvent.update(field(/Setup before each booking/), '45');
+    await fireEvent.click(saveButton());
+
+    expect(await screen.findByRole('status')).toHaveTextContent('Venue information saved.');
+    expect(JSON.parse(String(patchCalls(fetchMock)[0]![1]!.body))).toEqual({ setupMinutes: 45, expectedSetupMinutes: 15 });
+    expect(field(/Setup before each booking/).value).toBe('45');
+  });
+
+  it.each(['', '-5', '1441', '2.5'])('refuses %j without sending anything (AC2)', async (minutes) => {
+    const fetchMock = stubApi();
+    await renderPage();
+    await screen.findByRole('heading', { name: 'Harbour Hall' });
+    await fireEvent.update(field(/Turnaround after each booking/), minutes);
+
+    expect(await screen.findByText('Enter a whole number of minutes from 0 to 1440.')).toBeInTheDocument();
+    expect(field(/Turnaround after each booking/)).toHaveAttribute('aria-invalid', 'true');
+    expect(saveButton()).toBeDisabled();
+    expect(patchCalls(fetchMock)).toHaveLength(0);
+  });
+
+  it('explains a stale buffer conflict, keeps the typed value and reloads on request (AC5)', async () => {
+    const fetchMock = stubApi({
+      patch: () => json({ error: { code: 'VENUE_BUFFER_CONFLICT', message: 'Another change was saved.' } }, 409),
+    });
+    await renderPage();
+    await screen.findByRole('heading', { name: 'Harbour Hall' });
+    await fireEvent.update(field(/Setup before each booking/), '20');
+    await fireEvent.click(saveButton());
+
+    expect(await screen.findByText(/Someone else changed the setup or turnaround time/)).toBeInTheDocument();
+    expect(field(/Setup before each booking/).value).toBe('20');
+    fetchMock.mockImplementation(async () => json({ venue: { ...saved, setupMinutes: 35 } }));
+    await fireEvent.click(screen.getByRole('button', { name: 'Reload current values' }));
+
+    await waitFor(() => expect(field(/Setup before each booking/).value).toBe('35'));
+    expect(screen.queryByText(/Someone else changed/)).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Reload current values' })).not.toBeInTheDocument();
+  });
+
+  it('shows other save errors without the reload prompt', async () => {
+    stubApi({ patch: () => json({ error: { code: 'VENUE_INACTIVE', message: 'This venue is no longer active.' } }, 409) });
+    await renderPage();
+    await screen.findByRole('heading', { name: 'Harbour Hall' });
+    await fireEvent.update(field(/Setup before each booking/), '20');
+    await fireEvent.click(saveButton());
+
+    expect(await screen.findByText('This venue is no longer active.')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Reload current values' })).not.toBeInTheDocument();
+  });
+});
+
+describe('KAN-77 venue edit page: setup validation', () => {
+  it('explains an invalid setup time next to its field and keeps the save disabled (AC2)', async () => {
+    const fetchMock = stubApi();
+    await renderPage();
+    await screen.findByRole('heading', { name: 'Harbour Hall' });
+    await fireEvent.update(field(/Setup before each booking/), '-1');
+
+    expect(field(/Setup before each booking/)).toHaveAttribute('aria-invalid', 'true');
+    expect(field(/Setup before each booking/)).toHaveAccessibleDescription('Enter a whole number of minutes from 0 to 1440.');
+    expect(field(/Turnaround after each booking/)).toHaveAttribute('aria-invalid', 'false');
+    expect(saveButton()).toBeDisabled();
+    expect(patchCalls(fetchMock)).toHaveLength(0);
   });
 });
