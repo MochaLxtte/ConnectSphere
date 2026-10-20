@@ -38,6 +38,8 @@ erDiagram
     app_users ||..o{ notifications : "recipient_id"
     venue_bookings |o..o{ notifications : "venue_booking_id"
     app_users |o..o{ venue_bookings : "decided_by"
+    app_users |o..o{ venue_bookings : "held_by"
+    app_users |o..o{ venue_bookings : "cancelled_by"
     event_requests ||..o{ venue_bookings : "event_request_id"
     app_users ||..o{ venue_bookings : "requested_by"
     venues ||..o{ venue_bookings : "venue_id"
@@ -175,6 +177,13 @@ erDiagram
         uuid decided_by FK "nullable"
         timestamptz decided_at "nullable"
         text decision_reason "nullable"
+        timestamptz hold_expires_at "nullable, KAN-83"
+        uuid held_by FK "nullable, KAN-83"
+        timestamptz held_at "nullable, KAN-83"
+        timestamptz expired_at "nullable, KAN-83"
+        uuid cancelled_by FK "nullable, KAN-83"
+        timestamptz cancelled_at "nullable, KAN-83"
+        text cancellation_reason "nullable, KAN-83"
         timestamptz created_at
         timestamptz updated_at
     }
@@ -273,6 +282,7 @@ erDiagram
 - KAN-65 permits explicit Lead reassignment using the active history row's UUID as `expectedAssignmentVersion`. It requires the current linkage and exactly one active history row to agree. The old row's `unassigned_at` and the new row's `assigned_at` share one database timestamp; the new MANUAL row stores the Lead and required reason in `assigned_by`/`note`. History, `event_requests.coordinator_id` and KAN-64 handover notices change atomically. Same-coordinator requests with a current version do not write; stale versions and inconsistent legacy history fail without replacing records. Shared rollout and hosted acceptance remain pending.
 - KAN-64 migration 008 adds `notifications.venue_booking_id` (nullable, `ON DELETE SET NULL`) and `notifications.dedupe_key` (nullable, non-blank). A unique index on `(recipient_id, dedupe_key)` makes a repeated outcome a no-op; rows written before the migration have no key and never conflict. It is applied only to local test databases so far, not to shared Supabase.
 - KAN-77 migration 009 adds `venues.setup_minutes` and `venues.turnaround_minutes`, both non-null integers from 0 to 1,440 with default 0. Buffer updates compare each changed field against the value the editor loaded under the venue lock; conflicts write nothing. Existing booking intervals and conflict guards are unchanged. KAN-78 must implement buffered occupancy and the linked KAN-77 AC6 re-evaluation/warnings. Shared application of migration 009 remains pending.
+- Migration `011_venue_holds.sql` (KAN-83) adds `HELD` and `EXPIRED` to `venue_bookings.status`, the hold deadline/audit columns and cancellation columns. `HELD` requires a deadline; `EXPIRED` requires `expired_at`; hold columns are set together and kept after approval, rejection, expiry or cancellation. An `APPROVED` row or a `HELD` row whose `hold_expires_at` is still in the future occupies its venue; the `venue_bookings_conflict` trigger now guards both. `expire_venue_holds()` marks overdue holds `EXPIRED` and inserts one coordinator notification each.
 - `event_reviews.event_request_id` has no unique constraint; its one-to-many relationship reflects the database structure. The review service prevents repeated initial decisions.
 - Registrations are unique per `(event_request_id, attendee_id)` pair. Neither foreign key is individually unique.
 - User email addresses, venue names and equipment-type names have case-insensitive unique indexes using `lower(...)`.

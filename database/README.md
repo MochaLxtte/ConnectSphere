@@ -95,6 +95,19 @@ A successful new submission becomes `SUBMITTED` with no coordinator, even when e
 
 Turning availability off excludes future initial allocation; it does not unassign existing events or revoke access. Unexpected assignments on drafts are preserved and reported as `409 DRAFT_ALREADY_ASSIGNED`. Existing assigned events and historical `AUTOMATIC` records keep their actors/timestamps; the new migration does not backfill or reassign them. A repeated/stale allocation returns `409 COORDINATOR_ALREADY_ASSIGNED`. KAN-65 reassignment and KAN-64 organiser/coordinator notifications remain separately implemented dependencies; this rollout does not provide their completed integration acceptance.
 
+## KAN-83 venue holds rollout — 21 October 2026
+
+**Implementation record:** [011_venue_holds.sql](migrations/011_venue_holds.sql) is additive. It adds the `HELD` and `EXPIRED` booking statuses, the hold deadline, creator, time, expiry and cancellation columns with their consistency checks, a partial index on live holds, a hold-aware `prevent_venue_booking_conflict()` trigger (an approved booking or a live hold may not overlap another approved booking, live hold or block) and the `expire_venue_holds()` function. Existing rows, statuses and decisions are unchanged, and migrations 001-007 keep their checksums. Fresh-install and upgrade checks ran against an isolated PostgreSQL database (AUTO-20261021-02); migration 008 has **not** been applied to shared Supabase.
+
+Before applying it to shared Supabase:
+
+1. Tell the team and agree a time (AGENTS.md §7.3). Deploy the matching backend and frontend together: older code does not know the new statuses.
+2. Run `npm run db:migrate` against the agreed database; it applies only pending files.
+3. **Schedule expiry.** In the Supabase dashboard enable the `pg_cron` extension (Database → Extensions), then either re-run the scheduling block at the end of migration 011 or run `SELECT cron.schedule('connectsphere-expire-venue-holds', '* * * * *', 'SELECT public.expire_venue_holds()');` once. Check it with `SELECT jobname, schedule FROM cron.job;`. The API also runs `expire_venue_holds()` at startup and every minute (`hold-expiry-scheduler.ts`), so expiry still happens while the API is running even without `pg_cron`.
+4. Verify with synthetic data only: place a hold with a deadline a few minutes ahead, confirm the period shows as held, wait for the deadline and confirm the booking becomes `EXPIRED` with one `VENUE_HOLD_EXPIRED` notification. Record the run as `MAN-YYYYMMDD-NN`.
+
+The database clock is authoritative for every deadline check. A live hold stops occupying its venue at the deadline even before an expiry run marks it `EXPIRED`. Expiry is idempotent and safe to run from several API instances and `pg_cron` at the same time; it never approves a booking or changes an event. KAN-78 venue buffers will extend `backend/src/modules/venues/occupancy.ts`; KAN-64 will display the stored notifications.
+
 ## KAN-65 reassignment and setup follow-up — 19 October 2026
 
 Migration 007 application and successful Coordinator Lead login were confirmed in chat. This is a user-reported setup result, not a fresh inspection of every shared table/constraint or a completed manual workflow run. The [test evidence](../docs/testing/test-evidence.md#19-october-2026--kan-65-coordinator-reassignment) records the distinction. Manual workflow checks are deferred until the remaining features are finished.

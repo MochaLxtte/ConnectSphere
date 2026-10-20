@@ -161,6 +161,8 @@ classDiagram
     UUID eventRequestId
     UUID venueId
     BookingStatus status
+    Date holdExpiresAt
+    boolean occupiesVenue()
   }
   class VenueUnavailability {
     UUID venueId
@@ -191,7 +193,7 @@ classDiagram
   VenueBooking "0..1" --> "0..*" Notification : booking outcome
 ```
 
-`coordinatorId`, `assignmentVersion` and automatic-history `assignedBy` may be null. A partial unique index permits at most one assignment with null `unassignedAt` per event. New initial allocations and handovers are MANUAL with the Lead actor; historical AUTOMATIC rows retain their null actor. `assignmentVersion` is the UUID of matching active history rather than a new database column. Handover records its required reason in `note` and uses the same instant for the old end/new start. Notification event/booking links, legacy `dedupeKey` and unread `readAt` may be null; `(recipientId, dedupeKey)` is unique for keyed outcomes. Venue buffer values are integers from 0 to 1,440, defaulting to 0. They are returned as planning inputs; no buffered occupancy calculation or affected-booking warning is implemented yet.
+`coordinatorId`, `assignmentVersion` and automatic-history `assignedBy` may be null. A partial unique index permits at most one assignment with null `unassignedAt` per event. New initial allocations and handovers are MANUAL with the Lead actor; historical AUTOMATIC rows retain their null actor. `assignmentVersion` is the UUID of matching active history rather than a new database column. Handover records its required reason in `note` and uses the same instant for the old end/new start. Notification event/booking links, legacy `dedupeKey` and unread `readAt` may be null; `(recipientId, dedupeKey)` is unique for keyed outcomes. Venue buffer values are integers from 0 to 1,440, defaulting to 0. They are returned as planning inputs; no buffered occupancy calculation or affected-booking warning is implemented yet. KAN-83 adds `HELD`/`EXPIRED` booking states and a hold deadline: `occupiesVenue()` is the shared rule in `occupancy.ts` (approved, or held with the deadline still in the future), and `expire_venue_holds()` marks overdue holds expired.
 
 ## Sequence diagrams
 
@@ -279,7 +281,7 @@ Two Lead writes serialize on the event lock. An initial-allocation loser receive
 
 ## Diagram exports
 
-GitHub's Mermaid rendering is not part of the submission. The current PNG exports are in `docs/architecture/exports/`: `c1-context.png`, `c2-containers.png`, `c3-components.png`, `class.png`, `seq-lead-assignment.png`, `erd-events.png` and `erd-planning.png`. Re-export after design changes. These depict implementation boundaries, not hosted acceptance.
+GitHub's Mermaid rendering is not part of the submission. The current PNG exports are in `docs/architecture/exports/`: `c1-context.png`, `c2-containers.png`, `c3-components.png`, `class.png`, `seq-lead-assignment.png`, `erd-events.png` and `erd-planning.png`. Re-export after design changes. These depict implementation boundaries, not hosted acceptance. `class.png` and `erd-planning.png` were re-exported on 21 October 2026 for KAN-83 with `mmdc` (Mermaid CLI 12) from the sources in this file.
 
 ## ERD
 
@@ -403,11 +405,15 @@ erDiagram
     uuid event_request_id FK
     uuid venue_id FK
     uuid requested_by FK
-    text status "PENDING APPROVED REJECTED CANCELLED"
+    text status "PENDING HELD APPROVED REJECTED CANCELLED EXPIRED"
     timestamptz starts_at
     timestamptz ends_at
     text layout "nullable"
     uuid decided_by FK "set with decided_at on a decision"
+    timestamptz hold_expires_at "KAN-83 deadline, nullable"
+    uuid held_by FK "KAN-83, nullable"
+    timestamptz expired_at "KAN-83, nullable"
+    text cancellation_reason "KAN-83, nullable"
   }
   EQUIPMENT_TYPES {
     uuid id PK

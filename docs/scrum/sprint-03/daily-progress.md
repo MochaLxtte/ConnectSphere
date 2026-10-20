@@ -105,6 +105,8 @@ No hosted acceptance, Jira status change, sprint completion or velocity credit i
 
 **21 October 2026 — KAN-81 PR47 review remediation outside a Daily Scrum.** Codex under Arvin’s direction fixed stale 404/409 staff writes and added four regressions. `AUTO-20261021-KAN81-FIX-01`: 21 page tests; check/coverage 690 frontend + 1,205 backend pass. `AUTO-20261021-KAN81-CI-01` imports the verified original-head CI (398 database/148 browser tests) with scoped case executions; S3-E20 registers evidence, coverage and the visually checked planning ERD. Original full TC-09-01–12 and hosted acceptance remain Not executed/Not assessed. Jira corrected to In Progress, Kai Jie, 8 SP; phases/dependencies remain outstanding and no velocity is earned.
 
+**21 October 2026 — KAN-83 development outside a Daily Scrum.** KAN-83 moved to In Progress with subtasks KAN-98/99/100. Implemented explicit Venue Staff holds with a database-checked deadline, a single occupancy rule shared by calendar, search, suitability, request creation, approval and blocks, hold approval/rejection/cancellation, idempotent expiry (`expire_venue_holds()`, `pg_cron` where enabled, plus an API scheduler) and stored coordinator notices; migration 008 is additive. Automated run `AUTO-20261021-KAN83-01` passed check, coverage, 382 integration tests (41 new) and 137 browser tests (5 new). Remaining: KAN-78 buffers in `occupancy.ts`, KAN-64 inbox display, applying migration 008 to shared Supabase after telling the team, manual hosted cases, independent review, PR CI and merge. This work is after the configured 17 October sprint end and is not counted as Sprint 3 delivery.
+
 ## Impediments
 
 | Raised | Impediment | Owner | Action | Status |

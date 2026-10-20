@@ -11,7 +11,7 @@ import {
  * - only Event Coordinators, Venue Staff and Technical Support Staff may read the calendar;
  * - a booked period is an APPROVED venue_bookings row or, since KAN-83, a live HELD row (deadline
  *   still in the future, see occupancy.ts). PENDING, REJECTED, CANCELLED and EXPIRED rows do not
- *   hold the venue, matching the venue_bookings_conflict trigger (migrations 004 and 008);
+ *   hold the venue, matching the venue_bookings_conflict trigger (migrations 004 and 011);
  * - every venue_unavailability row is a recorded period of operational unavailability;
  * - intervals are half-open [startsAt, endsAt), so a period ending exactly at `from` or starting
  *   exactly at `to` lies outside the window; periods are returned whole, not clipped;

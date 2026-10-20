@@ -26,7 +26,7 @@ This rebalanced allocation replaces the earlier 97/29 split with **63/63**, with
 | --- | --- | ---: | --- | --- | --- | --- |
 | [KAN-6](https://smu-g7-grp1.atlassian.net/browse/KAN-6) | Submit an Event Request | 3 | Unassigned — team member to choose | To agree after owner chosen | Sprint 2 carry-over: full original points | S3-T05 |
 | [KAN-34](https://smu-g7-grp1.atlassian.net/browse/KAN-34) | Resume/Edit Draft Event Request | 3 | Unassigned — team member to choose | To agree after owner chosen | Sprint 2 carry-over: full original points | S3-T06 |
-| [KAN-60](https://smu-g7-grp1.atlassian.net/browse/KAN-60) | Require a reason when rejecting an event request | 2 | Unassigned — team member to choose | To agree after owner chosen | Existing release backlog | S3-T07 |
+| [KAN-60](https://smu-g7-grp1.atlassian.net/browse/KAN-60) | Require a reason when rejecting an event request | 2 | Irfan | To agree | Existing release backlog | S3-T07 |
 | [KAN-50](https://smu-g7-grp1.atlassian.net/browse/KAN-50) | Maintain Venue Catalog | 5 | Unassigned — team member to choose | To agree after owner chosen | Sprint 2 carry-over: full original points | S3-T15 |
 | [KAN-12](https://smu-g7-grp1.atlassian.net/browse/KAN-12) | Search and Filter Venues | 5 | Unassigned — team member to choose | To agree after owner chosen | Sprint 2 carry-over: full original points | S3-T16 |
 | [KAN-52](https://smu-g7-grp1.atlassian.net/browse/KAN-52) | Check Venue Suitability | 3 | Unassigned — team member to choose | To agree after owner chosen | Sprint 2 carry-over: full original points | S3-T17 |
@@ -36,7 +36,7 @@ This rebalanced allocation replaces the earlier 97/29 split with **63/63**, with
 | [KAN-65](https://smu-g7-grp1.atlassian.net/browse/KAN-65) | Reassign Event Coordinator | 3 | Tristan | Irfan ([PR #34](https://github.com/MochaLxtte/ConnectSphere/pull/34), 20 October; CI-based approval) | In Progress; KAN-79 integrated; merged to `main` 20 October, not Done | S3-T21 |
 | [KAN-64](https://smu-g7-grp1.atlassian.net/browse/KAN-64) | Receive Request, Assignment and Venue Notifications | 5 | Unassigned — team member to choose | To agree after owner chosen | Explicit original notification split | S3-T22 |
 | [KAN-81](https://smu-g7-grp1.atlassian.net/browse/KAN-81) | Recover venue arrangements affected by operational unavailability | 8 | Unassigned — team member to choose | To agree after owner chosen | Customer change CR-2 | S3-T25 |
-| [KAN-83](https://smu-g7-grp1.atlassian.net/browse/KAN-83) | Manage temporary venue holds with expiry and automatic release | 8 | Unassigned — team member to choose | To agree after owner chosen | Customer change CR-4 | S3-T26 |
+| [KAN-83](https://smu-g7-grp1.atlassian.net/browse/KAN-83) | Manage temporary venue holds with expiry and automatic release | 8 | Irfan | To agree | Customer change CR-4 | S3-T26 |
 | **Total** | **13 parents** | **63** | | | | |
 
 ## Shared test data and execution rules
@@ -68,7 +68,7 @@ Every row requires its complete active criterion set plus applicable Definition 
 | S3-T21 | KAN-65: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC101, AC102, AC103, AC104 | TC-05-10–16; TC-05-48; automated cases linked in traceability | Automated reassignment checks pass: AUTO-20261019-02; 21 October logout regression passes AUTO-20261021-KAN79-02/03 (S3-E18); KAN-64 notifications and manual/hosted checks **Not executed**; acceptance **Not assessed** **21 October combined follow-up: handover/no-op notification integration passes AUTO-20261021-INTEGRATION-05; browser regression passes INTEGRATION-06. Complete hosted group remains Not executed.** |
 | S3-T22 | KAN-64: AC201, AC202, AC203, AC204, AC205, AC206, AC207, AC208, AC209 | TC-20-12, TC-20-13, TC-20-14, TC-20-15, TC-20-16, TC-20-17, TC-20-18, TC-20-19, TC-20-20; TC-20-30–37 | **Partly executed**: TC-20-17 privacy integration passes in AUTO-20261021-KAN64-03. Other recorded automated checks support portions of TC-20-12–16/18/19; the full concurrency/overlapping-recipient cases, manual runs and TC-20-20 remain **Not executed**. Acceptance **Not assessed**. **21 October combined follow-up: eight lifecycle cases pass AUTO-20261021-INTEGRATION-02; notification PostgreSQL/browser checks pass INTEGRATION-05/06. Full TC-20-18/19/20 and hosted acceptance remain Not executed / Not assessed.** |
 | S3-T25 | KAN-81: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12 | TC-09-01, TC-09-02, TC-09-03, TC-09-04, TC-09-05, TC-09-06, TC-09-07, TC-09-08, TC-09-09, TC-09-10, TC-09-11, TC-09-12 | **Not executed** as a complete group. 21 October 2026, phase 1: AC1–AC4, AC9 (planning effects), AC10, AC11 and the staff side of AC6/AC12 have passing unit/component checks in `AUTO-20261021-08`; PostgreSQL and browser cases await CI. AC5, AC7, AC8, the coordinator side of AC6/AC12, hold cases and the readiness half of AC9 are Not executed. |
-| S3-T26 | KAN-83: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12 | TC-14-08, TC-14-09, TC-14-10, TC-14-11, TC-14-12, TC-14-13, TC-14-14, TC-14-15, TC-14-16, TC-14-17, TC-14-18, TC-14-19 | **Not executed** / Not recorded |
+| S3-T26 | KAN-83: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12 | TC-14-08, TC-14-09, TC-14-10, TC-14-11, TC-14-12, TC-14-13, TC-14-14, TC-14-15, TC-14-16, TC-14-17, TC-14-18, TC-14-19 | Automated: **Pass** 21 October (AUTO-20261021-KAN83-01; all twelve cases at integration, unit and browser levels). Manual hosted run, shared-database migration 008 and KAN-64 inbox display: **Not executed** |
 | S3-T27 | Integrated request/venue/Lead/recovery/hold workflow | TC-14-20 | **Not executed** / Not recorded |
 
 ## Selected story cards
@@ -1005,7 +1005,7 @@ Update contracts/diagrams, test cases, traceability, actual run evidence and spr
 
 ### KAN-83 — Manage temporary venue holds with expiry and automatic release
 
-**Owner:** Unassigned — team member to choose · **Independent reviewer:** To agree after owner chosen · **Estimate:** 8 SP · **Jira status:** To Do · **Acceptance:** Not assessed · **Test group:** S3-T26
+**Owner:** Irfan (claimed 20 October) · **Independent reviewer:** To agree · **Estimate:** 8 SP · **Jira status:** In Progress (subtasks KAN-98, KAN-99, KAN-100) · **Acceptance:** Not assessed · **Test group:** S3-T26
 
 **User story:** As an Event Coordinator, I want a temporary venue hold to have a visible deadline and be released when that deadline is not met, so that availability remains accurate and an expired hold never becomes a confirmed booking.
 
@@ -1027,6 +1027,8 @@ Update contracts/diagrams, test cases, traceability, actual run evidence and spr
 | **KAN-83-AC12** | Wrong-role or wrong-assignment clients cannot create/approve holds or access protected hold details. The UI displays stale/deadline conflicts and refreshes committed state after uncertain writes, without pretending a locally displayed countdown guarantees a reservation. | TC-14-19 |
 
 **Implementation location:** Not recorded. **Automated test files:** Not recorded. Record real files during implementation; these planned tests are not completion evidence.
+
+**Implementation update — 21 October 2026.** Branch `feat/KAN-83-venue-holds`. Migration `database/migrations/011_venue_holds.sql` adds `HELD`/`EXPIRED` states, hold deadline and audit columns, a hold-aware `prevent_venue_booking_conflict` trigger and the idempotent `expire_venue_holds()` function (scheduled by `pg_cron` where enabled). Backend: `backend/src/modules/venues/occupancy.ts` (the single occupancy rule, with the KAN-78 buffer hook), `booking-service.ts` (`placeVenueHold`, `cancelVenueHold`, hold approval/rejection in `decideVenueBooking`, `releaseHold`, `expireVenueHolds`), `booking-input.ts`, `venue-bookings-router.ts` (`POST /api/venue-bookings/:id/hold` and `/hold/cancel`), `hold-expiry-scheduler.ts` and `server.ts`; `availability.ts`, `venue-search.ts`, `suitability-service.ts`/`suitability-rules.ts` and `block-service.ts` use the shared rule. Frontend: `VenueBookingDetailPage.vue`, `VenueBookingsPage.vue`, `VenueBookingPanel.vue`, `VenueWeekTimeline.vue` and the venue API clients. Tests: `database/tests/venues/venue-holds.integration.test.ts`, `backend/test/venues/venue-holds.test.ts`, `venue-hold-input.test.ts`, `venue-bookings-router.test.ts`, `frontend/src/features/venues/pages/VenueBookingHold.test.ts` (plus list, panel and calendar cases) and `tests/e2e/venue-holds.spec.ts`. Automated run AUTO-20261021-KAN83-01 passed. Buffered occupancy uses the requested interval until KAN-78 extends `occupancy.ts`; AC7 notices are stored for the KAN-64 inbox, which is not yet built. Manual hosted checks, shared-database migration, independent review and acceptance remain **Not executed** / **Not assessed**.
 
 **Dependencies:** KAN-78 common buffered occupancy; KAN-64 persisted notification delivery; Existing KAN-53 request and KAN-8 decision workflows; CR-2 outage interaction.
 

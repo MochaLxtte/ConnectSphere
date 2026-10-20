@@ -1218,3 +1218,18 @@ Source: KAN-81 plan approved in chat by Kai Jie, the story owner, on 21 October 
 ## 21 October 2026 — KAN-81 stale-refusal review correction
 
 Source: PR47 review and Arvin's instruction to fix the findings and merge. A definite 4xx refusal does not establish that the cached staff view is current: 404/409 create/remove results now refresh both blocks and recovery while preserving the server message and save input. No write is retried automatically. This supplements phase-1 decision 6; the AC wording, phased scope and 8-SP estimate are unchanged. New TC-09-13–17 expose phase-1 verification without claiming completion of TC-09-01–12. Jira's To Do/In Progress mismatch was corrected to In Progress, retaining Kai Jie as assignee.
+
+## 21 October 2026 — KAN-83 implementation decisions
+
+**Source and date:** Irfan, 21 October 2026, while implementing KAN-83 (AI-assisted; plan approved in chat by Irfan, including the three choices marked *approved*).
+
+- **One occupancy rule (approved):** a booking occupies its venue when it is `APPROVED`, or `HELD` with the deadline still in the future (`backend/src/modules/venues/occupancy.ts`). Calendar, search, suitability, request creation, approval and block creation all use it. KAN-78 adds venue buffers in the same file; until then the occupied interval and the latest hold deadline use the requested start and end.
+- **Expiry scheduling (approved):** `expire_venue_holds()` in migration 011 is the single expiry operation and uses the database clock. Migration 011 schedules it every minute with `pg_cron` where that extension is enabled; the API also runs it at startup and every minute. Reads never depend on either: a hold stops occupying the venue at its deadline even if no run has happened.
+- **Notifications (approved):** placement, expiry and cancellation notices are written to the existing `notifications` table in the same transaction as the hold change (types `VENUE_HOLD_PLACED`, `VENUE_HOLD_EXPIRED`, `VENUE_HOLD_CANCELLED`). Showing them in the app is KAN-64's inbox, so AC7's in-app display cannot be accepted before KAN-64.
+- **Hold eligibility:** a hold may only be placed on a `PENDING` request for an `APPROVED` event (the same event state approval requires), at an active venue whose capacity fits the expected attendance and whose opening hours contain the booked period.
+- **Decisions on a hold:** Venue Staff may approve or reject a live hold through the existing decision endpoint. A hold at or after its deadline can no longer be approved, rejected or cancelled (`HOLD_EXPIRED`); it is already released.
+- **Outage interaction:** creating an operational block releases any live hold it overlaps (status `CANCELLED`, reason "Venue unavailable: <block reason>") and notifies the coordinator; an approved booking still refuses the block as before. KAN-81 owns wider outage recovery.
+- **Statuses:** `HELD` and `EXPIRED` are new booking statuses; readers see a `HELD` row past its deadline as `EXPIRED`. Venue Staff's queue lists pending requests and live holds.
+
+**Outcome:** implementation choices within the existing criteria; no new acceptance criterion, estimate or scope change. Jira wording is unchanged.
+
