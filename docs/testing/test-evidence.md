@@ -1280,3 +1280,22 @@ shared test data is left behind. No push, remote merge or PR creation is perform
 **AUTO-20261021-KAN81-FIX-01, local retest.** Windows, Node 24.21.0, Vitest 4.1.11. Tested working-tree application/test bytes were committed unchanged as `18ac27d4e26580ef5f8aca519e5cd8ecbc2d1d51`. The change refreshes both blocks and recovery after stale 404/409 as well as uncertain write failures, retaining the definite refusal and submitted input, without retrying. Four permanent variants cover save/removal × 404/409; the focused page suite passes **21/21**. `npm run check` passes **690 frontend + 1,205 backend tests**, types and both builds. `npm run test:coverage` passes the same tests: frontend statements/branches/functions/lines **95.19/92.54/97.12/97.63%**; backend **88.22/90.51/87.86/88.80%**. Existing uncovered workspace code remains; this is not a claim of 100% workspace coverage. Full coverage output is retained in [coverage report](coverage-reports/2026-10-21-kan81-review.txt).
 
 **Diagram and status.** Re-exported `erd-planning.png` directly from the planning Mermaid block with Mermaid CLI 12, neutral theme, white background, size 2600, scale 2; visually checked the recovery entity/relationships and legibility. S3-E20 records the source/export SHA-256 values and reproduction settings. Jira was observed To Do and transitioned to **In Progress** on 21 October; Kai Jie remains assignee and 8 SP is unchanged. No new schema/shared migration or Done/velocity credit. Phases 2/3, KAN-78 buffers, KAN-83 holds, readiness and hosted acceptance remain outstanding. Final pushed-head CI is required before merge; the GitHub check records that result separately from this original-head import.
+
+## 21 October 2026 — KAN-81 phase 2 coordinator notice and recovery view
+
+**Run ID: AUTO-20261021-09.** Branch `feat/KAN-81-phase-2-notifications`, stacked on the reviewed phase 1 (`30da68a`), code commits `f2491c2827b01a168498f59da807cd13f102b9a6` (backend), `dc24220` (frontend) and `b78f669` (PostgreSQL/browser fixtures), with the tested working tree committed without code changes. Actual execution date: 21 October 2026, Asia/Singapore. Environment: Windows, Node.js 24, Vitest. No isolated PostgreSQL database locally; shared Supabase not used.
+
+| Command / check | Actual result |
+| --- | --- |
+| `npm run check` | Pass: type checks, 696 frontend tests in 35 files and 1,210 backend tests in 44 files, both builds |
+| `npm run test:coverage` | Pass: the same tests |
+| `npm run test:integration` | **Not executed** locally: 5 new KAN-81 phase 2 PostgreSQL cases await CI |
+| `npm run test:e2e` | **Not executed** locally; two booking browser fixtures gained `recovery: []` |
+
+**New tests:** backend 5 (notice builder, transactional write, no-coordinator case, recovery serialisation) and frontend 6 (booking page for coordinator and staff, resolved/cleared, unaffected; venue panel marker). Updated for the new field: the KAN-64 notification-type list, the KAN-54 booking row fixture and three frontend booking fixtures.
+
+**Coverage:** `trigger-matrix.ts`, `outage-impact.ts` and `block-service.ts` 100% lines, branches and functions. In `booking-service.ts` every changed line is covered; its uncovered lines are pre-existing read paths covered by PostgreSQL suites.
+
+**Verified behaviour (unit/component):** one notice per affected event to its current coordinator, none for an event without one, multiple bookings of one event listed in one notice, notice written after the impacts and before commit with dedupe key `VENUE_OUTAGE_RECOVERY_REQUIRED:<outage>:<event>`. Booking recovery lists serialise to ISO timestamps. The booking page shows the outage list with role-specific guidance and distinguishes required, resolved and cleared; the coordinator panel marks bookings needing recovery.
+
+**Gaps:** PostgreSQL cases (notice per event, dedupe on reprocessing, recovery visible to staff and assigned coordinator but not another coordinator, inbox link, cleared state after removal) await CI; execution rows will be added after CI. AC7/AC8 (phase 3), holds and readiness remain Not executed. KAN-81 stays In Progress.

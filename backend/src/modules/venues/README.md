@@ -131,8 +131,9 @@ saves the outage and, inside the same venue-locked transaction, records each aff
 - Block creation, booking submission and approval share the venue row lock, so an outage and an
   approval never interleave. Removal locks the venue, marks that block's open flags `CLEARED` and
   deletes the block; other outages' flags are unchanged.
-- `GET /api/venues/recovery` lists affected arrangements for Venue Staff. Coordinator notification
-  and view (phase 2) and linked replacements (phase 3) follow.
+- `GET /api/venues/recovery` lists affected arrangements for Venue Staff. Phase 2: each affected
+  event's current coordinator gets one notice per outage (KAN-64 writer, same transaction), and every
+  booking response carries its `recovery` list. Linked replacements (phase 3) follow.
 
 ### Verification
 

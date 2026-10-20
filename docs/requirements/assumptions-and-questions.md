@@ -1218,3 +1218,12 @@ Source: KAN-81 plan approved in chat by Kai Jie, the story owner, on 21 October 
 ## 21 October 2026 — KAN-81 stale-refusal review correction
 
 Source: PR47 review and Arvin's instruction to fix the findings and merge. A definite 4xx refusal does not establish that the cached staff view is current: 404/409 create/remove results now refresh both blocks and recovery while preserving the server message and save input. No write is retried automatically. This supplements phase-1 decision 6; the AC wording, phased scope and 8-SP estimate are unchanged. New TC-09-13–17 expose phase-1 verification without claiming completion of TC-09-01–12. Jira's To Do/In Progress mismatch was corrected to In Progress, retaining Kai Jie as assignee.
+
+## 21 October 2026 — KAN-81 phases 2 and 3 decisions
+
+Source: options proposed in chat on 21 October 2026. Kai Jie, the story owner, said to proceed without choosing, so the recommended option of each was adopted. These are implementation decisions within CR-2, not customer clarifications or a team vote; the 8-SP estimate is unchanged.
+
+1. **Who is notified (AC5).** Only each affected event's current assigned coordinator, once per outage and event (dedupe key `VENUE_OUTAGE_RECOVERY_REQUIRED:<outage>:<event>`), linked to the event's first affected booking. The organiser is not notified. An event without a coordinator gets no notice. This adds one row to the KAN-64 trigger/recipient matrix, which is still To agree.
+2. **Suitability for a replacement (AC7, phase 3).** The objective checks are enforced automatically (active venue, capacity, operating hours, buffered availability and conflicts). Checks that need the coordinator's interpretation of free-text requirements stay advisory, consistent with KAN-52 and CR-6.
+3. **The original booking after an approved replacement (AC8, phase 3).** It becomes `CANCELLED`, keeping the row and its history, so it no longer reserves the venue. The `venue_bookings_conflict` trigger fires only for `APPROVED` rows, so this update is allowed even while the original overlaps the outage.
+4. **Coordinator view (AC6/AC12).** No new page: every booking response carries its `recovery` list, which the existing booking page shows to Venue Staff and the assigned coordinator. The coordinator's venue panel marks bookings that need recovery.

@@ -105,6 +105,8 @@ No hosted acceptance, Jira status change, sprint completion or velocity credit i
 
 **21 October 2026 — KAN-81 PR47 review remediation outside a Daily Scrum.** Codex under Arvin’s direction fixed stale 404/409 staff writes and added four regressions. `AUTO-20261021-KAN81-FIX-01`: 21 page tests; check/coverage 690 frontend + 1,205 backend pass. `AUTO-20261021-KAN81-CI-01` imports the verified original-head CI (398 database/148 browser tests) with scoped case executions; S3-E20 registers evidence, coverage and the visually checked planning ERD. Original full TC-09-01–12 and hosted acceptance remain Not executed/Not assessed. Jira corrected to In Progress, Kai Jie, 8 SP; phases/dependencies remain outstanding and no velocity is earned.
 
+**21 October 2026 — KAN-81 phase 2 development outside a Daily Scrum.** Rebased on the reviewed phase 1 (`30da68a`). Phase 2 on `feat/KAN-81-phase-2-notifications`: each affected event's coordinator is notified in the outage transaction and booking pages show the recovery state. `AUTO-20261021-09`: check and coverage pass; PostgreSQL cases await CI. Phase 3 (replacements) follows. KAN-81 stays In Progress at 8 SP.
+
 ## Impediments
 
 | Raised | Impediment | Owner | Action | Status |
