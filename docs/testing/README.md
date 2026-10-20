@@ -97,6 +97,21 @@ npm run test:e2e
 
 Follow the README for database and browser prerequisites. Treat the exit status and test report as evidence of an actual run; this document is not a stored passing result.
 
+## Browser regression reliability
+
+Scope live-region assertions to the intended message when notices and loading indicators can
+coexist. For response-order tests, hold and release the relevant fixture explicitly, assert the
+pending state, then wait for the final state before checking absence of stale data. Logout tests
+should observe cancellation and fixture completion before checking late feedback. A passing
+negative assertion before the response settles is insufficient evidence.
+
+Use focused repetitions followed by a full-suite run when diagnosing timing failures. Keep the
+original failed attempt and each retest; do not hide the race with sleeps, retries or enlarged
+timeouts. Run heavy suites sequentially when they share local CPU/database resources. The
+[21 October KAN-79 audit](test-evidence.md#21-october-2026--kan-79-test-reliability-and-owned-story-audit)
+records 30 focused and 396 full-suite executions, with separate specification and execution rows.
+These runs provide bounded evidence, not a guarantee that a test can never flake.
+
 ## Database environments
 
 Supabase hosts the development PostgreSQL database following the [8 September technical decision](../requirements/assumptions-and-questions.md#8-september-2026--hosted-postgresql). Keep database integration tests on an isolated test database: CI uses PostgreSQL 17, and Docker Compose provides an optional local test instance. Do not run tests that create or clean up fixtures against the shared development project or production.

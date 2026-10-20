@@ -893,3 +893,78 @@ browser, coverage and hosted acceptance tests. No application code, database, Ji
 acceptance, sprint totals or historical completion dates changed. The remaining Not executed cases
 include future and historical-baseline specifications as well as manual checks; their count is not
 a count of missing implementations. Commit and push remain for separate authorisation.
+
+## 21 October 2026 — KAN-79 test reliability and owned-story audit
+
+**Build:** `b93d2cc2bfcac385d87975744650419840c6a4c0`. Tests ran against the working tree based on `259cd17`; the
+subsequent test commit contains the same three tested source files. This branch also retains the
+approved test-documentation standardisation commit. [S3-E18](../scrum/sprint-03/evidence/kan79-reliability-2026-10-21.json)
+records source hashes, exact browser attempts, focused Vitest titles and aggregate results.
+
+The KAN-79 conflict test used an unscoped `role=status` locator. During conflict recovery the
+page legitimately renders both the conflict notice and a loading status. Holding the refresh
+response reproduces the ambiguity deterministically. The repair scopes the conflict assertion,
+checks the pending state, releases the response and waits for the final empty queue. The component
+regression now also waits for refresh completion. KAN-79 and KAN-65 logout tests wait for browser
+request cancellation and fixture-handler settlement before checking that private data and late
+success remain absent. No sleeps, retries, increased timeouts, application changes or migrations
+were introduced.
+
+| Run | Command / method | Actual result |
+| --- | --- | --- |
+| AUTO-20261021-01 | Playwright Lead conflict test, held refresh, **old** broad locator, one worker | **1 failed**: strict-mode locator resolved to conflict and loading status elements. This is the retained pre-fix test failure. |
+| AUTO-20261021-02 | Lead conflict + initial-allocation logout + reassignment logout; `--repeat-each=10 --workers=4` | **30/30 passed**, zero retries. |
+| AUTO-20261021-03 | Full browser suite; `--repeat-each=3 --workers=4` | **396/396 passed** (132 scenarios × 3), zero retries, skips or flaky results. |
+| AUTO-20261021-04 | `npm run check` | Types, **604 frontend + 1,035 backend tests** and both builds passed. |
+| AUTO-20261021-05 | `npm run test:coverage` | Same **1,639 tests passed**; [coverage table](coverage-reports/2026-10-21-kan79-reliability.txt). Frontend statements/branches **94.79% / 92.08%**, backend **85.34% / 88.54%**. |
+| AUTO-20261021-06 | `npm run test:integration` | **341/341** real PostgreSQL tests passed across 22 files. |
+| AUTO-20261021-07 | Focused Vitest JSON reports for six component files and `backend/test/venues/booking-input.test.ts` | **142 frontend + 55 backend tests passed**. Exact-title evidence supports the six newly documented existing regression cases. |
+
+**Environment and commands:** Windows, Node 24, Vitest 4.1.11, Playwright Chromium,
+disposable PostgreSQL 17. Browser runs used the existing configuration with only a temporary local
+override for ports 3089/5189, isolated database connection and report/output locations; retries
+remain zero and normal timeouts are unchanged. Local developer servers were left running.
+The temporary override is not a project setup change. Commands were:
+
+```sh
+npx playwright test --config dist/kan79-reliability/playwright.config.ts tests/e2e/lead-assignment.spec.ts --grep 'stale assignment conflict' --workers=1
+npx playwright test --config dist/kan79-reliability/playwright.config.ts tests/e2e/lead-assignment.spec.ts tests/e2e/coordinator-reassignment.spec.ts --grep 'stale assignment conflict|late in-flight|late handover' --repeat-each=10 --workers=4
+npx playwright test --config dist/kan79-reliability/playwright.config.ts --repeat-each=3 --workers=4
+npm run check
+npm run test:coverage
+npm run test:integration
+npm test --workspace @connectsphere/frontend -- src/features/venues/pages/VenueBookingDetailPage.test.ts src/features/events/pages/EventRequestsPage.test.ts src/features/events/pages/EventRequestDetailPage.test.ts src/features/reviews/pages/ReviewRequestPage.test.ts src/features/reviews/components/ReviewDecisionPanel.test.ts src/features/reviews/pages/UnassignedRequestsPage.test.ts --reporter=json --outputFile=../dist/kan79-reliability/documented-frontend.json
+npm test --workspace @connectsphere/backend -- test/venues/booking-input.test.ts --reporter=json --outputFile=../dist/kan79-reliability/documented-backend.json
+```
+
+The first database setup attempt preceded PostgreSQL readiness and failed with a connection
+termination; after `pg_isready`, migrations 001–007 and seed succeeded. This was a local setup
+retry, not a product-test failure. Suite runs were scheduled sequentially to avoid overlapping
+full-suite CPU load. Shared Supabase was not used or changed.
+
+**Owned-story audit:** live Jira on 21 October assigns KAN-8, KAN-16, KAN-29, KAN-36,
+KAN-65 and KAN-79 to Tristan; KAN-52 was additionally inspected because of earlier implementation
+work, although currently unassigned. Reviewed browser/component assertions, deferred-response
+handling, teardown, database fixture isolation, deterministic race synchronization and
+case/AC/file mappings. Besides the three browser scenarios and the component refresh assertion, no additional concrete timing defect
+was identified in the reviewed files. The evidence artifact lists that bounded review scope.
+KAN-29 automatic-allocation tests remain a historical baseline superseded by CR-5; current
+compatibility tests verify unassigned submission and preservation of prior assignment history.
+
+**Specification and execution changes:** added atomic cases TC-05-46–48 for the three browser
+scenarios and TC-13-01/02, TC-06-33/34 and TC-04-07/08 for existing decision recovery,
+validation and privacy regressions. Supporting mappings are limited to the assertions actually
+present; they do not add customer requirements or establish every linked AC. All original 427
+specifications, 115 traceability rows and 407 execution records remain unchanged. New execution
+rows retain the pre-fix Fail and each browser repetition separately, plus six case-specific Vitest
+passes. Aggregate feature rows and unrelated unperformed cases receive no new Pass.
+
+**Limits:** finite repeated runs cannot guarantee freedom from flakes or all defects. Browser
+API/session fixtures prove UI behavior, not hosted authentication or persistence; real database
+tests establish their own isolated boundaries. The aborted-write checks do not prove server
+rollback after cancellation. Unit coverage has existing exclusions and unexecuted branches;
+no application code was added by this repair. Manual/hosted acceptance, KAN-64 integration and
+the new branch's pushed-build CI/peer review remain **Not executed** / **Not assessed** as
+applicable. No Jira status, story estimate, sprint acceptance or historical completion changed.
+
+**Documentation verification:** 19/19 register, source-hash, attempt-mapping and file-link checks passed; 436 specifications map through 124 traceability rows. The 453 execution rows retain 372 Not executed placeholders, 75 passing attempts and six failed attempts (five earlier product audit cases plus this locator reproduction). These are attempt counts, not feature acceptance totals. Submission packaging passed. The initial helper was adjusted for Git/Windows line-ending normalization and preserved blank AC cells in old aggregate traceability rows; no historical records were rewritten. The disposable PostgreSQL container was removed after testing.

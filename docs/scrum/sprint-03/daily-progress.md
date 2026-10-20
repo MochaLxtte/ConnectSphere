@@ -49,6 +49,18 @@ tests were run and no acceptance status or sprint points changed. This is actual
 documentation work while Sprint 3 remains administratively Active, not work backdated into its
 configured 4–17 October window or a member's standup row.
 
+
+**21 October 2026 — test reliability repair outside a Daily Scrum.** Fixed the KAN-79
+conflict-test locator race using a held queue refresh; strengthened refresh-completion and
+KAN-79/KAN-65 logout assertions. Reviewed the assigned KAN-8/16/29/36/65/79 tests plus earlier
+KAN-52 work. AUTO-20261021-01 retains the failing reproduction; runs 02–07 / S3-E18 record
+30 focused browser repetitions, 396 full-browser executions, 1,639 unit/component tests,
+341 isolated PostgreSQL tests, coverage and focused case evidence. Added nine regression
+specifications with separate actual attempts and traceability; unperformed cases remain
+Not executed. No application/schema, estimate, acceptance or Jira status changed. Hosted
+checks and KAN-64 remain pending. This records actual 21 October work, not delivery within
+the configured 4–17 October sprint window.
+
 ## Impediments
 
 | Raised | Impediment | Owner | Action | Status |

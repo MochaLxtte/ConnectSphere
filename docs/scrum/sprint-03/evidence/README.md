@@ -104,3 +104,9 @@ KAN-65 code/test commit: `d8f3bc2aee19a608b1a3f57c87e7d5cc7d242d84`. Documentati
 | ID | Artifact | Source / result | Limits |
 | --- | --- | --- | --- |
 | S3-E17 | [Validation results and CSV hashes](test-documentation-validation-2026-10-21.json), [AUTO-20261021-DOCS-01](../../../testing/test-evidence.md#21-october-2026--test-documentation-standardisation), [original register](../../../testing/archive/test-cases-2026-10-21.csv) | 18/18 documentation checks; all 427 IDs retained and linked through 115 traceability rows. Separate execution records preserve 30 automated passes, five detailed audit failures and 372 Not executed placeholders; 20 feature summaries excluded from run counts. Submission packaging/readback passed. | Documentation working tree based on `aaee549`; no new application or manual runs, no invented metadata or acceptance. Original failure/retest narratives remain historical. |
+
+## KAN-79 test reliability and owned-story audit — 21 October 2026
+
+| ID | Artifact | Source / result | Limits |
+| --- | --- | --- | --- |
+| S3-E18 | [Run attempts, hashes and audit scope](kan79-reliability-2026-10-21.json), [AUTO-20261021-01–07](../../../testing/test-evidence.md#21-october-2026--kan-79-test-reliability-and-owned-story-audit), [coverage](../../../testing/coverage-reports/2026-10-21-kan79-reliability.txt) | Preserved failing locator reproduction; fixed tests pass 30 focused repetitions and 396 full-browser executions. Check/coverage: 604 frontend + 1,035 backend; PostgreSQL: 341. Focused exact-title reports: 142 frontend + 55 backend. Nine new mapped specifications; original registers retained. | Fixture browser checks and isolated PostgreSQL are separate from hosted acceptance. No application/schema changes, Jira Done, velocity credit or guarantee of zero future flakes. KAN-64 and manual/hosted checks remain Not executed. |
