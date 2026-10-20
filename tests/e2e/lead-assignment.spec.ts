@@ -15,11 +15,14 @@ const summary = {
 };
 type Options = {
   user?: typeof lead | null; available?: boolean; conflict?: boolean; status?: string; holdWrite?: Promise<void>;
+  holdQueueRefresh?: Promise<void>;
 };
 async function fixtures(page: Page, options: Options = {}) {
   let user = options.user === undefined ? lead : options.user;
   let assigned = false;
   let writes = 0;
+  let settleWrite!: () => void;
+  const writeSettled = new Promise<void>((resolve) => { settleWrite = resolve; });
   const calls: string[] = [];
   const unexpected: string[] = [];
   const current = () => ({ ...summary, status: options.status ?? summary.status,
@@ -37,6 +40,7 @@ async function fixtures(page: Page, options: Options = {}) {
     } else if (path === '/api/health' || path === '/api/health/ready') {
       await route.fulfill({ json: { status: 'ok', service: 'connectsphere-api', database: 'connected' } });
     } else if (method === 'GET' && path === '/api/events/unassigned') {
+      if (assigned) await options.holdQueueRefresh;
       await route.fulfill({ json: { items: assigned ? [] : [current()] } });
     } else if (method === 'GET' && path === '/api/events/coordinators') {
       await route.fulfill({ json: { items: options.available === false ? [] : [coordinator] } });
@@ -53,20 +57,24 @@ async function fixtures(page: Page, options: Options = {}) {
         note: null, assignedAt: '2026-10-19T02:00:00.000Z', unassignedAt: null,
       }] : [] } });
     } else if (method === 'PUT' && path === `/api/events/${eventId}/coordinator`) {
-      writes += 1;
-      expect(req.postDataJSON().coordinatorId).toBe(coordinatorId);
-      await options.holdWrite;
-      assigned = true;
-      await route.fulfill(options.conflict ? { status: 409, json: {
-        error: { code: 'COORDINATOR_ALREADY_ASSIGNED', message: 'This request already has a coordinator.' },
-      } } : { json: { eventRequestId: eventId, coordinatorId, previousCoordinatorId: null,
-        assignmentId: '10000000-0000-4000-8000-000000000080' } });
+      try {
+        writes += 1;
+        expect(req.postDataJSON().coordinatorId).toBe(coordinatorId);
+        await options.holdWrite;
+        assigned = true;
+        await route.fulfill(options.conflict ? { status: 409, json: {
+          error: { code: 'COORDINATOR_ALREADY_ASSIGNED', message: 'This request already has a coordinator.' },
+        } } : { json: { eventRequestId: eventId, coordinatorId, previousCoordinatorId: null,
+          assignmentId: '10000000-0000-4000-8000-000000000080' } });
+      } finally {
+        settleWrite();
+      }
     } else {
       unexpected.push(`${method} ${path}`);
       await route.fulfill({ status: 501, json: { error: { code: 'UNEXPECTED_TEST_REQUEST', message: 'No API fixture configured.' } } });
     }
   });
-  return { calls, unexpected, writes: () => writes };
+  return { calls, unexpected, writes: () => writes, writeSettled };
 }
 
 // API fixtures prove browser wiring and session lifecycle only. Real role mapping,
@@ -113,14 +121,27 @@ test.describe('KAN-79 Lead allocation browser workflow', () => {
   });
 
   test('handles a stale assignment conflict by refreshing the queue without claiming success', async ({ page }) => {
-    const fixture = await fixtures(page, { conflict: true });
+    let release!: () => void;
+    const refresh = new Promise<void>((resolve) => { release = resolve; });
+    const fixture = await fixtures(page, { conflict: true, holdQueueRefresh: refresh });
     await page.goto('/lead');
     await page.getByRole('combobox', { name: `Coordinator for ${summary.name}` }).selectOption(coordinatorId);
-    await page.getByRole('button', { name: 'Assign', exact: true }).click();
-    await expect(page.getByRole('status')).toContainText('was assigned by another Lead');
+    try {
+      await page.getByRole('button', { name: 'Assign', exact: true }).click();
+      // The conflict notice and loading status deliberately coexist during refresh.
+      await expect(page.getByRole('status').filter({ hasText: 'was assigned by another Lead' })).toBeVisible();
+      await expect(page.getByText('Loading unassigned requests…', { exact: true })).toBeVisible();
+      await expect(page.getByRole('button', { name: 'Refresh', exact: true })).toBeDisabled();
+      await expect(page.getByRole('link', { name: 'Open allocation', exact: true })).toHaveCount(0);
+    } finally {
+      release();
+    }
     await expect(page.getByRole('heading', { name: 'No requests are awaiting assignment' })).toBeVisible();
+    await expect(page.getByText('Loading unassigned requests…', { exact: true })).toHaveCount(0);
+    await expect(page.getByRole('status').filter({ hasText: 'was assigned by another Lead' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'Open allocation', exact: true })).toHaveCount(0);
     expect(fixture.writes()).toBe(1);
+    expect(fixture.calls.filter((call) => call === 'GET /api/events/unassigned')).toHaveLength(2);
     expect(fixture.unexpected).toEqual([]);
   });
 
@@ -143,9 +164,18 @@ test.describe('KAN-79 Lead allocation browser workflow', () => {
     await page.getByRole('button', { name: 'Assign', exact: true }).click();
     await expect.poll(fixture.writes).toBe(1);
     await expect(page.getByRole('button', { name: 'Assigning…' })).toBeDisabled();
-    await page.getByRole('button', { name: 'Sign out', exact: true }).click();
+    const cancelled = page.waitForEvent('requestfailed', (request) =>
+      request.method() === 'PUT' && new URL(request.url()).pathname === `/api/events/${eventId}/coordinator`);
+    try {
+      await page.getByRole('button', { name: 'Sign out', exact: true }).click();
+      await expect(page.getByRole('heading', { name: 'Sign in required', exact: true })).toBeVisible();
+    } finally {
+      release();
+    }
+    // Do not pass merely because the private data disappeared before the late write settled.
+    await fixture.writeSettled;
+    expect((await cancelled).failure()).not.toBeNull();
     await expect(page.getByRole('heading', { name: 'Sign in required', exact: true })).toBeVisible();
-    release();
     await expect(page.getByText(summary.name, { exact: true })).toHaveCount(0);
     await expect(page.getByRole('link', { name: 'Open allocation', exact: true })).toHaveCount(0);
     expect(fixture.unexpected).toEqual([]);
