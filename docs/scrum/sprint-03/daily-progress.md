@@ -105,6 +105,8 @@ No hosted acceptance, Jira status change, sprint completion or velocity credit i
 
 **21 October 2026 — KAN-81 PR47 review remediation outside a Daily Scrum.** Codex under Arvin’s direction fixed stale 404/409 staff writes and added four regressions. `AUTO-20261021-KAN81-FIX-01`: 21 page tests; check/coverage 690 frontend + 1,205 backend pass. `AUTO-20261021-KAN81-CI-01` imports the verified original-head CI (398 database/148 browser tests) with scoped case executions; S3-E20 registers evidence, coverage and the visually checked planning ERD. Original full TC-09-01–12 and hosted acceptance remain Not executed/Not assessed. Jira corrected to In Progress, Kai Jie, 8 SP; phases/dependencies remain outstanding and no velocity is earned.
 
+**21 October 2026 — KAN-60 development outside a Daily Scrum.** Irfan claimed KAN-60 (2 SP) and KAN-83 (8 SP) in Jira on 20 October; KAN-60 moved to In Progress with subtasks KAN-91/92/93. Implemented the required trimmed rejection reason with the shared 2,000-character limit, a field-specific API error and inline UI validation; updated six existing tests that rejected without a reason. Automated run `AUTO-20261021-KAN60-01` passed check, coverage (100% of changed files), 349 integration tests and the new browser test; the one browser failure is the pre-existing KAN-79 timing issue. Remaining: manual hosted TC-04-03/04/05, independent review, PR CI and merge. This work is after the configured 17 October sprint end and is not counted as Sprint 3 delivery.
+
 ## Impediments
 
 | Raised | Impediment | Owner | Action | Status |

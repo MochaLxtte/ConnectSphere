@@ -1218,3 +1218,13 @@ Source: KAN-81 plan approved in chat by Kai Jie, the story owner, on 21 October 
 ## 21 October 2026 — KAN-81 stale-refusal review correction
 
 Source: PR47 review and Arvin's instruction to fix the findings and merge. A definite 4xx refusal does not establish that the cached staff view is current: 404/409 create/remove results now refresh both blocks and recovery while preserving the server message and save input. No write is retried automatically. This supplements phase-1 decision 6; the AC wording, phased scope and 8-SP estimate are unchanged. New TC-09-13–17 expose phase-1 verification without claiming completion of TC-09-01–12. Jira's To Do/In Progress mismatch was corrected to In Progress, retaining Kai Jie as assignee.
+
+## 21 October 2026 — KAN-60 implementation decisions
+
+**Source and date:** Irfan, 21 October 2026, while implementing KAN-60 (AI-assisted; plan approved in chat by Irfan).
+
+- **Shared limit:** KAN-60-AC101 names "the existing shared review reason length limit", but the review parser had no limit. The existing shared workflow limit for reasons, notes and messages is `MAX_TEXT_LENGTH` = 2,000 characters after trimming (`workflow-support.ts`), so it is reused rather than introducing a new value.
+- **Limit on approvals:** the limit applies to both decisions, so an over-long approval reason is also refused. Approval stays reason-optional (KAN-60-AC4); only the length is checked.
+- **Field-specific error:** `400 INVALID_REVIEW_INPUT` adds `field: "reason"` (or `"decision"`) for field errors and keeps the existing code, so existing clients still recognise the error.
+
+**Outcome:** implementation choices within the existing criteria; no new acceptance criterion, estimate or scope change. Jira wording is unchanged.

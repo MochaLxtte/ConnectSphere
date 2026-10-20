@@ -26,7 +26,7 @@ This rebalanced allocation replaces the earlier 97/29 split with **63/63**, with
 | --- | --- | ---: | --- | --- | --- | --- |
 | [KAN-6](https://smu-g7-grp1.atlassian.net/browse/KAN-6) | Submit an Event Request | 3 | Unassigned — team member to choose | To agree after owner chosen | Sprint 2 carry-over: full original points | S3-T05 |
 | [KAN-34](https://smu-g7-grp1.atlassian.net/browse/KAN-34) | Resume/Edit Draft Event Request | 3 | Unassigned — team member to choose | To agree after owner chosen | Sprint 2 carry-over: full original points | S3-T06 |
-| [KAN-60](https://smu-g7-grp1.atlassian.net/browse/KAN-60) | Require a reason when rejecting an event request | 2 | Unassigned — team member to choose | To agree after owner chosen | Existing release backlog | S3-T07 |
+| [KAN-60](https://smu-g7-grp1.atlassian.net/browse/KAN-60) | Require a reason when rejecting an event request | 2 | Irfan | To agree | Existing release backlog | S3-T07 |
 | [KAN-50](https://smu-g7-grp1.atlassian.net/browse/KAN-50) | Maintain Venue Catalog | 5 | Unassigned — team member to choose | To agree after owner chosen | Sprint 2 carry-over: full original points | S3-T15 |
 | [KAN-12](https://smu-g7-grp1.atlassian.net/browse/KAN-12) | Search and Filter Venues | 5 | Unassigned — team member to choose | To agree after owner chosen | Sprint 2 carry-over: full original points | S3-T16 |
 | [KAN-52](https://smu-g7-grp1.atlassian.net/browse/KAN-52) | Check Venue Suitability | 3 | Unassigned — team member to choose | To agree after owner chosen | Sprint 2 carry-over: full original points | S3-T17 |
@@ -36,7 +36,7 @@ This rebalanced allocation replaces the earlier 97/29 split with **63/63**, with
 | [KAN-65](https://smu-g7-grp1.atlassian.net/browse/KAN-65) | Reassign Event Coordinator | 3 | Tristan | Irfan ([PR #34](https://github.com/MochaLxtte/ConnectSphere/pull/34), 20 October; CI-based approval) | In Progress; KAN-79 integrated; merged to `main` 20 October, not Done | S3-T21 |
 | [KAN-64](https://smu-g7-grp1.atlassian.net/browse/KAN-64) | Receive Request, Assignment and Venue Notifications | 5 | Unassigned — team member to choose | To agree after owner chosen | Explicit original notification split | S3-T22 |
 | [KAN-81](https://smu-g7-grp1.atlassian.net/browse/KAN-81) | Recover venue arrangements affected by operational unavailability | 8 | Unassigned — team member to choose | To agree after owner chosen | Customer change CR-2 | S3-T25 |
-| [KAN-83](https://smu-g7-grp1.atlassian.net/browse/KAN-83) | Manage temporary venue holds with expiry and automatic release | 8 | Unassigned — team member to choose | To agree after owner chosen | Customer change CR-4 | S3-T26 |
+| [KAN-83](https://smu-g7-grp1.atlassian.net/browse/KAN-83) | Manage temporary venue holds with expiry and automatic release | 8 | Irfan | To agree | Customer change CR-4 | S3-T26 |
 | **Total** | **13 parents** | **63** | | | | |
 
 ## Shared test data and execution rules
@@ -58,7 +58,7 @@ Every row requires its complete active criterion set plus applicable Definition 
 | --- | --- | --- | --- |
 | S3-T05 | KAN-6: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC101 | TC-02-02, TC-02-03, TC-02-04, TC-02-05, TC-02-06, TC-02-07, TC-02-08, TC-02-09; TC-02-10 | **Partly executed**: AC101 (TC-02-01) and the integration cases TC-02-05, -07, -08 passed 21 October, AUTO-20261021-KAN6-02; the manual cases (TC-02-02, -03, -04, -06, -09) are **Not executed** / Not recorded 20 October component evidence remains in AUTO-20261020-02. **21 October combined follow-up: TC-02-10 passes INTEGRATION-04 (36 component tests); PostgreSQL/browser regressions pass INTEGRATION-05/06. Full manual group remains Not executed.** |
 | S3-T06 | KAN-34: AC1, AC2, AC3, AC101 | TC-03-02, TC-03-03, TC-03-04, TC-03-05, TC-03-06 | **Not executed** as a complete group. 20 October 2026: KAN-34-AC101 parser checks pass in `AUTO-20261020-01`; its TC-03-05 integration case passes in PR #37 CI (run 39454303308). AC1–AC3 manual/hosted cases Not executed. **21 October combined follow-up: PostgreSQL suite including strict draft-date checks passes AUTO-20261021-INTEGRATION-05. Manual/hosted group remains Not executed.** |
-| S3-T07 | KAN-60: AC1, AC2, AC3, AC4, AC5, AC101, AC102, AC103 | TC-04-02, TC-04-03, TC-04-04, TC-04-05, TC-04-06 | **Not executed** / Not recorded |
+| S3-T07 | KAN-60: AC1, AC2, AC3, AC4, AC5, AC101, AC102, AC103 | TC-04-01, TC-04-02, TC-04-03, TC-04-04, TC-04-05, TC-04-06 | Automated: **Pass** 21 October (AUTO-20261021-KAN60-01; TC-04-01, TC-04-02). Manual hosted TC-04-03/04/05 and records check TC-04-06: **Not executed** |
 | S3-T15 | KAN-50: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12, AC13, AC14, AC15, AC16, AC17, AC18, AC19, AC20, AC21, AC101 | TC-08-02, TC-08-03, TC-08-04, TC-08-05, TC-08-06, TC-08-07, TC-08-08, TC-08-09, TC-08-10, TC-08-11, TC-08-12, TC-08-13, TC-08-14 | **Not executed** / Not recorded |
 | S3-T16 | KAN-12: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12, AC13, AC14, AC15, AC16, AC101, AC102 | TC-10-02, TC-10-03, TC-10-04, TC-10-05, TC-10-06, TC-10-07, TC-10-08, TC-10-09, TC-10-10, TC-10-11, TC-10-12, TC-10-210 | **Not executed** / Not recorded |
 | S3-T17 | KAN-52: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC101, AC102 | TC-11-02, TC-11-03, TC-11-04, TC-11-05, TC-11-06, TC-11-07, TC-11-205 | **Partly executed**: AC101 (TC-11-01, TC-11-07 automated layers) passed 21 October, AUTO-20261021-KAN52-01; the other cases and the manual run are **Not executed** / Not recorded **21 October combined follow-up: zero-attendance and adjacent suitability regressions pass AUTO-20261021-INTEGRATION-01/05/06; complete hosted group remains Not executed.** |
@@ -237,7 +237,7 @@ Implementation defaults: docs/scrum/sprint-03/planning.md and docs/requirements/
 
 ### KAN-60 — Require a reason when rejecting an event request
 
-**Owner:** Unassigned — team member to choose · **Independent reviewer:** To agree after owner chosen · **Estimate:** 2 SP · **Jira status:** To Do · **Acceptance:** Not assessed · **Test group:** S3-T07
+**Owner:** Irfan (claimed 20 October) · **Independent reviewer:** To agree · **Estimate:** 2 SP · **Jira status:** In Progress (subtasks KAN-91, KAN-92, KAN-93) · **Acceptance:** Not assessed · **Test group:** S3-T07
 
 **User story:** Require an event-rejection explanation, linked to the original KAN-36 workflow.
 
@@ -253,6 +253,8 @@ Implementation defaults: docs/scrum/sprint-03/planning.md and docs/requirements/
 | **KAN-60-AC103** | This item is the single tracked rejection-reason correction linked to KAN-36; do not create a second pointed repair for the same criterion. | TC-04-06 |
 
 **Implementation location:** backend/src/modules/events/review-input.ts. **Automated test files:** backend/test/events/review-input.test.ts. These are existing baseline locations to extend; no new fixed-code result is claimed.
+
+**Implementation update — 21 October 2026.** Branch `fix/KAN-60-rejection-reason`: `review-input.ts` requires a trimmed nonblank reason for `REJECTED` and applies the shared 2,000-character workflow limit (`MAX_TEXT_LENGTH`, now exported from `workflow-support.ts`) to both decisions; `review-router.ts` adds `field: "reason"` to `400 INVALID_REVIEW_INPUT`; `ReviewDecisionPanel.vue` marks the reason required while rejecting and shows an inline error without sending a request. Tests: `review-input.test.ts`, `review-router.test.ts`, `review-decision.integration.test.ts`, `ReviewDecisionPanel.test.ts` and `tests/e2e/review-decision.spec.ts`. Automated run AUTO-20261021-KAN60-01 passed; manual hosted cases, independent review and acceptance remain **Not executed** / **Not assessed**.
 
 <details>
 <summary>Preserved Jira description before self-selection (historical ownership)</summary>
