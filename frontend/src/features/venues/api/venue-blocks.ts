@@ -10,6 +10,30 @@ export interface VenueBlock {
   reason: string;
   createdBy: string;
   createdAt: string;
+  /** KAN-81: approved arrangements this outage affects, with their recovery state. */
+  affected: AffectedArrangement[];
+}
+
+export type RecoveryStatus = 'RECOVERY_REQUIRED' | 'RESOLVED' | 'CLEARED';
+
+export interface AffectedArrangement {
+  impactId: string;
+  status: RecoveryStatus;
+  bookingId: string;
+  eventRequestId: string;
+  eventName: string | null;
+  bookingStartsAt: string;
+  bookingEndsAt: string;
+}
+
+/** KAN-81: an affected arrangement with the outage that affected it (Venue Staff recovery list). */
+export interface RecoveryArrangement extends AffectedArrangement {
+  blockId: string | null;
+  venueId: string;
+  venueName: string;
+  outageStartsAt: string;
+  outageEndsAt: string;
+  outageReason: string;
 }
 
 export interface VenueBlockSubmissionInput {
@@ -30,6 +54,15 @@ export async function createVenueBlock(
   return (await postJson<{ block: VenueBlock }>(base(venueId), input, signal)).block;
 }
 
-export async function deleteVenueBlock(venueId: string, blockId: string, signal?: AbortSignal): Promise<void> {
-  await deleteJson<{ id: string }>(`${base(venueId)}/${encodeURIComponent(blockId)}`, signal);
+/** Returns the bookings whose recovery flag from this outage was cleared (KAN-81-AC11). */
+export async function deleteVenueBlock(venueId: string, blockId: string, signal?: AbortSignal): Promise<string[]> {
+  return (await deleteJson<{ id: string; clearedBookingIds: string[] }>(
+    `${base(venueId)}/${encodeURIComponent(blockId)}`, signal)).clearedBookingIds;
+}
+
+export async function fetchRecoveryArrangements(
+  status: RecoveryStatus | undefined, signal?: AbortSignal,
+): Promise<RecoveryArrangement[]> {
+  const query = status ? `?status=${encodeURIComponent(status)}` : '';
+  return (await getJson<{ items: RecoveryArrangement[] }>(`/api/venues/recovery${query}`, signal)).items;
 }

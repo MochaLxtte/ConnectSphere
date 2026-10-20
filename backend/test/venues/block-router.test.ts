@@ -5,9 +5,14 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createVenueBlockRouter } from '../../src/modules/venues/block-router.js';
 import { WorkflowError, type WorkflowActor } from '../../src/modules/events/workflow-support.js';
 import { createVenueBlock, deleteVenueBlock, listVenueBlocks } from '../../src/modules/venues/block-service.js';
+import { listRecoveryArrangements } from '../../src/modules/venues/outage-impact.js';
 
 vi.mock('../../src/modules/venues/block-service.js', () => ({
   createVenueBlock: vi.fn(), deleteVenueBlock: vi.fn(), listVenueBlocks: vi.fn(),
+}));
+vi.mock('../../src/modules/venues/outage-impact.js', async (importOriginal) => ({
+  ...await importOriginal<typeof import('../../src/modules/venues/outage-impact.js')>(),
+  listRecoveryArrangements: vi.fn(),
 }));
 
 const venueId = '12345678-1234-1234-1234-123456789abc';
@@ -77,10 +82,10 @@ describe('KAN-55 venue-unavailability block HTTP boundary', () => {
   });
 
   it('deletes a block and returns its id', async () => {
-    vi.mocked(deleteVenueBlock).mockResolvedValue(undefined);
+    vi.mocked(deleteVenueBlock).mockResolvedValue({ clearedBookingIds: [] });
     const response = await request(app).delete(`/api/venues/${venueId}/unavailability/${blockId}`);
     expect(response.status).toBe(200);
-    expect(response.body).toEqual({ id: blockId });
+    expect(response.body).toEqual({ id: blockId, clearedBookingIds: [] });
     expect(deleteVenueBlock).toHaveBeenCalledWith({ pool, authenticate }, { actor, blockId });
   });
 
@@ -100,5 +105,53 @@ describe('KAN-55 venue-unavailability block HTTP boundary', () => {
     const response = await request(app).delete(`/api/venues/${venueId}/unavailability/${blockId}`);
     expect(response.status).toBe(404);
     expect(response.body.error.code).toBe('VENUE_BLOCK_NOT_FOUND');
+  });
+});
+
+describe('KAN-81 venue recovery and outage HTTP boundary', () => {
+  it('lists recovery arrangements for Venue Staff with the parsed status filter', async () => {
+    vi.mocked(listRecoveryArrangements).mockResolvedValue([{ impactId: 'impact-1' }] as never);
+    const response = await request(app).get('/api/venues/recovery').query({ status: 'RECOVERY_REQUIRED' });
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ items: [{ impactId: 'impact-1' }] });
+    expect(listRecoveryArrangements).toHaveBeenCalledWith({ pool, authenticate }, { actor, status: 'RECOVERY_REQUIRED' });
+  });
+
+  it('refuses an unknown recovery filter with 400 before reading', async () => {
+    const response = await request(app).get('/api/venues/recovery').query({ status: 'OPEN' });
+    expect(response.status).toBe(400);
+    expect(response.body.error.code).toBe('INVALID_RECOVERY_FILTER');
+    expect(listRecoveryArrangements).not.toHaveBeenCalled();
+  });
+
+  it('requires authentication for the recovery list', async () => {
+    authenticate.mockResolvedValue(null);
+    const response = await request(app).get('/api/venues/recovery');
+    expect(response.status).toBe(401);
+    expect(listRecoveryArrangements).not.toHaveBeenCalled();
+  });
+
+  it.each(['EVENT_ORGANISER', 'EVENT_COORDINATOR', 'TECHNICAL_SUPPORT_STAFF', 'ATTENDEE'] as const)(
+    'refuses the recovery list to %s (AC6)', async (role) => {
+      authenticate.mockResolvedValue({ ...actor, role });
+      const response = await request(app).get('/api/venues/recovery');
+      expect(response.status).toBe(403);
+      expect(listRecoveryArrangements).not.toHaveBeenCalled();
+    },
+  );
+
+  it('returns the affected arrangements of a newly created outage (AC2-AC4)', async () => {
+    const block = { id: blockId, affected: [{ bookingId: 'booking-1', status: 'RECOVERY_REQUIRED' }] };
+    vi.mocked(createVenueBlock).mockResolvedValue(block as never);
+    const response = await request(app).post(`/api/venues/${venueId}/unavailability`).send(body);
+    expect(response.status).toBe(201);
+    expect(response.body).toEqual({ block });
+  });
+
+  it('reports which bookings were cleared when an outage is removed (AC11)', async () => {
+    vi.mocked(deleteVenueBlock).mockResolvedValue({ clearedBookingIds: ['booking-1'] });
+    const response = await request(app).delete(`/api/venues/${venueId}/unavailability/${blockId}`);
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ id: blockId, clearedBookingIds: ['booking-1'] });
   });
 });

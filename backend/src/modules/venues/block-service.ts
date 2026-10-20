@@ -1,7 +1,11 @@
+import type { PoolClient } from 'pg';
 import {
   inActorTransaction, iso, WorkflowError, type WorkflowActor, type WorkflowDependencies,
 } from '../events/workflow-support.js';
 import { parseBlockSubmission } from './block-input.js';
+import {
+  clearOutageImpacts, listBlockImpacts, recordOutageImpacts, type AffectedArrangement,
+} from './outage-impact.js';
 
 export interface VenueBlock {
   id: string;
@@ -12,9 +16,11 @@ export interface VenueBlock {
   reason: string;
   createdBy: string;
   createdAt: string;
+  /** KAN-81: the approved arrangements this outage affects, with their recovery state. */
+  affected: AffectedArrangement[];
 }
 
-type BlockRow = Omit<VenueBlock, 'startsAt' | 'endsAt' | 'createdAt'> & {
+type BlockRow = Omit<VenueBlock, 'startsAt' | 'endsAt' | 'createdAt' | 'affected'> & {
   startsAt: Date; endsAt: Date; createdAt: Date;
 };
 
@@ -30,9 +36,17 @@ function requireVenueStaff(actor: WorkflowActor): void {
   }
 }
 
-function serialize(row: BlockRow): VenueBlock {
-  return { ...row, startsAt: iso(row.startsAt), endsAt: iso(row.endsAt), createdAt: iso(row.createdAt) };
+function serialize(row: BlockRow, affected: AffectedArrangement[]): VenueBlock {
+  return {
+    ...row, startsAt: iso(row.startsAt), endsAt: iso(row.endsAt), createdAt: iso(row.createdAt), affected,
+  };
 }
+
+const lockActiveVenue = async (client: Pick<PoolClient, 'query'>, venueId: string) => {
+  const venue = await client.query<{ isActive: boolean }>(
+    'SELECT is_active AS "isActive" FROM venues WHERE id = $1 FOR UPDATE', [venueId]);
+  return venue.rows[0];
+};
 
 function conflict(code: string, message: string): never {
   throw new WorkflowError('CONFLICT', code, message);
@@ -46,14 +60,16 @@ export async function listVenueBlocks(
   const found = await pool.query<BlockRow>(
     `${blockSelect} WHERE u.venue_id = $1 ORDER BY u.starts_at ASC, u.id ASC`, [venueId],
   );
-  return found.rows.map(serialize);
+  return Promise.all(found.rows.map(async (row) => serialize(row, await listBlockImpacts(pool, row.id))));
 }
 
 /**
  * KAN-55-AC1-AC7: Venue Staff record a mandatory-reason unavailability period for one venue.
- * An existing APPROVED booking must not be silently displaced by a later block (open policy
- * question, see the decision record): creation is refused with VENUE_BOOKING_CONFLICT if the
- * new period overlaps one. This is an application-level check; no new migration/trigger guards it.
+ *
+ * KAN-81-AC2 (CR-2) replaces KAN-55's refusal of a block that overlaps an APPROVED booking: the
+ * outage is saved and every affected arrangement is flagged for recovery in the same transaction
+ * (AC3/AC4). The venue row lock is the same one booking submission and approval take, so an outage
+ * and an approval for that venue never interleave (AC10). Booking rows are not locked or updated.
  */
 export async function createVenueBlock(
   { pool }: WorkflowDependencies,
@@ -62,37 +78,46 @@ export async function createVenueBlock(
   requireVenueStaff(actor);
   const submission = parseBlockSubmission(input);
   return inActorTransaction(pool, actor.id, async (client) => {
-    const venue = await client.query<{ isActive: boolean }>(
-      'SELECT is_active AS "isActive" FROM venues WHERE id = $1 FOR UPDATE', [venueId]);
-    if (!venue.rows[0]) throw new WorkflowError('NOT_FOUND', 'VENUE_NOT_FOUND', 'The venue was not found.');
-    if (!venue.rows[0].isActive) conflict('VENUE_INACTIVE', 'This venue is no longer active.');
-
-    const clash = await client.query<{ booked: boolean }>(
-      `SELECT EXISTS(SELECT 1 FROM venue_bookings WHERE venue_id = $1 AND status = 'APPROVED'
-        AND starts_at < $3 AND ends_at > $2) AS booked`,
-      [venueId, submission.startsAt, submission.endsAt],
-    );
-    if (clash.rows[0]!.booked) {
-      conflict('VENUE_BOOKING_CONFLICT', 'An approved booking already exists during this period.');
-    }
+    const venue = await lockActiveVenue(client, venueId);
+    if (!venue) throw new WorkflowError('NOT_FOUND', 'VENUE_NOT_FOUND', 'The venue was not found.');
+    if (!venue.isActive) conflict('VENUE_INACTIVE', 'This venue is no longer active.');
 
     const inserted = await client.query<{ id: string }>(
       `INSERT INTO venue_unavailability (venue_id, starts_at, ends_at, reason, created_by)
        VALUES ($1, $2, $3, $4, $5) RETURNING id`,
       [venueId, submission.startsAt, submission.endsAt, submission.reason, actor.id],
     );
-    const saved = await client.query<BlockRow>(`${blockSelect} WHERE u.id = $1`, [inserted.rows[0]!.id]);
-    return serialize(saved.rows[0]!);
+    const blockId = inserted.rows[0]!.id;
+    const affected = await recordOutageImpacts(client, {
+      blockId, venueId, startsAt: submission.startsAt, endsAt: submission.endsAt,
+      reason: submission.reason, actorId: actor.id,
+    });
+    const saved = await client.query<BlockRow>(`${blockSelect} WHERE u.id = $1`, [blockId]);
+    return serialize(saved.rows[0]!, affected);
   });
 }
 
-/** Amendment/removal is implementation scope beyond KAN-55's listed acceptance criteria. */
+/**
+ * Removal (beyond KAN-55's listed criteria). KAN-81-AC11: under the venue lock, the block's open
+ * recovery flags are cleared and kept as history, then the block is deleted. Bookings still covered
+ * by another remaining outage keep that outage's flag; nothing is re-approved. Returns the IDs of
+ * the bookings whose flag from this outage was cleared.
+ */
 export async function deleteVenueBlock(
   { pool }: WorkflowDependencies, { actor, blockId }: { actor: WorkflowActor; blockId: string },
-): Promise<void> {
+): Promise<{ clearedBookingIds: string[] }> {
   requireVenueStaff(actor);
-  const deleted = await pool.query('DELETE FROM venue_unavailability WHERE id = $1', [blockId]);
-  if (deleted.rowCount !== 1) {
-    throw new WorkflowError('NOT_FOUND', 'VENUE_BLOCK_NOT_FOUND', 'The venue-unavailability block was not found.');
-  }
+  const notFound = () => new WorkflowError('NOT_FOUND', 'VENUE_BLOCK_NOT_FOUND',
+    'The venue-unavailability block was not found.');
+  return inActorTransaction(pool, actor.id, async (client) => {
+    const found = await client.query<{ venueId: string }>(
+      'SELECT venue_id AS "venueId" FROM venue_unavailability WHERE id = $1', [blockId]);
+    if (!found.rows[0]) throw notFound();
+    await lockActiveVenue(client, found.rows[0].venueId);
+
+    const clearedBookingIds = await clearOutageImpacts(client, blockId);
+    const deleted = await client.query('DELETE FROM venue_unavailability WHERE id = $1', [blockId]);
+    if (deleted.rowCount !== 1) throw notFound();
+    return { clearedBookingIds };
+  });
 }

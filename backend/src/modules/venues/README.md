@@ -116,6 +116,30 @@ service re-checks the role for direct callers.
 
 Run integration tests with `TEST_DATABASE_URL` pointing to a dedicated local test database.
 
+## Outage recovery — KAN-81 (phase 1)
+
+CR-2 replaces KAN-55's refusal of a block that overlaps an approved booking. `createVenueBlock` now
+saves the outage and, inside the same venue-locked transaction, records each affected arrangement in
+`venue_outage_impacts` (migration 010) through `outage-impact.ts`.
+
+### Rules
+
+- Affected means a non-ended `APPROVED` booking at the venue whose event interval overlaps the outage,
+  half-open. `AFFECTED_BOOKING_CONDITION` is the single place to change when KAN-78 adds buffers.
+- Booking and event rows are never updated (the `venue_bookings_conflict` trigger re-checks every
+  update of an approved booking against blocks). Reprocessing an outage adds nothing.
+- Block creation, booking submission and approval share the venue row lock, so an outage and an
+  approval never interleave. Removal locks the venue, marks that block's open flags `CLEARED` and
+  deletes the block; other outages' flags are unchanged.
+- `GET /api/venues/recovery` lists affected arrangements for Venue Staff. Coordinator notification
+  and view (phase 2) and linked replacements (phase 3) follow.
+
+### Verification
+
+Unit/HTTP: `backend/test/venues/outage-impact.test.ts`, `block-router.test.ts`. PostgreSQL:
+`database/tests/venues/venue-outage-recovery.integration.test.ts`. Browser:
+`tests/e2e/venue-outage-recovery.spec.ts`. Results: `AUTO-20261021-08` in the test evidence.
+
 ## Venue booking submission — KAN-53
 
 `POST /api/events/:id/venue-bookings` lets the event's currently assigned, non-draft
