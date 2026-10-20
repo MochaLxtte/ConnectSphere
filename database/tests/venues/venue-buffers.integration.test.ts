@@ -6,6 +6,7 @@ import { listVenueAvailability } from '../../../backend/src/modules/venues/avail
 import { searchVenues, parseVenueSearchQuery } from '../../../backend/src/modules/venues/venue-search.js';
 import { getVenueSuitabilityContext, checkVenueSuitability } from '../../../backend/src/modules/venues/suitability-service.js';
 import { createVenueBlock } from '../../../backend/src/modules/venues/block-service.js';
+import { updateCatalogueVenue } from '../../../backend/src/modules/venues/venue-catalogue-service.js';
 import type { WorkflowActor } from '../../../backend/src/modules/events/workflow-support.js';
 
 let f: WorkflowFixture;
@@ -102,7 +103,9 @@ describe('KAN-78 occupied intervals with real PostgreSQL', () => {
     const b = await request(id, end, '2030-12-01T06:00:00Z'); await approve(b.id);
     const other = await venue(0, 0); const c = await request(other); await approve(c.id);
     const before = (await f.pool.query('SELECT * FROM venue_bookings WHERE venue_id=$1 ORDER BY id', [id])).rows;
-    await f.pool.query('UPDATE venues SET setup_minutes=30,turnaround_minutes=45 WHERE id=$1', [id]);
+    const edited = await updateCatalogueVenue(f.dependencies, { actor: staff, venueId: id,
+      input: { setupMinutes: 30, expectedSetupMinutes: 0, turnaroundMinutes: 45, expectedTurnaroundMinutes: 0 } });
+    expect(edited.affectedBookings?.map(b => b.id)).toEqual(expect.arrayContaining([a.id, b.id]));
     for (const booking of [a, b]) expect((await getVenueBooking(f.dependencies, { actor: staff, bookingId: booking.id })).warnings).toContain('APPROVED_BOOKING_OVERLAP');
     expect((await listVenueBookings(f.dependencies, { actor: staff })).map(b => b.id)).toEqual(expect.arrayContaining([a.id, b.id]));
     expect((await getVenueBooking(f.dependencies, { actor: staff, bookingId: c.id })).warnings).toEqual([]);

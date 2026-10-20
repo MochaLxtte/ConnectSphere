@@ -155,3 +155,35 @@ describe('KAN-50 app wiring', () => {
     expect((await request(bare).get('/api/venues/catalogue')).status).toBe(404);
   });
 });
+
+describe('KAN-77 venue buffer HTTP boundary', () => {
+  it('passes the buffer and its expected value to the service unchanged and returns the saved venue', async () => {
+    authenticate.mockResolvedValue(actor);
+    const body = { setupMinutes: 30, expectedSetupMinutes: 0 };
+    vi.mocked(updateCatalogueVenue).mockResolvedValue({ ...venue, setupMinutes: 30, turnaroundMinutes: 0 } as never);
+    const response = await request(app).patch(`/api/venues/catalogue/${venueId}`).send(body);
+    expect(response.status).toBe(200);
+    expect(response.body.venue).toMatchObject({ setupMinutes: 30, turnaroundMinutes: 0 });
+    expect(updateCatalogueVenue).toHaveBeenCalledWith(dependencies, { actor, venueId, input: body });
+  });
+
+  it('returns 409 VENUE_BUFFER_CONFLICT with its message for a stale buffer edit (AC5)', async () => {
+    authenticate.mockResolvedValue(actor);
+    const message = 'Another change was saved to setupMinutes after you loaded this venue. Reload and try again.';
+    vi.mocked(updateCatalogueVenue).mockRejectedValue(new WorkflowError('CONFLICT', 'VENUE_BUFFER_CONFLICT', message));
+    const response = await request(app).patch(`/api/venues/catalogue/${venueId}`)
+      .send({ setupMinutes: 30, expectedSetupMinutes: 0 });
+    expect(response.status).toBe(409);
+    expect(response.body).toEqual({ error: { code: 'VENUE_BUFFER_CONFLICT', message } });
+  });
+
+  it.each(['EVENT_ORGANISER', 'EVENT_COORDINATOR', 'TECHNICAL_SUPPORT_STAFF', 'ATTENDEE'] as const)(
+    'refuses a buffer change by %s before calling the service (AC1)', async (role) => {
+      authenticate.mockResolvedValue({ ...actor, role });
+      const response = await request(app).patch(`/api/venues/catalogue/${venueId}`)
+        .send({ setupMinutes: 30, expectedSetupMinutes: 0 });
+      expect(response.status).toBe(403);
+      expect(updateCatalogueVenue).not.toHaveBeenCalled();
+    },
+  );
+});

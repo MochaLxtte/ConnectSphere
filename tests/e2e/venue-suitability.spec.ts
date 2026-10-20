@@ -13,7 +13,7 @@ const context = (): VenueSuitabilityContext => ({
   requirementsVersion: 'a'.repeat(64),
   venues: [{ id: venueId, name: 'Harbour Hall', capacity: 80, facilities: ['Projector'],
     layouts: ['Theatre'], accessibilityFeatures: ['Step-free access'], wheelchairAccessible: true,
-    opensAt: '08:00:00', closesAt: '22:00:00' }],
+    opensAt: '08:00:00', closesAt: '22:00:00', setupMinutes: 0, turnaroundMinutes: 0 }],
 });
 const assessment = (outcome: VenueSuitabilityAssessment['outcome'] = 'SUITABLE'): VenueSuitabilityAssessment => ({
   eventId, eventName: 'Community workshop', venueId, venueName: 'Harbour Hall',

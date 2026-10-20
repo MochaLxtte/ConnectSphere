@@ -106,3 +106,27 @@ S3-E-KAN78-01: [AUTO-20261021-01](../../../testing/test-evidence.md#21-october-2
 Retained final command output: [check](AUTO-20261021-01-check.txt), [coverage](AUTO-20261021-01-coverage.txt), [PostgreSQL integration](AUTO-20261021-01-integration.txt), [Chromium](AUTO-20261021-01-browser.txt). Earlier failed attempts are described in the run record; these files hold the final passing runs.
 
 AUTO-20261021-02: [backend coverage output](AUTO-20261021-02-coverage.txt) records the pre-commit timestamp precision regression fix: 1,050 backend tests passed; type checking passed.
+
+## Test documentation standardisation — 21 October 2026
+
+| ID | Artifact | Source / result | Limits |
+| --- | --- | --- | --- |
+| S3-E17 | [Validation results and CSV hashes](test-documentation-validation-2026-10-21.json), [AUTO-20261021-DOCS-01](../../../testing/test-evidence.md#21-october-2026--test-documentation-standardisation), [original register](../../../testing/archive/test-cases-2026-10-21.csv) | 18/18 documentation checks; all 427 IDs retained and linked through 115 traceability rows. Separate execution records preserve 30 automated passes, five detailed audit failures and 372 Not executed placeholders; 20 feature summaries excluded from run counts. Submission packaging/readback passed. | Documentation working tree based on `aaee549`; no new application or manual runs, no invented metadata or acceptance. Original failure/retest narratives remain historical. |
+
+## KAN-79 test reliability and owned-story audit — 21 October 2026
+
+| ID | Artifact | Source / result | Limits |
+| --- | --- | --- | --- |
+| S3-E18 | [Run attempts, hashes and audit scope](kan79-reliability-2026-10-21.json), [AUTO-20261021-KAN79-01–07](../../../testing/test-evidence.md#21-october-2026--kan-79-test-reliability-and-owned-story-audit), [coverage](../../../testing/coverage-reports/2026-10-21-kan79-reliability.txt) | Preserved failing locator reproduction; fixed tests pass 30 focused repetitions and 396 full-browser executions. Check/coverage: 604 frontend + 1,035 backend; PostgreSQL: 341. Focused exact-title reports: 142 frontend + 55 backend. Nine new mapped specifications; original registers retained. | Fixture browser checks and isolated PostgreSQL are separate from hosted acceptance. No application/schema changes, Jira Done, velocity credit or guarantee of zero future flakes. KAN-64 and manual/hosted checks remain Not executed. |
+
+## Combined team branch — 21 October 2026
+
+| ID | Artifact | Source / result | Limits |
+| --- | --- | --- | --- |
+| S3-E19 | [Integration source heads, exact test results and hashes](team-integration-2026-10-21.json), [run narratives](../../../testing/test-evidence.md#21-october-2026--combined-team-branch-verification), [coverage](../../../testing/coverage-reports/2026-10-21-team-integration.txt) | Main plus PRs #37/#38/#40–45 and local `599fee6`. Check/coverage: 676 frontend + 1,165 backend; final PostgreSQL: 380; browser: 147, zero retries. Includes failed notification reproduction, final 39-case focused run, failed/full database retest, exact case mappings, migration alias and refreshed diagram hashes. | Application/check build `4835a26`, final database/component build `70e6e41`; history-only PR45 follow-up merge `967938d`. Earlier notification run HEAD not separately recorded. Isolated/fixture evidence only; complete manual cases Not executed, acceptance Not assessed. KAN-64 recipient matrix To agree; KAN-78/KAN-77 AC6 incomplete. No shared migration or push. |
+
+**S3-E19 follow-up:** PR #45 head `6d5af10` adds verified [CI run39467271524](https://github.com/MochaLxtte/ConnectSphere/actions/runs/39467271524) on its separate source candidate (358 database,133 browser tests). `AUTO-20261021-KAN77-CI-01` and the JSON retain actual checkout/build and case-scope qualifications. TC-08-17 receives one appended CI Pass; full TC-08-16 and hosted cases remain Not executed. PR #38 was subsequently closed unmerged; its reconciled changes remain in this branch.
+
+## 21 October — reconciled KAN-78 / KAN-34 verification
+
+AUTO-20261021-90: [check](AUTO-20261021-90-check.txt), [PostgreSQL integration](AUTO-20261021-90-integration.txt), [Chromium](AUTO-20261021-90-browser.txt), [frontend coverage](AUTO-20261021-90-frontend-coverage.txt), [backend coverage](AUTO-20261021-90-backend-coverage.txt). These supersede the earlier branch-only results for the current merged tree. Hosted acceptance remains Not executed.

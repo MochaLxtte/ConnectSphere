@@ -77,7 +77,10 @@ describe('KAN-8 atomic venue booking decisions against PostgreSQL', () => {
     });
     expect(await fixture.eventRow(created.eventRequestId)).toEqual(eventBefore);
     expect(await fixture.history(created.eventRequestId)).toEqual(historyBefore);
-    expect(await fixture.notifications(created.eventRequestId)).toEqual([]);
+    // KAN-64-AC203/AC208: the organiser, the event's coordinator and the deciding staff member (the actor).
+    expect((await fixture.notifications(created.eventRequestId)).map((row) => [row.type, row.recipient_id]).sort()).toEqual([
+      [`VENUE_BOOKING_${decision}`, organiser.id], [`VENUE_BOOKING_${decision}`, coordinator.id], [`VENUE_BOOKING_${decision}`, staff.id],
+    ].sort());
     expect(await listVenueBookings(fixture.dependencies,
       { actor: staff, eventRequestId: created.eventRequestId })).toEqual([]);
     expect(await getVenueBooking(fixture.dependencies, { actor: staff, bookingId: created.id })).toEqual(saved);
@@ -470,7 +473,12 @@ describe('KAN-53/KAN-8 runtime submission-to-decision workflow', () => {
     expect((await staffSession.get('/api/venue-bookings').query({ eventRequestId: target.eventRequestId })).body.items).toEqual([]);
     const after = await submissionState(target.eventRequestId);
     expect(after.bookings).toHaveLength(1);
-    expect({ ...after, bookings: [] }).toEqual(before);
+    // Submitting a booking sends nothing; the one decision sent three notices, and the refused repeat added none.
+    expect({ ...after, bookings: [], notifications: [] }).toEqual({ ...before, notifications: [] });
+    expect(before.notifications).toEqual([]);
+    expect(after.notifications.map((row) => [row.type, row.recipient_id]).sort()).toEqual([
+      [`VENUE_BOOKING_${decision}`, organiser.id], [`VENUE_BOOKING_${decision}`, coordinator.id], [`VENUE_BOOKING_${decision}`, staff.id],
+    ].sort());
 
     if (decision === 'APPROVED') {
       const overlap = await coordinatorSession.post(path).send({ ...submission, venueId: target.venueId });

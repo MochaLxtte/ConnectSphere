@@ -80,7 +80,10 @@ describe('KAN-79 Lead initial assignment persistence and concurrency', () => {
       expect(rows[0].assigned_at.getTime()).toBeGreaterThanOrEqual(before.getTime());
       expect(rows[0].assigned_at.getTime()).toBeLessThanOrEqual(after.getTime());
       expect(await fixture.history(id)).toEqual(originalHistory);
-      expect(await fixture.notifications(id)).toEqual([]); // KAN-64 integration remains pending.
+      // KAN-64-AC202: the organiser and the new coordinator are told; the Lead (the actor) is not a recipient.
+      expect((await fixture.notifications(id)).map((row) => [row.type, row.recipient_id]).sort()).toEqual([
+        ['COORDINATOR_ASSIGNED', organiser.id], ['COORDINATOR_ASSIGNED', blair.id],
+      ].sort());
     },
   );
 

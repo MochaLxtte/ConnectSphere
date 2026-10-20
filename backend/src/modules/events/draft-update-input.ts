@@ -35,16 +35,20 @@ const allowedFields = new Set<string>([
 
 const maxCount = 2_147_483_647;
 
+// Seconds and fractions are optional; the offset is required (see docs/architecture/api-contract.md).
+const isoDateTime = /^(\d{4})-(\d{2})-(\d{2})T([01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d{1,6})?)?(?:Z|[+-](?:[01]\d|2[0-3]):[0-5]\d)$/;
+
+/**
+ * Date.parse rolls impossible days such as 30 February into March, and PostgreSQL then refuses the
+ * write with an unexpected error, so the calendar date is checked here (KAN-34-AC101).
+ */
 function isIsoDateTime(value: string): boolean {
-  const match = /^(\d{4})-(\d{2})-(\d{2})T\d{2}:\d{2}(?::\d{2}(?:\.\d{1,3})?)?(?:Z|[+-]\d{2}:\d{2})$/.exec(value);
-  if (!match || !Number.isFinite(Date.parse(value))) return false;
-  const year = Number(match[1]);
-  const month = Number(match[2]);
-  const day = Number(match[3]);
-  const calendar = new Date(0);
-  calendar.setUTCFullYear(year, month - 1, day);
-  return calendar.getUTCFullYear() === year && calendar.getUTCMonth() === month - 1
-    && calendar.getUTCDate() === day;
+  const match = isoDateTime.exec(value);
+  if (!match) return false;
+  const [year, month, day] = [Number(match[1]), Number(match[2]), Number(match[3])];
+  const date = new Date(Date.UTC(2000, month - 1, day));
+  return month >= 1 && month <= 12 && date.getUTCMonth() === month - 1 &&
+    (month !== 2 || day !== 29 || (year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0)));
 }
 
 /** Validate a PATCH body only; ownership and workflow-state eligibility are checked separately. */

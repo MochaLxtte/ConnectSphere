@@ -18,10 +18,11 @@ export interface SuitabilityVenue {
   accessibilityFeatures: string[];
   layouts: string[];
   wheelchairAccessible: boolean;
-  setupMinutes?: number;
-  turnaroundMinutes?: number;
   opensAt: string | null;
   closesAt: string | null;
+  /** KAN-77: planning input only; KAN-78 applies the buffers to availability. */
+  setupMinutes: number;
+  turnaroundMinutes: number;
 }
 
 export interface SuitabilityCheck {
@@ -96,7 +97,11 @@ export function assessVenueSuitability(
   add('venueActive', venue.isActive ? 'PASS' : 'FAIL', venue.isActive
     ? 'The venue is active.' : 'The venue is inactive.');
 
-  if (event.expectedAttendance === null || !Number.isInteger(event.expectedAttendance) || event.expectedAttendance < 1) {
+  // KAN-52-AC101: 0 is a known, permitted attendance (submission accepts it), so it is checked
+  // against capacity like any other count. Only a missing or unusable value leaves capacity unknown.
+  if (event.expectedAttendance === null) {
+    add('capacity', 'UNKNOWN', 'The event has no expected attendance yet, so capacity cannot be checked.');
+  } else if (!Number.isInteger(event.expectedAttendance) || event.expectedAttendance < 0) {
     add('capacity', 'UNKNOWN', 'The event needs a valid expected attendance before capacity can be checked.');
   } else {
     const fits = event.expectedAttendance <= venue.capacity;

@@ -1,8 +1,4 @@
--- KAN-78 foundation shared with KAN-77's separately delivered buffer editor.
-ALTER TABLE venues
-  ADD COLUMN setup_minutes integer NOT NULL DEFAULT 0 CHECK (setup_minutes BETWEEN 0 AND 1440),
-  ADD COLUMN turnaround_minutes integer NOT NULL DEFAULT 0 CHECK (turnaround_minutes BETWEEN 0 AND 1440);
-
+-- KAN-78: extends shared migration 009 without recreating venue buffer columns.
 -- Freeze the buffers used for each reservation's history. Live, non-ended bookings use
 -- current venue durations; an ended/completed booking retains these approval snapshots.
 ALTER TABLE venue_bookings

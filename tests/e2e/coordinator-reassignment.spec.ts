@@ -1,4 +1,5 @@
 import { expect, test, type Page } from './browser-fixtures.js';
+import { fulfilNotificationBell } from './workspace-fixtures.js';
 
 const eventId = '10000000-0000-4000-8000-000000000065';
 const oldId = '10000000-0000-4000-8000-000000000029';
@@ -19,6 +20,8 @@ async function fixtures(page: Page, settings: FixtureOptions = {}) {
   let moved = false;
   let signedIn = true;
   const writes: unknown[] = [];
+  let settleWrite!: () => void;
+  const writeSettled = new Promise<void>((resolve) => { settleWrite = resolve; });
   const unexpected: string[] = [];
   await page.route((url) => url.pathname.startsWith('/api/'), async (route) => {
     const request = route.request();
@@ -49,27 +52,33 @@ async function fixtures(page: Page, settings: FixtureOptions = {}) {
     } else if (path === '/api/events/coordinators' && method === 'GET') {
       await route.fulfill({ json: { items: settings.available === false ? [options[0]] : options } });
     } else if (path === `/api/events/${eventId}/coordinator/reassign` && method === 'POST') {
-      writes.push(request.postDataJSON());
-      expect(request.postDataJSON()).toEqual({ coordinatorId: newId, reason, expectedAssignmentVersion: versionOne });
-      await settings.hold;
-      if (settings.outcome === 'unavailable') {
-        settings.available = false;
-        await route.fulfill({ status: 400, json: { error: { code: 'INVALID_COORDINATOR', message: 'Select an available coordinator.' } } });
-      } else {
-        moved = true;
-        await route.fulfill(settings.outcome === 'conflict'
-          ? { status: 409, json: { error: { code: 'ASSIGNMENT_VERSION_CONFLICT', message: 'The assignment changed. Refresh it.' } } }
-          : settings.outcome === 'uncertain'
-            ? { status: 502, body: 'Gateway response unavailable', contentType: 'text/plain' }
-            : { json: { eventRequestId: eventId, assignmentId: versionTwo, coordinatorId: newId,
-              previousCoordinatorId: oldId, changed: true } });
+      try {
+        writes.push(request.postDataJSON());
+        expect(request.postDataJSON()).toEqual({ coordinatorId: newId, reason, expectedAssignmentVersion: versionOne });
+        await settings.hold;
+        if (settings.outcome === 'unavailable') {
+          settings.available = false;
+          await route.fulfill({ status: 400, json: { error: { code: 'INVALID_COORDINATOR', message: 'Select an available coordinator.' } } });
+        } else {
+          moved = true;
+          await route.fulfill(settings.outcome === 'conflict'
+            ? { status: 409, json: { error: { code: 'ASSIGNMENT_VERSION_CONFLICT', message: 'The assignment changed. Refresh it.' } } }
+            : settings.outcome === 'uncertain'
+              ? { status: 502, body: 'Gateway response unavailable', contentType: 'text/plain' }
+              : { json: { eventRequestId: eventId, assignmentId: versionTwo, coordinatorId: newId,
+                previousCoordinatorId: oldId, changed: true } });
+        }
+      } finally {
+        settleWrite();
       }
+    } else if (await fulfilNotificationBell(route, request)) {
+      // Answered: the top-bar notification bell (KAN-64).
     } else {
       unexpected.push(`${method} ${path}`);
       await route.fulfill({ status: 501, json: { error: { code: 'UNEXPECTED_TEST_REQUEST', message: 'Missing test fixture' } } });
     }
   });
-  return { writes, unexpected };
+  return { writes, unexpected, writeSettled };
 }
 
 async function selectReplacement(page: Page) {
@@ -157,9 +166,17 @@ test.describe('KAN-65 Lead reassignment browser workflow', () => {
     await selectReplacement(page); await page.getByRole('button', { name: 'Reassign coordinator' }).click();
     await expect.poll(() => fixture.writes.length).toBe(1);
     await expect(page.getByRole('button', { name: 'Saving…' })).toBeDisabled();
-    await page.getByRole('button', { name: 'Sign out', exact: true }).click();
+    const cancelled = page.waitForEvent('requestfailed', (request) =>
+      request.method() === 'POST' && new URL(request.url()).pathname === `/api/events/${eventId}/coordinator/reassign`);
+    try {
+      await page.getByRole('button', { name: 'Sign out', exact: true }).click();
+      await expect(page.getByRole('heading', { name: 'Sign in required' })).toBeVisible();
+    } finally {
+      release();
+    }
+    await fixture.writeSettled;
+    expect((await cancelled).failure()).not.toBeNull();
     await expect(page.getByRole('heading', { name: 'Sign in required' })).toBeVisible();
-    release();
     await expect(page.getByText('Coordinator handover workshop', { exact: true })).toHaveCount(0);
     await expect(page.getByText('Reassigned from', { exact: false })).toHaveCount(0);
     expect(fixture.writes).toHaveLength(1); expect(fixture.unexpected).toEqual([]);

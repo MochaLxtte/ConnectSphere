@@ -59,6 +59,9 @@ export interface VenueAvailability {
   /** Daily opening hours in Asia/Singapore as HH:MM; null means unrestricted. */
   opensAt: string | null;
   closesAt: string | null;
+  /** KAN-77: setup and turnaround minutes; periods below stay event-only until KAN-78. */
+  setupMinutes: number;
+  turnaroundMinutes: number;
   /** Confirmed bookings and blocked periods overlapping the window, earliest first. */
   unavailable: UnavailablePeriod[];
 }
@@ -99,9 +102,10 @@ export function parseAvailabilityWindow(query: Record<string, unknown>): Availab
 
 // One statement, so the venue list and every venue's periods come from the same snapshot.
 const AVAILABILITY_SQL = `
-  SELECT v.setup_minutes AS "setupMinutes", v.turnaround_minutes AS "turnaroundMinutes", v.id, v.name, v.location, v.capacity,
+  SELECT v.id, v.name, v.location, v.capacity,
          to_char(v.opens_at, 'HH24:MI') AS "opensAt",
          to_char(v.closes_at, 'HH24:MI') AS "closesAt",
+         v.setup_minutes AS "setupMinutes", v.turnaround_minutes AS "turnaroundMinutes",
          COALESCE((
            SELECT json_agg(p ORDER BY p."startsAt", p.kind, p.id)
            FROM (

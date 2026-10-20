@@ -103,6 +103,23 @@ async function venueBooking(eventId: string) {
   return { venueId, bookingId };
 }
 
+/**
+ * KAN-64-AC202/AC207: a handover leaves every related table as it was, and adds exactly three notices:
+ * the organiser, the new coordinator and (minimally) the previous coordinator.
+ */
+async function expectOnlyReassignmentNotices(id: string, before: Awaited<ReturnType<typeof snapshot>>, after: Awaited<ReturnType<typeof snapshot>>) {
+  const { notifications: earlier, ...beforeRelated } = before.related;
+  const { notifications: later, ...afterRelated } = after.related;
+  expect(afterRelated).toEqual(beforeRelated);
+  expect(later).toHaveLength((earlier ?? []).length + 3);
+  const reassigned = (await fixture.notifications(id)).filter((row) => row.type.startsWith('COORDINATOR_REASSIGNED'));
+  expect(reassigned.map((row) => [row.type, row.recipient_id]).sort()).toEqual([
+    ['COORDINATOR_REASSIGNED', owner.id], ['COORDINATOR_REASSIGNED', blair.id], ['COORDINATOR_REASSIGNED_AWAY', alex.id],
+  ].sort());
+  expect(reassigned.find((row) => row.recipient_id === alex.id)!.message)
+    .toBe('An event request you coordinated was reassigned to another coordinator. You no longer have access to it.');
+}
+
 describe('KAN-65 atomic versioned coordinator handovers against PostgreSQL', () => {
   it.each(activeStatuses)('hands over %s with one shared audit boundary and no status change', async (status) => {
     const { id, version } = await assigned(status);
@@ -115,7 +132,7 @@ describe('KAN-65 atomic versioned coordinator handovers against PostgreSQL', () 
     expect(result.assignmentId).not.toBe(version);
     const after = await snapshot(id);
     expect(after.event).toEqual({ ...before.event, coordinator_id: blair.id, updated_at: expect.any(Date) });
-    expect(after.related).toEqual(before.related);
+    await expectOnlyReassignmentNotices(id, before, after);
     expect(after.assignments).toHaveLength(2);
     const old = after.assignments.find((row) => row.id === version)!;
     const current = after.assignments.find((row) => row.id === result.assignmentId)!;
@@ -155,10 +172,8 @@ describe('KAN-65 atomic versioned coordinator handovers against PostgreSQL', () 
     const before = await snapshot(id);
     await handover(id, version);
     const after = await snapshot(id);
-    expect(after.related).toEqual(before.related);
+    await expectOnlyReassignmentNotices(id, before, after);
     expect(after.event).toEqual({ ...before.event, coordinator_id: blair.id, updated_at: expect.any(Date) });
-    // KAN-64 delivery is deliberately pending: a handover does not invent notifications.
-    expect(after.related.notifications).toEqual([]);
   });
 
   it('treats the current coordinator as a true no-op without timestamps, history or other changes', async () => {

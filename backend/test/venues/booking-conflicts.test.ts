@@ -56,6 +56,7 @@ function fakePool(scenario: Scenario = {}) {
       }
       if (/^\s*INSERT INTO venue_bookings/.test(sql)) return { rows: [{ id: bookingId }] };
       if (/^\s*UPDATE venue_bookings/.test(sql) && scenario.updateError) throw scenario.updateError;
+      if (/FROM venue_bookings b JOIN/.test(sql)) return { rows: [{ name: 'Fair', organiserId: 'owner', coordinatorId: coordinator.id, venueName: 'Hall' }] };
       if (/FROM venue_booking_intervals b JOIN/.test(sql)) return { rows: [bookingRow] };
       return { rows: [] };
     }),

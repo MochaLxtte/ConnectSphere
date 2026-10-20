@@ -53,6 +53,32 @@ through KAN-12 search and KAN-52 suitability.
   `pages/VenueCataloguePage.test.ts`, `pages/VenueCatalogueEditPage.test.ts`) and
   `tests/e2e/venue-catalogue.spec.ts`.
 
+## Venue setup and turnaround durations — KAN-77
+
+Venue Staff record `setupMinutes` and `turnaroundMinutes` for each venue through the KAN-50
+catalogue (`PATCH /api/venues/catalogue/:venueId`, `/venue-catalogue/:id`). Migration 008 stores them
+on `venues`, defaulting to 0.
+
+### Rules
+
+- Each is a whole number of minutes from 0 to 1440, never null; the input parser and a database
+  `CHECK` enforce the same range.
+- A changed buffer must be sent with `expectedSetupMinutes` / `expectedTurnaroundMinutes`, the
+  value the editor loaded. Under the existing row lock, a mismatch refuses the whole request with
+  `409 VENUE_BUFFER_CONFLICT` and writes nothing. Other fields keep KAN-50's rules, so a request
+  that changes no buffer is never refused for buffer changes made meanwhile.
+- Catalogue, search (`venue-search.ts`), suitability context (`suitability-service.ts`) and the
+  availability calendar (`availability.ts`) return both values. They do not yet change any
+  interval, search filter, suitability result or conflict check: KAN-78 applies the buffers, and
+  KAN-77-AC6's re-evaluation of existing bookings waits for it.
+
+### Verification
+
+Unit/HTTP: `backend/test/venues/venue-catalogue-input.test.ts`, `venue-catalogue-service.test.ts`,
+`venue-catalogue-router.test.ts` (KAN-77 suites). PostgreSQL: `database/tests/venues/venue-catalogue.integration.test.ts`
+and the migration test in `database/tests/database.integration.test.ts`. Browser:
+`tests/e2e/venue-catalogue.spec.ts`. Results are recorded as `AUTO-20261021-02` in the test evidence.
+
 ## Venue-unavailability blocks — KAN-55
 
 `block-router.ts` is mounted at `/api/venues` and is Venue Staff only end to end; the
@@ -166,9 +192,10 @@ concurrent approvals that committed while waiting. Status and all decision metad
 are saved in one transaction. Existing database conflict triggers remain a second guard;
 their known conflict errors also become 409 responses. Failure rolls back the decision.
 
-This feature does not change event status, send notifications, or add cancellation/reassignment
-workflows. It uses the existing `venue_bookings` schema; no new migration or historical SQL
-change is required. The separate KAN-51 calendar reads approved bookings from the same table.
+This feature does not change event status or add cancellation/reassignment
+workflows. Since KAN-64 a decision also writes in-app notifications in the same transaction
+(organiser, current coordinator and the deciding staff member). It uses the existing
+`venue_bookings` schema; no new migration or historical SQL change is required for bookings. The separate KAN-51 calendar reads approved bookings from the same table.
 
 ### Verification
 
@@ -205,6 +232,12 @@ UNSUITABLE for a definite failure, otherwise NEEDS_REVIEW for any unknown, other
 SUITABLE. Capacity, full-interval Singapore opening hours, active state, all approved
 reservations and operational blocks are read fresh. Adjacent intervals do not overlap.
 
+Expected attendance `0` is a known value, as submission accepts it (KAN-52-AC101): the capacity
+check passes it against capacity like any count. A missing attendance, or an unusable value such as a
+negative or fractional number, leaves the capacity check UNKNOWN with a different message, so the two
+stay distinguishable. A zero-attendance event is never SUITABLE on that basis alone: other failing or
+unknown checks still decide the overall result.
+
 The source version hashes relevant event values, so direct dashboard changes are detected
 even without an updated timestamp. A mismatch gives `409 SUITABILITY_CONTEXT_CHANGED`;
 the UI reloads and resets interpretation. A valid result remains an observation at check
@@ -224,3 +257,7 @@ Migration 008 supplies SQL occupied-interval functions, `venue_booking_intervals
 Calendar bars use occupied times and return event timing separately. Booking detail and the staff queue expose live overlap/block/hour warnings; the queue also includes affected approved bookings. Warnings are computed, so KAN-77's future editor gets current re-evaluation after a venue-row update without changing bookings. It should use the same venue lock and consume the warning function. KAN-77's editor and field-aware stale-save rules remain separate work.
 
 Verification: `database/tests/venues/venue-buffers.integration.test.ts` covers the calculator across consumers, boundaries, blocks/hours, preserved history, existing conflicts, privacy and races. `tests/e2e/venue-bookings.spec.ts` verifies occupied-time/warning display. See AUTO-20261021-01; hosted acceptance remains Not executed.
+
+## Main integration follow-up — 21 October 2026
+
+KAN-77 configuration is now merged. Buffer saves use its existing field-aware concurrency rules and return `affectedBookings` from KAN-78 warning evaluation within the save transaction; the editor displays their links/warnings. Shared duration storage is migration 009, and KAN-78 snapshots/view/functions/guards are migration 010. Earlier pending-editor notes remain historical.
