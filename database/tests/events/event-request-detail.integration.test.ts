@@ -234,7 +234,8 @@ describe('KAN-34 / KAN-33 / KAN-16 shared request detail with PostgreSQL', () =>
       },
       actions: { canEditDraft: false, canMakeInitialDecision: false },
     });
-    const duplicate = await request(app).post(`/api/events/${id}/reviews`).send({ decision: 'REJECTED' });
+    const duplicate = await request(app).post(`/api/events/${id}/reviews`)
+      .send({ decision: 'REJECTED', reason: 'Second decision.' });
     expect(duplicate.status).toBe(409);
     expect(duplicate.body.error.code).toBe('REVIEW_ALREADY_DECIDED');
   });

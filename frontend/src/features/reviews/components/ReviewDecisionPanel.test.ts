@@ -24,8 +24,7 @@ describe('KAN-36 coordinator decision panel', () => {
     ['APPROVED', '  Ready for planning.  ', 'Ready for planning.'],
     ['REJECTED', '  Unsuitable venue.  ', 'Unsuitable venue.'],
     ['APPROVED', '', null],
-    ['REJECTED', '   ', null],
-  ] as const)('emits %s with a trimmed optional reason', async (decision, reason, expectedReason) => {
+  ] as const)('emits %s with a trimmed reason', async (decision, reason, expectedReason) => {
     const view = renderPanel();
     expect(screen.getByRole('button', { name: 'Record decision' })).toBeDisabled();
     await choose(decision);
@@ -79,6 +78,8 @@ describe('KAN-36 coordinator decision panel', () => {
   it.each(['APPROVED', 'REJECTED'] as const)('shows success only after confirmed %s feedback', async (decision) => {
     const view = renderPanel();
     await choose(decision);
+    // KAN-60: a rejection needs a reason before it can be submitted.
+    await fireEvent.update(screen.getByRole('textbox', { name: /Reason/ }), 'Checked against policy.');
     await fireEvent.click(screen.getByRole('button', { name: /^Record (approval|rejection)$/ }));
     expect(screen.getByRole('status')).toHaveTextContent('Recording your decision');
 
@@ -265,6 +266,7 @@ describe('KAN-36 coordinator decision panel', () => {
     await fireEvent.click(screen.getByRole('button', { name: 'Record approval' }));
     await view.rerender({ request: { id: 'request-two', status: 'SUBMITTED' } });
     await choose('REJECTED');
+    await fireEvent.update(screen.getByRole('textbox', { name: /Reason/ }), 'Venue unavailable.');
     await fireEvent.click(screen.getByRole('button', { name: 'Record rejection' }));
     await view.rerender({ feedback: { eventRequestId: 'request-two', state: 'saving' } });
 
@@ -296,8 +298,113 @@ describe('KAN-36 coordinator decision panel', () => {
     const panels = screen.getAllByRole('region', { name: 'Record a decision' });
     const reasons = panels.map((panel) => within(panel).getByRole('textbox', { name: 'Reason (optional)' }));
     expect(reasons[0].id).not.toBe(reasons[1].id);
-    for (const reason of reasons) expect(reason).toHaveAccessibleDescription('Add an explanation to accompany the decision.');
+    for (const reason of reasons) {
+      expect(reason).toHaveAccessibleDescription('Add an explanation to accompany the decision. 0 / 2000');
+    }
     expect(within(panels[0]).getByRole('radio', { name: /^Approve request/ }).getAttribute('name'))
       .not.toBe(within(panels[1]).getByRole('radio', { name: /^Approve request/ }).getAttribute('name'));
+  });
+});
+
+describe('KAN-60 required rejection reason', () => {
+  const reasonBox = () => screen.getByRole('textbox', { name: /Reason/ });
+
+  it('KAN-60-AC1 labels the reason as required only while rejecting', async () => {
+    renderPanel();
+    expect(screen.getByRole('textbox', { name: 'Reason (optional)' })).not.toHaveAttribute('aria-required', 'true');
+    await choose('REJECTED');
+    expect(screen.getByRole('textbox', { name: 'Reason (required)' })).toHaveAttribute('aria-required', 'true');
+    expect(reasonBox()).toHaveAccessibleDescription(/organiser will see this reason/);
+    await choose('APPROVED');
+    expect(screen.getByRole('textbox', { name: 'Reason (optional)' })).toBeInTheDocument();
+  });
+
+  it.each(['', '   ', ' \n\t '])(
+    'KAN-60-AC1 blocks a rejection with reason %j and explains it beside the field',
+    async (reason) => {
+      const view = renderPanel();
+      await choose('REJECTED');
+      await fireEvent.update(reasonBox(), reason);
+      await fireEvent.click(screen.getByRole('button', { name: 'Record rejection' }));
+
+      expect(view.emitted('submit')).toBeUndefined();
+      const error = screen.getByRole('alert');
+      expect(error).toHaveTextContent('Enter a reason to reject this event request.');
+      expect(reasonBox()).toHaveAttribute('aria-invalid', 'true');
+      expect(reasonBox()).toHaveAccessibleDescription(/^Enter a reason to reject this event request\./);
+      expect(reasonBox()).toHaveFocus();
+      expect(reasonBox()).toBeEnabled();
+      expect(screen.getByRole('radio', { name: /^Reject request/ })).toBeChecked();
+    },
+  );
+
+  it('KAN-60-AC1 clears the field error once a reason is typed and then submits the trimmed reason', async () => {
+    const view = renderPanel();
+    await choose('REJECTED');
+    await fireEvent.click(screen.getByRole('button', { name: 'Record rejection' }));
+    expect(screen.getByRole('alert')).toBeInTheDocument();
+    await fireEvent.update(reasonBox(), '  Venue capacity too small.  ');
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    expect(reasonBox()).toHaveAttribute('aria-invalid', 'false');
+    await fireEvent.click(screen.getByRole('button', { name: 'Record rejection' }));
+    expect(view.emitted('submit')).toEqual([[{
+      eventRequestId: request.id, input: { decision: 'REJECTED', reason: 'Venue capacity too small.' },
+    }]]);
+  });
+
+  it('KAN-60-AC4 clears a rejection error when switching to approval and allows approval without a reason', async () => {
+    const view = renderPanel();
+    await choose('REJECTED');
+    await fireEvent.click(screen.getByRole('button', { name: 'Record rejection' }));
+    expect(screen.getByRole('alert')).toBeInTheDocument();
+    await choose('APPROVED');
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    await fireEvent.click(screen.getByRole('button', { name: 'Record approval' }));
+    expect(view.emitted('submit')).toEqual([[{
+      eventRequestId: request.id, input: { decision: 'APPROVED', reason: null },
+    }]]);
+  });
+
+  it('KAN-60-AC101 accepts a trimmed reason of exactly 2000 characters and counts trimmed characters', async () => {
+    const view = renderPanel();
+    await choose('REJECTED');
+    const reason = 'r'.repeat(2000);
+    await fireEvent.update(reasonBox(), `  ${reason}  `);
+    expect(reasonBox()).toHaveAccessibleDescription(/2000 \/ 2000$/);
+    await fireEvent.click(screen.getByRole('button', { name: 'Record rejection' }));
+    expect(view.emitted('submit')).toEqual([[{ eventRequestId: request.id, input: { decision: 'REJECTED', reason } }]]);
+  });
+
+  it.each(['REJECTED', 'APPROVED'] as const)(
+    'KAN-60-AC101 blocks a %s reason over 2000 characters with a field-specific error',
+    async (decision) => {
+      const view = renderPanel();
+      await choose(decision);
+      await fireEvent.update(reasonBox(), 'r'.repeat(2001));
+      await fireEvent.click(screen.getByRole('button', { name: /^Record (approval|rejection)$/ }));
+      expect(view.emitted('submit')).toBeUndefined();
+      expect(screen.getByRole('alert')).toHaveTextContent('Reason must be at most 2000 characters.');
+      expect(reasonBox()).toHaveAttribute('aria-invalid', 'true');
+    },
+  );
+
+  it('KAN-60 clears a field error when another request opens', async () => {
+    const view = renderPanel();
+    await choose('REJECTED');
+    await fireEvent.click(screen.getByRole('button', { name: 'Record rejection' }));
+    expect(screen.getByRole('alert')).toBeInTheDocument();
+    await view.rerender({ request: { id: 'request-two', status: 'SUBMITTED' } });
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    expect(reasonBox()).toHaveAttribute('aria-invalid', 'false');
+  });
+
+  it('KAN-60-AC1 still shows the server message if the API refuses the reason', async () => {
+    const view = renderPanel();
+    await choose('REJECTED');
+    await fireEvent.update(reasonBox(), 'Venue unavailable.');
+    await fireEvent.click(screen.getByRole('button', { name: 'Record rejection' }));
+    await view.rerender({ feedback: { eventRequestId: request.id, state: 'error', code: 'INVALID_REVIEW_INPUT' } });
+    expect(screen.getByRole('alert')).toHaveTextContent('Check your decision and reason');
+    expect(reasonBox()).toHaveValue('Venue unavailable.');
   });
 });
