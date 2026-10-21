@@ -20,7 +20,7 @@ const week = { from: '2026-10-04T16:00:00.000Z', to: '2026-10-11T16:00:00.000Z' 
 const actorWith = (role: UserRole): WorkflowActor => ({ id: '20000000-0000-4000-8000-000000000001', role });
 const venues: VenueAvailability[] = [{
   id: '30000000-0000-4000-8000-000000000001', name: 'Harbour Hall', location: 'Level 1', capacity: 300,
-  opensAt: '08:00', closesAt: '22:00',
+  opensAt: '08:00', closesAt: '22:00', setupMinutes: 0, turnaroundMinutes: 0,
   unavailable: [{
     id: '40000000-0000-4000-8000-000000000001', kind: 'BLOCKED', reason: 'Maintenance',
     startsAt: '2026-10-06T01:00:00.000Z', endsAt: '2026-10-06T10:00:00.000Z',

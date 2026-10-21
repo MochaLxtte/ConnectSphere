@@ -6,6 +6,7 @@ import {
 } from '../../src/modules/events/assignment.js';
 import type { EventStatus } from '../../src/modules/events/types.js';
 import type { WorkflowActor, WorkflowDependencies } from '../../src/modules/events/workflow-support.js';
+import { notificationRows } from '../support/notification-rows.js';
 
 const eventId = '10000000-0000-4000-8000-000000000001';
 const lead: WorkflowActor = { id: '20000000-0000-4000-8000-000000000001', role: 'EVENT_COORDINATOR_LEAD' };
@@ -34,7 +35,7 @@ function readDatabase(rows: unknown[] = []) {
 function transaction(options: {
   event?: typeof event | null;
   activeHistory?: boolean;
-  target?: { role: string; available: boolean } | null;
+  target?: { role: string; available: boolean; displayName?: string } | null;
   missingInsert?: boolean;
   updatedRows?: number;
   failStatement?: string;
@@ -48,7 +49,7 @@ function transaction(options: {
     }
     if (sql.includes('SELECT EXISTS')) return { rows: [{ exists: options.activeHistory ?? false }] };
     if (sql.includes('FROM app_users')) {
-      return { rows: options.target === null ? [] : [options.target ?? { role: 'EVENT_COORDINATOR', available: true }] };
+      return { rows: options.target === null ? [] : [options.target ?? { role: 'EVENT_COORDINATOR', available: true, displayName: 'Casey' }] };
     }
     if (sql.includes('INSERT INTO coordinator_assignments')) {
       return { rows: options.missingInsert ? [] : [{ id: assignmentId }] };
@@ -171,7 +172,17 @@ describe('KAN-79 atomic initial assignment', () => {
     expect(sql().findIndex((sql) => sql.includes('FOR UPDATE')))
       .toBeLessThan(sql().findIndex((sql) => sql.includes('FOR NO KEY UPDATE')));
     expect(sql()).toContain('COMMIT');
-    expect(sql().some((sql) => /notifications|event_reviews/.test(sql))).toBe(false);
+    expect(sql().some((sql) => /event_reviews/.test(sql))).toBe(false);
+    // KAN-64-AC202/AC207: the organiser and the new coordinator, written inside the allocation's transaction.
+    // The Lead is the actor but not a recipient, so receives nothing.
+    expect(notificationRows(query.mock.calls).map((row) => [row.recipientId, row.type, row.dedupeKey])).toEqual([
+      [organiser.id, 'COORDINATOR_ASSIGNED', `COORDINATOR_ASSIGNED:${assignmentId}`],
+      [coordinator.id, 'COORDINATOR_ASSIGNED', `COORDINATOR_ASSIGNED:${assignmentId}`],
+    ]);
+    const order = sql().map((statement) => (statement.includes('INSERT INTO notifications') ? 'notify'
+      : statement.includes('INSERT INTO coordinator_assignments') ? 'assign' : statement));
+    expect(order.indexOf('assign')).toBeLessThan(order.indexOf('notify'));
+    expect(order.indexOf('notify')).toBeLessThan(order.indexOf('COMMIT'));
     expect(sql().find((sql) => sql.startsWith('UPDATE event_requests'))).not.toContain('status =');
     expect(release).toHaveBeenCalledExactlyOnceWith(undefined);
   });

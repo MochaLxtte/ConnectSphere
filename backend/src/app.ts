@@ -16,6 +16,7 @@ import {
 } from './modules/venues/venue-bookings-router.js';
 import type { WorkflowRouterDependencies } from './modules/events/workflow-http.js';
 import { createVenueAvailabilityRouter } from './modules/venues/availability-router.js';
+import { createNotificationRouter } from './modules/notifications/inbox-router.js';
 import { createVenueBlockRouter } from './modules/venues/block-router.js';
 import { createVenueCatalogueRouter } from './modules/venues/venue-catalogue-router.js';
 import { createVenueSuitabilityRouter } from './modules/venues/suitability-router.js';
@@ -70,6 +71,8 @@ export function createApp({
   if (auth) app.use('/api/auth', createAuthRouter(auth));
 
   if (workspace) {
+    // KAN-64: the signed-in user's own in-app inbox.
+    app.use('/api/notifications', createNotificationRouter(workspace));
     app.use('/api/venue-bookings', createVenueBookingsRouter(workspace));
     // KAN-51: read-only venue calendar for the internal planning roles.
     app.use('/api/venues', createVenueAvailabilityRouter(workspace));

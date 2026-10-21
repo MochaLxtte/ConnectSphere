@@ -73,6 +73,12 @@ Five points cover a usable shared inbox, authorization, persistence/deduplicatio
 
 Operational defaults are explicit in each Jira card and sprint policy record, distinct from customer quotations. Implementers must update the API/data model/C4/class/sequence diagrams and re-export them with code; this planning update does not claim those designs or migrations already exist. [Traceability](traceability.csv) and [functional cases](../testing/test-cases.csv) allocate each active criterion; planned new cases are **Not executed**, and eventual actual runs go in [test evidence](../testing/test-evidence.md).
 
+**Test-record format update — 21 October 2026.** The case register now holds reusable specifications;
+case outcomes and unperformed-test placeholders are in [test-executions.csv](../testing/test-executions.csv).
+Append a record for each evidenced case attempt and retain run-level details in
+[test-evidence.md](../testing/test-evidence.md). Original and revised requirement versions remain
+distinct; this format change supplies no new customer-change implementation or acceptance result.
+
 ### Estimate and release effect
 
 Current Jira scope is **174 SP**: **127 estimated original-scope points + 47 customer-change points**. Of this, **48 SP are current administrative Done**, **63 are assigned S3** and **63 assigned S4**. These are inventory/plan totals, not historical velocity. The earlier 145-point Jira inventory plus 29-point forecast already totalled 174: creating KAN-81/82/83/84 turns that forecast into real cards, without adding another 29 to the release total. KAN-64's 8→5 plus KAN-80's 3 nets zero. The earlier KAN-15 2→5 revision remains explicitly recorded; carry-over never increases release scope again. See [release accounting](../scrum/release-burndown.md).
@@ -153,6 +159,8 @@ The existing KAN-60 rejection-reason correction predates Week 7. Resolve its rel
 5. **Design impact:** block/booking state relationship, recovery API, notification integration, data model and sequence diagrams **Not assessed**.
 6. **Tests:** plan outages over one/multiple bookings, unaffected periods, correct recipients, replacement flow and concurrent approval/outage. Original access and conflict protections require regression. Execution **Not executed**.
 7. **Release scope:** added points **To agree**; keep any original KAN-55 defect distinct from this changed customer rule.
+
+**Implementation progress — 21 October 2026.** KAN-81 phase 1 replaces KAN-55's refusal of an outage over approved bookings, flags the affected arrangements in a new `venue_outage_impacts` table and gives Venue Staff a recovery view. Coordinator notification (phase 2) and linked replacements (phase 3) follow. See the [phase 1 decisions](assumptions-and-questions.md#21-october-2026--kan-81-phase-1-outage-recovery-decisions). Acceptance is Not assessed.
 
 ## CR-3 — Multiple venues for one event
 

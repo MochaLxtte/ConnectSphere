@@ -2,7 +2,7 @@ import {
   inActorTransaction, iso, WorkflowError, type WorkflowActor, type WorkflowDependencies,
 } from '../events/workflow-support.js';
 import {
-  assertOperatingHoursOrdered, parseVenueCatalogueUpdate, type VenueCatalogueUpdate,
+  assertOperatingHoursOrdered, BUFFER_FIELDS, parseVenueCatalogueRequest, type VenueCatalogueUpdate,
 } from './venue-catalogue-input.js';
 import type { VenueResult } from './venue-search.js';
 
@@ -14,6 +14,7 @@ type CatalogueRow = Omit<CatalogueVenue, 'updatedAt'> & { updatedAt: Date };
 const catalogueSelect = `SELECT id, name, description, location, capacity, layouts, facilities,
   accessibility_features AS "accessibilityFeatures", wheelchair_accessible AS "wheelchairAccessible",
   to_char(opens_at, 'HH24:MI') AS "opensAt", to_char(closes_at, 'HH24:MI') AS "closesAt",
+  setup_minutes AS "setupMinutes", turnaround_minutes AS "turnaroundMinutes",
   updated_at AS "updatedAt"
   FROM venues`;
 
@@ -27,6 +28,8 @@ const COLUMN_BY_FIELD: Record<keyof VenueCatalogueUpdate, string> = {
   layouts: 'layouts',
   opensAt: 'opens_at',
   closesAt: 'closes_at',
+  setupMinutes: 'setup_minutes',
+  turnaroundMinutes: 'turnaround_minutes',
 };
 
 function requireVenueStaff(actor: WorkflowActor): void {
@@ -68,23 +71,36 @@ export async function getCatalogueVenue(
  * validated before any query. The venue row is locked so concurrent edits are serialised and the
  * layouts, facilities and hours always stay on the venue they were saved for; a field that is not
  * supplied is never touched. Search and suitability read these columns live (AC13).
+ *
+ * KAN-77-AC5: a buffer field is only changed when its stored value still equals the value the
+ * editor loaded, checked under the same lock; otherwise nothing is written (409). Other fields keep
+ * KAN-50's rule, so a different-field edit made meanwhile is preserved, not refused.
  */
 export async function updateCatalogueVenue(
   { pool }: WorkflowDependencies,
   { actor, venueId, input }: { actor: WorkflowActor; venueId: string; input: unknown },
 ): Promise<CatalogueVenue> {
   requireVenueStaff(actor);
-  const update = parseVenueCatalogueUpdate(input);
+  const { update, expected } = parseVenueCatalogueRequest(input);
 
   return inActorTransaction(pool, actor.id, async (client) => {
-    const locked = await client.query<{ isActive: boolean; opensAt: string | null; closesAt: string | null }>(
+    const locked = await client.query<{
+      isActive: boolean; opensAt: string | null; closesAt: string | null;
+      setupMinutes: number; turnaroundMinutes: number;
+    }>(
       `SELECT is_active AS "isActive", to_char(opens_at, 'HH24:MI') AS "opensAt",
-         to_char(closes_at, 'HH24:MI') AS "closesAt" FROM venues WHERE id = $1 FOR UPDATE`,
+         to_char(closes_at, 'HH24:MI') AS "closesAt", setup_minutes AS "setupMinutes",
+         turnaround_minutes AS "turnaroundMinutes" FROM venues WHERE id = $1 FOR UPDATE`,
       [venueId],
     );
     const current = locked.rows[0];
     if (!current) throw venueNotFound();
     if (!current.isActive) throw new WorkflowError('CONFLICT', 'VENUE_INACTIVE', 'This venue is no longer active.');
+    const stale = BUFFER_FIELDS.filter((field) => expected[field] !== undefined && expected[field] !== current[field]);
+    if (stale.length > 0) {
+      throw new WorkflowError('CONFLICT', 'VENUE_BUFFER_CONFLICT',
+        `Another change was saved to ${stale.join(' and ')} after you loaded this venue. Reload and try again.`);
+    }
 
     // One endpoint may be supplied alone, so the pair is checked against the stored value.
     assertOperatingHoursOrdered(

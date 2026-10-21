@@ -213,3 +213,100 @@ describe('KAN-50 catalogue service: updating (AC3-AC11, AC14)', () => {
       .toBeLessThan(order.findIndex((sql) => /^UPDATE venues/.test(sql)));
   });
 });
+
+describe('KAN-77 catalogue service: buffer durations', () => {
+  const lockedWith = (setupMinutes: number, turnaroundMinutes: number) => ({
+    isActive: true, opensAt: '08:00', closesAt: '22:00', setupMinutes, turnaroundMinutes,
+  });
+
+  it('saves a buffer when the stored value still matches the loaded one (AC1, AC4, AC5)', async () => {
+    const { pool, statements } = fakePool({
+      locked: lockedWith(0, 10), saved: { ...row, setupMinutes: 30, turnaroundMinutes: 10 } as typeof row,
+    });
+    const saved = await updateCatalogueVenue({ pool }, {
+      actor: staff, venueId, input: { setupMinutes: 30, expectedSetupMinutes: 0 },
+    });
+
+    expect(saved).toMatchObject({ setupMinutes: 30, turnaroundMinutes: 10 });
+    const update = sqlOf(statements, /^UPDATE venues/)!;
+    expect(update.sql).toBe('UPDATE venues SET setup_minutes = $2, updated_at = now() WHERE id = $1');
+    expect(update.params).toEqual([venueId, 30]);
+    expect(sqlOf(statements, /FOR UPDATE/)!.sql).toMatch(/setup_minutes AS "setupMinutes"/);
+    expect(statements.at(-1)!.sql).toBe('COMMIT');
+  });
+
+  it('writes both buffers and another field together when nothing is stale', async () => {
+    const { pool, statements } = fakePool({ locked: lockedWith(5, 10) });
+    await updateCatalogueVenue({ pool }, {
+      actor: staff, venueId,
+      input: { capacity: 90, setupMinutes: 15, expectedSetupMinutes: 5, turnaroundMinutes: 20, expectedTurnaroundMinutes: 10 },
+    });
+    const update = sqlOf(statements, /^UPDATE venues/)!;
+    expect(update.sql).toBe(
+      'UPDATE venues SET capacity = $2, setup_minutes = $3, turnaround_minutes = $4, updated_at = now() WHERE id = $1',
+    );
+    expect(update.params).toEqual([venueId, 90, 15, 20]);
+  });
+
+  it.each([
+    [{ setupMinutes: 30, expectedSetupMinutes: 0 }, lockedWith(15, 0), 'setupMinutes'],
+    [{ turnaroundMinutes: 30, expectedTurnaroundMinutes: 0 }, lockedWith(0, 45), 'turnaroundMinutes'],
+    [{ setupMinutes: 1, expectedSetupMinutes: 0, turnaroundMinutes: 1, expectedTurnaroundMinutes: 0 }, lockedWith(5, 5),
+      'setupMinutes and turnaroundMinutes'],
+  ])('refuses a stale edit to the same buffer field without writing anything (AC5): %j', async (input, locked, fields) => {
+    const { pool, statements, release } = fakePool({ locked });
+    const attempt = updateCatalogueVenue({ pool }, { actor: staff, venueId, input });
+
+    await expect(attempt).rejects.toMatchObject({
+      kind: 'CONFLICT', code: 'VENUE_BUFFER_CONFLICT',
+      message: `Another change was saved to ${fields} after you loaded this venue. Reload and try again.`,
+    });
+    expect(sqlOf(statements, /^UPDATE venues/)).toBeUndefined();
+    expect(statements.at(-1)!.sql).toBe('ROLLBACK');
+    expect(release).toHaveBeenCalledOnce();
+  });
+
+  it('refuses only the stale field when one buffer is stale and the other is not', async () => {
+    const { pool, statements } = fakePool({ locked: lockedWith(0, 45) });
+    await expect(updateCatalogueVenue({ pool }, {
+      actor: staff, venueId,
+      input: { setupMinutes: 5, expectedSetupMinutes: 0, turnaroundMinutes: 30, expectedTurnaroundMinutes: 0 },
+    })).rejects.toMatchObject({ code: 'VENUE_BUFFER_CONFLICT', message: expect.stringContaining('saved to turnaroundMinutes after') });
+    expect(sqlOf(statements, /^UPDATE venues/)).toBeUndefined();
+  });
+
+  it('keeps the KAN-50 rule for other fields: a non-buffer edit is never refused for changed buffers', async () => {
+    const { pool, statements } = fakePool({ locked: lockedWith(120, 60) });
+    await updateCatalogueVenue({ pool }, { actor: staff, venueId, input: { capacity: 75 } });
+    expect(sqlOf(statements, /^UPDATE venues/)!.params).toEqual([venueId, 75]);
+  });
+
+  it('accepts a matching expectation even if the buffer changed and changed back meanwhile', async () => {
+    const { pool, statements } = fakePool({ locked: lockedWith(10, 0) });
+    await updateCatalogueVenue({ pool }, { actor: staff, venueId, input: { setupMinutes: 20, expectedSetupMinutes: 10 } });
+    expect(sqlOf(statements, /^UPDATE venues/)!.params).toEqual([venueId, 20]);
+  });
+
+  it.each(otherRoles)('refuses %s before any query, so buffers cannot be changed by other roles (AC1)', async (role) => {
+    const { pool, rawPool } = fakePool();
+    expect(await codeOf(updateCatalogueVenue({ pool }, {
+      actor: { ...staff, role }, venueId, input: { setupMinutes: 5, expectedSetupMinutes: 0 },
+    }))).toBe('ACTION_FORBIDDEN');
+    expect(rawPool.connect).not.toHaveBeenCalled();
+  });
+
+  it('validates the buffer before opening a connection (AC2)', async () => {
+    const { pool, rawPool } = fakePool();
+    expect(await codeOf(updateCatalogueVenue({ pool }, {
+      actor: staff, venueId, input: { setupMinutes: 1441, expectedSetupMinutes: 0 },
+    }))).toBe('INVALID_VENUE_CATALOGUE_INPUT');
+    expect(rawPool.connect).not.toHaveBeenCalled();
+  });
+
+  it('checks the venue is active before comparing buffers', async () => {
+    const { pool } = fakePool({ locked: { ...lockedWith(99, 99), isActive: false } });
+    expect(await codeOf(updateCatalogueVenue({ pool }, {
+      actor: staff, venueId, input: { setupMinutes: 5, expectedSetupMinutes: 0 },
+    }))).toBe('VENUE_INACTIVE');
+  });
+});

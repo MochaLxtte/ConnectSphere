@@ -98,3 +98,30 @@ KAN-65 code/test commit: `d8f3bc2aee19a608b1a3f57c87e7d5cc7d242d84`. Documentati
 | ID | Artifact | Source / result | Limits |
 | --- | --- | --- | --- |
 | S3-E16 | [GitHub Actions CI run 39159683818](https://github.com/MochaLxtte/ConnectSphere/actions/runs/39159683818) and [PR #34](https://github.com/MochaLxtte/ConnectSphere/pull/34) | CI `verify` passed on 19 October 03:38 Singapore time for head `36d410d5aa67e6bc42669d68ea94627bd0080ce3`, the commit merged. PR approved by Irfan and merged into `main` as `3ddba2b` on 20 October 23:01 Singapore time. | Approval relied on CI and merge state; template, AC and Definition of Done review Not executed. Manual/hosted acceptance and KAN-64 notifications Not executed; acceptance Not assessed. No velocity credit. |
+
+## Test documentation standardisation — 21 October 2026
+
+| ID | Artifact | Source / result | Limits |
+| --- | --- | --- | --- |
+| S3-E17 | [Validation results and CSV hashes](test-documentation-validation-2026-10-21.json), [AUTO-20261021-DOCS-01](../../../testing/test-evidence.md#21-october-2026--test-documentation-standardisation), [original register](../../../testing/archive/test-cases-2026-10-21.csv) | 18/18 documentation checks; all 427 IDs retained and linked through 115 traceability rows. Separate execution records preserve 30 automated passes, five detailed audit failures and 372 Not executed placeholders; 20 feature summaries excluded from run counts. Submission packaging/readback passed. | Documentation working tree based on `aaee549`; no new application or manual runs, no invented metadata or acceptance. Original failure/retest narratives remain historical. |
+
+## KAN-79 test reliability and owned-story audit — 21 October 2026
+
+| ID | Artifact | Source / result | Limits |
+| --- | --- | --- | --- |
+| S3-E18 | [Run attempts, hashes and audit scope](kan79-reliability-2026-10-21.json), [AUTO-20261021-KAN79-01–07](../../../testing/test-evidence.md#21-october-2026--kan-79-test-reliability-and-owned-story-audit), [coverage](../../../testing/coverage-reports/2026-10-21-kan79-reliability.txt) | Preserved failing locator reproduction; fixed tests pass 30 focused repetitions and 396 full-browser executions. Check/coverage: 604 frontend + 1,035 backend; PostgreSQL: 341. Focused exact-title reports: 142 frontend + 55 backend. Nine new mapped specifications; original registers retained. | Fixture browser checks and isolated PostgreSQL are separate from hosted acceptance. No application/schema changes, Jira Done, velocity credit or guarantee of zero future flakes. KAN-64 and manual/hosted checks remain Not executed. |
+
+## Combined team branch — 21 October 2026
+
+| ID | Artifact | Source / result | Limits |
+| --- | --- | --- | --- |
+| S3-E19 | [Integration source heads, exact test results and hashes](team-integration-2026-10-21.json), [run narratives](../../../testing/test-evidence.md#21-october-2026--combined-team-branch-verification), [coverage](../../../testing/coverage-reports/2026-10-21-team-integration.txt) | Main plus PRs #37/#38/#40–45 and local `599fee6`. Check/coverage: 676 frontend + 1,165 backend; final PostgreSQL: 380; browser: 147, zero retries. Includes failed notification reproduction, final 39-case focused run, failed/full database retest, exact case mappings, migration alias and refreshed diagram hashes. | Application/check build `4835a26`, final database/component build `70e6e41`; history-only PR45 follow-up merge `967938d`. Earlier notification run HEAD not separately recorded. Isolated/fixture evidence only; complete manual cases Not executed, acceptance Not assessed. KAN-64 recipient matrix To agree; KAN-78/KAN-77 AC6 incomplete. No shared migration or push. |
+
+**S3-E19 follow-up:** PR #45 head `6d5af10` adds verified [CI run39467271524](https://github.com/MochaLxtte/ConnectSphere/actions/runs/39467271524) on its separate source candidate (358 database,133 browser tests). `AUTO-20261021-KAN77-CI-01` and the JSON retain actual checkout/build and case-scope qualifications. TC-08-17 receives one appended CI Pass; full TC-08-16 and hosted cases remain Not executed. PR #38 was subsequently closed unmerged; its reconciled changes remain in this branch.
+
+
+## KAN-81 phase-1 review remediation — 21 October 2026
+
+| ID | Artifact | Source / result | Limits |
+| --- | --- | --- | --- |
+| S3-E20 | [CI/local metadata and diagram hashes](kan81-review-2026-10-21.json), [run narratives](../../../testing/test-evidence.md#21-october-2026--kan-81-pr47-review-fixes-and-ci-follow-up), [coverage](../../../testing/coverage-reports/2026-10-21-kan81-review.txt), [planning ERD](../../../architecture/exports/erd-planning.png), [original CI](https://github.com/MochaLxtte/ConnectSphere/actions/runs/39477344094) | Original CI: 398 PostgreSQL and 148 browser tests; TC-09-13–16 scoped Pass. Retained failing stale-removal reproduction; corrected TC-09-17: 21 page tests, check/coverage 690 frontend + 1,205 backend. ERD rendered from current source and visually checked. | Original CI checkout `25c94c5501cd66bf62dcc88efd331f8d01f90e8d`; local application/test build `18ac27d4e26580ef5f8aca519e5cd8ecbc2d1d51`. Browser APIs are mocked; isolated PostgreSQL and unit/component evidence do not establish hosted acceptance or the unfinished full TC-09-01–12. No shared migration, story Done or velocity credit. |

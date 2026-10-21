@@ -3,6 +3,8 @@ import type { AuthenticatedUser } from '../auth/types.js';
 import type { EventRecord } from './types.js';
 import { parseReviewInput, type ReviewDecision } from './review-input.js';
 import { assertCanMakeInitialReview, ReviewEligibilityError } from './review-eligibility.js';
+import { recordNotifications } from '../notifications/notify.js';
+import { reviewNotifications } from '../notifications/trigger-matrix.js';
 
 export type ReviewActor = Pick<AuthenticatedUser, 'id' | 'role'>;
 export type ReviewRequest = Pick<EventRecord, 'id' | 'organiserId' | 'coordinatorId' | 'status'>;
@@ -60,8 +62,8 @@ export async function recordInitialReview(
     await client.query('BEGIN ISOLATION LEVEL READ COMMITTED');
 
     // Competing decisions must wait here, then inspect the latest committed request state.
-    const requests = await client.query<ReviewRequest>(`
-      SELECT id, organiser_id AS "organiserId", coordinator_id AS "coordinatorId", status
+    const requests = await client.query<ReviewRequest & { name: string | null }>(`
+      SELECT id, organiser_id AS "organiserId", coordinator_id AS "coordinatorId", status, name
       FROM event_requests WHERE id = $1 FOR UPDATE
     `, [eventRequestId]);
     const request = requests.rows[0];
@@ -90,6 +92,12 @@ export async function recordInitialReview(
       UPDATE event_requests SET status = $1, updated_at = now() WHERE id = $2
     `, [review.decision, request.id]);
     if (updated.rowCount !== 1) throw new Error('The event request status could not be updated.');
+
+    // KAN-64-AC201/AC207: in the same transaction as the decision.
+    await recordNotifications(client, reviewNotifications(
+      { id: request.id, name: request.name, organiserId: request.organiserId },
+      { id: saved.id, decision: review.decision, reason: review.reason },
+    ));
 
     await client.query('COMMIT');
     return {

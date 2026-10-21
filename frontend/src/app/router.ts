@@ -13,6 +13,7 @@ import LeadRequestPage from '../features/reviews/pages/LeadRequestPage.vue';
 import ReviewQueuePage from '../features/reviews/pages/ReviewQueuePage.vue';
 import ReviewRequestPage from '../features/reviews/pages/ReviewRequestPage.vue';
 import VenueAvailabilityPage from '../features/venues/pages/VenueAvailabilityPage.vue';
+import NotificationsPage from '../features/notifications/pages/NotificationsPage.vue';
 import NotFoundPage from '../components/NotFoundPage.vue';
 import VenueSearchPage from '../features/venues/pages/VenueSearchPage.vue';
 import VenueBookingsPage from '../features/venues/pages/VenueBookingsPage.vue';
@@ -32,6 +33,7 @@ export const router = createRouter({
     { path: '/events/:id/edit', component: EventDraftEditPage, meta: { title: 'Edit draft' } },
     { path: '/events/:id', component: EventRequestDetailPage, meta: { title: 'Event request' } },
     { path: '/venues/availability', component: VenueAvailabilityPage, meta: { title: 'Venue availability' } },
+    { path: '/notifications', component: NotificationsPage, meta: { title: 'Notifications' } },
     {
       path: '/reviews', component: ReviewAccessPage,
       children: [

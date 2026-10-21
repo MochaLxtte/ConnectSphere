@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { param, workflowRoute, type WorkflowRouterDependencies } from '../events/workflow-http.js';
 import { createVenueBlock, deleteVenueBlock, listVenueBlocks } from './block-service.js';
+import { listRecoveryArrangements, parseRecoveryFilter } from './outage-impact.js';
 
 export type VenueBlockRouterDependencies = WorkflowRouterDependencies;
 
@@ -33,9 +34,18 @@ export function createVenueBlockRouter(dependencies: VenueBlockRouterDependencie
     uuidParams: { ...venueIdParam, blockId: 'INVALID_VENUE_BLOCK_ID' },
   }, async (actor, request) => {
     const blockId = param(request, 'blockId');
-    await deleteVenueBlock(dependencies, { actor, blockId });
-    return { id: blockId };
+    const { clearedBookingIds } = await deleteVenueBlock(dependencies, { actor, blockId });
+    return { id: blockId, clearedBookingIds };
   }));
+
+  // KAN-81: Venue Staff view arrangements affected by outages, optionally filtered by state.
+  router.get('/recovery', workflowRoute(dependencies, {
+    signInMessage: 'Sign in to view venue recovery.', roles: staffOnly, uuidParams: {},
+  }, async (actor, request) => ({
+    items: await listRecoveryArrangements(dependencies, {
+      actor, status: parseRecoveryFilter(request.query as Record<string, unknown>),
+    }),
+  })));
 
   return router;
 }

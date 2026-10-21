@@ -54,7 +54,10 @@ describe('KAN-79 submission policy supersedes KAN-29 without erasing assignment 
       expect(saved.event).toMatchObject({ status: 'SUBMITTED', coordinator_id: null });
       expect(saved.assignments).toEqual([]);
       expect(saved.reviews).toEqual([]);
-      expect(saved.notifications).toEqual([]); // Notification integration belongs to KAN-64.
+      // KAN-64-AC201: only the organiser's acknowledgement; no coordinator is notified because none is allocated.
+      expect(saved.notifications).toEqual([{
+        recipient_id: organiser.id, type: 'REQUEST_SUBMITTED', message: expect.stringContaining('was submitted'),
+      }]);
       expect(saved.history).toEqual([
         { from_status: null, to_status: 'DRAFT', changed_by: null },
         { from_status: 'DRAFT', to_status: 'SUBMITTED', changed_by: organiser.id },

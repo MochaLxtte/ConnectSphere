@@ -11,7 +11,7 @@ const event: SuitabilityEvent = {
 };
 const venue: SuitabilityVenue & { isActive: boolean } = {
   id: 'venue', name: 'Hall', capacity: 50, facilities: ['Projector'], accessibilityFeatures: ['Hearing loop'],
-  layouts: ['Theatre'], wheelchairAccessible: true, opensAt: '08:00:00', closesAt: '22:00:00', isActive: true,
+  layouts: ['Theatre'], wheelchairAccessible: true, opensAt: '08:00:00', closesAt: '22:00:00', setupMinutes: 0, turnaroundMinutes: 0, isActive: true,
 };
 const input: VenueSuitabilityInput = {
   venueId: venue.id, requirementsVersion: 'a'.repeat(64), facilities: ['projector'], accessibility: ['HEARING LOOP'],
@@ -54,10 +54,67 @@ describe('KAN-52 suitability assessment', () => {
     expect(result.outcome).toBe('UNSUITABLE');
     expect(result.checks.find(check => check.key === 'availability')?.status).toBe('FAIL');
   });
-  it.each([{ expectedAttendance: null }, { expectedAttendance: 0 }, { startsAt: null },
+  it.each([{ expectedAttendance: null }, { startsAt: null },
     { endsAt: null }, { startsAt: 'invalid' }, { endsAt: event.startsAt }])('does not call incomplete event data suitable %j', change => {
     expect(assessVenueSuitability({ ...event, ...change }, venue, input, clear, now).outcome).toBe('NEEDS_REVIEW');
   });
+});
+
+describe('KAN-52-AC101 expected attendance 0 is a known value', () => {
+  const capacity = (result: ReturnType<typeof assessVenueSuitability>) =>
+    result.checks.find(check => check.key === 'capacity')!;
+
+  it('assesses 0 against venue capacity and passes it, so an otherwise suitable venue is SUITABLE', () => {
+    const result = assessVenueSuitability({ ...event, expectedAttendance: 0 }, venue, input, clear, now);
+    expect(capacity(result)).toEqual({
+      key: 'capacity', status: 'PASS', message: 'Expected attendance (0) fits the venue capacity (50).',
+    });
+    expect(result.outcome).toBe('SUITABLE');
+  });
+
+  it('keeps missing attendance distinguishable from 0', () => {
+    const missing = capacity(assessVenueSuitability({ ...event, expectedAttendance: null }, venue, input, clear, now));
+    const zero = capacity(assessVenueSuitability({ ...event, expectedAttendance: 0 }, venue, input, clear, now));
+    expect(missing).toMatchObject({ status: 'UNKNOWN', message: expect.stringContaining('no expected attendance') });
+    expect(zero.status).toBe('PASS');
+    expect(zero.message).not.toBe(missing.message);
+  });
+
+  it.each([-1, 2.5, Number.NaN])('still treats the unusable value %s as unknown, not as a count', expectedAttendance => {
+    const result = assessVenueSuitability({ ...event, expectedAttendance }, venue, input, clear, now);
+    expect(capacity(result)).toMatchObject({ status: 'UNKNOWN', message: expect.stringContaining('valid expected attendance') });
+    expect(result.outcome).toBe('NEEDS_REVIEW');
+  });
+
+  it.each([
+    ['a required facility is missing', { facilities: [] }, {}, {}],
+    ['the venue is booked', {}, { booked: true, blocked: false }, {}],
+    ['the venue is blocked', {}, { booked: false, blocked: true }, {}],
+    ['the venue is inactive', {}, {}, { isActive: false }],
+  ])('other requirements still decide suitability when attendance is 0: %s', (_label, venueChange, conflicts, venueFlag) => {
+    const result = assessVenueSuitability(
+      { ...event, expectedAttendance: 0 }, { ...venue, ...venueChange, ...venueFlag },
+      input, { ...clear, ...conflicts }, now,
+    );
+    expect(capacity(result).status).toBe('PASS');
+    expect(result.outcome).toBe('UNSUITABLE');
+  });
+
+  it('does not call a 0-attendance event suitable while requirements are unconfirmed', () => {
+    const result = assessVenueSuitability(
+      { ...event, expectedAttendance: 0 }, venue, { ...input, requirementsConfirmed: false }, clear, now,
+    );
+    expect(capacity(result).status).toBe('PASS');
+    expect(result.outcome).toBe('NEEDS_REVIEW');
+  });
+
+  it('still fails an attendance above capacity, and passes exactly at capacity', () => {
+    expect(capacity(assessVenueSuitability({ ...event, expectedAttendance: 51 }, venue, input, clear, now)).status).toBe('FAIL');
+    expect(capacity(assessVenueSuitability({ ...event, expectedAttendance: 50 }, venue, input, clear, now)).status).toBe('PASS');
+  });
+});
+
+describe('KAN-52 suitability assessment (requirements and conflicts)', () => {
   it.each([{ requirementsConfirmed: false }, { unresolvedRequirements: 'Check noise restrictions' }])('requires review for unconfirmed/unresolved requirements %j', change => {
     const result = assessVenueSuitability(event, venue, { ...input, ...change }, clear, now);
     expect(result.outcome).toBe('NEEDS_REVIEW');

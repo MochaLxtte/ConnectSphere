@@ -8,6 +8,7 @@ import {
   listVenueFilterOptions, parseVenueSearchQuery, searchVenues,
 } from '../../../backend/src/modules/venues/venue-search.js';
 import { getVenueSuitabilityContext } from '../../../backend/src/modules/venues/suitability-service.js';
+import { listVenueAvailability } from '../../../backend/src/modules/venues/availability.js';
 import { createWorkflowFixture, type WorkflowFixture } from '../events/workflow-fixture.js';
 
 let fixture: WorkflowFixture;
@@ -275,5 +276,119 @@ describe('KAN-50 saved changes reach venue search and suitability (AC13)', () =>
     await update(id, { capacity: 10, layouts: ['Banquet'] });
     expect((await fixture.pool.query('SELECT status, layout FROM venue_bookings WHERE id = $1', [bookingId])).rows[0])
       .toEqual({ status: 'APPROVED', layout: 'Theatre' });
+  });
+});
+
+describe('KAN-77 venue buffer durations against PostgreSQL', () => {
+  const buffers = async (id: string) => (await fixture.pool.query(
+    'SELECT setup_minutes, turnaround_minutes, capacity FROM venues WHERE id = $1', [id])).rows[0];
+
+  it('starts a venue at zero, saves both buffers and shows them on the next read (AC3, AC4)', async () => {
+    const id = await venue();
+    expect(await getCatalogueVenue(fixture.dependencies, { actor: staff, venueId: id }))
+      .toMatchObject({ setupMinutes: 0, turnaroundMinutes: 0 });
+
+    const saved = await update(id, {
+      setupMinutes: 30, expectedSetupMinutes: 0, turnaroundMinutes: 1440, expectedTurnaroundMinutes: 0,
+    });
+    expect(saved).toMatchObject({ setupMinutes: 30, turnaroundMinutes: 1440 });
+    expect(await getCatalogueVenue(fixture.dependencies, { actor: staff, venueId: id }))
+      .toMatchObject({ setupMinutes: 30, turnaroundMinutes: 1440 });
+    expect((await listCatalogueVenues(fixture.dependencies, { actor: staff })).find((item) => item.id === id))
+      .toMatchObject({ setupMinutes: 30, turnaroundMinutes: 1440 });
+  });
+
+  it('includes the saved buffers in search, suitability and calendar inputs (AC4)', async () => {
+    const id = await venue();
+    const eventId = await fixture.createEvent({
+      organiserId: organiser.id, coordinatorId: coordinator.id, status: 'APPROVED',
+    });
+    await update(id, { setupMinutes: 45, expectedSetupMinutes: 0, turnaroundMinutes: 15, expectedTurnaroundMinutes: 0 });
+
+    const found = await searchVenues(fixture.dependencies, coordinator, parseVenueSearchQuery({}));
+    expect(found.find((result) => result.id === id)).toMatchObject({ setupMinutes: 45, turnaroundMinutes: 15 });
+    const context = await getVenueSuitabilityContext(fixture.dependencies, { actor: coordinator, eventId });
+    expect(context.venues.find((candidate) => candidate.id === id)).toMatchObject({ setupMinutes: 45, turnaroundMinutes: 15 });
+    const calendar = await listVenueAvailability(fixture.dependencies, staff,
+      { from: '2031-01-12T00:00:00.000Z', to: '2031-01-13T00:00:00.000Z' });
+    expect(calendar.find((entry) => entry.id === id)).toMatchObject({ setupMinutes: 45, turnaroundMinutes: 15 });
+  });
+
+  it.each([
+    [{ setupMinutes: -1, expectedSetupMinutes: 0 }],
+    [{ setupMinutes: 1441, expectedSetupMinutes: 0 }],
+    [{ turnaroundMinutes: 7.5, expectedTurnaroundMinutes: 0 }],
+    [{ turnaroundMinutes: null, expectedTurnaroundMinutes: 0 }],
+    [{ setupMinutes: 10 }],
+  ])('refuses %j with a validation error and saves nothing (AC2)', async (input) => {
+    const id = await venue();
+    const before = await row(id);
+    await expect(update(id, input)).rejects.toMatchObject({ code: 'INVALID_VENUE_CATALOGUE_INPUT' });
+    expect(await row(id)).toEqual(before);
+  });
+
+  it.each(['EVENT_ORGANISER', 'EVENT_COORDINATOR', 'TECHNICAL_SUPPORT_STAFF', 'ATTENDEE'] as const)(
+    'refuses a buffer change by %s and leaves the venue unchanged (AC1)', async (role) => {
+      const id = await venue();
+      const before = await row(id);
+      const actor = await fixture.createUser(role);
+      await expect(update(id, { setupMinutes: 10, expectedSetupMinutes: 0 }, actor))
+        .rejects.toMatchObject({ code: 'ACTION_FORBIDDEN' });
+      expect(await row(id)).toEqual(before);
+    },
+  );
+
+  it('refuses a stale buffer edit without overwriting the newer value (AC5)', async () => {
+    const id = await venue();
+    await update(id, { setupMinutes: 20, expectedSetupMinutes: 0 });
+    await expect(update(id, { setupMinutes: 60, expectedSetupMinutes: 0 }))
+      .rejects.toMatchObject({ kind: 'CONFLICT', code: 'VENUE_BUFFER_CONFLICT' });
+    expect(await buffers(id)).toMatchObject({ setup_minutes: 20 });
+  });
+
+  it('preserves an unrelated field edit and refuses only the stale buffer edit (AC5)', async () => {
+    const id = await venue();
+    await update(id, { capacity: 250 });
+    await update(id, { turnaroundMinutes: 30, expectedTurnaroundMinutes: 0 });
+    const stale = update(id, { capacity: 260, turnaroundMinutes: 90, expectedTurnaroundMinutes: 0 });
+    await expect(stale).rejects.toMatchObject({ code: 'VENUE_BUFFER_CONFLICT' });
+    expect(await buffers(id)).toEqual({ setup_minutes: 0, turnaround_minutes: 30, capacity: 250 });
+  });
+
+  it('lets exactly one of two concurrent edits from the same loaded value win (AC5)', async () => {
+    const id = await venue();
+    const results = await Promise.allSettled([
+      update(id, { setupMinutes: 15, expectedSetupMinutes: 0 }),
+      update(id, { setupMinutes: 25, expectedSetupMinutes: 0 }),
+    ]);
+    expect(results.filter((result) => result.status === 'fulfilled')).toHaveLength(1);
+    const refused = results.find((result) => result.status === 'rejected') as PromiseRejectedResult;
+    expect(refused.reason).toMatchObject({ code: 'VENUE_BUFFER_CONFLICT' });
+    const winner = (results.find((result) => result.status === 'fulfilled') as PromiseFulfilledResult<{ setupMinutes: number }>).value;
+    expect(await buffers(id)).toMatchObject({ setup_minutes: winner.setupMinutes });
+  });
+
+  it('keeps both changes when a buffer and another field are edited at the same time', async () => {
+    const id = await venue();
+    await Promise.all([
+      update(id, { setupMinutes: 40, expectedSetupMinutes: 0 }),
+      update(id, { capacity: 333 }),
+    ]);
+    expect(await buffers(id)).toEqual({ setup_minutes: 40, turnaround_minutes: 0, capacity: 333 });
+  });
+
+  it('does not change existing bookings when buffers change (AC6 boundary; re-evaluation is KAN-78)', async () => {
+    const id = await venue();
+    const eventId = await fixture.createEvent({
+      organiserId: organiser.id, coordinatorId: coordinator.id, status: 'APPROVED',
+    });
+    const bookingId = randomUUID();
+    await fixture.pool.query(`INSERT INTO venue_bookings
+      (id,event_request_id,venue_id,requested_by,status,starts_at,ends_at,decided_by,decided_at)
+      VALUES($1,$2,$3,$4,'APPROVED','2031-01-12T02:00:00Z','2031-01-12T04:00:00Z',$5,now())`,
+    [bookingId, eventId, id, coordinator.id, staff.id]);
+    const before = (await fixture.pool.query('SELECT * FROM venue_bookings WHERE id = $1', [bookingId])).rows;
+    await update(id, { setupMinutes: 120, expectedSetupMinutes: 0, turnaroundMinutes: 120, expectedTurnaroundMinutes: 0 });
+    expect((await fixture.pool.query('SELECT * FROM venue_bookings WHERE id = $1', [bookingId])).rows).toEqual(before);
   });
 });
