@@ -2,10 +2,9 @@ import {
   iso, WorkflowError,
   type WorkflowActor, type WorkflowDependencies,
 } from '../events/workflow-support.js';
-import { intervalWithinVenueHours } from './suitability-rules.js';
 
 /**
- * Coordinator venue search over the venue catalogue, bookings and operational blocks.
+ * Coordinator venue search over the existing public.venues and public.venue_bookings tables.
  *
  * Rules:
  * - only Event Coordinators may search (the route also enforces this; checked again here);
@@ -17,9 +16,10 @@ import { intervalWithinVenueHours } from './suitability-rules.js';
  * - facilities / accessibility: the venue must have ALL selected values (array containment);
  * - wheelchair accessible: venues.wheelchair_accessible must be true;
  * - date/time: the event occupies the venue continuously from start to end, so BOTH must hold:
- *   1. opening hours (see isOpenForRange): the whole interval must be within daily Singapore
- *      opening hours; overnight/multi-day events need a venue with no closed period;
- *   2. no APPROVED booking or operational block overlaps the event (half-open: adjacency is fine).
+ *   1. opening hours (see isOpenForRange): an event inside one Singapore calendar day must sit
+ *      within opens_at..closes_at; an event spanning days or nights needs a venue with no opening
+ *      hours, because a venue with hours is closed part of the time;
+ *   2. no APPROVED venue_bookings row overlaps the event (half-open: back-to-back is fine).
  * - an empty result is a normal answer, never an error, and changes no event request.
  */
 
@@ -56,6 +56,8 @@ export interface VenueFilterOptions {
   accessibility: string[];
 }
 
+/** Singapore has no daylight saving, so a fixed offset is exact. */
+const SINGAPORE_OFFSET_MS = 8 * 60 * 60 * 1000;
 /**
  * Only APPROVED bookings make a venue unavailable. This matches the database's
  * venue_bookings_conflict trigger, which only guards APPROVED rows, so PENDING requests
@@ -96,12 +98,32 @@ function count(query: Record<string, unknown>, key: string): number | null {
   return parsed;
 }
 
+/** ISO 8601 date-time with an explicit time zone, e.g. 2026-10-20T14:00:00+08:00 or ...Z */
+const ISO_DATE_TIME = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2})(?:\.\d{1,3})?)?(?:Z|[+-](\d{2}):(\d{2}))$/;
+
+/**
+ * True only if every part is a real calendar value. Date.parse alone is NOT enough: it can
+ * silently roll an impossible date over (30 Feb 2026 becomes 2 Mar 2026), which would check
+ * availability for a period the coordinator never asked for.
+ */
+function isRealDateTime(match: RegExpExecArray): boolean {
+  const [year, month, day, hour, minute, second, offsetHour, offsetMinute] =
+    [1, 2, 3, 4, 5, 6, 7, 8].map((index) => (match[index] === undefined ? 0 : Number(match[index])));
+  if (year! < 1000 || month! < 1 || month! > 12) return false;
+  const daysInMonth = new Date(Date.UTC(year!, month!, 0)).getUTCDate(); // day 0 of next month
+  return day! >= 1 && day! <= daysInMonth
+    && hour! <= 23 && minute! <= 59 && second! <= 59
+    && offsetHour! <= 23 && offsetMinute! <= 59;
+}
+
 function dateTime(query: Record<string, unknown>, key: string): string | null {
   const value = text(query, key);
   if (value === null) return null;
-  const parsed = Date.parse(value);
-  if (Number.isNaN(parsed)) throw invalid(`${key} must be an ISO 8601 date-time.`);
-  return new Date(parsed).toISOString();
+  const match = ISO_DATE_TIME.exec(value);
+  if (match === null || !isRealDateTime(match)) {
+    throw invalid(`${key} must be a real date and time in ISO 8601 format with a time zone, such as 2026-10-20T14:00:00+08:00.`);
+  }
+  return new Date(Date.parse(value)).toISOString();
 }
 
 function flag(query: Record<string, unknown>, key: string): boolean {
@@ -151,18 +173,40 @@ export function parseVenueSearchQuery(query: Record<string, unknown>): VenueSear
   };
 }
 
+/** Singapore calendar day ("2026-10-20") and seconds since local midnight for an ISO instant. */
+function singaporeTime(instant: string): { day: string; seconds: number } {
+  const local = new Date(Date.parse(instant) + SINGAPORE_OFFSET_MS);
+  return {
+    day: local.toISOString().slice(0, 10),
+    seconds: local.getUTCHours() * 3600 + local.getUTCMinutes() * 60 + local.getUTCSeconds(),
+  };
+}
+
+function clockSeconds(clock: string): number {
+  const [hours = '0', minutes = '0'] = clock.split(':');
+  return Number(hours) * 3600 + Number(minutes) * 60;
+}
+
 /**
  * Whether a venue's opening hours can host an event running continuously from startsAt to endsAt.
- * Shares KAN-52's whole-interval check, including exclusive midnight ends and second precision.
- * Missing bounds mean midnight/day-end; an unrestricted or explicit 24-hour venue is always open.
- * Invalid hours or event timing do not produce a match.
+ * - No opening hours at all: always open.
+ * - Event inside a single Singapore calendar day: it must start no earlier than opens_at and end
+ *   no later than closes_at (either bound may be unset).
+ * - Event crossing midnight or spanning several days: a venue with any opening hours is closed
+ *   at some point in between, so it cannot host it.
  */
 export function isOpenForRange(
   hours: { opensAt: string | null; closesAt: string | null },
   startsAt: string,
   endsAt: string,
 ): boolean {
-  return intervalWithinVenueHours(startsAt, endsAt, hours.opensAt, hours.closesAt) === true;
+  if (hours.opensAt === null && hours.closesAt === null) return true;
+  const start = singaporeTime(startsAt);
+  const end = singaporeTime(endsAt);
+  if (start.day !== end.day) return false;
+  if (hours.opensAt !== null && start.seconds < clockSeconds(hours.opensAt)) return false;
+  if (hours.closesAt !== null && end.seconds > clockSeconds(hours.closesAt)) return false;
+  return true;
 }
 
 const SEARCH_SQL = `
@@ -171,9 +215,8 @@ const SEARCH_SQL = `
          v.wheelchair_accessible AS "wheelchairAccessible",
          to_char(v.opens_at, 'HH24:MI') AS "opensAt",
          to_char(v.closes_at, 'HH24:MI') AS "closesAt",
-         v.opens_at::text AS "openingStartsAt", v.closes_at::text AS "openingEndsAt",
          v.updated_at AS "updatedAt"
-  FROM venues v
+  FROM public.venues v
   WHERE v.is_active
     AND v.capacity >= $1::int
     AND ($2::text IS NULL
@@ -182,24 +225,17 @@ const SEARCH_SQL = `
     AND v.facilities @> $4::text[]
     AND v.accessibility_features @> $5::text[]
     AND (NOT $6::boolean OR v.wheelchair_accessible)
-    AND ($7::timestamptz IS NULL OR NOT EXISTS (
-          SELECT 1 FROM venue_bookings b
-          WHERE b.venue_id = v.id
-            AND b.status = '${BLOCKING_BOOKING_STATUS}'
-            AND b.starts_at < $8::timestamptz
-            AND b.ends_at > $7::timestamptz))
-    AND ($7::timestamptz IS NULL OR NOT EXISTS (
-          SELECT 1 FROM venue_unavailability u
-          WHERE u.venue_id = v.id
-            AND u.starts_at < $8::timestamptz
-            AND u.ends_at > $7::timestamptz))
   ORDER BY lower(v.name), v.id`;
 
-type VenueRow = Omit<VenueResult, 'updatedAt'> & {
-  updatedAt: Date;
-  openingStartsAt: string | null;
-  openingEndsAt: string | null;
-};
+/** Venues with an approved booking that overlaps [start, end); back-to-back bookings don't. */
+const BOOKED_VENUES_SQL = `
+  SELECT DISTINCT b.venue_id AS "venueId"
+  FROM public.venue_bookings b
+  WHERE b.status = '${BLOCKING_BOOKING_STATUS}'
+    AND b.starts_at < $2::timestamptz
+    AND b.ends_at > $1::timestamptz`;
+
+type VenueRow = Omit<VenueResult, 'updatedAt'> & { updatedAt: Date };
 
 export async function searchVenues(
   { pool }: WorkflowDependencies,
@@ -215,20 +251,16 @@ export async function searchVenues(
     filters.facilities,
     filters.accessibility,
     filters.wheelchairAccessible,
-    filters.startsAt,
-    filters.endsAt,
   ]);
   let venues = found.rows;
 
   const { startsAt, endsAt } = filters;
   if (startsAt !== null && endsAt !== null) {
-    venues = venues.filter((venue) => isOpenForRange({
-      opensAt: venue.openingStartsAt, closesAt: venue.openingEndsAt,
-    }, startsAt, endsAt));
+    const booked = await pool.query<{ venueId: string }>(BOOKED_VENUES_SQL, [startsAt, endsAt]);
+    const bookedIds = new Set(booked.rows.map((row) => row.venueId));
+    venues = venues.filter((venue) => !bookedIds.has(venue.id) && isOpenForRange(venue, startsAt, endsAt));
   }
-  return venues.map(({ openingStartsAt: _opens, openingEndsAt: _closes, ...row }) => ({
-    ...row, updatedAt: iso(row.updatedAt),
-  }));
+  return venues.map((row) => ({ ...row, updatedAt: iso(row.updatedAt) }));
 }
 
 /** The layouts, facilities and accessibility features that exist on active venues right now. */
@@ -240,7 +272,7 @@ export async function listVenueFilterOptions(
   const distinct = (column: 'layouts' | 'facilities' | 'accessibility_features') =>
     pool.query<{ value: string }>(
       `SELECT DISTINCT item AS value
-       FROM venues v, unnest(v.${column}) AS item
+       FROM public.venues v, unnest(v.${column}) AS item
        WHERE v.is_active AND trim(item) <> ''
        ORDER BY 1`,
     );
