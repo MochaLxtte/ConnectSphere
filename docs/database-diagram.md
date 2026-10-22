@@ -45,6 +45,7 @@ erDiagram
     venues ||..o{ venue_unavailability : "venue_id"
     venue_unavailability |o..o{ venue_outage_impacts : "unavailability_id"
     venue_bookings ||..o{ venue_outage_impacts : "venue_booking_id"
+    venue_bookings |o..o{ venue_bookings : "replaces_booking_id"
 
     app_users {
         uuid id PK
@@ -176,6 +177,7 @@ erDiagram
         timestamptz decided_at "nullable"
         text decision_reason "nullable"
         timestamptz created_at
+        uuid replaces_booking_id FK "nullable, migration 011"
         timestamptz updated_at
     }
 

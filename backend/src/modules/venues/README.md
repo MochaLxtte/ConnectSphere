@@ -133,7 +133,11 @@ saves the outage and, inside the same venue-locked transaction, records each aff
   deletes the block; other outages' flags are unchanged.
 - `GET /api/venues/recovery` lists affected arrangements for Venue Staff. Phase 2: each affected
   event's current coordinator gets one notice per outage (KAN-64 writer, same transaction), and every
-  booking response carries its `recovery` list. Linked replacements (phase 3) follow.
+  booking response carries its `recovery` list.
+- Phase 3: a request with `replacesBookingId` must target a same-event booking that still needs
+  recovery, for an approved or confirmed event, and pass capacity and opening-hours checks. Approving
+  it locks the original after booking -> event -> venue, refuses if recovery is no longer needed, then
+  resolves the original's flags and cancels it (migration 011).
 
 ### Verification
 

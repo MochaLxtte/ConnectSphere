@@ -7,7 +7,11 @@ import {
 import { parseBookingDecision, parseBookingSubmission } from './booking-input.js';
 import { recordNotifications } from '../notifications/notify.js';
 import { bookingDecisionNotifications } from '../notifications/trigger-matrix.js';
-import { BOOKING_RECOVERY_SQL, serializeRecovery, type BookingRecovery } from './outage-impact.js';
+import {
+  BOOKING_RECOVERY_SQL, hasOpenRecovery, resolveReplacedBooking, serializeRecovery, type BookingRecovery,
+} from './outage-impact.js';
+import { isOpenForRange } from './venue-search.js';
+import type { BookingSubmissionInput } from './booking-input.js';
 
 export type VenueBookingStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'CANCELLED';
 
@@ -37,6 +41,8 @@ export interface VenueBooking {
   accessibilityNeeds: string | null;
   /** KAN-81: outages recorded against this booking and their recovery state, earliest first. */
   recovery: BookingRecovery[];
+  /** KAN-81-AC7: the outage-affected booking this request replaces, if any. */
+  replacesBookingId: string | null;
 }
 
 type BookingRow = Omit<VenueBooking,
@@ -52,7 +58,8 @@ const bookingSelect = `SELECT b.id, b.event_request_id AS "eventRequestId",
   b.decision_reason AS "decisionReason", b.created_at AS "createdAt", b.updated_at AS "updatedAt",
   e.starts_at AS "eventStartsAt", e.ends_at AS "eventEndsAt", e.purpose, e.description,
   e.expected_attendance AS "expectedAttendance", e.venue_requirements AS "venueRequirements",
-  e.accessibility_needs AS "accessibilityNeeds", ${BOOKING_RECOVERY_SQL} AS recovery
+  e.accessibility_needs AS "accessibilityNeeds", ${BOOKING_RECOVERY_SQL} AS recovery,
+  b.replaces_booking_id AS "replacesBookingId"
   FROM venue_bookings b JOIN event_requests e ON e.id = b.event_request_id
   JOIN venues v ON v.id = b.venue_id`;
 
@@ -110,6 +117,48 @@ function conflict(code: string, message: string): never {
 }
 
 const TERMINAL_EVENT_STATUSES: readonly EventStatus[] = ['REJECTED', 'CANCELLED', 'COMPLETED'];
+/** KAN-81-AC7: a replacement is for an event whose venue planning is already approved. */
+const REPLACEMENT_EVENT_STATUSES: readonly EventStatus[] = ['APPROVED', 'CONFIRMED'];
+
+const replacementNotNeeded = () => conflict('REPLACEMENT_NOT_NEEDED',
+  'The booking being replaced no longer needs recovery. Refresh to see its current state.');
+
+/**
+ * KAN-81-AC7: the original must be a booking of the same event that still needs recovery. It is only
+ * read here, not locked; approval locks it and checks again.
+ */
+async function assertReplaceable(
+  client: Pick<PoolClient, 'query'>, eventRequestId: string, eventStatus: EventStatus, originalBookingId: string,
+): Promise<void> {
+  if (!REPLACEMENT_EVENT_STATUSES.includes(eventStatus)) {
+    conflict('EVENT_NOT_ELIGIBLE_FOR_REPLACEMENT', 'A replacement venue can only be requested for an approved or confirmed event.');
+  }
+  const original = await client.query<{ eventRequestId: string }>(
+    'SELECT event_request_id AS "eventRequestId" FROM venue_bookings WHERE id = $1', [originalBookingId]);
+  if (original.rows[0]?.eventRequestId !== eventRequestId) throw bookingNotFound();
+  if (!(await hasOpenRecovery(client, originalBookingId))) replacementNotNeeded();
+}
+
+/**
+ * KAN-81-AC7 (21 October decision): a replacement must pass the objective suitability checks. The
+ * venue must fit the expected attendance and be open for the whole period. Interpretation-dependent
+ * checks stay advisory (KAN-52). Call after the venue row is locked.
+ */
+async function assertObjectivelySuitable(
+  client: Pick<PoolClient, 'query'>, eventRequestId: string, submission: BookingSubmissionInput,
+): Promise<void> {
+  const found = await client.query<{ capacity: number; opensAt: string | null; closesAt: string | null; attendance: number | null }>(
+    `SELECT v.capacity, v.opens_at::text AS "opensAt", v.closes_at::text AS "closesAt",
+       e.expected_attendance AS attendance FROM venues v, event_requests e WHERE v.id = $1 AND e.id = $2`,
+    [submission.venueId, eventRequestId]);
+  const fit = found.rows[0]!;
+  if (fit.attendance !== null && fit.capacity < fit.attendance) {
+    conflict('VENUE_CAPACITY_TOO_SMALL', "This venue cannot hold the event's expected attendance.");
+  }
+  if (!isOpenForRange(fit, submission.startsAt, submission.endsAt)) {
+    conflict('VENUE_CLOSED_DURING_PERIOD', 'This venue is not open for the whole requested period.');
+  }
+}
 
 /**
  * KAN-53: only the event's currently assigned coordinator may request a venue, and only while
@@ -134,6 +183,9 @@ export async function createVenueBooking(
       conflict('EVENT_NOT_ELIGIBLE',
         'A venue booking cannot be requested for a rejected, cancelled or completed event.');
     }
+    if (submission.replacesBookingId !== null) {
+      await assertReplaceable(client, eventRequestId, event.status, submission.replacesBookingId);
+    }
     const venue = await client.query<{ isActive: boolean }>(
       'SELECT is_active AS "isActive" FROM venues WHERE id = $1 FOR UPDATE', [submission.venueId]);
     if (!venue.rows[0]) throw new WorkflowError('NOT_FOUND', 'VENUE_NOT_FOUND', 'The venue was not found.');
@@ -152,12 +204,14 @@ export async function createVenueBooking(
       conflict('VENUE_BOOKING_CONFLICT', 'The venue already has an approved booking during this period.');
     }
     if (clashes.rows[0]!.blocked) conflict('VENUE_UNAVAILABLE', 'The venue is blocked during this period.');
+    if (submission.replacesBookingId !== null) await assertObjectivelySuitable(client, eventRequestId, submission);
 
     const inserted = await client.query<{ id: string }>(
-      `INSERT INTO venue_bookings (event_request_id, venue_id, requested_by, starts_at, ends_at, layout, notes)
-       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
+      `INSERT INTO venue_bookings (event_request_id, venue_id, requested_by, starts_at, ends_at, layout, notes,
+         replaces_booking_id)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id`,
       [eventRequestId, submission.venueId, actor.id, submission.startsAt, submission.endsAt,
-        submission.layout, submission.notes],
+        submission.layout, submission.notes, submission.replacesBookingId],
     );
     return readBooking(client, inserted.rows[0]!.id, actor);
   });
@@ -180,8 +234,10 @@ export async function decideVenueBooking(
     return await inActorTransaction(pool, actor.id, async (client) => {
       const locked = await client.query<{
         status: VenueBookingStatus; eventRequestId: string; venueId: string; startsAt: Date; endsAt: Date;
+        replacesBookingId: string | null;
       }>(`SELECT status, event_request_id AS "eventRequestId", venue_id AS "venueId",
-        starts_at AS "startsAt", ends_at AS "endsAt" FROM venue_bookings WHERE id = $1 FOR UPDATE`,
+        starts_at AS "startsAt", ends_at AS "endsAt", replaces_booking_id AS "replacesBookingId"
+        FROM venue_bookings WHERE id = $1 FOR UPDATE`,
       [bookingId]);
       const booking = locked.rows[0];
       if (!booking) throw bookingNotFound();
@@ -194,7 +250,9 @@ export async function decideVenueBooking(
         // until commit. Rejection still works if either has become unsuitable meanwhile.
         const event = await client.query<{ status: EventStatus }>(
           'SELECT status FROM event_requests WHERE id = $1 FOR UPDATE', [booking.eventRequestId]);
-        if (event.rows[0]?.status !== 'APPROVED') {
+        // KAN-81-AC7: a replacement may also be approved for a confirmed event.
+        const approvable = booking.replacesBookingId === null ? ['APPROVED'] : REPLACEMENT_EVENT_STATUSES;
+        if (!approvable.includes(event.rows[0]?.status as EventStatus)) {
           conflict('EVENT_NOT_APPROVED', 'Only a booking for an approved event request can be approved.');
         }
         const venue = await client.query<{ isActive: boolean }>(
@@ -213,11 +271,21 @@ export async function decideVenueBooking(
           conflict('VENUE_BOOKING_CONFLICT', 'The venue already has an approved booking during this period.');
         }
         if (clashes.rows[0]!.blocked) conflict('VENUE_UNAVAILABLE', 'The venue is blocked during this period.');
+
+        // KAN-81-AC8: lock the original last (after booking -> event -> venue) and approve only while it
+        // still needs recovery, so a second replacement or a removed outage cannot double-book the event.
+        if (booking.replacesBookingId !== null) {
+          await client.query('SELECT id FROM venue_bookings WHERE id = $1 FOR UPDATE', [booking.replacesBookingId]);
+          if (!(await hasOpenRecovery(client, booking.replacesBookingId))) replacementNotNeeded();
+        }
       }
 
       await client.query(`UPDATE venue_bookings SET status = $1, decided_by = $2,
         decided_at = now(), decision_reason = $3, updated_at = now() WHERE id = $4`,
       [decision.decision, actor.id, decision.reason, bookingId]);
+      if (decision.decision === 'APPROVED' && booking.replacesBookingId !== null) {
+        await resolveReplacedBooking(client, booking.replacesBookingId);
+      }
 
       // Share-lock the event so the coordinator notified is the one assigned when this commits.
       const context = await client.query<{

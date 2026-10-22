@@ -26,6 +26,7 @@ const booking: VenueBooking = {
   purpose: 'Hiring', description: 'Annual fair', expectedAttendance: 200,
   venueRequirements: 'Large hall', accessibilityNeeds: 'Wheelchair access',
   recovery: [],
+  replacesBookingId: null,
 };
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status });
 function deferred() {

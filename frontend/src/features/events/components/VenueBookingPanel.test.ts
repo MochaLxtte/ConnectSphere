@@ -29,6 +29,7 @@ const pending: VenueBooking = {
   eventStartsAt: null, eventEndsAt: null, purpose: null, description: null, expectedAttendance: null,
   venueRequirements: null, accessibilityNeeds: null,
   recovery: [],
+  replacesBookingId: null,
 };
 
 const coordinatorProps = { eventRequestId, status: 'APPROVED', viewerRole: 'EVENT_COORDINATOR' };
@@ -289,5 +290,68 @@ describe('KAN-81 phase 2: recovery in the coordinator venue panel (AC12)', () =>
     render(VenueBookingPanel, { props: coordinatorProps });
     expect(await screen.findByText('Approved')).toBeInTheDocument();
     expect(screen.queryByText('Recovery required')).not.toBeInTheDocument();
+  });
+});
+
+describe('KAN-81 phase 3: requesting a replacement venue from the panel (AC7, AC12)', () => {
+  const affected = {
+    ...pending, id: 'affected-1', status: 'APPROVED' as const, venueName: 'Old Hall',
+    recovery: [{ impactId: 'i-1', status: 'RECOVERY_REQUIRED' as const, outageStartsAt: '2026-12-01T03:00:00.000Z',
+      outageEndsAt: '2026-12-01T05:00:00.000Z', outageReason: 'Burst pipe' }],
+  };
+  const list = `GET /api/venue-bookings?eventRequestId=${eventRequestId}`;
+
+  it('offers only bookings needing recovery and sends the chosen one as replacesBookingId', async () => {
+    const api = stubApi({
+      [list]: { body: { items: [affected, { ...pending, id: 'unaffected', status: 'APPROVED' }] } },
+      'GET /api/venues/search-venues': venues,
+      [`POST ${base}/venue-bookings`]: { status: 201, body: { booking: { ...pending, replacesBookingId: 'affected-1' } } },
+    });
+    render(VenueBookingPanel, { props: coordinatorProps });
+    const select = await screen.findByLabelText(/This request replaces/);
+    expect([...(select as HTMLSelectElement).options].map((option) => option.value)).toEqual(['', 'affected-1']);
+    await fireEvent.update(select, 'affected-1');
+    await fillAndSubmit();
+    await screen.findByText('A venue booking request for Main Hall was submitted for review.');
+    expect(api.writes()[0]!.body).toMatchObject({ venueId: 'hall', replacesBookingId: 'affected-1' });
+  });
+
+  it('does not offer a replacement choice when nothing needs recovery, and omits the field', async () => {
+    const api = stubApi({
+      [list]: { body: { items: [] } },
+      'GET /api/venues/search-venues': venues,
+      [`POST ${base}/venue-bookings`]: { status: 201, body: { booking: pending } },
+    });
+    render(VenueBookingPanel, { props: coordinatorProps });
+    await screen.findByText('No venue has been requested for this event yet.');
+    expect(screen.queryByLabelText(/This request replaces/)).not.toBeInTheDocument();
+    await fillAndSubmit();
+    await screen.findByText('A venue booking request for Main Hall was submitted for review.');
+    expect(api.writes()[0]!.body).not.toHaveProperty('replacesBookingId');
+  });
+
+  it('explains a replacement that is no longer needed and reloads the current bookings', async () => {
+    const api = stubApi({
+      [list]: { body: { items: [affected] } },
+      'GET /api/venues/search-venues': venues,
+      [`POST ${base}/venue-bookings`]: apiError(409, 'REPLACEMENT_NOT_NEEDED',
+        'The booking being replaced no longer needs recovery. Refresh to see its current state.'),
+    });
+    render(VenueBookingPanel, { props: coordinatorProps });
+    await fireEvent.update(await screen.findByLabelText(/This request replaces/), 'affected-1');
+    api.set(list, { body: { items: [{ ...affected, status: 'CANCELLED', recovery: [{ ...affected.recovery[0]!, status: 'RESOLVED' as const }] }] } });
+    await fillAndSubmit();
+    expect(await screen.findByText(/no longer needs recovery/)).toBeInTheDocument();
+    await waitFor(() => expect(screen.queryByLabelText(/This request replaces/)).not.toBeInTheDocument());
+    expect(api.calls.filter((call) => call.key === list)).toHaveLength(2);
+  });
+
+  it('marks a replacement booking in the list', async () => {
+    stubApi({
+      [list]: { body: { items: [{ ...pending, replacesBookingId: 'affected-1' }] } },
+      'GET /api/venues/search-venues': venues,
+    });
+    render(VenueBookingPanel, { props: coordinatorProps });
+    expect(await screen.findByText('Replacement for an outage-affected booking.')).toBeInTheDocument();
   });
 });

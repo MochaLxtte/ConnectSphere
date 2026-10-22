@@ -18,6 +18,11 @@ interface Scenario {
   bookingStatus?: string;
   /** Error thrown by the booking UPDATE, standing in for a database exclusion constraint. */
   updateError?: unknown;
+  /** KAN-81 phase 3: the booking being decided replaces this original. */
+  replaces?: string | null;
+  originalEventId?: string | null;
+  openRecovery?: boolean;
+  fit?: { capacity: number; opensAt: string | null; closesAt: string | null; attendance: number | null };
 }
 
 const bookingRow = {
@@ -43,7 +48,7 @@ function fakePool(scenario: Scenario = {}) {
       }
       if (/FROM venue_bookings WHERE id = \$1 FOR UPDATE/.test(sql)) {
         return { rows: [{ status: scenario.bookingStatus ?? 'PENDING', eventRequestId: eventId, venueId,
-          startsAt: new Date(startsAt), endsAt: new Date(endsAt) }] };
+          startsAt: new Date(startsAt), endsAt: new Date(endsAt), replacesBookingId: scenario.replaces ?? null }] };
       }
       if (/SELECT status FROM event_requests/.test(sql)) {
         return { rows: [{ status: scenario.eventStatus ?? 'APPROVED' }] };
@@ -53,6 +58,13 @@ function fakePool(scenario: Scenario = {}) {
       }
       if (/AS booked/.test(sql)) {
         return { rows: [{ booked: scenario.booked ?? false, blocked: scenario.blocked ?? false }] };
+      }
+      if (/^SELECT event_request_id AS "eventRequestId" FROM venue_bookings/.test(sql)) {
+        return { rows: scenario.originalEventId === null ? [] : [{ eventRequestId: scenario.originalEventId ?? eventId }] };
+      }
+      if (/AS open/.test(sql)) return { rows: [{ open: scenario.openRecovery ?? true }] };
+      if (/v\.capacity/.test(sql)) {
+        return { rows: [scenario.fit ?? { capacity: 100, opensAt: null, closesAt: null, attendance: 50 }] };
       }
       if (/^\s*INSERT INTO venue_bookings/.test(sql)) return { rows: [{ id: bookingId }] };
       if (/^\s*UPDATE venue_bookings/.test(sql) && scenario.updateError) throw scenario.updateError;
@@ -227,5 +239,73 @@ describe('KAN-54 database exclusion constraints are the last line of defence (AC
     await expect(decide(fakePool({ updateError: outage }).pool)).rejects.toBe(outage);
     const bareCode = Object.assign(new Error('no constraint name'), { code: '23P01' });
     await expect(decide(fakePool({ updateError: bareCode }).pool)).rejects.toBe(bareCode);
+  });
+});
+
+describe('KAN-81 phase 3: replacement requests and approvals (AC7, AC8)', () => {
+  const originalId = '60000000-0000-4000-8000-000000000001';
+  const replacement = { ...submission, replacesBookingId: originalId };
+
+  it('records a replacement linked to its original after the objective checks (AC7)', async () => {
+    const { pool, find, index } = fakePool();
+    await expect(submit(pool, replacement)).resolves.toMatchObject({ status: 'PENDING' });
+    expect(find(/^\s*INSERT INTO venue_bookings/)!.params.at(-1)).toBe(originalId);
+    expect(index(/AS open/)).toBeLessThan(index(/FROM venues WHERE id = \$1 FOR UPDATE/));
+    expect(index(/v\.capacity/)).toBeGreaterThan(index(/AS booked/));
+  });
+
+  it.each([
+    [{ eventStatus: 'SUBMITTED' }, 'EVENT_NOT_ELIGIBLE_FOR_REPLACEMENT'],
+    [{ originalEventId: '70000000-0000-4000-8000-000000000001' }, 'VENUE_BOOKING_NOT_FOUND'],
+    [{ originalEventId: null }, 'VENUE_BOOKING_NOT_FOUND'],
+    [{ openRecovery: false }, 'REPLACEMENT_NOT_NEEDED'],
+    [{ fit: { capacity: 40, opensAt: null, closesAt: null, attendance: 50 } }, 'VENUE_CAPACITY_TOO_SMALL'],
+    [{ fit: { capacity: 100, opensAt: '12:00:00', closesAt: '22:00:00', attendance: 50 } }, 'VENUE_CLOSED_DURING_PERIOD'],
+  ] as const)('refuses a replacement for %j with %s and creates nothing (AC7)', async (scenario, code) => {
+    const { pool, wrote } = fakePool(scenario as Scenario);
+    await expect(submit(pool, replacement)).rejects.toMatchObject({ code });
+    expect(wrote(/^\s*INSERT INTO venue_bookings/)).toBe(false);
+  });
+
+  it('accepts a replacement for a confirmed event and when attendance is unknown', async () => {
+    await expect(submit(fakePool({ eventStatus: 'CONFIRMED' }).pool, replacement)).resolves.toMatchObject({ status: 'PENDING' });
+    await expect(submit(fakePool({ fit: { capacity: 1, opensAt: null, closesAt: null, attendance: null } }).pool, replacement))
+      .resolves.toMatchObject({ status: 'PENDING' });
+  });
+
+  it('skips the replacement checks for an ordinary request', async () => {
+    const { pool, wrote } = fakePool({ eventStatus: 'SUBMITTED' });
+    await submit(pool);
+    expect(wrote(/AS open/)).toBe(false);
+    expect(wrote(/v\.capacity/)).toBe(false);
+  });
+
+  it('approves a replacement by resolving and cancelling the original after the other locks (AC8)', async () => {
+    const { pool, calls, index } = fakePool({ replaces: originalId });
+    await decide(pool);
+    const lockOriginal = calls.findIndex((call) => /FROM venue_bookings WHERE id = \$1 FOR UPDATE/.test(call.sql) && call.params[0] === originalId);
+    expect(lockOriginal).toBeGreaterThan(index(/FROM venues WHERE id = \$1 FOR UPDATE/));
+    const resolve = index(/UPDATE venue_outage_impacts SET status = 'RESOLVED'/);
+    const cancel = calls.findIndex((call) => /SET status = 'CANCELLED'/.test(call.sql));
+    expect(resolve).toBeGreaterThan(index(/SET status = \$1, decided_by/));
+    expect(cancel).toBeGreaterThan(resolve);
+    expect(calls[cancel]!.params).toEqual([originalId]);
+  });
+
+  it('approves a replacement for a confirmed event', async () => {
+    await expect(decide(fakePool({ replaces: originalId, eventStatus: 'CONFIRMED' }).pool)).resolves.toBeDefined();
+  });
+
+  it('refuses to approve a replacement whose original no longer needs recovery (AC8)', async () => {
+    const { pool, wrote } = fakePool({ replaces: originalId, openRecovery: false });
+    await expect(decide(pool)).rejects.toMatchObject({ code: 'REPLACEMENT_NOT_NEEDED' });
+    expect(wrote(/SET status = \$1, decided_by/)).toBe(false);
+  });
+
+  it('leaves the original untouched when a replacement is rejected (AC8)', async () => {
+    const { pool, wrote } = fakePool({ replaces: originalId });
+    await decide(pool, 'REJECTED');
+    expect(wrote(/UPDATE venue_outage_impacts/)).toBe(false);
+    expect(wrote(/SET status = 'CANCELLED'/)).toBe(false);
   });
 });

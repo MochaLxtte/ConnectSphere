@@ -25,6 +25,7 @@ const booking: VenueBooking = {
   purpose: 'Hiring', description: 'Annual fair', expectedAttendance: 200,
   venueRequirements: 'Large hall', accessibilityNeeds: 'Wheelchair access',
   recovery: [],
+  replacesBookingId: null,
 };
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status });
 const errorResponse = (status: number, code: string, message = 'The booking could not be updated.') =>
@@ -370,5 +371,21 @@ describe('KAN-81 phase 2: recovery state on the booking detail page (AC6, AC12)'
     await open();
     await screen.findByRole('heading', { name: 'Career fair' });
     expect(screen.queryByRole('region', { name: 'Venue unavailability' })).not.toBeInTheDocument();
+  });
+});
+
+describe('KAN-81 phase 3: replacement link on the booking page (AC8)', () => {
+  it('links a replacement to the booking it replaces', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(json({ booking: { ...booking, replacesBookingId: 'original-1' } })));
+    await open();
+    expect(await screen.findByRole('link', { name: 'The outage-affected booking' }))
+      .toHaveAttribute('href', '/venue-bookings/original-1');
+  });
+
+  it('shows no replacement link for an ordinary booking', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(json({ booking })));
+    await open();
+    await screen.findByRole('heading', { name: 'Career fair' });
+    expect(screen.queryByRole('link', { name: 'The outage-affected booking' })).not.toBeInTheDocument();
   });
 });

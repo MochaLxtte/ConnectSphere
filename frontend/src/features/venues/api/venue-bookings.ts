@@ -30,6 +30,8 @@ export interface VenueBooking {
   accessibilityNeeds: string | null;
   /** KAN-81: operational outages recorded against this booking, earliest first. */
   recovery: BookingRecovery[];
+  /** KAN-81-AC7: the outage-affected booking this request replaces, if any. */
+  replacesBookingId: string | null;
 }
 
 export type RecoveryStatus = 'RECOVERY_REQUIRED' | 'RESOLVED' | 'CLEARED';
@@ -67,6 +69,8 @@ export interface VenueBookingSubmissionInput {
   endsAt: string;
   layout: string | null;
   notes: string | null;
+  /** KAN-81-AC7: omit or null for an ordinary request. */
+  replacesBookingId?: string | null;
 }
 
 export async function submitVenueBooking(

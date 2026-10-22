@@ -368,6 +368,7 @@ erDiagram
   VENUES ||--o{ VENUE_UNAVAILABILITY : blocks
   VENUE_UNAVAILABILITY |o--o{ VENUE_OUTAGE_IMPACTS : affects
   VENUE_BOOKINGS ||--o{ VENUE_OUTAGE_IMPACTS : "flagged by"
+  VENUE_BOOKINGS |o--o{ VENUE_BOOKINGS : "replaced by"
   EQUIPMENT_TYPES ||--o{ EQUIPMENT_REQUESTS : "drawn from"
   APP_USERS ||--o{ EVENT_REGISTRATIONS : attends
   APP_USERS ||--o{ NOTIFICATIONS : receives
@@ -408,6 +409,7 @@ erDiagram
     timestamptz ends_at
     text layout "nullable"
     uuid decided_by FK "set with decided_at on a decision"
+    uuid replaces_booking_id FK "nullable, KAN-81 replacement"
   }
   EQUIPMENT_TYPES {
     uuid id PK

@@ -175,6 +175,9 @@ onBeforeUnmount(resetView);
             <div><dt>Booking ends</dt><dd>{{ formatEventTime(state.booking.endsAt) }}</dd></div>
             <div><dt>Requested layout</dt><dd>{{ state.booking.layout ?? 'Not provided' }}</dd></div>
             <div><dt>Booking notes</dt><dd>{{ state.booking.notes ?? 'Not provided' }}</dd></div>
+            <div v-if="state.booking.replacesBookingId"><dt>Replaces</dt><dd>
+              <RouterLink :to="`/venue-bookings/${state.booking.replacesBookingId}`">The outage-affected booking</RouterLink>
+            </dd></div>
           </dl>
           <RouterLink :to="{ path: '/venues/availability', query: { venue: state.booking.venueId, week: singaporeDateKey(state.booking.startsAt) } }" class="booking-link">View venue availability</RouterLink>
         </section>

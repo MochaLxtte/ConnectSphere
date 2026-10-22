@@ -111,6 +111,8 @@ No hosted acceptance, Jira status change, sprint completion or velocity credit i
 
 **21 October 2026 — KAN-81 phase 2 development outside a Daily Scrum.** Rebased on the reviewed phase 1 (`30da68a`). Phase 2 on `feat/KAN-81-phase-2-notifications`: each affected event's coordinator is notified in the outage transaction and booking pages show the recovery state. `AUTO-20261021-09`: check and coverage pass; PostgreSQL cases await CI. Phase 3 (replacements) follows. KAN-81 stays In Progress at 8 SP.
 
+**21 October 2026 — KAN-81 phase 3 development outside a Daily Scrum.** Replacement bookings on `feat/KAN-81-phase-3-replacements` (migration 011): a coordinator can request a replacement for an outage-affected booking; approving it resolves the recovery and cancels the original. `AUTO-20261021-10`: check and coverage pass; PostgreSQL cases await CI. KAN-81 stays In Progress at 8 SP.
+
 ## Impediments
 
 | Raised | Impediment | Owner | Action | Status |
