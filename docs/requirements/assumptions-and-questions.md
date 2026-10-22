@@ -1260,3 +1260,14 @@ Source: phase 3 design approved in chat by Kai Jie, the story owner, on 21 Octob
 
 **Outcome:** implementation choices within the existing criteria; no new acceptance criterion, estimate or scope change. Jira wording is unchanged.
 
+## 22 October 2026 — sprint 3 integration 2 decisions
+
+**Source and date:** Irfan, 22 October 2026, while integrating PRs #48–#53 on `feat/sprint-3-integration2` (AI-assisted; Kai Jie's review of #48 is the source for decisions 1–4). Implementation decisions by one member, recorded for the team to confirm; no team vote is recorded.
+
+1. **Outages over approved bookings stay allowed (KAN-81-AC2 over KAN-78).** KAN-78's `prevent_blocking_occupied_booking` trigger now only takes the venue lock; it no longer refuses a block that overlaps an approved occupied interval. KAN-81 saves the outage and flags the bookings for recovery.
+2. **Outage impact uses the buffered interval.** `AFFECTED_BOOKING_CONDITION` reads `venue_booking_intervals`, so an outage that covers only a booking's setup or turnaround also flags it.
+3. **Staff queue.** Approved bookings appear in the Venue Staff queue only for buffer warnings other than `OPERATIONAL_BLOCK_OVERLAP`; outage-affected bookings are handled through KAN-81 recovery.
+4. **Migration order.** 010 outages and 011 replacements (KAN-81) keep their numbers; KAN-78 becomes 012 and KAN-83 becomes 013. Branch names are recorded in each migration header.
+5. **Live holds reserve the buffered interval (KAN-83 with KAN-78).** The 013 trigger extends 012's buffered checks with live holds, and the app's buffered check refuses a live hold with `VENUE_HELD`. A hold deadline may be no later than the buffered occupied start (setup time before the event), as KAN-83-AC1 states.
+6. **KAN-12 search.** From #51 only the strict ISO 8601 date-time validation is integrated; the search service keeps operational-block exclusion, the shared opening-hours rule and KAN-78 buffers, and no `public.` schema prefixes.
+7. **Staff queue empty state.** The Venue Staff heading reads "No pending requests, holds or affected bookings", replacing both branches' wording.

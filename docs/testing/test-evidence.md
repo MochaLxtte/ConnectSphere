@@ -1431,3 +1431,20 @@ Branch `feat/KAN-83-venue-holds` was rebased from `aaee549` onto `main` at `b282
 | `npm run test:integration`, `npm run test:e2e` | **Not executed** locally after the rebase (no disposable PostgreSQL available). The pull request's CI run is the reference for the rebased build |
 
 No test case result is changed by this rebase. `class.png` and `erd-planning.png` keep main's exports; re-exporting them with the KAN-83 hold states is **pending**.
+
+## 22 October 2026 — sprint 3 integration 2 (PRs #48–#53)
+
+**Run ID: AUTO-20261022-INTEGRATION2-01.** Branch `feat/sprint-3-integration2` from `main` `b2820e1`, merged in this order: #52 (`fix/KAN-60-rejection-reason`), #49 (`feat/KAN-81-phase-2-notifications`), #50 (`feat/KAN-81-phase-3-replacements`), #48 (`feat/kan-78-kan-34`), #53 (`feat/KAN-83-venue-holds`), #51 (`KAN-12-bug-fix`). Merge commits keep each PR's own commits. Windows, Node.js 24 for local checks; GitHub Actions (Ubuntu, Node.js 24, isolated PostgreSQL 17, Chromium) for the full run. AI-assisted (Claude) integration directed by Irfan.
+
+| Command / check | Actual result |
+| --- | --- |
+| `npm run check` after #48 | First run failed 1 KAN-81 unit test that pinned the unbuffered outage condition; updated to the occupied interval |
+| `npm run check` after #53 | First run: a type error in two KAN-83 fixtures missing KAN-81 fields, then 12 KAN-83 unit tests whose fake did not answer the buffered query; fixtures and fake updated |
+| `npm run check` after #51 (`96fe6e6`) | Pass: type checks; 759 frontend tests (36 files), 1354 backend tests (46 files); both production builds |
+| CI `verify` (check, coverage, migrate, PostgreSQL integration, browser E2E) | first run [39749788947](https://github.com/MochaLxtte/ConnectSphere/actions/runs/39749788947) on `96fe6e6` failed 2 of 479 PostgreSQL tests (a KAN-78 test still expecting an outage over a turnaround buffer to be refused, and a KAN-81 closed-venue replacement reporting the buffered hours error); after fix `9094ee6`, run [39750396624](https://github.com/MochaLxtte/ConnectSphere/actions/runs/39750396624) passed: 759 frontend and 1354 backend unit tests, coverage, migrations 001–013 on PostgreSQL 17, 479 integration tests and 156 browser tests |
+
+The fix runs KAN-81 replacement suitability before the KAN-78 buffered check and updates the KAN-78 test to the KAN-81-AC2 rule (the outage is saved and the booking flagged).
+
+**Conflict resolutions that change behaviour** are listed in the [22 October decisions](../requirements/assumptions-and-questions.md#22-october-2026--sprint-3-integration-2-decisions). Test changes made only to fit the combined code: `outage-impact.test.ts` (buffered condition), `venue-holds.test.ts` (fake answers the buffered check, KAN-81 fixture fields, parameter order), `database.integration.test.ts` (migration lists 012/013 and new empty booking columns), `VenueBookingHold.test.ts` and `venue-holds.spec.ts` (KAN-81 fixture fields), `venue-search.test.ts` (keeps the integrated tests plus #51's KAN-12-AC101 cases), and the staff-queue heading in `VenueBookingsPage.test.ts` and `venue-bookings.spec.ts`. KAN-78 run IDs are renamed `AUTO-20261021-KAN78-01/02`, including the evidence file names.
+
+**Not executed / not done:** manual and hosted acceptance cases for every story; the combined `class.png`/`erd-planning.png` re-export (Mermaid CLI not available; main's exports kept); applying migrations 010–013 to shared Supabase. No case result in `test-executions.csv` is changed by this run.
