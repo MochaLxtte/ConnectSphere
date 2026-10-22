@@ -450,7 +450,12 @@ test('KAN-77 migration gives existing venues zero buffers and preserves bookings
 
     expect((await database.query('SELECT * FROM venues ORDER BY id')).rows)
       .toEqual(before.venues.map((row) => ({ ...row, setup_minutes: 0, turnaround_minutes: 0 })));
-    expect((await database.query('SELECT * FROM venue_bookings ORDER BY id')).rows).toEqual(before.bookings);
+    // KAN-83 migration 011 adds empty hold and cancellation columns; existing values are unchanged.
+    expect((await database.query('SELECT * FROM venue_bookings ORDER BY id')).rows)
+      .toEqual(before.bookings.map((row) => ({
+        ...row, hold_expires_at: null, held_by: null, held_at: null, expired_at: null,
+        cancelled_by: null, cancelled_at: null, cancellation_reason: null,
+      })));
     expect((await database.query("SELECT * FROM schema_migrations WHERE name NOT IN ('009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_holds.sql') ORDER BY name")).rows)
       .toEqual(before.migrations);
 
