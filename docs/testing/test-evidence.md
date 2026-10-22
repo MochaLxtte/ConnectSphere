@@ -1300,3 +1300,14 @@ All changed KAN-60 files have **100% line and branch coverage**: `review-input.t
 **Earlier failures and resolution:** the first integration run passed 347/349. Both failures were in this change's test assertions: one older assertion compared the extended state snapshot (now including history and notifications) with the earlier shape, and the new AC2 test did not allow for the fixture's own creation history row. The assertions were corrected without changing product code; the rerun passed 349/349. The first browser run could not launch Chromium because the local Playwright expected browser build 1243; the installed build 1194 was linked in its place, and the reruns above used it.
 
 **Acceptance boundary:** automated coverage exists for AC1–AC5, AC101 and AC102. AC103 is a records check: KAN-60 remains the single 2-SP correction linked to KAN-36. Manual hosted cases TC-04-03, TC-04-04 and TC-04-05, independent peer review, CI on the pushed commits, merge and formal acceptance remain **Not executed** / **Not assessed**. KAN-60 stays In Progress. This work was carried out on 21 October, after the configured 17 October Sprint 3 end, and is not delivery evidence for that sprint window.
+
+## 22 October 2026 — KAN-60 rebase onto main before the pull request
+
+Branch `fix/KAN-60-rejection-reason` was rebased from `aaee549` onto `main` at `b2820e1` (after PR #47). Only documentation conflicted; the code applied unchanged. Main now keeps case results in `test-executions.csv`, so the KAN-60 TC-04-01 and TC-04-02 passes are recorded there as `EX-KAN60-01-*`, and `test-cases.csv` keeps main's specification-only layout. The run above is renamed **AUTO-20261021-KAN60-01** (it was AUTO-20261021-01, an ID already used by the KAN-53/KAN-55 evidence mapping).
+
+| Command / check | Actual result (22 October 2026, Windows, Node.js 24) |
+| --- | --- |
+| `npm run check` | Pass: type checks; 700 frontend tests (35 files), 1224 backend tests (44 files); both production builds |
+| `npm run test:integration`, `npm run test:e2e` | **Not executed** locally after the rebase (no disposable PostgreSQL available). The pull request's CI run is the reference for the rebased build |
+
+No test case result is changed by this rebase.

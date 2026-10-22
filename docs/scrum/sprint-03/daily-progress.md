@@ -107,6 +107,8 @@ No hosted acceptance, Jira status change, sprint completion or velocity credit i
 
 **21 October 2026 — KAN-60 development outside a Daily Scrum.** Irfan claimed KAN-60 (2 SP) and KAN-83 (8 SP) in Jira on 20 October; KAN-60 moved to In Progress with subtasks KAN-91/92/93. Implemented the required trimmed rejection reason with the shared 2,000-character limit, a field-specific API error and inline UI validation; updated six existing tests that rejected without a reason. Automated run `AUTO-20261021-KAN60-01` passed check, coverage (100% of changed files), 349 integration tests and the new browser test; the one browser failure is the pre-existing KAN-79 timing issue. Remaining: manual hosted TC-04-03/04/05, independent review, PR CI and merge. This work is after the configured 17 October sprint end and is not counted as Sprint 3 delivery.
 
+**22 October 2026 — KAN-60 rebased for review, outside a Daily Scrum.** Irfan rebased `fix/KAN-60-rejection-reason` onto `main` after PR #47; only documentation conflicted. Case results moved to `test-executions.csv` to match main's layout, and the run ID became AUTO-20261021-KAN60-01. `npm run check` passed; integration and browser suites are left to the pull request's CI. Remaining: CI, independent review, merge and manual hosted cases TC-04-03 to TC-04-05. Jira subtasks are not changed by this note.
+
 ## Impediments
 
 | Raised | Impediment | Owner | Action | Status |
