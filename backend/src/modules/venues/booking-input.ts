@@ -1,5 +1,5 @@
 import {
-  optionalText, parseObjectBody, UUID_PATTERN, WorkflowError,
+  optionalText, parseObjectBody, requiredText, UUID_PATTERN, WorkflowError,
 } from '../events/workflow-support.js';
 
 export interface BookingDecisionInput {
@@ -87,4 +87,35 @@ export function parseBookingFilter(query: Record<string, unknown>): string | und
       'eventRequestId must be a UUID.');
   }
   return id;
+}
+
+export interface HoldPlacementInput {
+  expiresAt: string;
+}
+
+export interface HoldCancellationInput {
+  reason: string;
+}
+
+/**
+ * KAN-83-AC1: the hold deadline is an explicit instant with Z or an offset. Whether it is in
+ * the future and no later than the occupied start is checked against the database clock.
+ */
+export function parseHoldPlacement(input: unknown): HoldPlacementInput {
+  const body = parseObjectBody(input, ['expiresAt']);
+  if (body.expiresAt === undefined || body.expiresAt === null) {
+    throw new WorkflowError('INVALID_INPUT', 'INVALID_HOLD_EXPIRY', 'expiresAt is required.');
+  }
+  try {
+    return { expiresAt: requiredDateTime(body, 'expiresAt') };
+  } catch (error) {
+    // requiredDateTime only throws WorkflowError; keep its message under the hold-specific code.
+    throw new WorkflowError('INVALID_INPUT', 'INVALID_HOLD_EXPIRY', (error as Error).message);
+  }
+}
+
+/** KAN-83-AC10: cancelling a hold needs a trimmed, nonempty reason. */
+export function parseHoldCancellation(input: unknown): HoldCancellationInput {
+  const body = parseObjectBody(input, ['reason']);
+  return { reason: requiredText(body, 'reason') };
 }

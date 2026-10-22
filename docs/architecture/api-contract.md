@@ -444,7 +444,7 @@ Client navigation is not access control; every page relies on the API responses 
 | `/venue-catalogue/:id` | KAN-50 view and edit one venue; only changed fields are saved | VS after session resolution; others see a staff-only message and no venue data is requested |
 | `/venues` | KAN-12 venue search and combined filters | EC after session resolution |
 | `/venue-bookings` | KAN-8 staff pending queue or coordinator outcomes; optional `?eventRequestId=<id>` | VS or EC after session resolution |
-| `/venue-bookings/:id` | KAN-8 request detail and saved decision; writes only for staff with a pending booking | Linked from the booking list; role checked on direct navigation |
+| `/venue-bookings/:id` | KAN-8 request detail and saved decision; KAN-83 hold deadline, place-hold and cancel-hold forms; writes only for staff with a pending or live held booking | Linked from the booking list; role checked on direct navigation |
 | `/venues/availability` | KAN-51 venue availability calendar; optional `?week=YYYY-MM-DD&venue=<id>` reopens a week and venue | EC, VS or TS after session resolution; also linked from `/reviews/:id` for the event's week |
 
 `EventPlanningPanels.vue` adds read-only assignment history, clarification and read-only status-history panels to organiser/coordinator details. KAN-79 allocation controls live on the dedicated Lead pages; these planning panels do not offer coordinator self-assignment.
@@ -538,6 +538,32 @@ On `/reviews/:id`, **Venue booking requests** lets the coordinator choose an act
 
 Verification sources include `booking-input.test.ts`, `venue-booking-submission-router.test.ts`, `VenueBookingPanel.test.ts` and `database/tests/venues/venue-bookings.integration.test.ts`. The original branch's [4 October results](../testing/test-evidence.md#4-october-venue-booking-submission) have a narrower scope than this merged implementation. Record combined runs separately and follow [hosted submission checks](../testing/README.md#kan-53-hosted-verification); no hosted result is claimed here.
 
+## Temporary venue holds (KAN-83, CR-4)
+
+**Status, 21 October 2026:** implemented on branch `feat/KAN-83-venue-holds` with migration [008](../../database/migrations/013_venue_holds.sql); automated run AUTO-20261021-KAN83-01 in the [test register](../testing/test-evidence.md). Not applied to shared Supabase; hosted acceptance and review are outstanding. Decisions: [21 October KAN-83 entry](../requirements/assumptions-and-questions.md#21-october-2026--kan-83-implementation-decisions).
+
+`POST /api/venue-bookings/:id/hold` body: `{ "expiresAt": "2026-11-28T18:00:00+08:00" }`, an ISO 8601 instant with `Z` or an offset. The deadline must be strictly after the database clock and no later than the booking's occupied start (the requested start until KAN-78 adds buffers). The service locks booking → event → venue and rechecks event approval, venue activity, capacity against expected attendance, opening hours, approved bookings, other live holds and blocks.
+
+`POST /api/venue-bookings/:id/hold/cancel` body: `{ "reason": "Organiser withdrew" }`, trimmed, nonempty, at most 2,000 characters. Only that booking changes; its hold fields remain as history.
+
+Approving a live hold through `POST /api/venue-bookings/:id/decision` converts it into the approved booking in one row update after rechecking the deadline under every lock. Rejecting a live hold is also allowed.
+
+| Error | Meaning |
+| --- | --- |
+| `400 INVALID_HOLD_EXPIRY` | Missing, malformed, past or after-start deadline |
+| `400 INVALID_INPUT` | Missing/blank cancellation reason or unknown field |
+| `403 ACTION_FORBIDDEN` | The verified role is not Venue Staff |
+| `404 VENUE_BOOKING_NOT_FOUND` | No such booking |
+| `409 BOOKING_NOT_PENDING` / `BOOKING_ALREADY_HELD` | Only a pending request without a live hold can be held |
+| `409 BOOKING_NOT_HELD` | Cancel on a booking without a live hold |
+| `409 HOLD_EXPIRED` | Approve, reject or cancel at or after the deadline; the hold is already released and cannot be revived |
+| `409 EVENT_NOT_APPROVED` / `VENUE_INACTIVE` / `VENUE_UNSUITABLE` / `OUTSIDE_VENUE_HOURS` | Hold eligibility failed |
+| `409 VENUE_BOOKING_CONFLICT` / `VENUE_HELD` / `VENUE_UNAVAILABLE` | Overlap with an approved booking, another live hold or a block |
+
+`VenueBooking` adds `holdExpiresAt`, `heldBy`, `heldAt`, `expiredAt`, `cancelledBy`, `cancelledAt` and `cancellationReason` (all nullable). `status` may now be `HELD` or `EXPIRED`; a `HELD` row past its deadline is returned as `EXPIRED` even before expiry runs. Venue Staff's list contains `PENDING` and live `HELD` bookings. `VENUE_HELD` is also returned by `POST /api/events/:id/venue-bookings` and booking approval when another request's live hold overlaps. Calendar `BOOKING` periods add `heldUntil` (the deadline for a live hold, otherwise `null`), and search and suitability treat a live hold as occupying.
+
+Each hold change writes a notification for the event's current coordinator in the same transaction: `VENUE_HOLD_PLACED` (with the deadline in Singapore time), `VENUE_HOLD_EXPIRED` (once, from `expire_venue_holds()`) and `VENUE_HOLD_CANCELLED`. Their in-app display belongs to KAN-64.
+
 ## Venue booking decisions (KAN-8, CF-13)
 
 **Status, 4 October 2026:** implemented for existing `venue_bookings` rows, using the verified application session and migration 004's retained schema. KAN-53 was not integrated in that original run; the [5 October submission integration](#venue-booking-submission-kan-53-cf-12) now supplies pending rows on this branch. No new migration or shared Supabase write is part of this implementation. The [implementation choices](../requirements/assumptions-and-questions.md#4-october-2026--kan-8-venue-booking-decisions) distinguish provisional policy from the story criteria. Executed checks belong in AUTO-20261004-KAN8-01 in the [test register](../testing/test-evidence.md); hosted acceptance, peer review and new CI remain pending.
@@ -546,7 +572,9 @@ Verification sources include `booking-input.test.ts`, `venue-booking-submission-
 | --- | --- | --- |
 | `GET /api/venue-bookings?eventRequestId=…` | VS: pending bookings across venues. EC: all booking statuses for currently assigned, non-draft events. The optional UUID filter only narrows this scope. | `200 { items: VenueBooking[] }`, oldest request first, stable ID tie-break |
 | `GET /api/venue-bookings/:id` | VS: booking detail in any status, including a saved decision. EC: only a currently assigned, non-draft event. | `200 { booking: VenueBooking }` |
-| `POST /api/venue-bookings/:id/decision` | VS only, `PENDING` booking only | `200 { booking: VenueBooking }` after the decision commits |
+| `POST /api/venue-bookings/:id/decision` | VS only, `PENDING` booking or live `HELD` booking (KAN-83) | `200 { booking: VenueBooking }` after the decision commits |
+| `POST /api/venue-bookings/:id/hold` | VS only, `PENDING` booking for an `APPROVED` event (KAN-83) | `200 { booking: VenueBooking }` with status `HELD` |
+| `POST /api/venue-bookings/:id/hold/cancel` | VS only, live `HELD` booking (KAN-83) | `200 { booking: VenueBooking }` with status `CANCELLED` |
 
 Request body for the decision route:
 

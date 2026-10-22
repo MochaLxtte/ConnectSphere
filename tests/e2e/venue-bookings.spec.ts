@@ -20,6 +20,8 @@ const makeBooking = (overrides: Partial<VenueBooking> = {}): VenueBooking => ({
   description: 'Orientation and activities', expectedAttendance: 80,
   venueRequirements: 'A seated hall', accessibilityNeeds: 'Step-free access',
   decidedBy: null, decidedAt: null, decisionReason: null,
+  holdExpiresAt: null, heldBy: null, heldAt: null, expiredAt: null,
+  cancelledBy: null, cancelledAt: null, cancellationReason: null,
   createdAt: '2026-10-01T01:00:00.000Z', updatedAt: '2026-10-01T01:00:00.000Z', recovery: [], replacesBookingId: null, ...overrides,
 });
 
@@ -149,7 +151,7 @@ for (const scenario of [
     await expect(outcome.getByText(scenario.outcome, { exact: true })).toBeVisible();
     await expect(outcome.getByText(scenario.reason || 'No reason provided.', { exact: true })).toBeVisible();
     await page.getByRole('link', { name: 'Back to venue booking requests' }).click();
-    await expect(page.getByRole('heading', { name: 'No pending requests or affected bookings' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'No pending requests, holds or affected bookings' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'Community welcome day · Harbour Hall' })).toHaveCount(0);
     expect(fixture.unexpected).toEqual([]);
   });

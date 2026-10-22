@@ -27,6 +27,8 @@ const booking: VenueBooking = {
   venueRequirements: 'Large hall', accessibilityNeeds: 'Wheelchair access',
   recovery: [],
   replacesBookingId: null,
+  holdExpiresAt: null, heldBy: null, heldAt: null, expiredAt: null,
+  cancelledBy: null, cancelledAt: null, cancellationReason: null,
 };
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status });
 function deferred() {
@@ -77,7 +79,7 @@ describe('KAN-8 venue booking requests list', () => {
     session.user = user(role);
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(json({ items: [] })));
     await open();
-    expect(await screen.findByRole('heading', { name: role === 'VENUE_STAFF' ? 'No pending requests or affected bookings' : 'No venue booking requests yet' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: role === 'VENUE_STAFF' ? 'No pending requests, holds or affected bookings' : 'No venue booking requests yet' })).toBeInTheDocument();
   });
 
   it.each(['EVENT_ORGANISER', 'TECHNICAL_SUPPORT_STAFF', 'ATTENDEE'] as const)('does not read booking data for %s', async (role) => {
@@ -119,7 +121,7 @@ describe('KAN-8 venue booking requests list', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent('Unable to reach the API');
     expect(screen.queryByText('Career fair · Harbour Hall')).not.toBeInTheDocument();
     await fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
-    expect(await screen.findByRole('heading', { name: 'No pending requests or affected bookings' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'No pending requests, holds or affected bookings' })).toBeInTheDocument();
     expect(fetchMock).toHaveBeenCalledTimes(3);
   });
 
@@ -183,3 +185,18 @@ describe('KAN-8 venue booking requests list', () => {
     expect((fetchMock.mock.calls[0]![1] as RequestInit).signal?.aborted).toBe(true);
   });
 });
+
+describe('KAN-83 holds in the venue booking list', () => {
+  it('KAN-83-AC2/AC11 shows a live hold deadline and an expired hold distinctly', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(json({ items: [
+      { ...booking, id: 'held', status: 'HELD', holdExpiresAt: '2026-10-04T10:00:00Z' },
+      { ...booking, id: 'expired', status: 'EXPIRED', holdExpiresAt: '2026-10-03T10:00:00Z' },
+    ] })));
+    await open();
+    expect(await screen.findByText('Held until 4 Oct 2026, 6:00 pm')).toBeInTheDocument();
+    expect(screen.getByText('Hold expired at 3 Oct 2026, 6:00 pm')).toBeInTheDocument();
+    expect(screen.getByText('Held')).toHaveClass('booking-status--held');
+    expect(screen.getByText('Hold expired')).toHaveClass('booking-status--expired');
+  });
+});
+

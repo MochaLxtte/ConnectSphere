@@ -4,16 +4,21 @@ import {
   inActorTransaction, iso, isoOrNull, lockEventRequest, requireRelation, WorkflowError,
   type WorkflowActor, type WorkflowDependencies,
 } from '../events/workflow-support.js';
-import { parseBookingDecision, parseBookingSubmission } from './booking-input.js';
+import {
+  parseBookingDecision, parseBookingSubmission, parseHoldCancellation, parseHoldPlacement,
+} from './booking-input.js';
 import { recordNotifications } from '../notifications/notify.js';
 import { bookingDecisionNotifications } from '../notifications/trigger-matrix.js';
 import {
   BOOKING_RECOVERY_SQL, hasOpenRecovery, resolveReplacedBooking, serializeRecovery, type BookingRecovery,
 } from './outage-impact.js';
 import { isOpenForRange } from './venue-search.js';
+import { effectiveBookingStatusSql } from './occupancy.js';
+import { intervalWithinVenueHours } from './suitability-rules.js';
 import type { BookingSubmissionInput } from './booking-input.js';
 
-export type VenueBookingStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'CANCELLED';
+/** KAN-83 adds HELD (live or awaiting expiry) and EXPIRED (deadline passed without approval). */
+export type VenueBookingStatus = 'PENDING' | 'HELD' | 'APPROVED' | 'REJECTED' | 'CANCELLED' | 'EXPIRED';
 
 export interface VenueBooking {
   id: string;
@@ -46,24 +51,37 @@ export interface VenueBooking {
   recovery: BookingRecovery[];
   /** KAN-81-AC7: the outage-affected booking this request replaces, if any. */
   replacesBookingId: string | null;
+  /** KAN-83: hold deadline and audit. Kept after approval, expiry, rejection or cancellation. */
+  holdExpiresAt: string | null;
+  heldBy: string | null;
+  heldAt: string | null;
+  expiredAt: string | null;
+  cancelledBy: string | null;
+  cancelledAt: string | null;
+  cancellationReason: string | null;
 }
 
 type BookingRow = Omit<VenueBooking,
-  'startsAt' | 'endsAt' | 'decidedAt' | 'createdAt' | 'updatedAt' | 'eventStartsAt' | 'eventEndsAt'> & {
+  'startsAt' | 'endsAt' | 'decidedAt' | 'createdAt' | 'updatedAt' | 'eventStartsAt' | 'eventEndsAt'
+  | 'holdExpiresAt' | 'heldAt' | 'expiredAt' | 'cancelledAt'> & {
   startsAt: Date; endsAt: Date; decidedAt: Date | null; createdAt: Date; updatedAt: Date;
   eventStartsAt: Date | null; eventEndsAt: Date | null;
+  holdExpiresAt: Date | null; heldAt: Date | null; expiredAt: Date | null; cancelledAt: Date | null;
 };
 
 const bookingSelect = `SELECT b.occupied_starts_at AS "occupiedStartsAt",
   b.occupied_ends_at AS "occupiedEndsAt", venue_booking_warnings(b.id) AS warnings, b.id, b.event_request_id AS "eventRequestId",
   e.name AS "eventName", e.status AS "eventStatus", b.venue_id AS "venueId",
-  v.name AS "venueName", b.status, b.starts_at AS "startsAt", b.ends_at AS "endsAt",
+  v.name AS "venueName", ${effectiveBookingStatusSql('b')} AS status, b.starts_at AS "startsAt", b.ends_at AS "endsAt",
   b.layout, b.notes, b.decided_by AS "decidedBy", b.decided_at AS "decidedAt",
   b.decision_reason AS "decisionReason", b.created_at AS "createdAt", b.updated_at AS "updatedAt",
   e.starts_at AS "eventStartsAt", e.ends_at AS "eventEndsAt", e.purpose, e.description,
   e.expected_attendance AS "expectedAttendance", e.venue_requirements AS "venueRequirements",
   e.accessibility_needs AS "accessibilityNeeds", ${BOOKING_RECOVERY_SQL} AS recovery,
-  b.replaces_booking_id AS "replacesBookingId"
+  b.replaces_booking_id AS "replacesBookingId",
+  b.hold_expires_at AS "holdExpiresAt", b.held_by AS "heldBy", b.held_at AS "heldAt",
+  b.expired_at AS "expiredAt", b.cancelled_by AS "cancelledBy", b.cancelled_at AS "cancelledAt",
+  b.cancellation_reason AS "cancellationReason"
   FROM venue_booking_intervals b JOIN event_requests e ON e.id = b.event_request_id
   JOIN venues v ON v.id = b.venue_id`;
 
@@ -84,6 +102,8 @@ function serialize(row: BookingRow): VenueBooking {
     decidedAt: isoOrNull(row.decidedAt), createdAt: iso(row.createdAt), updatedAt: iso(row.updatedAt),
     eventStartsAt: isoOrNull(row.eventStartsAt), eventEndsAt: isoOrNull(row.eventEndsAt),
     recovery: serializeRecovery(row.recovery),
+    holdExpiresAt: isoOrNull(row.holdExpiresAt), heldAt: isoOrNull(row.heldAt),
+    expiredAt: isoOrNull(row.expiredAt), cancelledAt: isoOrNull(row.cancelledAt),
   };
 }
 
@@ -98,7 +118,9 @@ export async function listVenueBookings(
 ): Promise<VenueBooking[]> {
   requireReader(actor);
   const found = await pool.query<BookingRow>(`${bookingSelect}
-    WHERE (($1 = 'VENUE_STAFF' AND (b.status = 'PENDING' OR (b.status = 'APPROVED'
+    -- Venue Staff work queue: pending requests, live holds (KAN-83-AC2) and approved bookings
+    -- with buffer warnings (KAN-78).
+    WHERE (($1 = 'VENUE_STAFF' AND (${effectiveBookingStatusSql('b')} IN ('PENDING', 'HELD') OR (b.status = 'APPROVED'
         AND cardinality(array_remove(venue_booking_warnings(b.id), 'OPERATIONAL_BLOCK_OVERLAP')) > 0))) OR
       ($1 = 'EVENT_COORDINATOR' AND e.coordinator_id = $2 AND e.status <> 'DRAFT'))
       AND ($3::uuid IS NULL OR b.event_request_id = $3)
@@ -126,14 +148,22 @@ function conflict(code: string, message: string): never {
   throw new WorkflowError('CONFLICT', code, message);
 }
 
-/** Called after the venue lock; all current buffers and reservations share one snapshot. */
+/**
+ * Called after the venue lock; all current buffers and reservations share one snapshot. KAN-83:
+ * a live hold reserves its buffered interval too. clock_timestamp() is read after the lock, so a
+ * hold that expired while this writer waited no longer counts (KAN-83-AC9). `bookingId` leaves
+ * out the booking being decided or held (KAN-83-AC5).
+ */
 async function assertOccupiedIntervalAvailable(client: Pick<PoolClient, 'query'>,
   venueId: string, startsAt: string | Date, endsAt: string | Date, bookingId: string | null = null) {
-  const result = await client.query<{ booked: boolean; blocked: boolean; withinHours: boolean }>(
+  const result = await client.query<{ booked: boolean; held: boolean; blocked: boolean; withinHours: boolean }>(
     `SELECT venue_interval_within_hours(occupied.s, occupied.e, v.opens_at, v.closes_at) AS "withinHours",
       EXISTS(SELECT 1 FROM venue_booking_intervals b WHERE b.venue_id = v.id
         AND ($4::uuid IS NULL OR b.id <> $4) AND b.status = 'APPROVED'
         AND b.occupied_starts_at < occupied.e AND b.occupied_ends_at > occupied.s) AS booked,
+      EXISTS(SELECT 1 FROM venue_booking_intervals b WHERE b.venue_id = v.id
+        AND ($4::uuid IS NULL OR b.id <> $4) AND b.status = 'HELD' AND b.hold_expires_at > clock_timestamp()
+        AND b.occupied_starts_at < occupied.e AND b.occupied_ends_at > occupied.s) AS held,
       EXISTS(SELECT 1 FROM venue_unavailability u WHERE u.venue_id = v.id
         AND u.starts_at < occupied.e AND u.ends_at > occupied.s) AS blocked
       FROM venues v CROSS JOIN LATERAL (SELECT
@@ -144,6 +174,7 @@ async function assertOccupiedIntervalAvailable(client: Pick<PoolClient, 'query'>
   if (!current.withinHours) conflict('VENUE_OUTSIDE_OPERATING_HOURS',
     'The occupied interval is outside valid venue operating hours; restricted cross-day windows are unsupported.');
   if (current.booked) conflict('VENUE_BOOKING_CONFLICT', 'The venue already has an approved booking during the occupied period.');
+  if (current.held) conflict('VENUE_HELD', 'The venue is temporarily held for another request during this period.');
   if (current.blocked) conflict('VENUE_UNAVAILABLE', 'The venue is blocked during the occupied period.');
 }
 
@@ -239,9 +270,61 @@ export async function createVenueBooking(
   });
 }
 
+interface LockedBooking {
+  status: VenueBookingStatus;
+  eventRequestId: string;
+  venueId: string;
+  startsAt: Date;
+  endsAt: Date;
+  replacesBookingId: string | null;
+  holdExpiresAt: Date | null;
+  /** Evaluated with clock_timestamp() after the row lock: true only for a live hold. */
+  holdLive: boolean;
+}
+
+async function lockBooking(client: Pick<PoolClient, 'query'>, bookingId: string): Promise<LockedBooking> {
+  const locked = await client.query<Omit<LockedBooking, 'holdLive'>>(`SELECT status,
+    event_request_id AS "eventRequestId", venue_id AS "venueId", starts_at AS "startsAt",
+    ends_at AS "endsAt", replaces_booking_id AS "replacesBookingId", hold_expires_at AS "holdExpiresAt"
+    FROM venue_bookings WHERE id = $1 FOR UPDATE`, [bookingId]);
+  const booking = locked.rows[0];
+  if (!booking) throw bookingNotFound();
+  // A separate statement after the lock: the clock is read once this writer owns the row.
+  const clock = await client.query<{ holdLive: boolean }>(
+    'SELECT ($1::timestamptz IS NOT NULL AND $1::timestamptz > clock_timestamp()) AS "holdLive"',
+    [booking.holdExpiresAt]);
+  return { ...booking, holdLive: booking.status === 'HELD' && clock.rows[0]!.holdLive };
+}
+
+function holdExpired(): never {
+  conflict('HOLD_EXPIRED',
+    'This hold reached its deadline and the venue period was released. Ask the coordinator to submit a new request.');
+}
+
+/** Map the database trigger's exclusion errors to the same API conflicts as the app checks. */
+function mapTriggerConflict(error: unknown): void {
+  if (typeof error === 'object' && error !== null && 'code' in error && error.code === '23P01'
+    && 'constraint' in error) {
+    if (error.constraint === 'venue_bookings_no_overlap') {
+      // Same contract as before KAN-83; the app checks above name a live hold as VENUE_HELD.
+      conflict('VENUE_BOOKING_CONFLICT', 'The venue already has an approved booking during the occupied period.');
+    }
+    if (error.constraint === 'venue_bookings_within_hours') {
+      conflict('VENUE_OUTSIDE_OPERATING_HOURS', 'The occupied interval is outside valid venue operating hours; restricted cross-day windows are unsupported.');
+    }
+    if (error.constraint === 'venue_bookings_not_blocked') {
+      conflict('VENUE_UNAVAILABLE', 'The venue is blocked during the occupied period.');
+    }
+  }
+}
+
 /**
- * No event status or other booking rows change as part of a booking decision. KAN-64-AC203/AC207: its
- * notifications are written in the same transaction, so a refused or rolled-back decision sends none.
+ * KAN-8 decision, extended by KAN-83: a PENDING request or a live HELD request can be approved
+ * or rejected. Approving a hold converts its provisional reservation into the approved booking
+ * in one row update, so the period is never reserved twice (AC5). A hold at or past its deadline
+ * cannot be approved or rejected: it is already released (AC6/AC9). No event status or other
+ * booking rows change, except KAN-81 replacement resolution. KAN-64-AC203/AC207: notifications are
+ * written in the same transaction, so a refused or rolled-back decision sends none.
  */
 export async function decideVenueBooking(
   { pool }: WorkflowDependencies,
@@ -254,16 +337,9 @@ export async function decideVenueBooking(
   const decision = parseBookingDecision(input);
   try {
     return await inActorTransaction(pool, actor.id, async (client) => {
-      const locked = await client.query<{
-        status: VenueBookingStatus; eventRequestId: string; venueId: string; startsAt: Date; endsAt: Date;
-        replacesBookingId: string | null;
-      }>(`SELECT status, event_request_id AS "eventRequestId", venue_id AS "venueId",
-        starts_at AS "startsAt", ends_at AS "endsAt", replaces_booking_id AS "replacesBookingId"
-        FROM venue_bookings WHERE id = $1 FOR UPDATE`,
-      [bookingId]);
-      const booking = locked.rows[0];
-      if (!booking) throw bookingNotFound();
-      if (booking.status !== 'PENDING') {
+      const booking = await lockBooking(client, bookingId);
+      if (booking.status === 'HELD' && !booking.holdLive) holdExpired();
+      if (booking.status !== 'PENDING' && booking.status !== 'HELD') {
         conflict('BOOKING_ALREADY_DECIDED', 'This booking is no longer pending a decision.');
       }
 
@@ -281,6 +357,12 @@ export async function decideVenueBooking(
           'SELECT is_active AS "isActive" FROM venues WHERE id = $1 FOR UPDATE', [booking.venueId]);
         if (!venue.rows[0]?.isActive) conflict('VENUE_INACTIVE', 'This venue is no longer active.');
 
+        // Recheck the deadline after every lock wait (KAN-83-AC9): never approve late.
+        if (booking.status === 'HELD') {
+          const still = await client.query<{ live: boolean }>(
+            'SELECT $1::timestamptz > clock_timestamp() AS live', [booking.holdExpiresAt]);
+          if (!still.rows[0]!.live) holdExpired();
+        }
         // A separate statement after acquiring the venue lock sees approvals committed
         // while we waited. Half-open occupied intervals allow exact adjacency.
         await assertOccupiedIntervalAvailable(client, booking.venueId, booking.startsAt, booking.endsAt, bookingId);
@@ -320,18 +402,136 @@ export async function decideVenueBooking(
     });
   } catch (error) {
     // Keep database-trigger protection useful to callers if another writer reaches it.
-    if (typeof error === 'object' && error !== null && 'code' in error && error.code === '23P01'
-      && 'constraint' in error) {
-      if (error.constraint === 'venue_bookings_no_overlap') {
-        conflict('VENUE_BOOKING_CONFLICT', 'The venue already has an approved booking during the occupied period.');
-      }
-      if (error.constraint === 'venue_bookings_within_hours') {
-        conflict('VENUE_OUTSIDE_OPERATING_HOURS', 'The occupied interval is outside valid venue operating hours; restricted cross-day windows are unsupported.');
-      }
-      if (error.constraint === 'venue_bookings_not_blocked') {
-        conflict('VENUE_UNAVAILABLE', 'The venue is blocked during the occupied period.');
-      }
-    }
+    mapTriggerConflict(error);
     throw error;
   }
+}
+
+const singaporeDeadline = (column: string) =>
+  `to_char(${column} AT TIME ZONE 'Asia/Singapore', 'DD Mon YYYY HH24:MI')`;
+
+async function notifyCoordinator(
+  client: Pick<PoolClient, 'query'>, bookingId: string, type: string, title: string, messageSql: string,
+): Promise<void> {
+  // KAN-83-AC7: written in the same transaction as the hold change; no row when unassigned.
+  await client.query(`INSERT INTO notifications (recipient_id, event_request_id, type, title, message)
+    SELECT e.coordinator_id, e.id, $2, $3, ${messageSql}
+    FROM venue_bookings b JOIN event_requests e ON e.id = b.event_request_id
+    JOIN venues v ON v.id = b.venue_id
+    WHERE b.id = $1 AND e.coordinator_id IS NOT NULL`, [bookingId, type, title]);
+}
+
+/**
+ * KAN-83-AC1/AC2/AC3/AC7: Venue Staff explicitly place a hold on one PENDING request. The
+ * deadline must be strictly after the database clock and no later than the occupied start.
+ * Event, venue, suitability, opening hours and every occupying booking or block are rechecked
+ * under the booking -> event -> venue locks. A rejected attempt writes nothing.
+ */
+export async function placeVenueHold(
+  { pool }: WorkflowDependencies,
+  { bookingId, actor, input }: { bookingId: string; actor: WorkflowActor; input: unknown },
+): Promise<VenueBooking> {
+  if (actor.role !== 'VENUE_STAFF') {
+    throw new WorkflowError('FORBIDDEN', 'ACTION_FORBIDDEN', 'Only Venue Staff can place a venue hold.');
+  }
+  const { expiresAt } = parseHoldPlacement(input);
+  try {
+    return await inActorTransaction(pool, actor.id, async (client) => {
+      const booking = await lockBooking(client, bookingId);
+      if (booking.status === 'HELD' && booking.holdLive) {
+        conflict('BOOKING_ALREADY_HELD', 'This request already has a live hold. Approve, reject or cancel it instead.');
+      }
+      if (booking.status !== 'PENDING') {
+        conflict('BOOKING_NOT_PENDING', 'Only a pending venue request can be held.');
+      }
+      const event = await client.query<{ status: EventStatus; expectedAttendance: number | null }>(
+        `SELECT status, expected_attendance AS "expectedAttendance"
+         FROM event_requests WHERE id = $1 FOR UPDATE`, [booking.eventRequestId]);
+      if (event.rows[0]?.status !== 'APPROVED') {
+        conflict('EVENT_NOT_APPROVED', 'Only a request for an approved event can be held.');
+      }
+      const venue = await client.query<{
+        isActive: boolean; capacity: number; opensAt: string | null; closesAt: string | null;
+      }>(`SELECT is_active AS "isActive", capacity, to_char(opens_at, 'HH24:MI') AS "opensAt",
+        to_char(closes_at, 'HH24:MI') AS "closesAt" FROM venues WHERE id = $1 FOR UPDATE`, [booking.venueId]);
+      const place = venue.rows[0];
+      if (!place?.isActive) conflict('VENUE_INACTIVE', 'This venue is no longer active.');
+      const attendance = event.rows[0]!.expectedAttendance;
+      if (attendance !== null && attendance > place.capacity) {
+        conflict('VENUE_UNSUITABLE', 'The venue capacity is below the expected attendance.');
+      }
+      const withinHours = intervalWithinVenueHours(booking.startsAt.toISOString(), booking.endsAt.toISOString(),
+        place.opensAt, place.closesAt);
+      if (withinHours !== true) {
+        conflict('OUTSIDE_VENUE_HOURS', 'The requested period is outside the venue opening hours.');
+      }
+
+      // Deadline checks use the database clock, read after every lock (KAN-83-AC1/AC8). The deadline
+      // may be no later than the buffered occupied start (KAN-78 setup time before the event).
+      const timing = await client.query<{ future: boolean; beforeStart: boolean }>(
+        `SELECT $1::timestamptz > clock_timestamp() AS future,
+           $1::timestamptz <= venue_occupied_start($2::timestamptz, v.setup_minutes) AS "beforeStart"
+         FROM venues v WHERE v.id = $3`,
+        [expiresAt, booking.startsAt, booking.venueId]);
+      if (!timing.rows[0]!.future) {
+        throw new WorkflowError('INVALID_INPUT', 'INVALID_HOLD_EXPIRY', 'The hold deadline must be in the future.');
+      }
+      if (!timing.rows[0]!.beforeStart) {
+        throw new WorkflowError('INVALID_INPUT', 'INVALID_HOLD_EXPIRY',
+          'The hold deadline must be no later than the start of the booked period.');
+      }
+      await assertOccupiedIntervalAvailable(client, booking.venueId, booking.startsAt, booking.endsAt, bookingId);
+
+      await client.query(`UPDATE venue_bookings SET status = 'HELD', hold_expires_at = $2,
+        held_by = $3, held_at = now(), updated_at = now() WHERE id = $1`, [bookingId, expiresAt, actor.id]);
+      await notifyCoordinator(client, bookingId, 'VENUE_HOLD_PLACED', 'Venue hold placed',
+        `format('%s is held for %s until %s (Singapore time). Venue Staff must approve the booking before then, or the hold is released.',
+          v.name, coalesce(e.name, 'your event'), ${singaporeDeadline('b.hold_expires_at')})`);
+      return readBooking(client, bookingId, actor);
+    });
+  } catch (error) {
+    mapTriggerConflict(error);
+    throw error;
+  }
+}
+
+/**
+ * KAN-83-AC10: Venue Staff release one live hold with a reason. Only that booking changes; its
+ * hold details stay as history. Later cancellation stories reuse releaseHold().
+ */
+export async function cancelVenueHold(
+  { pool }: WorkflowDependencies,
+  { bookingId, actor, input }: { bookingId: string; actor: WorkflowActor; input: unknown },
+): Promise<VenueBooking> {
+  if (actor.role !== 'VENUE_STAFF') {
+    throw new WorkflowError('FORBIDDEN', 'ACTION_FORBIDDEN', 'Only Venue Staff can cancel a venue hold.');
+  }
+  const { reason } = parseHoldCancellation(input);
+  return inActorTransaction(pool, actor.id, async (client) => {
+    const booking = await lockBooking(client, bookingId);
+    if (booking.status === 'HELD' && !booking.holdLive) holdExpired();
+    if (booking.status !== 'HELD') conflict('BOOKING_NOT_HELD', 'This request does not have a live hold.');
+    await releaseHold(client, bookingId, actor.id, reason);
+    return readBooking(client, bookingId, actor);
+  });
+}
+
+/** Shared held-state release: the caller holds the booking lock and has checked it is HELD. */
+export async function releaseHold(
+  client: Pick<PoolClient, 'query'>, bookingId: string, actorId: string, reason: string,
+): Promise<void> {
+  await client.query(`UPDATE venue_bookings SET status = 'CANCELLED', cancelled_by = $2,
+    cancelled_at = now(), cancellation_reason = $3, updated_at = now() WHERE id = $1 AND status = 'HELD'`,
+  [bookingId, actorId, reason]);
+  await notifyCoordinator(client, bookingId, 'VENUE_HOLD_CANCELLED', 'Venue hold cancelled',
+    `format('The hold on %s for %s was cancelled: %s', v.name, coalesce(e.name, 'your event'), b.cancellation_reason)`);
+}
+
+/**
+ * KAN-83-AC6/AC8: mark overdue holds EXPIRED and notify once. Idempotent; safe to run from
+ * several API instances and from pg_cron at the same time. Returns the number expired.
+ */
+export async function expireVenueHolds(database: Pick<Pool, 'query'>): Promise<number> {
+  const result = await database.query<{ expired: number }>('SELECT expire_venue_holds() AS expired');
+  return result.rows[0]!.expired;
 }

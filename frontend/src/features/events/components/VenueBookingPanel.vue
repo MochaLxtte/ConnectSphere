@@ -117,7 +117,7 @@ const timeError = computed(() => {
 
 function tagClass(status: VenueBooking['status']): string {
   if (status === 'APPROVED') return 'tag-positive';
-  if (status === 'REJECTED' || status === 'CANCELLED') return 'tag-negative';
+  if (status === 'REJECTED' || status === 'CANCELLED' || status === 'EXPIRED') return 'tag-negative';
   return 'tag-waiting';
 }
 
@@ -207,6 +207,10 @@ onBeforeUnmount(() => { contextVersion++; abortPending(); });
           <p v-if="item.warnings?.length" role="status">Warning: {{ item.warnings.join(', ') }}</p>
           <p v-if="item.decisionReason">Decision note: {{ item.decisionReason }}</p>
           <p v-if="item.replacesBookingId" class="panel-meta">Replacement for an outage-affected booking.</p>
+          <!-- KAN-83-AC11: the hold deadline, its expiry and any cancellation are visible to the coordinator. -->
+          <p v-if="item.status === 'HELD'" class="hold-note">Held until {{ formatEventTime(item.holdExpiresAt) }} (Singapore time). Venue staff must approve it before then, or it is released. The deadline is confirmed by the server, not this page.</p>
+          <p v-else-if="item.status === 'EXPIRED'" class="hold-note">The hold expired at {{ formatEventTime(item.holdExpiresAt) }} and the venue period was released. Submit a new request to try again.</p>
+          <p v-if="item.cancellationReason">Cancellation reason: {{ item.cancellationReason }}</p>
         </li>
       </ul>
 
@@ -268,4 +272,5 @@ onBeforeUnmount(() => { contextVersion++; abortPending(); });
 <style src="./workflow-panel.css"></style>
 <style scoped>
 .tag-recovery { background: #fbeee6; color: #853e37; }
+.hold-note { color: #7a5212; }
 </style>

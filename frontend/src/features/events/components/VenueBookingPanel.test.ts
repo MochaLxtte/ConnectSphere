@@ -30,6 +30,8 @@ const pending: VenueBooking = {
   venueRequirements: null, accessibilityNeeds: null,
   recovery: [],
   replacesBookingId: null,
+  holdExpiresAt: null, heldBy: null, heldAt: null, expiredAt: null,
+  cancelledBy: null, cancelledAt: null, cancellationReason: null,
 };
 
 const coordinatorProps = { eventRequestId, status: 'APPROVED', viewerRole: 'EVENT_COORDINATOR' };
@@ -355,3 +357,20 @@ describe('KAN-81 phase 3: requesting a replacement venue from the panel (AC7, AC
     expect(await screen.findByText('Replacement for an outage-affected booking.')).toBeInTheDocument();
   });
 });
+
+describe('KAN-83 hold details for the coordinator', () => {
+  it('KAN-83-AC11 shows the live hold deadline, an expired outcome and a cancellation reason', async () => {
+    stubApi({ [`GET /api/venue-bookings?eventRequestId=${eventRequestId}`]: { body: { items: [
+      { ...pending, id: 'h1', status: 'HELD', holdExpiresAt: '2026-11-28T10:00:00.000Z' },
+      { ...pending, id: 'h2', status: 'EXPIRED', holdExpiresAt: '2026-11-20T10:00:00.000Z' },
+      { ...pending, id: 'h3', status: 'CANCELLED', cancellationReason: 'Venue unavailable: Burst pipe' },
+    ] } } });
+    render(VenueBookingPanel, { props: { ...coordinatorProps, status: 'REJECTED' } });
+    expect(await screen.findByText(/^Held until 28 Nov 2026, 6:00 pm \(Singapore time\)\. Venue staff must approve it before then/))
+      .toBeInTheDocument();
+    expect(screen.getByText(/^The hold expired at 20 Nov 2026, 6:00 pm and the venue period was released\./)).toBeInTheDocument();
+    expect(screen.getByText('Cancellation reason: Venue unavailable: Burst pipe')).toBeInTheDocument();
+    expect(screen.getByText('Hold expired')).toHaveClass('tag-negative');
+  });
+});
+

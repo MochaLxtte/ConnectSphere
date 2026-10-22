@@ -1,0 +1,29 @@
+KAN-83 temporary venue holds - local coverage summary
+Run ID: AUTO-20261021-KAN83-01 (see ../test-evidence.md, "21 October 2026 - KAN-83 temporary venue holds")
+Date: 21 October 2026, Asia/Singapore
+Branch: feat/KAN-83-venue-holds, base aaee549 (main after PR #35); uncommitted working tree at run time
+Environment: Linux, Node.js 22.22.0, Vitest; this is not sprint-close coverage
+Command: npm run test:coverage
+
+Workspace totals (% statements / branches / functions / lines)
+  frontend: 94.94 / 92.61 / 96.77 / 97.19   (33 files, 624 tests passed)
+  backend:  87.30 / 89.72 / 86.26 / 87.83   (41 files, 1108 tests passed)
+
+New files (covered / total)
+  backend/src/modules/venues/occupancy.ts               lines 3/3, branches 3/3 (100%)
+  backend/src/modules/venues/hold-expiry-scheduler.ts   lines 19/19, branches 18/18 (100%)
+
+Changed files: every line and branch added or changed by KAN-83 is covered. Remaining gaps
+are lines that were already uncovered on main:
+  backend/src/modules/venues/booking-service.ts         lines 110/120, branches 76/87
+  backend/src/modules/venues/booking-input.ts           lines 41/41, branches 35/35
+  backend/src/modules/venues/availability.ts            lines 28/28, branches 19/19
+  backend/src/modules/venues/block-service.ts           lines 17/27, branches 4/10 (list/delete paths)
+  backend/src/modules/venues/suitability-service.ts     lines 2/25 (service SQL is exercised by integration tests)
+  frontend VenueBookingDetailPage.vue                   statements 138/142, branches 282/289 (main: 96/100, 183/196)
+  frontend VenueBookingsPage.vue                        statements 42/43, branches 64/67 (main: 42/43, 60/63)
+  frontend VenueBookingPanel.vue                        statements 164/174, branches 171/185 (main: 164/174, 164/178)
+  frontend VenueWeekTimeline.vue                        statements 34/34, branches 31/34 (main: 32/32, 25/28)
+
+Database code (migration 011 trigger (numbered 008 at run time) and expire_venue_holds) is exercised by
+database/tests/venues/venue-holds.integration.test.ts, outside unit coverage.

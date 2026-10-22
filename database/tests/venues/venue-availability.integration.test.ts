@@ -170,7 +170,7 @@ function expectedWeek(named: { fair?: boolean; dinner?: boolean } = {}) {
         unavailable: [
           {
             id: period.fairBooking, kind: 'BOOKING', startsAt: sgt('05T10:00'), endsAt: sgt('05T12:00'),
-            event: named.fair ? { id: event.fair, name: 'Career fair' } : null,
+            event: named.fair ? { id: event.fair, name: 'Career fair' } : null, heldUntil: null,
           },
           { id: period.maintenance, kind: 'BLOCKED', startsAt: sgt('06T09:00'), endsAt: sgt('06T18:00'), reason: 'Maintenance' },
         ],
@@ -183,9 +183,9 @@ function expectedWeek(named: { fair?: boolean; dinner?: boolean } = {}) {
           { id: period.polishing, kind: 'BLOCKED', startsAt: sgt('04T18:00'), endsAt: sgt('05T09:00'), reason: 'Floor polishing' },
           {
             id: period.dinnerBooking, kind: 'BOOKING', startsAt: sgt('05T10:00'), endsAt: sgt('05T12:00'),
-            event: named.dinner ? { id: event.dinner, name: 'Alumni dinner' } : null,
+            event: named.dinner ? { id: event.dinner, name: 'Alumni dinner' } : null, heldUntil: null,
           },
-          { id: period.draftBooking, kind: 'BOOKING', startsAt: sgt('07T10:00'), endsAt: sgt('07T11:00'), event: null },
+          { id: period.draftBooking, kind: 'BOOKING', startsAt: sgt('07T10:00'), endsAt: sgt('07T11:00'), event: null, heldUntil: null },
         ],
       },
     ],
@@ -251,7 +251,7 @@ describe('KAN-51 venue availability calendar with PostgreSQL', () => {
     expect(response.status).toBe(200);
     const hall = response.body.items.find((item: { id: string }) => item.id === venue.hall);
     expect(hall.unavailable).toEqual([
-      { id: period.pending, kind: 'BOOKING', startsAt: sgt('05T14:00'), endsAt: sgt('05T16:00'), event: null, eventStartsAt: sgt('05T14:00'), eventEndsAt: sgt('05T16:00'), warnings: [] },
+      { id: period.pending, kind: 'BOOKING', startsAt: sgt('05T14:00'), endsAt: sgt('05T16:00'), event: null, heldUntil: null, eventStartsAt: sgt('05T14:00'), eventEndsAt: sgt('05T16:00'), warnings: [] },
       { id: period.maintenance, kind: 'BLOCKED', startsAt: sgt('06T09:00'), endsAt: sgt('06T18:00'), reason: 'Maintenance' },
       { id: inspection, kind: 'BLOCKED', startsAt: sgt('09T13:00'), endsAt: sgt('09T15:00'), reason: null },
     ]);

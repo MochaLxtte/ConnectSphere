@@ -1,6 +1,6 @@
 import { getJson } from '../../../lib/api-client';
 
-/** KAN-51: a confirmed (APPROVED) venue booking. */
+/** KAN-51: a confirmed (APPROVED) venue booking, or since KAN-83 a live temporary hold. */
 export interface BookedPeriod {
   id: string;
   kind: 'BOOKING';
@@ -11,6 +11,8 @@ export interface BookedPeriod {
   endsAt: string;
   /** Only sent to the event's assigned coordinator; null for every other reader. */
   event: { id: string; name: string | null } | null;
+  /** KAN-83: the deadline of a live temporary hold; null (or absent) for an approved booking. */
+  heldUntil?: string | null;
 }
 
 /** KAN-51: a recorded period of operational unavailability. */

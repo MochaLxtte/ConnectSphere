@@ -26,6 +26,8 @@ const booking: VenueBooking = {
   venueRequirements: 'Large hall', accessibilityNeeds: 'Wheelchair access',
   recovery: [],
   replacesBookingId: null,
+  holdExpiresAt: null, heldBy: null, heldAt: null, expiredAt: null,
+  cancelledBy: null, cancelledAt: null, cancellationReason: null,
 };
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status });
 const errorResponse = (status: number, code: string, message = 'The booking could not be updated.') =>

@@ -290,3 +290,10 @@ Verification: `database/tests/venues/venue-buffers.integration.test.ts` covers t
 ## Main integration follow-up — 21 October 2026
 
 KAN-77 configuration is now merged. Buffer saves use its existing field-aware concurrency rules and return `affectedBookings` from KAN-78 warning evaluation within the save transaction; the editor displays their links/warnings. Shared duration storage is migration 009, and KAN-78 snapshots/view/functions/guards are migration 010. Earlier pending-editor notes remain historical.
+
+## Temporary venue holds — KAN-83
+
+`occupancy.ts` is the single rule for when a booking occupies its venue: `APPROVED`, or `HELD` with `hold_expires_at` still in the future. `availability.ts`, `venue-search.ts`, `suitability-service.ts`, `booking-service.ts` (request creation and approval) and `block-service.ts` all use it, applied to KAN-78's buffered occupied interval (`venue_booking_intervals`); a hold deadline may be no later than the buffered occupied start. Readers use `now()`; writers that have just taken a lock use `clock_timestamp()` so a hold that lapsed while they waited no longer counts.
+
+`booking-service.ts` adds `placeVenueHold` (Venue Staff, pending request, deadline checked against the database clock, booking → event → venue locks, notice to the coordinator), `cancelVenueHold` and the shared `releaseHold`, extends `decideVenueBooking` to approve or reject a live hold, and wraps `expire_venue_holds()` as `expireVenueHolds`. `block-service.ts` releases live holds a new block overlaps, skipping rows another writer has locked to avoid a lock-order deadlock. `hold-expiry-scheduler.ts` runs expiry at API startup and every minute (`server.ts`). Routes: `POST /api/venue-bookings/:id/hold` and `/hold/cancel` in `venue-bookings-router.ts`. Contract: [api-contract](../../../../docs/architecture/api-contract.md#temporary-venue-holds-kan-83-cr-4); rollout: [database setup](../../../../database/README.md#kan-83-venue-holds-rollout--21-october-2026).
+

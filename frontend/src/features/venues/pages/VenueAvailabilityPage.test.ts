@@ -381,3 +381,17 @@ describe('KAN-51 venue availability calendar', () => {
     expect(screen.queryByRole('combobox', { name: 'Venue' })).not.toBeInTheDocument();
   });
 });
+
+describe('KAN-83 live holds in the availability calendar', () => {
+  it('KAN-83-AC4 labels a live hold as Held with its deadline, separately from a confirmed booking', async () => {
+    stubAvailability([{ ...hall, unavailable: [
+      { ...hall.unavailable[0]!, kind: 'BOOKING', event: null, heldUntil: '2026-10-04T10:00:00.000Z' },
+    ] }]);
+    await openCalendar();
+    await screen.findByRole('heading', { name: 'Harbour Hall' });
+    const [, held] = agendaFor('Mon, 5 Oct');
+    expect(held).toMatch(/^Held 10:00 – 12:00 · Held until /);
+    expect(screen.getByText('Held')).toHaveClass('agenda-tag--held');
+  });
+});
+

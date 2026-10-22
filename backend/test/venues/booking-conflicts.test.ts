@@ -15,7 +15,11 @@ interface Scenario {
   venueActive?: boolean;
   withinHours?: boolean;
   booked?: boolean;
+  /** KAN-83: another booking's live hold overlaps. */
+  held?: boolean;
   blocked?: boolean;
+  /** KAN-83: whether this booking's own hold is still live when the clock is read. */
+  holdLive?: boolean;
   bookingStatus?: string;
   /** Error thrown by the booking UPDATE, standing in for a database exclusion constraint. */
   updateError?: unknown;
@@ -32,7 +36,8 @@ const bookingRow = {
   layout: null, notes: null, decidedBy: null, decidedAt: null, decisionReason: null,
   createdAt: new Date(startsAt), updatedAt: new Date(startsAt), eventStartsAt: null, eventEndsAt: null,
   purpose: null, description: null, expectedAttendance: null, venueRequirements: null,
-  accessibilityNeeds: null,
+  accessibilityNeeds: null, holdExpiresAt: null, heldBy: null, heldAt: null, expiredAt: null,
+  cancelledBy: null, cancelledAt: null, cancellationReason: null,
   recovery: [],
 };
 
@@ -49,8 +54,11 @@ function fakePool(scenario: Scenario = {}) {
       }
       if (/FROM venue_bookings WHERE id = \$1 FOR UPDATE/.test(sql)) {
         return { rows: [{ status: scenario.bookingStatus ?? 'PENDING', eventRequestId: eventId, venueId,
-          startsAt: new Date(startsAt), endsAt: new Date(endsAt), replacesBookingId: scenario.replaces ?? null }] };
+          startsAt: new Date(startsAt), endsAt: new Date(endsAt), replacesBookingId: scenario.replaces ?? null,
+          holdExpiresAt: scenario.bookingStatus === 'HELD' ? new Date('2026-11-30T00:00:00.000Z') : null }] };
       }
+      if (/AS "holdLive"/.test(sql)) return { rows: [{ holdLive: scenario.holdLive ?? true }] };
+      if (/AS live$/.test(sql.trim())) return { rows: [{ live: scenario.holdLive ?? true }] };
       if (/SELECT status FROM event_requests/.test(sql)) {
         return { rows: [{ status: scenario.eventStatus ?? 'APPROVED' }] };
       }
@@ -58,7 +66,8 @@ function fakePool(scenario: Scenario = {}) {
         return { rows: [{ isActive: scenario.venueActive ?? true }] };
       }
       if (/AS booked/.test(sql)) {
-        return { rows: [{ withinHours: scenario.withinHours ?? true, booked: scenario.booked ?? false, blocked: scenario.blocked ?? false }] };
+        return { rows: [{ withinHours: scenario.withinHours ?? true, booked: scenario.booked ?? false,
+          held: scenario.held ?? false, blocked: scenario.blocked ?? false }] };
       }
       if (/^SELECT event_request_id AS "eventRequestId" FROM venue_bookings/.test(sql)) {
         return { rows: scenario.originalEventId === null ? [] : [{ eventRequestId: scenario.originalEventId ?? eventId }] };
@@ -98,9 +107,11 @@ describe('KAN-54 conflict assessment when a booking is requested (AC1, AC2, AC5,
     const clash = find(/AS booked/)!;
     expect(clash.params).toEqual([venueId, startsAt, endsAt, null]);
     // AC3: scoped to one venue, so an overlapping period elsewhere can never count.
-    expect(clash.sql.match(/venue_id = v.id/g)).toHaveLength(2);
+    expect(clash.sql.match(/venue_id = v.id/g)).toHaveLength(3);
     // AC1/AC6: only confirmed (approved) bookings reserve a venue.
     expect(clash.sql).toMatch(/status = 'APPROVED'/);
+    // KAN-83-AC4: another request's live hold also reserves the venue until its deadline.
+    expect(clash.sql).toMatch(/status = 'HELD' AND b\.hold_expires_at > clock_timestamp\(\)/);
     // AC4: half-open interval, so back-to-back periods do not overlap.
     expect(clash.sql).toContain('b.occupied_starts_at < occupied.e AND b.occupied_ends_at > occupied.s');
   });
