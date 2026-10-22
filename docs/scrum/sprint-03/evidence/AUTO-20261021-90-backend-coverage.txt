@@ -1,0 +1,55 @@
+> @connectsphere/backend@0.1.0 test:coverage
+> vitest run --coverage
+
+
+ RUN  v4.1.11 C:/Users/arvin/Downloads/GitHub/ConnectSphere-kan-78-kan-34/backend
+      Coverage enabled with v8
+
+
+ Test Files  43 passed (43)
+      Tests  1180 passed (1180)
+   Start at  03:05:26
+   Duration  17.22s (transform 33.25s, setup 0ms, import 97.03s, tests 20.61s, environment 50ms)
+
+ % Coverage report from v8
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s
+-------------------|---------|----------|---------|---------|-------------------
+All files          |   86.38 |    89.32 |   84.98 |   86.98 |
+ src               |    90.9 |    88.46 |      75 |   90.19 |
+  app.ts           |   96.15 |    95.83 |     100 |   95.83 | 106-107
+  runtime-app.ts   |       0 |        0 |       0 |       0 | 19-26
+ src/config        |   83.33 |      100 |      50 |   83.33 |
+  env.ts           |   83.33 |      100 |      50 |   83.33 | 14-18
+ src/db            |   78.94 |      100 |   33.33 |   78.94 |
+  pool.ts          |       0 |      100 |       0 |       0 | 15-29
+ src/modules/auth  |   82.35 |    76.92 |   81.25 |   80.76 |
+  router.ts        |   95.31 |      100 |    90.9 |   94.82 | 19-20,39
+  supabase.ts      |      20 |    29.41 |   33.33 |      20 | 29-49
+ ...modules/events |   85.01 |    88.42 |   86.66 |   85.52 |
+  ...ion-router.ts |   63.63 |      100 |      20 |   63.63 | 17,22,29,40
+  ...ifications.ts |   13.63 |        0 |   33.33 |    11.9 | 38-118
+  create-draft.ts  |   92.85 |     62.5 |     100 |   95.65 | 62
+  ...est-detail.ts |     100 |    87.09 |     100 |     100 | 87-90
+  ...w-decision.ts |    9.67 |        0 |      50 |   10.71 | 51-119
+  ...sts-router.ts |   98.31 |    97.26 |     100 |   98.31 | 206,264
+  update-draft.ts  |   22.85 |    22.22 |      50 |   23.33 | 89-140
+  workflow-http.ts |      96 |    94.44 |     100 |     100 | 71
+  ...ow-support.ts |   89.61 |    91.83 |    87.5 |   91.17 | 64-70,159-163
+ ...modules/venues |   86.67 |    89.27 |    82.9 |   88.02 |
+  availability.ts  |     100 |    90.47 |     100 |     100 | 162-163
+  block-service.ts |    3.84 |        0 |       0 |    4.16 | 27-96
+  ...ng-service.ts |      80 |    73.07 |   66.66 |   84.61 | ...06,147,156,188
+  ...lity-rules.ts |   98.36 |     97.7 |     100 |     100 | 57,136,138
+  ...ty-service.ts |    6.89 |        0 |       0 |       8 | 32-104
+  ...ngs-router.ts |   92.85 |       50 |   83.33 |   92.85 | 21
+  venue-router.ts  |      75 |      100 |   33.33 |      75 | 20,25
+  venue-search.ts  |    92.3 |       90 |     100 |   98.43 | 130
+-------------------|---------|----------|---------|---------|-------------------
+
+=============================== Coverage summary ===============================
+Statements   : 86.38% ( 1352/1565 )
+Branches     : 89.32% ( 1012/1133 )
+Functions    : 84.98% ( 249/293 )
+Lines        : 86.98% ( 1230/1414 )
+================================================================================

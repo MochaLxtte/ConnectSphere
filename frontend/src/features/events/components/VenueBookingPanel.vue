@@ -203,6 +203,8 @@ onBeforeUnmount(() => { contextVersion++; abortPending(); });
           <p class="panel-meta">{{ formatEventTime(item.startsAt) }} to {{ formatEventTime(item.endsAt) }}</p>
           <p v-if="item.layout">Layout: {{ item.layout }}</p>
           <p v-if="item.notes">Notes: {{ item.notes }}</p>
+          <p v-if="item.occupiedStartsAt && item.occupiedEndsAt">Occupied (including setup/turnaround): {{ formatEventTime(item.occupiedStartsAt) }} to {{ formatEventTime(item.occupiedEndsAt) }}</p>
+          <p v-if="item.warnings?.length" role="status">Warning: {{ item.warnings.join(', ') }}</p>
           <p v-if="item.decisionReason">Decision note: {{ item.decisionReason }}</p>
           <p v-if="item.replacesBookingId" class="panel-meta">Replacement for an outage-affected booking.</p>
         </li>

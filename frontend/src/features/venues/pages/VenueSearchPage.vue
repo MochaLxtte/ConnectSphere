@@ -250,6 +250,7 @@ onBeforeUnmount(() => {
             <h3>{{ venue.name }}</h3>
             <span class="venue-capacity">Up to {{ venue.capacity }} guests</span>
           </div>
+          <p v-if="venue.occupiedStartsAt && venue.occupiedEndsAt">Occupied time (including setup/turnaround): {{ formatEventTime(venue.occupiedStartsAt) }} – {{ formatEventTime(venue.occupiedEndsAt) }}</p>
           <p class="venue-address">{{ venue.location || 'Location not listed' }}</p>
           <p v-if="venue.description" class="venue-description">{{ venue.description }}</p>
 

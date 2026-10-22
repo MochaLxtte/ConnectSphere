@@ -50,6 +50,8 @@ export interface VenueResult {
   /** KAN-77: venue setup and turnaround minutes; KAN-78 applies them to occupancy. */
   setupMinutes: number;
   turnaroundMinutes: number;
+  occupiedStartsAt?: string | null;
+  occupiedEndsAt?: string | null;
   updatedAt: string;
 }
 
@@ -169,7 +171,9 @@ export function isOpenForRange(
 }
 
 const SEARCH_SQL = `
-  SELECT v.id, v.name, v.description, v.location, v.capacity,
+  SELECT v.setup_minutes AS "setupMinutes", v.turnaround_minutes AS "turnaroundMinutes",
+         venue_occupied_start($7::timestamptz, v.setup_minutes) AS "occupiedStartsAt",
+         venue_occupied_end($8::timestamptz, v.turnaround_minutes) AS "occupiedEndsAt", v.id, v.name, v.description, v.location, v.capacity,
          v.layouts, v.facilities, v.accessibility_features AS "accessibilityFeatures",
          v.wheelchair_accessible AS "wheelchairAccessible",
          to_char(v.opens_at, 'HH24:MI') AS "opensAt",
@@ -187,16 +191,19 @@ const SEARCH_SQL = `
     AND v.accessibility_features @> $5::text[]
     AND (NOT $6::boolean OR v.wheelchair_accessible)
     AND ($7::timestamptz IS NULL OR NOT EXISTS (
-          SELECT 1 FROM venue_bookings b
+          SELECT 1 FROM venue_booking_intervals b
           WHERE b.venue_id = v.id
             AND b.status = '${BLOCKING_BOOKING_STATUS}'
-            AND b.starts_at < $8::timestamptz
-            AND b.ends_at > $7::timestamptz))
+            AND b.occupied_starts_at < venue_occupied_end($8::timestamptz, v.turnaround_minutes)
+            AND b.occupied_ends_at > venue_occupied_start($7::timestamptz, v.setup_minutes)))
     AND ($7::timestamptz IS NULL OR NOT EXISTS (
           SELECT 1 FROM venue_unavailability u
           WHERE u.venue_id = v.id
-            AND u.starts_at < $8::timestamptz
-            AND u.ends_at > $7::timestamptz))
+            AND u.starts_at < venue_occupied_end($8::timestamptz, v.turnaround_minutes)
+            AND u.ends_at > venue_occupied_start($7::timestamptz, v.setup_minutes)))
+    AND ($7::timestamptz IS NULL OR venue_interval_within_hours(
+      venue_occupied_start($7::timestamptz, v.setup_minutes),
+      venue_occupied_end($8::timestamptz, v.turnaround_minutes), v.opens_at, v.closes_at))
   ORDER BY lower(v.name), v.id`;
 
 type VenueRow = Omit<VenueResult, 'updatedAt'> & {
@@ -228,10 +235,11 @@ export async function searchVenues(
   if (startsAt !== null && endsAt !== null) {
     venues = venues.filter((venue) => isOpenForRange({
       opensAt: venue.openingStartsAt, closesAt: venue.openingEndsAt,
-    }, startsAt, endsAt));
+    }, iso(venue.occupiedStartsAt ?? startsAt), iso(venue.occupiedEndsAt ?? endsAt)));
   }
   return venues.map(({ openingStartsAt: _opens, openingEndsAt: _closes, ...row }) => ({
     ...row, updatedAt: iso(row.updatedAt),
+    ...(row.occupiedStartsAt ? { occupiedStartsAt: iso(row.occupiedStartsAt), occupiedEndsAt: iso(row.occupiedEndsAt!) } : {}),
   }));
 }
 

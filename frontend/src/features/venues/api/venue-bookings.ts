@@ -12,6 +12,9 @@ export interface VenueBooking {
   venueId: string;
   venueName: string;
   status: VenueBookingStatus;
+  occupiedStartsAt?: string;
+  occupiedEndsAt?: string;
+  warnings?: string[];
   startsAt: string;
   endsAt: string;
   layout: string | null;

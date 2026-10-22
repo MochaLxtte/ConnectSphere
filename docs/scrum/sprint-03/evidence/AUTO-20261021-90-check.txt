@@ -1,0 +1,84 @@
+
+> connectsphere@0.1.0 check
+> npm run typecheck && npm test && npm run build
+
+
+> connectsphere@0.1.0 typecheck
+> tsc -p tsconfig.tools.json && npm run typecheck --workspaces
+
+
+> @connectsphere/frontend@0.1.0 typecheck
+> vue-tsc --noEmit
+
+
+> @connectsphere/backend@0.1.0 typecheck
+> tsc --noEmit
+
+
+> connectsphere@0.1.0 test
+> npm run test --workspaces
+
+
+> @connectsphere/frontend@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.11 C:/Users/arvin/Downloads/GitHub/ConnectSphere-kan-78-kan-34/frontend
+
+
+ Test Files  35 passed (35)
+      Tests  678 passed (678)
+   Start at  03:08:56
+   Duration  36.37s (transform 37.54s, setup 109.90s, import 62.34s, tests 109.80s, environment 151.03s)
+
+
+> @connectsphere/backend@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.11 C:/Users/arvin/Downloads/GitHub/ConnectSphere-kan-78-kan-34/backend
+
+
+ Test Files  43 passed (43)
+      Tests  1180 passed (1180)
+   Start at  03:09:34
+   Duration  11.05s (transform 19.51s, setup 0ms, import 76.18s, tests 17.34s, environment 21ms)
+
+
+> connectsphere@0.1.0 build
+> npm run build --workspaces
+
+
+> @connectsphere/frontend@0.1.0 build
+> vue-tsc --noEmit && vite build
+
+vite v8.2.2 building client environment for production...
+transforming...
+✓ 195 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.69 kB │ gzip:   0.40 kB
+dist/assets/index-DsBMA_rS.css   58.02 kB │ gzip:  10.81 kB
+dist/assets/index-Bm_CWG9P.js   492.30 kB │ gzip: 135.36 kB
+
+✓ built in 3.59s
+node.exe : [33m[PLUGIN_TIMINGS] [0mPlugin hooks ran for 3.2s of this 3.6s build (88%).
+At line:1 char:1
++ & "C:\Users\arvin\AppData\Local\nvm\v24.21.0/node.exe" "C:\Users\arvi ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([33m[PLUGIN_TI...6s build (88%).:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+The slowest hooks, timed inside each callback (the wait before a callback starts is excluded, the time it awaits is
+included):
+  - vite:css-post renderChunk (48%, 1.7s, 1 call)
+Additional hook time came from the hooks below and from hooks under 1s.
+2 hooks are listed without a time. Their calls overlapped, so the time inside one call includes work from other calls.
+To find their cost, profile the build with `node --cpu-prof`:
+  - vite:css transform (29 calls)
+  - vite:vue transform (103 calls)
+See https://rolldown.rs/reference/InputOptions.checks#plugintimings for more details.
+
+
+> @connectsphere/backend@0.1.0 build
+> tsc -p tsconfig.build.json

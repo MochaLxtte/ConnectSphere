@@ -36,6 +36,8 @@ export interface SuitabilityAssessment {
   eventName: string | null;
   venueId: string;
   venueName: string;
+  occupiedStartsAt?: string | null;
+  occupiedEndsAt?: string | null;
   checkedAt: string;
   outcome: 'SUITABLE' | 'UNSUITABLE' | 'NEEDS_REVIEW';
   checks: SuitabilityCheck[];
@@ -130,17 +132,21 @@ export function assessVenueSuitability(
     ? `Required layout is unavailable: ${input.layout}.`
     : input.layout ? 'The required layout is available.' : 'No layout was specified as required.');
 
-  const hours = event.startsAt !== null && event.endsAt !== null
-    ? intervalWithinVenueHours(event.startsAt, event.endsAt, venue.opensAt, venue.closesAt) : null;
+  const occupiedStartsAt = event.startsAt === null || !Number.isFinite(Date.parse(event.startsAt)) ? null
+    : new Date(Date.parse(event.startsAt) - (venue.setupMinutes ?? 0) * 60_000).toISOString();
+  const occupiedEndsAt = event.endsAt === null || !Number.isFinite(Date.parse(event.endsAt)) ? null
+    : new Date(Date.parse(event.endsAt) + (venue.turnaroundMinutes ?? 0) * 60_000).toISOString();
+  const hours = occupiedStartsAt !== null && occupiedEndsAt !== null
+    ? intervalWithinVenueHours(occupiedStartsAt, occupiedEndsAt, venue.opensAt, venue.closesAt) : null;
   if (hours === null) {
     add('availability', 'UNKNOWN', 'Valid event timing and venue opening hours are needed to check availability.');
   } else {
-    const failures = [!hours ? 'the event extends outside the venue opening hours' : '',
-      conflicts.booked ? 'an approved booking overlaps the event period' : '',
-      conflicts.blocked ? 'an operational block overlaps the event period' : ''].filter(Boolean);
+    const failures = [!hours ? 'the occupied interval extends outside the venue opening hours' : '',
+      conflicts.booked ? 'an approved booking overlaps the occupied period' : '',
+      conflicts.blocked ? 'an operational block overlaps the occupied period' : ''].filter(Boolean);
     add('availability', failures.length ? 'FAIL' : 'PASS', failures.length
       ? `The venue is unavailable: ${failures.join('; ')}.`
-      : 'The event period is within opening hours and has no overlapping approved booking or operational block.');
+      : 'The occupied period is within opening hours and has no overlapping approved booking or operational block.');
   }
 
   add('requirements', input.requirementsConfirmed && input.unresolvedRequirements === null ? 'PASS' : 'UNKNOWN',
@@ -148,7 +154,7 @@ export function assessVenueSuitability(
       : input.unresolvedRequirements !== null ? 'Some event requirements still need manual review.'
         : 'The coordinator confirmed the structured requirements and reported no unresolved requirements.');
   return {
-    eventId: event.id, eventName: event.name, venueId: venue.id, venueName: venue.name, checkedAt,
+    eventId: event.id, eventName: event.name, venueId: venue.id, venueName: venue.name, checkedAt, occupiedStartsAt, occupiedEndsAt,
     outcome: checks.some(check => check.status === 'FAIL') ? 'UNSUITABLE'
       : checks.some(check => check.status === 'UNKNOWN') ? 'NEEDS_REVIEW' : 'SUITABLE',
     checks,

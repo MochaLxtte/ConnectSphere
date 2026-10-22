@@ -121,6 +121,8 @@ erDiagram
     }
 
     venues {
+        integer setup_minutes "0..1440, default 0"
+        integer turnaround_minutes "0..1440, default 0"
         uuid id PK
         text name
         text description "nullable"
@@ -164,6 +166,8 @@ erDiagram
     }
 
     venue_bookings {
+        integer reserved_setup_minutes "approval history"
+        integer reserved_turnaround_minutes "approval history"
         uuid id PK
         uuid event_request_id FK
         uuid venue_id FK
@@ -280,3 +284,7 @@ erDiagram
 - User email addresses, venue names and equipment-type names have case-insensitive unique indexes using `lower(...)`.
 
 The diagrams describe stored tables and relationships. The [database guide](../database/README.md) documents integrity guards and setup; the [scope record](requirements/README.md#30-september-sprint-scope-audit) distinguishes current workflows from later features.
+
+## KAN-78 internal interval model — 21 October 2026
+
+Migration 008 adds two zero-default constrained venue duration columns and two booking approval-snapshot columns shown above. `venue_booking_intervals` is an internal view, not another persistent table: live non-completed bookings use current venue durations; ended/completed bookings use the recorded snapshots. `venue_booking_warnings(uuid)` derives current conflicts/operational violations without writing bookings. These database objects do not grant a new Data API access path.

@@ -149,6 +149,12 @@ The local service does not use TLS. Tests create and drop an isolated schema in 
 
 For optional local application development, set `DATABASE_URL=postgresql://connectsphere:connectsphere_local@127.0.0.1:5432/connectsphere` and leave `MIGRATION_DATABASE_URL` blank, then run migrations, seeds and the app normally. Update the URL if the local port or credentials change. `npm run db:down` stops the Compose service and retains its named volume. Changing Compose credentials after a volume is initialised does not change the existing PostgreSQL users. There is no automatic reset command.
 
+## Migration 008 — KAN-78 occupied venue intervals
+
+Adds zero-default 0..1440-minute venue durations, reservation snapshot fields, SQL occupied start/end/hour helpers, an internal booking-interval view, live warning evaluation and booking/block integrity guards. Existing migrations and booking rows are preserved. The shared venue lock serialises current buffer changes and reservation decisions. Ended/completed rows retain approval snapshots; warnings for live bookings are computed without mutating history.
+
+Run `npm run db:migrate` only against the intended development database after the team has been told. This session applied migration 008 only to disposable local PostgreSQL test schemas. Shared Supabase application is **Not executed**. Coordinate the column names/migration with KAN-77 before merging its separately owned editor; do not create duplicate buffer columns. Tests use explicit `TEST_DATABASE_URL` and must never target shared data.
+
 ## KAN-77 venue buffer durations — 21 October 2026
 
 **Implementation record:** [009_venue_buffer_durations.sql](migrations/009_venue_buffer_durations.sql) adds `venues.setup_minutes` and `venues.turnaround_minutes`, each `integer NOT NULL DEFAULT 0` with a `CHECK` from 0 to 1440. Existing venues receive zero, so current intervals are unchanged; bookings, blocks and migration history are untouched. The upgrade and constraint checks are in `database/tests/database.integration.test.ts` and run on an isolated PostgreSQL test database.
@@ -166,3 +172,7 @@ For optional local application development, set `DATABASE_URL=postgresql://conne
 ## KAN-81 replacement link — 21 October 2026
 
 **Implementation record:** [011_venue_booking_replacements.sql](migrations/011_venue_booking_replacements.sql) adds nullable `venue_bookings.replaces_booking_id`, a self-reference from a replacement to the outage-affected booking it replaces, with a partial index. Existing rows get NULL and are unchanged. It follows 010 because PR #47 merged 010; an applied migration is never edited. Not applied to shared Supabase; agree the window with the team (AGENTS.md §7.3). The booking routes read this column and fail on a database without migration 011.
+
+## KAN-78 main reconciliation — 21 October 2026
+
+The original branch migration `008_venue_occupied_intervals.sql` is superseded by `012_venue_occupied_intervals.sql` after main integration. Shared `008_notification_inbox.sql` and `009_venue_buffer_durations.sql` are preserved without edits. Migration 010 adds booking snapshots and occupied-interval/warning/guard objects, using duration columns already created by 009. Fresh installs, prior migration aliases and existing data passed the integration suite. Migration 010 was applied only to the isolated local test database; shared Supabase application is Not executed. Coordinate its application before deploying this PR.

@@ -574,7 +574,7 @@ The staff page at `/venue-bookings` opens `/venue-bookings/:id`; the assigned co
 | `409 VENUE_BOOKING_CONFLICT` | Another approved booking overlaps this venue and period. |
 | `409 VENUE_UNAVAILABLE` | An operational block overlaps this venue and period. |
 
-The write uses one transaction, locks the booking row and rechecks `PENDING`. Approval also locks the event then venue, verifies `APPROVED`/active eligibility, and queries conflicts **after** obtaining the venue lock so competing approvals see the latest committed reservation. Periods use `[startsAt, endsAt)` with no turnover buffer; pending/rejected/cancelled rows do not reserve the venue. Rejection can close a stale pending request without requiring event/venue approval eligibility. The existing database trigger remains a final integrity guard; future booking/block writers must coordinate their venue locking and tests with this path.
+The write uses one transaction, locks the booking row and rechecks `PENDING`. Approval also locks the event then venue, verifies `APPROVED`/active eligibility, and queries conflicts **after** obtaining the venue lock so competing approvals see the latest committed reservation. KAN-78 now checks occupied intervals including setup/turnaround (see the 21 October contract below); pending/rejected/cancelled rows do not reserve the venue. Rejection can close a stale pending request without requiring event/venue approval eligibility. The existing database trigger remains a final integrity guard; future booking/block writers must coordinate their venue locking and tests with this path.
 
 A successful write changes only this booking's status, decision actor/time/reason and update timestamp. It preserves the event/venue associations and booking period, and does not transition the event. It writes the venue-decision notifications in the same transaction (KAN-64). KAN-51 reads the new approved period on refresh; rejected bookings remain absent. Repeated/competing decisions never overwrite the original outcome. An uncertain client response requires a read before retrying; the UI automatically reloads on 409 and offers a read-only retry after uncertain transport failures.
 
@@ -659,6 +659,20 @@ The update locks the venue row and runs in one transaction, so concurrent edits 
 
 **Verification:** `backend/test/venues/venue-catalogue-input.test.ts`, `venue-catalogue-service.test.ts` and `venue-catalogue-router.test.ts`. PostgreSQL integration and browser coverage (S2-T03/S2-T04) are added under `database/tests/venues/` and `tests/e2e/` and recorded in test evidence when executed.
 
+## KAN-78 occupied venue intervals — 21 October 2026
+
+Migration 008 adds `venues.setup_minutes` / `turnaround_minutes` (integers 0..1440, defaults zero), booking approval snapshots and internal SQL helpers/view. KAN-77 owns the separate buffer editing API/UI and stale-field contract; it is not implemented by this branch. Its writer must lock/update the same venue row and may query `venue_booking_warnings(booking_id)` for affected bookings.
+
+The shared rule is [event start - setup, event end + turnaround). Search, calendar, suitability, submission and approval use current durations for non-ended/non-completed bookings. Approved reservations block; pending/rejected/cancelled requests do not. Exact occupied adjacency is allowed. Blocks and Singapore opening hours cover the full occupied interval. Restricted cross-day windows and invalid hours are unavailable; null/full-day hours permit continuous multi-day use.
+
+Search adds `setupMinutes`, `turnaroundMinutes` and nullable `occupiedStartsAt/occupiedEndsAt` for a timed query. Suitability adds nullable occupied endpoints and checks them against hours. Calendar booking `startsAt/endsAt` now describe occupied bars; `eventStartsAt/eventEndsAt` retain event timing, with `warnings` carrying current operational issues. Booking list/detail/submission/decision responses add `occupiedStartsAt/occupiedEndsAt` and `warnings`. Existing event timing fields are unchanged. Staff lists include pending requests and approved bookings with current warnings; coordinators remain scoped to their assigned events. No additional event identity is disclosed on the calendar.
+
+Warnings are `APPROVED_BOOKING_OVERLAP`, `OPERATIONAL_BLOCK_OVERLAP` and `OUTSIDE_OPERATING_HOURS`. They are recomputed on read after duration changes, flag both affected overlaps and disappear after resolution. They never cancel, delete or move bookings. Ended/completed historical bookings use recorded approval snapshots and have no new warnings. Existing conflicts do not exempt newly attempted reservations.
+
+Submission and approval take the venue lock before a separate current-data check, serialising with duration edits/blocks/other approvals. The database trigger is a final approval guard; it snapshots durations. New block writes also coordinate on the venue lock. Existing conflict codes stay `VENUE_BOOKING_CONFLICT` / `VENUE_UNAVAILABLE`; an occupied hours violation returns 409 `VENUE_OUTSIDE_OPERATING_HOURS` with clear cross-day feedback. Any failure rolls back the write.
+
+KAN-34's four editable date fields require ISO date-times with explicit offsets and real calendar dates. Impossible month/day or leap-day combinations return 400 input feedback before SQL; omitted fields, explicit nullable clears and Draft state/access policies are preserved.
+
 ## Notifications (KAN-64, CF-20)
 
 Mounted at `/api/notifications` for every signed-in role. There is no way to name another recipient: each query uses the verified caller. Every response sets `Cache-Control: no-store`.
@@ -676,3 +690,7 @@ The relevant business services insert these notices before committing, using the
 
 
 **KAN-81 staff stale-write handling — 21 October 2026.** A 404/409 refusal of block creation/removal keeps the server error and entered values but refreshes both the selected venue's blocks and cross-venue recovery list. It is still a definite refused write; it is not described as uncertain. Network/5xx/unreadable outcomes also refresh, with uncertain-result wording. Neither branch retries a mutation automatically. Component regressions: TC-09-17.
+
+## KAN-78 integrated buffer-save reporting — 21 October 2026
+
+The KAN-77 editor is now present from main. On a successful buffer-field PATCH, the catalogue response adds optional `venue.affectedBookings: { id: string, warnings: string[] }[]`, evaluated in the same venue-locked transaction. The editor displays these warnings with booking-detail links. This reports affected arrangements without cancelling or moving them. Existing field-aware stale checks remain unchanged. Earlier KAN-77 pending-editor notes describe the pre-integration branch. Schema source is now shared migration 009 plus extension 010, not the superseded private 008.

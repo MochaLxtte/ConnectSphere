@@ -158,6 +158,11 @@ classDiagram
     boolean active
   }
   class VenueBooking {
+    integer reservedSetupMinutes
+    integer reservedTurnaroundMinutes
+    Date occupiedStartsAt
+    Date occupiedEndsAt
+    string[] warnings
     UUID eventRequestId
     UUID venueId
     BookingStatus status
@@ -264,9 +269,11 @@ sequenceDiagram
   Notify->>DB: Insert organiser notice
   API->>DB: Commit review and notification
   Coordinator->>API: Request suitable available venue for approved event
-  API->>DB: Validate current event and venue, insert pending booking
+  API->>DB: Lock event and venue and check current occupied interval, hours and blocks
+  API->>DB: Insert pending booking without reserving time
   Staff->>API: Decide venue booking
-  API->>DB: Recheck conflicts and permissions, persist decision
+  API->>DB: Lock booking, event and venue and recheck current buffers and occupied conflicts
+  API->>DB: Snapshot buffers and persist approval atomically
   API->>Notify: Venue decision, same transaction
   Notify->>DB: Organiser, current coordinator and deciding staff notices
   API->>DB: Commit booking decision and notifications
@@ -400,6 +407,8 @@ erDiagram
     text status "RECOVERY_REQUIRED RESOLVED CLEARED"
   }
   VENUE_BOOKINGS {
+    integer reserved_setup_minutes
+    integer reserved_turnaround_minutes
     uuid id PK
     uuid event_request_id FK
     uuid venue_id FK
@@ -487,3 +496,7 @@ Customer changes received 2 October are represented by KAN-77/78/79/81/82/83/84;
 Implementers must update C3/class/sequence/data/API views for venue buffers, outage recovery, timed holds and its scheduler, Lead authorization, independent arrangements, revision-bound safety and preparation, plus notification integration. Preserve existing diagrams as the current implementation until code changes; add numbered migrations rather than editing applied history. Re-export affected diagrams in the same story PR. Safety review remains separate from event confirmation: readiness permits review, while preparation requires both a confirmed event and current safety approval, avoiding a circular prerequisite.
 
 **21 October implementation follow-up:** Lead allocation/reassignment and the KAN-64 inbox are reflected in the current C3, class and sequence views above. Migration 009 and the venue fields implement KAN-77 AC1–AC5; buffer application and affected-booking warnings remain KAN-78/KAN-77 AC6 work. The 16 October paragraph is the original design plan, not the current implementation status.
+
+## KAN-78 occupied interval evaluation — 21 October 2026
+
+The API's venue module now shares SQL occupied-interval calculation across search, calendar, suitability and booking writes. Migration 008 centralises occupied endpoints and operating-hour eligibility. The internal view selects current durations for live bookings and approval snapshots for ended/completed history. Computed warnings identify both affected overlaps and operational violations after buffer edits; no background job or booking cancellation is introduced. Existing API/module boundaries stay the same. KAN-77's configuration editor remains a separate dependency. The updated class, planning ERD and workflow sequence PNGs accompany this source.

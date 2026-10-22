@@ -144,3 +144,29 @@ No hosted acceptance, Jira status change, sprint completion or velocity credit i
 | 16 October 2026, after rebalance | 63 | 0 selected parent points evidenced complete | 63 | Not assessed | Current administrative snapshot: Sprint 3 id 67, 13 selected To Do parents; scope reduction is reallocation, not completed work |
 
 At sprint close: export the Jira burndown chart, save it in `evidence/`, register it, and update `../release-burndown.md`.
+
+## 21 October 2026 — KAN-78 / KAN-34 development update
+
+Arvin's approved implementation uses `feat/kan-78-kan-34` from main `aaee549`. Jira parents are In Progress / Arvin; unestimated subtasks KAN-94/95 and KAN-96/97 were created. No sprint, point, reviewer or acceptance decision was changed. KAN-78 implements buffered planning/conflict checks, serialised decisions, preserved history and live warnings; KAN-34 repairs impossible-date input errors and re-verifies existing editing behaviour. AUTO-20261021-KAN78-01: 605 frontend, 1,049 backend, 356 database and 48 browser tests passed; type checks/builds passed. The team saw test and coverage results in chat before evidence authoring.
+
+Remaining: coordinate migration 008 with KAN-77's owner/editor; relay group notice; shared migration application, hosted checks, independent reviewer/review, commit/PR/merge. Independent reviewer **To agree**. No Done/velocity credit; no backdated 17 October completion. This is a development note, not an invented Daily Scrum row or meeting record.
+
+### 21 October — pre-commit packet review follow-up
+
+KAN-78 search now preserves PostgreSQL Date milliseconds at fractional opening-hour boundaries. AUTO-20261021-KAN78-02: 1,050 backend tests and backend type checking passed; line coverage 86.03%, branch coverage 88.58%. No commit or external review was created.
+
+### 21 October — KAN-78 / KAN-34 reviewer selection
+
+Arvin selected Leo Kai Jie as independent reviewer for both stories in chat. This records Arvin's selection only; Leo's acknowledgement and actual GitHub review are Not recorded. Earlier To agree entries retain their dated context.
+
+### 21 October — authorised commits
+
+Arvin authorised local commits in chat. Implementation/test source: `0b08802` (KAN-34), `2396cce` (KAN-78), `afea8cf` (KAN-78 tests). Independent reviewer: Leo Kai Jie; review, hosted acceptance, push and PR remain Not executed. This records actual source provenance, not new test execution or delivery credit.
+
+## 21 October — KAN-78 / KAN-34 PR reconciliation
+
+Arvin authorised pushing and opening a main-target PR and moving both Jira parents to In Review. Main `4d36883` is reconciled without discarding KAN-64 notifications, KAN-77 buffer settings or the strict draft-date fix. Shared migrations 008/009 remain unchanged; KAN-78 extends them with migration 010. The existing buffer editor now surfaces affected-booking warnings after save. AUTO-20261021-90 passed: 678 frontend, 1,180 backend, 395 PostgreSQL and 149 Chromium tests, types and builds. Reviewer: Leo Kai Jie (`NahIts-Leo`). Hosted acceptance and independent PR review remain Not executed. No point, sprint or Done credit change.
+
+## 21 October — PR #48 opened and Jira moved to review
+
+Under Arvin's approval, the branch was pushed and [PR #48](https://github.com/MochaLxtte/ConnectSphere/pull/48) opened against main. GitHub confirms reviewer request for Leo Kai Jie (`NahIts-Leo`). Jira confirms KAN-78 and KAN-34 are In Review. Reconciled implementation/test source `2d138be` retains AUTO-20261021-90 results; this status-documentation update is not a new test run. GitHub Actions started. Approval, hosted acceptance and shared application of migration 010 remain Not executed.

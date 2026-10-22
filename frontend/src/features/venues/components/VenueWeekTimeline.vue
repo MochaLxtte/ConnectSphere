@@ -48,6 +48,7 @@ function agendaKey(item: AgendaItem): string {
 
 <template>
   <div class="week-timeline" :style="{ '--hours': String(span / HOUR_MS) }">
+    <p>Booked bars show occupied time, including setup and turnaround.</p>
     <ul class="timeline-legend" aria-label="Legend">
       <li><span class="legend-swatch bar-segment--available" aria-hidden="true"></span>Available</li>
       <li><span class="legend-swatch bar-segment--booked" aria-hidden="true"></span>Booked: confirmed venue booking</li>
@@ -89,6 +90,12 @@ function agendaKey(item: AgendaItem): string {
               <template v-else-if="item.kind === 'RECORDED' && item.period.kind === 'BLOCKED'">
                 · {{ item.period.reason?.trim() || 'No reason recorded' }}
               </template>
+              <span v-if="item.kind === 'RECORDED' && item.period.kind === 'BOOKING' && item.period.eventStartsAt">
+                · Event: {{ formatInstant(item.period.eventStartsAt) }} – {{ formatInstant(item.period.eventEndsAt!) }}
+              </span>
+              <span v-if="item.kind === 'RECORDED' && item.period.kind === 'BOOKING' && item.period.warnings?.length" role="status">
+                · Warning: {{ item.period.warnings.join(', ') }}
+              </span>
               <span v-if="item.kind === 'RECORDED' && item.clipped" class="agenda-note">
                 · {{ formatInstant(item.period.startsAt) }} – {{ formatInstant(item.period.endsAt) }}
               </span>

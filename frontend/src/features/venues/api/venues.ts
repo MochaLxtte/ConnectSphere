@@ -25,6 +25,10 @@ export interface VenueResult {
   wheelchairAccessible: boolean;
   opensAt: string | null; // "HH:MM"
   closesAt: string | null;
+  setupMinutes?: number;
+  turnaroundMinutes?: number;
+  occupiedStartsAt?: string | null;
+  occupiedEndsAt?: string | null;
   updatedAt: string;
 }
 

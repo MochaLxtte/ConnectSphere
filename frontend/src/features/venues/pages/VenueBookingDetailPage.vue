@@ -171,6 +171,9 @@ onBeforeUnmount(resetView);
           <dl>
             <div><dt>Venue</dt><dd>{{ state.booking.venueName }}</dd></div>
             <div><dt>Booking status</dt><dd>{{ venueBookingStatusLabel(state.booking.status) }}</dd></div>
+            <div v-if="state.booking.occupiedStartsAt"><dt>Occupied starts (including setup)</dt><dd>{{ formatEventTime(state.booking.occupiedStartsAt) }}</dd></div>
+            <div v-if="state.booking.occupiedEndsAt"><dt>Occupied ends (including turnaround)</dt><dd>{{ formatEventTime(state.booking.occupiedEndsAt) }}</dd></div>
+            <div v-if="state.booking.warnings?.length"><dt>Booking warnings</dt><dd role="alert">{{ state.booking.warnings.join(', ') }}</dd></div>
             <div><dt>Booking starts</dt><dd>{{ formatEventTime(state.booking.startsAt) }}</dd></div>
             <div><dt>Booking ends</dt><dd>{{ formatEventTime(state.booking.endsAt) }}</dd></div>
             <div><dt>Requested layout</dt><dd>{{ state.booking.layout ?? 'Not provided' }}</dd></div>

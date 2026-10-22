@@ -36,11 +36,12 @@ const serializeAffected = (row: AffectedRow): AffectedArrangement => ({
 /**
  * KAN-81-AC3: the one place that decides which bookings an outage affects. A non-ended APPROVED
  * booking at the same venue whose interval overlaps the outage, half-open so exact adjacency is
- * unaffected. It uses the booking's event interval; KAN-78 (buffered occupancy) replaces this
- * condition with the buffered occupied interval. Tentative holds do not exist until KAN-83.
+ * unaffected. KAN-78: it compares the buffered occupied interval from venue_booking_intervals, so
+ * an outage covering only a booking's setup or turnaround also affects it. KAN-83 live holds are
+ * released by the block itself before this runs, so only approved bookings are recorded.
  */
 export const AFFECTED_BOOKING_CONDITION = `b.venue_id = $1 AND b.status = 'APPROVED'
-  AND b.ends_at > now() AND b.starts_at < $3 AND b.ends_at > $2`;
+  AND b.ends_at > now() AND b.occupied_starts_at < $3 AND b.occupied_ends_at > $2`;
 
 const affectedSelect = `SELECT i.id AS "impactId", i.status, b.id AS "bookingId",
   b.event_request_id AS "eventRequestId", e.name AS "eventName",
@@ -62,7 +63,7 @@ export async function recordOutageImpacts(
   await client.query(
     `INSERT INTO venue_outage_impacts
        (unavailability_id, venue_booking_id, venue_id, outage_starts_at, outage_ends_at, outage_reason, recorded_by)
-     SELECT $4, b.id, b.venue_id, $2, $3, $5, $6 FROM venue_bookings b
+     SELECT $4, b.id, b.venue_id, $2, $3, $5, $6 FROM venue_booking_intervals b
      WHERE ${AFFECTED_BOOKING_CONDITION}
      ON CONFLICT (unavailability_id, venue_booking_id) WHERE unavailability_id IS NOT NULL DO NOTHING`,
     [outage.venueId, outage.startsAt, outage.endsAt, outage.blockId, outage.reason, outage.actorId],

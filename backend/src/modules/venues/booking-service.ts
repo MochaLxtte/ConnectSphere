@@ -23,6 +23,9 @@ export interface VenueBooking {
   venueId: string;
   venueName: string;
   status: VenueBookingStatus;
+  occupiedStartsAt?: string;
+  occupiedEndsAt?: string;
+  warnings?: string[];
   startsAt: string;
   endsAt: string;
   layout: string | null;
@@ -51,7 +54,8 @@ type BookingRow = Omit<VenueBooking,
   eventStartsAt: Date | null; eventEndsAt: Date | null;
 };
 
-const bookingSelect = `SELECT b.id, b.event_request_id AS "eventRequestId",
+const bookingSelect = `SELECT b.occupied_starts_at AS "occupiedStartsAt",
+  b.occupied_ends_at AS "occupiedEndsAt", venue_booking_warnings(b.id) AS warnings, b.id, b.event_request_id AS "eventRequestId",
   e.name AS "eventName", e.status AS "eventStatus", b.venue_id AS "venueId",
   v.name AS "venueName", b.status, b.starts_at AS "startsAt", b.ends_at AS "endsAt",
   b.layout, b.notes, b.decided_by AS "decidedBy", b.decided_at AS "decidedAt",
@@ -60,7 +64,7 @@ const bookingSelect = `SELECT b.id, b.event_request_id AS "eventRequestId",
   e.expected_attendance AS "expectedAttendance", e.venue_requirements AS "venueRequirements",
   e.accessibility_needs AS "accessibilityNeeds", ${BOOKING_RECOVERY_SQL} AS recovery,
   b.replaces_booking_id AS "replacesBookingId"
-  FROM venue_bookings b JOIN event_requests e ON e.id = b.event_request_id
+  FROM venue_booking_intervals b JOIN event_requests e ON e.id = b.event_request_id
   JOIN venues v ON v.id = b.venue_id`;
 
 const bookingNotFound = () => new WorkflowError('NOT_FOUND', 'VENUE_BOOKING_NOT_FOUND',
@@ -76,20 +80,26 @@ function requireReader(actor: WorkflowActor) {
 function serialize(row: BookingRow): VenueBooking {
   return {
     ...row, startsAt: iso(row.startsAt), endsAt: iso(row.endsAt),
+    ...(row.occupiedStartsAt ? { occupiedStartsAt: iso(row.occupiedStartsAt), occupiedEndsAt: iso(row.occupiedEndsAt!) } : {}),
     decidedAt: isoOrNull(row.decidedAt), createdAt: iso(row.createdAt), updatedAt: iso(row.updatedAt),
     eventStartsAt: isoOrNull(row.eventStartsAt), eventEndsAt: isoOrNull(row.eventEndsAt),
     recovery: serializeRecovery(row.recovery),
   };
 }
 
-/** The current schema has no per-venue staff allocation: every verified Venue Staff may review. */
+/**
+ * The current schema has no per-venue staff allocation: every verified Venue Staff may review.
+ * KAN-78 lists approved bookings with buffer warnings; an outage overlap alone is left out because
+ * KAN-81 recovery (GET /api/venues/recovery) already handles it and staff cannot decide it here.
+ */
 export async function listVenueBookings(
   { pool }: WorkflowDependencies,
   { actor, eventRequestId }: { actor: WorkflowActor; eventRequestId?: string },
 ): Promise<VenueBooking[]> {
   requireReader(actor);
   const found = await pool.query<BookingRow>(`${bookingSelect}
-    WHERE (($1 = 'VENUE_STAFF' AND b.status = 'PENDING') OR
+    WHERE (($1 = 'VENUE_STAFF' AND (b.status = 'PENDING' OR (b.status = 'APPROVED'
+        AND cardinality(array_remove(venue_booking_warnings(b.id), 'OPERATIONAL_BLOCK_OVERLAP')) > 0))) OR
       ($1 = 'EVENT_COORDINATOR' AND e.coordinator_id = $2 AND e.status <> 'DRAFT'))
       AND ($3::uuid IS NULL OR b.event_request_id = $3)
     ORDER BY b.created_at ASC, b.id ASC`, [actor.role, actor.id, eventRequestId ?? null]);
@@ -114,6 +124,27 @@ export async function getVenueBooking(
 
 function conflict(code: string, message: string): never {
   throw new WorkflowError('CONFLICT', code, message);
+}
+
+/** Called after the venue lock; all current buffers and reservations share one snapshot. */
+async function assertOccupiedIntervalAvailable(client: Pick<PoolClient, 'query'>,
+  venueId: string, startsAt: string | Date, endsAt: string | Date, bookingId: string | null = null) {
+  const result = await client.query<{ booked: boolean; blocked: boolean; withinHours: boolean }>(
+    `SELECT venue_interval_within_hours(occupied.s, occupied.e, v.opens_at, v.closes_at) AS "withinHours",
+      EXISTS(SELECT 1 FROM venue_booking_intervals b WHERE b.venue_id = v.id
+        AND ($4::uuid IS NULL OR b.id <> $4) AND b.status = 'APPROVED'
+        AND b.occupied_starts_at < occupied.e AND b.occupied_ends_at > occupied.s) AS booked,
+      EXISTS(SELECT 1 FROM venue_unavailability u WHERE u.venue_id = v.id
+        AND u.starts_at < occupied.e AND u.ends_at > occupied.s) AS blocked
+      FROM venues v CROSS JOIN LATERAL (SELECT
+        venue_occupied_start($2::timestamptz, v.setup_minutes) AS s,
+        venue_occupied_end($3::timestamptz, v.turnaround_minutes) AS e) occupied
+      WHERE v.id = $1`, [venueId, startsAt, endsAt, bookingId]);
+  const current = result.rows[0]!;
+  if (!current.withinHours) conflict('VENUE_OUTSIDE_OPERATING_HOURS',
+    'The occupied interval is outside valid venue operating hours; restricted cross-day windows are unsupported.');
+  if (current.booked) conflict('VENUE_BOOKING_CONFLICT', 'The venue already has an approved booking during the occupied period.');
+  if (current.blocked) conflict('VENUE_UNAVAILABLE', 'The venue is blocked during the occupied period.');
 }
 
 const TERMINAL_EVENT_STATUSES: readonly EventStatus[] = ['REJECTED', 'CANCELLED', 'COMPLETED'];
@@ -194,16 +225,7 @@ export async function createVenueBooking(
     // KAN-53/KAN-54: a pending request does not reserve the venue, but must not be
     // submitted for a period already reserved or blocked. Read after acquiring the
     // venue lock so approvals/blocks committed while waiting are included.
-    const clashes = await client.query<{ booked: boolean; blocked: boolean }>(`SELECT
-      EXISTS(SELECT 1 FROM venue_bookings WHERE venue_id = $1 AND status = 'APPROVED'
-        AND starts_at < $3 AND ends_at > $2) AS booked,
-      EXISTS(SELECT 1 FROM venue_unavailability WHERE venue_id = $1
-        AND starts_at < $3 AND ends_at > $2) AS blocked`,
-    [submission.venueId, submission.startsAt, submission.endsAt]);
-    if (clashes.rows[0]!.booked) {
-      conflict('VENUE_BOOKING_CONFLICT', 'The venue already has an approved booking during this period.');
-    }
-    if (clashes.rows[0]!.blocked) conflict('VENUE_UNAVAILABLE', 'The venue is blocked during this period.');
+    await assertOccupiedIntervalAvailable(client, submission.venueId, submission.startsAt, submission.endsAt);
     if (submission.replacesBookingId !== null) await assertObjectivelySuitable(client, eventRequestId, submission);
 
     const inserted = await client.query<{ id: string }>(
@@ -260,17 +282,8 @@ export async function decideVenueBooking(
         if (!venue.rows[0]?.isActive) conflict('VENUE_INACTIVE', 'This venue is no longer active.');
 
         // A separate statement after acquiring the venue lock sees approvals committed
-        // while we waited. Half-open intervals allow back-to-back bookings, with no buffer.
-        const clashes = await client.query<{ booked: boolean; blocked: boolean }>(`SELECT
-          EXISTS(SELECT 1 FROM venue_bookings WHERE venue_id = $1 AND id <> $2
-            AND status = 'APPROVED' AND starts_at < $4 AND ends_at > $3) AS booked,
-          EXISTS(SELECT 1 FROM venue_unavailability WHERE venue_id = $1
-            AND starts_at < $4 AND ends_at > $3) AS blocked`,
-        [booking.venueId, bookingId, booking.startsAt, booking.endsAt]);
-        if (clashes.rows[0]!.booked) {
-          conflict('VENUE_BOOKING_CONFLICT', 'The venue already has an approved booking during this period.');
-        }
-        if (clashes.rows[0]!.blocked) conflict('VENUE_UNAVAILABLE', 'The venue is blocked during this period.');
+        // while we waited. Half-open occupied intervals allow exact adjacency.
+        await assertOccupiedIntervalAvailable(client, booking.venueId, booking.startsAt, booking.endsAt, bookingId);
 
         // KAN-81-AC8: lock the original last (after booking -> event -> venue) and approve only while it
         // still needs recovery, so a second replacement or a removed outage cannot double-book the event.
@@ -310,10 +323,13 @@ export async function decideVenueBooking(
     if (typeof error === 'object' && error !== null && 'code' in error && error.code === '23P01'
       && 'constraint' in error) {
       if (error.constraint === 'venue_bookings_no_overlap') {
-        conflict('VENUE_BOOKING_CONFLICT', 'The venue already has an approved booking during this period.');
+        conflict('VENUE_BOOKING_CONFLICT', 'The venue already has an approved booking during the occupied period.');
+      }
+      if (error.constraint === 'venue_bookings_within_hours') {
+        conflict('VENUE_OUTSIDE_OPERATING_HOURS', 'The occupied interval is outside valid venue operating hours; restricted cross-day windows are unsupported.');
       }
       if (error.constraint === 'venue_bookings_not_blocked') {
-        conflict('VENUE_UNAVAILABLE', 'The venue is blocked during this period.');
+        conflict('VENUE_UNAVAILABLE', 'The venue is blocked during the occupied period.');
       }
     }
     throw error;

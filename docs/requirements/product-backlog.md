@@ -590,3 +590,15 @@ Export the final Jira backlog with completed and pending stories for submission.
 
 
 **21 October 2026 — KAN-81 targeted status correction.** Jira To Do was corrected to In Progress during PR47 review remediation; Kai Jie is the observed assignee, estimate 8 SP. Only the KAN-81 row is refreshed; other rows retain their dated snapshots. Phase-1 merge does not complete the parent story, confer velocity or establish hosted acceptance.
+
+## 21 October 2026 — targeted KAN-78 / KAN-34 implementation snapshot
+
+KAN-78 (8 SP) and KAN-34 (3 SP) are In Progress / Arvin in Jira on `feat/kan-78-kan-34`; Sprint 3 membership is unchanged. Subtasks: KAN-94/95 under KAN-78; KAN-96/97 under KAN-34. Local automated verification passed (AUTO-20261021-KAN78-01). Independent review, hosted acceptance and Done date remain Not recorded / Not executed as applicable. KAN-77 remains separately assigned to Kai Jie; this branch supplies shared buffer storage/evaluation, not its editor. Earlier allocations and historical acceptance are preserved.
+
+### 21 October — reviewer selection follow-up
+
+Independent reviewer for KAN-78 and KAN-34: Leo Kai Jie, selected by Arvin in chat. Review execution and approval remain Not recorded. Story status, estimates and sprint membership are unchanged.
+
+## 21 October — KAN-78 / KAN-34 review handoff
+
+KAN-78 (8 SP) and KAN-34 (3 SP), Arvin, are now **In Review** in Jira; both transitions were confirmed by the Jira response. [PR #48](https://github.com/MochaLxtte/ConnectSphere/pull/48) targets main from `feat/kan-78-kan-34`, source `2d138be`. Leo Kai Jie (`NahIts-Leo`) is requested on GitHub. Review and hosted acceptance remain Not executed; no Done date, estimate, sprint or delivered credit changed.

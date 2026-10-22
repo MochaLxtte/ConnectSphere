@@ -7,7 +7,9 @@ import {
 import type { VenueResult } from './venue-search.js';
 
 /** Same shape as a venue search result, so search, suitability and maintenance agree on a venue. */
-export type CatalogueVenue = VenueResult;
+export type CatalogueVenue = VenueResult & {
+  affectedBookings?: { id: string; warnings: string[] }[];
+};
 
 type CatalogueRow = Omit<CatalogueVenue, 'updatedAt'> & { updatedAt: Date };
 
@@ -116,6 +118,14 @@ export async function updateCatalogueVenue(
     );
 
     const saved = await client.query<CatalogueRow>(`${catalogueSelect} WHERE id = $1`, [venueId]);
-    return serialize(saved.rows[0]!);
+    const venue = serialize(saved.rows[0]!);
+    if (BUFFER_FIELDS.some(field => update[field] !== undefined)) {
+      const affected = await client.query<{ id: string; warnings: string[] }>(
+        `SELECT b.id, venue_booking_warnings(b.id) AS warnings FROM venue_booking_intervals b
+         WHERE b.venue_id = $1 AND cardinality(venue_booking_warnings(b.id)) > 0
+         ORDER BY b.starts_at, b.id`, [venueId]);
+      return { ...venue, affectedBookings: affected.rows };
+    }
+    return venue;
   });
 }
