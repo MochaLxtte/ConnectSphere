@@ -244,3 +244,60 @@ describe('KAN-12/KAN-52 shared opening-hours boundaries', () => {
       sgt('2026-10-20T10:00'), sgt('2026-10-20T09:00'))).toBe(false);
   });
 });
+
+/* ------------------------------------------------------------------------------------------ */
+describe('KAN-12-AC101: impossible calendar dates are refused, never silently changed', () => {
+  const valid = '2026-10-20T14:00:00+08:00';
+
+  it.each([
+    { title: '30 February 2026 (the reported bug; it used to become 2 March)', value: '2026-02-30T10:00:00+08:00' },
+    { title: '29 February 2026 (2026 is not a leap year)', value: '2026-02-29T10:00:00+08:00' },
+    { title: '31 April', value: '2026-04-31T10:00:00+08:00' },
+    { title: '31 November', value: '2026-11-31T10:00:00Z' },
+    { title: 'day 00', value: '2026-10-00T10:00:00+08:00' },
+    { title: 'day 32', value: '2026-10-32T10:00:00+08:00' },
+    { title: 'month 13', value: '2026-13-01T10:00:00+08:00' },
+    { title: 'month 00', value: '2026-00-10T10:00:00+08:00' },
+    { title: 'hour 24', value: '2026-10-20T24:00:00+08:00' },
+    { title: 'minute 60', value: '2026-10-20T10:60:00+08:00' },
+    { title: 'second 60', value: '2026-10-20T10:00:60+08:00' },
+    { title: 'a time zone offset of +24:00', value: '2026-10-20T10:00:00+24:00' },
+  ])('TC-VS-41 [KAN-12-AC101, negative] refuses $title as the start', ({ value }) => {
+    expect(() => parseVenueSearchQuery({ startsAt: value, endsAt: '2027-01-01T00:00:00Z' })).toThrow(/startsAt must be a real date/);
+  });
+
+  it('TC-VS-42 [KAN-12-AC101, negative] refuses an impossible date as the end, and names that field', () => {
+    expect(() => parseVenueSearchQuery({ startsAt: valid, endsAt: '2026-02-30T10:00:00+08:00' }))
+      .toThrow(/endsAt must be a real date/);
+  });
+
+  it('TC-VS-43 [KAN-12-AC101, negative] the request is refused before any database query runs', async () => {
+    const { query } = fakeDeps([venue()]);
+    expect(() => parseVenueSearchQuery({ startsAt: '2026-02-30T10:00:00+08:00', endsAt: '2026-03-05T10:00:00+08:00' })).toThrow();
+    expect(query).not.toHaveBeenCalled();
+  });
+
+  it('TC-VS-44 [KAN-12-AC101, positive] a real leap day (29 February 2028) is accepted and not moved', () => {
+    const filters = parseVenueSearchQuery({ startsAt: '2028-02-29T10:00:00+08:00', endsAt: '2028-02-29T12:00:00+08:00' });
+    expect(filters.startsAt).toBe('2028-02-29T02:00:00.000Z');
+  });
+
+  it('TC-VS-45 [KAN-12-AC101, boundary] the last valid day of each month is accepted unchanged', () => {
+    for (const [date, utc] of [
+      ['2026-01-31', '2026-01-31T02:00:00.000Z'], ['2026-02-28', '2026-02-28T02:00:00.000Z'],
+      ['2026-04-30', '2026-04-30T02:00:00.000Z'], ['2026-12-31', '2026-12-31T02:00:00.000Z'],
+    ] as const) {
+      const filters = parseVenueSearchQuery({ startsAt: `${date}T10:00:00+08:00`, endsAt: '2030-01-01T00:00:00Z' });
+      expect(filters.startsAt).toBe(utc);
+    }
+  });
+
+  it.each([
+    { title: 'a date with no time', value: '2026-10-20' },
+    { title: 'a date-time with no time zone (its meaning would depend on the server)', value: '2026-10-20T14:00:00' },
+    { title: 'free text', value: 'next tuesday' },
+    { title: 'a non-ISO date', value: '20 Oct 2026 14:00' },
+  ])('TC-VS-46 [KAN-12-AC101, negative] refuses $title', ({ value }) => {
+    expect(() => parseVenueSearchQuery({ startsAt: value, endsAt: '2027-01-01T00:00:00Z' })).toThrow(/startsAt must be a real date/);
+  });
+});

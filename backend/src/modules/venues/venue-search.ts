@@ -101,12 +101,32 @@ function count(query: Record<string, unknown>, key: string): number | null {
   return parsed;
 }
 
+/** ISO 8601 date-time with an explicit time zone, e.g. 2026-10-20T14:00:00+08:00 or ...Z */
+const ISO_DATE_TIME = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2})(?:\.\d{1,3})?)?(?:Z|[+-](\d{2}):(\d{2}))$/;
+
+/**
+ * True only if every part is a real calendar value. Date.parse alone is NOT enough: it can
+ * silently roll an impossible date over (30 Feb 2026 becomes 2 Mar 2026), which would check
+ * availability for a period the coordinator never asked for.
+ */
+function isRealDateTime(match: RegExpExecArray): boolean {
+  const [year, month, day, hour, minute, second, offsetHour, offsetMinute] =
+    [1, 2, 3, 4, 5, 6, 7, 8].map((index) => (match[index] === undefined ? 0 : Number(match[index])));
+  if (year! < 1000 || month! < 1 || month! > 12) return false;
+  const daysInMonth = new Date(Date.UTC(year!, month!, 0)).getUTCDate(); // day 0 of next month
+  return day! >= 1 && day! <= daysInMonth
+    && hour! <= 23 && minute! <= 59 && second! <= 59
+    && offsetHour! <= 23 && offsetMinute! <= 59;
+}
+
 function dateTime(query: Record<string, unknown>, key: string): string | null {
   const value = text(query, key);
   if (value === null) return null;
-  const parsed = Date.parse(value);
-  if (Number.isNaN(parsed)) throw invalid(`${key} must be an ISO 8601 date-time.`);
-  return new Date(parsed).toISOString();
+  const match = ISO_DATE_TIME.exec(value);
+  if (match === null || !isRealDateTime(match)) {
+    throw invalid(`${key} must be a real date and time in ISO 8601 format with a time zone, such as 2026-10-20T14:00:00+08:00.`);
+  }
+  return new Date(Date.parse(value)).toISOString();
 }
 
 function flag(query: Record<string, unknown>, key: string): boolean {

@@ -5,7 +5,7 @@ import { ApiError } from '../../../lib/api-client';
 import { authSession, clearLocalSession } from '../../auth/session.js';
 import { formatEventTime } from '../../events/presentation';
 import {
-  emptyFilters, fetchVenueFilterOptions, hasActiveFilters, localToIso, searchVenues,
+  emptyFilters, fetchVenueFilterOptions, hasActiveFilters, periodHasErrors, searchVenues, validatePeriod,
   type VenueFilterOptions, type VenueFilters, type VenueResult,
 } from '../api/venues';
 
@@ -26,12 +26,19 @@ const isCoordinator = computed(
   () => !authSession.loading && authSession.user?.role === 'EVENT_COORDINATOR',
 );
 
-const timeError = computed(() => {
-  if (!filters.startsAt && !filters.endsAt) return '';
-  if (!filters.startsAt || !filters.endsAt) return 'Enter both a start and an end time, or leave both empty.';
-  return Date.parse(localToIso(filters.endsAt)) > Date.parse(localToIso(filters.startsAt))
-    ? '' : 'The end time must be after the start time.';
-});
+/**
+ * A browser reports a half-typed or impossible date as an empty value, so remember when an input
+ * holds text it could not read; otherwise the field would look "left blank" instead of "not a real date".
+ */
+const unreadable = reactive({ startsAt: false, endsAt: false });
+
+function noteUnreadable(field: 'startsAt' | 'endsAt', event: Event) {
+  unreadable[field] = (event.target as HTMLInputElement | null)?.validity?.badInput === true;
+}
+
+// KAN-12-AC14 / AC101: field-level feedback, and no search is sent while the period is invalid.
+const periodErrors = computed(() => validatePeriod(filters.startsAt, filters.endsAt, unreadable));
+const periodInvalid = computed(() => periodHasErrors(periodErrors.value));
 
 function showSignIn() {
   controller?.abort();
@@ -42,7 +49,8 @@ function showSignIn() {
 }
 
 async function search() {
-  if (timeError.value) return;
+  if (periodInvalid.value) return;
+  // A newer search always wins: aborting the older one makes its late answer get ignored below (KAN-12-AC15).
   controller?.abort();
   const current = new AbortController();
   controller = current;
@@ -87,6 +95,8 @@ async function loadOptions() {
 
 function clearFilters() {
   Object.assign(filters, emptyFilters());
+  unreadable.startsAt = false;
+  unreadable.endsAt = false;
   void search();
 }
 
@@ -112,6 +122,8 @@ watch(
       return;
     }
     Object.assign(filters, emptyFilters());
+    unreadable.startsAt = false;
+    unreadable.endsAt = false;
     void loadOptions();
     void search();
   },
@@ -148,15 +160,27 @@ onBeforeUnmount(() => {
       <div class="filter-grid">
         <div class="field">
           <label for="venue-start">Event start (Singapore time)</label>
-          <input id="venue-start" v-model="filters.startsAt" type="datetime-local" />
+          <input
+            id="venue-start" v-model="filters.startsAt" type="datetime-local"
+            :aria-invalid="periodErrors.startsAt !== ''"
+            :aria-describedby="periodErrors.startsAt ? 'venue-start-error' : undefined"
+            @input="noteUnreadable('startsAt', $event)"
+          />
+          <p v-if="periodErrors.startsAt" id="venue-start-error" class="field-error" role="alert">{{ periodErrors.startsAt }}</p>
         </div>
         <div class="field">
           <label for="venue-end">Event end (Singapore time)</label>
-          <input id="venue-end" v-model="filters.endsAt" type="datetime-local" />
+          <input
+            id="venue-end" v-model="filters.endsAt" type="datetime-local"
+            :aria-invalid="periodErrors.endsAt !== ''"
+            :aria-describedby="periodErrors.endsAt ? 'venue-end-error' : undefined"
+            @input="noteUnreadable('endsAt', $event)"
+          />
+          <p v-if="periodErrors.endsAt" id="venue-end-error" class="field-error" role="alert">{{ periodErrors.endsAt }}</p>
         </div>
-        <p v-if="timeError" class="field-error" role="alert">{{ timeError }}</p>
-        <p v-else class="field-hint wide">
-          Venues are matched on opening hours and excluded if they have an approved booking in this period.
+        <p class="field-hint wide">
+          Venues with opening hours only match events that start and end on the same day within those hours.
+          Venues with an approved booking in this period are excluded.
         </p>
 
         <div class="field">
@@ -199,14 +223,15 @@ onBeforeUnmount(() => {
       </fieldset>
 
       <p v-if="optionsFailed" class="field-hint" role="status">
-        The layout, accessibility and facility lists could not be loaded. The other filters still work.
+        The room layout, accessibility and facility lists could not be loaded, so you can't choose those filters
+        right now. The other filters still work.
       </p>
 
       <div class="filter-actions">
-        <button type="submit" class="button button-primary" :disabled="state.status === 'loading' || !!timeError">
+        <button type="submit" class="button button-primary" :disabled="periodInvalid">
           <AppIcon name="review" :size="16" />Search venues
         </button>
-        <button type="button" class="button button-secondary" :disabled="state.status === 'loading'" @click="clearFilters">
+        <button type="button" class="button button-secondary" @click="clearFilters">
           Clear filters
         </button>
       </div>
@@ -296,7 +321,8 @@ onBeforeUnmount(() => {
   width: 100%; box-sizing: border-box; padding: 9px 10px; font: inherit;
   border: 1px solid var(--border); border-radius: 8px; background: #fff;
 }
-.field-error { grid-column: 1 / -1; color: #853e37; font-size: 13px; margin: 0; }
+.field input[aria-invalid='true'] { border-color: #853e37; }
+.field-error { color: #853e37; font-size: 13px; margin: 0; }
 .field-hint { color: #59685e; font-size: 13px; margin: 0; }
 .field-hint.wide { grid-column: 1 / -1; }
 .check-group { border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px 16px; margin: 0; display: flex; flex-wrap: wrap; gap: 8px 20px; }
