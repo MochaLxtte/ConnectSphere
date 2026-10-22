@@ -58,11 +58,11 @@ const sqlOf = <T extends { sql: string }>(statements: T[], pattern: RegExp) =>
   statements.find((s) => pattern.test(s.sql.trim()));
 
 describe('KAN-81 outage impact rules', () => {
-  it('uses half-open overlap on non-ended approved bookings at the same venue (AC3)', () => {
+  it('uses half-open overlap of the KAN-78 occupied interval on non-ended approved bookings (AC3)', () => {
     expect(AFFECTED_BOOKING_CONDITION).toMatch(/b\.venue_id = \$1/);
     expect(AFFECTED_BOOKING_CONDITION).toMatch(/b\.status = 'APPROVED'/);
     expect(AFFECTED_BOOKING_CONDITION).toMatch(/b\.ends_at > now\(\)/);
-    expect(AFFECTED_BOOKING_CONDITION).toMatch(/b\.starts_at < \$3 AND b\.ends_at > \$2/);
+    expect(AFFECTED_BOOKING_CONDITION).toMatch(/b\.occupied_starts_at < \$3 AND b\.occupied_ends_at > \$2/);
   });
 
   it('records impacts idempotently for the saved outage and returns them serialised (AC3, AC11)', async () => {
