@@ -273,7 +273,9 @@ describe('KAN-81 phase 3: replacement requests and approvals (AC7, AC8)', () => 
     await expect(submit(pool, replacement)).resolves.toMatchObject({ status: 'PENDING' });
     expect(find(/^\s*INSERT INTO venue_bookings/)!.params.at(-1)).toBe(originalId);
     expect(index(/AS open/)).toBeLessThan(index(/FROM venues WHERE id = \$1 FOR UPDATE/));
-    expect(index(/v\.capacity/)).toBeGreaterThan(index(/AS booked/));
+    // Objective suitability now runs before the buffered availability check (integration, 22 October).
+    expect(index(/v\.capacity/)).toBeLessThan(index(/AS booked/));
+    expect(index(/v\.capacity/)).toBeGreaterThan(index(/FROM venues WHERE id = \$1 FOR UPDATE/));
   });
 
   it.each([

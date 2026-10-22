@@ -81,10 +81,12 @@ describe('KAN-78 occupied intervals with real PostgreSQL', () => {
     await expect(approve(pending.id)).rejects.toMatchObject({ code: 'VENUE_UNAVAILABLE' });
     await expect(request(id)).rejects.toMatchObject({ code: 'VENUE_UNAVAILABLE' });
     const other = await venue();
-    await approve((await request(other)).id);
-    await expect(createVenueBlock(f.dependencies, { actor: staff, venueId: other,
-      input: { startsAt: '2030-12-01T04:30:00Z', endsAt: '2030-12-01T05:00:00Z', reason: 'Reset' } }))
-      .rejects.toMatchObject({ code: 'VENUE_BOOKING_CONFLICT' });
+    const approved = await approve((await request(other)).id);
+    // KAN-81-AC2 (integrated 22 October): an outage over only the turnaround buffer is saved and
+    // the approved booking is flagged for recovery, instead of the block being refused.
+    const outage = await createVenueBlock(f.dependencies, { actor: staff, venueId: other,
+      input: { startsAt: '2030-12-01T04:30:00Z', endsAt: '2030-12-01T05:00:00Z', reason: 'Reset' } });
+    expect(outage.affected.map((item) => item.bookingId)).toEqual([approved.id]);
   });
 
   it('checks full occupied operating hours including invalid and restricted cross-day windows', async () => {

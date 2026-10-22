@@ -256,8 +256,10 @@ export async function createVenueBooking(
     // KAN-53/KAN-54: a pending request does not reserve the venue, but must not be
     // submitted for a period already reserved or blocked. Read after acquiring the
     // venue lock so approvals/blocks committed while waiting are included.
-    await assertOccupiedIntervalAvailable(client, submission.venueId, submission.startsAt, submission.endsAt);
+    // KAN-81-AC7 objective checks first, so a replacement reports capacity or closure plainly; the
+    // buffered check then covers setup/turnaround hours, bookings, live holds and blocks.
     if (submission.replacesBookingId !== null) await assertObjectivelySuitable(client, eventRequestId, submission);
+    await assertOccupiedIntervalAvailable(client, submission.venueId, submission.startsAt, submission.endsAt);
 
     const inserted = await client.query<{ id: string }>(
       `INSERT INTO venue_bookings (event_request_id, venue_id, requested_by, starts_at, ends_at, layout, notes,
