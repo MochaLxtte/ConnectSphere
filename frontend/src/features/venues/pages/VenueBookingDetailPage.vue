@@ -6,7 +6,7 @@ import { authSession, clearLocalSession } from '../../auth/session.js';
 import { eventStatusLabel, formatEventTime } from '../../events/presentation';
 import { singaporeDateKey } from '../availability';
 import {
-  decideVenueBooking, fetchVenueBooking, venueBookingStatusLabel,
+  decideVenueBooking, fetchVenueBooking, needsRecovery, recoveryStatusLabel, venueBookingStatusLabel,
   type VenueBooking, type VenueBookingDecision,
 } from '../api/venue-bookings';
 
@@ -179,6 +179,22 @@ onBeforeUnmount(resetView);
           <RouterLink :to="{ path: '/venues/availability', query: { venue: state.booking.venueId, week: singaporeDateKey(state.booking.startsAt) } }" class="booking-link">View venue availability</RouterLink>
         </section>
 
+        <section v-if="state.booking.recovery.length > 0" class="panel booking-panel recovery-panel" aria-labelledby="recovery-title">
+          <h2 id="recovery-title">Venue unavailability</h2>
+          <p v-if="needsRecovery(state.booking)" class="booking-error">
+            {{ staff
+              ? 'The venue is unavailable for part of this booking. The assigned coordinator has been notified to arrange a replacement venue.'
+              : 'The venue is unavailable for part of this booking. The event and its other arrangements are unchanged; arrange a replacement venue for this period.' }}
+          </p>
+          <p v-else class="booking-caption">No outage currently requires recovery for this booking.</p>
+          <ul class="recovery-list">
+            <li v-for="item in state.booking.recovery" :key="item.impactId">
+              <span class="recovery-status" :class="`recovery-status--${item.status.toLowerCase()}`">{{ recoveryStatusLabel(item.status) }}</span>
+              <span>Unavailable {{ formatEventTime(item.outageStartsAt) }} to {{ formatEventTime(item.outageEndsAt) }}: {{ item.outageReason }}</span>
+            </li>
+          </ul>
+        </section>
+
         <section class="panel booking-panel" aria-labelledby="event-requirements-title">
           <h2 id="event-requirements-title">Current event requirements</h2>
           <p class="booking-caption">The latest event information is shown below; the booking period is recorded above.</p>
@@ -258,4 +274,10 @@ onBeforeUnmount(resetView);
   .booking-toolbar { align-items: flex-start; flex-direction: column; }
   .booking-panel dl > div { grid-template-columns: 1fr; gap: 4px; }
 }
+.recovery-list { list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 8px; font-size: 14px; }
+.recovery-list li { display: flex; flex-wrap: wrap; gap: 8px; align-items: baseline; overflow-wrap: anywhere; }
+.recovery-status { border-radius: 12px; padding: 2px 10px; font-size: 12px; font-weight: 600; }
+.recovery-status--recovery_required { background: #fbeee6; color: #853e37; }
+.recovery-status--resolved { background: #edf5e9; color: #365d2e; }
+.recovery-status--cleared { background: #eef0ee; color: #59685e; }
 </style>

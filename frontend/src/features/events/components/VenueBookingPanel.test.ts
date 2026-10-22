@@ -28,6 +28,7 @@ const pending: VenueBooking = {
   createdAt: '2026-10-01T00:00:00.000Z', updatedAt: '2026-10-01T00:00:00.000Z',
   eventStartsAt: null, eventEndsAt: null, purpose: null, description: null, expectedAttendance: null,
   venueRequirements: null, accessibilityNeeds: null,
+  recovery: [],
 };
 
 const coordinatorProps = { eventRequestId, status: 'APPROVED', viewerRole: 'EVENT_COORDINATOR' };
@@ -257,5 +258,36 @@ describe('KAN-53 venue booking request panel', () => {
     expect(screen.queryByText('Pending')).not.toBeInTheDocument();
     if (status === 401) expect(session.user).toBeNull();
     else expect(screen.getByRole('alert')).toHaveTextContent('no longer have access');
+  });
+});
+
+describe('KAN-81 phase 2: recovery in the coordinator venue panel (AC12)', () => {
+  const recovery = (status: 'RECOVERY_REQUIRED' | 'CLEARED') => [{
+    impactId: 'i-1', status, outageStartsAt: '2026-12-01T03:00:00.000Z', outageEndsAt: '2026-12-01T05:00:00.000Z',
+    outageReason: 'Burst pipe',
+  }];
+
+  it('marks an approved booking that needs recovery and explains what to do', async () => {
+    stubApi({
+      [`GET /api/venue-bookings?eventRequestId=${eventRequestId}`]: {
+        body: { items: [{ ...pending, status: 'APPROVED', recovery: recovery('RECOVERY_REQUIRED') }] },
+      },
+      'GET /api/venues/search-venues': venues,
+    });
+    render(VenueBookingPanel, { props: coordinatorProps });
+    expect(await screen.findByText('Recovery required')).toBeInTheDocument();
+    expect(screen.getByText(/The venue is unavailable for part of this booking/)).toBeInTheDocument();
+  });
+
+  it('shows no recovery marker once the outage is cleared', async () => {
+    stubApi({
+      [`GET /api/venue-bookings?eventRequestId=${eventRequestId}`]: {
+        body: { items: [{ ...pending, status: 'APPROVED', recovery: recovery('CLEARED') }] },
+      },
+      'GET /api/venues/search-venues': venues,
+    });
+    render(VenueBookingPanel, { props: coordinatorProps });
+    expect(await screen.findByText('Approved')).toBeInTheDocument();
+    expect(screen.queryByText('Recovery required')).not.toBeInTheDocument();
   });
 });

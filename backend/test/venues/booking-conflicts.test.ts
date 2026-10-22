@@ -27,6 +27,7 @@ const bookingRow = {
   createdAt: new Date(startsAt), updatedAt: new Date(startsAt), eventStartsAt: null, eventEndsAt: null,
   purpose: null, description: null, expectedAttendance: null, venueRequirements: null,
   accessibilityNeeds: null,
+  recovery: [],
 };
 
 /** Routes each statement by its SQL so tests can see what was asked, in what order. */

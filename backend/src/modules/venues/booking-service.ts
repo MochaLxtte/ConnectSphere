@@ -7,6 +7,7 @@ import {
 import { parseBookingDecision, parseBookingSubmission } from './booking-input.js';
 import { recordNotifications } from '../notifications/notify.js';
 import { bookingDecisionNotifications } from '../notifications/trigger-matrix.js';
+import { BOOKING_RECOVERY_SQL, serializeRecovery, type BookingRecovery } from './outage-impact.js';
 
 export type VenueBookingStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'CANCELLED';
 
@@ -34,6 +35,8 @@ export interface VenueBooking {
   expectedAttendance: number | null;
   venueRequirements: string | null;
   accessibilityNeeds: string | null;
+  /** KAN-81: outages recorded against this booking and their recovery state, earliest first. */
+  recovery: BookingRecovery[];
 }
 
 type BookingRow = Omit<VenueBooking,
@@ -49,7 +52,7 @@ const bookingSelect = `SELECT b.id, b.event_request_id AS "eventRequestId",
   b.decision_reason AS "decisionReason", b.created_at AS "createdAt", b.updated_at AS "updatedAt",
   e.starts_at AS "eventStartsAt", e.ends_at AS "eventEndsAt", e.purpose, e.description,
   e.expected_attendance AS "expectedAttendance", e.venue_requirements AS "venueRequirements",
-  e.accessibility_needs AS "accessibilityNeeds"
+  e.accessibility_needs AS "accessibilityNeeds", ${BOOKING_RECOVERY_SQL} AS recovery
   FROM venue_bookings b JOIN event_requests e ON e.id = b.event_request_id
   JOIN venues v ON v.id = b.venue_id`;
 
@@ -68,6 +71,7 @@ function serialize(row: BookingRow): VenueBooking {
     ...row, startsAt: iso(row.startsAt), endsAt: iso(row.endsAt),
     decidedAt: isoOrNull(row.decidedAt), createdAt: iso(row.createdAt), updatedAt: iso(row.updatedAt),
     eventStartsAt: isoOrNull(row.eventStartsAt), eventEndsAt: isoOrNull(row.eventEndsAt),
+    recovery: serializeRecovery(row.recovery),
   };
 }
 

@@ -109,6 +109,8 @@ No hosted acceptance, Jira status change, sprint completion or velocity credit i
 
 **22 October 2026 — KAN-60 rebased for review, outside a Daily Scrum.** Irfan rebased `fix/KAN-60-rejection-reason` onto `main` after PR #47; only documentation conflicted. Case results moved to `test-executions.csv` to match main's layout, and the run ID became AUTO-20261021-KAN60-01. `npm run check` passed; integration and browser suites are left to the pull request's CI. Remaining: CI, independent review, merge and manual hosted cases TC-04-03 to TC-04-05. Jira subtasks are not changed by this note.
 
+**21 October 2026 — KAN-81 phase 2 development outside a Daily Scrum.** Rebased on the reviewed phase 1 (`30da68a`). Phase 2 on `feat/KAN-81-phase-2-notifications`: each affected event's coordinator is notified in the outage transaction and booking pages show the recovery state. `AUTO-20261021-09`: check and coverage pass; PostgreSQL cases await CI. Phase 3 (replacements) follows. KAN-81 stays In Progress at 8 SP.
+
 ## Impediments
 
 | Raised | Impediment | Owner | Action | Status |

@@ -1228,3 +1228,12 @@ Source: PR47 review and Arvin's instruction to fix the findings and merge. A def
 - **Field-specific error:** `400 INVALID_REVIEW_INPUT` adds `field: "reason"` (or `"decision"`) for field errors and keeps the existing code, so existing clients still recognise the error.
 
 **Outcome:** implementation choices within the existing criteria; no new acceptance criterion, estimate or scope change. Jira wording is unchanged.
+
+## 21 October 2026 — KAN-81 phases 2 and 3 decisions
+
+Source: options proposed in chat on 21 October 2026. Kai Jie, the story owner, said to proceed without choosing, so the recommended option of each was adopted. These are implementation decisions within CR-2, not customer clarifications or a team vote; the 8-SP estimate is unchanged.
+
+1. **Who is notified (AC5).** Only each affected event's current assigned coordinator, once per outage and event (dedupe key `VENUE_OUTAGE_RECOVERY_REQUIRED:<outage>:<event>`), linked to the event's first affected booking. The organiser is not notified. An event without a coordinator gets no notice. This adds one row to the KAN-64 trigger/recipient matrix, which is still To agree.
+2. **Suitability for a replacement (AC7, phase 3).** The objective checks are enforced automatically (active venue, capacity, operating hours, buffered availability and conflicts). Checks that need the coordinator's interpretation of free-text requirements stay advisory, consistent with KAN-52 and CR-6.
+3. **The original booking after an approved replacement (AC8, phase 3).** It becomes `CANCELLED`, keeping the row and its history, so it no longer reserves the venue. The `venue_bookings_conflict` trigger fires only for `APPROVED` rows, so this update is allowed even while the original overlaps the outage.
+4. **Coordinator view (AC6/AC12).** No new page: every booking response carries its `recovery` list, which the existing booking page shows to Venue Staff and the assigned coordinator. The coordinator's venue panel marks bookings that need recovery.

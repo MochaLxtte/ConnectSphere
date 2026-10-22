@@ -16,6 +16,8 @@ import type { NotificationInput } from './notify.js';
  * |                                             | coordinator, who gets a minimal notice with no event details   |
  * | Venue booking decision (Venue Staff)        | the organiser, the event's current coordinator, and the        |
  * |                                             | deciding Venue Staff member, as an acknowledgement             |
+ * | Outage affects approved bookings (Venue     | each affected event's current coordinator, once per event      |
+ * | Staff; KAN-81-AC5)                          | and outage                                                     |
  *
  * Out of scope here (KAN-64-AC209): equipment, significant change, final confirmation/cancellation
  * and registration/withdrawal triggers belong to KAN-80.
@@ -30,6 +32,7 @@ export const NOTIFICATION_TYPES = [
   'COORDINATOR_REASSIGNED_AWAY',
   'VENUE_BOOKING_APPROVED',
   'VENUE_BOOKING_REJECTED',
+  'VENUE_OUTAGE_RECOVERY_REQUIRED',
 ] as const;
 export type NotificationType = (typeof NOTIFICATION_TYPES)[number];
 
@@ -175,4 +178,40 @@ export function bookingDecisionNotifications(
     message: sentences(`You ${outcome} ${subject}`, reasonSentence(booking.reason)),
   });
   return notifications;
+}
+
+/**
+ * KAN-81-AC5: one notice per affected event for one outage, to that event's current coordinator,
+ * linked to its first affected booking. An event without a coordinator gets none. The key is per
+ * outage and event, so reprocessing the outage adds nothing.
+ */
+export function outageRecoveryNotifications(
+  targets: readonly {
+    eventId: string; eventName: string | null; coordinatorId: string | null; bookingId: string;
+    venueName: string; bookingStartsAt: Date | string; bookingEndsAt: Date | string;
+  }[],
+  outage: { blockId: string; startsAt: Date | string; endsAt: Date | string; reason: string },
+): NotificationInput[] {
+  const byEvent = new Map<string, (typeof targets)[number][]>();
+  for (const target of targets) {
+    if (target.coordinatorId === null) continue;
+    byEvent.set(target.eventId, [...(byEvent.get(target.eventId) ?? []), target]);
+  }
+  const type = 'VENUE_OUTAGE_RECOVERY_REQUIRED';
+  return [...byEvent.values()].map((bookings) => {
+    const first = bookings[0]!;
+    const periods = bookings.map((booking) => bookingPeriod(booking.bookingStartsAt, booking.bookingEndsAt));
+    return {
+      recipientId: first.coordinatorId!, eventRequestId: first.eventId, venueBookingId: first.bookingId, type,
+      title: 'Venue unavailable: replacement needed',
+      message: sentences(
+        `${first.venueName} is unavailable ${bookingPeriod(outage.startsAt, outage.endsAt)}`,
+        reasonSentence(outage.reason),
+        `This affects the approved booking${bookings.length === 1 ? '' : 's'} for ${label({ name: first.eventName })} `
+          + `at ${periods.join('; ')}`,
+        'The event and its other arrangements are unchanged. Open the booking to arrange a replacement venue',
+      ),
+      dedupeKey: `${type}:${outage.blockId}:${first.eventId}`,
+    };
+  });
 }
