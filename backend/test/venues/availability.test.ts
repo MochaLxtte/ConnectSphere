@@ -62,6 +62,8 @@ describe('KAN-51 venue availability query', () => {
     const [sql, values] = pool.query.mock.calls[0]!;
     expect(sql).toContain('WHERE v.is_active');
     expect(sql).toContain("b.status = 'APPROVED'");
+    // KAN-83: live holds occupy the venue until their deadline (occupancy.ts).
+    expect(sql).toContain("b.status = 'HELD' AND b.hold_expires_at > now()");
     expect(sql).toContain('FROM venue_unavailability u');
     expect(sql).not.toContain(actor.id);
     expect(values).toEqual([week.from, week.to, actor.role, actor.id]);
@@ -74,15 +76,16 @@ describe('KAN-51 venue availability query', () => {
         opensAt: '08:00', closesAt: '22:00',
         unavailable: [
           {
-            id: 'booking-1', kind: 'BOOKING', reason: null, event: null,
+            id: 'booking-1', kind: 'BOOKING', reason: null, event: null, heldUntil: null,
             startsAt: '2026-10-05T10:00:00+08:00', endsAt: '2026-10-05T12:00:00+08:00',
           },
           {
-            id: 'block-1', kind: 'BLOCKED', reason: 'Maintenance', event: null,
+            id: 'block-1', kind: 'BLOCKED', reason: 'Maintenance', event: null, heldUntil: null,
             startsAt: '2026-10-06T01:00:00+00:00', endsAt: '2026-10-07T10:00:00+00:00',
           },
           {
             id: 'booking-2', kind: 'BOOKING', reason: null, event: { id: 'event-1', name: 'Career fair' },
+            heldUntil: '2026-10-07T18:00:00+08:00',
             startsAt: '2026-10-08T06:00:00+00:00', endsAt: '2026-10-08T09:30:00+00:00',
           },
         ],
@@ -98,11 +101,12 @@ describe('KAN-51 venue availability query', () => {
         id: 'venue-1', name: 'Harbour Hall', location: 'Level 1', capacity: 300,
         opensAt: '08:00', closesAt: '22:00',
         unavailable: [
-          { id: 'booking-1', kind: 'BOOKING', startsAt: '2026-10-05T02:00:00.000Z', endsAt: '2026-10-05T04:00:00.000Z', event: null },
+          { id: 'booking-1', kind: 'BOOKING', startsAt: '2026-10-05T02:00:00.000Z', endsAt: '2026-10-05T04:00:00.000Z', event: null, heldUntil: null },
           { id: 'block-1', kind: 'BLOCKED', startsAt: '2026-10-06T01:00:00.000Z', endsAt: '2026-10-07T10:00:00.000Z', reason: 'Maintenance' },
           {
             id: 'booking-2', kind: 'BOOKING', startsAt: '2026-10-08T06:00:00.000Z', endsAt: '2026-10-08T09:30:00.000Z',
-            event: { id: 'event-1', name: 'Career fair' },
+            // KAN-83: a live hold is a booked period carrying its deadline.
+            event: { id: 'event-1', name: 'Career fair' }, heldUntil: '2026-10-07T10:00:00.000Z',
           },
         ],
       },

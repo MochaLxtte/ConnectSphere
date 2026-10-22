@@ -1,4 +1,5 @@
 import type { UserRole } from '../auth/types.js';
+import { occupyingBookingSql } from './occupancy.js';
 import {
   iso, WorkflowError, type WorkflowActor, type WorkflowDependencies,
 } from '../events/workflow-support.js';
@@ -8,8 +9,9 @@ import {
  * the rest are PROVISIONAL team rules (Q-06, Q-07 and S2-Q03 are open), recorded in the
  * 3 October decision log entry:
  * - only Event Coordinators, Venue Staff and Technical Support Staff may read the calendar;
- * - a confirmed booking is an APPROVED venue_bookings row. PENDING, REJECTED and CANCELLED rows
- *   do not hold the venue, matching the venue_bookings_conflict trigger in migration 004;
+ * - a booked period is an APPROVED venue_bookings row or, since KAN-83, a live HELD row (deadline
+ *   still in the future, see occupancy.ts). PENDING, REJECTED, CANCELLED and EXPIRED rows do not
+ *   hold the venue, matching the venue_bookings_conflict trigger (migrations 004 and 011);
  * - every venue_unavailability row is a recorded period of operational unavailability;
  * - intervals are half-open [startsAt, endsAt), so a period ending exactly at `from` or starting
  *   exactly at `to` lies outside the window; periods are returned whole, not clipped;
@@ -32,10 +34,15 @@ export interface AvailabilityWindow {
 export interface BookedPeriod {
   id: string;
   kind: 'BOOKING';
+  eventStartsAt?: string;
+  eventEndsAt?: string;
+  warnings?: string[];
   startsAt: string;
   endsAt: string;
   /** Only for the event's currently assigned coordinator; null for every other reader. */
   event: { id: string; name: string | null } | null;
+  /** KAN-83: set for a live temporary hold (its deadline); null for an approved booking. */
+  heldUntil: string | null;
 }
 
 export interface BlockedPeriod {
@@ -106,17 +113,20 @@ const AVAILABILITY_SQL = `
          COALESCE((
            SELECT json_agg(p ORDER BY p."startsAt", p.kind, p.id)
            FROM (
-             SELECT b.id, 'BOOKING' AS kind, b.starts_at AS "startsAt", b.ends_at AS "endsAt",
+             SELECT b.id, 'BOOKING' AS kind, b.occupied_starts_at AS "startsAt", b.occupied_ends_at AS "endsAt",
+                    b.starts_at AS "eventStartsAt", b.ends_at AS "eventEndsAt",
+                    venue_booking_warnings(b.id) AS warnings,
                     NULL::text AS reason,
+                    CASE WHEN b.status = 'HELD' THEN b.hold_expires_at END AS "heldUntil",
                     CASE WHEN $3::text = 'EVENT_COORDINATOR' AND e.coordinator_id = $4::uuid
                            AND e.status <> 'DRAFT'
                          THEN json_build_object('id', e.id, 'name', e.name) END AS event
-             FROM venue_bookings b
+             FROM venue_booking_intervals b
              JOIN event_requests e ON e.id = b.event_request_id
-             WHERE b.venue_id = v.id AND b.status = 'APPROVED'
-               AND b.starts_at < $2::timestamptz AND b.ends_at > $1::timestamptz
+             WHERE b.venue_id = v.id AND ${occupyingBookingSql('b')}
+               AND b.occupied_starts_at < $2::timestamptz AND b.occupied_ends_at > $1::timestamptz
              UNION ALL
-             SELECT u.id, 'BLOCKED', u.starts_at, u.ends_at, u.reason, NULL::json
+             SELECT u.id, 'BLOCKED', u.starts_at, u.ends_at, NULL::timestamptz, NULL::timestamptz, ARRAY[]::text[], u.reason, NULL::timestamptz, NULL::json
              FROM venue_unavailability u
              WHERE u.venue_id = v.id
                AND u.starts_at < $2::timestamptz AND u.ends_at > $1::timestamptz
@@ -129,10 +139,14 @@ const AVAILABILITY_SQL = `
 interface PeriodRow {
   id: string;
   kind: 'BOOKING' | 'BLOCKED';
+  eventStartsAt?: string;
+  eventEndsAt?: string;
+  warnings?: string[];
   // json_agg renders timestamps in the session time zone; they are normalised below.
   startsAt: string;
   endsAt: string;
   reason: string | null;
+  heldUntil: string | null;
   event: BookedPeriod['event'];
 }
 
@@ -150,7 +164,10 @@ function requireCalendarRole(actor: WorkflowActor): void {
 function toPeriod(row: PeriodRow): UnavailablePeriod {
   const period = { id: row.id, startsAt: iso(row.startsAt), endsAt: iso(row.endsAt) };
   return row.kind === 'BOOKING'
-    ? { ...period, kind: 'BOOKING', event: row.event }
+    ? { ...period, kind: 'BOOKING', event: row.event,
+      heldUntil: row.heldUntil === null ? null : iso(row.heldUntil),
+      ...(row.eventStartsAt ? { eventStartsAt: iso(row.eventStartsAt), eventEndsAt: iso(row.eventEndsAt!) } : {}),
+      ...(row.warnings ? { warnings: row.warnings } : {}) }
     : { ...period, kind: 'BLOCKED', reason: row.reason };
 }
 

@@ -70,6 +70,22 @@ async function readState(id: string) {
 }
 
 describe('KAN-34 draft update persistence', () => {
+  it.each(['2026-02-30T10:00:00+08:00', '2026-02-29T10:00:00Z', '1900-02-29T10:00:00Z', '2026-04-31T10:00:00Z'])(
+    'KAN-34-AC101 returns HTTP 400 for %s without changing the draft', async (invalid) => {
+      const eventRequestId = await createEvent();
+      const before = await readState(eventRequestId);
+      const app = createApp({ database: pool, submittedRequests: {
+        pool, canViewRequest: () => true, canReviewRequest: () => false,
+        authenticate: async () => organiser,
+      } });
+      for (const field of ['startsAt', 'endsAt', 'registrationOpensAt', 'registrationClosesAt']) {
+        const response = await request(app).patch(`/api/events/${eventRequestId}`)
+          .send({ name: 'Must not be saved', [field]: invalid });
+        expect(response.status).toBe(400);
+        expect(await readState(eventRequestId)).toEqual(before);
+      }
+    },
+  );
   it('saves a changed field and leaves other fields unchanged', async () => {
     const eventRequestId = await createEvent();
     const updated = await updateOwnedDraft(dependencies, {

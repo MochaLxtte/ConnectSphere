@@ -1,6 +1,7 @@
 import { createRuntimeApp } from './runtime-app.js';
 import { loadEnvironment } from './config/env.js';
 import { createDatabasePool } from './db/pool.js';
+import { startHoldExpiryScheduler } from './modules/venues/hold-expiry-scheduler.js';
 
 const environment = loadEnvironment();
 const pool = createDatabasePool(environment.databaseUrl);
@@ -8,6 +9,9 @@ const app = createRuntimeApp({
   pool,
   isProduction: environment.nodeEnv === 'production',
 });
+
+// KAN-83: expire overdue venue holds at startup and every minute (database clock).
+const stopHoldExpiry = startHoldExpiryScheduler(pool);
 
 const server = app.listen(environment.apiPort, environment.apiHost, () => {
   console.info(
@@ -26,6 +30,7 @@ async function shutdown(exitCode = 0): Promise<void> {
   }, 10_000);
   timeout.unref();
 
+  stopHoldExpiry();
   try {
     await new Promise<void>((resolve, reject) => {
       server.close((error) => (error ? reject(error) : resolve()));

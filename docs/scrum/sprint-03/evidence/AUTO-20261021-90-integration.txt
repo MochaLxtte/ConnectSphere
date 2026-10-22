@@ -1,0 +1,12 @@
+
+> connectsphere@0.1.0 test:integration
+> vitest run --config vitest.integration.config.ts
+
+
+ RUN  v4.1.11 C:/Users/arvin/Downloads/GitHub/ConnectSphere-kan-78-kan-34
+
+
+ Test Files  24 passed (24)
+      Tests  395 passed (395)
+   Start at  03:04:05
+   Duration  158.79s (transform 4.49s, setup 0ms, import 35.29s, tests 100.02s, environment 9ms)

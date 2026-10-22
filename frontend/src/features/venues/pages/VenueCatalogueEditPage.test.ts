@@ -354,6 +354,16 @@ describe('KAN-50 venue edit page: access (AC14)', () => {
 });
 
 describe('KAN-77 venue edit page: buffer durations', () => {
+  it('KAN-78 displays affected booking warnings returned by a buffer save', async () => {
+    stubApi({ patch: () => json({ venue: { ...saved, setupMinutes: 30,
+      affectedBookings: [{ id: 'booking-1', warnings: ['APPROVED_BOOKING_OVERLAP'] }] } }) });
+    await renderPage();
+    await screen.findByRole('heading', { name: 'Harbour Hall' });
+    await fireEvent.update(screen.getByLabelText(/Setup before each booking/), '30');
+    await fireEvent.click(saveButton());
+    await waitFor(() => expect(screen.getByRole('link', { name: 'Review affected booking' })).toHaveAttribute('href', '/venue-bookings/booking-1'));
+    expect(screen.getByLabelText('Affected bookings')).toHaveTextContent('APPROVED_BOOKING_OVERLAP');
+  });
   it('shows the saved buffers and saves a changed one with its loaded value (AC4, AC5)', async () => {
     const fetchMock = stubApi({ get: json({ venue: { ...saved, setupMinutes: 15, turnaroundMinutes: 30 } }) });
     await renderPage();

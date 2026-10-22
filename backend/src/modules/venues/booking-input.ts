@@ -1,5 +1,5 @@
 import {
-  optionalText, parseObjectBody, UUID_PATTERN, WorkflowError,
+  optionalText, parseObjectBody, requiredText, UUID_PATTERN, WorkflowError,
 } from '../events/workflow-support.js';
 
 export interface BookingDecisionInput {
@@ -13,6 +13,8 @@ export interface BookingSubmissionInput {
   endsAt: string;
   layout: string | null;
   notes: string | null;
+  /** KAN-81-AC7: the outage-affected booking of the same event that this request replaces. */
+  replacesBookingId: string | null;
 }
 
 // Require an explicit instant, independent of the server's time zone. Millisecond precision
@@ -43,7 +45,7 @@ function requiredDateTime(body: Record<string, unknown>, field: string): string 
 
 /** KAN-53: a coordinator selects a venue and timing for an event they are authorised to coordinate. */
 export function parseBookingSubmission(input: unknown): BookingSubmissionInput {
-  const body = parseObjectBody(input, ['venueId', 'startsAt', 'endsAt', 'layout', 'notes']);
+  const body = parseObjectBody(input, ['venueId', 'startsAt', 'endsAt', 'layout', 'notes', 'replacesBookingId']);
   const venueId = body.venueId;
   if (typeof venueId !== 'string' || !UUID_PATTERN.test(venueId)) {
     throw new WorkflowError('INVALID_INPUT', 'INVALID_VENUE_ID', 'venueId must be a UUID.');
@@ -53,10 +55,15 @@ export function parseBookingSubmission(input: unknown): BookingSubmissionInput {
   if (Date.parse(endsAt) <= Date.parse(startsAt)) {
     throw new WorkflowError('INVALID_INPUT', 'INVALID_BOOKING_PERIOD', 'endsAt must be after startsAt.');
   }
+  const replaces = body.replacesBookingId;
+  if (replaces !== undefined && replaces !== null && (typeof replaces !== 'string' || !UUID_PATTERN.test(replaces))) {
+    throw new WorkflowError('INVALID_INPUT', 'INVALID_REPLACED_BOOKING_ID', 'replacesBookingId must be a UUID or null.');
+  }
   return {
     venueId, startsAt, endsAt,
     layout: optionalText(body, 'layout'),
     notes: optionalText(body, 'notes'),
+    replacesBookingId: typeof replaces === 'string' ? replaces : null,
   };
 }
 
@@ -80,4 +87,35 @@ export function parseBookingFilter(query: Record<string, unknown>): string | und
       'eventRequestId must be a UUID.');
   }
   return id;
+}
+
+export interface HoldPlacementInput {
+  expiresAt: string;
+}
+
+export interface HoldCancellationInput {
+  reason: string;
+}
+
+/**
+ * KAN-83-AC1: the hold deadline is an explicit instant with Z or an offset. Whether it is in
+ * the future and no later than the occupied start is checked against the database clock.
+ */
+export function parseHoldPlacement(input: unknown): HoldPlacementInput {
+  const body = parseObjectBody(input, ['expiresAt']);
+  if (body.expiresAt === undefined || body.expiresAt === null) {
+    throw new WorkflowError('INVALID_INPUT', 'INVALID_HOLD_EXPIRY', 'expiresAt is required.');
+  }
+  try {
+    return { expiresAt: requiredDateTime(body, 'expiresAt') };
+  } catch (error) {
+    // requiredDateTime only throws WorkflowError; keep its message under the hold-specific code.
+    throw new WorkflowError('INVALID_INPUT', 'INVALID_HOLD_EXPIRY', (error as Error).message);
+  }
+}
+
+/** KAN-83-AC10: cancelling a hold needs a trimmed, nonempty reason. */
+export function parseHoldCancellation(input: unknown): HoldCancellationInput {
+  const body = parseObjectBody(input, ['reason']);
+  return { reason: requiredText(body, 'reason') };
 }

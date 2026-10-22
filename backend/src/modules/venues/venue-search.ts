@@ -1,3 +1,4 @@
+import { occupyingBookingSql } from './occupancy.js';
 import {
   iso, WorkflowError,
   type WorkflowActor, type WorkflowDependencies,
@@ -50,6 +51,8 @@ export interface VenueResult {
   /** KAN-77: venue setup and turnaround minutes; KAN-78 applies them to occupancy. */
   setupMinutes: number;
   turnaroundMinutes: number;
+  occupiedStartsAt?: string | null;
+  occupiedEndsAt?: string | null;
   updatedAt: string;
 }
 
@@ -60,11 +63,10 @@ export interface VenueFilterOptions {
 }
 
 /**
- * Only APPROVED bookings make a venue unavailable. This matches the database's
- * venue_bookings_conflict trigger, which only guards APPROVED rows, so PENDING requests
- * can overlap and do not hold the venue.
+ * APPROVED bookings and, since KAN-83, live holds make a venue unavailable (occupancy.ts). This
+ * matches the venue_bookings_conflict trigger, so PENDING requests can overlap and do not hold
+ * the venue.
  */
-const BLOCKING_BOOKING_STATUS = 'APPROVED';
 const MAX_COUNT = 2_147_483_647;
 const MAX_TEXT_LENGTH = 100;
 const MAX_LIST_ITEMS = 30;
@@ -99,12 +101,32 @@ function count(query: Record<string, unknown>, key: string): number | null {
   return parsed;
 }
 
+/** ISO 8601 date-time with an explicit time zone, e.g. 2026-10-20T14:00:00+08:00 or ...Z */
+const ISO_DATE_TIME = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2})(?:\.\d{1,3})?)?(?:Z|[+-](\d{2}):(\d{2}))$/;
+
+/**
+ * True only if every part is a real calendar value. Date.parse alone is NOT enough: it can
+ * silently roll an impossible date over (30 Feb 2026 becomes 2 Mar 2026), which would check
+ * availability for a period the coordinator never asked for.
+ */
+function isRealDateTime(match: RegExpExecArray): boolean {
+  const [year, month, day, hour, minute, second, offsetHour, offsetMinute] =
+    [1, 2, 3, 4, 5, 6, 7, 8].map((index) => (match[index] === undefined ? 0 : Number(match[index])));
+  if (year! < 1000 || month! < 1 || month! > 12) return false;
+  const daysInMonth = new Date(Date.UTC(year!, month!, 0)).getUTCDate(); // day 0 of next month
+  return day! >= 1 && day! <= daysInMonth
+    && hour! <= 23 && minute! <= 59 && second! <= 59
+    && offsetHour! <= 23 && offsetMinute! <= 59;
+}
+
 function dateTime(query: Record<string, unknown>, key: string): string | null {
   const value = text(query, key);
   if (value === null) return null;
-  const parsed = Date.parse(value);
-  if (Number.isNaN(parsed)) throw invalid(`${key} must be an ISO 8601 date-time.`);
-  return new Date(parsed).toISOString();
+  const match = ISO_DATE_TIME.exec(value);
+  if (match === null || !isRealDateTime(match)) {
+    throw invalid(`${key} must be a real date and time in ISO 8601 format with a time zone, such as 2026-10-20T14:00:00+08:00.`);
+  }
+  return new Date(Date.parse(value)).toISOString();
 }
 
 function flag(query: Record<string, unknown>, key: string): boolean {
@@ -169,7 +191,9 @@ export function isOpenForRange(
 }
 
 const SEARCH_SQL = `
-  SELECT v.id, v.name, v.description, v.location, v.capacity,
+  SELECT v.setup_minutes AS "setupMinutes", v.turnaround_minutes AS "turnaroundMinutes",
+         venue_occupied_start($7::timestamptz, v.setup_minutes) AS "occupiedStartsAt",
+         venue_occupied_end($8::timestamptz, v.turnaround_minutes) AS "occupiedEndsAt", v.id, v.name, v.description, v.location, v.capacity,
          v.layouts, v.facilities, v.accessibility_features AS "accessibilityFeatures",
          v.wheelchair_accessible AS "wheelchairAccessible",
          to_char(v.opens_at, 'HH24:MI') AS "opensAt",
@@ -187,16 +211,19 @@ const SEARCH_SQL = `
     AND v.accessibility_features @> $5::text[]
     AND (NOT $6::boolean OR v.wheelchair_accessible)
     AND ($7::timestamptz IS NULL OR NOT EXISTS (
-          SELECT 1 FROM venue_bookings b
+          SELECT 1 FROM venue_booking_intervals b
           WHERE b.venue_id = v.id
-            AND b.status = '${BLOCKING_BOOKING_STATUS}'
-            AND b.starts_at < $8::timestamptz
-            AND b.ends_at > $7::timestamptz))
+            AND ${occupyingBookingSql('b')}
+            AND b.occupied_starts_at < venue_occupied_end($8::timestamptz, v.turnaround_minutes)
+            AND b.occupied_ends_at > venue_occupied_start($7::timestamptz, v.setup_minutes)))
     AND ($7::timestamptz IS NULL OR NOT EXISTS (
           SELECT 1 FROM venue_unavailability u
           WHERE u.venue_id = v.id
-            AND u.starts_at < $8::timestamptz
-            AND u.ends_at > $7::timestamptz))
+            AND u.starts_at < venue_occupied_end($8::timestamptz, v.turnaround_minutes)
+            AND u.ends_at > venue_occupied_start($7::timestamptz, v.setup_minutes)))
+    AND ($7::timestamptz IS NULL OR venue_interval_within_hours(
+      venue_occupied_start($7::timestamptz, v.setup_minutes),
+      venue_occupied_end($8::timestamptz, v.turnaround_minutes), v.opens_at, v.closes_at))
   ORDER BY lower(v.name), v.id`;
 
 type VenueRow = Omit<VenueResult, 'updatedAt'> & {
@@ -228,10 +255,11 @@ export async function searchVenues(
   if (startsAt !== null && endsAt !== null) {
     venues = venues.filter((venue) => isOpenForRange({
       opensAt: venue.openingStartsAt, closesAt: venue.openingEndsAt,
-    }, startsAt, endsAt));
+    }, iso(venue.occupiedStartsAt ?? startsAt), iso(venue.occupiedEndsAt ?? endsAt)));
   }
   return venues.map(({ openingStartsAt: _opens, openingEndsAt: _closes, ...row }) => ({
     ...row, updatedAt: iso(row.updatedAt),
+    ...(row.occupiedStartsAt ? { occupiedStartsAt: iso(row.occupiedStartsAt), occupiedEndsAt: iso(row.occupiedEndsAt!) } : {}),
   }));
 }
 

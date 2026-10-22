@@ -854,6 +854,33 @@ The interface requires a replacement and reason, agrees detail/history versions 
 
 **Documentation/artifact checks:** 15/15 functional-case, traceability and document checks passed (427 cases, 112 traceability rows, 579 changed-document file links); native workbook checks passed 16/16. Four updated diagram exports and six changed workbook regions were visually inspected. `npm run submission:prepare` passed; generated draft folders still require the team's evidence-completeness review. The disposable KAN-65 PostgreSQL container was removed after testing. See [S3-E15 validation](../scrum/sprint-03/evidence/kan65-validation-2026-10-19.json). No shared database cleanup was performed.
 
+## 21 October 2026 — KAN-78 buffered venue intervals and KAN-34 draft dates
+
+**AUTO-20261021-KAN78-01.** Executor: Codex in Arvin's approved implementation session. Branch: `feat/kan-78-kan-34`; base HEAD `aaee5498e8140526e6005c4fe5fce0bf95d95f40` plus uncommitted working-tree changes. No implementation commit exists yet. Local Windows, Node 24.21.0, Chromium and isolated PostgreSQL 17.11 on loopback port 55478; each integration file used a disposable schema. The shared Supabase database and existing development servers were not used for these checks.
+
+| Command / check | Actual result |
+| --- | --- |
+| `npm run check` | Pass: type checks, 605 frontend + 1,049 backend tests, both builds |
+| `npm run test:coverage` | Pass: frontend 94.84% statements / 91.53% branches / 97.19% lines; backend 85.46% / 88.49% / 86.03% |
+| `npm run test:integration` | Pass: 23 files / 356 tests, including 11 KAN-78 real-database cases and strict-date HTTP/persistence tests |
+| Playwright: draft editing, venue bookings, availability, search, suitability and booking submission | Pass: 48 Chromium cases, two workers; isolated API 3078 and web 5178 |
+
+Browser response fixtures verify rendering, navigation, registration toggle/save/reload and occupied-time/warning displays; real database rules are verified separately by integration tests. Authentication-required browser cases also contact the normal API startup on the isolated ports. This is not hosted acceptance.
+
+KAN-34 refuses impossible dates on all four editable date fields before writes; valid leap days and explicit clears remain supported. Earlier TC-03-01's 15 October failure remains historical; TC-03-301 is the permanent repaired-code regression. Existing ownership/state and registration-edit regressions were rerun.
+
+KAN-78 checks one occupied-interval rule across five consumers; exact adjacency, buffer-only blocks, opening hours/cross-day limits, live warnings for both sides, unchanged historical rows, zero durations, unrelated venues, access/privacy and concurrent approvals/buffer edits passed. SQL functions and triggers are not instrumented by V8; their behavioural coverage comes from PostgreSQL integration cases. Unit coverage does not instrument every database-backed serialization/warning branch or every existing page path; no claim of 100% new-code coverage is made. The full integration run initially exposed old response/ledger fixtures and transient KAN-65 timing failures under concurrent load. Fixtures were updated for migration 008/additive response fields; the unchanged KAN-65 suite passed 37/37 alone, and the final full suite passed 356/356.
+
+No shared data was created or left behind. Migration 008 was applied only to the disposable local test schemas. KAN-77's settings editor, team coordination/group-chat notice, independent review, hosted checks, final commit SHA and merge remain outstanding; no Done/velocity credit is claimed. The 8/3 SP estimates remain unchanged. No customer requirement was added.
+
+## 21 October 2026 — KAN-78 review follow-up
+
+**AUTO-20261021-KAN78-02.** The pre-commit packet review found that PostgreSQL Date values could lose milliseconds when passed to Date.parse in the extra search opening-hours check. Search now normalises occupied endpoints through iso() first. A permanent regression checks a 10:00:00.600 occupied start against 10:00:00.500 opening time. Backend coverage run passed 39 files / 1,050 tests; lines 86.03%, branches 88.58%. Backend type checking passed. Environment and uncommitted base SHA are unchanged from AUTO-20261021-KAN78-01. No SQL, API contract or browser behaviour was changed beyond preserving timestamp precision; earlier integration and browser runs remain applicable. Independent human review and hosted acceptance remain Not executed.
+
+## 21 October 2026 — committed verification source
+
+The source and tests exercised by AUTO-20261021-KAN78-01/02 are now committed as `0b08802` (KAN-34), `2396cce` (KAN-78 implementation) and `afea8cf` (KAN-78 tests). The combined implementation/test tree is `afea8cf`. Earlier uncommitted-state descriptions accurately record the state when the runs occurred; no test rerun is claimed solely for committing identical content. The documentation commit follows these source commits. Push, PR, Leo Kai Jie's independent review and hosted acceptance remain Not executed.
+
 ## 21 October 2026 — KAN-53 and KAN-55 automated evidence mapping (backfill for S2-T11/T12/T17/T18)
 
 **Run ID: AUTO-20261021-01.** Branch `docs/KAN-53-KAN-55-evidence` at `main` commit `aaee549`, with no code changes. Actual execution date: 21 October 2026, Asia/Singapore. Local environment: Windows, Node.js 24, Vitest. PostgreSQL and browser layers are taken from the existing GitHub Actions run [39447691109](https://github.com/MochaLxtte/ConnectSphere/actions/runs/39447691109) on the same commit `aaee549` (push to `main`, 20 October 2026 15:21 UTC), whose disposable PostgreSQL service is not shared Supabase. This entry runs and maps existing tests; it adds no tests and records no hosted or manual result.
@@ -1280,3 +1307,144 @@ shared test data is left behind. No push, remote merge or PR creation is perform
 **AUTO-20261021-KAN81-FIX-01, local retest.** Windows, Node 24.21.0, Vitest 4.1.11. Tested working-tree application/test bytes were committed unchanged as `18ac27d4e26580ef5f8aca519e5cd8ecbc2d1d51`. The change refreshes both blocks and recovery after stale 404/409 as well as uncertain write failures, retaining the definite refusal and submitted input, without retrying. Four permanent variants cover save/removal × 404/409; the focused page suite passes **21/21**. `npm run check` passes **690 frontend + 1,205 backend tests**, types and both builds. `npm run test:coverage` passes the same tests: frontend statements/branches/functions/lines **95.19/92.54/97.12/97.63%**; backend **88.22/90.51/87.86/88.80%**. Existing uncovered workspace code remains; this is not a claim of 100% workspace coverage. Full coverage output is retained in [coverage report](coverage-reports/2026-10-21-kan81-review.txt).
 
 **Diagram and status.** Re-exported `erd-planning.png` directly from the planning Mermaid block with Mermaid CLI 12, neutral theme, white background, size 2600, scale 2; visually checked the recovery entity/relationships and legibility. S3-E20 records the source/export SHA-256 values and reproduction settings. Jira was observed To Do and transitioned to **In Progress** on 21 October; Kai Jie remains assignee and 8 SP is unchanged. No new schema/shared migration or Done/velocity credit. Phases 2/3, KAN-78 buffers, KAN-83 holds, readiness and hosted acceptance remain outstanding. Final pushed-head CI is required before merge; the GitHub check records that result separately from this original-head import.
+
+## 21 October 2026 — KAN-60 required rejection reason
+
+**Run ID: AUTO-20261021-KAN60-01.** Branch `fix/KAN-60-rejection-reason`, base `aaee549` (main after PR #35). The tested working tree was uncommitted at run time; it is committed without code changes and the commit list is in the pull request. Execution date: 21 October 2026, Asia/Singapore. Environment: Linux, Node.js 22.22.0, Vitest, a disposable local PostgreSQL 16.15 database and Playwright with Chromium build 1194. CI uses Node.js 24, PostgreSQL 17 and a newer Chromium build, so the pull request's CI run is the reference run for those versions. Tests use synthetic profiles and data; shared Supabase and real login were not used, and no shared schema or data changed. AI-assisted implementation and test writing; results below are the actual command outputs.
+
+| Command / check | Actual result |
+| --- | --- |
+| `npm run check` | Pass: tools/backend/frontend type checks; 614 frontend tests (32 files), 1054 backend tests (39 files); both production builds |
+| `npm run test:coverage` | Pass: the same 614 frontend and 1054 backend tests; summary below |
+| `npm run db:migrate`, `npm run db:seed` | Pass: migrations 001–007 applied to the disposable database; development sample data added |
+| `npm run test:integration` | Pass: 349 tests, 22 files, including nine new KAN-60 PostgreSQL tests |
+| `npm run test:e2e -- --workers=4` | 132 passed, 1 failed: the KAN-79 test `lead-assignment.spec.ts:115` (stale assignment conflict), which also failed in the 20 October `main` CI run for `aaee549` and passed on re-run. It asserts a single `status` element while the queue reload briefly shows a second one; it is unrelated to KAN-60. The new KAN-60 browser test passed. |
+
+All changed KAN-60 files have **100% line and branch coverage**: `review-input.ts` 19/19 lines and 28/28 branches, `review-router.ts` 30/30 and 17/17, `ReviewDecisionPanel.vue` 59/59 lines and 116/116 branches, and the frontend `types.ts` constant. `workflow-support.ts` only gains an exported constant; its uncovered lines are pre-existing. Whole-workspace coverage includes existing unrelated gaps: frontend **94.84% statements / 92.12% branches / 96.69% functions / 97.17% lines**; backend **85.40% / 88.63% / 83.07% / 85.98%**. Retained summary: [2026-10-21-kan60.txt](coverage-reports/2026-10-21-kan60.txt).
+
+**Behaviour verified:** a rejection with a missing, null, empty or whitespace-only reason is refused at the API with `400 INVALID_REVIEW_INPUT`, the message "Enter a reason to reject this event request." and `field: "reason"`, before any database connection is opened (AC1, AC101). In PostgreSQL, the refused rejection leaves the request status, review rows, status history and notifications unchanged (AC3, AC102). A reason longer than the shared 2,000-character workflow limit (`MAX_TEXT_LENGTH`) is refused for either decision with a field-specific error; exactly 2,000 characters after trimming is accepted (AC101). Approval without a reason still saves with `reason: null` (AC4). A decided request still returns `409 REVIEW_ALREADY_DECIDED` (AC102). A valid rejection saves the trimmed reason on the correct review, adds one status transition, and the detail read returns it (AC2). In the browser, Reject marks the reason as required, a blank reason shows an inline error, focuses the field and sends no request, and the corrected reason is shown again after a reload. Six existing integration tests that rejected without a reason were updated to supply one.
+
+**Earlier failures and resolution:** the first integration run passed 347/349. Both failures were in this change's test assertions: one older assertion compared the extended state snapshot (now including history and notifications) with the earlier shape, and the new AC2 test did not allow for the fixture's own creation history row. The assertions were corrected without changing product code; the rerun passed 349/349. The first browser run could not launch Chromium because the local Playwright expected browser build 1243; the installed build 1194 was linked in its place, and the reruns above used it.
+
+**Acceptance boundary:** automated coverage exists for AC1–AC5, AC101 and AC102. AC103 is a records check: KAN-60 remains the single 2-SP correction linked to KAN-36. Manual hosted cases TC-04-03, TC-04-04 and TC-04-05, independent peer review, CI on the pushed commits, merge and formal acceptance remain **Not executed** / **Not assessed**. KAN-60 stays In Progress. This work was carried out on 21 October, after the configured 17 October Sprint 3 end, and is not delivery evidence for that sprint window.
+
+## 22 October 2026 — KAN-60 rebase onto main before the pull request
+
+Branch `fix/KAN-60-rejection-reason` was rebased from `aaee549` onto `main` at `b2820e1` (after PR #47). Only documentation conflicted; the code applied unchanged. Main now keeps case results in `test-executions.csv`, so the KAN-60 TC-04-01 and TC-04-02 passes are recorded there as `EX-KAN60-01-*`, and `test-cases.csv` keeps main's specification-only layout. The run above is renamed **AUTO-20261021-KAN60-01** (it was AUTO-20261021-01, an ID already used by the KAN-53/KAN-55 evidence mapping).
+
+| Command / check | Actual result (22 October 2026, Windows, Node.js 24) |
+| --- | --- |
+| `npm run check` | Pass: type checks; 700 frontend tests (35 files), 1224 backend tests (44 files); both production builds |
+| `npm run test:integration`, `npm run test:e2e` | **Not executed** locally after the rebase (no disposable PostgreSQL available). The pull request's CI run is the reference for the rebased build |
+
+No test case result is changed by this rebase.
+
+## 21 October 2026 — KAN-81 phase 2 coordinator notice and recovery view
+
+**Run ID: AUTO-20261021-09.** Branch `feat/KAN-81-phase-2-notifications`, stacked on the reviewed phase 1 (`30da68a`), code commits `f2491c2827b01a168498f59da807cd13f102b9a6` (backend), `dc24220` (frontend) and `b78f669` (PostgreSQL/browser fixtures), with the tested working tree committed without code changes. Actual execution date: 21 October 2026, Asia/Singapore. Environment: Windows, Node.js 24, Vitest. No isolated PostgreSQL database locally; shared Supabase not used.
+
+| Command / check | Actual result |
+| --- | --- |
+| `npm run check` | Pass: type checks, 696 frontend tests in 35 files and 1,210 backend tests in 44 files, both builds |
+| `npm run test:coverage` | Pass: the same tests |
+| `npm run test:integration` | **Not executed** locally: 5 new KAN-81 phase 2 PostgreSQL cases await CI |
+| `npm run test:e2e` | **Not executed** locally; two booking browser fixtures gained `recovery: []` |
+
+**New tests:** backend 5 (notice builder, transactional write, no-coordinator case, recovery serialisation) and frontend 6 (booking page for coordinator and staff, resolved/cleared, unaffected; venue panel marker). Updated for the new field: the KAN-64 notification-type list, the KAN-54 booking row fixture and three frontend booking fixtures.
+
+**Coverage:** `trigger-matrix.ts`, `outage-impact.ts` and `block-service.ts` 100% lines, branches and functions. In `booking-service.ts` every changed line is covered; its uncovered lines are pre-existing read paths covered by PostgreSQL suites.
+
+**Verified behaviour (unit/component):** one notice per affected event to its current coordinator, none for an event without one, multiple bookings of one event listed in one notice, notice written after the impacts and before commit with dedupe key `VENUE_OUTAGE_RECOVERY_REQUIRED:<outage>:<event>`. Booking recovery lists serialise to ISO timestamps. The booking page shows the outage list with role-specific guidance and distinguishes required, resolved and cleared; the coordinator panel marks bookings needing recovery.
+
+**Gaps:** PostgreSQL cases (notice per event, dedupe on reprocessing, recovery visible to staff and assigned coordinator but not another coordinator, inbox link, cleared state after removal) await CI; execution rows will be added after CI. AC7/AC8 (phase 3), holds and readiness remain Not executed. KAN-81 stays In Progress.
+
+**CI follow-up — 21 October 2026, PR #49 (KAN-81 phase 2).** Run [39492721585](https://github.com/MochaLxtte/ConnectSphere/actions/runs/39492721585) (`AUTO-20261021-KAN81-P2-CI-01`, merge `92097c3` of head `8688bf6`) passed check, coverage (696 frontend, 1,210 backend) and migration/seed, but integration failed **402/403**: the new reprocessing case inserted an approved booking into a period it had just blocked at the same venue, which the `venue_bookings_conflict` trigger correctly refused. Browser tests did not run. Commit `f87b59d` moved that case to a second venue; feature code was unchanged. Run [39493384129](https://github.com/MochaLxtte/ConnectSphere/actions/runs/39493384129) (`AUTO-20261021-KAN81-P2-CI-02`, merge `0dd8fb5`) passed every step: integration **403/403** (`venue-outage-recovery` 23/23) and browser **148/148**. Case results are recorded as scoped TC-09-18 (Fail, then Pass), TC-09-19 and TC-09-20 in `test-executions.csv`; the broader TC-09-05/06/12 remain unexecuted.
+
+## 21 October 2026 — KAN-81 phase 3 replacement bookings
+
+**Run ID: AUTO-20261021-10.** Branch `feat/KAN-81-phase-3-replacements`, stacked on phase 2, code commits `e8310367face54ecbec4ef71de4369a6957b5129` (backend), `ac9639e` (frontend) and `981f8ab` (PostgreSQL tests and fixtures), with the tested working tree committed without code changes. Actual execution date: 21 October 2026, Asia/Singapore. Environment: Windows, Node.js 24, Vitest. No isolated PostgreSQL database locally; shared Supabase not used. Migration 011 not applied to any shared database.
+
+| Command / check | Actual result |
+| --- | --- |
+| `npm run check` | Pass: type checks, 702 frontend tests in 35 files and 1,228 backend tests in 44 files, both builds |
+| `npm run test:coverage` | Pass: the same tests |
+| `npm run test:integration` | **Not executed** locally: 13 phase 3 PostgreSQL cases and migration 011 in every migration expectation await CI |
+| `npm run test:e2e` | **Not executed** locally; booking browser fixtures gained `replacesBookingId: null`. No phase 3 browser test was added. |
+
+**New tests:** backend 18 (input parsing; request checks and refusals; approval lock order, resolution, cancellation and refusal; rejection) and frontend 6 (replacement choice and request body, omitted field, refusal reload, list marker, booking page link).
+
+**Coverage:** `booking-input.ts` and `outage-impact.ts` 100% lines and branches. In `booking-service.ts` every changed line and branch is covered; its remaining uncovered lines are pre-existing read and error paths covered by PostgreSQL suites. Workspace totals: frontend 95.27% statements / 92.65% branches / 97.16% functions / 97.64% lines; backend 88.65% / 90.84% / 88.60% / 89.12%.
+
+**Gaps:** PostgreSQL cases (link and pending state, approval resolving and cancelling, rejection and retry, second replacement and removed outage refused, concurrent approvals, objective-check refusals, unassigned coordinator) await CI. There is no phase 3 browser test; the panel and page are covered at component level. `docs/architecture/exports/erd-planning.png` was re-rendered from the updated planning Mermaid block with the phase 1 settings (Mermaid CLI 12.0.0, neutral theme, white background, size 2600, scale 2; SHA-256 `ad82ed1d29edd413d4d78fc9baf166389cf67ac662714a87697b9541116b9c9e`) and visually checked: the new `replaces_booking_id` field and "replaced by" self-relationship appear, with no clipping. Holds (KAN-83), buffered intervals (KAN-78) and readiness (KAN-61/CR-6) remain outside KAN-81's implemented scope. KAN-81 stays In Progress.
+
+**CI follow-up — 21 October 2026, PR #50 (KAN-81 phase 3).** Run [39496812442](https://github.com/MochaLxtte/ConnectSphere/actions/runs/39496812442) (`AUTO-20261021-KAN81-P3-CI-01`, merge `cdac7f6` of head `e86cb05`) passed check and coverage (702 frontend, 1,228 backend) and all 35 `venue-outage-recovery` cases, but integration failed **414/415**: the KAN-77 migration-upgrade test compared existing booking rows with a pre-migration snapshot and now also saw the new null `replaces_booking_id` from migration 011. Commit `c0d164c` expects that column; feature code unchanged. Run [39497476638](https://github.com/MochaLxtte/ConnectSphere/actions/runs/39497476638) (`AUTO-20261021-KAN81-P3-CI-02`, merge `fcf0074`) passed every step: integration **415/415** (`venue-outage-recovery` 35/35) and browser **148/148**. Recorded as TC-08-17 (Fail, then Pass) and scoped TC-09-21–23 in `test-executions.csv`; the broader TC-09-07/08/12 remain unexecuted.
+
+## 21 October 2026 — KAN-78 / KAN-34 main reconciliation
+
+**AUTO-20261021-90.** Codex, under Arvin's instruction to open the PR, reconciled `feat/kan-78-kan-34` (source commits through `6a5951c`) with merged main `4d36883`. These checks ran on the reconciled working tree before its merge commit; a later documentation commit is not a new test run. The original branch's migration 008 was never applied to shared Supabase. Shared 008/009 from PR #46 are preserved byte-for-byte; remaining occupied-interval objects now use **012_venue_occupied_intervals.sql**. KAN-34 retains main's already-merged strict offset/date validator, with this branch's extra regressions. KAN-64 notification writes remain inside the booking decision transaction.
+
+Actual local results: `npm run check` passed (678 frontend / 1,180 backend tests, types and both builds); `npm run test:integration` passed 24 files / 395 tests; full Chromium suite passed 149/149 on isolated API 3078/web 5178. Frontend coverage passed with `--maxWorkers=2`: 95.00% statements, 91.75% branches, 97.40% lines. Backend coverage passed: 86.38% statements, 89.32% branches, 86.98% lines. Coverage gaps remain as described in the earlier KAN-78 record; SQL is behaviourally verified through PostgreSQL, not V8 instrumentation. One frontend test hit its 5-second timeout under concurrent coverage load; its final limited-worker coverage run and normal check passed. A warning-display test's text matcher and merged notification/ledger fixtures were corrected before final verification.
+
+The merged KAN-77 editor now returns affected-booking IDs/warnings from the same buffer-save transaction and shows links after save. This is KAN-78's re-evaluation/reporting integration; editor field validation and concurrency policy stay as merged on main. The buffer-save integration case and component warning-display regression passed. Test specifications and case executions use main's separate CSV formats; both histories are retained, with original-source run IDs qualified by branch/build where needed.
+
+Windows, Node 24.21.0, dedicated local PostgreSQL 17.11 on loopback 55478 with per-file disposable schemas, Chromium; response-fixture browser boundaries remain explicit. No test ran against shared Supabase. Migration 010 is **not applied** there. Hosted acceptance and Leo Kai Jie's independent review of this PR remain **Not executed**. No Done/velocity credit is claimed. Final logs are retained under `sprint-03/evidence/AUTO-20261021-90-*.txt`.
+
+## 21 October — reconciled source committed and handed off
+
+AUTO-20261021-90's verified implementation/test content is committed as `2d138be079a74b3714db1e63190591cd26b1f05c`. [PR #48](https://github.com/MochaLxtte/ConnectSphere/pull/48) is open against main with Leo Kai Jie requested. Jira KAN-78/KAN-34 are In Review. The subsequent handoff documentation commit changes records only; no new local test run or independent acceptance is claimed.
+
+## 21 October 2026 — KAN-83 temporary venue holds
+
+**Run ID: AUTO-20261021-KAN83-01.** Branch `feat/KAN-83-venue-holds`, base `aaee549` (main after PR #35). The tested working tree was uncommitted at run time; it is committed without code changes and the commit list is in the pull request. Execution date: 21 October 2026, Asia/Singapore. Environment: Linux, Node.js 22.22.0, Vitest, a disposable local PostgreSQL 16.15 database and Playwright with Chromium build 1194. CI uses Node.js 24, PostgreSQL 17 and a newer Chromium build, so the pull request's CI run is the reference run for those versions. Tests use synthetic profiles and data; shared Supabase, real login and the production `pg_cron` schedule were not used, and migration 008 was not applied to the shared database. AI-assisted implementation and test writing; results below are the actual command outputs.
+
+| Command / check | Actual result |
+| --- | --- |
+| `npm run check` | Pass: tools/backend/frontend type checks; 624 frontend tests (33 files), 1108 backend tests (41 files); both production builds |
+| `npm run test:coverage` | Pass: the same tests; summary below |
+| `npm run db:migrate`, `npm run db:seed` | Pass on a fresh database: migrations 001–008 applied; development sample data added |
+| `npm run test:integration` | Pass: 382 tests, 23 files, including 41 new KAN-83 PostgreSQL tests in `database/tests/venues/venue-holds.integration.test.ts` |
+| `npm run test:e2e -- --workers=4` | Pass: 137 browser tests, including 5 KAN-83 scenarios in `tests/e2e/venue-holds.spec.ts`; API responses use controlled fixtures, not hosted Supabase |
+
+New files `occupancy.ts` and `hold-expiry-scheduler.ts` have **100% line and branch coverage**, and every line and branch added or changed in the other KAN-83 files is covered; their remaining gaps were already uncovered on `main` (listed in the retained summary). Migration 008's trigger and `expire_venue_holds()` are exercised by the PostgreSQL tests, which are outside unit coverage. Whole-workspace coverage: frontend **94.94% statements / 92.61% branches / 96.77% functions / 97.19% lines**; backend **87.30% / 89.72% / 86.26% / 87.83%**. Retained summary: [2026-10-21-kan83.txt](coverage-reports/2026-10-21-kan83.txt).
+
+**Behaviour verified (PostgreSQL unless stated):**
+- AC1: only Venue Staff place a hold, and only on a pending request. A missing, malformed, zone-less, past or after-start deadline is refused with `INVALID_HOLD_EXPIRY` and nothing is written; a deadline exactly at the booked start is accepted. The database clock decides "past".
+- AC2/AC7: the hold keeps its creator, time and deadline; ordinary pending requests stay pending; the coordinator receives one `VENUE_HOLD_PLACED` notice with the deadline in Singapore time, in the same transaction; no notice is written when no coordinator is assigned.
+- AC3: overlap with an approved booking (`VENUE_BOOKING_CONFLICT`), another live hold (`VENUE_HELD`) or a block (`VENUE_UNAVAILABLE`), an unapproved event, an inactive or too-small venue, and a period outside opening hours are refused without a hold or notice. A lapsed overlapping hold does not block. Two simultaneous holds for the same period leave exactly one held.
+- AC4: a live hold blocks the calendar (shown with its deadline), search, suitability (message names the live hold), new request submission and approval of another request; the database trigger refuses an overlapping approval written directly. Once the deadline passes, before any expiry run, all five consumers treat the period as free and readers see `EXPIRED`.
+- AC5/AC6/AC9: approval before the deadline converts the hold into the approved booking with one occupying row; rejection is allowed; after the deadline approval and rejection return `HOLD_EXPIRED` and nothing is revived; the event status never changes. An approval that waited on a row lock past the deadline is refused and expiry then marks the hold; an approval that commits first is not undone by a concurrent expiry run.
+- AC8: `expire_venue_holds()` marks overdue holds `EXPIRED` once, including two held for different overdue periods (catch-up), writes one `VENUE_HOLD_EXPIRED` notice each and is unchanged by two further runs. The API scheduler runs it at startup and every minute, never overlaps runs and logs failures without details (unit tests).
+- AC10: cancellation needs a trimmed nonempty reason, releases only that hold, keeps its history and notifies the coordinator; a lapsed hold cannot be cancelled; a new operational block releases an overlapping live hold with the reason "Venue unavailable: …".
+- AC11/AC12: the assigned coordinator sees the deadline and the expired outcome; another coordinator gets `NOT_FOUND` and an empty list; Venue Staff no longer see expired holds in their queue; unauthenticated, wrong-role and malformed-ID HTTP calls are refused through the mounted runtime. Component and browser tests cover the staff hold and cancel forms, Singapore-time conversion, deadline-after-start guidance, conflict reload without retry, uncertain-outcome refresh and the coordinator's read-only view.
+
+**Earlier failures and resolution:** after adding migration 008, 11 existing PostgreSQL and 9 unit tests failed only because they asserted the exact migration list, calendar period shape (new `heldUntil`) or clash SQL; their expectations were updated to the new contract without changing what they check. Two existing component tests and one browser test asserted the old empty-queue heading, now "No pending or held venue requests". In the new suite, one test used a fixed deadline that fell after its dynamically chosen booking start and was refused correctly; it now uses a relative deadline. One backend typecheck error in a test fake was fixed with a cast. The final reruns above passed. As in AUTO-20261021-01, Chromium build 1194 was linked in place of the expected build 1243.
+
+**Acceptance boundary:** automated coverage exists for AC1–AC12. Not done: buffered occupancy (KAN-78 extends `occupancy.ts`; until then the requested interval is used), in-app display of the stored notices (KAN-64 inbox), migration 008 and the `pg_cron` schedule on shared Supabase (the team must be told first, AGENTS.md §7.3), manual hosted cases TC-14-09, TC-14-14, TC-14-18 and TC-14-19, independent peer review, CI on the pushed commits, merge and formal acceptance. KAN-83 stays In Progress. This work was carried out on 21 October, after the configured 17 October Sprint 3 end, and is not delivery evidence for that sprint window.
+
+## 22 October 2026 — KAN-83 rebase onto main before the pull request
+
+Branch `feat/KAN-83-venue-holds` was rebased from `aaee549` onto `main` at `b2820e1` (after PR #47, KAN-81 phase 1). Main now has migrations `008_notification_inbox.sql`, `009_venue_buffer_durations.sql` and `010_venue_outage_impacts.sql`, so the hold migration is renumbered **`011_venue_holds.sql`** (renumbered again to `013_venue_holds.sql` in the 22 October integration) with unchanged SQL; none of 008–010 redefines `prevent_venue_booking_conflict()` or the `venue_bookings` status check. The run above is renamed **AUTO-20261021-KAN83-01** (it was AUTO-20261021-02, an ID already used by another 21 October run). Code conflicts were resolved by keeping both sides: booking decisions keep the KAN-64 notification write and the KAN-83 hold checks, and operational blocks release overlapping live holds (KAN-83-AC10) before KAN-81 flags affected approved bookings. One KAN-83 unit-test fake was extended to answer the KAN-64 notification read.
+
+| Command / check | Actual result (22 October 2026, Windows, Node.js 24) |
+| --- | --- |
+| `npm run check` | Pass: type checks; 710 frontend tests (36 files), 1278 backend tests (46 files); both production builds. The first run failed 2 KAN-83-AC5 unit tests because the fake did not answer the KAN-64 notification read; fixed in the test only |
+| `npm run test:integration`, `npm run test:e2e` | **Not executed** locally after the rebase (no disposable PostgreSQL available). The pull request's CI run is the reference for the rebased build |
+
+No test case result is changed by this rebase. `class.png` and `erd-planning.png` keep main's exports; re-exporting them with the KAN-83 hold states is **pending**.
+
+## 22 October 2026 — sprint 3 integration 2 (PRs #48–#53)
+
+**Run ID: AUTO-20261022-INTEGRATION2-01.** Branch `feat/sprint-3-integration2` from `main` `b2820e1`, merged in this order: #52 (`fix/KAN-60-rejection-reason`), #49 (`feat/KAN-81-phase-2-notifications`), #50 (`feat/KAN-81-phase-3-replacements`), #48 (`feat/kan-78-kan-34`), #53 (`feat/KAN-83-venue-holds`), #51 (`KAN-12-bug-fix`). Merge commits keep each PR's own commits. Windows, Node.js 24 for local checks; GitHub Actions (Ubuntu, Node.js 24, isolated PostgreSQL 17, Chromium) for the full run. AI-assisted (Claude) integration directed by Irfan.
+
+| Command / check | Actual result |
+| --- | --- |
+| `npm run check` after #48 | First run failed 1 KAN-81 unit test that pinned the unbuffered outage condition; updated to the occupied interval |
+| `npm run check` after #53 | First run: a type error in two KAN-83 fixtures missing KAN-81 fields, then 12 KAN-83 unit tests whose fake did not answer the buffered query; fixtures and fake updated |
+| `npm run check` after #51 (`96fe6e6`) | Pass: type checks; 759 frontend tests (36 files), 1354 backend tests (46 files); both production builds |
+| CI `verify` (check, coverage, migrate, PostgreSQL integration, browser E2E) | first run [39749788947](https://github.com/MochaLxtte/ConnectSphere/actions/runs/39749788947) on `96fe6e6` failed 2 of 479 PostgreSQL tests (a KAN-78 test still expecting an outage over a turnaround buffer to be refused, and a KAN-81 closed-venue replacement reporting the buffered hours error); after fix `9094ee6`, run [39750396624](https://github.com/MochaLxtte/ConnectSphere/actions/runs/39750396624) passed: 759 frontend and 1354 backend unit tests, coverage, migrations 001–013 on PostgreSQL 17, 479 integration tests and 156 browser tests |
+
+The fix runs KAN-81 replacement suitability before the KAN-78 buffered check and updates the KAN-78 test to the KAN-81-AC2 rule (the outage is saved and the booking flagged).
+
+**Conflict resolutions that change behaviour** are listed in the [22 October decisions](../requirements/assumptions-and-questions.md#22-october-2026--sprint-3-integration-2-decisions). Test changes made only to fit the combined code: `outage-impact.test.ts` (buffered condition), `venue-holds.test.ts` (fake answers the buffered check, KAN-81 fixture fields, parameter order), `database.integration.test.ts` (migration lists 012/013 and new empty booking columns), `VenueBookingHold.test.ts` and `venue-holds.spec.ts` (KAN-81 fixture fields), `venue-search.test.ts` (keeps the integrated tests plus #51's KAN-12-AC101 cases), and the staff-queue heading in `VenueBookingsPage.test.ts` and `venue-bookings.spec.ts`. KAN-78 run IDs are renamed `AUTO-20261021-KAN78-01/02`, including the evidence file names.
+
+**Not executed / not done:** manual and hosted acceptance cases for every story; the combined `class.png`/`erd-planning.png` re-export (Mermaid CLI not available; main's exports kept); applying migrations 010–013 to shared Supabase. No case result in `test-executions.csv` is changed by this run.

@@ -1218,3 +1218,56 @@ Source: KAN-81 plan approved in chat by Kai Jie, the story owner, on 21 October 
 ## 21 October 2026 — KAN-81 stale-refusal review correction
 
 Source: PR47 review and Arvin's instruction to fix the findings and merge. A definite 4xx refusal does not establish that the cached staff view is current: 404/409 create/remove results now refresh both blocks and recovery while preserving the server message and save input. No write is retried automatically. This supplements phase-1 decision 6; the AC wording, phased scope and 8-SP estimate are unchanged. New TC-09-13–17 expose phase-1 verification without claiming completion of TC-09-01–12. Jira's To Do/In Progress mismatch was corrected to In Progress, retaining Kai Jie as assignee.
+
+## 21 October 2026 — KAN-60 implementation decisions
+
+**Source and date:** Irfan, 21 October 2026, while implementing KAN-60 (AI-assisted; plan approved in chat by Irfan).
+
+- **Shared limit:** KAN-60-AC101 names "the existing shared review reason length limit", but the review parser had no limit. The existing shared workflow limit for reasons, notes and messages is `MAX_TEXT_LENGTH` = 2,000 characters after trimming (`workflow-support.ts`), so it is reused rather than introducing a new value.
+- **Limit on approvals:** the limit applies to both decisions, so an over-long approval reason is also refused. Approval stays reason-optional (KAN-60-AC4); only the length is checked.
+- **Field-specific error:** `400 INVALID_REVIEW_INPUT` adds `field: "reason"` (or `"decision"`) for field errors and keeps the existing code, so existing clients still recognise the error.
+
+**Outcome:** implementation choices within the existing criteria; no new acceptance criterion, estimate or scope change. Jira wording is unchanged.
+
+## 21 October 2026 — KAN-81 phases 2 and 3 decisions
+
+Source: options proposed in chat on 21 October 2026. Kai Jie, the story owner, said to proceed without choosing, so the recommended option of each was adopted. These are implementation decisions within CR-2, not customer clarifications or a team vote; the 8-SP estimate is unchanged.
+
+1. **Who is notified (AC5).** Only each affected event's current assigned coordinator, once per outage and event (dedupe key `VENUE_OUTAGE_RECOVERY_REQUIRED:<outage>:<event>`), linked to the event's first affected booking. The organiser is not notified. An event without a coordinator gets no notice. This adds one row to the KAN-64 trigger/recipient matrix, which is still To agree.
+2. **Suitability for a replacement (AC7, phase 3).** The objective checks are enforced automatically (active venue, capacity, operating hours, buffered availability and conflicts). Checks that need the coordinator's interpretation of free-text requirements stay advisory, consistent with KAN-52 and CR-6.
+3. **The original booking after an approved replacement (AC8, phase 3).** It becomes `CANCELLED`, keeping the row and its history, so it no longer reserves the venue. The `venue_bookings_conflict` trigger fires only for `APPROVED` rows, so this update is allowed even while the original overlaps the outage.
+4. **Coordinator view (AC6/AC12).** No new page: every booking response carries its `recovery` list, which the existing booking page shows to Venue Staff and the assigned coordinator. The coordinator's venue panel marks bookings that need recovery.
+
+## 21 October 2026 — KAN-81 phase 3 replacement rules
+
+Source: phase 3 design approved in chat by Kai Jie, the story owner, on 21 October 2026, applying the phase 2/3 decisions above. Implementation decisions within CR-2, not a team vote; the 8-SP estimate is unchanged.
+
+1. **Migration 011, not 010.** PR #47 merged migration 010, so the replacement link is a new additive migration (`venue_bookings.replaces_booking_id`). An applied migration is never edited.
+2. **Requesting a replacement (AC7).** `POST /api/events/:id/venue-bookings` accepts an optional `replacesBookingId`. The original must be a booking of the same event (otherwise `404 VENUE_BOOKING_NOT_FOUND`) that still needs recovery (otherwise `409 REPLACEMENT_NOT_NEEDED`), for an `APPROVED` or `CONFIRMED` event (otherwise `409 EVENT_NOT_ELIGIBLE_FOR_REPLACEMENT`). After the usual availability checks, a replacement must fit the expected attendance (`409 VENUE_CAPACITY_TOO_SMALL`) and the venue's opening hours (`409 VENUE_CLOSED_DURING_PERIOD`). Ordinary requests are unchanged.
+3. **Approving a replacement (AC8).** In the approval transaction, after the booking, event and venue locks and the conflict re-check, the original is locked and must still need recovery; otherwise `409 REPLACEMENT_NOT_NEEDED`. That covers a second replacement or a removed outage, and prevents double-booking the event. On approval the original's open flags become `RESOLVED` and the original becomes `CANCELLED`, keeping its row. A replacement may also be approved for a `CONFIRMED` event. Rejection changes nothing, so another attempt is possible.
+
+## 21 October 2026 — KAN-83 implementation decisions
+
+**Source and date:** Irfan, 21 October 2026, while implementing KAN-83 (AI-assisted; plan approved in chat by Irfan, including the three choices marked *approved*).
+
+- **One occupancy rule (approved):** a booking occupies its venue when it is `APPROVED`, or `HELD` with the deadline still in the future (`backend/src/modules/venues/occupancy.ts`). Calendar, search, suitability, request creation, approval and block creation all use it. KAN-78 adds venue buffers in the same file; until then the occupied interval and the latest hold deadline use the requested start and end.
+- **Expiry scheduling (approved):** `expire_venue_holds()` in migration 011 is the single expiry operation and uses the database clock. Migration 011 schedules it every minute with `pg_cron` where that extension is enabled; the API also runs it at startup and every minute. Reads never depend on either: a hold stops occupying the venue at its deadline even if no run has happened.
+- **Notifications (approved):** placement, expiry and cancellation notices are written to the existing `notifications` table in the same transaction as the hold change (types `VENUE_HOLD_PLACED`, `VENUE_HOLD_EXPIRED`, `VENUE_HOLD_CANCELLED`). Showing them in the app is KAN-64's inbox, so AC7's in-app display cannot be accepted before KAN-64.
+- **Hold eligibility:** a hold may only be placed on a `PENDING` request for an `APPROVED` event (the same event state approval requires), at an active venue whose capacity fits the expected attendance and whose opening hours contain the booked period.
+- **Decisions on a hold:** Venue Staff may approve or reject a live hold through the existing decision endpoint. A hold at or after its deadline can no longer be approved, rejected or cancelled (`HOLD_EXPIRED`); it is already released.
+- **Outage interaction:** creating an operational block releases any live hold it overlaps (status `CANCELLED`, reason "Venue unavailable: <block reason>") and notifies the coordinator; an approved booking still refuses the block as before. KAN-81 owns wider outage recovery.
+- **Statuses:** `HELD` and `EXPIRED` are new booking statuses; readers see a `HELD` row past its deadline as `EXPIRED`. Venue Staff's queue lists pending requests and live holds.
+
+**Outcome:** implementation choices within the existing criteria; no new acceptance criterion, estimate or scope change. Jira wording is unchanged.
+
+## 22 October 2026 — sprint 3 integration 2 decisions
+
+**Source and date:** Irfan, 22 October 2026, while integrating PRs #48–#53 on `feat/sprint-3-integration2` (AI-assisted; Kai Jie's review of #48 is the source for decisions 1–4). Implementation decisions by one member, recorded for the team to confirm; no team vote is recorded.
+
+1. **Outages over approved bookings stay allowed (KAN-81-AC2 over KAN-78).** KAN-78's `prevent_blocking_occupied_booking` trigger now only takes the venue lock; it no longer refuses a block that overlaps an approved occupied interval. KAN-81 saves the outage and flags the bookings for recovery.
+2. **Outage impact uses the buffered interval.** `AFFECTED_BOOKING_CONDITION` reads `venue_booking_intervals`, so an outage that covers only a booking's setup or turnaround also flags it.
+3. **Staff queue.** Approved bookings appear in the Venue Staff queue only for buffer warnings other than `OPERATIONAL_BLOCK_OVERLAP`; outage-affected bookings are handled through KAN-81 recovery.
+4. **Migration order.** 010 outages and 011 replacements (KAN-81) keep their numbers; KAN-78 becomes 012 and KAN-83 becomes 013. Branch names are recorded in each migration header.
+5. **Live holds reserve the buffered interval (KAN-83 with KAN-78).** The 013 trigger extends 012's buffered checks with live holds, and the app's buffered check refuses a live hold with `VENUE_HELD`. A hold deadline may be no later than the buffered occupied start (setup time before the event), as KAN-83-AC1 states.
+6. **KAN-12 search.** From #51 only the strict ISO 8601 date-time validation is integrated; the search service keeps operational-block exclusion, the shared opening-hours rule and KAN-78 buffers, and no `public.` schema prefixes.
+7. **Staff queue empty state.** The Venue Staff heading reads "No pending requests, holds or affected bookings", replacing both branches' wording.

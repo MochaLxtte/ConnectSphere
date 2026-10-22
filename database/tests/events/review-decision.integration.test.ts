@@ -71,7 +71,15 @@ async function readState(id: string) {
      FROM event_reviews WHERE event_request_id = $1`,
     [id],
   );
-  return { event: event.rows[0], reviews: reviews.rows };
+  const history = await pool.query(
+    'SELECT from_status, to_status FROM event_status_history WHERE event_request_id = $1 ORDER BY created_at, id',
+    [id],
+  );
+  const notifications = await pool.query(
+    'SELECT recipient_id, type FROM notifications WHERE event_request_id = $1 ORDER BY created_at, id',
+    [id],
+  );
+  return { event: event.rows[0], reviews: reviews.rows, history: history.rows, notifications: notifications.rows };
 }
 
 describe('KAN-36 review decision persistence', () => {
@@ -119,7 +127,7 @@ describe('KAN-36 review decision persistence', () => {
     );
     const before = await readState(eventRequestId);
     await expect(recordInitialReview(dependencies, {
-      eventRequestId, reviewer: coordinator, input: { decision: 'REJECTED' },
+      eventRequestId, reviewer: coordinator, input: { decision: 'REJECTED', reason: 'Dates conflict.' },
     })).rejects.toMatchObject({ code: 'REVIEW_ALREADY_DECIDED' });
     expect(await readState(eventRequestId)).toEqual(before);
   });
@@ -134,7 +142,8 @@ describe('KAN-36 review decision persistence', () => {
       await blocker.query('SELECT id FROM event_requests WHERE id = $1 FOR UPDATE', [eventRequestId]);
       pending = Promise.allSettled(
         ['APPROVED', 'REJECTED'].map((decision) => recordInitialReview(dependencies, {
-          eventRequestId, reviewer: coordinator, input: { decision },
+          // KAN-60: both attempts carry a reason so either decision is valid input.
+          eventRequestId, reviewer: coordinator, input: { decision, reason: 'Competing decision.' },
         })),
       );
       // Prove both writers reached a database lock before letting either finish.
@@ -166,7 +175,7 @@ describe('KAN-36 review decision persistence', () => {
     expect(state.event.status).toBe(winner.value.decision);
     expect(state.reviews).toEqual([{
       id: winner.value.reviewId, event_request_id: eventRequestId, reviewed_by: coordinator.id,
-      decision: winner.value.decision, reason: null,
+      decision: winner.value.decision, reason: 'Competing decision.',
     }]);
   });
 
@@ -192,7 +201,9 @@ describe('KAN-36 review decision persistence', () => {
     await expect(recordInitialReview(dependencies, {
       eventRequestId, reviewer: coordinator, input: { decision: 'APPROVED' },
     })).rejects.toBeInstanceOf(ReviewRequestNotFoundError);
-    expect(await readState(eventRequestId)).toEqual({ event: undefined, reviews: [] });
+    expect(await readState(eventRequestId)).toEqual({
+      event: undefined, reviews: [], history: [], notifications: [],
+    });
   });
 
   it('persists a decision through HTTP using the verified actor and request policy', async () => {
@@ -228,14 +239,90 @@ describe('KAN-36 review decision persistence', () => {
     });
     const forbidden = await request(app)
       .post(`/api/events/${eventRequestId}/reviews`)
-      .send({ decision: 'REJECTED' });
+      .send({ decision: 'REJECTED', reason: 'Not suitable.' });
     const missing = await request(app)
       .post(`/api/events/${randomUUID()}/reviews`)
-      .send({ decision: 'REJECTED' });
+      .send({ decision: 'REJECTED', reason: 'Not suitable.' });
 
     expect(forbidden.status).toBe(404);
     expect(missing.status).toBe(404);
     expect(forbidden.body).toEqual(missing.body);
     expect(await readState(eventRequestId)).toEqual(before);
+  });
+});
+
+describe('KAN-60 required rejection reason persistence', () => {
+  const httpApp = () => createApp({
+    database: pool,
+    reviews: { ...dependencies, authenticate: async () => coordinator },
+  });
+
+  it.each([undefined, null, '', '   \n\t '])(
+    'KAN-60-AC3/AC102 writes no decision, status, history or notification for reason %j',
+    async (reason) => {
+      const eventRequestId = await createEvent('UNDER_REVIEW');
+      const before = await readState(eventRequestId);
+      await expect(recordInitialReview(dependencies, {
+        eventRequestId, reviewer: coordinator, input: { decision: 'REJECTED', reason },
+      })).rejects.toMatchObject({ name: 'ReviewInputError', field: 'reason' });
+      const response = await request(httpApp())
+        .post(`/api/events/${eventRequestId}/reviews`)
+        .send(reason === undefined ? { decision: 'REJECTED' } : { decision: 'REJECTED', reason });
+      expect(response.status).toBe(400);
+      expect(response.body.error).toMatchObject({ code: 'INVALID_REVIEW_INPUT', field: 'reason' });
+      expect(await readState(eventRequestId)).toEqual(before);
+    },
+  );
+
+  it('KAN-60-AC101 refuses an over-long reason without changing the request', async () => {
+    const eventRequestId = await createEvent();
+    const before = await readState(eventRequestId);
+    const response = await request(httpApp())
+      .post(`/api/events/${eventRequestId}/reviews`)
+      .send({ decision: 'REJECTED', reason: 'x'.repeat(2001) });
+    expect(response.status).toBe(400);
+    expect(response.body.error.field).toBe('reason');
+    expect(await readState(eventRequestId)).toEqual(before);
+  });
+
+  it('KAN-60-AC102 keeps the earlier decision checks: a decided request still reports REVIEW_ALREADY_DECIDED', async () => {
+    const eventRequestId = await createEvent('APPROVED');
+    await pool.query(
+      "INSERT INTO event_reviews (event_request_id, reviewed_by, decision) VALUES ($1, $2, 'APPROVED')",
+      [eventRequestId, coordinator.id],
+    );
+    const response = await request(httpApp())
+      .post(`/api/events/${eventRequestId}/reviews`)
+      .send({ decision: 'REJECTED', reason: 'Late rejection.' });
+    expect(response.status).toBe(409);
+    expect(response.body.error.code).toBe('REVIEW_ALREADY_DECIDED');
+  });
+
+  it('KAN-60-AC2 saves the trimmed reason on the rejection and shows it on the detail read after a reload', async () => {
+    const eventRequestId = await createEvent();
+    const response = await request(httpApp())
+      .post(`/api/events/${eventRequestId}/reviews`)
+      .send({ decision: 'REJECTED', reason: '  The venue capacity is too small.  ' });
+    expect(response.status).toBe(201);
+    expect(response.body).toMatchObject({ decision: 'REJECTED', reason: 'The venue capacity is too small.' });
+    const state = await readState(eventRequestId);
+    expect(state.event.status).toBe('REJECTED');
+    expect(state.reviews).toEqual([expect.objectContaining({
+      id: response.body.reviewId, decision: 'REJECTED', reason: 'The venue capacity is too small.',
+    })]);
+    // The decision adds exactly one status transition after the fixture's own creation entry.
+    expect(state.history.at(-1)).toEqual({ from_status: 'SUBMITTED', to_status: 'REJECTED' });
+    expect(state.history.filter((row) => row.to_status === 'REJECTED')).toHaveLength(1);
+  });
+
+  it('KAN-60-AC4 still records an approval without a reason', async () => {
+    const eventRequestId = await createEvent();
+    const response = await request(httpApp())
+      .post(`/api/events/${eventRequestId}/reviews`)
+      .send({ decision: 'APPROVED' });
+    expect(response.status).toBe(201);
+    expect((await readState(eventRequestId)).reviews).toEqual([expect.objectContaining({
+      decision: 'APPROVED', reason: null,
+    })]);
   });
 });

@@ -50,6 +50,8 @@ export interface VenueSuitabilityAssessment {
   eventName: string | null;
   venueId: string;
   venueName: string;
+  occupiedStartsAt?: string | null;
+  occupiedEndsAt?: string | null;
   checkedAt: string;
   outcome: 'SUITABLE' | 'UNSUITABLE' | 'NEEDS_REVIEW';
   checks: VenueSuitabilityCheck[];

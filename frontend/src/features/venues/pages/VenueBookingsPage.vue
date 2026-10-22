@@ -69,7 +69,7 @@ onBeforeUnmount(() => controller?.abort());
   <section v-else class="panel bookings-panel" aria-labelledby="bookings-title">
     <header class="bookings-header">
       <div>
-        <h2 id="bookings-title">{{ staff ? 'Pending venue requests' : 'Bookings for your assigned events' }}</h2>
+        <h2 id="bookings-title">{{ staff ? 'Pending requests and affected bookings' : 'Bookings for your assigned events' }}</h2>
         <p>All dates and times are in Singapore time.</p>
         <RouterLink v-if="eventRequestId" to="/venue-bookings">Show all venue booking requests</RouterLink>
       </div>
@@ -82,15 +82,18 @@ onBeforeUnmount(() => controller?.abort());
     </div>
     <template v-else-if="state.status === 'ready'">
       <div v-if="state.items.length === 0" class="bookings-empty">
-        <h3>{{ staff ? 'No pending venue requests' : 'No venue booking requests yet' }}</h3>
-        <p>{{ staff ? 'Requests awaiting a venue decision will appear here.' : 'Requests for your currently assigned events will appear here.' }}</p>
+        <h3>{{ staff ? 'No pending requests, holds or affected bookings' : 'No venue booking requests yet' }}</h3>
+        <p>{{ staff ? 'Pending requests, live holds and approved bookings with current warnings will appear here.' : 'Requests for your currently assigned events will appear here.' }}</p>
       </div>
       <ul v-else class="booking-list" aria-label="Venue booking requests">
         <li v-for="booking in state.items" :key="booking.id">
           <div class="booking-summary">
             <h3><RouterLink :to="`/venue-bookings/${booking.id}`">{{ booking.eventName?.trim() || 'Untitled event request' }} · {{ booking.venueName }}</RouterLink></h3>
             <p>{{ formatEventTime(booking.startsAt) }} – {{ formatEventTime(booking.endsAt) }}</p>
+            <p v-if="booking.warnings?.length" role="status">Warning: {{ booking.warnings.join(', ') }}</p>
             <p v-if="booking.decisionReason" class="booking-reason">{{ booking.decisionReason }}</p>
+            <p v-if="booking.status === 'HELD'" class="booking-hold">Held until {{ formatEventTime(booking.holdExpiresAt) }}</p>
+            <p v-else-if="booking.status === 'EXPIRED'" class="booking-hold">Hold expired at {{ formatEventTime(booking.holdExpiresAt) }}</p>
           </div>
           <span class="booking-status" :class="`booking-status--${booking.status.toLowerCase()}`">{{ venueBookingStatusLabel(booking.status) }}</span>
         </li>
@@ -116,6 +119,9 @@ onBeforeUnmount(() => controller?.abort());
 .booking-status--approved { background: #edf5e9; color: #365d2e; }
 .booking-status--rejected { background: #fbeeed; color: #853e37; }
 .booking-status--cancelled { background: #f2f3ed; color: #52614e; }
+.booking-status--held { background: #fdf3e1; color: #7a5212; }
+.booking-status--expired { background: #f2f3ed; color: #52614e; }
+.booking-summary .booking-hold { color: #7a5212; }
 .bookings-empty { padding: 24px 0; }
 @media (max-width: 600px) {
   .bookings-panel { padding: 20px; }

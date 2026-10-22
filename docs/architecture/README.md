@@ -158,9 +158,16 @@ classDiagram
     boolean active
   }
   class VenueBooking {
+    integer reservedSetupMinutes
+    integer reservedTurnaroundMinutes
+    Date occupiedStartsAt
+    Date occupiedEndsAt
+    string[] warnings
     UUID eventRequestId
     UUID venueId
     BookingStatus status
+    Date holdExpiresAt
+    boolean occupiesVenue()
   }
   class VenueUnavailability {
     UUID venueId
@@ -191,7 +198,7 @@ classDiagram
   VenueBooking "0..1" --> "0..*" Notification : booking outcome
 ```
 
-`coordinatorId`, `assignmentVersion` and automatic-history `assignedBy` may be null. A partial unique index permits at most one assignment with null `unassignedAt` per event. New initial allocations and handovers are MANUAL with the Lead actor; historical AUTOMATIC rows retain their null actor. `assignmentVersion` is the UUID of matching active history rather than a new database column. Handover records its required reason in `note` and uses the same instant for the old end/new start. Notification event/booking links, legacy `dedupeKey` and unread `readAt` may be null; `(recipientId, dedupeKey)` is unique for keyed outcomes. Venue buffer values are integers from 0 to 1,440, defaulting to 0. They are returned as planning inputs; no buffered occupancy calculation or affected-booking warning is implemented yet.
+`coordinatorId`, `assignmentVersion` and automatic-history `assignedBy` may be null. A partial unique index permits at most one assignment with null `unassignedAt` per event. New initial allocations and handovers are MANUAL with the Lead actor; historical AUTOMATIC rows retain their null actor. `assignmentVersion` is the UUID of matching active history rather than a new database column. Handover records its required reason in `note` and uses the same instant for the old end/new start. Notification event/booking links, legacy `dedupeKey` and unread `readAt` may be null; `(recipientId, dedupeKey)` is unique for keyed outcomes. Venue buffer values are integers from 0 to 1,440, defaulting to 0. They are returned as planning inputs; no buffered occupancy calculation or affected-booking warning is implemented yet. KAN-83 adds `HELD`/`EXPIRED` booking states and a hold deadline: `occupiesVenue()` is the shared rule in `occupancy.ts` (approved, or held with the deadline still in the future), and `expire_venue_holds()` marks overdue holds expired.
 
 ## Sequence diagrams
 
@@ -264,9 +271,11 @@ sequenceDiagram
   Notify->>DB: Insert organiser notice
   API->>DB: Commit review and notification
   Coordinator->>API: Request suitable available venue for approved event
-  API->>DB: Validate current event and venue, insert pending booking
+  API->>DB: Lock event and venue and check current occupied interval, hours and blocks
+  API->>DB: Insert pending booking without reserving time
   Staff->>API: Decide venue booking
-  API->>DB: Recheck conflicts and permissions, persist decision
+  API->>DB: Lock booking, event and venue and recheck current buffers and occupied conflicts
+  API->>DB: Snapshot buffers and persist approval atomically
   API->>Notify: Venue decision, same transaction
   Notify->>DB: Organiser, current coordinator and deciding staff notices
   API->>DB: Commit booking decision and notifications
@@ -279,7 +288,7 @@ Two Lead writes serialize on the event lock. An initial-allocation loser receive
 
 ## Diagram exports
 
-GitHub's Mermaid rendering is not part of the submission. The current PNG exports are in `docs/architecture/exports/`: `c1-context.png`, `c2-containers.png`, `c3-components.png`, `class.png`, `seq-lead-assignment.png`, `erd-events.png` and `erd-planning.png`. Re-export after design changes. These depict implementation boundaries, not hosted acceptance.
+GitHub's Mermaid rendering is not part of the submission. The current PNG exports are in `docs/architecture/exports/`: `c1-context.png`, `c2-containers.png`, `c3-components.png`, `class.png`, `seq-lead-assignment.png`, `erd-events.png` and `erd-planning.png`. Re-export after design changes. These depict implementation boundaries, not hosted acceptance. `class.png` and `erd-planning.png` were re-exported on 21 October 2026 for KAN-83 with `mmdc` (Mermaid CLI 12), but those exports predate main's KAN-64/KAN-77/KAN-81 diagram changes; after the 22 October rebase the files are main's exports and a combined re-export is **pending**.
 
 ## ERD
 
@@ -368,6 +377,7 @@ erDiagram
   VENUES ||--o{ VENUE_UNAVAILABILITY : blocks
   VENUE_UNAVAILABILITY |o--o{ VENUE_OUTAGE_IMPACTS : affects
   VENUE_BOOKINGS ||--o{ VENUE_OUTAGE_IMPACTS : "flagged by"
+  VENUE_BOOKINGS |o--o{ VENUE_BOOKINGS : "replaced by"
   EQUIPMENT_TYPES ||--o{ EQUIPMENT_REQUESTS : "drawn from"
   APP_USERS ||--o{ EVENT_REGISTRATIONS : attends
   APP_USERS ||--o{ NOTIFICATIONS : receives
@@ -399,15 +409,22 @@ erDiagram
     text status "RECOVERY_REQUIRED RESOLVED CLEARED"
   }
   VENUE_BOOKINGS {
+    integer reserved_setup_minutes
+    integer reserved_turnaround_minutes
     uuid id PK
     uuid event_request_id FK
     uuid venue_id FK
     uuid requested_by FK
-    text status "PENDING APPROVED REJECTED CANCELLED"
+    text status "PENDING HELD APPROVED REJECTED CANCELLED EXPIRED"
     timestamptz starts_at
     timestamptz ends_at
     text layout "nullable"
     uuid decided_by FK "set with decided_at on a decision"
+    uuid replaces_booking_id FK "nullable, KAN-81 replacement"
+    timestamptz hold_expires_at "KAN-83 deadline, nullable"
+    uuid held_by FK "KAN-83, nullable"
+    timestamptz expired_at "KAN-83, nullable"
+    text cancellation_reason "KAN-83, nullable"
   }
   EQUIPMENT_TYPES {
     uuid id PK
@@ -485,3 +502,7 @@ Customer changes received 2 October are represented by KAN-77/78/79/81/82/83/84;
 Implementers must update C3/class/sequence/data/API views for venue buffers, outage recovery, timed holds and its scheduler, Lead authorization, independent arrangements, revision-bound safety and preparation, plus notification integration. Preserve existing diagrams as the current implementation until code changes; add numbered migrations rather than editing applied history. Re-export affected diagrams in the same story PR. Safety review remains separate from event confirmation: readiness permits review, while preparation requires both a confirmed event and current safety approval, avoiding a circular prerequisite.
 
 **21 October implementation follow-up:** Lead allocation/reassignment and the KAN-64 inbox are reflected in the current C3, class and sequence views above. Migration 009 and the venue fields implement KAN-77 AC1–AC5; buffer application and affected-booking warnings remain KAN-78/KAN-77 AC6 work. The 16 October paragraph is the original design plan, not the current implementation status.
+
+## KAN-78 occupied interval evaluation — 21 October 2026
+
+The API's venue module now shares SQL occupied-interval calculation across search, calendar, suitability and booking writes. Migration 008 centralises occupied endpoints and operating-hour eligibility. The internal view selects current durations for live bookings and approval snapshots for ended/completed history. Computed warnings identify both affected overlaps and operational violations after buffer edits; no background job or booking cancellation is introduced. Existing API/module boundaries stay the same. KAN-77's configuration editor remains a separate dependency. The updated class, planning ERD and workflow sequence PNGs accompany this source.

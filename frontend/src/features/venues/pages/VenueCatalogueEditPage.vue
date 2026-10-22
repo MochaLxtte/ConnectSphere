@@ -142,6 +142,13 @@ onBeforeUnmount(() => controller?.abort());
     <form v-else-if="state.status === 'ready' && venue" class="panel edit-panel" :aria-busy="busy"
       novalidate @submit.prevent="save">
       <p v-if="venue.description" class="venue-description">{{ venue.description }}</p>
+      <section v-if="venue?.affectedBookings?.length" aria-label="Affected bookings" role="status">
+        <h2>Bookings need review</h2>
+        <ul><li v-for="booking in venue.affectedBookings" :key="booking.id">
+          <RouterLink :to="`/venue-bookings/${booking.id}`">Review affected booking</RouterLink>
+          — {{ booking.warnings.join(', ') }}
+        </li></ul>
+      </section>
       <p v-if="savedMessage" class="panel-saved" role="status">{{ savedMessage }}</p>
       <p v-if="actionError" class="field-error" role="alert">{{ actionError }}</p>
       <button v-if="bufferConflict" type="button" class="button button-secondary" @click="load">

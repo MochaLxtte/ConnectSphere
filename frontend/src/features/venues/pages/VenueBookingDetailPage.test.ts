@@ -24,6 +24,10 @@ const booking: VenueBooking = {
   eventStartsAt: '2026-10-05T02:30:00Z', eventEndsAt: '2026-10-05T03:30:00Z',
   purpose: 'Hiring', description: 'Annual fair', expectedAttendance: 200,
   venueRequirements: 'Large hall', accessibilityNeeds: 'Wheelchair access',
+  recovery: [],
+  replacesBookingId: null,
+  holdExpiresAt: null, heldBy: null, heldAt: null, expiredAt: null,
+  cancelledBy: null, cancelledAt: null, cancellationReason: null,
 };
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status });
 const errorResponse = (status: number, code: string, message = 'The booking could not be updated.') =>
@@ -325,5 +329,65 @@ describe('KAN-8 booking detail and staff decisions', () => {
     await waitFor(() => expect(screen.queryByRole('heading', { name: 'Career fair' })).not.toBeInTheDocument());
     expect(screen.queryByRole('radio')).not.toBeInTheDocument();
     expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('KAN-81 phase 2: recovery state on the booking detail page (AC6, AC12)', () => {
+  const outage = (status: 'RECOVERY_REQUIRED' | 'RESOLVED' | 'CLEARED', impactId = `i-${status}`) => ({
+    impactId, status, outageStartsAt: '2026-12-01T03:00:00.000Z', outageEndsAt: '2026-12-01T05:00:00.000Z',
+    outageReason: 'Burst pipe',
+  });
+  const affected = (...recovery: ReturnType<typeof outage>[]): VenueBooking => ({ ...decided('APPROVED'), recovery });
+
+  it('tells the assigned coordinator to arrange a replacement and lists the outage', async () => {
+    session.user = user('EVENT_COORDINATOR', 'coordinator-1');
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(json({ booking: affected(outage('RECOVERY_REQUIRED')) })));
+    await open();
+    const panel = await screen.findByRole('region', { name: 'Venue unavailability' });
+    expect(panel).toHaveTextContent('The event and its other arrangements are unchanged; arrange a replacement venue for this period.');
+    expect(panel).toHaveTextContent('Recovery required');
+    expect(panel).toHaveTextContent('Burst pipe');
+  });
+
+  it('tells Venue Staff the coordinator has been notified', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(json({ booking: affected(outage('RECOVERY_REQUIRED')) })));
+    await open();
+    expect(await screen.findByRole('region', { name: 'Venue unavailability' }))
+      .toHaveTextContent('The assigned coordinator has been notified to arrange a replacement venue.');
+  });
+
+  it('distinguishes resolved and cleared outages when nothing needs recovery', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(json({
+      booking: affected(outage('CLEARED'), outage('RESOLVED')),
+    })));
+    await open();
+    const panel = await screen.findByRole('region', { name: 'Venue unavailability' });
+    expect(panel).toHaveTextContent('No outage currently requires recovery for this booking.');
+    expect(panel).toHaveTextContent('Cleared');
+    expect(panel).toHaveTextContent('Resolved');
+    expect(panel).not.toHaveTextContent('Recovery required');
+  });
+
+  it('shows no unavailability section for an unaffected booking', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(json({ booking })));
+    await open();
+    await screen.findByRole('heading', { name: 'Career fair' });
+    expect(screen.queryByRole('region', { name: 'Venue unavailability' })).not.toBeInTheDocument();
+  });
+});
+
+describe('KAN-81 phase 3: replacement link on the booking page (AC8)', () => {
+  it('links a replacement to the booking it replaces', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(json({ booking: { ...booking, replacesBookingId: 'original-1' } })));
+    await open();
+    expect(await screen.findByRole('link', { name: 'The outage-affected booking' }))
+      .toHaveAttribute('href', '/venue-bookings/original-1');
+  });
+
+  it('shows no replacement link for an ordinary booking', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(json({ booking })));
+    await open();
+    await screen.findByRole('heading', { name: 'Career fair' });
+    expect(screen.queryByRole('link', { name: 'The outage-affected booking' })).not.toBeInTheDocument();
   });
 });

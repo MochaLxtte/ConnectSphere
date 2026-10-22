@@ -3,8 +3,11 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import type { WorkflowActor } from '../../../backend/src/modules/events/workflow-support.js';
 import { listVenueAvailability } from '../../../backend/src/modules/venues/availability.js';
 import { createVenueBlock, deleteVenueBlock, listVenueBlocks } from '../../../backend/src/modules/venues/block-service.js';
-import { createVenueBooking, decideVenueBooking } from '../../../backend/src/modules/venues/booking-service.js';
-import { listRecoveryArrangements, recordOutageImpacts } from '../../../backend/src/modules/venues/outage-impact.js';
+import { createVenueBooking, decideVenueBooking, getVenueBooking, listVenueBookings } from '../../../backend/src/modules/venues/booking-service.js';
+import { listNotifications } from '../../../backend/src/modules/notifications/inbox.js';
+import { recordNotifications } from '../../../backend/src/modules/notifications/notify.js';
+import { outageRecoveryNotifications } from '../../../backend/src/modules/notifications/trigger-matrix.js';
+import { listOutageNotificationTargets, listRecoveryArrangements, recordOutageImpacts } from '../../../backend/src/modules/venues/outage-impact.js';
 import { parseVenueSearchQuery, searchVenues } from '../../../backend/src/modules/venues/venue-search.js';
 import { createWorkflowFixture, type WorkflowFixture } from '../events/workflow-fixture.js';
 
@@ -258,5 +261,202 @@ describe('KAN-81 outage effects on planning and approval (AC9, AC10)', () => {
     }
     expect(await attempt).toMatchObject({ code: 'VENUE_UNAVAILABLE' });
     expect((await bookingRow(pending.id)).status).toBe('PENDING');
+  });
+});
+
+describe('KAN-81 phase 2: coordinator notice and recovery view against PostgreSQL (AC5, AC6)', () => {
+  it('notifies each affected event’s current coordinator once, in the outage transaction (AC5)', async () => {
+    const venueId = await venue();
+    const first = await booking(venueId, at('03:00'), at('04:00'));
+    const second = await booking(venueId, at('05:00'), at('05:30'));
+    const saved = await create(venueId);
+
+    for (const affected of [first, second]) {
+      expect(await fixture.notifications(affected.eventRequestId)).toEqual([
+        expect.objectContaining({ recipient_id: coordinator.id, type: 'VENUE_OUTAGE_RECOVERY_REQUIRED' }),
+      ]);
+    }
+    const stored = await fixture.pool.query(
+      `SELECT venue_booking_id, dedupe_key FROM notifications WHERE event_request_id = $1`, [first.eventRequestId]);
+    expect(stored.rows).toEqual([{
+      venue_booking_id: first.id, dedupe_key: `VENUE_OUTAGE_RECOVERY_REQUIRED:${saved.id}:${first.eventRequestId}`,
+    }]);
+    const [notice] = await fixture.notifications(first.eventRequestId);
+    expect(notice!.message).toContain('Reason: Burst pipe');
+  });
+
+  it('sends nothing for an outage that affects no booking, and nothing twice when reprocessed', async () => {
+    const venueId = await venue();
+    const unaffected = await booking(venueId, at('07:00'), at('08:00'));
+    await create(venueId);
+    expect(await fixture.notifications(unaffected.eventRequestId)).toEqual([]);
+
+    // A second venue: approved bookings cannot be inserted into the first venue's blocked period.
+    const secondVenue = await venue();
+    const affected = await booking(secondVenue, at('03:00'), at('04:00'));
+    const saved = await create(secondVenue, { startsAt: at('02:30'), endsAt: at('03:30'), reason: 'Gas leak' });
+    const again = outageRecoveryNotifications(await listOutageNotificationTargets(fixture.pool, saved.id),
+      { blockId: saved.id, startsAt: at('02:30'), endsAt: at('03:30'), reason: 'Gas leak' });
+    expect(await recordNotifications(fixture.pool, again)).toBe(0);
+    expect(await fixture.notifications(affected.eventRequestId)).toHaveLength(1);
+  });
+
+  it('shows the recovery state to the assigned coordinator and Venue Staff, and to no one else (AC6)', async () => {
+    const venueId = await venue();
+    const affected = await booking(venueId, at('03:00'), at('04:00'));
+    const saved = await create(venueId);
+    const expected = [{
+      impactId: saved.affected[0]!.impactId, status: 'RECOVERY_REQUIRED',
+      outageStartsAt: outage.startsAt, outageEndsAt: outage.endsAt, outageReason: 'Burst pipe',
+    }];
+
+    expect((await getVenueBooking(fixture.dependencies, { bookingId: affected.id, actor: coordinator })).recovery)
+      .toEqual(expected);
+    expect((await getVenueBooking(fixture.dependencies, { bookingId: affected.id, actor: staff })).recovery)
+      .toEqual(expected);
+    const listed = await listVenueBookings(fixture.dependencies, { actor: coordinator, eventRequestId: affected.eventRequestId });
+    expect(listed.map((item) => item.recovery)).toEqual([expected]);
+    const other = await fixture.createUser('EVENT_COORDINATOR');
+    await expect(getVenueBooking(fixture.dependencies, { bookingId: affected.id, actor: other }))
+      .rejects.toMatchObject({ code: 'VENUE_BOOKING_NOT_FOUND' });
+  });
+
+  it('links the coordinator’s inbox notice to the protected booking page (AC5, AC6)', async () => {
+    const venueId = await venue();
+    const affected = await booking(venueId, at('03:00'), at('04:00'));
+    await create(venueId);
+    const inbox = await listNotifications(fixture.dependencies, coordinator);
+    expect(inbox.find((item) => item.booking?.id === affected.id)).toMatchObject({
+      type: 'VENUE_OUTAGE_RECOVERY_REQUIRED', link: `/venue-bookings/${affected.id}`,
+    });
+  });
+
+  it('shows a removed outage as cleared on the booking, without deleting the notice', async () => {
+    const venueId = await venue();
+    const affected = await booking(venueId, at('03:00'), at('04:00'));
+    const saved = await create(venueId);
+    await deleteVenueBlock(fixture.dependencies, { actor: staff, blockId: saved.id });
+    expect((await getVenueBooking(fixture.dependencies, { bookingId: affected.id, actor: coordinator })).recovery)
+      .toEqual([expect.objectContaining({ status: 'CLEARED' })]);
+    expect(await fixture.notifications(affected.eventRequestId)).toHaveLength(1);
+  });
+});
+
+describe('KAN-81 phase 3: replacement bookings against PostgreSQL (AC7, AC8)', () => {
+  /** An approved booking at venue A affected by an outage, plus a free replacement venue B. */
+  async function affectedArrangement() {
+    const venueA = await venue();
+    const venueB = await venue();
+    const original = await booking(venueA, at('03:00'), at('04:00'));
+    await create(venueA);
+    return { venueA, venueB, original };
+  }
+  const requestReplacement = (eventRequestId: string, venueId: string, replacesBookingId: string, actor = coordinator) =>
+    createVenueBooking(fixture.dependencies, {
+      eventRequestId, actor, input: { venueId, startsAt: at('03:00'), endsAt: at('04:00'), replacesBookingId },
+    });
+  const approve = (bookingId: string) =>
+    decideVenueBooking(fixture.dependencies, { bookingId, actor: staff, input: { decision: 'APPROVED' } });
+  const impactStatuses = async (bookingId: string) => (await impacts(bookingId)).map((row) => row.status);
+
+  it('records a pending replacement linked to the affected original, leaving the original as it was (AC7)', async () => {
+    const { venueB, original } = await affectedArrangement();
+    const replacement = await requestReplacement(original.eventRequestId, venueB, original.id);
+    expect(replacement).toMatchObject({ status: 'PENDING', venueId: venueB, replacesBookingId: original.id });
+    expect((await bookingRow(original.id)).status).toBe('APPROVED');
+    expect(await impactStatuses(original.id)).toEqual(['RECOVERY_REQUIRED']);
+  });
+
+  it('approves the replacement, resolves the recovery and cancels the original while keeping its history (AC8)', async () => {
+    const { venueB, original } = await affectedArrangement();
+    const replacement = await requestReplacement(original.eventRequestId, venueB, original.id);
+    const approved = await approve(replacement.id);
+    expect(approved.status).toBe('APPROVED');
+    expect(await bookingRow(original.id)).toMatchObject({ status: 'CANCELLED', decided_by: staff.id });
+    expect(await impactStatuses(original.id)).toEqual(['RESOLVED']);
+    const resolved = await listRecoveryArrangements(fixture.dependencies, { actor: staff, status: 'RESOLVED' });
+    expect(resolved.some((item) => item.bookingId === original.id)).toBe(true);
+  });
+
+  it('leaves recovery open after a rejected replacement and accepts another attempt (AC8)', async () => {
+    const { venueB, original } = await affectedArrangement();
+    const first = await requestReplacement(original.eventRequestId, venueB, original.id);
+    await decideVenueBooking(fixture.dependencies, { bookingId: first.id, actor: staff, input: { decision: 'REJECTED', reason: 'Too small' } });
+    expect((await bookingRow(original.id)).status).toBe('APPROVED');
+    expect(await impactStatuses(original.id)).toEqual(['RECOVERY_REQUIRED']);
+
+    const second = await requestReplacement(original.eventRequestId, venueB, original.id);
+    await approve(second.id);
+    expect(await impactStatuses(original.id)).toEqual(['RESOLVED']);
+  });
+
+  it('refuses a second replacement once the original is resolved, at request and at approval (AC8)', async () => {
+    const { venueB, original } = await affectedArrangement();
+    const venueC = await venue();
+    const first = await requestReplacement(original.eventRequestId, venueB, original.id);
+    const second = await requestReplacement(original.eventRequestId, venueC, original.id);
+    await approve(first.id);
+    await expect(approve(second.id)).rejects.toMatchObject({ code: 'REPLACEMENT_NOT_NEEDED' });
+    expect((await bookingRow(second.id)).status).toBe('PENDING');
+    await expect(requestReplacement(original.eventRequestId, venueC, original.id))
+      .rejects.toMatchObject({ code: 'REPLACEMENT_NOT_NEEDED' });
+  });
+
+  it('refuses to approve a replacement after its outage was removed (AC8, AC11)', async () => {
+    const { venueA, venueB, original } = await affectedArrangement();
+    const replacement = await requestReplacement(original.eventRequestId, venueB, original.id);
+    const [block] = await listVenueBlocks(fixture.dependencies, { actor: staff, venueId: venueA });
+    await deleteVenueBlock(fixture.dependencies, { actor: staff, blockId: block!.id });
+    await expect(approve(replacement.id)).rejects.toMatchObject({ code: 'REPLACEMENT_NOT_NEEDED' });
+    expect((await bookingRow(original.id)).status).toBe('APPROVED');
+  });
+
+  it('lets exactly one of two concurrent replacement approvals win (AC8, AC10)', async () => {
+    const { venueB, original } = await affectedArrangement();
+    const venueC = await venue();
+    const first = await requestReplacement(original.eventRequestId, venueB, original.id);
+    const second = await requestReplacement(original.eventRequestId, venueC, original.id);
+    const results = await Promise.allSettled([approve(first.id), approve(second.id)]);
+    expect(results.filter((result) => result.status === 'fulfilled')).toHaveLength(1);
+    expect((results.find((result) => result.status === 'rejected') as PromiseRejectedResult).reason)
+      .toMatchObject({ code: 'REPLACEMENT_NOT_NEEDED' });
+    expect(await impactStatuses(original.id)).toEqual(['RESOLVED']);
+  });
+
+  it.each([
+    ['an unaffected original', 'REPLACEMENT_NOT_NEEDED'],
+    ['another event booking', 'VENUE_BOOKING_NOT_FOUND'],
+    ['a venue too small for the attendance', 'VENUE_CAPACITY_TOO_SMALL'],
+    ['a venue closed during the period', 'VENUE_CLOSED_DURING_PERIOD'],
+    ['a venue already booked then', 'VENUE_BOOKING_CONFLICT'],
+  ] as const)('refuses a replacement for %s and creates nothing (AC7)', async (scenario, code) => {
+    const { venueB, original } = await affectedArrangement();
+    let eventRequestId = original.eventRequestId;
+    let replaces = original.id;
+    if (scenario === 'an unaffected original') {
+      const plain = await booking(await venue(), at('03:00'), at('04:00'));
+      eventRequestId = plain.eventRequestId;
+      replaces = plain.id;
+    } else if (scenario === 'another event booking') {
+      eventRequestId = (await booking(await venue(), at('07:00'), at('08:00'))).eventRequestId;
+    } else if (scenario === 'a venue too small for the attendance') {
+      await fixture.pool.query('UPDATE event_requests SET expected_attendance = 500 WHERE id = $1', [eventRequestId]);
+    } else if (scenario === 'a venue closed during the period') {
+      await fixture.pool.query(`UPDATE venues SET opens_at = '13:00', closes_at = '22:00' WHERE id = $1`, [venueB]);
+    } else {
+      await booking(venueB, at('03:00'), at('04:00'));
+    }
+    const count = async () => (await fixture.pool.query(
+      'SELECT count(*)::int AS n FROM venue_bookings WHERE replaces_booking_id IS NOT NULL')).rows[0].n;
+    const before = await count();
+    await expect(requestReplacement(eventRequestId, venueB, replaces)).rejects.toMatchObject({ code });
+    expect(await count()).toBe(before);
+  });
+
+  it('refuses a replacement from a coordinator who is not assigned to the event (AC6, AC7)', async () => {
+    const { venueB, original } = await affectedArrangement();
+    const other = await fixture.createUser('EVENT_COORDINATOR');
+    await expect(requestReplacement(original.eventRequestId, venueB, original.id, other)).rejects.toBeDefined();
+    expect(await impactStatuses(original.id)).toEqual(['RECOVERY_REQUIRED']);
   });
 });

@@ -1,5 +1,7 @@
 # Sprint 3 planning
 
+**Ownership update — 20 October 2026.** KAN-60 (2 SP) and KAN-83 (8 SP) are assigned to Irfan in Jira (20 October, 23:39 Singapore time); independent reviewers **To agree**. Other Sprint 3 Jira assignments read on 20 October: Ernest KAN-6, KAN-52, KAN-64; Arvin KAN-34, KAN-78; Ryan KAN-12, KAN-50; Tristan KAN-65, KAN-79; KAN-77 and KAN-81 unassigned. No new planning meeting or vote is asserted.
+
 **Ownership update — 19 October 2026.** KAN-79 is claimed by Tristan (8 SP); independent reviewer **To agree**. KAN-65 remains a separate dependency and is not claimed or implemented by this update. Existing allocation and estimate records below retain their dates; no new planning meeting or vote is asserted.
 
 **Estimation status:** The current 63-SP allocation is a planning baseline. Team confirmation of relative estimates, capacity and the sprint commitment is **To agree**; no planning-poker vote is recorded. The 10 to 11 SP selection target is guidance, not an individual quota. Keep existing estimates until a team-agreed change is logged.
@@ -36,14 +38,14 @@ Deliver reliable request review and Lead assignment, then coherent venue plannin
 | KAN-34 | Resume/Edit Draft Event Request | 3 | Unassigned — team member to choose | To agree after owner chosen | Full-point Sprint 2 carry-over; Original draft criteria and strict real-calendar validation |
 | KAN-50 | Maintain Venue Catalog | 5 | Unassigned — team member to choose | To agree after owner chosen | Full-point Sprint 2 carry-over; Original catalogue criteria; stale-save navigation regression |
 | KAN-52 | Check Venue Suitability | 3 | Unassigned — team member to choose | To agree after owner chosen | Full-point Sprint 2 carry-over; Zero-attendance consistency and shared current venue checks |
-| KAN-60 | Require a reason when rejecting an event request | 2 | Unassigned — team member to choose | To agree after owner chosen | Existing KAN-36 review flow; correction counted once |
+| KAN-60 | Require a reason when rejecting an event request | 2 | Irfan | To agree | Existing KAN-36 review flow; correction counted once |
 | KAN-64 | Receive Request, Assignment and Venue Notifications | 5 | Unassigned — team member to choose | To agree after owner chosen | Shared business-event/recipient contract; request, assignment and venue trigger owners |
 | KAN-65 | Reassign Event Coordinator | 3 | Unassigned — team member to choose | To agree after owner chosen | KAN-79 Lead authority; KAN-64 notifications and current assignment access |
 | KAN-77 | Configure Venue Setup and Turnaround Durations | 2 | Unassigned — team member to choose | To agree after owner chosen | KAN-50 catalogue and additive schema/API changes |
 | KAN-78 | Apply Venue Buffers to Availability and Booking Conflicts | 8 | Unassigned — team member to choose | To agree after owner chosen | KAN-77 buffers; shared availability contract with KAN-81/KAN-83 |
 | KAN-79 | Assign Submitted Events Through a Coordinator Lead Queue | 8 | Unassigned — team member to choose | To agree after owner chosen | KAN-6 submission; trusted role mapping; KAN-64 notification delivery |
 | KAN-81 | Recover venue arrangements affected by operational unavailability | 8 | Unassigned — team member to choose | To agree after owner chosen | KAN-78 occupancy, KAN-64 delivery, existing booking decisions; integrate KAN-83 live holds |
-| KAN-83 | Manage temporary venue holds with expiry and automatic release | 8 | Unassigned — team member to choose | To agree after owner chosen | KAN-78 occupancy, KAN-64 delivery, existing booking decisions; integrate KAN-81 outages |
+| KAN-83 | Manage temporary venue holds with expiry and automatic release | 8 | Irfan | To agree | KAN-78 occupancy, KAN-64 delivery, existing booking decisions; integrate KAN-81 outages |
 
 The pool is unassigned. Once a story is chosen, its owner is responsible for code, meaningful tests, contracts/docs, hosted evidence and arranging independent review. Points are relative story size, not hours or individual productivity.
 

@@ -261,7 +261,7 @@ describe('KAN-16 / KAN-25 / KAN-33 / KAN-36 authenticated event workflow', () =>
       expect(decidedList.body.items).toEqual([expect.objectContaining({ id, status: decision })]);
       expect((await reviewer.get('/api/events')).body.items).toEqual([]);
       const repeat = await reviewer.post(`/api/events/${id}/reviews`)
-        .send({ decision: decision === 'APPROVED' ? 'REJECTED' : 'APPROVED' });
+        .send({ decision: decision === 'APPROVED' ? 'REJECTED' : 'APPROVED', reason: 'Second decision.' });
       expect(repeat.status).toBe(409);
       expect(await readState(id)).toEqual(state);
     },
@@ -280,7 +280,7 @@ describe('KAN-16 / KAN-25 / KAN-33 / KAN-36 authenticated event workflow', () =>
       const reviewer = await signIn(coordinator);
 
       expect((await reviewer.get('/api/events?scope=history')).body).toEqual({ items: [] });
-      expect((await reviewer.post(`/api/events/${id}/reviews`).send({ decision })).status).toBe(201);
+      expect((await reviewer.post(`/api/events/${id}/reviews`).send({ decision, reason: 'Checked.' })).status).toBe(201);
 
       expect((await reviewer.get('/api/events')).body.items).toEqual([]);
       const history = await reviewer.get('/api/events?scope=history');
@@ -296,7 +296,7 @@ describe('KAN-16 / KAN-25 / KAN-33 / KAN-36 authenticated event workflow', () =>
         actions: { canEditDraft: false, canMakeInitialDecision: false },
       });
       const stateBefore = await readState(id);
-      expect((await reviewer.post(`/api/events/${id}/reviews`).send({ decision })).status).toBe(409);
+      expect((await reviewer.post(`/api/events/${id}/reviews`).send({ decision, reason: 'Checked.' })).status).toBe(409);
       expect(await readState(id)).toEqual(stateBefore);
 
       const outsider = await signIn(otherCoordinator);
@@ -363,7 +363,8 @@ describe('KAN-16 / KAN-25 / KAN-33 / KAN-36 authenticated event workflow', () =>
     const session = await signIn(coordinator);
 
     expect((await session.get(`/api/events/${id}`)).status).toBe(404);
-    const decision = await session.post(`/api/events/${id}/reviews`).send({ decision: 'REJECTED' });
+    const decision = await session.post(`/api/events/${id}/reviews`)
+      .send({ decision: 'REJECTED', reason: 'Draft is incomplete.' });
     expect(decision.status).toBe(409);
     expect(decision.body.error.code).toBe('REQUEST_NOT_REVIEWABLE');
     expect(await readState(id)).toEqual(before);

@@ -38,13 +38,13 @@ describe('KAN-53 venue booking submission input', () => {
   it('accepts a full submission and normalises dates and optional text', () => {
     expect(parseBookingSubmission({
       venueId, startsAt, endsAt, layout: '  Theatre  ', notes: '  Projector required  ',
-    })).toEqual({ venueId, startsAt, endsAt, layout: 'Theatre', notes: 'Projector required' });
+    })).toEqual({ venueId, startsAt, endsAt, layout: 'Theatre', notes: 'Projector required', replacesBookingId: null });
   });
   it('accepts the minimal submission with layout and notes omitted', () => {
     expect(parseBookingSubmission({ venueId, startsAt, endsAt }))
-      .toEqual({ venueId, startsAt, endsAt, layout: null, notes: null });
+      .toEqual({ venueId, startsAt, endsAt, layout: null, notes: null, replacesBookingId: null });
     expect(parseBookingSubmission({ venueId, startsAt, endsAt, layout: null, notes: '   ' }))
-      .toEqual({ venueId, startsAt, endsAt, layout: null, notes: null });
+      .toEqual({ venueId, startsAt, endsAt, layout: null, notes: null, replacesBookingId: null });
   });
   it('normalises a date-time to an ISO string', () => {
     expect(parseBookingSubmission({ venueId, startsAt: '2026-12-01T10:00:00+08:00', endsAt }).startsAt)
@@ -97,5 +97,17 @@ describe('KAN-53 venue booking submission input', () => {
     { venueId, startsAt, endsAt, decidedBy: 'spoofed' },
   ])('rejects malformed input %j', (input) => {
     expect(() => parseBookingSubmission(input)).toThrow();
+  });
+});
+
+describe('KAN-81 phase 3: replacement link in the submission input (AC7)', () => {
+  const original = '60000000-0000-4000-8000-000000000001';
+  it('accepts a UUID or null for the replaced booking', () => {
+    expect(parseBookingSubmission({ venueId, startsAt, endsAt, replacesBookingId: original }).replacesBookingId).toBe(original);
+    expect(parseBookingSubmission({ venueId, startsAt, endsAt, replacesBookingId: null }).replacesBookingId).toBeNull();
+  });
+  it.each(['not-a-uuid', 42, true, ''])('refuses %j as the replaced booking', (replacesBookingId) => {
+    expect(() => parseBookingSubmission({ venueId, startsAt, endsAt, replacesBookingId }))
+      .toThrow(expect.objectContaining({ code: 'INVALID_REPLACED_BOOKING_ID' }));
   });
 });

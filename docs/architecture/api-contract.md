@@ -349,15 +349,15 @@ Request body:
 }
 ```
 
-`decision` must be `APPROVED` or `REJECTED`. `reason` is optional, is trimmed, and becomes `null` when absent or blank. Other body fields are rejected. The event request ID must use UUID format. Initial decisions require `SUBMITTED` or, since 19 September, `UNDER_REVIEW` status with no existing review decision. A request in `CLARIFICATION_REQUESTED` must be answered first, which returns it to `SUBMITTED`.
+`decision` must be `APPROVED` or `REJECTED`. `reason` is trimmed and may be at most 2,000 characters after trimming (the shared workflow limit). **KAN-60 (21 October 2026, branch `fix/KAN-60-rejection-reason`):** a `REJECTED` decision requires a nonblank reason; an `APPROVED` decision keeps the reason optional, and an absent or blank approval reason becomes `null`. Other body fields are rejected. The event request ID must use UUID format. Initial decisions require `SUBMITTED` or, since 19 September, `UNDER_REVIEW` status with no existing review decision. A request in `CLARIFICATION_REQUESTED` must be answered first, which returns it to `SUBMITTED`.
 
-**Required correction, recorded 21 September:** The [customer rule](../requirements/assumptions-and-questions.md#21-september-2026--customer-rules-reconciled-with-the-backlog) requires a non-empty reason for event-request rejection. The current parser, persistence path and UI still allow an empty reason. The paragraph above describes existing behaviour, not compliance with that requirement. Refine KAN-36 and add the validation/UI regression work; approval may continue without a reason. No implementation change or new test pass is recorded here.
+**Required correction, recorded 21 September:** The [customer rule](../requirements/assumptions-and-questions.md#21-september-2026--customer-rules-reconciled-with-the-backlog) requires a non-empty reason for event-request rejection. The current parser, persistence path and UI still allow an empty reason. The paragraph above describes existing behaviour, not compliance with that requirement. Refine KAN-36 and add the validation/UI regression work; approval may continue without a reason. No implementation change or new test pass is recorded here. **Implemented 21 October 2026 by KAN-60** as described above; this note is retained as history.
 
 | Response | Meaning |
 | --- | --- |
 | `201` | Returns `reviewId`, `eventRequestId`, `reviewedBy`, `decision` and `reason` after the review and matching event status commit together. |
 | `400 INVALID_EVENT_REQUEST_ID` | The route ID is not a UUID. |
-| `400 INVALID_REVIEW_INPUT` | The JSON body does not match the decision contract. |
+| `400 INVALID_REVIEW_INPUT` | The JSON body does not match the decision contract. Field errors add `field` (`"decision"` or `"reason"`), for example `{ "error": { "code": "INVALID_REVIEW_INPUT", "message": "Enter a reason to reject this event request.", "field": "reason" } }`; whole-body errors omit it. No decision, status, history or notification is written. |
 | `401 AUTHENTICATION_REQUIRED` | The authentication adapter reports absent or invalid credentials. |
 | `403 REVIEW_FORBIDDEN` | The verified account is not an event coordinator. |
 | `404 EVENT_REQUEST_NOT_FOUND` | The request does not exist or this coordinator cannot review it; both cases return the same response. |
@@ -444,7 +444,7 @@ Client navigation is not access control; every page relies on the API responses 
 | `/venue-catalogue/:id` | KAN-50 view and edit one venue; only changed fields are saved | VS after session resolution; others see a staff-only message and no venue data is requested |
 | `/venues` | KAN-12 venue search and combined filters | EC after session resolution |
 | `/venue-bookings` | KAN-8 staff pending queue or coordinator outcomes; optional `?eventRequestId=<id>` | VS or EC after session resolution |
-| `/venue-bookings/:id` | KAN-8 request detail and saved decision; writes only for staff with a pending booking | Linked from the booking list; role checked on direct navigation |
+| `/venue-bookings/:id` | KAN-8 request detail and saved decision; KAN-83 hold deadline, place-hold and cancel-hold forms; writes only for staff with a pending or live held booking | Linked from the booking list; role checked on direct navigation |
 | `/venues/availability` | KAN-51 venue availability calendar; optional `?week=YYYY-MM-DD&venue=<id>` reopens a week and venue | EC, VS or TS after session resolution; also linked from `/reviews/:id` for the event's week |
 
 `EventPlanningPanels.vue` adds read-only assignment history, clarification and read-only status-history panels to organiser/coordinator details. KAN-79 allocation controls live on the dedicated Lead pages; these planning panels do not offer coordinator self-assignment.
@@ -538,6 +538,32 @@ On `/reviews/:id`, **Venue booking requests** lets the coordinator choose an act
 
 Verification sources include `booking-input.test.ts`, `venue-booking-submission-router.test.ts`, `VenueBookingPanel.test.ts` and `database/tests/venues/venue-bookings.integration.test.ts`. The original branch's [4 October results](../testing/test-evidence.md#4-october-venue-booking-submission) have a narrower scope than this merged implementation. Record combined runs separately and follow [hosted submission checks](../testing/README.md#kan-53-hosted-verification); no hosted result is claimed here.
 
+## Temporary venue holds (KAN-83, CR-4)
+
+**Status, 21 October 2026:** implemented on branch `feat/KAN-83-venue-holds` with migration [008](../../database/migrations/013_venue_holds.sql); automated run AUTO-20261021-KAN83-01 in the [test register](../testing/test-evidence.md). Not applied to shared Supabase; hosted acceptance and review are outstanding. Decisions: [21 October KAN-83 entry](../requirements/assumptions-and-questions.md#21-october-2026--kan-83-implementation-decisions).
+
+`POST /api/venue-bookings/:id/hold` body: `{ "expiresAt": "2026-11-28T18:00:00+08:00" }`, an ISO 8601 instant with `Z` or an offset. The deadline must be strictly after the database clock and no later than the booking's occupied start (the requested start until KAN-78 adds buffers). The service locks booking → event → venue and rechecks event approval, venue activity, capacity against expected attendance, opening hours, approved bookings, other live holds and blocks.
+
+`POST /api/venue-bookings/:id/hold/cancel` body: `{ "reason": "Organiser withdrew" }`, trimmed, nonempty, at most 2,000 characters. Only that booking changes; its hold fields remain as history.
+
+Approving a live hold through `POST /api/venue-bookings/:id/decision` converts it into the approved booking in one row update after rechecking the deadline under every lock. Rejecting a live hold is also allowed.
+
+| Error | Meaning |
+| --- | --- |
+| `400 INVALID_HOLD_EXPIRY` | Missing, malformed, past or after-start deadline |
+| `400 INVALID_INPUT` | Missing/blank cancellation reason or unknown field |
+| `403 ACTION_FORBIDDEN` | The verified role is not Venue Staff |
+| `404 VENUE_BOOKING_NOT_FOUND` | No such booking |
+| `409 BOOKING_NOT_PENDING` / `BOOKING_ALREADY_HELD` | Only a pending request without a live hold can be held |
+| `409 BOOKING_NOT_HELD` | Cancel on a booking without a live hold |
+| `409 HOLD_EXPIRED` | Approve, reject or cancel at or after the deadline; the hold is already released and cannot be revived |
+| `409 EVENT_NOT_APPROVED` / `VENUE_INACTIVE` / `VENUE_UNSUITABLE` / `OUTSIDE_VENUE_HOURS` | Hold eligibility failed |
+| `409 VENUE_BOOKING_CONFLICT` / `VENUE_HELD` / `VENUE_UNAVAILABLE` | Overlap with an approved booking, another live hold or a block |
+
+`VenueBooking` adds `holdExpiresAt`, `heldBy`, `heldAt`, `expiredAt`, `cancelledBy`, `cancelledAt` and `cancellationReason` (all nullable). `status` may now be `HELD` or `EXPIRED`; a `HELD` row past its deadline is returned as `EXPIRED` even before expiry runs. Venue Staff's list contains `PENDING` and live `HELD` bookings. `VENUE_HELD` is also returned by `POST /api/events/:id/venue-bookings` and booking approval when another request's live hold overlaps. Calendar `BOOKING` periods add `heldUntil` (the deadline for a live hold, otherwise `null`), and search and suitability treat a live hold as occupying.
+
+Each hold change writes a notification for the event's current coordinator in the same transaction: `VENUE_HOLD_PLACED` (with the deadline in Singapore time), `VENUE_HOLD_EXPIRED` (once, from `expire_venue_holds()`) and `VENUE_HOLD_CANCELLED`. Their in-app display belongs to KAN-64.
+
 ## Venue booking decisions (KAN-8, CF-13)
 
 **Status, 4 October 2026:** implemented for existing `venue_bookings` rows, using the verified application session and migration 004's retained schema. KAN-53 was not integrated in that original run; the [5 October submission integration](#venue-booking-submission-kan-53-cf-12) now supplies pending rows on this branch. No new migration or shared Supabase write is part of this implementation. The [implementation choices](../requirements/assumptions-and-questions.md#4-october-2026--kan-8-venue-booking-decisions) distinguish provisional policy from the story criteria. Executed checks belong in AUTO-20261004-KAN8-01 in the [test register](../testing/test-evidence.md); hosted acceptance, peer review and new CI remain pending.
@@ -546,7 +572,9 @@ Verification sources include `booking-input.test.ts`, `venue-booking-submission-
 | --- | --- | --- |
 | `GET /api/venue-bookings?eventRequestId=…` | VS: pending bookings across venues. EC: all booking statuses for currently assigned, non-draft events. The optional UUID filter only narrows this scope. | `200 { items: VenueBooking[] }`, oldest request first, stable ID tie-break |
 | `GET /api/venue-bookings/:id` | VS: booking detail in any status, including a saved decision. EC: only a currently assigned, non-draft event. | `200 { booking: VenueBooking }` |
-| `POST /api/venue-bookings/:id/decision` | VS only, `PENDING` booking only | `200 { booking: VenueBooking }` after the decision commits |
+| `POST /api/venue-bookings/:id/decision` | VS only, `PENDING` booking or live `HELD` booking (KAN-83) | `200 { booking: VenueBooking }` after the decision commits |
+| `POST /api/venue-bookings/:id/hold` | VS only, `PENDING` booking for an `APPROVED` event (KAN-83) | `200 { booking: VenueBooking }` with status `HELD` |
+| `POST /api/venue-bookings/:id/hold/cancel` | VS only, live `HELD` booking (KAN-83) | `200 { booking: VenueBooking }` with status `CANCELLED` |
 
 Request body for the decision route:
 
@@ -574,7 +602,7 @@ The staff page at `/venue-bookings` opens `/venue-bookings/:id`; the assigned co
 | `409 VENUE_BOOKING_CONFLICT` | Another approved booking overlaps this venue and period. |
 | `409 VENUE_UNAVAILABLE` | An operational block overlaps this venue and period. |
 
-The write uses one transaction, locks the booking row and rechecks `PENDING`. Approval also locks the event then venue, verifies `APPROVED`/active eligibility, and queries conflicts **after** obtaining the venue lock so competing approvals see the latest committed reservation. Periods use `[startsAt, endsAt)` with no turnover buffer; pending/rejected/cancelled rows do not reserve the venue. Rejection can close a stale pending request without requiring event/venue approval eligibility. The existing database trigger remains a final integrity guard; future booking/block writers must coordinate their venue locking and tests with this path.
+The write uses one transaction, locks the booking row and rechecks `PENDING`. Approval also locks the event then venue, verifies `APPROVED`/active eligibility, and queries conflicts **after** obtaining the venue lock so competing approvals see the latest committed reservation. KAN-78 now checks occupied intervals including setup/turnaround (see the 21 October contract below); pending/rejected/cancelled rows do not reserve the venue. Rejection can close a stale pending request without requiring event/venue approval eligibility. The existing database trigger remains a final integrity guard; future booking/block writers must coordinate their venue locking and tests with this path.
 
 A successful write changes only this booking's status, decision actor/time/reason and update timestamp. It preserves the event/venue associations and booking period, and does not transition the event. It writes the venue-decision notifications in the same transaction (KAN-64). KAN-51 reads the new approved period on refresh; rejected bookings remain absent. Repeated/competing decisions never overwrite the original outcome. An uncertain client response requires a read before retrying; the UI automatically reloads on 409 and offers a read-only retry after uncertain transport failures.
 
@@ -622,6 +650,10 @@ Tests live in `backend/test/venues/suitability-input.test.ts`, `suitability-rule
 
 **KAN-81 phase 1 / CR-2, 21 October 2026 (supersedes the overlap refusal below).** `POST /api/venues/:venueId/unavailability` no longer refuses an outage that overlaps an approved booking. It saves the block and returns it with `affected`: one `{ impactId, status, bookingId, eventRequestId, eventName, bookingStartsAt, bookingEndsAt }` per non-ended approved booking at that venue whose event interval overlaps (half-open; KAN-78 will use buffered intervals). `status` is `RECOVERY_REQUIRED`, `RESOLVED` or `CLEARED`. `GET` returns each block with its `affected` list. `DELETE …/:blockId` returns `{ id, clearedBookingIds }` and clears only that block's open flags. New `GET /api/venues/recovery[?status=…]` (Venue Staff only) lists affected arrangements with `blockId` (null once removed), `venueId`, `venueName`, `outageStartsAt`, `outageEndsAt` and `outageReason`. An unknown filter returns `400 INVALID_RECOVERY_FILTER`. Booking and event records are not changed by an outage.
 
+**KAN-81 phase 2, 21 October 2026.** Every venue booking response (`GET /api/venue-bookings`, `GET /api/venue-bookings/:id`, submission and decision results) includes `recovery`: `[{ impactId, status, outageStartsAt, outageEndsAt, outageReason }]`, earliest outage first, empty when unaffected. Existing booking visibility rules apply. Saving an outage records a `VENUE_OUTAGE_RECOVERY_REQUIRED` notification for each affected event's current coordinator, linked to the booking, in the same transaction.
+
+**KAN-81 phase 3, 21 October 2026.** The booking submission body accepts optional `replacesBookingId` (UUID or null; `400 INVALID_REPLACED_BOOKING_ID` otherwise), and every booking response includes `replacesBookingId`. Replacement refusals: `404 VENUE_BOOKING_NOT_FOUND`, `409 REPLACEMENT_NOT_NEEDED`, `409 EVENT_NOT_ELIGIBLE_FOR_REPLACEMENT`, `409 VENUE_CAPACITY_TOO_SMALL`, `409 VENUE_CLOSED_DURING_PERIOD`, plus the usual conflict codes. Approving a replacement can return `409 REPLACEMENT_NOT_NEEDED`; on success the original becomes `CANCELLED` and its recovery `RESOLVED`. See the [phase 3 rules](../requirements/assumptions-and-questions.md#21-october-2026--kan-81-phase-3-replacement-rules).
+
 Current main provides Venue Staff-only `GET`/`POST /api/venues/:venueId/unavailability` and `DELETE /api/venues/:venueId/unavailability/:blockId`. Creation records an ordered time interval and a mandatory reason against the correct active venue; it refuses overlap with an existing approved booking. The shared `venue_unavailability` records feed the calendar, search, KAN-52 suitability and booking approval. See the [module contract](../../backend/src/modules/venues/README.md#venue-unavailability-blocks--kan-55) and [dated implementation record](../requirements/assumptions-and-questions.md#4-october-2026--kan-55-block-venue-for-operational-unavailability). Block removal is additional implementation behavior recorded there; inclusion in main does not itself establish hosted acceptance. KAN-53 creation is now integrated on this branch; its submission-time checks read the same operational blocks.
 
 ## Venue catalogue maintenance (KAN-50, CF-08)
@@ -655,6 +687,20 @@ The update locks the venue row and runs in one transaction, so concurrent edits 
 
 **Verification:** `backend/test/venues/venue-catalogue-input.test.ts`, `venue-catalogue-service.test.ts` and `venue-catalogue-router.test.ts`. PostgreSQL integration and browser coverage (S2-T03/S2-T04) are added under `database/tests/venues/` and `tests/e2e/` and recorded in test evidence when executed.
 
+## KAN-78 occupied venue intervals — 21 October 2026
+
+Migration 008 adds `venues.setup_minutes` / `turnaround_minutes` (integers 0..1440, defaults zero), booking approval snapshots and internal SQL helpers/view. KAN-77 owns the separate buffer editing API/UI and stale-field contract; it is not implemented by this branch. Its writer must lock/update the same venue row and may query `venue_booking_warnings(booking_id)` for affected bookings.
+
+The shared rule is [event start - setup, event end + turnaround). Search, calendar, suitability, submission and approval use current durations for non-ended/non-completed bookings. Approved reservations block; pending/rejected/cancelled requests do not. Exact occupied adjacency is allowed. Blocks and Singapore opening hours cover the full occupied interval. Restricted cross-day windows and invalid hours are unavailable; null/full-day hours permit continuous multi-day use.
+
+Search adds `setupMinutes`, `turnaroundMinutes` and nullable `occupiedStartsAt/occupiedEndsAt` for a timed query. Suitability adds nullable occupied endpoints and checks them against hours. Calendar booking `startsAt/endsAt` now describe occupied bars; `eventStartsAt/eventEndsAt` retain event timing, with `warnings` carrying current operational issues. Booking list/detail/submission/decision responses add `occupiedStartsAt/occupiedEndsAt` and `warnings`. Existing event timing fields are unchanged. Staff lists include pending requests and approved bookings with current warnings; coordinators remain scoped to their assigned events. No additional event identity is disclosed on the calendar.
+
+Warnings are `APPROVED_BOOKING_OVERLAP`, `OPERATIONAL_BLOCK_OVERLAP` and `OUTSIDE_OPERATING_HOURS`. They are recomputed on read after duration changes, flag both affected overlaps and disappear after resolution. They never cancel, delete or move bookings. Ended/completed historical bookings use recorded approval snapshots and have no new warnings. Existing conflicts do not exempt newly attempted reservations.
+
+Submission and approval take the venue lock before a separate current-data check, serialising with duration edits/blocks/other approvals. The database trigger is a final approval guard; it snapshots durations. New block writes also coordinate on the venue lock. Existing conflict codes stay `VENUE_BOOKING_CONFLICT` / `VENUE_UNAVAILABLE`; an occupied hours violation returns 409 `VENUE_OUTSIDE_OPERATING_HOURS` with clear cross-day feedback. Any failure rolls back the write.
+
+KAN-34's four editable date fields require ISO date-times with explicit offsets and real calendar dates. Impossible month/day or leap-day combinations return 400 input feedback before SQL; omitted fields, explicit nullable clears and Draft state/access policies are preserved.
+
 ## Notifications (KAN-64, CF-20)
 
 Mounted at `/api/notifications` for every signed-in role. There is no way to name another recipient: each query uses the verified caller. Every response sets `Cache-Control: no-store`.
@@ -672,3 +718,7 @@ The relevant business services insert these notices before committing, using the
 
 
 **KAN-81 staff stale-write handling — 21 October 2026.** A 404/409 refusal of block creation/removal keeps the server error and entered values but refreshes both the selected venue's blocks and cross-venue recovery list. It is still a definite refused write; it is not described as uncertain. Network/5xx/unreadable outcomes also refresh, with uncertain-result wording. Neither branch retries a mutation automatically. Component regressions: TC-09-17.
+
+## KAN-78 integrated buffer-save reporting — 21 October 2026
+
+The KAN-77 editor is now present from main. On a successful buffer-field PATCH, the catalogue response adds optional `venue.affectedBookings: { id: string, warnings: string[] }[]`, evaluated in the same venue-locked transaction. The editor displays these warnings with booking-detail links. This reports affected arrangements without cancelling or moving them. Existing field-aware stale checks remain unchanged. Earlier KAN-77 pending-editor notes describe the pre-integration branch. Schema source is now shared migration 009 plus extension 010, not the superseded private 008.

@@ -38,7 +38,8 @@ function visibleSegments(day: CalendarDay): DaySegment[] {
 
 function agendaLabel(item: AgendaItem): string {
   if (item.kind === 'AVAILABLE') return 'Available';
-  return item.period.kind === 'BOOKING' ? 'Booked' : 'Blocked';
+  if (item.period.kind === 'BLOCKED') return 'Blocked';
+  return item.period.heldUntil ? 'Held' : 'Booked';
 }
 
 function agendaKey(item: AgendaItem): string {
@@ -48,6 +49,7 @@ function agendaKey(item: AgendaItem): string {
 
 <template>
   <div class="week-timeline" :style="{ '--hours': String(span / HOUR_MS) }">
+    <p>Booked bars show occupied time, including setup and turnaround.</p>
     <ul class="timeline-legend" aria-label="Legend">
       <li><span class="legend-swatch bar-segment--available" aria-hidden="true"></span>Available</li>
       <li><span class="legend-swatch bar-segment--booked" aria-hidden="true"></span>Booked: confirmed venue booking</li>
@@ -86,9 +88,18 @@ function agendaKey(item: AgendaItem): string {
                 · Assigned to you:
                 <RouterLink :to="`/reviews/${item.period.event.id}`">{{ item.period.event.name?.trim() || 'Untitled event request' }}</RouterLink>
               </template>
+              <template v-if="item.kind === 'RECORDED' && item.period.kind === 'BOOKING' && item.period.heldUntil">
+                · Held until {{ formatInstant(item.period.heldUntil) }}
+              </template>
               <template v-else-if="item.kind === 'RECORDED' && item.period.kind === 'BLOCKED'">
                 · {{ item.period.reason?.trim() || 'No reason recorded' }}
               </template>
+              <span v-if="item.kind === 'RECORDED' && item.period.kind === 'BOOKING' && item.period.eventStartsAt">
+                · Event: {{ formatInstant(item.period.eventStartsAt) }} – {{ formatInstant(item.period.eventEndsAt!) }}
+              </span>
+              <span v-if="item.kind === 'RECORDED' && item.period.kind === 'BOOKING' && item.period.warnings?.length" role="status">
+                · Warning: {{ item.period.warnings.join(', ') }}
+              </span>
               <span v-if="item.kind === 'RECORDED' && item.clipped" class="agenda-note">
                 · {{ formatInstant(item.period.startsAt) }} – {{ formatInstant(item.period.endsAt) }}
               </span>
@@ -170,6 +181,7 @@ function agendaKey(item: AgendaItem): string {
 .agenda-tag--available { background: #edf5e9; color: #365d2e; }
 .agenda-tag--booked { background: #edf2fa; color: #345579; }
 .agenda-tag--blocked { background: #fff2e5; color: #8a5a26; }
+.agenda-tag--held { background: #fdf3e1; color: #7a5212; }
 .agenda-text { flex: 1 1 0; min-width: 0; overflow-wrap: anywhere; }
 .agenda-time { font-weight: 600; font-variant-numeric: tabular-nums; }
 .agenda-text a { color: var(--green); text-decoration: underline; text-underline-offset: 3px; }

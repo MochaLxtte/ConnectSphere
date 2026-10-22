@@ -3,7 +3,7 @@ import { computed, onBeforeUnmount, ref, useId, watch } from 'vue';
 import { ApiError } from '../../../lib/api-client';
 import { authSession, clearLocalSession } from '../../auth/session.js';
 import {
-  fetchVenueBookings, submitVenueBooking, venueBookingStatusLabel, type VenueBooking,
+  fetchVenueBookings, needsRecovery, submitVenueBooking, venueBookingStatusLabel, type VenueBooking,
 } from '../../venues/api/venue-bookings';
 import { emptyFilters, searchVenues, type VenueResult } from '../../venues/api/venues';
 import { formatEventTime, fromSingaporeInputValue } from '../presentation';
@@ -30,6 +30,7 @@ const startsAt = ref('');
 const endsAt = ref('');
 const layout = ref('');
 const notes = ref('');
+const replacesBookingId = ref('');
 
 const isCoordinator = computed(() => !authSession.loading && authSession.user?.role === 'EVENT_COORDINATOR'
   && props.viewerRole === 'EVENT_COORDINATOR' && !!props.eventRequestId && props.status !== 'DRAFT');
@@ -43,7 +44,11 @@ let submitController: AbortController | undefined;
 
 function resetForm() {
   venueId.value = ''; startsAt.value = ''; endsAt.value = ''; layout.value = ''; notes.value = '';
+  replacesBookingId.value = '';
 }
+
+/** KAN-81-AC7: approved bookings of this event that still need a replacement venue. */
+const replaceable = computed(() => bookings.value.filter((item) => item.status === 'APPROVED' && needsRecovery(item)));
 
 function abortPending() {
   listController?.abort(); venuesController?.abort(); submitController?.abort();
@@ -112,7 +117,7 @@ const timeError = computed(() => {
 
 function tagClass(status: VenueBooking['status']): string {
   if (status === 'APPROVED') return 'tag-positive';
-  if (status === 'REJECTED' || status === 'CANCELLED') return 'tag-negative';
+  if (status === 'REJECTED' || status === 'CANCELLED' || status === 'EXPIRED') return 'tag-negative';
   return 'tag-waiting';
 }
 
@@ -131,6 +136,7 @@ async function submit() {
     await submitVenueBooking(props.eventRequestId, {
       venueId: venueId.value, startsAt: from, endsAt: to,
       layout: layout.value.trim() || null, notes: notes.value.trim() || null,
+      ...(replacesBookingId.value ? { replacesBookingId: replacesBookingId.value } : {}),
     }, current.signal);
     if (current.signal.aborted || version !== contextVersion) return;
     resetForm();
@@ -142,7 +148,11 @@ async function submit() {
     if (!(error instanceof ApiError) || error.status === 0 || error.status >= 500 || error.code === 'INVALID_RESPONSE') {
       uncertainSave.value = true;
       actionError.value = 'We could not confirm whether the booking request was saved. Refresh booking requests and check the list before submitting again.';
-    } else actionError.value = error.message;
+    } else {
+      actionError.value = error.message;
+      // KAN-81-AC12: the original was resolved or its outage removed meanwhile; show current state.
+      if (error.code === 'REPLACEMENT_NOT_NEEDED') { replacesBookingId.value = ''; void load(); }
+    }
   } finally {
     if (!current.signal.aborted && version === contextVersion) busy.value = false;
   }
@@ -187,11 +197,20 @@ onBeforeUnmount(() => { contextVersion++; abortPending(); });
           <div class="item-heading">
             <span class="item-label">{{ item.venueName }}</span>
             <span class="tag" :class="tagClass(item.status)">{{ venueBookingStatusLabel(item.status) }}</span>
+            <span v-if="needsRecovery(item)" class="tag tag-recovery">Recovery required</span>
           </div>
+          <p v-if="needsRecovery(item)" class="panel-error">The venue is unavailable for part of this booking. Open it from Venue bookings to see the outage and arrange a replacement venue.</p>
           <p class="panel-meta">{{ formatEventTime(item.startsAt) }} to {{ formatEventTime(item.endsAt) }}</p>
           <p v-if="item.layout">Layout: {{ item.layout }}</p>
           <p v-if="item.notes">Notes: {{ item.notes }}</p>
+          <p v-if="item.occupiedStartsAt && item.occupiedEndsAt">Occupied (including setup/turnaround): {{ formatEventTime(item.occupiedStartsAt) }} to {{ formatEventTime(item.occupiedEndsAt) }}</p>
+          <p v-if="item.warnings?.length" role="status">Warning: {{ item.warnings.join(', ') }}</p>
           <p v-if="item.decisionReason">Decision note: {{ item.decisionReason }}</p>
+          <p v-if="item.replacesBookingId" class="panel-meta">Replacement for an outage-affected booking.</p>
+          <!-- KAN-83-AC11: the hold deadline, its expiry and any cancellation are visible to the coordinator. -->
+          <p v-if="item.status === 'HELD'" class="hold-note">Held until {{ formatEventTime(item.holdExpiresAt) }} (Singapore time). Venue staff must approve it before then, or it is released. The deadline is confirmed by the server, not this page.</p>
+          <p v-else-if="item.status === 'EXPIRED'" class="hold-note">The hold expired at {{ formatEventTime(item.holdExpiresAt) }} and the venue period was released. Submit a new request to try again.</p>
+          <p v-if="item.cancellationReason">Cancellation reason: {{ item.cancellationReason }}</p>
         </li>
       </ul>
 
@@ -228,6 +247,17 @@ onBeforeUnmount(() => { contextVersion++; abortPending(); });
         <label :for="`${id}-notes`">Notes for Venue Staff <span class="optional">(optional)</span></label>
         <textarea :id="`${id}-notes`" v-model="notes" rows="3" maxlength="2000" :disabled="busy" />
 
+        <template v-if="replaceable.length > 0">
+          <label :for="`${id}-replaces`">This request replaces <span class="optional">(optional)</span></label>
+          <select :id="`${id}-replaces`" v-model="replacesBookingId" :disabled="busy">
+            <option value="">Not a replacement</option>
+            <option v-for="item in replaceable" :key="item.id" :value="item.id">
+              {{ item.venueName }}, {{ formatEventTime(item.startsAt) }} to {{ formatEventTime(item.endsAt) }}
+            </option>
+          </select>
+          <p class="panel-hint">A replacement must fit the expected attendance and the venue's opening hours. Once Venue Staff approve it, the affected booking is cancelled and its recovery is resolved.</p>
+        </template>
+
         <div class="panel-actions">
           <button type="submit" class="button button-primary"
             :disabled="busy || uncertainSave || !venueId || !!timeError || !startsAt || !endsAt">
@@ -240,3 +270,7 @@ onBeforeUnmount(() => { contextVersion++; abortPending(); });
 </template>
 
 <style src="./workflow-panel.css"></style>
+<style scoped>
+.tag-recovery { background: #fbeee6; color: #853e37; }
+.hold-note { color: #7a5212; }
+</style>

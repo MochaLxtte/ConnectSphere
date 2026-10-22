@@ -18,3 +18,9 @@ In-app inbox for request, assignment and venue outcomes. Email, push and externa
 - To add a trigger (KAN-80 and the change stories), add a builder to `trigger-matrix.ts`, call `recordNotifications` from the service, extend the visibility rule if the new notification points to a new kind of target, and update the decision log and tests.
 
 Migration `008_notification_inbox.sql` adds `venue_booking_id` and `dedupe_key`. Tests: `backend/test/notifications/`, `database/tests/notifications/notification-inbox.integration.test.ts`.
+
+## KAN-81 outage notices — 21 October 2026
+
+Saving a venue outage records `VENUE_OUTAGE_RECOVERY_REQUIRED` for each affected event's current coordinator
+(`outageRecoveryNotifications` in `trigger-matrix.ts`), keyed per outage and event and linked to the first affected
+booking. It is written in the outage's transaction from `venues/block-service.ts`.

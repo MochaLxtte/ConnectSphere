@@ -13,11 +13,21 @@ const endsAt = '2026-12-01T06:00:00.000Z';
 interface Scenario {
   eventStatus?: string;
   venueActive?: boolean;
+  withinHours?: boolean;
   booked?: boolean;
+  /** KAN-83: another booking's live hold overlaps. */
+  held?: boolean;
   blocked?: boolean;
+  /** KAN-83: whether this booking's own hold is still live when the clock is read. */
+  holdLive?: boolean;
   bookingStatus?: string;
   /** Error thrown by the booking UPDATE, standing in for a database exclusion constraint. */
   updateError?: unknown;
+  /** KAN-81 phase 3: the booking being decided replaces this original. */
+  replaces?: string | null;
+  originalEventId?: string | null;
+  openRecovery?: boolean;
+  fit?: { capacity: number; opensAt: string | null; closesAt: string | null; attendance: number | null };
 }
 
 const bookingRow = {
@@ -26,7 +36,9 @@ const bookingRow = {
   layout: null, notes: null, decidedBy: null, decidedAt: null, decisionReason: null,
   createdAt: new Date(startsAt), updatedAt: new Date(startsAt), eventStartsAt: null, eventEndsAt: null,
   purpose: null, description: null, expectedAttendance: null, venueRequirements: null,
-  accessibilityNeeds: null,
+  accessibilityNeeds: null, holdExpiresAt: null, heldBy: null, heldAt: null, expiredAt: null,
+  cancelledBy: null, cancelledAt: null, cancellationReason: null,
+  recovery: [],
 };
 
 /** Routes each statement by its SQL so tests can see what was asked, in what order. */
@@ -42,8 +54,11 @@ function fakePool(scenario: Scenario = {}) {
       }
       if (/FROM venue_bookings WHERE id = \$1 FOR UPDATE/.test(sql)) {
         return { rows: [{ status: scenario.bookingStatus ?? 'PENDING', eventRequestId: eventId, venueId,
-          startsAt: new Date(startsAt), endsAt: new Date(endsAt) }] };
+          startsAt: new Date(startsAt), endsAt: new Date(endsAt), replacesBookingId: scenario.replaces ?? null,
+          holdExpiresAt: scenario.bookingStatus === 'HELD' ? new Date('2026-11-30T00:00:00.000Z') : null }] };
       }
+      if (/AS "holdLive"/.test(sql)) return { rows: [{ holdLive: scenario.holdLive ?? true }] };
+      if (/AS live$/.test(sql.trim())) return { rows: [{ live: scenario.holdLive ?? true }] };
       if (/SELECT status FROM event_requests/.test(sql)) {
         return { rows: [{ status: scenario.eventStatus ?? 'APPROVED' }] };
       }
@@ -51,11 +66,20 @@ function fakePool(scenario: Scenario = {}) {
         return { rows: [{ isActive: scenario.venueActive ?? true }] };
       }
       if (/AS booked/.test(sql)) {
-        return { rows: [{ booked: scenario.booked ?? false, blocked: scenario.blocked ?? false }] };
+        return { rows: [{ withinHours: scenario.withinHours ?? true, booked: scenario.booked ?? false,
+          held: scenario.held ?? false, blocked: scenario.blocked ?? false }] };
+      }
+      if (/^SELECT event_request_id AS "eventRequestId" FROM venue_bookings/.test(sql)) {
+        return { rows: scenario.originalEventId === null ? [] : [{ eventRequestId: scenario.originalEventId ?? eventId }] };
+      }
+      if (/AS open/.test(sql)) return { rows: [{ open: scenario.openRecovery ?? true }] };
+      if (/v\.capacity/.test(sql)) {
+        return { rows: [scenario.fit ?? { capacity: 100, opensAt: null, closesAt: null, attendance: 50 }] };
       }
       if (/^\s*INSERT INTO venue_bookings/.test(sql)) return { rows: [{ id: bookingId }] };
       if (/^\s*UPDATE venue_bookings/.test(sql) && scenario.updateError) throw scenario.updateError;
-      if (/FROM venue_bookings b JOIN/.test(sql)) return { rows: [bookingRow] };
+      if (/FROM venue_bookings b JOIN/.test(sql)) return { rows: [{ name: 'Fair', organiserId: 'owner', coordinatorId: coordinator.id, venueName: 'Hall' }] };
+      if (/FROM venue_booking_intervals b JOIN/.test(sql)) return { rows: [bookingRow] };
       return { rows: [] };
     }),
   };
@@ -72,17 +96,24 @@ const decide = (pool: never, decision: 'APPROVED' | 'REJECTED' = 'APPROVED') =>
   decideVenueBooking({ pool }, { bookingId, actor: staff, input: { decision } });
 
 describe('KAN-54 conflict assessment when a booking is requested (AC1, AC2, AC5, AC6, AC7, AC8, AC9)', () => {
+  it('KAN-78 refuses occupied time outside operating hours before writing a pending request', async () => {
+    const { pool, wrote } = fakePool({ withinHours: false });
+    await expect(submit(pool)).rejects.toMatchObject({ code: 'VENUE_OUTSIDE_OPERATING_HOURS' });
+    expect(wrote(/^\s*INSERT INTO venue_bookings/)).toBe(false);
+  });
   it('asks only about approved bookings and blocks of the requested venue, for the requested period', async () => {
     const { pool, find } = fakePool();
     await submit(pool);
     const clash = find(/AS booked/)!;
-    expect(clash.params).toEqual([venueId, startsAt, endsAt]);
+    expect(clash.params).toEqual([venueId, startsAt, endsAt, null]);
     // AC3: scoped to one venue, so an overlapping period elsewhere can never count.
-    expect(clash.sql.match(/venue_id = \$1/g)).toHaveLength(2);
+    expect(clash.sql.match(/venue_id = v.id/g)).toHaveLength(3);
     // AC1/AC6: only confirmed (approved) bookings reserve a venue.
     expect(clash.sql).toMatch(/status = 'APPROVED'/);
+    // KAN-83-AC4: another request's live hold also reserves the venue until its deadline.
+    expect(clash.sql).toMatch(/status = 'HELD' AND b\.hold_expires_at > clock_timestamp\(\)/);
     // AC4: half-open interval, so back-to-back periods do not overlap.
-    expect(clash.sql.match(/starts_at < \$3 AND ends_at > \$2/g)).toHaveLength(2);
+    expect(clash.sql).toContain('b.occupied_starts_at < occupied.e AND b.occupied_ends_at > occupied.s');
   });
 
   it('creates the pending booking when nothing clashes (AC3, AC4)', async () => {
@@ -95,7 +126,7 @@ describe('KAN-54 conflict assessment when a booking is requested (AC1, AC2, AC5,
     const { pool, wrote } = fakePool({ booked: true });
     await expect(submit(pool)).rejects.toMatchObject({
       kind: 'CONFLICT', code: 'VENUE_BOOKING_CONFLICT',
-      message: 'The venue already has an approved booking during this period.',
+      message: 'The venue already has an approved booking during the occupied period.',
     });
     expect(wrote(/^\s*INSERT INTO venue_bookings/)).toBe(false);
     expect(wrote(/^ROLLBACK/)).toBe(true);
@@ -105,7 +136,7 @@ describe('KAN-54 conflict assessment when a booking is requested (AC1, AC2, AC5,
   it('refuses an overlap with an operational block and creates nothing (AC5, AC7, AC8)', async () => {
     const { pool, wrote } = fakePool({ blocked: true });
     await expect(submit(pool)).rejects.toMatchObject({
-      kind: 'CONFLICT', code: 'VENUE_UNAVAILABLE', message: 'The venue is blocked during this period.',
+      kind: 'CONFLICT', code: 'VENUE_UNAVAILABLE', message: 'The venue is blocked during the occupied period.',
     });
     expect(wrote(/^\s*INSERT INTO venue_bookings/)).toBe(false);
   });
@@ -134,10 +165,10 @@ describe('KAN-54 conflict assessment when Venue Staff approve a booking (AC1, AC
     const { pool, find } = fakePool();
     await decide(pool);
     const clash = find(/AS booked/)!;
-    expect(clash.params).toEqual([venueId, bookingId, new Date(startsAt), new Date(endsAt)]);
-    expect(clash.sql).toMatch(/id <> \$2/);
+    expect(clash.params).toEqual([venueId, new Date(startsAt), new Date(endsAt), bookingId]);
+    expect(clash.sql).toMatch(/id <> \$4/);
     expect(clash.sql).toMatch(/status = 'APPROVED'/);
-    expect(clash.sql.match(/starts_at < \$4 AND ends_at > \$3/g)).toHaveLength(2);
+    expect(clash.sql).toContain('b.occupied_starts_at < occupied.e AND b.occupied_ends_at > occupied.s');
   });
 
   it('approves when nothing clashes (AC3, AC4)', async () => {
@@ -151,7 +182,7 @@ describe('KAN-54 conflict assessment when Venue Staff approve a booking (AC1, AC
     const { pool, wrote } = fakePool({ booked: true });
     await expect(decide(pool)).rejects.toMatchObject({
       kind: 'CONFLICT', code: 'VENUE_BOOKING_CONFLICT',
-      message: 'The venue already has an approved booking during this period.',
+      message: 'The venue already has an approved booking during the occupied period.',
     });
     expect(wrote(/^\s*UPDATE venue_bookings/)).toBe(false);
     expect(wrote(/^ROLLBACK/)).toBe(true);
@@ -205,12 +236,16 @@ describe('KAN-54 conflict assessment when Venue Staff approve a booking (AC1, AC
 
 describe('KAN-54 database exclusion constraints are the last line of defence (AC2, AC5, AC7, AC8)', () => {
   const exclusion = (constraint: string) => Object.assign(new Error('exclusion'), { code: '23P01', constraint });
+  it('KAN-78 maps the database occupied-hours guard to clear conflict feedback', async () => {
+    await expect(decide(fakePool({ updateError: exclusion('venue_bookings_within_hours') }).pool))
+      .rejects.toMatchObject({ code: 'VENUE_OUTSIDE_OPERATING_HOURS' });
+  });
 
   it('reports a booking overlap caught by the database as the same conflict', async () => {
     const { pool } = fakePool({ updateError: exclusion('venue_bookings_no_overlap') });
     await expect(decide(pool)).rejects.toMatchObject({
       kind: 'CONFLICT', code: 'VENUE_BOOKING_CONFLICT',
-      message: 'The venue already has an approved booking during this period.',
+      message: 'The venue already has an approved booking during the occupied period.',
     });
   });
 
@@ -226,5 +261,75 @@ describe('KAN-54 database exclusion constraints are the last line of defence (AC
     await expect(decide(fakePool({ updateError: outage }).pool)).rejects.toBe(outage);
     const bareCode = Object.assign(new Error('no constraint name'), { code: '23P01' });
     await expect(decide(fakePool({ updateError: bareCode }).pool)).rejects.toBe(bareCode);
+  });
+});
+
+describe('KAN-81 phase 3: replacement requests and approvals (AC7, AC8)', () => {
+  const originalId = '60000000-0000-4000-8000-000000000001';
+  const replacement = { ...submission, replacesBookingId: originalId };
+
+  it('records a replacement linked to its original after the objective checks (AC7)', async () => {
+    const { pool, find, index } = fakePool();
+    await expect(submit(pool, replacement)).resolves.toMatchObject({ status: 'PENDING' });
+    expect(find(/^\s*INSERT INTO venue_bookings/)!.params.at(-1)).toBe(originalId);
+    expect(index(/AS open/)).toBeLessThan(index(/FROM venues WHERE id = \$1 FOR UPDATE/));
+    // Objective suitability now runs before the buffered availability check (integration, 22 October).
+    expect(index(/v\.capacity/)).toBeLessThan(index(/AS booked/));
+    expect(index(/v\.capacity/)).toBeGreaterThan(index(/FROM venues WHERE id = \$1 FOR UPDATE/));
+  });
+
+  it.each([
+    [{ eventStatus: 'SUBMITTED' }, 'EVENT_NOT_ELIGIBLE_FOR_REPLACEMENT'],
+    [{ originalEventId: '70000000-0000-4000-8000-000000000001' }, 'VENUE_BOOKING_NOT_FOUND'],
+    [{ originalEventId: null }, 'VENUE_BOOKING_NOT_FOUND'],
+    [{ openRecovery: false }, 'REPLACEMENT_NOT_NEEDED'],
+    [{ fit: { capacity: 40, opensAt: null, closesAt: null, attendance: 50 } }, 'VENUE_CAPACITY_TOO_SMALL'],
+    [{ fit: { capacity: 100, opensAt: '12:00:00', closesAt: '22:00:00', attendance: 50 } }, 'VENUE_CLOSED_DURING_PERIOD'],
+  ] as const)('refuses a replacement for %j with %s and creates nothing (AC7)', async (scenario, code) => {
+    const { pool, wrote } = fakePool(scenario as Scenario);
+    await expect(submit(pool, replacement)).rejects.toMatchObject({ code });
+    expect(wrote(/^\s*INSERT INTO venue_bookings/)).toBe(false);
+  });
+
+  it('accepts a replacement for a confirmed event and when attendance is unknown', async () => {
+    await expect(submit(fakePool({ eventStatus: 'CONFIRMED' }).pool, replacement)).resolves.toMatchObject({ status: 'PENDING' });
+    await expect(submit(fakePool({ fit: { capacity: 1, opensAt: null, closesAt: null, attendance: null } }).pool, replacement))
+      .resolves.toMatchObject({ status: 'PENDING' });
+  });
+
+  it('skips the replacement checks for an ordinary request', async () => {
+    const { pool, wrote } = fakePool({ eventStatus: 'SUBMITTED' });
+    await submit(pool);
+    expect(wrote(/AS open/)).toBe(false);
+    expect(wrote(/v\.capacity/)).toBe(false);
+  });
+
+  it('approves a replacement by resolving and cancelling the original after the other locks (AC8)', async () => {
+    const { pool, calls, index } = fakePool({ replaces: originalId });
+    await decide(pool);
+    const lockOriginal = calls.findIndex((call) => /FROM venue_bookings WHERE id = \$1 FOR UPDATE/.test(call.sql) && call.params[0] === originalId);
+    expect(lockOriginal).toBeGreaterThan(index(/FROM venues WHERE id = \$1 FOR UPDATE/));
+    const resolve = index(/UPDATE venue_outage_impacts SET status = 'RESOLVED'/);
+    const cancel = calls.findIndex((call) => /SET status = 'CANCELLED'/.test(call.sql));
+    expect(resolve).toBeGreaterThan(index(/SET status = \$1, decided_by/));
+    expect(cancel).toBeGreaterThan(resolve);
+    expect(calls[cancel]!.params).toEqual([originalId]);
+  });
+
+  it('approves a replacement for a confirmed event', async () => {
+    await expect(decide(fakePool({ replaces: originalId, eventStatus: 'CONFIRMED' }).pool)).resolves.toBeDefined();
+  });
+
+  it('refuses to approve a replacement whose original no longer needs recovery (AC8)', async () => {
+    const { pool, wrote } = fakePool({ replaces: originalId, openRecovery: false });
+    await expect(decide(pool)).rejects.toMatchObject({ code: 'REPLACEMENT_NOT_NEEDED' });
+    expect(wrote(/SET status = \$1, decided_by/)).toBe(false);
+  });
+
+  it('leaves the original untouched when a replacement is rejected (AC8)', async () => {
+    const { pool, wrote } = fakePool({ replaces: originalId });
+    await decide(pool, 'REJECTED');
+    expect(wrote(/UPDATE venue_outage_impacts/)).toBe(false);
+    expect(wrote(/SET status = 'CANCELLED'/)).toBe(false);
   });
 });

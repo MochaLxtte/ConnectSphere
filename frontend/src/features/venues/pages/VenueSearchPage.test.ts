@@ -1,386 +1,472 @@
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/vue';
+import { fireEvent, render, screen } from '@testing-library/vue';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { createMemoryHistory, createRouter, RouterView } from 'vue-router';
-import { authSession, type SignedInUser, type UserRole } from '../../auth/session.js';
-import type { VenueFilterOptions, VenueResult } from '../api/venues';
+import { ApiError, getJson } from '../../../lib/api-client';
+import { authSession } from '../../auth/session.js';
+import {
+  emptyFilters, END_NOT_AFTER_START, INCOMPLETE_DATE, isRealLocalDateTime, localToIso, MISSING_END,
+  MISSING_START, NOT_A_REAL_DATE, searchVenues, validatePeriod, type VenueResult,
+} from '../api/venues';
 import VenueSearchPage from './VenueSearchPage.vue';
+
+/**
+ * KAN-12 venue search: page and API-client tests. Full descriptions: docs/venue-search-test-cases.md
+ * (the backend rules are tested in backend/test/venues/venue-search.test.ts).
+ *
+ * Test names read "TC-VS-nn [KAN-12-ACn, test type]". AC15 (stale results) and AC16 (missing lists,
+ * no match versus empty catalogue) can only be checked here, because they are page behaviour.
+ * Only the network (getJson) and the signed-in user are replaced; the page and API client run for real.
+ */
+
+vi.mock('../../../lib/api-client', () => {
+  class ApiError extends Error {
+    status: number;
+    code: string;
+    constructor(message: string, status: number, code: string) {
+      super(message);
+      this.status = status;
+      this.code = code;
+    }
+  }
+  return { ApiError, getJson: vi.fn() };
+});
 
 vi.mock('../../auth/session.js', async () => {
   const { reactive } = await import('vue');
-  const state = reactive({ user: null, loading: false });
-  return { authSession: state, clearLocalSession: () => { state.user = null; } };
+  return { authSession: reactive({ user: null, loading: false }), clearLocalSession: vi.fn() };
 });
-const session = authSession as { user: SignedInUser | null; loading: boolean };
-const user = (role: UserRole = 'EVENT_COORDINATOR'): SignedInUser =>
-  ({ id: 'coordinator-a', role, email: 'coordinator-a@example.test', displayName: 'Coordinator A' });
 
+const getJsonMock = getJson as unknown as ReturnType<typeof vi.fn>;
+const session = authSession as unknown as { user: unknown; loading: boolean };
+
+const OPTIONS = { layouts: ['Theatre', 'Banquet'], facilities: ['Projector', 'Wi-Fi'], accessibility: ['Lift'] };
 const hall: VenueResult = {
-  id: 'venue-a', name: 'Harbour Hall', description: 'A large hall by the water.', location: '1 Marina Way',
-  capacity: 200, layouts: ['Theatre', 'Banquet'], facilities: ['Projector', 'Wi-Fi'],
-  accessibilityFeatures: ['Hearing loop'], wheelchairAccessible: true, opensAt: '08:00', closesAt: '22:00',
-  updatedAt: '2026-10-01T02:00:00Z',
+  id: 'v1', name: 'Harbourfront Hall', description: 'Large hall by the water', location: 'Marina Bay',
+  capacity: 300, layouts: ['Theatre'], facilities: ['Projector'], accessibilityFeatures: ['Lift'],
+  wheelchairAccessible: true, opensAt: '08:00', closesAt: '22:00', updatedAt: '2026-10-01T02:00:00.000Z',
 };
-const room: VenueResult = {
-  id: 'venue-b', name: 'Garden Room', description: null, location: null, capacity: 40, layouts: [],
-  facilities: [], accessibilityFeatures: [], wheelchairAccessible: false, opensAt: null, closesAt: null,
-  updatedAt: '2026-10-02T02:00:00Z',
-};
-const filterOptions: VenueFilterOptions = {
-  layouts: ['Theatre', 'Banquet'], facilities: ['Projector', 'Wi-Fi'], accessibility: ['Hearing loop', 'Lift'],
-};
+const room: VenueResult = { ...hall, id: 'v2', name: 'Sengkang Community Room', location: 'Sengkang', capacity: 80 };
 
-const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status });
-const apiError = (status: number, code: string, message: string) => json({ error: { code, message } }, status);
+const START = 'Event start (Singapore time)';
+const END = 'Event end (Singapore time)';
 
-interface Backend {
-  search?: (url: URL) => Response | Promise<Response>;
-  options?: () => Response | Promise<Response>;
+function signInAs(role: string | null) {
+  session.loading = false;
+  session.user = role ? { id: 'user-1', email: 'user@example.com', displayName: 'Test user', role } : null;
 }
 
-/** Routes the page's two requests by path so tests can see exactly what was asked. */
-function mockBackend({ search = () => json({ items: [hall, room] }), options = () => json(filterOptions) }: Backend = {}) {
-  const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
-    const url = new URL(String(input), 'http://localhost');
-    if (url.pathname === '/api/venues/filter-options') return options();
-    if (url.pathname === '/api/venues/search-venues') return search(url);
-    throw new Error(`Unexpected request ${url.pathname}`);
-  });
-  vi.stubGlobal('fetch', fetchMock);
-  const searches = () => fetchMock.mock.calls
-    .map(([input]) => new URL(String(input), 'http://localhost'))
-    .filter((url) => url.pathname === '/api/venues/search-venues');
-  return { fetchMock, searches, lastSearch: () => searches().at(-1)!.searchParams };
+/** Answer the two endpoints. `search` and `options` may return a value, a promise, or throw. */
+function route(
+  search: (url: string) => unknown = () => ({ items: [hall] }),
+  options: () => unknown = () => OPTIONS,
+) {
+  getJsonMock.mockReset();
+  getJsonMock.mockImplementation(async (url: string) => (url.startsWith('/api/venues/filter-options') ? options() : search(url)));
 }
 
-async function open() {
-  const router = createRouter({ history: createMemoryHistory(), routes: [
-    { path: '/', component: VenueSearchPage },
-    { path: '/login', component: { template: '<h1>Login destination</h1>' } },
-  ] });
-  await router.push('/');
-  await router.isReady();
-  return render(RouterView, { global: { plugins: [router] } });
+const searchUrls = () => getJsonMock.mock.calls.map(([url]) => String(url)).filter((url) => url.startsWith('/api/venues/search-venues'));
+const lastSearchUrl = () => searchUrls().at(-1)!;
+const paramsOf = (url: string) => new URLSearchParams(url.split('?')[1] ?? '');
+
+function deferred<T>() {
+  let resolve!: (value: T) => void;
+  let reject!: (error: unknown) => void;
+  const promise = new Promise<T>((res, rej) => { resolve = res; reject = rej; });
+  return { promise, resolve, reject };
 }
-const type = (label: string, value: string) => fireEvent.update(screen.getByLabelText(label), value);
-const search = () => fireEvent.click(screen.getByRole('button', { name: /Search venues/ }));
+const settle = () => new Promise((done) => setTimeout(done, 25));
 
-beforeEach(() => { session.user = user(); session.loading = false; });
+function renderPage() {
+  return render(VenueSearchPage, { global: { stubs: { RouterLink: { template: '<a><slot /></a>' } } } });
+}
+const searchButton = () => screen.getByRole('button', { name: /search venues/i }) as HTMLButtonElement;
+const search = () => fireEvent.click(searchButton());
+const field = (label: string) => screen.getByLabelText(label) as HTMLInputElement;
+/** The first search has returned and the filter lists have loaded. */
+async function ready() {
+  await screen.findByText('Harbourfront Hall');
+  await screen.findByLabelText('Lift');
+}
 
-describe('KAN-12 coordinator venue search: results (KAN-12-AC8, AC9, AC12)', () => {
-  it('loads every active venue on arrival, with no filter applied', async () => {
-    const { searches } = mockBackend();
-    await open();
-    expect(await screen.findByText('2 venues found')).toBeInTheDocument();
-    expect(searches()).toHaveLength(1);
-    expect(searches()[0]!.search).toBe('');
-  });
-
-  it('identifies each venue by name with its capacity, location, hours and catalogue details (AC12)', async () => {
-    mockBackend();
-    await open();
-    const list = await screen.findByRole('list', { name: 'Matching venues' });
-    const [first, second] = within(list).getAllByRole('listitem');
-    expect(within(first!).getByRole('heading', { name: 'Harbour Hall' })).toBeInTheDocument();
-    for (const text of ['Up to 200 guests', '1 Marina Way', 'A large hall by the water.', '08:00 to 22:00',
-      'Theatre', 'Banquet', 'Projector', 'Wi-Fi', 'Hearing loop', 'Wheelchair accessible']) {
-      expect(within(first!).getByText(text)).toBeInTheDocument();
-    }
-    expect(within(first!).getByText('1 Oct 2026, 10:00 am')).toBeInTheDocument();
-    expect(within(second!).getByRole('heading', { name: 'Garden Room' })).toBeInTheDocument();
-    expect(within(second!).getByText('Location not listed')).toBeInTheDocument();
-    expect(within(second!).getByText('Not listed')).toBeInTheDocument();
-    expect(within(second!).queryByText('Room layouts')).not.toBeInTheDocument();
-    expect(within(second!).queryByText('Accessibility')).not.toBeInTheDocument();
-  });
-
-  it('describes partly listed opening hours', async () => {
-    mockBackend({ search: () => json({ items: [
-      { ...room, id: 'v1', name: 'Early', opensAt: '09:00' }, { ...room, id: 'v2', name: 'Late', closesAt: '21:00' },
-    ] }) });
-    await open();
-    expect(await screen.findByText('From 09:00')).toBeInTheDocument();
-    expect(screen.getByText('Until 21:00')).toBeInTheDocument();
-  });
-
-  it('uses the singular when exactly one venue matches', async () => {
-    mockBackend({ search: () => json({ items: [hall] }) });
-    await open();
-    expect(await screen.findByText('1 venue found')).toBeInTheDocument();
-  });
-
-  it('shows the filter lists the catalogue currently offers (AC6, AC7, AC8)', async () => {
-    mockBackend();
-    await open();
-    await screen.findByText('2 venues found');
-    expect(screen.getByRole('option', { name: 'Banquet' })).toBeInTheDocument();
-    expect(screen.getByRole('checkbox', { name: 'Projector' })).toBeInTheDocument();
-    expect(screen.getByRole('checkbox', { name: 'Lift' })).toBeInTheDocument();
-  });
-
-  it('hides the facility group when the catalogue lists no facilities', async () => {
-    mockBackend({ options: () => json({ ...filterOptions, facilities: [] }) });
-    await open();
-    await screen.findByText('2 venues found');
-    expect(screen.queryByText('Required facilities')).not.toBeInTheDocument();
-  });
+beforeEach(() => {
+  route();
+  signInAs('EVENT_COORDINATOR');
 });
 
-describe('KAN-12 coordinator venue search: each criterion reaches the query (KAN-12-AC1 to AC7, AC10)', () => {
-  it('sends the event start and end as Singapore time instants (AC1)', async () => {
-    const { lastSearch } = mockBackend();
-    await open();
-    await screen.findByText('2 venues found');
-    await type('Event start (Singapore time)', '2026-10-05T10:00');
-    await type('Event end (Singapore time)', '2026-10-05T12:30');
+/* ------------------------------------------------------------------------------------------ */
+describe('KAN-12-AC1 to AC7: the filters on the page', () => {
+  it('TC-VS-47 [KAN-12-AC1, positive] the event start and end are sent as Singapore time converted to UTC', async () => {
+    renderPage();
+    await ready();
+    await fireEvent.update(field(START), '2026-10-20T14:00');
+    await fireEvent.update(field(END), '2026-10-20T18:00');
     await search();
-    await waitFor(() => expect(lastSearch().get('startsAt')).toBe('2026-10-05T02:00:00.000Z'));
-    expect(lastSearch().get('endsAt')).toBe('2026-10-05T04:30:00.000Z');
+    const params = paramsOf(lastSearchUrl());
+    expect(params.get('startsAt')).toBe('2026-10-20T06:00:00.000Z');
+    expect(params.get('endsAt')).toBe('2026-10-20T10:00:00.000Z');
   });
 
   it.each([
-    ['Expected attendance', '150', 'attendance', '150'],
-    ['Minimum capacity', '80', 'capacity', '80'],
-    ['Location', '  Marina  ', 'location', 'Marina'],
-  ])('sends %s (AC2, AC3, AC4)', async (label, entered, key, expected) => {
-    const { lastSearch } = mockBackend();
-    await open();
-    await screen.findByText('2 venues found');
-    await type(label, entered);
+    { title: 'TC-VS-48 [KAN-12-AC2, positive] expected attendance', act: () => fireEvent.update(field('Expected attendance'), '120'), expected: { attendance: '120' } },
+    { title: 'TC-VS-49 [KAN-12-AC3, positive] location', act: () => fireEvent.update(field('Location'), 'Marina'), expected: { location: 'Marina' } },
+    { title: 'TC-VS-50 [KAN-12-AC4, positive] minimum capacity', act: () => fireEvent.update(field('Minimum capacity'), '150'), expected: { capacity: '150' } },
+    { title: 'TC-VS-51 [KAN-12-AC5, positive] an accessibility feature', act: () => fireEvent.click(field('Lift')), expected: { accessibility: 'Lift' } },
+    { title: 'TC-VS-52 [KAN-12-AC5, positive] wheelchair accessible', act: () => fireEvent.click(field('Wheelchair accessible')), expected: { wheelchairAccessible: 'true' } },
+    { title: 'TC-VS-53 [KAN-12-AC6, positive] supported room layout', act: () => fireEvent.update(screen.getByLabelText('Room layout'), 'Theatre'), expected: { layout: 'Theatre' } },
+    { title: 'TC-VS-54 [KAN-12-AC7, positive] a required facility', act: () => fireEvent.click(field('Projector')), expected: { facilities: 'Projector' } },
+  ])('$title is sent when searching', async ({ act, expected }) => {
+    renderPage();
+    await ready();
+    await act();
     await search();
-    await waitFor(() => expect(lastSearch().get(key)).toBe(expected));
-  });
-
-  it('sends the room layout, accessibility needs and required facilities (AC5, AC6, AC7)', async () => {
-    const { lastSearch } = mockBackend();
-    await open();
-    await screen.findByText('2 venues found');
-    await type('Room layout', 'Theatre');
-    await fireEvent.click(screen.getByRole('checkbox', { name: 'Wheelchair accessible' }));
-    await fireEvent.click(screen.getByRole('checkbox', { name: 'Hearing loop' }));
-    await fireEvent.click(screen.getByRole('checkbox', { name: 'Projector' }));
-    await fireEvent.click(screen.getByRole('checkbox', { name: 'Wi-Fi' }));
-    await search();
-    await waitFor(() => expect(lastSearch().get('layout')).toBe('Theatre'));
-    expect(lastSearch().get('wheelchairAccessible')).toBe('true');
-    expect(lastSearch().getAll('accessibility')).toEqual(['Hearing loop']);
-    expect(lastSearch().getAll('facilities')).toEqual(['Projector', 'Wi-Fi']);
-  });
-
-  it('combines all criteria in one request', async () => {
-    const { lastSearch } = mockBackend();
-    await open();
-    await screen.findByText('2 venues found');
-    await type('Event start (Singapore time)', '2026-10-05T10:00');
-    await type('Event end (Singapore time)', '2026-10-05T12:00');
-    await type('Expected attendance', '100');
-    await type('Location', 'Marina');
-    await fireEvent.click(screen.getByRole('checkbox', { name: 'Projector' }));
-    await search();
-    await waitFor(() => expect(lastSearch().get('attendance')).toBe('100'));
-    expect([...lastSearch().keys()].sort()).toEqual(['attendance', 'endsAt', 'facilities', 'location', 'startsAt']);
-  });
-
-  it('shows only what the server returned, never a venue the filters excluded (AC9, AC10)', async () => {
-    mockBackend({ search: (url) => json({ items: url.searchParams.get('capacity') === '150' ? [hall] : [hall, room] }) });
-    await open();
-    await screen.findByText('2 venues found');
-    await type('Minimum capacity', '150');
-    await search();
-    expect(await screen.findByText('1 venue found')).toBeInTheDocument();
-    expect(screen.queryByRole('heading', { name: 'Garden Room' })).not.toBeInTheDocument();
-  });
-
-  it('keeps the previous results out of view while a new search runs', async () => {
-    let release!: (response: Response) => void;
-    let calls = 0;
-    mockBackend({ search: () => (++calls === 1 ? json({ items: [hall] })
-      : new Promise<Response>((resolve) => { release = resolve; })) });
-    await open();
-    await screen.findByText('1 venue found');
-    await type('Location', 'Garden');
-    await search();
-    expect(await screen.findByText('Loading venues…')).toBeInTheDocument();
-    expect(screen.queryByRole('heading', { name: 'Harbour Hall' })).not.toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Search venues/ })).toBeDisabled();
-    release(json({ items: [room] }));
-    expect(await screen.findByRole('heading', { name: 'Garden Room' })).toBeInTheDocument();
+    expect(Object.fromEntries(paramsOf(lastSearchUrl()))).toEqual(expected);
   });
 });
 
-describe('KAN-12 coordinator venue search: changing and clearing filters (KAN-12-AC11)', () => {
-  it('searches again with a changed filter', async () => {
-    const { searches, lastSearch } = mockBackend();
-    await open();
-    await screen.findByText('2 venues found');
-    await type('Location', 'Marina');
+/* ------------------------------------------------------------------------------------------ */
+describe('KAN-12-AC8 to AC12: results, no match, change or clear, identity', () => {
+  it('TC-VS-55 [KAN-12-AC8, positive] every search shows what the catalogue returns at that moment', async () => {
+    renderPage();
+    await ready();
+    route(() => ({ items: [room] }));
     await search();
-    await waitFor(() => expect(lastSearch().get('location')).toBe('Marina'));
-    await waitFor(() => expect(screen.getByRole('button', { name: /Search venues/ })).toBeEnabled());
-    await type('Location', 'Garden');
-    await search();
-    await waitFor(() => expect(lastSearch().get('location')).toBe('Garden'));
-    expect(searches()).toHaveLength(3);
+    expect(await screen.findByText('Sengkang Community Room')).toBeTruthy();
+    expect(screen.queryByText('Harbourfront Hall')).toBeNull();
   });
 
-  it('clears every filter and searches again with none', async () => {
-    const { searches, lastSearch } = mockBackend();
-    await open();
-    await screen.findByText('2 venues found');
-    await type('Expected attendance', '100');
-    await type('Location', 'Marina');
-    await type('Room layout', 'Banquet');
-    await fireEvent.click(screen.getByRole('checkbox', { name: 'Lift' }));
-    await fireEvent.click(screen.getByRole('checkbox', { name: 'Wheelchair accessible' }));
+  it('TC-VS-56 [KAN-12-AC9, positive] only the filters that were selected are sent', async () => {
+    renderPage();
+    await ready();
+    await fireEvent.update(field('Expected attendance'), '60');
+    await fireEvent.click(field('Projector'));
+    await fireEvent.update(field('Location'), 'Sengkang');
+    await search();
+    expect(Object.fromEntries(paramsOf(lastSearchUrl()))).toEqual({
+      attendance: '60', facilities: 'Projector', location: 'Sengkang',
+    });
+  });
+
+  it('TC-VS-57 [KAN-12-AC10, negative] says clearly when no venue matches, and that the event request is not affected', async () => {
+    route((url) => ({ items: url.includes('attendance=') ? [] : [hall] }));
+    renderPage();
+    await ready();
+    await fireEvent.update(field('Expected attendance'), '99999');
+    await search();
+    expect(await screen.findByText('No venue matches these filters')).toBeTruthy();
+    expect(screen.getByText(/doesn't affect the event request/)).toBeTruthy();
+    expect(screen.getByText('0 venues found')).toBeTruthy();
+    expect(screen.queryByText('Harbourfront Hall')).toBeNull();
+  });
+
+  it('TC-VS-58 [KAN-12-AC11, positive] changing a filter shows the updated results', async () => {
+    route((url) => ({ items: url.includes('location=Sengkang') ? [room] : [hall] }));
+    renderPage();
+    await ready();
+    await fireEvent.update(field('Location'), 'Sengkang');
+    await search();
+    expect(await screen.findByText('Sengkang Community Room')).toBeTruthy();
+    expect(screen.queryByText('Harbourfront Hall')).toBeNull();
+  });
+
+  it('TC-VS-59 [KAN-12-AC11, positive] clearing the filters empties every field and shows the full results again', async () => {
+    route((url) => ({ items: url.includes('?') ? [room] : [hall, room] }));
+    renderPage();
+    await screen.findByText('Harbourfront Hall');
+    await screen.findByLabelText('Lift');
+    await fireEvent.update(field('Location'), 'Sengkang');
+    await fireEvent.click(field('Projector'));
+    await search();
+    await screen.findByText('1 venue found');
+
     await fireEvent.click(screen.getByRole('button', { name: 'Clear filters' }));
-    await waitFor(() => expect(searches()).toHaveLength(2));
-    expect(lastSearch().toString()).toBe('');
-    expect(screen.getByLabelText('Location')).toHaveValue('');
-    expect(screen.getByLabelText('Expected attendance')).toHaveValue(null);
-    expect(screen.getByLabelText('Room layout')).toHaveValue('');
-    expect(screen.getByRole('checkbox', { name: 'Lift' })).not.toBeChecked();
-    expect(screen.getByRole('checkbox', { name: 'Wheelchair accessible' })).not.toBeChecked();
+    expect(await screen.findByText('2 venues found')).toBeTruthy();
+    expect(lastSearchUrl()).toBe('/api/venues/search-venues');
+    expect(field('Location').value).toBe('');
+    expect((field('Projector') as HTMLInputElement).checked).toBe(false);
   });
 
-  it('explains a search with no matches and offers to widen it', async () => {
-    let calls = 0;
-    const { searches } = mockBackend({ search: () => json({ items: ++calls === 1 ? [hall] : calls === 2 ? [] : [hall] }) });
-    await open();
-    await screen.findByText('1 venue found');
-    await type('Minimum capacity', '5000');
-    await search();
-    expect(await screen.findByRole('heading', { name: 'No venue matches these filters' })).toBeInTheDocument();
-    expect(screen.getByText('0 venues found')).toBeInTheDocument();
-    await fireEvent.click(within(screen.getByText('No venue matches these filters').parentElement!)
-      .getByRole('button', { name: 'Clear filters' }));
-    expect(await screen.findByText('1 venue found')).toBeInTheDocument();
-    expect(searches()).toHaveLength(3);
-  });
-
-  it('says so when the catalogue itself has no venues, rather than blaming the filters', async () => {
-    mockBackend({ search: () => json({ items: [] }) });
-    await open();
-    expect(await screen.findByRole('heading', { name: 'No venues in the catalogue yet' })).toBeInTheDocument();
-    expect(screen.queryByText('No venue matches these filters')).not.toBeInTheDocument();
+  it('TC-VS-60 [KAN-12-AC12, positive] each result shows its venue name, location and capacity', async () => {
+    route(() => ({ items: [hall, room] }));
+    renderPage();
+    expect(await screen.findByText('Harbourfront Hall')).toBeTruthy();
+    expect(screen.getByText('Sengkang Community Room')).toBeTruthy();
+    expect(screen.getByText('Marina Bay')).toBeTruthy();
+    expect(screen.getByText('Up to 80 guests')).toBeTruthy();
   });
 });
 
-describe('KAN-12 coordinator venue search: invalid time filters (proposed robustness for S2-T08)', () => {
-  it.each([
-    ['only a start', '2026-10-05T10:00', '', 'Enter both a start and an end time, or leave both empty.'],
-    ['only an end', '', '2026-10-05T10:00', 'Enter both a start and an end time, or leave both empty.'],
-    ['an end before the start', '2026-10-05T12:00', '2026-10-05T10:00', 'The end time must be after the start time.'],
-    ['an end equal to the start', '2026-10-05T10:00', '2026-10-05T10:00', 'The end time must be after the start time.'],
-  ])('does not search with %s', async (_name, start, end, message) => {
-    const { searches } = mockBackend();
-    await open();
-    await screen.findByText('2 venues found');
-    if (start) await type('Event start (Singapore time)', start);
-    if (end) await type('Event end (Singapore time)', end);
-    expect(screen.getByRole('alert')).toHaveTextContent(message);
-    expect(screen.getByRole('button', { name: /Search venues/ })).toBeDisabled();
-    await fireEvent.submit(screen.getByRole('form', { name: 'Venue filters' }));
-    expect(searches()).toHaveLength(1);
-  });
-
-  it('accepts a valid period and removes the warning', async () => {
-    mockBackend();
-    await open();
-    await screen.findByText('2 venues found');
-    await type('Event start (Singapore time)', '2026-10-05T10:00');
-    expect(screen.getByRole('alert')).toBeInTheDocument();
-    await type('Event end (Singapore time)', '2026-10-05T11:00');
-    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Search venues/ })).toBeEnabled();
-  });
-});
-
-describe('KAN-12 coordinator venue search: access and failures (KAN-12-AC13)', () => {
-  it('sends a signed-out visitor to sign in without requesting any venue data', async () => {
-    session.user = null;
-    const { fetchMock } = mockBackend();
-    await open();
-    expect(screen.getAllByText('Sign in to search venues.').length).toBeGreaterThan(0);
-    expect(screen.getByRole('link', { name: 'Sign in' })).toHaveAttribute('href', '/login');
-    expect(screen.queryByRole('form', { name: 'Venue filters' })).not.toBeInTheDocument();
-    expect(fetchMock).not.toHaveBeenCalled();
-  });
-
-  it.each(['EVENT_ORGANISER', 'VENUE_STAFF', 'TECHNICAL_SUPPORT_STAFF', 'ATTENDEE'] as UserRole[])(
-    'keeps the page closed to a %s without requesting venue data', async (role) => {
-      session.user = user(role);
-      const { fetchMock } = mockBackend();
-      await open();
-      expect(screen.getByRole('alert')).toHaveTextContent('This page is for event coordinators.');
-      expect(screen.queryByRole('form', { name: 'Venue filters' })).not.toBeInTheDocument();
-      expect(screen.queryByRole('heading', { name: 'Harbour Hall' })).not.toBeInTheDocument();
-      expect(fetchMock).not.toHaveBeenCalled();
+/* ------------------------------------------------------------------------------------------ */
+describe('KAN-12-AC13: users not authorised for venue planning', () => {
+  it.each(['EVENT_ORGANISER', 'VENUE_STAFF', 'TECHNICAL_SUPPORT_STAFF', 'ATTENDEE'])(
+    'TC-VS-61 [KAN-12-AC13, security] shows %s a denial and makes no request at all',
+    async (role) => {
+      signInAs(role);
+      renderPage();
+      expect(await screen.findByText('This page is for event coordinators.')).toBeTruthy();
+      expect(screen.queryByLabelText('Expected attendance')).toBeNull();
+      expect(getJsonMock).not.toHaveBeenCalled();
     },
   );
 
-  it('waits for the session before deciding who may search', async () => {
-    session.loading = true;
-    session.user = null;
-    const { fetchMock } = mockBackend();
-    await open();
-    expect(screen.getByText('Checking your access…')).toBeInTheDocument();
-    expect(fetchMock).not.toHaveBeenCalled();
-    session.user = user();
-    session.loading = false;
-    expect(await screen.findByText('2 venues found')).toBeInTheDocument();
+  it('TC-VS-62 [KAN-12-AC13, security] asks a signed-out visitor to sign in and makes no request', async () => {
+    signInAs(null);
+    renderPage();
+    expect(await screen.findByText('Sign in to search venues.')).toBeTruthy();
+    expect(getJsonMock).not.toHaveBeenCalled();
   });
 
-  it('asks the user to sign in again when the session has expired (401)', async () => {
-    mockBackend({ search: () => apiError(401, 'UNAUTHENTICATED', 'Sign in required.') });
-    await open();
-    expect(await screen.findByRole('alert')).toHaveTextContent('Sign in to search venues.');
-    expect(screen.getByRole('link', { name: 'Sign in' })).toHaveAttribute('href', '/login');
-    expect(screen.queryByRole('button', { name: 'Try again' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('heading', { name: 'Harbour Hall' })).not.toBeInTheDocument();
-    expect(session.user).toBeNull();
+  it('TC-VS-63 [KAN-12-AC13, security] shows the coordinator-only message, without a retry, when the server answers 403', async () => {
+    route(() => { throw new ApiError('Forbidden', 403, 'VENUE_SEARCH_FORBIDDEN'); });
+    renderPage();
+    expect(await screen.findByText('This page is for event coordinators.')).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Try again' })).toBeNull();
+  });
+});
+
+/* ------------------------------------------------------------------------------------------ */
+describe('KAN-12-AC14: an incomplete or backwards period is refused before any search is sent', () => {
+  const form = () => screen.getByRole('form', { name: 'Venue filters' });
+
+  it('TC-VS-64 [KAN-12-AC14, negative] a start without an end is refused on the end field', async () => {
+    renderPage();
+    await ready();
+    const sent = searchUrls().length;
+    await fireEvent.update(field(START), '2026-10-20T14:00');
+    expect(await screen.findByText(MISSING_END)).toBeTruthy();
+    expect(field(END).getAttribute('aria-invalid')).toBe('true');
+    expect(searchButton().disabled).toBe(true);
+    await fireEvent.submit(form());
+    expect(searchUrls()).toHaveLength(sent);
   });
 
-  it('shows the server refusal without a retry when the account is not a coordinator (403)', async () => {
-    mockBackend({ search: () => apiError(403, 'ACTION_FORBIDDEN', 'Forbidden.') });
-    await open();
-    expect(await screen.findByText('This page is for event coordinators.', { selector: '.venue-error p' }))
-      .toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'Try again' })).not.toBeInTheDocument();
+  it('TC-VS-65 [KAN-12-AC14, negative] an end without a start is refused on the start field', async () => {
+    renderPage();
+    await ready();
+    const sent = searchUrls().length;
+    await fireEvent.update(field(END), '2026-10-20T14:00');
+    expect(await screen.findByText(MISSING_START)).toBeTruthy();
+    expect(field(START).getAttribute('aria-invalid')).toBe('true');
+    await fireEvent.submit(form());
+    expect(searchUrls()).toHaveLength(sent);
   });
 
-  it('shows the server message and lets the user try again after a failure', async () => {
-    let calls = 0;
-    const { searches } = mockBackend({ search: () => (++calls === 1
-      ? apiError(500, 'INTERNAL_ERROR', 'Venues are unavailable right now.') : json({ items: [hall] })) });
-    await open();
-    expect(await screen.findByText('Venues are unavailable right now.')).toBeInTheDocument();
-    await fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
-    expect(await screen.findByText('1 venue found')).toBeInTheDocument();
-    expect(searches()).toHaveLength(2);
+  it.each([
+    { title: 'TC-VS-66 [KAN-12-AC14, negative] an end before the start', end: '2026-10-20T10:00' },
+    { title: 'TC-VS-67 [KAN-12-AC14, boundary] an end equal to the start', end: '2026-10-20T14:00' },
+  ])('$title is refused with a clear message', async ({ end }) => {
+    renderPage();
+    await ready();
+    const sent = searchUrls().length;
+    await fireEvent.update(field(START), '2026-10-20T14:00');
+    await fireEvent.update(field(END), end);
+    expect(await screen.findByText(END_NOT_AFTER_START)).toBeTruthy();
+    expect(searchButton().disabled).toBe(true);
+    await fireEvent.submit(form());
+    expect(searchUrls()).toHaveLength(sent);
   });
 
-  it('still searches when the filter lists cannot be loaded, and says what is missing', async () => {
-    const { lastSearch } = mockBackend({ options: () => apiError(500, 'INTERNAL_ERROR', 'Options failed.') });
-    await open();
-    expect(await screen.findByText('2 venues found')).toBeInTheDocument();
-    expect(screen.getByText(/The layout, accessibility and facility lists could not be loaded/)).toBeInTheDocument();
-    await type('Location', 'Marina');
+  it('TC-VS-68 [KAN-12-AC14, positive] fixing the period removes the message and the search goes through', async () => {
+    renderPage();
+    await ready();
+    await fireEvent.update(field(START), '2026-10-20T14:00');
+    await screen.findByText(MISSING_END);
+    await fireEvent.update(field(END), '2026-10-20T18:00');
+    expect(screen.queryByText(MISSING_END)).toBeNull();
+    expect(searchButton().disabled).toBe(false);
     await search();
-    await waitFor(() => expect(lastSearch().get('location')).toBe('Marina'));
+    expect(paramsOf(lastSearchUrl()).get('startsAt')).toBe('2026-10-20T06:00:00.000Z');
+  });
+});
+
+/* ------------------------------------------------------------------------------------------ */
+describe('KAN-12-AC15: earlier results never replace newer ones', () => {
+  /** After the first load, hand out one controllable answer per later search. */
+  function slowSearches() {
+    const answers = [deferred<{ items: VenueResult[] }>(), deferred<{ items: VenueResult[] }>()];
+    getJsonMock.mockImplementation(async (url: string) => (
+      url.startsWith('/api/venues/filter-options') ? OPTIONS : answers.shift()!.promise
+    ));
+    return [...answers] as [typeof answers[number], typeof answers[number]];
+  }
+
+  it('TC-VS-69 [KAN-12-AC15, positive] a slow earlier search that answers last does not replace the newer results', async () => {
+    renderPage();
+    await ready();
+    const [older, newer] = slowSearches();
+    await fireEvent.update(field('Location'), 'Marina');
+    await search(); // older search, still waiting
+    await fireEvent.update(field('Location'), 'Sengkang');
+    await search(); // newer search
+
+    newer.resolve({ items: [room] });
+    expect(await screen.findByText('Sengkang Community Room')).toBeTruthy();
+    older.resolve({ items: [hall] });
+    await settle();
+    expect(screen.queryByText('Harbourfront Hall')).toBeNull();
+    expect(screen.getByText('Sengkang Community Room')).toBeTruthy();
   });
 
-  it('ignores a slower earlier response that arrives after a newer search (stale results)', async () => {
-    const pending: ((response: Response) => void)[] = [];
-    mockBackend({ search: () => new Promise<Response>((resolve) => { pending.push(resolve); }) });
-    await open();
-    await waitFor(() => expect(pending).toHaveLength(1));
-    await type('Location', 'Garden');
-    await fireEvent.click(screen.getByRole('button', { name: 'Clear filters' }));
-    await waitFor(() => expect(pending).toHaveLength(2));
-    pending[1]!(json({ items: [room] }));
-    expect(await screen.findByRole('heading', { name: 'Garden Room' })).toBeInTheDocument();
-    pending[0]!(json({ items: [hall] }));
-    await new Promise((resolve) => setTimeout(resolve, 0));
-    expect(screen.queryByRole('heading', { name: 'Harbour Hall' })).not.toBeInTheDocument();
-    expect(screen.getByText('1 venue found')).toBeInTheDocument();
+  it('TC-VS-70 [KAN-12-AC15, negative] an earlier search that fails late does not show an error over the newer results', async () => {
+    renderPage();
+    await ready();
+    const [older, newer] = slowSearches();
+    await fireEvent.update(field('Location'), 'Marina');
+    await search();
+    await fireEvent.update(field('Location'), 'Sengkang');
+    await search();
+
+    newer.resolve({ items: [room] });
+    await screen.findByText('Sengkang Community Room');
+    older.reject(new Error('The old search failed.'));
+    await settle();
+    expect(screen.queryByText('The old search failed.')).toBeNull();
+    expect(screen.getByText('Sengkang Community Room')).toBeTruthy();
+  });
+
+  it('TC-VS-71 [KAN-12-AC15, positive] earlier results are hidden while a new search runs', async () => {
+    renderPage();
+    await ready();
+    const [pending] = slowSearches();
+    await fireEvent.update(field('Location'), 'Sengkang');
+    await search();
+
+    expect(screen.queryByText('Harbourfront Hall')).toBeNull();
+    expect(screen.getByText('Loading venues…')).toBeTruthy();
+    pending.resolve({ items: [room] });
+    expect(await screen.findByText('Sengkang Community Room')).toBeTruthy();
+  });
+});
+
+/* ------------------------------------------------------------------------------------------ */
+describe('KAN-12-AC16: missing lists, and no match versus an empty catalogue', () => {
+  it('TC-VS-72 [KAN-12-AC16, negative] when the lists cannot load, the user is told and the other filters still work', async () => {
+    route(undefined, () => { throw new Error('lists unavailable'); });
+    renderPage();
+    expect(await screen.findByText(/room layout, accessibility and facility lists could not be loaded.*other filters still work/)).toBeTruthy();
+    expect(screen.queryByLabelText('Projector')).toBeNull();
+
+    await fireEvent.update(field('Location'), 'Marina');
+    await fireEvent.click(field('Wheelchair accessible'));
+    await search();
+    expect(Object.fromEntries(paramsOf(lastSearchUrl()))).toEqual({ location: 'Marina', wheelchairAccessible: 'true' });
+    expect(await screen.findByText('Harbourfront Hall')).toBeTruthy();
+  });
+
+  it('TC-VS-73 [KAN-12-AC16, positive] "no venue matches" and "no venues in the catalogue" are different messages', async () => {
+    route(() => ({ items: [] }));
+    renderPage();
+    expect(await screen.findByText('No venues in the catalogue yet')).toBeTruthy();
+    expect(screen.queryByText('No venue matches these filters')).toBeNull();
+
+    await fireEvent.update(field('Location'), 'nowhere');
+    await search();
+    expect(await screen.findByText('No venue matches these filters')).toBeTruthy();
+    expect(screen.getByText(/No venue in the catalogue meets every filter you applied/)).toBeTruthy();
+    expect(screen.queryByText('No venues in the catalogue yet')).toBeNull();
+  });
+});
+
+/* ------------------------------------------------------------------------------------------ */
+describe('KAN-12-AC101: impossible dates on the page', () => {
+  it('TC-VS-74 [KAN-12-AC101, negative] an impossible date gets field feedback and no search is sent', async () => {
+    renderPage();
+    await ready();
+    const sent = searchUrls().length;
+    const start = field(START);
+    // A browser's date picker will not produce 30 February, but a script or autofill can supply any text.
+    Object.defineProperty(start, 'value', { configurable: true, get: () => '2026-02-30T10:00', set: () => {} });
+    await fireEvent.input(start);
+    await fireEvent.update(field(END), '2026-03-05T10:00');
+
+    expect(await screen.findByText(NOT_A_REAL_DATE)).toBeTruthy();
+    expect(start.getAttribute('aria-invalid')).toBe('true');
+    expect(searchButton().disabled).toBe(true);
+    await fireEvent.submit(screen.getByRole('form', { name: 'Venue filters' }));
+    expect(searchUrls()).toHaveLength(sent);
+  });
+
+  it('TC-VS-75 [KAN-12-AC101, negative] a date the browser cannot read shows as incomplete, not as left blank', async () => {
+    renderPage();
+    await ready();
+    const sent = searchUrls().length;
+    const start = field(START);
+    const validity = { badInput: true };
+    Object.defineProperty(start, 'validity', { configurable: true, get: () => validity });
+    await fireEvent.update(start, '');
+    await fireEvent.update(field(END), '2026-10-20T18:00');
+
+    expect(await screen.findByText(INCOMPLETE_DATE)).toBeTruthy();
+    expect(searchUrls()).toHaveLength(sent);
+    validity.badInput = false;
+    await fireEvent.update(start, '2026-10-20T14:00');
+    expect(screen.queryByText(INCOMPLETE_DATE)).toBeNull();
+    expect(searchButton().disabled).toBe(false);
+  });
+});
+
+/* ==== API CLIENT TESTS: no page needed (marker used to run this part on its own) ============ */
+describe('KAN-12-AC101 and AC14: event period rules in the API client', () => {
+  it.each([
+    { title: '30 February 2026', value: '2026-02-30T10:00' },
+    { title: '29 February 2026 (not a leap year)', value: '2026-02-29T10:00' },
+    { title: '31 April', value: '2026-04-31T10:00' },
+    { title: 'day 00', value: '2026-10-00T10:00' },
+    { title: 'month 13', value: '2026-13-01T10:00' },
+    { title: 'hour 24', value: '2026-10-20T24:00' },
+    { title: 'minute 60', value: '2026-10-20T10:60' },
+    { title: 'text that is not a date', value: 'soon' },
+  ])('TC-VS-76 [KAN-12-AC101, negative] $title is not a real date and time', ({ value }) => {
+    expect(isRealLocalDateTime(value)).toBe(false);
+  });
+
+  it.each([
+    { title: '29 February 2028 (leap day)', value: '2028-02-29T10:00', utc: '2028-02-29T02:00:00.000Z' },
+    { title: '28 February 2026', value: '2026-02-28T23:30', utc: '2026-02-28T15:30:00.000Z' },
+    { title: '31 December 2026', value: '2026-12-31T10:00:00', utc: '2026-12-31T02:00:00.000Z' },
+    { title: '1 January 2027 at midnight', value: '2027-01-01T00:00', utc: '2026-12-31T16:00:00.000Z' },
+  ])('TC-VS-77 [KAN-12-AC101, positive] $title is accepted and converted exactly', ({ value, utc }) => {
+    expect(isRealLocalDateTime(value)).toBe(true);
+    expect(localToIso(value)).toBe(utc);
+  });
+
+  it('TC-VS-78 [KAN-12-AC101, negative] converting an impossible date fails instead of moving it to another day', () => {
+    expect(() => localToIso('2026-02-30T10:00')).toThrow(/not a real date/);
+  });
+
+  it.each([
+    { title: 'neither field set is fine', start: '', end: '', expected: { startsAt: '', endsAt: '' } },
+    { title: 'a valid period is fine', start: '2026-10-20T14:00', end: '2026-10-20T18:00', expected: { startsAt: '', endsAt: '' } },
+    { title: 'a start without an end', start: '2026-10-20T14:00', end: '', expected: { startsAt: '', endsAt: MISSING_END } },
+    { title: 'an end without a start', start: '', end: '2026-10-20T14:00', expected: { startsAt: MISSING_START, endsAt: '' } },
+    { title: 'an end before the start', start: '2026-10-20T14:00', end: '2026-10-20T10:00', expected: { startsAt: '', endsAt: END_NOT_AFTER_START } },
+    { title: 'an end equal to the start', start: '2026-10-20T14:00', end: '2026-10-20T14:00', expected: { startsAt: '', endsAt: END_NOT_AFTER_START } },
+    { title: 'an impossible start date', start: '2026-02-30T10:00', end: '2026-03-05T10:00', expected: { startsAt: NOT_A_REAL_DATE, endsAt: '' } },
+    { title: 'an impossible end date', start: '2026-02-01T10:00', end: '2026-02-30T10:00', expected: { startsAt: '', endsAt: NOT_A_REAL_DATE } },
+  ])('TC-VS-79 [KAN-12-AC14 and AC101, negative] field feedback: $title', ({ start, end, expected }) => {
+    expect(validatePeriod(start, end)).toEqual(expected);
+  });
+
+  it('TC-VS-80 [KAN-12-AC101, negative] text the browser could not read is reported on that field', () => {
+    expect(validatePeriod('', '2026-10-20T14:00', { startsAt: true })).toEqual({ startsAt: INCOMPLETE_DATE, endsAt: '' });
+  });
+
+  it.each([
+    { title: 'an impossible date', filters: { startsAt: '2026-02-30T10:00', endsAt: '2026-03-05T10:00' } },
+    { title: 'only a start', filters: { startsAt: '2026-10-20T14:00', endsAt: '' } },
+    { title: 'an end before the start', filters: { startsAt: '2026-10-20T14:00', endsAt: '2026-10-20T10:00' } },
+  ])('TC-VS-81 [KAN-12-AC14 and AC101, negative] refuses $title before any request is sent', async ({ filters }) => {
+    await expect(searchVenues({ ...emptyFilters(), ...filters })).rejects.toThrow();
+    expect(getJsonMock).not.toHaveBeenCalled();
+  });
+
+  it('TC-VS-82 [KAN-12-AC2 and AC4, positive] number inputs (numbers, not text) are accepted: regression for "value.trim is not a function"', async () => {
+    route();
+    await searchVenues({ ...emptyFilters(), attendance: 200, capacity: 300 });
+    expect(Object.fromEntries(paramsOf(lastSearchUrl()))).toEqual({ attendance: '200', capacity: '300' });
+  });
+
+  it('TC-VS-83 [KAN-12-AC11, positive] cleared filters send no parameters at all', async () => {
+    route();
+    await searchVenues(emptyFilters());
+    expect(lastSearchUrl()).toBe('/api/venues/search-venues');
   });
 });

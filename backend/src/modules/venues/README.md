@@ -131,8 +131,13 @@ saves the outage and, inside the same venue-locked transaction, records each aff
 - Block creation, booking submission and approval share the venue row lock, so an outage and an
   approval never interleave. Removal locks the venue, marks that block's open flags `CLEARED` and
   deletes the block; other outages' flags are unchanged.
-- `GET /api/venues/recovery` lists affected arrangements for Venue Staff. Coordinator notification
-  and view (phase 2) and linked replacements (phase 3) follow.
+- `GET /api/venues/recovery` lists affected arrangements for Venue Staff. Phase 2: each affected
+  event's current coordinator gets one notice per outage (KAN-64 writer, same transaction), and every
+  booking response carries its `recovery` list.
+- Phase 3: a request with `replacesBookingId` must target a same-event booking that still needs
+  recovery, for an approved or confirmed event, and pass capacity and opening-hours checks. Approving
+  it locks the original after booking -> event -> venue, refuses if recovery is no longer needed, then
+  resolves the original's flags and cancels it (migration 011).
 
 ### Verification
 
@@ -273,3 +278,22 @@ for policy boundaries and [testing guidance](../../../../docs/testing/README.md#
 for remaining hosted checks. Unit/HTTP tests are `backend/test/venues/suitability-*.test.ts`;
 PostgreSQL tests are `database/tests/venues/venue-suitability.integration.test.ts`.
 Record executed results separately in the shared test register.
+
+## KAN-78 buffered planning — 21 October 2026
+
+Migration 008 supplies SQL occupied-interval functions, `venue_booking_intervals`, approval snapshots and `venue_booking_warnings(uuid)`. Search, availability, suitability, booking submission/approval and block creation consume these rules. Views/functions returning booking data are internal, with public/anon/authenticated access revoked. The API enforces existing roles and current assignment.
+
+Calendar bars use occupied times and return event timing separately. Booking detail and the staff queue expose live overlap/block/hour warnings; the queue also includes affected approved bookings. Warnings are computed, so KAN-77's future editor gets current re-evaluation after a venue-row update without changing bookings. It should use the same venue lock and consume the warning function. KAN-77's editor and field-aware stale-save rules remain separate work.
+
+Verification: `database/tests/venues/venue-buffers.integration.test.ts` covers the calculator across consumers, boundaries, blocks/hours, preserved history, existing conflicts, privacy and races. `tests/e2e/venue-bookings.spec.ts` verifies occupied-time/warning display. See AUTO-20261021-KAN78-01; hosted acceptance remains Not executed.
+
+## Main integration follow-up — 21 October 2026
+
+KAN-77 configuration is now merged. Buffer saves use its existing field-aware concurrency rules and return `affectedBookings` from KAN-78 warning evaluation within the save transaction; the editor displays their links/warnings. Shared duration storage is migration 009, and KAN-78 snapshots/view/functions/guards are migration 010. Earlier pending-editor notes remain historical.
+
+## Temporary venue holds — KAN-83
+
+`occupancy.ts` is the single rule for when a booking occupies its venue: `APPROVED`, or `HELD` with `hold_expires_at` still in the future. `availability.ts`, `venue-search.ts`, `suitability-service.ts`, `booking-service.ts` (request creation and approval) and `block-service.ts` all use it, applied to KAN-78's buffered occupied interval (`venue_booking_intervals`); a hold deadline may be no later than the buffered occupied start. Readers use `now()`; writers that have just taken a lock use `clock_timestamp()` so a hold that lapsed while they waited no longer counts.
+
+`booking-service.ts` adds `placeVenueHold` (Venue Staff, pending request, deadline checked against the database clock, booking → event → venue locks, notice to the coordinator), `cancelVenueHold` and the shared `releaseHold`, extends `decideVenueBooking` to approve or reject a live hold, and wraps `expire_venue_holds()` as `expireVenueHolds`. `block-service.ts` releases live holds a new block overlaps, skipping rows another writer has locked to avoid a lock-order deadlock. `hold-expiry-scheduler.ts` runs expiry at API startup and every minute (`server.ts`). Routes: `POST /api/venue-bookings/:id/hold` and `/hold/cancel` in `venue-bookings-router.ts`. Contract: [api-contract](../../../../docs/architecture/api-contract.md#temporary-venue-holds-kan-83-cr-4); rollout: [database setup](../../../../database/README.md#kan-83-venue-holds-rollout--21-october-2026).
+

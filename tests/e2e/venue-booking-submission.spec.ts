@@ -67,6 +67,9 @@ async function fixtures(page: Page, options: {
         createdAt: '2026-10-05T00:00:00.000Z', updatedAt: '2026-10-05T00:00:00.000Z',
         eventStartsAt: event.startsAt, eventEndsAt: event.endsAt, purpose: event.purpose, description: event.description,
         expectedAttendance: event.expectedAttendance, venueRequirements: event.venueRequirements, accessibilityNeeds: event.accessibilityNeeds,
+        recovery: [], replacesBookingId: null,
+        holdExpiresAt: null, heldBy: null, heldAt: null, expiredAt: null,
+        cancelledBy: null, cancelledAt: null, cancellationReason: null,
       };
       await route.fulfill(options.lostResponse
         ? { status: 500, json: error('INTERNAL_ERROR', 'The response was lost.') }

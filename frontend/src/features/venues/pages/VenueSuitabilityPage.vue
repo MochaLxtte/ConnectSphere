@@ -255,6 +255,7 @@ onBeforeUnmount(() => { readController?.abort(); assessmentController?.abort(); 
         <p class="eyebrow">Assessment result</p>
         <h2 id="suitability-result-title" :class="`outcome-${assessment.outcome.toLowerCase()}`">{{ outcomeLabels[assessment.outcome] }}</h2>
         <p class="suitability-hint">{{ assessment.venueName }} · Checked {{ formatEventTime(assessment.checkedAt) }} (Singapore time)</p>
+        <p v-if="assessment.occupiedStartsAt && assessment.occupiedEndsAt">Occupied time (including setup/turnaround): {{ formatEventTime(assessment.occupiedStartsAt) }} – {{ formatEventTime(assessment.occupiedEndsAt) }}</p>
         <ul class="assessment-checks" aria-label="Suitability checks">
           <li v-for="check in assessment.checks" :key="check.key">
             <div class="check-heading"><h3>{{ checkLabels[check.key] }}</h3><span :class="`check-${check.status.toLowerCase()}`">{{ checkStatusLabels[check.status] }}</span></div>

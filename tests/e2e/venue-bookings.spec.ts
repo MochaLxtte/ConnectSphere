@@ -20,7 +20,9 @@ const makeBooking = (overrides: Partial<VenueBooking> = {}): VenueBooking => ({
   description: 'Orientation and activities', expectedAttendance: 80,
   venueRequirements: 'A seated hall', accessibilityNeeds: 'Step-free access',
   decidedBy: null, decidedAt: null, decisionReason: null,
-  createdAt: '2026-10-01T01:00:00.000Z', updatedAt: '2026-10-01T01:00:00.000Z', ...overrides,
+  holdExpiresAt: null, heldBy: null, heldAt: null, expiredAt: null,
+  cancelledBy: null, cancelledAt: null, cancellationReason: null,
+  createdAt: '2026-10-01T01:00:00.000Z', updatedAt: '2026-10-01T01:00:00.000Z', recovery: [], replacesBookingId: null, ...overrides,
 });
 
 async function bookingFixtures(page: Page, role: Role | null, options: {
@@ -94,6 +96,18 @@ async function bookingFixtures(page: Page, role: Role | null, options: {
   return { reads, decisions, unexpected };
 }
 
+test('KAN-78 staff can distinguish event and occupied times and see affected-booking warnings', async ({ page }) => {
+  await bookingFixtures(page, 'VENUE_STAFF', { bookings: [makeBooking({
+    occupiedStartsAt: '2026-12-01T01:30:00.000Z', occupiedEndsAt: '2026-12-01T06:45:00.000Z',
+    warnings: ['APPROVED_BOOKING_OVERLAP', 'OUTSIDE_OPERATING_HOURS'],
+  })] });
+  await page.goto(`/venue-bookings/${bookingId}`);
+  await expect(page.getByText('Occupied starts (including setup)', { exact: true })).toBeVisible();
+  await expect(page.getByText('Occupied ends (including turnaround)', { exact: true })).toBeVisible();
+  await expect(page.getByText('Booking starts', { exact: true })).toBeVisible();
+  await expect(page.getByRole('alert').filter({ hasText: 'APPROVED_BOOKING_OVERLAP' })).toBeVisible();
+});
+
 test('KAN-8 running backend requires login for booking list, detail and decision', async ({ request }) => {
   // No response fixtures: normal Vite proxy -> Express runtime routes, with no session cookie.
   for (const response of [
@@ -137,7 +151,7 @@ for (const scenario of [
     await expect(outcome.getByText(scenario.outcome, { exact: true })).toBeVisible();
     await expect(outcome.getByText(scenario.reason || 'No reason provided.', { exact: true })).toBeVisible();
     await page.getByRole('link', { name: 'Back to venue booking requests' }).click();
-    await expect(page.getByRole('heading', { name: 'No pending venue requests' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'No pending requests, holds or affected bookings' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'Community welcome day · Harbour Hall' })).toHaveCount(0);
     expect(fixture.unexpected).toEqual([]);
   });

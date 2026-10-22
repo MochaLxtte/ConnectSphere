@@ -16,6 +16,7 @@ export interface CatalogueVenue {
   /** KAN-77: whole minutes needed before and after each booking (0-1440). */
   setupMinutes: number;
   turnaroundMinutes: number;
+  affectedBookings?: { id: string; warnings: string[] }[];
   updatedAt: string;
 }
 

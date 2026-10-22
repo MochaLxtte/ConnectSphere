@@ -28,6 +28,10 @@ const pending: VenueBooking = {
   createdAt: '2026-10-01T00:00:00.000Z', updatedAt: '2026-10-01T00:00:00.000Z',
   eventStartsAt: null, eventEndsAt: null, purpose: null, description: null, expectedAttendance: null,
   venueRequirements: null, accessibilityNeeds: null,
+  recovery: [],
+  replacesBookingId: null,
+  holdExpiresAt: null, heldBy: null, heldAt: null, expiredAt: null,
+  cancelledBy: null, cancelledAt: null, cancellationReason: null,
 };
 
 const coordinatorProps = { eventRequestId, status: 'APPROVED', viewerRole: 'EVENT_COORDINATOR' };
@@ -259,3 +263,114 @@ describe('KAN-53 venue booking request panel', () => {
     else expect(screen.getByRole('alert')).toHaveTextContent('no longer have access');
   });
 });
+
+describe('KAN-81 phase 2: recovery in the coordinator venue panel (AC12)', () => {
+  const recovery = (status: 'RECOVERY_REQUIRED' | 'CLEARED') => [{
+    impactId: 'i-1', status, outageStartsAt: '2026-12-01T03:00:00.000Z', outageEndsAt: '2026-12-01T05:00:00.000Z',
+    outageReason: 'Burst pipe',
+  }];
+
+  it('marks an approved booking that needs recovery and explains what to do', async () => {
+    stubApi({
+      [`GET /api/venue-bookings?eventRequestId=${eventRequestId}`]: {
+        body: { items: [{ ...pending, status: 'APPROVED', recovery: recovery('RECOVERY_REQUIRED') }] },
+      },
+      'GET /api/venues/search-venues': venues,
+    });
+    render(VenueBookingPanel, { props: coordinatorProps });
+    expect(await screen.findByText('Recovery required')).toBeInTheDocument();
+    expect(screen.getByText(/The venue is unavailable for part of this booking/)).toBeInTheDocument();
+  });
+
+  it('shows no recovery marker once the outage is cleared', async () => {
+    stubApi({
+      [`GET /api/venue-bookings?eventRequestId=${eventRequestId}`]: {
+        body: { items: [{ ...pending, status: 'APPROVED', recovery: recovery('CLEARED') }] },
+      },
+      'GET /api/venues/search-venues': venues,
+    });
+    render(VenueBookingPanel, { props: coordinatorProps });
+    expect(await screen.findByText('Approved')).toBeInTheDocument();
+    expect(screen.queryByText('Recovery required')).not.toBeInTheDocument();
+  });
+});
+
+describe('KAN-81 phase 3: requesting a replacement venue from the panel (AC7, AC12)', () => {
+  const affected = {
+    ...pending, id: 'affected-1', status: 'APPROVED' as const, venueName: 'Old Hall',
+    recovery: [{ impactId: 'i-1', status: 'RECOVERY_REQUIRED' as const, outageStartsAt: '2026-12-01T03:00:00.000Z',
+      outageEndsAt: '2026-12-01T05:00:00.000Z', outageReason: 'Burst pipe' }],
+  };
+  const list = `GET /api/venue-bookings?eventRequestId=${eventRequestId}`;
+
+  it('offers only bookings needing recovery and sends the chosen one as replacesBookingId', async () => {
+    const api = stubApi({
+      [list]: { body: { items: [affected, { ...pending, id: 'unaffected', status: 'APPROVED' }] } },
+      'GET /api/venues/search-venues': venues,
+      [`POST ${base}/venue-bookings`]: { status: 201, body: { booking: { ...pending, replacesBookingId: 'affected-1' } } },
+    });
+    render(VenueBookingPanel, { props: coordinatorProps });
+    const select = await screen.findByLabelText(/This request replaces/);
+    expect([...(select as HTMLSelectElement).options].map((option) => option.value)).toEqual(['', 'affected-1']);
+    await fireEvent.update(select, 'affected-1');
+    await fillAndSubmit();
+    await screen.findByText('A venue booking request for Main Hall was submitted for review.');
+    expect(api.writes()[0]!.body).toMatchObject({ venueId: 'hall', replacesBookingId: 'affected-1' });
+  });
+
+  it('does not offer a replacement choice when nothing needs recovery, and omits the field', async () => {
+    const api = stubApi({
+      [list]: { body: { items: [] } },
+      'GET /api/venues/search-venues': venues,
+      [`POST ${base}/venue-bookings`]: { status: 201, body: { booking: pending } },
+    });
+    render(VenueBookingPanel, { props: coordinatorProps });
+    await screen.findByText('No venue has been requested for this event yet.');
+    expect(screen.queryByLabelText(/This request replaces/)).not.toBeInTheDocument();
+    await fillAndSubmit();
+    await screen.findByText('A venue booking request for Main Hall was submitted for review.');
+    expect(api.writes()[0]!.body).not.toHaveProperty('replacesBookingId');
+  });
+
+  it('explains a replacement that is no longer needed and reloads the current bookings', async () => {
+    const api = stubApi({
+      [list]: { body: { items: [affected] } },
+      'GET /api/venues/search-venues': venues,
+      [`POST ${base}/venue-bookings`]: apiError(409, 'REPLACEMENT_NOT_NEEDED',
+        'The booking being replaced no longer needs recovery. Refresh to see its current state.'),
+    });
+    render(VenueBookingPanel, { props: coordinatorProps });
+    await fireEvent.update(await screen.findByLabelText(/This request replaces/), 'affected-1');
+    api.set(list, { body: { items: [{ ...affected, status: 'CANCELLED', recovery: [{ ...affected.recovery[0]!, status: 'RESOLVED' as const }] }] } });
+    await fillAndSubmit();
+    expect(await screen.findByText(/no longer needs recovery/)).toBeInTheDocument();
+    await waitFor(() => expect(screen.queryByLabelText(/This request replaces/)).not.toBeInTheDocument());
+    expect(api.calls.filter((call) => call.key === list)).toHaveLength(2);
+  });
+
+  it('marks a replacement booking in the list', async () => {
+    stubApi({
+      [list]: { body: { items: [{ ...pending, replacesBookingId: 'affected-1' }] } },
+      'GET /api/venues/search-venues': venues,
+    });
+    render(VenueBookingPanel, { props: coordinatorProps });
+    expect(await screen.findByText('Replacement for an outage-affected booking.')).toBeInTheDocument();
+  });
+});
+
+describe('KAN-83 hold details for the coordinator', () => {
+  it('KAN-83-AC11 shows the live hold deadline, an expired outcome and a cancellation reason', async () => {
+    stubApi({ [`GET /api/venue-bookings?eventRequestId=${eventRequestId}`]: { body: { items: [
+      { ...pending, id: 'h1', status: 'HELD', holdExpiresAt: '2026-11-28T10:00:00.000Z' },
+      { ...pending, id: 'h2', status: 'EXPIRED', holdExpiresAt: '2026-11-20T10:00:00.000Z' },
+      { ...pending, id: 'h3', status: 'CANCELLED', cancellationReason: 'Venue unavailable: Burst pipe' },
+    ] } } });
+    render(VenueBookingPanel, { props: { ...coordinatorProps, status: 'REJECTED' } });
+    expect(await screen.findByText(/^Held until 28 Nov 2026, 6:00 pm \(Singapore time\)\. Venue staff must approve it before then/))
+      .toBeInTheDocument();
+    expect(screen.getByText(/^The hold expired at 20 Nov 2026, 6:00 pm and the venue period was released\./)).toBeInTheDocument();
+    expect(screen.getByText('Cancellation reason: Venue unavailable: Burst pipe')).toBeInTheDocument();
+    expect(screen.getByText('Hold expired')).toHaveClass('tag-negative');
+  });
+});
+
