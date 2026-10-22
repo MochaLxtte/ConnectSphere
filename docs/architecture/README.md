@@ -281,7 +281,7 @@ Two Lead writes serialize on the event lock. An initial-allocation loser receive
 
 ## Diagram exports
 
-GitHub's Mermaid rendering is not part of the submission. The current PNG exports are in `docs/architecture/exports/`: `c1-context.png`, `c2-containers.png`, `c3-components.png`, `class.png`, `seq-lead-assignment.png`, `erd-events.png` and `erd-planning.png`. Re-export after design changes. These depict implementation boundaries, not hosted acceptance. `class.png` and `erd-planning.png` were re-exported on 21 October 2026 for KAN-83 with `mmdc` (Mermaid CLI 12) from the sources in this file.
+GitHub's Mermaid rendering is not part of the submission. The current PNG exports are in `docs/architecture/exports/`: `c1-context.png`, `c2-containers.png`, `c3-components.png`, `class.png`, `seq-lead-assignment.png`, `erd-events.png` and `erd-planning.png`. Re-export after design changes. These depict implementation boundaries, not hosted acceptance. `class.png` and `erd-planning.png` were re-exported on 21 October 2026 for KAN-83 with `mmdc` (Mermaid CLI 12), but those exports predate main's KAN-64/KAN-77/KAN-81 diagram changes; after the 22 October rebase the files are main's exports and a combined re-export is **pending**.
 
 ## ERD
 

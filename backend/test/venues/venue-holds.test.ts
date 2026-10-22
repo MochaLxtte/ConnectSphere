@@ -83,6 +83,11 @@ function fakePool(scenario: Scenario = {}) {
       }
       if (/FROM venue_bookings b JOIN event_requests e ON e.id = b.event_request_id\s+JOIN venues/.test(sql)
         && /SELECT b\.id/.test(sql)) return { rows: [readRow] };
+      // KAN-64 decision notifications read the event's people after the booking update.
+      if (/FOR SHARE OF e/.test(sql)) {
+        return { rows: [{ name: 'Open day', organiserId: 'organiser-1', coordinatorId: 'coordinator-1',
+          venueName: 'Hall' }] };
+      }
       if (/expire_venue_holds/.test(sql)) return { rows: [{ expired: 3 }] };
       return { rows: [] };
     }),
