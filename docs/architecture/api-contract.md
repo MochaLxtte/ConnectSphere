@@ -349,15 +349,15 @@ Request body:
 }
 ```
 
-`decision` must be `APPROVED` or `REJECTED`. `reason` is optional, is trimmed, and becomes `null` when absent or blank. Other body fields are rejected. The event request ID must use UUID format. Initial decisions require `SUBMITTED` or, since 19 September, `UNDER_REVIEW` status with no existing review decision. A request in `CLARIFICATION_REQUESTED` must be answered first, which returns it to `SUBMITTED`.
+`decision` must be `APPROVED` or `REJECTED`. `reason` is trimmed and may be at most 2,000 characters after trimming (the shared workflow limit). **KAN-60 (21 October 2026, branch `fix/KAN-60-rejection-reason`):** a `REJECTED` decision requires a nonblank reason; an `APPROVED` decision keeps the reason optional, and an absent or blank approval reason becomes `null`. Other body fields are rejected. The event request ID must use UUID format. Initial decisions require `SUBMITTED` or, since 19 September, `UNDER_REVIEW` status with no existing review decision. A request in `CLARIFICATION_REQUESTED` must be answered first, which returns it to `SUBMITTED`.
 
-**Required correction, recorded 21 September:** The [customer rule](../requirements/assumptions-and-questions.md#21-september-2026--customer-rules-reconciled-with-the-backlog) requires a non-empty reason for event-request rejection. The current parser, persistence path and UI still allow an empty reason. The paragraph above describes existing behaviour, not compliance with that requirement. Refine KAN-36 and add the validation/UI regression work; approval may continue without a reason. No implementation change or new test pass is recorded here.
+**Required correction, recorded 21 September:** The [customer rule](../requirements/assumptions-and-questions.md#21-september-2026--customer-rules-reconciled-with-the-backlog) requires a non-empty reason for event-request rejection. The current parser, persistence path and UI still allow an empty reason. The paragraph above describes existing behaviour, not compliance with that requirement. Refine KAN-36 and add the validation/UI regression work; approval may continue without a reason. No implementation change or new test pass is recorded here. **Implemented 21 October 2026 by KAN-60** as described above; this note is retained as history.
 
 | Response | Meaning |
 | --- | --- |
 | `201` | Returns `reviewId`, `eventRequestId`, `reviewedBy`, `decision` and `reason` after the review and matching event status commit together. |
 | `400 INVALID_EVENT_REQUEST_ID` | The route ID is not a UUID. |
-| `400 INVALID_REVIEW_INPUT` | The JSON body does not match the decision contract. |
+| `400 INVALID_REVIEW_INPUT` | The JSON body does not match the decision contract. Field errors add `field` (`"decision"` or `"reason"`), for example `{ "error": { "code": "INVALID_REVIEW_INPUT", "message": "Enter a reason to reject this event request.", "field": "reason" } }`; whole-body errors omit it. No decision, status, history or notification is written. |
 | `401 AUTHENTICATION_REQUIRED` | The authentication adapter reports absent or invalid credentials. |
 | `403 REVIEW_FORBIDDEN` | The verified account is not an event coordinator. |
 | `404 EVENT_REQUEST_NOT_FOUND` | The request does not exist or this coordinator cannot review it; both cases return the same response. |

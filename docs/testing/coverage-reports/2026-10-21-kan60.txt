@@ -1,0 +1,20 @@
+KAN-60 required rejection reason - local coverage summary
+Run ID: AUTO-20261021-KAN60-01 (see ../test-evidence.md, "21 October 2026 - KAN-60 required rejection reason")
+Date: 21 October 2026, Asia/Singapore
+Branch: fix/KAN-60-rejection-reason, base aaee549 (main after PR #35); uncommitted working tree at run time
+Environment: Linux, Node.js 22.22.0, Vitest; this is not sprint-close coverage
+Command: npm run test:coverage
+
+Workspace totals (% statements / branches / functions / lines)
+  frontend: 94.84 / 92.12 / 96.69 / 97.17   (32 files, 614 tests passed)
+  backend:  85.40 / 88.63 / 83.07 / 85.98   (39 files, 1054 tests passed)
+
+Changed files (covered / total)
+  backend/src/modules/events/review-input.ts                      lines 19/19 (100%)  branches 28/28 (100%)
+  backend/src/modules/events/review-router.ts                     lines 30/30 (100%)  branches 17/17 (100%)
+  frontend/src/features/reviews/components/ReviewDecisionPanel.vue statements 74/74, branches 116/116, functions 22/22, lines 59/59 (100%)
+  frontend/src/features/reviews/types.ts                          statements 1/1, lines 1/1 (100%)
+  backend/src/modules/events/workflow-support.ts                  lines 62/68, branches 45/49; the only KAN-60 change is
+                                                                  exporting MAX_TEXT_LENGTH; the uncovered lines are pre-existing.
+
+Workspace totals include existing unrelated gaps and are not a claim of complete mutation coverage.

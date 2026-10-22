@@ -162,7 +162,7 @@ describe('KAN-64 one event through the whole workflow (AC201–AC203, AC205, AC2
       .rejects.toMatchObject({ code: 'BOOKING_ALREADY_DECIDED' });
     await expect(assignCoordinator(fixture.dependencies, { eventRequestId: journey.eventId, actor: lead, input: { coordinatorId: blair.id } }))
       .rejects.toMatchObject({ code: 'COORDINATOR_ALREADY_ASSIGNED' });
-    await expect(review(journey.eventId, alex, { decision: 'REJECTED' })).rejects.toMatchObject({ code: 'REVIEW_ALREADY_DECIDED' });
+    await expect(review(journey.eventId, alex, { decision: 'REJECTED', reason: 'Not suitable' })).rejects.toMatchObject({ code: 'REVIEW_ALREADY_DECIDED' });
     await expect(submitEventRequest(fixture.dependencies, { eventRequestId: journey.eventId, actor: organiser }))
       .rejects.toMatchObject({ code: 'REQUEST_NOT_SUBMITTABLE' });
     expect(await count()).toBe(before);

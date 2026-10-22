@@ -139,3 +139,65 @@ test('KAN-36 a submitted request without the decision action has no decision con
   await expect(page.getByRole('button', { name: /^Record / })).toHaveCount(0);
   expect(unexpectedRequests).toEqual([]);
 });
+
+test('KAN-60 a blank rejection reason is blocked in the browser; the corrected reason survives a reload', async ({ page }) => {
+  // All API responses are fixtures. This checks browser validation and wiring, not live login or persistence.
+  const reason = 'The proposed venue cannot hold 25 people.';
+  const savedReview = {
+    reviewId: '10000000-0000-4000-8000-000000000060',
+    eventRequestId: requestId,
+    reviewedBy: coordinatorId,
+    decision: 'REJECTED',
+    reason,
+  };
+  let saved = false;
+  const submissions: unknown[] = [];
+  const unexpectedRequests: string[] = [];
+
+  await page.route((url) => url.pathname.startsWith('/api/'), async (route) => {
+    const request = route.request();
+    const path = new URL(request.url()).pathname;
+    if (request.method() === 'GET' && path === '/api/auth/me') {
+      await route.fulfill({ json: { user } });
+    } else if (request.method() === 'GET' && path === `/api/events/${requestId}`) {
+      await route.fulfill({ json: {
+        ...detail,
+        status: saved ? 'REJECTED' : 'SUBMITTED',
+        review: saved ? { ...savedReview, createdAt: '2026-10-21T02:00:00.000Z' } : null,
+        actions: { canEditDraft: false, canMakeInitialDecision: !saved },
+      } });
+    } else if (request.method() === 'POST' && path === `/api/events/${requestId}/reviews`) {
+      submissions.push(request.postDataJSON());
+      saved = true;
+      await route.fulfill({ status: 201, json: savedReview });
+    } else if (!(await fulfilWorkspaceRead(route, request, { coordinatorBookingEventId: requestId }))) {
+      unexpectedRequests.push(`${request.method()} ${path}`);
+      await route.fulfill({ status: 501, json: {
+        error: { code: 'UNEXPECTED_TEST_REQUEST', message: 'No response fixture was configured.' },
+      } });
+    }
+  });
+
+  await page.goto(`/reviews/${requestId}`);
+  await page.getByRole('radio', { name: /Reject request/ }).check();
+  const reasonBox = page.getByRole('textbox', { name: 'Reason (required)' });
+  await reasonBox.fill('   ');
+  await page.getByRole('button', { name: 'Record rejection', exact: true }).click();
+
+  await expect(page.getByRole('alert')).toHaveText('Enter a reason to reject this event request.');
+  await expect(reasonBox).toHaveAttribute('aria-invalid', 'true');
+  await expect(reasonBox).toBeFocused();
+  expect(submissions).toEqual([]);
+
+  await reasonBox.fill(`  ${reason}  `);
+  await expect(page.getByRole('alert')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Record rejection', exact: true }).click();
+  const outcome = page.getByRole('region', { name: 'Review outcome', exact: true }).getByRole('status');
+  await expect(outcome).toContainText('Request rejected');
+  expect(submissions).toEqual([{ decision: 'REJECTED', reason }]);
+
+  await page.reload();
+  await expect(outcome).toContainText(reason);
+  expect(submissions).toHaveLength(1);
+  expect(unexpectedRequests).toEqual([]);
+});

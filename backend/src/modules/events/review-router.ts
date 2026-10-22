@@ -58,7 +58,13 @@ export function createReviewRouter(dependencies: ReviewRouterDependencies) {
       response.status(201).json(saved);
     } catch (error) {
       if (error instanceof ReviewInputError) {
-        response.status(400).json({ error: { code: 'INVALID_REVIEW_INPUT', message: error.message } });
+        response.status(400).json({
+          error: {
+            code: 'INVALID_REVIEW_INPUT',
+            message: error.message,
+            ...(error.field ? { field: error.field } : {}),
+          },
+        });
         return;
       }
       // An unrelated coordinator must not learn whether this request exists or its current state.

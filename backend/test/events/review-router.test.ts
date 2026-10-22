@@ -118,6 +118,61 @@ describe('KAN-36 review HTTP boundary', () => {
     expect(record).not.toHaveBeenCalled();
   });
 
+  it.each([
+    { decision: 'REJECTED' },
+    { decision: 'REJECTED', reason: null },
+    { decision: 'REJECTED', reason: '' },
+    { decision: 'REJECTED', reason: '   \n ' },
+  ])('KAN-60-AC1/AC3 refuses a rejection without a reason before persistence: %j', async (body) => {
+    const { app } = setup();
+    const response = await request(app).post(endpoint).send(body);
+    expect(response.status).toBe(400);
+    expect(response.headers['cache-control']).toBe('no-store');
+    expect(response.body).toEqual({
+      error: {
+        code: 'INVALID_REVIEW_INPUT',
+        message: 'Enter a reason to reject this event request.',
+        field: 'reason',
+      },
+    });
+    expect(record).not.toHaveBeenCalled();
+  });
+
+  it('KAN-60-AC101 refuses an over-long reason with a field-specific error', async () => {
+    const { app } = setup();
+    const response = await request(app).post(endpoint).send({ decision: 'REJECTED', reason: 'x'.repeat(2001) });
+    expect(response.status).toBe(400);
+    expect(response.body.error).toEqual({
+      code: 'INVALID_REVIEW_INPUT',
+      message: 'Reason must be at most 2000 characters.',
+      field: 'reason',
+    });
+    expect(record).not.toHaveBeenCalled();
+  });
+
+  it('omits the field property for whole-body input errors', async () => {
+    const { app } = setup();
+    const response = await request(app).post(endpoint).send({ decision: 'APPROVED', status: 'APPROVED' });
+    expect(response.status).toBe(400);
+    expect(response.body.error).toEqual({
+      code: 'INVALID_REVIEW_INPUT',
+      message: 'Only decision and reason may be supplied.',
+    });
+  });
+
+  it('KAN-60-AC4 still passes an approval without a reason to persistence', async () => {
+    const { app, reviews } = setup();
+    record.mockResolvedValue({
+      reviewId: '30000000-0000-4000-8000-000000000002', eventRequestId, reviewedBy: actor.id,
+      decision: 'APPROVED', reason: null,
+    });
+    const response = await request(app).post(endpoint).send({ decision: 'APPROVED' });
+    expect(response.status).toBe(201);
+    expect(record).toHaveBeenCalledExactlyOnceWith(reviews, {
+      eventRequestId, reviewer: actor, input: { decision: 'APPROVED', reason: null },
+    });
+  });
+
   it('does not reveal whether an inaccessible request exists', async () => {
     const { app } = setup();
     record.mockRejectedValueOnce(new ReviewRequestNotFoundError())
