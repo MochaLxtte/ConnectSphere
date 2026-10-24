@@ -1271,3 +1271,9 @@ Source: phase 3 design approved in chat by Kai Jie, the story owner, on 21 Octob
 5. **Live holds reserve the buffered interval (KAN-83 with KAN-78).** The 013 trigger extends 012's buffered checks with live holds, and the app's buffered check refuses a live hold with `VENUE_HELD`. A hold deadline may be no later than the buffered occupied start (setup time before the event), as KAN-83-AC1 states.
 6. **KAN-12 search.** From #51 only the strict ISO 8601 date-time validation is integrated; the search service keeps operational-block exclusion, the shared opening-hours rule and KAN-78 buffers, and no `public.` schema prefixes.
 7. **Staff queue empty state.** The Venue Staff heading reads "No pending requests, holds or affected bookings", replacing both branches' wording.
+
+## 25 October 2026 — KAN-81 outages release holds by their buffered interval
+
+**Source and date:** Kai Jie, 25 October 2026, while checking KAN-81 against `main` after the 22 October integration (AI-assisted). A correction to make the code meet the existing KAN-81-AC3 wording; no AC or estimate changes.
+
+**Correction.** Saving an outage released only live holds whose *event* interval overlapped it, while approved bookings were already judged by their buffered occupied interval (22 October decision 2). An outage covering only a hold's setup or turnaround time therefore left the hold live and still reserving the venue, contrary to AC3 ("every non-ended approved booking or live tentative hold … whose buffered occupied interval overlaps the outage"). The hold query in `createVenueBlock` now reads `venue_booking_intervals`, the same interval the hold reserves under the 013 trigger. Exact adjacency remains unaffected (half-open intervals). Released holds keep KAN-83-AC10's behaviour: cancelled with the outage reason and the coordinator notified; they are not recorded as recovery items.
