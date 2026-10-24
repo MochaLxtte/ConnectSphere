@@ -1459,3 +1459,5 @@ The fix runs KAN-81 replacement suitability before the KAN-78 buffered check and
 | `npm run test:integration` (three new `KAN-81-AC3` cases in `venue-holds.integration.test.ts`: setup-only and turnaround-only outages release the hold; exactly adjacent outages leave it live) | **Not executed** locally (no disposable PostgreSQL). The pull request's CI run is the reference |
 
 No test case result in `test-executions.csv` is changed by this run.
+
+**CI follow-up — 25 October 2026, PR #55 (KAN-81 AC3 hold fix).** Run [40141272223](https://github.com/MochaLxtte/ConnectSphere/actions/runs/40141272223) (`AUTO-20261025-KAN81-CI-01`, merge `f2b1ece` of head `d870cf6`) passed every step: check and coverage, migrate, seed, integration **482/482** (`venue-holds` 44/44, including the three new `KAN-81-AC3` cases) and browser **156/156**. Recorded as scoped TC-09-24 in `test-executions.csv`; the broader TC-09-03 remains unexecuted.
