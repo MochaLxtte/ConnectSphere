@@ -91,9 +91,13 @@ export async function createVenueBlock(
     // and flagged for recovery below (KAN-81). Hold writers lock booking -> venue, so rows another writer has
     // locked are skipped instead of waited for: that writer then needs this venue lock, sees the
     // committed block and refuses itself (no deadlock, no hold surviving the block).
+    // KAN-81-AC3: overlap uses the hold's buffered occupied interval, the same one it reserves, so
+    // an outage covering only its setup or turnaround also releases it. Only venue_bookings is
+    // locked; the view is read in a subquery so its joined venue and event rows are not.
     const held = await client.query<{ id: string }>(
-      `SELECT id FROM venue_bookings WHERE venue_id = $1 AND status = 'HELD'
-        AND hold_expires_at > clock_timestamp() AND starts_at < $3 AND ends_at > $2
+      `SELECT id FROM venue_bookings WHERE id IN (
+        SELECT id FROM venue_booking_intervals WHERE venue_id = $1 AND status = 'HELD'
+          AND hold_expires_at > clock_timestamp() AND occupied_starts_at < $3 AND occupied_ends_at > $2)
         ORDER BY id FOR UPDATE SKIP LOCKED`,
       [venueId, submission.startsAt, submission.endsAt],
     );

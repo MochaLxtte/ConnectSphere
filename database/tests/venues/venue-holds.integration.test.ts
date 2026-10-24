@@ -437,6 +437,42 @@ describe('KAN-83 completing, expiring, rejecting and cancelling holds (AC5, AC6,
   });
 });
 
+describe('KAN-81 an outage releases a live hold by its buffered interval (AC3)', () => {
+  const HOUR = 3_600_000;
+  const shift = (iso: string, ms: number) => new Date(Date.parse(iso) + ms).toISOString();
+  async function bufferedHold() {
+    const venueId = await createVenue();
+    await fixture.pool.query('UPDATE venues SET setup_minutes = 60, turnaround_minutes = 30 WHERE id = $1', [venueId]);
+    const target = await pending({ venueId });
+    await hold(target.id);
+    return target;
+  }
+  const block = (venueId: string, from: string, to: string) => createVenueBlock(fixture.dependencies, {
+    actor: staff, venueId, input: { startsAt: from, endsAt: to, reason: 'Fire door repair' },
+  });
+
+  it('KAN-81-AC3 an outage covering only the setup time releases the hold', async () => {
+    const target = await bufferedHold();
+    await block(target.venueId, shift(startsAt, -HOUR), startsAt);
+    expect(await row(target.id)).toMatchObject({
+      status: 'CANCELLED', cancellation_reason: 'Venue unavailable: Fire door repair',
+    });
+  });
+
+  it('KAN-81-AC3 an outage covering only the turnaround time releases the hold', async () => {
+    const target = await bufferedHold();
+    await block(target.venueId, endsAt, shift(endsAt, HOUR / 2));
+    expect((await row(target.id)).status).toBe('CANCELLED');
+  });
+
+  it('KAN-81-AC3 an outage exactly adjacent to the buffered interval leaves the hold live', async () => {
+    const target = await bufferedHold();
+    await block(target.venueId, shift(startsAt, -2 * HOUR), shift(startsAt, -HOUR));
+    await block(target.venueId, shift(endsAt, HOUR / 2), shift(endsAt, HOUR));
+    expect((await row(target.id)).status).toBe('HELD');
+  });
+});
+
 describe('KAN-83 coordinator visibility and access (AC11, AC12)', () => {
   it('KAN-83-AC11 the assigned coordinator sees the deadline and the expired outcome; others cannot', async () => {
     const target = await pending();
