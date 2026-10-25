@@ -1461,38 +1461,3 @@ The fix runs KAN-81 replacement suitability before the KAN-78 buffered check and
 No test case result in `test-executions.csv` is changed by this run.
 
 **CI follow-up — 25 October 2026, PR #55 (KAN-81 AC3 hold fix).** Run [40141272223](https://github.com/MochaLxtte/ConnectSphere/actions/runs/40141272223) (`AUTO-20261025-KAN81-CI-01`, merge `f2b1ece` of head `d870cf6`) passed every step: check and coverage, migrate, seed, integration **482/482** (`venue-holds` 44/44, including the three new `KAN-81-AC3` cases) and browser **156/156**. Recorded as scoped TC-09-24 in `test-executions.csv`; the broader TC-09-03 remains unexecuted.
-
-## 25 October 2026 — KAN-60 and KAN-83 manual hosted runs
-
-**Run IDs: MAN-20261025-KAN60-01 and MAN-20261025-KAN83-01.** Executed 25 October 2026, 18:05–18:35 Singapore time, by Irfan with AI assistance (Claude driving Chrome through the Claude in Chrome extension). Build: `main` at `2f056bf` (after PR #55), run locally with `npm run dev` (Vite on 5173, API on 3000) against the **shared Supabase development database**. A read-only check of `schema_migrations` showed migrations **001–013 already applied** there; `pg_cron` is **not** enabled. Accounts: the mapped test accounts for Organiser, Organiser 2, Coordinator Lead, Event Coordinator, Event Coordinator 2 and Venue Staff. Case results are in [test-executions.csv](test-executions.csv) (`EX-MAN60-01-*`, `EX-MAN83-01-*`).
-
-**Synthetic data created (left in place, labelled):** events "TEST – Irfan manual QA – A (KAN-60 reject)", "– B (KAN-83 hold)", "– C (KAN-83 second event)" (all 10 March 2027, 14:00–16:00) and "– D (draft, KAN-60 guard)"; Rooftop Terrace bookings for B (one EXPIRED, one APPROVED) and C (one CANCELLED by staff, one PENDING for 10 March, one CANCELLED by outage for 11 March); their notifications. **Restored:** Rooftop Terrace setup/turnaround set to 30/30 for the run and returned to 0/0 (confirmed in the database); the test outage block (11 March 13:30–14:00) was removed through the Venue Blocks page.
-
-**KAN-60 (S3-T07).** Organiser submitted A–C; the Lead assigned them to Event Coordinator.
-1. Reject A with an empty reason, then spaces only (form fill and typed): "Enter a reason to reject this event request." shown, nothing written.
-2. Reject A with a reason padded by spaces: saved trimmed; status history Draft → Submitted → Rejected only.
-3. Approve B and C without a reason: saved with `reason` NULL.
-4. Organiser reload: A shows Rejected with the reason; B shows Approved and "No reason provided."
-5. Organiser 2 opening A, Coordinator 2 opening B's review, and any coordinator opening draft D: refused. Decided A offers no second decision. Database afterwards: A 1 review / 3 history rows; D 0 reviews / 1 history row.
-
-Result: TC-04-03, TC-04-04 and TC-04-05 **Pass**. TC-04-06 (records check) remains Not executed.
-
-**KAN-83 (S3-T26).** Coordinator requested Rooftop Terrace for B; Venue Staff set 30/30 buffers.
-1. Hold deadline in the past and at 13:45 (after the 13:30 buffered start): refused. Deadline 18:16 accepted; booking shows Held with occupied 13:30–16:30.
-2. Coordinator sees "Held until … 6:16 pm (Singapore time)" and a "Venue hold placed" notice with the deadline.
-3. Event C request for 14:00–16:00 and for 16:00–17:00 (turnaround overlap only): refused with "The venue is temporarily held for another request during this period."
-4. 18:16:00: B still HELD in the database but past its deadline; C's 14:00–16:00 request at 18:16:15 succeeded.
-5. 18:16:58: the running API scheduler marked B EXPIRED; one "Venue hold expired" notice; staff and coordinator views show the expired outcome with no approval or renewal.
-6. C held, then cancelled: Cancel hold disabled with an empty reason; with a reason, cancelled and shown.
-7. B re-requested, held and approved: same row APPROVED, reserved buffers 30/30.
-8. C requested for 11 March, held; an outage block 13:30–14:00 (setup only) cancelled the hold with "Venue unavailable: …" and notified the coordinator.
-9. Organiser opening a booking page: refused.
-
-Result: TC-14-08, -11, -12, -13, -14, -17, -19 **Pass (scoped)** and TC-14-18 **Pass**. Scoped means the steps listed in each row's remarks were not exercised, so the full case stays open. TC-14-15 **Blocked**: there is no deployed API and `pg_cron` is not enabled, so KAN-83-AC8's production schedule is not operational in the shared environment. TC-14-09, -10 and -16 were not executed in this run.
-
-**Findings (not fixed in this run):**
-- **KAN-81-AC3/AC7:** a hold released by an outage gets no `venue_outage_impacts` row; the Venue Blocks page shows "No bookings currently need recovery", so no replacement is offered for that event. PO decision needed: release only, or flag for recovery.
-- **KAN-83 UI:** the hold deadline hint says "no later than the booking start (2:00 pm)" although the server limit is the buffered start (1:30 pm).
-- **KAN-36/KAN-60 UI:** the coordinator review page shows proposed start/end as raw UTC ISO strings (for example `2027-03-10T06:00:00.000Z`).
-- **KAN-78 UI:** the catalogue's affected-bookings list shows "— OUTSIDE_OPERATING_HOURS" with no event name.
-- **Records:** migrations 010–013 are applied on shared Supabase, although earlier notes (including the 22 October integration record) say they are not.
