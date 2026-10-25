@@ -178,3 +178,9 @@ Use the observed Sprint 1 velocity, capacity differences, carryover and dependen
 The seven Done PBIs account for 24 original points, so **32 committed = 24 Done + 8 carried forward**. Attach the closing Jira report, acceptance evidence and completion timestamps. The 24 points describe the accepted outcome at closure; daily completion dates and burndown remain unrecorded.
 
 Sprint 2 has nine new stories totalling **35 SP**, plus the unchanged **8 SP** of carryover, giving an agreed **43-SP baseline**. The approximate **6-SP-per-member** selection target relates to the 35 new points across Ryan, Ernest, Kai Jie, Irfan, Tristan and Arvin. It is neither a capacity measurement nor a target that includes the carryover. Owners are still to be selected; account for carried work, review fixes, integration and testing before finalizing each member's load. See [Sprint 2 estimation and capacity](../sprint-02/estimation-and-capacity.md).
+
+## 25 October 2026 — Arvin contribution reconciliation (Sprints 1–3)
+
+This is a dated evidence backfill prepared with Codex on 25 October, not a new ceremony, Jira transition, test execution or acceptance decision. Historical entries, other members’ ownership and agreed estimates are preserved.
+
+The original KAN-24 estimate remains **5 SP**. Actual later delivery is documented in the [sprint backlog](sprint-backlog.md); it supplies no historical capacity, planning-poker votes or on-time velocity evidence. No re-estimation occurred.

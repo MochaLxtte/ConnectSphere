@@ -1,5 +1,7 @@
 # Sprint 3 planning
 
+**Scoped ownership and delivery reconciliation — 25 October 2026.** Arvin owns KAN-34 **3 SP** and KAN-78 **8 SP**. Leo Kai Jie supplied the requested-changes review; Irfan recorded integration approval on PR #48/#54 on 22 October. Leo's later re-review is Not recorded. [The current evidence](../../testing/test-evidence.md#25-october-2026--arvin-kan-78-and-kan-34-documentation-reconciliation) records automated main verification, not hosted acceptance or a planning meeting. The last recorded Jira state is In Review (21 October); no new Jira read is claimed. Estimates, sprint scope and dates are unchanged; the historical unassigned rows below are superseded only for these two stories.
+
 **Ownership update — 20 October 2026.** KAN-60 (2 SP) and KAN-83 (8 SP) are assigned to Irfan in Jira (20 October, 23:39 Singapore time); independent reviewers **To agree**. Other Sprint 3 Jira assignments read on 20 October: Ernest KAN-6, KAN-52, KAN-64; Arvin KAN-34, KAN-78; Ryan KAN-12, KAN-50; Tristan KAN-65, KAN-79; KAN-77 and KAN-81 unassigned. No new planning meeting or vote is asserted.
 
 **Ownership update — 19 October 2026.** KAN-79 is claimed by Tristan (8 SP); independent reviewer **To agree**. KAN-65 remains a separate dependency and is not claimed or implemented by this update. Existing allocation and estimate records below retain their dates; no new planning meeting or vote is asserted.
@@ -35,14 +37,14 @@ Deliver reliable request review and Lead assignment, then coherent venue plannin
 | --- | --- | ---: | --- | --- | --- |
 | KAN-6 | Submit an Event Request | 3 | Unassigned — team member to choose | To agree after owner chosen | Full-point Sprint 2 carry-over; Original submission validation; KAN-79 replaces initial assignment in the integrated release |
 | KAN-12 | Search and Filter Venues | 5 | Unassigned — team member to choose | To agree after owner chosen | Full-point Sprint 2 carry-over; Strict dates and shared buffered/held/unavailable venue reads |
-| KAN-34 | Resume/Edit Draft Event Request | 3 | Unassigned — team member to choose | To agree after owner chosen | Full-point Sprint 2 carry-over; Original draft criteria and strict real-calendar validation |
+| KAN-34 | Resume/Edit Draft Event Request | 3 | Arvin | Leo Kai Jie (requested changes); Irfan (integration approval); Leo re-review Not recorded | Full-point Sprint 2 carry-over; Original draft criteria and strict real-calendar validation |
 | KAN-50 | Maintain Venue Catalog | 5 | Unassigned — team member to choose | To agree after owner chosen | Full-point Sprint 2 carry-over; Original catalogue criteria; stale-save navigation regression |
 | KAN-52 | Check Venue Suitability | 3 | Unassigned — team member to choose | To agree after owner chosen | Full-point Sprint 2 carry-over; Zero-attendance consistency and shared current venue checks |
 | KAN-60 | Require a reason when rejecting an event request | 2 | Irfan | To agree | Existing KAN-36 review flow; correction counted once |
 | KAN-64 | Receive Request, Assignment and Venue Notifications | 5 | Unassigned — team member to choose | To agree after owner chosen | Shared business-event/recipient contract; request, assignment and venue trigger owners |
 | KAN-65 | Reassign Event Coordinator | 3 | Unassigned — team member to choose | To agree after owner chosen | KAN-79 Lead authority; KAN-64 notifications and current assignment access |
 | KAN-77 | Configure Venue Setup and Turnaround Durations | 2 | Unassigned — team member to choose | To agree after owner chosen | KAN-50 catalogue and additive schema/API changes |
-| KAN-78 | Apply Venue Buffers to Availability and Booking Conflicts | 8 | Unassigned — team member to choose | To agree after owner chosen | KAN-77 buffers; shared availability contract with KAN-81/KAN-83 |
+| KAN-78 | Apply Venue Buffers to Availability and Booking Conflicts | 8 | Arvin | Leo Kai Jie (requested changes); Irfan (integration approval); Leo re-review Not recorded | KAN-77 buffers; shared availability contract with KAN-81/KAN-83 |
 | KAN-79 | Assign Submitted Events Through a Coordinator Lead Queue | 8 | Unassigned — team member to choose | To agree after owner chosen | KAN-6 submission; trusted role mapping; KAN-64 notification delivery |
 | KAN-81 | Recover venue arrangements affected by operational unavailability | 8 | Unassigned — team member to choose | To agree after owner chosen | KAN-78 occupancy, KAN-64 delivery, existing booking decisions; integrate KAN-83 live holds |
 | KAN-83 | Manage temporary venue holds with expiry and automatic release | 8 | Irfan | To agree | KAN-78 occupancy, KAN-64 delivery, existing booking decisions; integrate KAN-81 outages |
@@ -398,3 +400,15 @@ Sessions held before or during this sprint to refine stories, ACs, priorities an
 - Jira sprint board screenshot: **Not recorded**. The current API/export snapshot is registered as `S3-E05` in [evidence](evidence/README.md), using its actual capture date. `S3-E01` remains reserved for the missing original sprint-start board; any later board image needs its own dated evidence entry and does not reconstruct the 4 October state.
 
 </details>
+
+## 25 October 2026 — Arvin contribution reconciliation (Sprints 1–3)
+
+This is a dated evidence backfill prepared with Codex on 25 October, not a new ceremony, Jira transition, test execution or acceptance decision. Historical entries, other members’ ownership and agreed estimates are preserved.
+
+**Supporting contributions, separate from owned KAN-34 (3 SP) and KAN-78 (8 SP):**
+
+- **12 October preparation:** Arvin’s consultation action list, C4 preparation record and submission runbook are retained as TXT source snapshots in this sprint’s evidence folder. They prepared Sprint 2 closure, Sprint 3 planning, capacity inputs, C4 exports and packaging; they do not establish that meetings occurred, votes were cast, artifacts were independently reviewed or instructor access was delivered. The original worktree remains untouched. Current committed design supersedes those historical C4 snapshots.
+- **21 October 02:26:27 Singapore time — shared migrations 008/009:** Arvin authorized the reviewed rollout; Codex executed it from `cf65c05e5d7b91675d74f7281439d0e9c2b1a766`. The retained JSON records both ledger checksums, four columns, two indexes and zero venues with nonzero initial buffers. This is deployment verification, not KAN-64/KAN-77 authorship, hosted functional acceptance or a new team-wide decision. No fixture, booking or cleanup writes were part of that run.
+- **21 October — KAN-81 PR #47 review and corrections:** Arvin requested changes, implemented stale 404/409 refresh corrections in `18ac27d`/`30da68a`, updated tests/evidence and then approved the phase-one work while disclosing his own fixes. His follow-up approval is not a second independent review of his corrections. Kai Jie remains KAN-81’s owner at 8 SP. Existing **S3-E20**, the KAN-81 review JSON and 21 October test narrative retain the scope and CI results.
+
+Owned KAN-34/KAN-78 merge, CI and acceptance limits remain in the preceding 25 October reconciliation. Supporting work adds no story points and does not convert other members’ stories to Done.

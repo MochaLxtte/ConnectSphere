@@ -1,5 +1,7 @@
 # Product backlog
 
+**Scoped ownership and delivery reconciliation — 25 October 2026.** Arvin owns KAN-34 **3 SP** and KAN-78 **8 SP**. Leo Kai Jie supplied the requested-changes review; Irfan recorded integration approval on PR #48/#54 on 22 October. Leo's later re-review is Not recorded. [The current evidence](../testing/test-evidence.md#25-october-2026--arvin-kan-78-and-kan-34-documentation-reconciliation) records automated main verification, not hosted acceptance or a planning meeting. The last recorded Jira state is In Review (21 October); no new Jira read is claimed. Estimates, sprint scope and dates are unchanged; the historical unassigned rows below are superseded only for these two stories.
+
 **KAN-79 and KAN-65 merge — 20 October 2026.** [PR #34](https://github.com/MochaLxtte/ConnectSphere/pull/34) merged both stories into `main` as `3ddba2b` after Irfan's approval, based on passing CI (S3-E16). Manual/hosted workflow checks and KAN-64 notifications remain Not executed, so neither story meets the Definition of Done; the register rows below stay In Progress, Not resolved, with 8 SP and 3 SP unchanged. Jira changes after the merge are Not recorded, and the master workbook is not updated by this note.
 
 **KAN-65 follow-up — 19 October 2026.** KAN-65 and subtasks KAN-88/89/90 are In Progress / Tristan; the estimate remains 3 SP. Branch `feat/KAN-65-coordinator-reassignment` includes KAN-79 and implements Lead-only reassignment with a required reason, assignment-version checks, atomic audit history and current-assignment permissions. `AUTO-20261019-02` records local verification. KAN-64 notifications, manual/hosted workflow checks, independent review and acceptance remain pending. The earlier KAN-79 dependency notes below describe that earlier implementation stage. This targeted update does not change sprint scope, historical evidence or velocity.
@@ -46,7 +48,7 @@ Jira Done/resolution dates are administrative values, not proof of acceptance or
 | Medium | [KAN-29](https://smu-g7-grp1.atlassian.net/browse/KAN-29) | Automatically Assign Event Coordinator | CF-05 | 3 | Done | Sprint 2 | 2026-10-04 | Tristan | relates to: KAN-65; relates to: KAN-79 |
 | Medium | [KAN-31](https://smu-g7-grp1.atlassian.net/browse/KAN-31) | Create Event Request | CF-02 | 3 | Done | Sprint 1 | 2026-09-21 | Ernest | None recorded |
 | Medium | [KAN-33](https://smu-g7-grp1.atlassian.net/browse/KAN-33) | View Submitted Event Request | CF-04 | 2 | Done | Sprint 1, Sprint 2 | 2026-10-01 | Irfan | None recorded |
-| High | [KAN-34](https://smu-g7-grp1.atlassian.net/browse/KAN-34) | Resume/Edit Draft Event Request | CF-03, CF-07 | 3 | To Do | Sprint 1, Sprint 2, Sprint 3 | Not resolved | Unassigned | None recorded |
+| High | [KAN-34](https://smu-g7-grp1.atlassian.net/browse/KAN-34) | Resume/Edit Draft Event Request | CF-03, CF-07 | 3 | In Review (last recorded 21 October; not rechecked) | Sprint 1, Sprint 2, Sprint 3 | Not resolved | Arvin | None recorded |
 | Medium | [KAN-36](https://smu-g7-grp1.atlassian.net/browse/KAN-36) | Approve/Reject Event Request | CF-04 | 3 | Done | Sprint 1 | 2026-09-21 | Tristan | relates to: KAN-60 |
 | Highest | [KAN-50](https://smu-g7-grp1.atlassian.net/browse/KAN-50) | Maintain Venue Catalog | CF-08 | 5 | To Do | Sprint 2, Sprint 3 | Not resolved | Unassigned | relates to: KAN-77 |
 | Medium | [KAN-51](https://smu-g7-grp1.atlassian.net/browse/KAN-51) | View Venue Availability Calendar | CF-09 | 5 | Done | Sprint 2 | 2026-10-10 | Arvin | relates to: KAN-78; relates to: KAN-81; relates to: KAN-83 |
@@ -63,7 +65,7 @@ Jira Done/resolution dates are administrative values, not proof of acceptance or
 | High | [KAN-66](https://smu-g7-grp1.atlassian.net/browse/KAN-66) | Update Event Information During Planning | CF-07 | 3 | To Do | Sprint 4 | Not resolved | Unassigned | relates to: KAN-15 |
 | High | [KAN-67](https://smu-g7-grp1.atlassian.net/browse/KAN-67) | View Event Registrations | CF-18 | 2 | To Do | Sprint 4 | Not resolved | Unassigned | relates to: KAN-14; relates to: KAN-17; is blocked by: KAN-14 |
 | High | [KAN-77](https://smu-g7-grp1.atlassian.net/browse/KAN-77) | Configure Venue Setup and Turnaround Durations | CF-08; CR-1 | 2 | To Do | Sprint 3 | Not resolved | Unassigned | relates to: KAN-50; relates to: KAN-78 |
-| High | [KAN-78](https://smu-g7-grp1.atlassian.net/browse/KAN-78) | Apply Venue Buffers to Availability and Booking Conflicts | CF-09–CF-14; CR-1 | 8 | To Do | Sprint 3 | Not resolved | Unassigned | relates to: KAN-77; relates to: KAN-51; relates to: KAN-12; relates to: KAN-52; relates to: KAN-53; relates to: KAN-8; relates to: KAN-54; relates to: KAN-55; blocks: KAN-81; blocks: KAN-83 |
+| High | [KAN-78](https://smu-g7-grp1.atlassian.net/browse/KAN-78) | Apply Venue Buffers to Availability and Booking Conflicts | CF-09–CF-14; CR-1 | 8 | In Review (last recorded 21 October; not rechecked) | Sprint 3 | Not resolved | Arvin | relates to: KAN-77; relates to: KAN-51; relates to: KAN-12; relates to: KAN-52; relates to: KAN-53; relates to: KAN-8; relates to: KAN-54; relates to: KAN-55; blocks: KAN-81; blocks: KAN-83 |
 | High | [KAN-79](https://smu-g7-grp1.atlassian.net/browse/KAN-79) | Assign Submitted Events Through a Coordinator Lead Queue | CF-01, CF-02, CF-04, CF-05; CR-5 | 8 | In Progress | Sprint 3 | Not resolved | Tristan | relates to: KAN-29; relates to: KAN-25; relates to: KAN-6; relates to: KAN-65; relates to: KAN-64 |
 | High | [KAN-80](https://smu-g7-grp1.atlassian.net/browse/KAN-80) | Receive Equipment, Lifecycle, Change and Registration Notifications | CF-20 | 3 | To Do | Sprint 4 | Not resolved | Unassigned | is blocked by: KAN-64; relates to: KAN-84; relates to: KAN-18; relates to: KAN-26; relates to: KAN-15; relates to: KAN-61; relates to: KAN-62; relates to: KAN-14; relates to: KAN-17 |
 | High | [KAN-81](https://smu-g7-grp1.atlassian.net/browse/KAN-81) | Recover venue arrangements affected by operational unavailability | CF-09, CF-12, CF-13, CF-14, CF-20; CR-2 | 8 | In Progress | Sprint 3 | Not resolved | Kai Jie | is blocked by: KAN-64; is blocked by: KAN-78; relates to: KAN-55; relates to: KAN-51; relates to: KAN-53; relates to: KAN-8; relates to: KAN-54; relates to: KAN-83; relates to: KAN-82 |
@@ -602,3 +604,19 @@ Independent reviewer for KAN-78 and KAN-34: Leo Kai Jie, selected by Arvin in ch
 ## 21 October — KAN-78 / KAN-34 review handoff
 
 KAN-78 (8 SP) and KAN-34 (3 SP), Arvin, are now **In Review** in Jira; both transitions were confirmed by the Jira response. [PR #48](https://github.com/MochaLxtte/ConnectSphere/pull/48) targets main from `feat/kan-78-kan-34`, source `2d138be`. Leo Kai Jie (`NahIts-Leo`) is requested on GitHub. Review and hosted acceptance remain Not executed; no Done date, estimate, sprint or delivered credit changed.
+
+## 25 October 2026 — Arvin contribution reconciliation (Sprints 1–3)
+
+This is a dated evidence backfill prepared with Codex on 25 October, not a new ceremony, Jira transition, test execution or acceptance decision. Historical entries, other members’ ownership and agreed estimates are preserved.
+
+| Sprint / actual delivery | Arvin’s evidenced contribution | Source / boundary |
+| --- | --- | --- |
+| Sprint 1 story; 20 September merge | KAN-24 infrastructure, 5 SP: database/schema, ERD and persistence | PR #10; after planned sprint end; broader feature work later removed |
+| Sprint 2; 26 September | Corrected KAN-24 scope by removing premature application features | PR #19; no additional story or points |
+| Sprint 2 story; 6–7 October | KAN-51, 5 SP: calendar navigation/selection and access fixes | PR #28; Ernest retains original calendar implementation; hosted acceptance gaps remain |
+| Sprint 3; 12 October | Consultation, planning/closure, capacity, C4 and submission preparation | Historical preparation snapshots; not completed ceremonies or approved decisions |
+| Sprint 3; 21 October | Authorized shared migration 008/009 rollout, executed by Codex | Retained ledger/checksum/schema readback; no new feature acceptance |
+| Sprint 3; 21 October | KAN-81 review and stale-write refresh corrections | PR #47; Kai Jie retains story ownership and 8 SP |
+| Sprint 3; 22 October integration | KAN-34 (3 SP), KAN-78 (8 SP) | PR #48 via #54; automated evidence imported separately; hosted acceptance and Jira Done not inferred |
+
+The 21 SP across the four owned stories is their estimate total, **not accepted velocity**. Source evidence is registered in the sprint evidence indexes and in `docs/scrum/sprint-03/evidence/arvin-contributions-github-2026-10-25.json`. No fresh Jira export was obtained; historical CSV/workbook snapshots remain unchanged.

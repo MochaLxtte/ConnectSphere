@@ -69,3 +69,9 @@ At review, calculate accepted points only for stories meeting the Definition of 
 **4 October allocation update:** Tristan took up KAN-8, keeping his new-story allocation at 3 + 3 = 6 points. This implementation update is after the planned 3 October boundary; it does not change the sprint dates, record review acceptance or award points. Actual review/closure and any carry-over decision still require team records.
 
 **4 October KAN-52 responsibility update:** Tristan requested this three-point implementation after KAN-29 and KAN-8, making nine new-story points across his three implementations. The original roughly six-point target remains a historical distribution guide. No point estimate, 43-point baseline, Jira assignee, review outcome or Done count changes through this record. Reconcile capacity and formal allocation with the team.
+
+## 25 October 2026 — Arvin contribution reconciliation (Sprints 1–3)
+
+This is a dated evidence backfill prepared with Codex on 25 October, not a new ceremony, Jira transition, test execution or acceptance decision. Historical entries, other members’ ownership and agreed estimates are preserved.
+
+The original KAN-51 estimate remains **5 SP**. Actual later delivery is documented in the [sprint backlog](sprint-backlog.md); it supplies no historical capacity, planning-poker votes or on-time velocity evidence. No re-estimation occurred.

@@ -1,5 +1,7 @@
 # Testing and evidence
 
+**Arvin verification readback — 25 October 2026.** KAN-34 and KAN-78 are integrated in main `96a0d10`; [AUTO-20261025-ARVIN-01](test-evidence.md#25-october-2026--arvin-kan-78-and-kan-34-documentation-reconciliation) imports existing current-main CI without a new local/hosted run. KAN-78 uses migration 012 after KAN-77 settings in 009, with the later hold extension in 013. The dated 21 October prerequisites below retain that earlier checkpoint. The [25 October hosted record](test-evidence.md#25-october-2026--kan-60-and-kan-83-manual-hosted-runs) reports migrations 001–013 applied, but does not complete S3-T06 or S3-T19. Use the scoped planned walkthroughs at the end of this guide and retain actual execution separately.
+
 ## Current test-document structure — 21 October 2026
 
 Maintain the test specification once and keep a separate execution record for each run, following the Week 4 **Test Case Template**. The specification says what should happen; the execution records say what was actually observed. Maintain the current records below during development.
@@ -343,3 +345,28 @@ Automated suites: `backend/test/venues/venue-catalogue-input.test.ts`, `venue-ca
 [Sprint 3](../scrum/sprint-03/sprint-backlog.md) and [Sprint 4](../scrum/sprint-04/sprint-backlog.md) allocate all active criteria after the 63/63 rebalance. Transferred tests retain their existing case IDs; old combined KAN-64 cases are labelled historical and its active AC201–209 plus KAN-80 have separate cases. CR-1–CR-6 trace to the 2 October receipt and later refinement in the [change register](../requirements/change-requests.md). New case specifications are Not executed, not passing evidence. The five original failed audit cases retain their dated failures until an actual fixed-code run is recorded.
 
 S3 connected verification ends with usable request/venue decisions, Lead access, buffers, outage recovery and expiring holds with notifications. S4 extends this through equipment, event lifecycle/registration, independent arrangements, safety/preparation and the remaining notification matrix. Expiry tests need a controlled clock, worker restart/replay and race checks; safety tests need current arrangement revisions and three outcomes. These checks are acceptance requirements for implementation, not results from this documentation update.
+
+## KAN-34 hosted verification
+
+**Prepared 25 October 2026; Not executed here.** Use S3-T06 and TC-03-02?06 with the permanent automated cases TC-03-301/302. A human signs in to mapped synthetic organiser O1/O2 accounts; record actual aliases, release SHA, environment and original draft values. Use the integrated frontend/API against the agreed shared development environment. Never expose passwords or point cleanup-based tests at shared Supabase.
+
+1. O1 opens an owned saved draft and compares every populated field with the persisted record. Save one field, omit another, explicitly clear a permitted nullable field, then reload and reopen; the updated values persist and the request stays Draft.
+2. Change registration No to Yes, fill the capacity/window, save/reopen and refresh; repeat Yes to No. Compare fields and persisted values against the agreed update contract rather than assuming that hidden fields are deleted.
+3. Check the other organiser and a non-editable request are refused without revealing or changing protected data. For impossible dates/offsets use the existing direct-HTTP and parser specifications, recording only the variants actually attempted; a browser date control alone does not exercise a forged API value.
+4. Restore original draft values or record labelled synthetic data retained. Append case-level results under the actual MAN run, link captures, and update S3-T06 only to the demonstrated extent. Automated fixture-browser results are not this hosted run; acceptance remains a review decision.
+
+## KAN-78 hosted verification
+
+**Prepared 25 October 2026; Not executed here.** Use S3-T19 and TC-14-01?07; TC-14-301?307 supply the existing automated boundaries. Confirm the integrated migrations (009 settings, 012 intervals, 013 holds), mapped assigned coordinator and Venue Staff accounts, an agreed synthetic venue and future bookings. Record current buffers, operating hours, existing bookings/blocks and the tested commit before changing shared data.
+
+1. For a 10:00?12:00 Singapore-time booking set setup 30 and turnaround 45 minutes. Compare the 09:30?12:45 occupied interval in search, suitability, calendar and booking details; retain the distinct event interval. Check a buffer-only overlap, exact occupied adjacency and zero-buffer behaviour using the relevant case's data.
+2. In the authorised catalogue editor change buffers after two synthetic adjacent approved bookings. Check returned affected-booking links/warnings and both persisted bookings; no booking should be silently moved, cancelled or deleted. The previously recorded raw-warning/no-event-name display issue remains to assess, not a claimed repair.
+3. Distinguish write direction: refuse a new booking/approval against an existing block, but save a later outage over an approved booking and flag recovery, including setup/turnaround-only overlap. Staff recovery handles outage-only warnings; they do not become pending booking decisions. Restricted opening hours cover the entire occupied interval.
+4. Verify unrelated venue and unauthorised caller behaviour. Keep concurrency, injected failures and historical-row setup in the isolated PostgreSQL tests; do not infer these cases passed from an ordinary UI walkthrough. Live-hold extension checks belong to the recorded KAN-83 dependency and must state their tested scope.
+5. Restore venue buffers/hours and agreed test blocks; record every synthetic booking/event retained and obtain the team's agreement before cleanup. Append the actual MAN outcomes and evidence per attempted case, then update S3-T19. A migration-presence check or another story's manual run does not accept the complete KAN-78 group.
+
+## 25 October 2026 — Arvin contribution reconciliation (Sprints 1–3)
+
+This is a dated evidence backfill prepared with Codex on 25 October, not a new ceremony, Jira transition, test execution or acceptance decision. Historical entries, other members’ ownership and agreed estimates are preserved.
+
+Historical KAN-24 and KAN-51 results retain their test-environment boundaries in [test evidence](test-evidence.md). Before acceptance, complete the outstanding setup/security/diagram checks for KAN-24 and hosted role, venue and session checks for KAN-51 against their existing criteria. The local fixture-token walkthrough is not hosted sign-in evidence. No new case results are added by this historical contribution readback.

@@ -18,14 +18,14 @@
 | --- | --- | ---: | --- | --- | --- | --- |
 | KAN-6 | Submit an Event Request | 3 | Unassigned — team member to choose | Not assessed | S3-T05; Not executed | Not recorded |
 | KAN-12 | Search and Filter Venues | 5 | Unassigned — team member to choose | Not assessed | S3-T16; Not executed | Not recorded |
-| KAN-34 | Resume/Edit Draft Event Request | 3 | Unassigned — team member to choose | Not assessed | S3-T06; Not executed | Not recorded |
+| KAN-34 | Resume/Edit Draft Event Request | 3 | Arvin | Not assessed | S3-T06; scoped automated Pass in AUTO-20261025-ARVIN-01; complete hosted group Not executed | Not recorded at review; later evidence reconciliation dated 25 October below |
 | KAN-50 | Maintain Venue Catalog | 5 | Unassigned — team member to choose | Not assessed | S3-T15; Not executed | Not recorded |
 | KAN-52 | Check Venue Suitability | 3 | Unassigned — team member to choose | Not assessed | S3-T17; Not executed | Not recorded |
 | KAN-60 | Require a reason when rejecting an event request | 2 | Unassigned — team member to choose | Not assessed | S3-T07; Not executed | Not recorded |
 | KAN-64 | Receive Request, Assignment and Venue Notifications | 5 | Unassigned — team member to choose | Not assessed | S3-T22; Not executed | Not recorded |
 | KAN-65 | Reassign Event Coordinator | 3 | Unassigned — team member to choose | Not assessed | S3-T21; Not executed | Not recorded |
 | KAN-77 | Configure Venue Setup and Turnaround Durations | 2 | Unassigned — team member to choose | Not assessed | S3-T18; Not executed | Not recorded |
-| KAN-78 | Apply Venue Buffers to Availability and Booking Conflicts | 8 | Unassigned — team member to choose | Not assessed | S3-T19; Not executed | Not recorded |
+| KAN-78 | Apply Venue Buffers to Availability and Booking Conflicts | 8 | Arvin | Not assessed | S3-T19; scoped automated Pass in AUTO-20261025-ARVIN-01; complete hosted group Not executed | Not recorded at review; later evidence reconciliation dated 25 October below |
 | KAN-79 | Assign Submitted Events Through a Coordinator Lead Queue | 8 | Unassigned — team member to choose | Not assessed | S3-T20; Not executed | Not recorded |
 | KAN-81 | Recover venue arrangements affected by operational unavailability | 8 | Unassigned — team member to choose | Not assessed | S3-T25; Not executed | Not recorded |
 | KAN-83 | Manage temporary venue holds with expiry and automatic release | 8 | Unassigned — team member to choose | Not assessed | S3-T26; Not executed | Not recorded |
@@ -123,3 +123,19 @@ Suggested demo order: five carried corrections and rejection reason; Lead submis
 | Not recorded | Not recorded | Not recorded |
 
 </details>
+
+## Arvin evidence prepared for review — 25 October 2026
+
+KAN-34 (3 SP) and KAN-78 (8 SP), Arvin, are implemented and integrated via PR #48/#54. `AUTO-20261025-ARVIN-01` / S3-E21 records the current-main automated results and the earlier requested-changes/approval trail. This is evidence preparation, not a held sprint review: actual review date, participants, demonstrated build, PO acceptance and retrospective outcomes remain **Not recorded**. Complete hosted S3-T06/S3-T19 remain **Not executed**, acceptance **Not assessed**; neither story earns Done or velocity credit from this update. The 25 October KAN-83 manual record's raw-warning/no-event-name KAN-78 display finding remains to assess. Keep the configured 4–17 October window and the actual 21–25 October implementation/review/evidence dates separate.
+
+## 25 October 2026 — Arvin contribution reconciliation (Sprints 1–3)
+
+This is a dated evidence backfill prepared with Codex on 25 October, not a new ceremony, Jira transition, test execution or acceptance decision. Historical entries, other members’ ownership and agreed estimates are preserved.
+
+**Supporting contributions, separate from owned KAN-34 (3 SP) and KAN-78 (8 SP):**
+
+- **12 October preparation:** Arvin’s consultation action list, C4 preparation record and submission runbook are retained as TXT source snapshots in this sprint’s evidence folder. They prepared Sprint 2 closure, Sprint 3 planning, capacity inputs, C4 exports and packaging; they do not establish that meetings occurred, votes were cast, artifacts were independently reviewed or instructor access was delivered. The original worktree remains untouched. Current committed design supersedes those historical C4 snapshots.
+- **21 October 02:26:27 Singapore time — shared migrations 008/009:** Arvin authorized the reviewed rollout; Codex executed it from `cf65c05e5d7b91675d74f7281439d0e9c2b1a766`. The retained JSON records both ledger checksums, four columns, two indexes and zero venues with nonzero initial buffers. This is deployment verification, not KAN-64/KAN-77 authorship, hosted functional acceptance or a new team-wide decision. No fixture, booking or cleanup writes were part of that run.
+- **21 October — KAN-81 PR #47 review and corrections:** Arvin requested changes, implemented stale 404/409 refresh corrections in `18ac27d`/`30da68a`, updated tests/evidence and then approved the phase-one work while disclosing his own fixes. His follow-up approval is not a second independent review of his corrections. Kai Jie remains KAN-81’s owner at 8 SP. Existing **S3-E20**, the KAN-81 review JSON and 21 October test narrative retain the scope and CI results.
+
+Owned KAN-34/KAN-78 merge, CI and acceptance limits remain in the preceding 25 October reconciliation. Supporting work adds no story points and does not convert other members’ stories to Done.

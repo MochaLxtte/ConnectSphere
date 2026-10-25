@@ -1,5 +1,7 @@
 # Scrum evidence
 
+**25 October scoped readback — Arvin:** KAN-34 (3 SP) and KAN-78 (8 SP) were integrated through PR #48/#54 on 22 October. The [Sprint 3 backlog](sprint-03/sprint-backlog.md#25-october-2026--arvin-kan-78-and-kan-34-documentation-reconciliation) distinguishes Arvin's ownership, independent review history, latest automated evidence and remaining hosted acceptance. Other stories and sprint administration were not re-audited; no sprint-end delivery or velocity is inferred.
+
 **KAN-65 follow-up — 19 October 2026.** KAN-65 and subtasks KAN-88/89/90 are In Progress / Tristan; the estimate remains 3 SP. Branch `feat/KAN-65-coordinator-reassignment` includes KAN-79 and implements Lead-only reassignment with a required reason, assignment-version checks, atomic audit history and current-assignment permissions. `AUTO-20261019-02` records local verification. KAN-64 notifications, manual/hosted workflow checks, independent review and acceptance remain pending. The earlier KAN-79 dependency notes below describe that earlier implementation stage. This targeted update does not change sprint scope, historical evidence or velocity.
 
 **KAN-79 implementation update — 19 October 2026.** KAN-79 is assigned to Tristan and In Progress in Jira, with subtasks KAN-85/86/87 In Progress. Its 8 SP and Sprint 3 membership are unchanged. The branch implements trusted Lead access, unassigned submission, oversight and initial allocation; automated verification is recorded as `AUTO-20261019-01`. KAN-65/KAN-64 integration, hosted checks, independent review and acceptance remain outstanding. Other stories retain their last dated snapshot; this is a targeted update, not a fresh project-wide export. Sprint 3 remains administratively Active despite its configured 17 October end; this work is recorded on its actual 19 October date and is not counted as delivery by 17 October.
@@ -65,3 +67,9 @@ These records belong in **folder 4** of the final submission. The [submission ch
 **17 October submission reconciliation.** The [master backlog](../requirements/product-backlog.md#master-backlog-register) distinguishes the current plan from closed-sprint history and [documented customer changes](../requirements/change-requests.md). Sprint 1/2 criterion crosswalks and functional-case specifications improve traceability without altering original sprint totals or acceptance. Historical snapshots below/within sprint documents retain their date; current metadata comes from the latest labelled register.
 
 Planning, backlog reconciliation and document checks were AI-assisted. Scope and estimate selections used delegated chat planning; no independent six-member vote is recorded. Sources, dates and actual test execution methods are retained. Include the assistance and checks in the pull request.
+
+## 25 October 2026 — Arvin contribution reconciliation (Sprints 1–3)
+
+This is a dated evidence backfill prepared with Codex on 25 October, not a new ceremony, Jira transition, test execution or acceptance decision. Historical entries, other members’ ownership and agreed estimates are preserved.
+
+Arvin’s cross-sprint contribution register is in the [master backlog](../requirements/product-backlog.md). Sprint 1/2 records now contain dated factual backfills for KAN-24/KAN-51; Sprint 3 also records supporting preparation, rollout and KAN-81 review work. Historical sprint status and closure dates are preserved.

@@ -1,0 +1,22 @@
+AUTO-20261025-ARVIN-01
+Imported existing CI output; no new local test execution.
+Build: 96a0d1001017f66281ad4828c48ac1a32109399b
+Source: https://github.com/MochaLxtte/ConnectSphere/actions/runs/40192394546
+Scope: full main; only KAN-78/KAN-34 case assertions are reconciled here.
+
+verify	Run npm run check	2026-10-25T12:19:36.2289697Z  Test Files  36 passed (36)
+verify	Run npm run check	2026-10-25T12:19:36.2301289Z       Tests  770 passed (770)
+verify	Run npm run check	2026-10-25T12:19:49.8010810Z  Test Files  46 passed (46)
+verify	Run npm run check	2026-10-25T12:19:49.8023983Z       Tests  1354 passed (1354)
+verify	Run npm run test:coverage	2026-10-25T12:21:05.8409915Z  Test Files  36 passed (36)
+verify	Run npm run test:coverage	2026-10-25T12:21:05.8430862Z       Tests  770 passed (770)
+verify	Run npm run test:coverage	2026-10-25T12:21:05.8564912Z All files          |   95.32 |    92.42 |   97.48 |   97.57 |
+verify	Run npm run test:coverage	2026-10-25T12:21:21.1348511Z  Test Files  46 passed (46)
+verify	Run npm run test:coverage	2026-10-25T12:21:21.1358942Z       Tests  1354 passed (1354)
+verify	Run npm run test:coverage	2026-10-25T12:21:21.1488379Z All files          |   89.56 |    91.48 |   89.44 |   89.89 |
+verify	Run npm run test:integration	2026-10-25T12:21:42.1830539Z  ✓ database/tests/venues/venue-buffers.integration.test.ts (11 tests) 599ms
+verify	Run npm run test:integration	2026-10-25T12:21:43.5790315Z  ✓ database/tests/events/update-draft.integration.test.ts (19 tests) 304ms
+verify	Run npm run test:integration	2026-10-25T12:21:48.4206037Z  Test Files  26 passed (26)
+verify	Run npm run test:integration	2026-10-25T12:21:48.4208299Z       Tests  482 passed (482)
+verify	Run npm run test:e2e	2026-10-25T12:23:01.1666747Z   ✓   23 [chromium] › tests/e2e/kan34-draft-edit.spec.ts:4:1 › KAN-34 registration toggles and cleared values survive save and reopening (3.5s)
+verify	Run npm run test:e2e	2026-10-25T12:25:59.0965838Z   156 passed (3.8m)

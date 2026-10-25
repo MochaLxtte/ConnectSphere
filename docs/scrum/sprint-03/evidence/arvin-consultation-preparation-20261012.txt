@@ -1,0 +1,13 @@
+# Arvin's consultation actions
+
+Prepared 12 October 2026 from *Claude Suggestion post consulatation.pdf* (8 October), current repository source and live Jira. Work is on `codex/arvin-consultation-actions`.
+
+| Arvin responsibility | Prepared deliverable | Remaining actual action |
+| --- | --- | --- |
+| Sprint 2 closure | [Dated evidence and closure procedure](../submission/4/sprint-02/README.md) | Resolve three open subtasks; supply/hold review and retrospective; capture native reports; close Jira sprint |
+| Sprint 3 planning | [Agenda, candidate scope and cadence](sprint-03/README.md) | Run recorded planning; agree dates, goal and selected stories |
+| Poker and capacity | [Workbook](sprint-03/estimation-and-capacity.xlsx) | Record six members' inputs, votes and agreement; import to team Sheets when connected |
+| C4 C1–C3 | [Sources, PNGs and PDF](../architecture/c4/README.md) | Obtain second developer review and deliver to instructor |
+| Submission exports | [Export runbook](../submission/4/README.md) | Export actual meeting records and final Jira reports at sprint end |
+
+The prepared materials leave human decisions unfilled. No new business features, PO-owned change-request stories, Definition of Done adoption or branch-protection changes are included. Confluence publication requires access restoration; Google Drive/Sheets is not connected. Native Jira screenshots, meeting outcomes and instructor delivery remain outstanding.

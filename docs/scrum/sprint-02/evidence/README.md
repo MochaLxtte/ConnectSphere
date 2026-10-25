@@ -95,3 +95,13 @@ At closure, check that story acceptance, executed tests, board state, scope chan
 The [current CSV and workbook](../../../submission/1/README.md) were refreshed after Jira Sprint 2 (id 34) was closed at 16 October 02:06 Singapore time and Sprint 3 (id 67) was activated. This is **S2-E30**, a later administrative reconciliation, not a 3 October end-board or review record.
 
 KAN-6/34/50/12/52 are now To Do in Sprint 3 at their original 19 SP. The [review assessment](../review.md#current-evidence-assessment--16-october-2026) records the user's statement that historical acceptance was not recorded and separates the five defects from unchanged/untested criteria. The remaining seven parents / 24 SP are not automatically accepted. Original 43 SP commitment and historical evidence are preserved. No new product tests were run by this planning/documentation activity.
+
+## 25 October 2026 — Arvin contribution reconciliation (Sprints 1–3)
+
+**S2-E32 — Arvin historical contribution readback, registered 25 October.**
+
+**KAN-51 — calendar, recorded owner Arvin, 5 SP.** Ernest’s original calendar rebuild in [PR #22](https://github.com/MochaLxtte/ConnectSphere/pull/22) remains his contribution. Arvin’s [PR #28](https://github.com/MochaLxtte/ConnectSphere/pull/28) corrected route/history synchronization, venue selection and server-side denial of spoofed roles; it merged **7 October 01:29 Singapore time**, after Sprint 2’s planned 3 October end. It added three component regressions and two API denial regressions. This is later delivery on a Sprint 2 story, not evidence of on-time Sprint 2 completion.
+
+The existing **MAN-20261006-KAN51-01** walkthrough used a real local API with isolated PostgreSQL and locally signed fixture tokens: 15 checks passed as recorded. It did not exercise hosted Supabase password sign-in. The original ignored captures were not retained in this documentation checkout; no replacement screenshot is invented. GitHub readback records no submitted human approval for #28. `KAN-51-AC1`–`AC6`, `TC-09-201`–`203` and `S2-T05/T06` remain subject to their recorded scope and hosted acceptance gaps; the later shared buffers/holds requirements do not retroactively redefine the original checks. No new acceptance or velocity is inferred.
+
+The retained [GitHub metadata](../../sprint-03/evidence/arvin-contributions-github-2026-10-25.json) contains authors, commits, merge timestamps and submitted reviews. Readback date is distinct from actual delivery dates; no new tests were run.

@@ -1,5 +1,7 @@
 # Submission checklist
 
+**Scoped Arvin documentation update — 25 October 2026.** KAN-34/KAN-78 records now distinguish integrated source, independent review history, current-main CI and remaining hosted acceptance; see [S3-E21](../scrum/sprint-03/evidence/README.md#arvin-delivery-reconciliation--25-october-2026). Folders 1–4 must use the updated master rows, current design exports, separate case/execution records and dated Sprint 3 evidence. Existing CSV/workbook exports retain their labelled source dates; this is not a new full Jira export or completed submission. No story acceptance, sprint closure, instructor access or other story delivery is asserted.
+
 **Test-document structure — 21 October 2026.** Folder 3 uses separate [test specifications](../testing/test-cases.csv) and [case execution records](../testing/test-executions.csv), linked through stable case IDs to the [traceability matrix](../requirements/traceability.csv) and [run narratives](../testing/test-evidence.md). This follows the Week 4 template: a specification is maintained once and an execution record is retained for each run/attempt. Maintain the source records during development; final presentation and numbered-folder packaging can wait until submission. Existing outcomes are retained with their source limitations; unperformed cases remain **Not executed**. The [original combined register](../testing/archive/test-cases-2026-10-21.csv) is an archive, not the current editable source.
 
 **Documentation reconciliation — 17 October 2026.** The submitted [master backlog](1/README.md) distinguishes the verbatim Jira snapshot, repository corrections and documented before/after customer requirements. Sprint 1/2 criterion crosswalks and detailed functional specifications close mapping gaps; they do not establish new test results or historical acceptance. Finish the actual evidence and deliverables in the checklist below before calling the final submission complete. Scope and sprint-point totals are unchanged.
@@ -99,3 +101,9 @@ For final submission, review the contents, then ZIP **the seven numbered folders
 - [ ] Submit through the correct section's eLearn assignment before the deadline; only the latest submission is graded.
 
 For Week 13, each team member should be able to explain the relevant code and decisions, demonstrate selected behaviour, trace a requirement to tests and discuss improvements made after feedback.
+
+## 25 October 2026 — Arvin contribution reconciliation (Sprints 1–3)
+
+This is a dated evidence backfill prepared with Codex on 25 October, not a new ceremony, Jira transition, test execution or acceptance decision. Historical entries, other members’ ownership and agreed estimates are preserved.
+
+Arvin’s Sprint 1–3 contribution readback now includes owned KAN-24, KAN-51, KAN-34/KAN-78 and supporting scope correction, preparation, migration rollout and KAN-81 review fixes. The master backlog, sprint records, test narrative and traceability contain the reconciliation. Existing Jira CSV/workbook exports remain historical snapshots; a fresh Jira export and acceptance reconciliation are still required. Retained preparation snapshots are draft evidence, not final meeting records or instructor-delivery confirmation.

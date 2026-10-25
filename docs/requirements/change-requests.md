@@ -203,3 +203,13 @@ The existing KAN-60 rejection-reason correction predates Week 7. Resolve its rel
 5. **Design impact:** role, safety-review records, event state transitions, authorization/API, affected-arrangement references and approval sequence **Not assessed**.
 6. **Tests:** plan prerequisite enforcement, three outcomes, data association, unauthorised actions, repeated decisions, changed arrangements and preparation blocking. Execution **Not executed**.
 7. **Release scope:** added points **To agree**; no sprint commitment is implied by this register.
+
+## CR-1 KAN-78 delivery reconciliation — 25 October 2026
+
+Arvin's KAN-78 contribution (8 SP) is integrated through PR #48/#54. KAN-77's 2 SP remain separate: its migration 009 supplies editor settings; migration 012 supplies occupied intervals/snapshots/warnings; migration 013 extends the contract with live holds. CR-2's permitted outages are preserved and use buffered recovery. This records implementation of the existing CR-1 criteria and the [22 October integration decisions](assumptions-and-questions.md#22-october-2026--sprint-3-integration-2-decisions), not a new requirement or estimate. KAN-34's 3-SP original carry-over/strict-date regressions remain separate from CR-1. [Current automated evidence](../testing/test-evidence.md#25-october-2026--arvin-kan-78-and-kan-34-documentation-reconciliation) does not establish hosted acceptance, a new team/customer decision or sprint-end delivery. Historical CR allocation and receipt records are unchanged.
+
+## 25 October 2026 — Arvin contribution reconciliation (Sprints 1–3)
+
+This is a dated evidence backfill prepared with Codex on 25 October, not a new ceremony, Jira transition, test execution or acceptance decision. Historical entries, other members’ ownership and agreed estimates are preserved.
+
+PR #19 corrected premature application scope introduced under KAN-24; it was not a newly approved customer change or a new estimate. KAN-51’s later buffer/hold-dependent behavior belongs to the later change scope, not the original Sprint 2 acceptance evidence. Existing KAN-34/KAN-78 change mappings remain unchanged.

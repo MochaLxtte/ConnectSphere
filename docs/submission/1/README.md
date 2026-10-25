@@ -1,5 +1,7 @@
 # 1. Final product backlog
 
+**Targeted Arvin delivery reconciliation — 25 October 2026.** The [master register](../../requirements/product-backlog.md#master-backlog-register) and [Sprint 3 story records](../../scrum/sprint-03/sprint-backlog.md#25-october-2026--arvin-kan-78-and-kan-34-documentation-reconciliation) now show Arvin's KAN-34 (3 SP) and KAN-78 (8 SP), last recorded Jira In Review on 21 October, integrated via PR #48/#54. Existing workbook and Jira CSV exports remain unchanged historical snapshots; no fresh Jira read/export or new Done date is claimed. Refresh those exports against the actual tracker before final packaging rather than silently rewriting their dated source data. [S3-E21](../../scrum/sprint-03/evidence/README.md#arvin-delivery-reconciliation--25-october-2026) supplies reviewed merge/CI provenance and remaining hosted limits. Other issue fields, parent totals, sprint dates and point accounting are unchanged.
+
 **Test-register format — 21 October 2026.** Backlog and criterion links still resolve to the same
 [test specification IDs](../../testing/test-cases.csv). Actual case outcomes now live separately in
 [execution records](../../testing/test-executions.csv), with detailed [run evidence](../../testing/test-evidence.md).
@@ -139,3 +141,9 @@ This portable extract retains the complete Jira description text, including Jira
 The snapshot records the state after the 21 September refinement. It does not reconstruct the 6 September baseline, the 19 September closing board or daily burndown observations. Sprint 2 remains 43 points; the future backlog has seven older estimates totalling 26 points plus eight unestimated items. Refresh this snapshot before final submission and verify its scope again.
 
 Before packaging, open the export locally and check that story descriptions, acceptance criteria and completed/pending statuses are readable without Jira access.
+
+## 25 October 2026 — Arvin contribution reconciliation (Sprints 1–3)
+
+This is a dated evidence backfill prepared with Codex on 25 October, not a new ceremony, Jira transition, test execution or acceptance decision. Historical entries, other members’ ownership and agreed estimates are preserved.
+
+Arvin’s Sprint 1–3 contribution readback now includes owned KAN-24, KAN-51, KAN-34/KAN-78 and supporting scope correction, preparation, migration rollout and KAN-81 review fixes. The master backlog, sprint records, test narrative and traceability contain the reconciliation. Existing Jira CSV/workbook exports remain historical snapshots; a fresh Jira export and acceptance reconciliation are still required. Retained preparation snapshots are draft evidence, not final meeting records or instructor-delivery confirmation.

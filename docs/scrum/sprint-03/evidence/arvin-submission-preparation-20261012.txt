@@ -1,0 +1,17 @@
+# Scrum export runbook
+
+Arvin maintains a dated export directory for each sprint. Keep historical Sprint 1/2 source records; add later corrections as dated supplements with evidence.
+
+At sprint end, retain:
+
+1. Jira board and burndown exports, sprint goal/dates, starting and ending scope, estimates and scope-change explanations.
+2. Actual planning, daily, review and retrospective records exported from Confluence, plus planning-poker and capacity evidence.
+3. Review acceptance and feedback linked to Jira/AC/tests; retrospective actions with owner/due date and follow-up.
+4. Recording links with actual meeting dates and verified instructor access. Do not commit large video files.
+5. An export manifest with source URL, actual capture timestamp/timezone, filename and any missing evidence.
+
+Use `sprint-0N/` and descriptive names such as `review-2026-10-24.pdf`; dates must reflect actual events/captures. Keep editable source as well as portable exports.
+
+`node scripts/prepare-submission.mjs` includes these retained exports under final folder `4/exports/`, alongside the Scrum source records in folder `4/`. The different destination avoids overwriting historical records with supplements. Review the generated package before final submission.
+
+Current packages: [Sprint 2 supplement](sprint-02/README.md), [Sprint 3 manifest](sprint-03/README.md).

@@ -1,5 +1,7 @@
 # Requirements and scope
 
+**Arvin implementation evidence — 25 October 2026.** KAN-34's draft persistence/date regressions and KAN-78's existing CR-1 buffered venue criteria are integrated in main `96a0d10`; their feature/story mappings and estimates are unchanged. [Scoped evidence](../testing/test-evidence.md#25-october-2026--arvin-kan-78-and-kan-34-documentation-reconciliation) separates current automated verification from complete hosted acceptance (Not executed) and story acceptance (Not assessed). Earlier dated planning-only statements remain historical; this update covers no other story.
+
 **19 October 2026 implementation follow-up:** KAN-79 Lead allocation and KAN-65 reassignment are implemented and tested locally on `feat/KAN-65-coordinator-reassignment`. Lead role provisioning/migration 007 and login were reported working by the user; full workflow acceptance remains separate. KAN-64 notifications and hosted/manual checks are pending. CF-05 maps to the preserved original KAN-29 requirement, replacement KAN-79 initial allocation and KAN-65 handover. No additional requirement or story points are introduced.
 
 **Current branch implementation — 19 October 2026.** KAN-79 implements the sixth trusted role, Event Coordinator Lead, and replaces automatic initial allocation with a Lead queue. Existing KAN-29 assignment history remains intact; the dated Sprint 1/2 scope below is historical. Shared deployment and acceptance are pending; Safety Officer remains future KAN-84 scope. KAN-65/KAN-64 integration is pending. See [CR-5](change-requests.md), [current criteria](../scrum/sprint-03/sprint-backlog.md#kan-79--assign-submitted-events-through-a-coordinator-lead-queue) and [test evidence](../testing/test-evidence.md#19-october-2026--kan-79-lead-allocation).
@@ -127,3 +129,9 @@ Project scope and assessment follow **Week 4 Project Instructions.docx** and its
 | Week 4 Project Instructions, deliverables and assessment rubric | Submit the full completed/pending backlog, design, tests, all-sprint evidence, slide PDF, software and access information. Jira itself is not the submitted evidence. | [Seven-folder submission checklist](../submission/checklist.md), [backlog export](../submission/1/README.md) and [rubric-oriented slide record](../submission/5/README.md) |
 
 Jira descriptions hold the user story and current acceptance criteria. Planning history, dated evidence and submission records live in the repository; they are not repeated as card commentary. Current point values remain the planning baseline until the team records its estimation/capacity review. Historical acceptance, votes and meeting outcomes are not supplied by formatting a card.
+
+## 25 October 2026 — Arvin contribution reconciliation (Sprints 1–3)
+
+This is a dated evidence backfill prepared with Codex on 25 October, not a new ceremony, Jira transition, test execution or acceptance decision. Historical entries, other members’ ownership and agreed estimates are preserved.
+
+The [master backlog](product-backlog.md) now indexes KAN-24 infrastructure, KAN-51 calendar fixes, KAN-34/KAN-78 and Arvin’s supporting work. Core-feature ownership and customer requirements are unchanged; removed PR #10 workflows are not counted as implemented feature scope.

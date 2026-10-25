@@ -1,0 +1,11 @@
+AUTO-20261025-ARVIN-01
+Date: 25 October 2026, Asia/Singapore
+Build: 96a0d1001017f66281ad4828c48ac1a32109399b
+Source: https://github.com/MochaLxtte/ConnectSphere/actions/runs/40192394546
+Imported whole-main unit/component coverage, not a local rerun or sprint-close report.
+
+Frontend: statements 95.32%; branches 92.42%; functions 97.48%; lines 97.57%.
+Backend: statements 89.56%; branches 91.48%; functions 89.44%; lines 89.89%.
+SQL is behaviourally tested in isolated PostgreSQL; it is not measured by V8.
+Configured metrics omit runtime areas and do not establish full requirements or new-code coverage.
+Hosted S3-T06/S3-T19 Not executed; acceptance Not assessed.

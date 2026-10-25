@@ -178,3 +178,13 @@ All rows below are **planned rechecks — Not executed**. Use synthetic accounts
 ## 16 October clarification — customer changes received during Sprint 2
 
 **Record updated 16 October 2026.** The team received the Week 7 customer changes on **2 October 2026**, near the planned 3 October sprint end. The recorded plan was to complete Sprint 2 against its original scope, then consider the changes during Sprint 3 planning. The original **43 SP (35 new + 8 carry-over)** and original acceptance criteria therefore remain the Sprint 2 baseline. This later clarification records receipt and intended handling; it does not supply missing review attendance, acceptance or proof of completion by 3 October. The [change register](../../requirements/change-requests.md) traces the new/replacement requirements and later 63/63 Sprint 3/4 allocation.
+
+## 25 October 2026 — Arvin contribution reconciliation (Sprints 1–3)
+
+This is a dated evidence backfill prepared with Codex on 25 October, not a new ceremony, Jira transition, test execution or acceptance decision. Historical entries, other members’ ownership and agreed estimates are preserved.
+
+**KAN-51 — calendar, recorded owner Arvin, 5 SP.** Ernest’s original calendar rebuild in [PR #22](https://github.com/MochaLxtte/ConnectSphere/pull/22) remains his contribution. Arvin’s [PR #28](https://github.com/MochaLxtte/ConnectSphere/pull/28) corrected route/history synchronization, venue selection and server-side denial of spoofed roles; it merged **7 October 01:29 Singapore time**, after Sprint 2’s planned 3 October end. It added three component regressions and two API denial regressions. This is later delivery on a Sprint 2 story, not evidence of on-time Sprint 2 completion.
+
+The existing **MAN-20261006-KAN51-01** walkthrough used a real local API with isolated PostgreSQL and locally signed fixture tokens: 15 checks passed as recorded. It did not exercise hosted Supabase password sign-in. The original ignored captures were not retained in this documentation checkout; no replacement screenshot is invented. GitHub readback records no submitted human approval for #28. `KAN-51-AC1`–`AC6`, `TC-09-201`–`203` and `S2-T05/T06` remain subject to their recorded scope and hosted acceptance gaps; the later shared buffers/holds requirements do not retroactively redefine the original checks. No new acceptance or velocity is inferred.
+
+See the [evidence index](evidence/README.md) and [master contribution register](../../requirements/product-backlog.md).

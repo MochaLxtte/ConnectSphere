@@ -1,0 +1,59 @@
+{
+  "capturedAt": "2026-10-20T18:26:31.003Z",
+  "sourceCommit": "cf65c05e5d7b91675d74f7281439d0e9c2b1a766",
+  "applied": [
+    "008_notification_inbox.sql",
+    "009_venue_buffer_durations.sql"
+  ],
+  "history": [
+    {
+      "name": "008_notification_inbox.sql",
+      "checksum": "8f71835ba4221e8a1cfdb8ad837939a30b7618ee4829c9b6a6492fb700ec69d5",
+      "applied_at": "2026-10-20T18:26:27.350Z"
+    },
+    {
+      "name": "009_venue_buffer_durations.sql",
+      "checksum": "fa0dbcab17359317a9bd527395ec907bbe3b7dbe79e896d5960004b51b77de8e",
+      "applied_at": "2026-10-20T18:26:27.350Z"
+    }
+  ],
+  "columns": [
+    {
+      "table_name": "notifications",
+      "column_name": "dedupe_key",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "notifications",
+      "column_name": "venue_booking_id",
+      "data_type": "uuid",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "venues",
+      "column_name": "setup_minutes",
+      "data_type": "integer",
+      "is_nullable": "NO",
+      "column_default": "0"
+    },
+    {
+      "table_name": "venues",
+      "column_name": "turnaround_minutes",
+      "data_type": "integer",
+      "is_nullable": "NO",
+      "column_default": "0"
+    }
+  ],
+  "indexes": [
+    {
+      "indexname": "notifications_booking_idx"
+    },
+    {
+      "indexname": "notifications_recipient_outcome_unique"
+    }
+  ],
+  "venuesWithNonzeroInitialBuffers": 0
+}

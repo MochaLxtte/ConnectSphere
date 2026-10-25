@@ -1,0 +1,353 @@
+{
+  "recorded_date": "2026-10-25",
+  "scope": [
+    "KAN-34",
+    "KAN-78"
+  ],
+  "recording_method": "Codex documentation reconciliation authorised by Arvin; imported existing CI, no new application/hosted run",
+  "source_commit": "96a0d1001017f66281ad4828c48ac1a32109399b",
+  "last_recorded_jira": {
+    "date": "2026-10-21",
+    "status": "In Review",
+    "fresh_read": false
+  },
+  "estimates": {
+    "KAN-34": 3,
+    "KAN-78": 8
+  },
+  "acceptance": "Not assessed",
+  "hosted_groups": "Not executed",
+  "velocity_credit_added": 0,
+  "ci": {
+    "conclusion": "success",
+    "createdAt": "2026-10-25T12:16:36Z",
+    "headSha": "96a0d1001017f66281ad4828c48ac1a32109399b",
+    "updatedAt": "2026-10-25T12:26:06Z",
+    "url": "https://github.com/MochaLxtte/ConnectSphere/actions/runs/40192394546"
+  },
+  "ci_job": {
+    "name": "verify",
+    "startedAt": "2026-10-25T12:17:54Z",
+    "completedAt": "2026-10-25T12:26:05Z",
+    "conclusion": "success"
+  },
+  "pr48": {
+    "headRefOid": "32016ed76eb5fe97500c2d8077c78c05b7dd0fed",
+    "mergeCommit": {
+      "oid": "708b6a06043537248476aa4789398b0c7554109b"
+    },
+    "mergedAt": "2026-10-22T09:08:11Z",
+    "number": 48,
+    "reviews": [
+      {
+        "id": "PRR_kwDOUQdP_88AAAABTTZofg",
+        "author": {
+          "login": "copilot-pull-request-reviewer"
+        },
+        "authorAssociation": "NONE",
+        "body": "Copilot was unable to review this pull request because the user who requested the review has reached their quota limit.",
+        "submittedAt": "2026-10-20T19:18:07Z",
+        "includesCreatedEdit": false,
+        "reactionGroups": [],
+        "state": "COMMENTED",
+        "commit": {
+          "oid": "2d138be079a74b3714db1e63190591cd26b1f05c"
+        }
+      },
+      {
+        "id": "PRR_kwDOUQdP_88AAAABTU2Xbw",
+        "author": {
+          "login": "NahIts-Leo"
+        },
+        "authorAssociation": "COLLABORATOR",
+        "body": "Requesting changes. The KAN-78 occupied-interval design looks sound: setup/turnaround are applied consistently in search, calendar, submission and approval, checks run after the venue-row lock, and existing bookings get warnings instead of being moved or cancelled. CI on the branch passes. But the branch is behind `main` and can't merge as it stands. **Disclosure:** I wrote KAN-81 (#47, merged; #49 and #50 open), which is the code most of this collides with, so please weigh points 1â€“3 with that in mind.\n\n### Blocking\n\n**1. Migration number collision.** `main` already has `database/migrations/010_venue_outage_impacts.sql` (#47), and #50 adds `011_venue_booking_replacements.sql`. `010_venue_occupied_intervals.sql` has to be renumbered to the next free number when this is rebased: 011 if this merges before #50, otherwise 012. The migration lists in `database/tests/database.integration.test.ts` need the same update; that file is one of the conflicts. Can we agree the merge order in the group chat so only one of us renumbers?\n\n**2. The new block trigger reverses KAN-81 AC1.** `prevent_blocking_occupied_booking` (`010_venue_occupied_intervals.sql:99-112`) raises whenever a block overlaps an approved booking. Since #47, `main` deliberately allows Venue Staff to record an outage over approved bookings. It flags them as `RECOVERY_REQUIRED` instead of refusing (`block-service.ts` and `outage-impact.ts`). With this trigger, every outage over an approved booking fails at the database, and the KAN-81 integration suite (`venue-outage-recovery.integration.test.ts`) will fail. Suggested fix: keep only the venue-row `FOR UPDATE` lock in the trigger, or drop the trigger. The application path already takes that lock.\n\n**3. `block-service.ts` conflict.** This branch edits the approved-booking clash query in `createVenueBlock`, but `main` removed that refusal in #47. On rebase, please keep `main`'s version (no refusal). Then swap KAN-81's affected-booking rule to occupied intervals. It was written as the KAN-78 swap point: `AFFECTED_BOOKING_CONDITION` in `backend/src/modules/venues/outage-impact.ts` currently compares raw `b.starts_at`/`b.ends_at`. Switching it to `venue_booking_intervals` (`occupied_starts_at`/`occupied_ends_at`) means an outage covering only a booking's setup or turnaround also flags it. The KAN-81 tests and the TC-09-xx records would need a buffered case.\n\n**4. Reused run IDs.** The evidence uses `AUTO-20261021-01` and `AUTO-20261021-02` (in `test-evidence.md` and the `evidence/AUTO-20261021-01-*.txt` / `-02-*` files), but `main` already uses both IDs for other stories. Lines 859, 975 and 1072â€“1162 of `main`'s `test-evidence.md` show the earlier collisions being qualified as `AUTO-20261021-KAN52-01`, `-KAN6-02` and `-KAN77-02`. Please qualify these the same way, e.g. `AUTO-20261021-KAN78-01/02`. `-90` doesn't collide.\n\n**5. Resolve the remaining conflicts.** These are `database/README.md` (migration sequence), `api-contract.md`, `product-backlog.md`, `evidence/README.md`, `test-cases.csv`, `test-evidence.md`, `test-executions.csv` and `erd-planning.png`. The TC-03-30x/TC-14-30x and EX-* IDs don't collide with `main`, so the CSV conflicts are only append positions. Please keep both sides. `erd-planning.png` needs re-exporting from the merged Mermaid source, because `main`'s version includes `VENUE_OUTAGE_IMPACTS`, and #50 adds `replaces_booking_id`. The settings recorded in #47 were Mermaid CLI 12.0.0, neutral theme, white background, `--size 2600`, scale 2.\n\n### Should fix\n\n**6. Staff queue and KAN-81 recovery.** `listVenueBookings` (`booking-service.ts:86`) now shows Venue Staff every APPROVED booking that has warnings. After a KAN-81 outage, every affected booking carries `OPERATIONAL_BLOCK_OVERLAP`, so it shows up in the pending-decision queue until a replacement is approved. Staff can't decide an approved booking there. Either leave `OPERATIONAL_BLOCK_OVERLAP` out of the queue filter (KAN-81 already surfaces those through `GET /api/venues/recovery`), or label these rows clearly as \"needs attention\" rather than awaiting decision. If you change this, the AC wording should go in the decision log.\n\n**7. Phase 3 interaction (only if #50 merges first).** Replacement requests use the same request and approval checks, so they'll pick up `assertOccupiedIntervalAvailable` automatically. But #50's `assertObjectivelySuitable` checks opening hours on event times through `isOpenForRange`. Once buffers apply, that check should use the occupied interval, or it can be dropped because your check already covers hours. Whichever PR merges second should reconcile this.\n\n### Minor\n- `venue_booking_warnings(b.id)` runs per row in both the staff list and the calendar. It's fine at our data size; just noting it in case the queue grows.\n\nAfter the rebase, please re-run integration and e2e on the merged tree, record the new run, and re-request review. I'll re-review promptly.\n",
+        "submittedAt": "2026-10-20T21:21:49Z",
+        "includesCreatedEdit": false,
+        "reactionGroups": [],
+        "state": "CHANGES_REQUESTED",
+        "commit": {
+          "oid": "32016ed76eb5fe97500c2d8077c78c05b7dd0fed"
+        }
+      },
+      {
+        "id": "PRR_kwDOUQdP_88AAAABTnuXLQ",
+        "author": {
+          "login": "irfanmno"
+        },
+        "authorAssociation": "COLLABORATOR",
+        "body": "Approved and reviewed by Irfan (member 1, PO) as part of the sprint 3 integration in #54.\n\n@NahIts-Leo, your requested changes are applied in #54:\n1. Migration renumbered to `012_venue_occupied_intervals.sql`, after KAN-81's 010 and 011.\n2. `prevent_blocking_occupied_booking` now only takes the venue lock. KAN-81 outages over approved bookings are saved and flagged, and `venue-outage-recovery.integration.test.ts` passes.\n3. `createVenueBlock` keeps main's no-refusal path. `AFFECTED_BOOKING_CONDITION` now reads `venue_booking_intervals`. The KAN-78 buffer test now expects a turnaround-only outage to be saved and the booking flagged.\n4. Run IDs are qualified as `AUTO-20261021-KAN78-01/02`, and the evidence files are renamed too.\n5. Conflicts are resolved keeping both sides. `erd-planning.png` keeps main's export because the Mermaid CLI was not available, so a combined re-export is still pending.\n6. The staff queue leaves out approved bookings whose only warning is `OPERATIONAL_BLOCK_OVERLAP`.\n7. Replacement suitability runs before the buffered check.\n\nKAN-83 holds now reserve the buffered interval: migration 013 extends your trigger with live holds. Please re-review #54 after merge, or dismiss your earlier review if you are satisfied. CI run [39750396624](https://github.com/MochaLxtte/ConnectSphere/actions/runs/39750396624) on the combined branch passed: 759 frontend and 1,354 backend unit tests, migrations 001â€“013 on PostgreSQL 17, 479 integration tests and 156 browser tests.\n\nReview method: AI-assisted (Claude), directed by Irfan. The diff was read in full while resolving it against the other Sprint 3 PRs, the PR template was checked, and the combined build was tested. Not checked: manual or hosted acceptance of the ACs; that stays with the story owner before the card moves to Done.",
+        "submittedAt": "2026-10-22T09:00:18Z",
+        "includesCreatedEdit": false,
+        "reactionGroups": [],
+        "state": "APPROVED",
+        "commit": {
+          "oid": "32016ed76eb5fe97500c2d8077c78c05b7dd0fed"
+        }
+      }
+    ],
+    "url": "https://github.com/MochaLxtte/ConnectSphere/pull/48"
+  },
+  "integration_pr": "https://github.com/MochaLxtte/ConnectSphere/pull/54",
+  "integration_merge": "f0ce5fa241080f86b3ba07eed8b64ab154de5b69",
+  "case_imports": [
+    "TC-03-301",
+    "TC-03-302",
+    "TC-14-301",
+    "TC-14-302",
+    "TC-14-303",
+    "TC-14-304",
+    "TC-14-305",
+    "TC-14-306",
+    "TC-14-307"
+  ],
+  "migrations": {
+    "settings": "009",
+    "intervals": "012",
+    "later_hold_extension": "013"
+  },
+  "validation": {
+    "status": "Pass",
+    "checks": [
+      {
+        "check": "Changes stay under docs",
+        "passed": true,
+        "detail": "30 files"
+      },
+      {
+        "check": "Documentation branch based on pulled main",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "13 selected parents retained",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "63 story points retained",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "Only Arvin selected story rows changed",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "Arvin owner and 3 plus 8 points",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "Stable story acceptance criteria unchanged",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "Current acceptance rows have four columns",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "Correct S3-T06 and S3-T19 evidence columns",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "42 master parents and 174 points retained",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "Other master story rows unchanged",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "Only recorded Arvin owner and tracker state updated",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "All specification IDs retained uniquely",
+        "passed": true,
+        "detail": "467"
+      },
+      {
+        "check": "Only nine owned specifications clarified",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "Case creation metadata preserved",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "Earlier execution history unchanged",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "Nine supported case readback rows only",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "Execution IDs unique and results constrained",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "Executions reference existing specifications",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "Imported results identify build and non-hosted boundary",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "Traceability count preserved",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "Only owned traceability rows changed",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "Owned implementation and test paths exist",
+        "passed": true,
+        "detail": "24 unique paths"
+      },
+      {
+        "check": "KAN-78 current feature mappings no longer placeholders",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "CSV schemas remain intact",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "No new Markdown document requiring AGENTS map entry",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "Added local Markdown links and anchors resolve",
+        "passed": true,
+        "detail": "128 links; []"
+      },
+      {
+        "check": "No conflict markers in added lines",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "Detailed venue ERD has one duration pair",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "Three current design exports readable",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "No application changes need a new runtime result",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "Git whitespace check",
+        "passed": true,
+        "detail": "git diff --check returned 0"
+      },
+      {
+        "check": "Draft submission numbered folders and owned evidence readback",
+        "passed": true,
+        "detail": "Draft snapshot dist/submission-C5JDuI; folders 1?7, eight byte-matched CSV/evidence/image files, changed Markdown records and required release configuration verified. This is not a final submitted release."
+      },
+      {
+        "check": "Uncommitted-source provenance retained",
+        "passed": true,
+        "detail": "Draft package record explicitly identifies working-tree changes; no release, acceptance or test run is inferred from packaging."
+      }
+    ],
+    "check_count": 34,
+    "application_tests_run_for_this_docs_change": false,
+    "prior_CI_import_only": true,
+    "draft_submission_readback": "dist/submission-C5JDuI (temporary validation snapshot, not final submission)"
+  },
+  "changed_records": [
+    "docs/architecture/README.md",
+    "docs/architecture/api-contract.md",
+    "docs/architecture/exports/class.png",
+    "docs/architecture/exports/erd-planning.png",
+    "docs/architecture/exports/seq-lead-assignment.png",
+    "docs/database-diagram.md",
+    "docs/requirements/README.md",
+    "docs/requirements/assumptions-and-questions.md",
+    "docs/requirements/change-requests.md",
+    "docs/requirements/product-backlog.md",
+    "docs/requirements/traceability.csv",
+    "docs/scrum/README.md",
+    "docs/scrum/release-burndown.md",
+    "docs/scrum/sprint-03/README.md",
+    "docs/scrum/sprint-03/daily-progress.md",
+    "docs/scrum/sprint-03/estimation-and-capacity.md",
+    "docs/scrum/sprint-03/evidence/AUTO-20261025-ARVIN-01-ci.txt",
+    "docs/scrum/sprint-03/evidence/README.md",
+    "docs/scrum/sprint-03/evidence/arvin-reconciliation-2026-10-25.json",
+    "docs/scrum/sprint-03/planning.md",
+    "docs/scrum/sprint-03/review.md",
+    "docs/scrum/sprint-03/sprint-backlog.md",
+    "docs/submission/1/README.md",
+    "docs/submission/checklist.md",
+    "docs/testing/README.md",
+    "docs/testing/coverage-reports/2026-10-25-kan78-kan34-ci.txt",
+    "docs/testing/coverage-reports/README.md",
+    "docs/testing/test-cases.csv",
+    "docs/testing/test-evidence.md",
+    "docs/testing/test-executions.csv"
+  ],
+  "diagrams": {
+    "renderer": "Mermaid CLI 12.0.0; neutral theme; white background; size 2600; scale 2; local Chromium 1243",
+    "exports": {
+      "class": {
+        "path": "docs/architecture/exports/class.png",
+        "sha256": "bad528de851ccefb6b21e914c8b0ce03c6ee307986a35f3d637e7e1a8c2e4c5d",
+        "dimensions": [
+          5200,
+          4448
+        ],
+        "mermaid_source_sha256": "9c821211fc738916c319a17e7a79da48c91f525b624143c07e6188509afd80b3"
+      },
+      "erd-planning": {
+        "path": "docs/architecture/exports/erd-planning.png",
+        "sha256": "961dea6db87c3a29dd86c62cc8e14879da842057424cf778144b61c4d5f39bf0",
+        "dimensions": [
+          5200,
+          2970
+        ],
+        "mermaid_source_sha256": "77b2282c11dfd8cce7e3208f8e7c20a4a897848361f27d3370f84a6fef722be7"
+      },
+      "seq-lead-assignment": {
+        "path": "docs/architecture/exports/seq-lead-assignment.png",
+        "sha256": "6d751216b7c424367abb902efef79cb1ef970a038494e719070243a6e84ed356",
+        "dimensions": [
+          3250,
+          5200
+        ],
+        "mermaid_source_sha256": "6b3decaaaa37fae25de1ad70da734fa155484dbd4ee264e677655fb91f713498"
+      }
+    },
+    "visually_inspected_by": "Codex",
+    "visual_result": "Pass: all three exports inspected for legibility, relationships and clipping"
+  }
+}

@@ -82,3 +82,13 @@ Average velocity: **Not recorded**. Sprint 1's reported outcome is 24 points; a 
 Export or draw the chart from the table above (remaining SP vs ideal line, scope increases marked), save it as `release-burndown.png` in this folder and register it in the latest sprint's evidence register.
 
 Chart: **Not recorded**. The missing baseline and historical observations prevent a faithful chart; no synthetic daily or release burndown has been generated.
+
+## Arvin evidence reconciliation — 25 October 2026
+
+KAN-34 retains **3 SP** (original carry-over) and KAN-78 **8 SP** (existing CR-1), both already included in Sprint 3's **63 SP**. Their integration through PR #48/#54 and the latest automated CI evidence add **0 release scope points** and establish **no new Done/velocity credit**. Complete hosted acceptance and actual review/DoD disposition are not supplied; do not subtract 11 from remaining work or manufacture a 17 October completion. Sprint 1/2 history, current release inventory and all other story estimates remain unchanged. See [S3-E21](sprint-03/evidence/README.md#arvin-delivery-reconciliation--25-october-2026).
+
+## 25 October 2026 — Arvin contribution reconciliation (Sprints 1–3)
+
+This is a dated evidence backfill prepared with Codex on 25 October, not a new ceremony, Jira transition, test execution or acceptance decision. Historical entries, other members’ ownership and agreed estimates are preserved.
+
+KAN-24 merged after the planned Sprint 1 end; Arvin’s KAN-51 fixes merged after the planned Sprint 2 end. This readback does not validate or increase the historical accepted totals. KAN-34/KAN-78 remain without a newly recorded hosted acceptance/Jira Done decision. Supporting contributions add no release scope or velocity.

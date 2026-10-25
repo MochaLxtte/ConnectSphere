@@ -1,0 +1,1614 @@
+[
+  {
+    "author": {
+      "id": "U_kgDOCa7PTA",
+      "is_bot": false,
+      "login": "arvinty",
+      "name": ""
+    },
+    "commits": [
+      {
+        "authoredDate": "2026-09-20T14:15:54Z",
+        "authors": [
+          {
+            "email": "arvintay@gmail.com",
+            "id": "U_kgDOCa7PTA",
+            "login": "arvinty",
+            "name": "arvinty"
+          },
+          {
+            "email": "noreply@anthropic.com",
+            "id": "MDQ6VXNlcjgxODQ3",
+            "login": "claude",
+            "name": "Claude Opus 5 (1M context)"
+          }
+        ],
+        "committedDate": "2026-09-20T14:15:54Z",
+        "messageBody": "Migration 005 adds the tables for CF-05 and CF-08 to CF-20 ahead of their\nservices: status history, coordinator assignments, venues and their blocked\nperiods, venue bookings, pooled equipment types and requests, attendee\nregistrations, change requests and notifications. It also allows the later\nCONFIRMED, CANCELLED and COMPLETED request statuses and adds the registration\ncapacity and window to event_requests.\n\nTriggers guard only the invariants concurrent requests could otherwise break:\nthe status-history record, one approved booking per venue and period, the\npooled equipment peak and the registration capacity. Roles, ownership and\ntransition validity stay with the services.\n\nMigration 006 corrects 005's equipment guard, which summed every overlapping\nreservation instead of taking the simultaneous peak and so refused requests\nthat never coincide.\n\nNew tables keep migration 002's Data API boundary: row-level security on, no\nprivileges for the Supabase API roles, and a pinned search_path on each\ntrigger function.\n\nThe rules for Q-04 and Q-06 to Q-13 are provisional team assumptions recorded\nin database/README.md; revise them through new migrations once the customer\nanswers.\n\nCo-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>",
+        "messageHeadline": "feat(KAN-24): add first-release schema for the remaining core features",
+        "oid": "6330afa4585cb375812ff7375cc96c8f3195a6a1"
+      },
+      {
+        "authoredDate": "2026-09-20T14:16:06Z",
+        "authors": [
+          {
+            "email": "arvintay@gmail.com",
+            "id": "U_kgDOCa7PTA",
+            "login": "arvinty",
+            "name": "arvinty"
+          },
+          {
+            "email": "noreply@anthropic.com",
+            "id": "MDQ6VXNlcjgxODQ3",
+            "login": "claude",
+            "name": "Claude Opus 5 (1M context)"
+          }
+        ],
+        "committedDate": "2026-09-20T14:16:06Z",
+        "messageBody": "POST /api/events creates a DRAFT owned by the verified organiser, taking\norganiser_id from the session and never from the body. It accepts the same\noptional partial draft that PATCH validates and returns the same flat event\nshape.\n\nThe draft input now also carries the CF-18 registration settings\n(registrationCapacity, registrationOpensAt, registrationClosesAt) as an\nextension type, because EventDraftFields is frozen, and rejects counts above\nPostgreSQL's integer limit rather than failing the write with a 500. The\nshared detail read returns those settings so the edit page can load them.\n\nNewEventPage replaces its placeholder with the real form: every event field\nin Singapore time, first save creates and later saves PATCH only what\nchanged, submit saves first and then shows any missingFields beside the\nright inputs. EditDraftPage resumes an owned draft and refuses one that is\nno longer editable. The organiser detail page gains Edit draft and Submit\nfor review while the request is a DRAFT the caller owns.\n\nCo-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>",
+        "messageHeadline": "feat(KAN-31,KAN-4,KAN-34): create, save and edit event request drafts",
+        "oid": "28dcfbb84416cfea873e855e28608b9d7307dabf"
+      },
+      {
+        "authoredDate": "2026-09-20T14:16:21Z",
+        "authors": [
+          {
+            "email": "arvintay@gmail.com",
+            "id": "U_kgDOCa7PTA",
+            "login": "arvinty",
+            "name": "arvinty"
+          },
+          {
+            "email": "noreply@anthropic.com",
+            "id": "MDQ6VXNlcjgxODQ3",
+            "login": "claude",
+            "name": "Claude Opus 5 (1M context)"
+          }
+        ],
+        "committedDate": "2026-09-20T14:16:21Z",
+        "messageBody": "\u2026equests and lifecycle\n\nAssignment (CF-05) lets a coordinator list unassigned non-draft requests and\nthe coordinator directory, take or hand over a request, and read its\nassignment history. Assigning updates event_requests.coordinator_id and the\nactive coordinator_assignments row in one transaction; only the currently\nassigned coordinator may hand over.\n\nClarifications (CF-04, KAN-27) let the assigned coordinator ask a question\nfrom SUBMITTED or UNDER_REVIEW, moving the request to\nCLARIFICATION_REQUESTED, and the owning organiser answer it, returning the\nrequest to SUBMITTED once nothing is outstanding. A coordinator can also\nmark a request as under review.\n\nReview eligibility now accepts a decision from UNDER_REVIEW as well as\nSUBMITTED. Without this, marking a request as under review left the\ncoordinator unable to approve or reject it except by a clarification\nround-trip. A pending clarification still blocks a decision.\n\nChange requests (CF-19) let the owner propose field changes to an APPROVED\nor CONFIRMED event with a reason, reusing the draft input rules. Approval\napplies the changes and, where the date or attendance really differs,\ncancels that event's bookings and equipment reservations so the\narrangements are re-requested.\n\nLifecycle (CF-06, CF-12) adds confirm, cancel and complete with their\npreconditions, plus the status-history read.\n\nEvery write runs in one transaction that sets app.actor_id for the\nstatus-history trigger and locks the event row, and notifies the affected\norganiser, coordinator and attendees but never the actor. The provisional\nrules for Q-02, Q-04, Q-05, Q-11 and Q-12 are in each service's header.\n\nCo-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>",
+        "messageHeadline": "feat(KAN-27,KAN-29): coordinator assignment, clarifications, change r\u2026",
+        "oid": "b5c303b2f164dfe0f79f13a16321ed5c0d7e19f3"
+      },
+      {
+        "authoredDate": "2026-09-20T14:16:36Z",
+        "authors": [
+          {
+            "email": "arvintay@gmail.com",
+            "id": "U_kgDOCa7PTA",
+            "login": "arvinty",
+            "name": "arvinty"
+          },
+          {
+            "email": "noreply@anthropic.com",
+            "id": "MDQ6VXNlcjgxODQ3",
+            "login": "claude",
+            "name": "Claude Opus 5 (1M context)"
+          }
+        ],
+        "committedDate": "2026-09-20T14:16:36Z",
+        "messageBody": "\u2026ing and approval\n\nVenue staff maintain the catalogue (CF-08) and block periods for\nmaintenance; any signed-in user can search and filter it by capacity,\nfacilities, accessibility features, layout and a free period (CF-10), and\nread a venue's availability calendar (CF-09). Other people's event names\nstay hidden from organisers and attendees.\n\nSuitability (CF-11) reports capacity, accessibility, operating hours,\navailability and active checks. Per the provisional Q-08 rule an unsuitable\nvenue can still be booked; the failed checks travel with the request and are\nshown to venue staff when they decide.\n\nOrganisers and assigned coordinators request a booking for an APPROVED or\nCONFIRMED event (CF-12); venue staff approve or reject it (CF-13). Pending\nrequests do not hold a slot, so conflicts surface at approval: the database\nraises 23P01 and the service maps it to 409 VENUE_BOOKING_CONFLICT or\nVENUE_UNAVAILABLE with the conflicting intervals (CF-14). An integration\ntest parks two overlapping approvals behind the venue row lock and asserts\nexactly one succeeds.\n\nCo-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>",
+        "messageHeadline": "feat(KAN-8,KAN-12,KAN-21,KAN-28): venue catalogue, availability, book\u2026",
+        "oid": "14b81a4b5ffc342f8f1b40d65998c69c044275bb"
+      },
+      {
+        "authoredDate": "2026-09-20T14:16:36Z",
+        "authors": [
+          {
+            "email": "arvintay@gmail.com",
+            "id": "U_kgDOCa7PTA",
+            "login": "arvinty",
+            "name": "arvinty"
+          },
+          {
+            "email": "noreply@anthropic.com",
+            "id": "MDQ6VXNlcjgxODQ3",
+            "login": "claude",
+            "name": "Claude Opus 5 (1M context)"
+          }
+        ],
+        "committedDate": "2026-09-20T14:16:36Z",
+        "messageBody": "\u2026rvation\n\nEquipment is pooled by type with a total quantity, the provisional Q-09\nrule. Technical support staff maintain the catalogue and cannot lower a\ntotal below the peak already reserved.\n\nAvailability (CF-16) reports the maximum simultaneous reserved quantity in a\nwindow, computed by a sweep over the reservation boundaries rather than a\nplain sum, so reservations that never coincide do not appear to consume the\nsame units.\n\nOrganisers and assigned coordinators request equipment for an APPROVED or\nCONFIRMED event (CF-15); technical support staff reserve or reject it\n(CF-17) from a queue that shows the quantity actually available for that\nwindow. The database guard raises 23P01 when a reservation would exceed the\npool and the service maps it to 409 EQUIPMENT_UNAVAILABLE with the\navailable quantity. An integration test holds two reservations that together\nexceed the pool behind the type row lock and asserts exactly one succeeds.\n\nCo-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>",
+        "messageHeadline": "feat(KAN-9,KAN-18,KAN-26): equipment catalogue, availability and rese\u2026",
+        "oid": "00f67967d1231b36af3d79b6cdbf36edc57327a9"
+      },
+      {
+        "authoredDate": "2026-09-20T14:16:48Z",
+        "authors": [
+          {
+            "email": "arvintay@gmail.com",
+            "id": "U_kgDOCa7PTA",
+            "login": "arvinty",
+            "name": "arvinty"
+          },
+          {
+            "email": "noreply@anthropic.com",
+            "id": "MDQ6VXNlcjgxODQ3",
+            "login": "claude",
+            "name": "Claude Opus 5 (1M context)"
+          }
+        ],
+        "committedDate": "2026-09-20T14:16:48Z",
+        "messageBody": "\u2026tions\n\nRegistration (CF-18) exposes discoverable events to any signed-in user with\npublic fields only, never the organiser and coordinator ids, internal\nrequirements or review data. An event is open when it is APPROVED or\nCONFIRMED, marks registration required, is inside its window, has not\nstarted and has room; a NULL capacity means unlimited. These are the\nprovisional Q-10 rules.\n\nAttendees register and withdraw, and re-registering after a withdrawal\nreuses the existing row so the unique attendee-and-event pair holds. The\ncapacity trigger raises 23P01 and the service maps it to 409\nREGISTRATION_FULL; an integration test fires two simultaneous registrations\nat a capacity of one and asserts exactly one succeeds. Only the owning\norganiser and the assigned coordinator can read the attendee list.\n\nNotifications (CF-20) are in-app with read state and no delivery retry, the\nprovisional Q-13 rule. notify() takes the caller's transaction client so a\nnotification is saved only when the action it describes commits, and\nde-duplicates recipients. The inbox is keyset paginated by created_at and\nid so rows sharing a timestamp are not skipped, and a bell polls the unread\ncount only while signed in and visible.\n\nCo-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>",
+        "messageHeadline": "feat(KAN-14,KAN-17,KAN-22): attendee registration and in-app notifica\u2026",
+        "oid": "32b92f5b70221edc3e50a51383c3aeff4d7a1f4d"
+      },
+      {
+        "authoredDate": "2026-09-20T14:17:08Z",
+        "authors": [
+          {
+            "email": "arvintay@gmail.com",
+            "id": "U_kgDOCa7PTA",
+            "login": "arvinty",
+            "name": "arvinty"
+          },
+          {
+            "email": "noreply@anthropic.com",
+            "id": "MDQ6VXNlcjgxODQ3",
+            "login": "claude",
+            "name": "Claude Opus 5 (1M context)"
+          }
+        ],
+        "committedDate": "2026-09-20T14:17:08Z",
+        "messageBody": "createApp takes one workspace dependency carrying the pool and the same\nverified-identity function, and mounts the assignment, clarification,\nchange-request, lifecycle, venue, equipment, registration and notification\nrouters. The assignment router mounts before the shared GET /:id so\n/unassigned and /coordinators are not read as request ids.\n\nEVENT_STATUSES and the status labels gain CONFIRMED, CANCELLED and\nCOMPLETED; without the labels those statuses displayed as \"Status\nunavailable\".\n\nThe sidebar now shows links by role rather than assuming an organiser or\ncoordinator, and carries the notification bell. EventPlanningPanels groups\nthe workflow panels so the organiser and coordinator detail pages show the\nsame arrangements, with venue, equipment, change and attendee panels only\nonce a request is decided. Both pages refresh their own data after a panel\nsaves rather than remounting it.\n\nThe browser fixtures answer the panels' read calls from a shared helper so\nthey still fail closed on any other request, and the scaffold check now\nexpects the real creation page instead of the removed placeholder.\n\nCo-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>",
+        "messageHeadline": "feat: mount the new routes, navigation and event planning panels",
+        "oid": "cf117261d223ee9dd2c73e3c33e1799b92174dbd"
+      },
+      {
+        "authoredDate": "2026-09-20T14:19:46Z",
+        "authors": [
+          {
+            "email": "arvintay@gmail.com",
+            "id": "U_kgDOCa7PTA",
+            "login": "arvinty",
+            "name": "arvinty"
+          },
+          {
+            "email": "noreply@anthropic.com",
+            "id": "MDQ6VXNlcjgxODQ3",
+            "login": "claude",
+            "name": "Claude Opus 5 (1M context)"
+          }
+        ],
+        "committedDate": "2026-09-20T14:19:46Z",
+        "messageBody": "S1-T31 passed: a clean clone reproduced the hosted setup, applying\nmigrations 003, 004 and 005 to the shared project and reaching readiness\nover verified TLS.\n\nS1-T32 is partial. Row-level security and the absent Data API role\nprivileges were inspected on all 17 tables, and a publishable-key call\nreturned 503 PGRST002, which is consistent with the Data API being\ndisabled but is not an inspection of the project setting. Recorded as\nevidence rather than confirmation so the gap stays visible.\n\nS1-T33 passed in isolation against local PostgreSQL 17.\n\nCo-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>",
+        "messageHeadline": "docs(KAN-24): record the acceptance evidence for S1-T31 to S1-T33",
+        "oid": "a81439a525996d848c6e2bb0a31b107aff421e49"
+      },
+      {
+        "authoredDate": "2026-09-20T14:22:12Z",
+        "authors": [
+          {
+            "email": "arvintay@gmail.com",
+            "id": "U_kgDOCa7PTA",
+            "login": "arvinty",
+            "name": "arvinty"
+          },
+          {
+            "email": "noreply@anthropic.com",
+            "id": "MDQ6VXNlcjgxODQ3",
+            "login": "claude",
+            "name": "Claude Opus 5 (1M context)"
+          }
+        ],
+        "committedDate": "2026-09-20T14:22:12Z",
+        "messageBody": "\u2026diagram\n\ndocs/database-diagram.md holds a generated entity-relationship diagram of\nthe live public schema, linked from the architecture record and the\ndatabase setup guide. The architecture record carries a curated view split\ninto the Sprint 1 request workflow and the later first-release tables, and\nits module table, C4 context note and decision bullets now describe what\nexists rather than what was planned.\n\napi-contract.md documents the new endpoints per module with their roles,\nresponses and error codes. traceability.csv fills in CF-05 and CF-08 to\nCF-20 and extends the earlier rows.\n\nassumptions-and-questions.md records one dated entry for the provisional\nrules adopted for Q-02, Q-04, Q-05 and Q-06 to Q-13, including the\ndecision to accept a review from UNDER_REVIEW. Every customer question\nstays Open, and the new work is described as implemented with automated\ntests rather than accepted: none of it has been verified against hosted\naccounts or peer reviewed.\n\nBoth READMEs note that Venue Staff, Technical Support Staff and Attendee\naccounts must be provisioned in Supabase Auth and linked through\napp_users.supabase_user_id before those roles can sign in.\n\nCo-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>",
+        "messageHeadline": "docs: record the implemented first-release features and the database \u2026",
+        "oid": "7f0acd0b9bc2d82d0b9f145f645a31d09bcdf75d"
+      },
+      {
+        "authoredDate": "2026-09-20T14:23:56Z",
+        "authors": [
+          {
+            "email": "arvintay@gmail.com",
+            "id": "U_kgDOCa7PTA",
+            "login": "arvinty",
+            "name": "arvinty"
+          },
+          {
+            "email": "noreply@anthropic.com",
+            "id": "MDQ6VXNlcjgxODQ3",
+            "login": "claude",
+            "name": "Claude Opus 5 (1M context)"
+          }
+        ],
+        "committedDate": "2026-09-20T14:23:56Z",
+        "messageBody": "Migration 005 comments event_status_history as a Q-14 audit trail, so the\ndecision record should say what it actually covers: status changes only,\nattributed through app.actor_id, readable by the owner and assigned\ncoordinator, with no retention policy and no administrator view. Nothing\nelse is audited, which is narrower than the question asks.\n\nCo-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>",
+        "messageHeadline": "docs: record the provisional Q-14 audit rule",
+        "oid": "5721397d9a8255f9393df08837996b6d5965fb33"
+      },
+      {
+        "authoredDate": "2026-09-20T14:34:34Z",
+        "authors": [
+          {
+            "email": "arvintay@gmail.com",
+            "id": "U_kgDOCa7PTA",
+            "login": "arvinty",
+            "name": "arvinty"
+          },
+          {
+            "email": "noreply@anthropic.com",
+            "id": "MDQ6VXNlcjgxODQ3",
+            "login": "claude",
+            "name": "Claude Opus 5 (1M context)"
+          }
+        ],
+        "committedDate": "2026-09-20T14:34:34Z",
+        "messageBody": "This branch was cut from 93bdd1a, before #6, #7 and #8 merged, and\nindependently built a draft-editing page while Kai Jie's\nEventDraftEditPage was being reviewed. Kai Jie's page is the merged one\nand stays; EditDraftPage.vue and its test are removed along with their\nduplicate /events/:id/edit route. Event creation is kept: KAN-31 is still\nTo Do and neither #7 nor #8 covers POST /api/events or the /events/new\nform.\n\nupdateEventDraft and submitEventRequest now go through this branch's\nsendJson rather than the shared client's patchJson/postJson, so a 400\nSUBMISSION_INCOMPLETE keeps its missingFields list. SubmissionIncompleteError\nextends ApiError, so the existing status and code checks still hold.\n\ntraceability.csv is rebuilt from both sides: implementation and test paths\nare unioned, the five overlapping rows keep main's wording and gain this\nbranch's additions, and CF-05 and CF-08 to CF-20 take this branch's rows.\nmain's CF-02, CF-03 and CF-07 rows had unquoted commas in the status\ncolumn, which made them 10, 9 and 9 fields wide; the file is now valid\nCSV throughout. Both 19 September decision records are kept.\n\nChecks on the merged tree: typecheck clean, 278 frontend and 737 backend\ntests, both builds, 17 browser tests.\n\nCo-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>",
+        "messageHeadline": "Merge main and drop the draft-editing page that duplicated PR #7",
+        "oid": "87d40f38dba0ef7e35285d4d076be24c12118487"
+      },
+      {
+        "authoredDate": "2026-09-20T14:39:07Z",
+        "authors": [
+          {
+            "email": "arvintay@gmail.com",
+            "id": "U_kgDOCa7PTA",
+            "login": "arvinty",
+            "name": "arvinty"
+          },
+          {
+            "email": "noreply@anthropic.com",
+            "id": "MDQ6VXNlcjgxODQ3",
+            "login": "claude",
+            "name": "Claude Opus 5 (1M context)"
+          }
+        ],
+        "committedDate": "2026-09-20T14:39:07Z",
+        "messageBody": "GET /api/equipment/availability returns { from, to, items }, but the\nclient typed the body as { items } and the browser fixture returned only\nthat. Neither broke at runtime, since the extra fields are ignored, but\nboth described a contract the backend does not have and would have hidden\na change to it. Raised in review on PR #10.\n\nThe third review finding, an outdated comment in EditDraftPage.vue, no\nlonger applies: that file was removed when this branch merged main,\nbecause it duplicated PR #7.\n\nCo-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>",
+        "messageHeadline": "fix: record the equipment availability window in the client and fixture",
+        "oid": "d2ab34f6f7a6757e824c876d7ac24643d78b1e6d"
+      }
+    ],
+    "mergeCommit": {
+      "oid": "998096833f5fa250121836792fd08193599aceda"
+    },
+    "mergedAt": "2026-09-20T14:43:24Z",
+    "number": 10,
+    "reviews": [
+      {
+        "author": {
+          "login": "copilot-pull-request-reviewer"
+        },
+        "submittedAt": "2026-09-20T14:30:30Z",
+        "state": "COMMENTED",
+        "commit": {
+          "oid": "5721397d9a8255f9393df08837996b6d5965fb33"
+        }
+      }
+    ],
+    "title": "KAN-24: first-release database schema, ERD, and the services and pages that use them",
+    "url": "https://github.com/MochaLxtte/ConnectSphere/pull/10"
+  },
+  {
+    "author": {
+      "id": "U_kgDOCa7PTA",
+      "is_bot": false,
+      "login": "arvinty",
+      "name": ""
+    },
+    "commits": [
+      {
+        "authoredDate": "2026-09-26T10:23:53Z",
+        "authors": [
+          {
+            "email": "arvintay@gmail.com",
+            "id": "U_kgDOCa7PTA",
+            "login": "arvinty",
+            "name": "arvinty"
+          },
+          {
+            "email": "noreply@anthropic.com",
+            "id": "MDQ6VXNlcjgxODQ3",
+            "login": "claude",
+            "name": "Claude Opus 5 (1M context)"
+          }
+        ],
+        "committedDate": "2026-09-26T10:23:53Z",
+        "messageBody": "KAN-24 was \"set up the database infrastructure required to persist the\ninformation needed by the Sprint 1 user stories and generate database\ndiagram\". PR #10 went far past that and shipped whole feature areas whose\nJira items were never in the Sprint 1 commitment and are still unassigned.\nThis removes the parts nothing else depends on.\n\nRemoved, roughly 15,000 lines:\n\n- Venues (CF-08 to CF-14) - catalogue, availability, suitability, bookings\n  and the conflict handling, backend and frontend.\n- Equipment (CF-15 to CF-17) - types, peak availability and reservations.\n- Registrations (CF-18) - discovery, register/withdraw and attendee lists.\n- Notifications (CF-20) - the router, inbox page and bell. The notify()\n  helper stays because the clarification and lifecycle services call it.\n- Change requests (CF-19) - service, router and panel.\n- Their routes, navigation, planning panels and documentation claims.\n\nKept, because main now depends on it. Six days of teammate work landed on\ntop of PR #10 and removing these breaks the build or their tests:\n\n- EventRequestForm and the registration draft fields. PR #18 rewrote\n  EventDraftEditPage to use the form, deleting 433 lines of its own.\n- Coordinator assignment (CF-05). A teammate's ReviewAccessPage and its\n  tests read /api/events/unassigned and /coordinators, and review-access\n  .spec.ts asserts the \"Unassigned requests\" nav link exists.\n- Clarifications (CF-04) and lifecycle/status history (CF-06). The same\n  browser spec asserts that opening /reviews/:id fires reads for\n  assignments, coordinators, clarifications and history, so those panels\n  must stay mounted on the coordinator page.\n- A decision from UNDER_REVIEW, which a teammate re-landed in c680051.\n- Migrations 005 and 006, the ERD and docs/database-diagram.md. These are\n  KAN-24's own deliverable, and both migrations are already applied to the\n  shared Supabase project, so deleting the files would leave CI building a\n  schema the live database does not match.\n\nworkflow-routers.test.ts and workflow-support.test.ts are trimmed to the\nservices that remain. workspace-fixtures.ts stays because a teammate's\nreview-access.spec.ts imports it.\n\nVerified on this branch: typecheck clean, 190 frontend and 372 backend\ntests, 119 PostgreSQL integration tests, 32 browser tests, both builds.\n\nCo-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>",
+        "messageHeadline": "revert: remove the out-of-scope features added under KAN-24",
+        "oid": "93fad6c23c3d61386c3e54904177a6432612b6d8"
+      },
+      {
+        "authoredDate": "2026-09-26T10:50:18Z",
+        "authors": [
+          {
+            "email": "arvintay@gmail.com",
+            "id": "U_kgDOCa7PTA",
+            "login": "arvinty",
+            "name": "arvinty"
+          },
+          {
+            "email": "noreply@anthropic.com",
+            "id": "MDQ6VXNlcjgxODQ3",
+            "login": "claude",
+            "name": "Claude Opus 5 (1M context)"
+          }
+        ],
+        "committedDate": "2026-09-26T10:50:18Z",
+        "messageBody": "The previous commit claimed it removed documentation claims. It did not\ntouch docs at all, so main would have kept describing venue, equipment,\nregistration, notification and change-request endpoints and pages that no\nlonger exist.\n\n- api-contract.md drops those route sections, their rows in the frontend\n  route table and the stale panel/verification notes.\n- The architecture C4 note and module table now say the tables and guards\n  exist in migration 005 while the services and pages do not, and name\n  Sprint 2 as the owner of the venue stories.\n- traceability.csv clears the implementation and test paths for CF-08 to\n  CF-20, pointing them at the migration and its schema test, and records\n  that the Sprint 2 estimates for those stories are build work rather than\n  verification of existing code.\n- Both READMEs and database/README.md say the same.\n- The 19 September provisional-rules record is marked superseded in part:\n  the Q-06 to Q-11 and Q-13 rules describe code that no longer exists and\n  are kept only as reasoning. Q-02, Q-04, Q-12 and Q-14 remain in force\n  because those services stay. Every customer question stays Open.\n\nCo-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>",
+        "messageHeadline": "docs: stop describing the features this branch removes",
+        "oid": "3a535da75c38ee8684646e661a79eadd2b050c9f"
+      }
+    ],
+    "mergeCommit": {
+      "oid": "dff42ed649b8b66d7e5f1b0f825017b175928c8d"
+    },
+    "mergedAt": "2026-09-26T10:54:54Z",
+    "number": 19,
+    "reviews": [
+      {
+        "author": {
+          "login": "copilot-pull-request-reviewer"
+        },
+        "submittedAt": "2026-09-26T10:28:13Z",
+        "state": "COMMENTED",
+        "commit": {
+          "oid": "93fad6c23c3d61386c3e54904177a6432612b6d8"
+        }
+      }
+    ],
+    "title": "revert: remove the out-of-scope features added under KAN-24",
+    "url": "https://github.com/MochaLxtte/ConnectSphere/pull/19"
+  },
+  {
+    "author": {
+      "id": "U_kgDOCa7PTA",
+      "is_bot": false,
+      "login": "arvinty",
+      "name": ""
+    },
+    "commits": [
+      {
+        "authoredDate": "2026-10-06T17:23:34Z",
+        "authors": [
+          {
+            "email": "arvintay@gmail.com",
+            "id": "U_kgDOCa7PTA",
+            "login": "arvinty",
+            "name": "arvinty"
+          }
+        ],
+        "committedDate": "2026-10-06T17:23:34Z",
+        "messageBody": "",
+        "messageHeadline": "fix(KAN-51): sync calendar selection and verify protected access",
+        "oid": "c5946eb05295a0b1c80dcd200d8afa4c5a7095ca"
+      }
+    ],
+    "mergeCommit": {
+      "oid": "1ed03325cf3291ed67ff53ea31749aef729e46e0"
+    },
+    "mergedAt": "2026-10-06T17:29:09Z",
+    "number": 28,
+    "reviews": [
+      {
+        "author": {
+          "login": "copilot-pull-request-reviewer"
+        },
+        "submittedAt": "2026-10-06T17:23:56Z",
+        "state": "COMMENTED",
+        "commit": {
+          "oid": "c5946eb05295a0b1c80dcd200d8afa4c5a7095ca"
+        }
+      }
+    ],
+    "title": "fix(KAN-51): sync calendar navigation and venue selection",
+    "url": "https://github.com/MochaLxtte/ConnectSphere/pull/28"
+  },
+  {
+    "author": {
+      "id": "U_kgDODEhNOA",
+      "is_bot": false,
+      "login": "NahIts-Leo",
+      "name": ""
+    },
+    "commits": [
+      {
+        "authoredDate": "2026-10-20T18:43:26Z",
+        "authors": [
+          {
+            "email": "kaijie.leo.2024@computing.smu.edu.sg",
+            "id": "",
+            "login": "",
+            "name": "NahIts-Leo"
+          },
+          {
+            "email": "noreply@anthropic.com",
+            "id": "MDQ6VXNlcjgxODQ3",
+            "login": "claude",
+            "name": "Claude Opus 5.5"
+          }
+        ],
+        "committedDate": "2026-10-20T18:43:26Z",
+        "messageBody": "\u2026ecovery\n\nCR-2 replaces KAN-55's refusal of a block that overlaps an approved booking.\nMigration 010 adds venue_outage_impacts; the outage and its affected\narrangements are recorded in one venue-locked transaction, removal clears\nonly that outage's flags, and Venue Staff can list recovery\n(KAN-81-AC1-AC4, AC10, AC11).\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01P5QCEa5HQYyAcQdoCV6HYQ",
+        "messageHeadline": "feat(KAN-81): save outages over approved bookings and flag them for r\u2026",
+        "oid": "2f74ede11c3537ed615406bd6d82e8ecd71f837c"
+      },
+      {
+        "authoredDate": "2026-10-20T18:43:26Z",
+        "authors": [
+          {
+            "email": "kaijie.leo.2024@computing.smu.edu.sg",
+            "id": "",
+            "login": "",
+            "name": "NahIts-Leo"
+          },
+          {
+            "email": "noreply@anthropic.com",
+            "id": "MDQ6VXNlcjgxODQ3",
+            "login": "claude",
+            "name": "Claude Opus 5.5"
+          }
+        ],
+        "committedDate": "2026-10-20T18:43:26Z",
+        "messageBody": "\u2026 page\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01P5QCEa5HQYyAcQdoCV6HYQ",
+        "messageHeadline": "feat(KAN-81): show affected bookings and recovery on the venue blocks\u2026",
+        "oid": "2f47413240cc862cf4230a0dccb92e6e8ae84b79"
+      },
+      {
+        "authoredDate": "2026-10-20T18:43:26Z",
+        "authors": [
+          {
+            "email": "kaijie.leo.2024@computing.smu.edu.sg",
+            "id": "",
+            "login": "",
+            "name": "NahIts-Leo"
+          },
+          {
+            "email": "noreply@anthropic.com",
+            "id": "MDQ6VXNlcjgxODQ3",
+            "login": "claude",
+            "name": "Claude Opus 5.5"
+          }
+        ],
+        "committedDate": "2026-10-20T18:43:26Z",
+        "messageBody": "\u2026wser\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01P5QCEa5HQYyAcQdoCV6HYQ",
+        "messageHeadline": "test(KAN-81): cover outage recovery against PostgreSQL and in the bro\u2026",
+        "oid": "9e0758fa9459a1a3db05c5e1e5216968594edded"
+      },
+      {
+        "authoredDate": "2026-10-20T18:43:26Z",
+        "authors": [
+          {
+            "email": "kaijie.leo.2024@computing.smu.edu.sg",
+            "id": "",
+            "login": "",
+            "name": "NahIts-Leo"
+          },
+          {
+            "email": "noreply@anthropic.com",
+            "id": "MDQ6VXNlcjgxODQ3",
+            "login": "claude",
+            "name": "Claude Opus 5.5"
+          }
+        ],
+        "committedDate": "2026-10-20T18:43:26Z",
+        "messageBody": "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01P5QCEa5HQYyAcQdoCV6HYQ",
+        "messageHeadline": "docs(KAN-81): record phase 1 implementation, evidence and decisions",
+        "oid": "e4ac4fff32720662180c3f82e11bfefa485334d7"
+      },
+      {
+        "authoredDate": "2026-10-20T20:07:01Z",
+        "authors": [
+          {
+            "email": "arvintay@gmail.com",
+            "id": "U_kgDOCa7PTA",
+            "login": "arvinty",
+            "name": "arvinty"
+          }
+        ],
+        "committedDate": "2026-10-20T20:10:47Z",
+        "messageBody": "",
+        "messageHeadline": "fix(KAN-81): refresh recovery state after stale write refusals",
+        "oid": "18ac27d4e26580ef5f8aca519e5cd8ecbc2d1d51"
+      },
+      {
+        "authoredDate": "2026-10-20T20:11:25Z",
+        "authors": [
+          {
+            "email": "arvintay@gmail.com",
+            "id": "U_kgDOCa7PTA",
+            "login": "arvinty",
+            "name": "arvinty"
+          }
+        ],
+        "committedDate": "2026-10-20T20:11:25Z",
+        "messageBody": "",
+        "messageHeadline": "docs(KAN-81): complete phase-one execution evidence and planning export",
+        "oid": "30da68aa271e344ce4bced152954a25085eed9e2"
+      }
+    ],
+    "mergeCommit": {
+      "oid": "b2820e11154833831f7512ce3331ff9decf38629"
+    },
+    "mergedAt": "2026-10-20T20:17:29Z",
+    "number": 47,
+    "reviews": [
+      {
+        "author": {
+          "login": "arvinty"
+        },
+        "submittedAt": "2026-10-20T19:09:31Z",
+        "state": "CHANGES_REQUESTED",
+        "commit": {
+          "oid": "e4ac4fff32720662180c3f82e11bfefa485334d7"
+        }
+      },
+      {
+        "author": {
+          "login": "arvinty"
+        },
+        "submittedAt": "2026-10-20T20:12:18Z",
+        "state": "COMMENTED",
+        "commit": {
+          "oid": "30da68aa271e344ce4bced152954a25085eed9e2"
+        }
+      },
+      {
+        "author": {
+          "login": "arvinty"
+        },
+        "submittedAt": "2026-10-20T20:12:21Z",
+        "state": "COMMENTED",
+        "commit": {
+          "oid": "30da68aa271e344ce4bced152954a25085eed9e2"
+        }
+      },
+      {
+        "author": {
+          "login": "arvinty"
+        },
+        "submittedAt": "2026-10-20T20:12:23Z",
+        "state": "COMMENTED",
+        "commit": {
+          "oid": "30da68aa271e344ce4bced152954a25085eed9e2"
+        }
+      },
+      {
+        "author": {
+          "login": "arvinty"
+        },
+        "submittedAt": "2026-10-20T20:17:22Z",
+        "state": "APPROVED",
+        "commit": {
+          "oid": "30da68aa271e344ce4bced152954a25085eed9e2"
+        }
+      }
+    ],
+    "title": "feat(KAN-81): outage recovery phase 1 \u2014 save outages over bookings and flag them",
+    "url": "https://github.com/MochaLxtte/ConnectSphere/pull/47"
+  },
+  {
+    "author": {
+      "id": "U_kgDOCa7PTA",
+      "is_bot": false,
+      "login": "arvinty",
+      "name": ""
+    },
+    "commits": [
+      {
+        "authoredDate": "2026-10-20T18:09:34Z",
+        "authors": [
+          {
+            "email": "arvintay@gmail.com",
+            "id": "U_kgDOCa7PTA",
+            "login": "arvinty",
+            "name": "arvinty"
+          }
+        ],
+        "committedDate": "2026-10-20T18:09:34Z",
+        "messageBody": "",
+        "messageHeadline": "fix(KAN-34): validate calendar dates and verify draft editing",
+        "oid": "0b08802f0422434450cfb87eb94aed58c5b5f43d"
+      },
+      {
+        "authoredDate": "2026-10-20T18:09:34Z",
+        "authors": [
+          {
+            "email": "arvintay@gmail.com",
+            "id": "U_kgDOCa7PTA",
+            "login": "arvinty",
+            "name": "arvinty"
+          }
+        ],
+        "committedDate": "2026-10-20T18:09:34Z",
+        "messageBody": "",
+        "messageHeadline": "feat(KAN-78): apply occupied venue intervals and expose booking warnings",
+        "oid": "2396cce40cbbb3807f5464396aab3999de60c8d8"
+      },
+      {
+        "authoredDate": "2026-10-20T18:09:34Z",
+        "authors": [
+          {
+            "email": "arvintay@gmail.com",
+            "id": "U_kgDOCa7PTA",
+            "login": "arvinty",
+            "name": "arvinty"
+          }
+        ],
+        "committedDate": "2026-10-20T18:09:34Z",
+        "messageBody": "",
+        "messageHeadline": "test(KAN-78): cover buffered conflicts, history and concurrent writes",
+        "oid": "afea8cf84052698ce0e30108b018d3e647297036"
+      },
+      {
+        "authoredDate": "2026-10-20T18:10:12Z",
+        "authors": [
+          {
+            "email": "arvintay@gmail.com",
+            "id": "U_kgDOCa7PTA",
+            "login": "arvinty",
+            "name": "arvinty"
+          }
+        ],
+        "committedDate": "2026-10-20T18:10:12Z",
+        "messageBody": "",
+        "messageHeadline": "docs(KAN-78): record KAN-78 and KAN-34 contracts and verification",
+        "oid": "6a5951c8cc6ae0ad29e9902c8c6e64620cc6d3bd"
+      },
+      {
+        "authoredDate": "2026-10-20T19:16:12Z",
+        "authors": [
+          {
+            "email": "arvintay@gmail.com",
+            "id": "U_kgDOCa7PTA",
+            "login": "arvinty",
+            "name": "arvinty"
+          }
+        ],
+        "committedDate": "2026-10-20T19:16:12Z",
+        "messageBody": "",
+        "messageHeadline": "merge(KAN-78): reconcile KAN-34 and buffered planning with main",
+        "oid": "2d138be079a74b3714db1e63190591cd26b1f05c"
+      },
+      {
+        "authoredDate": "2026-10-20T19:19:36Z",
+        "authors": [
+          {
+            "email": "arvintay@gmail.com",
+            "id": "U_kgDOCa7PTA",
+            "login": "arvinty",
+            "name": "arvinty"
+          }
+        ],
+        "committedDate": "2026-10-20T19:19:36Z",
+        "messageBody": "",
+        "messageHeadline": "docs(KAN-78): record KAN-34 and KAN-78 PR review handoff",
+        "oid": "32016ed76eb5fe97500c2d8077c78c05b7dd0fed"
+      }
+    ],
+    "mergeCommit": {
+      "oid": "708b6a06043537248476aa4789398b0c7554109b"
+    },
+    "mergedAt": "2026-10-22T09:08:11Z",
+    "number": 48,
+    "reviews": [
+      {
+        "author": {
+          "login": "copilot-pull-request-reviewer"
+        },
+        "submittedAt": "2026-10-20T19:18:07Z",
+        "state": "COMMENTED",
+        "commit": {
+          "oid": "2d138be079a74b3714db1e63190591cd26b1f05c"
+        }
+      },
+      {
+        "author": {
+          "login": "NahIts-Leo"
+        },
+        "submittedAt": "2026-10-20T21:21:49Z",
+        "state": "CHANGES_REQUESTED",
+        "commit": {
+          "oid": "32016ed76eb5fe97500c2d8077c78c05b7dd0fed"
+        }
+      },
+      {
+        "author": {
+          "login": "irfanmno"
+        },
+        "submittedAt": "2026-10-22T09:00:18Z",
+        "state": "APPROVED",
+        "commit": {
+          "oid": "32016ed76eb5fe97500c2d8077c78c05b7dd0fed"
+        }
+      }
+    ],
+    "title": "feat(KAN-78): buffered venue planning and KAN-34 draft regressions",
+    "url": "https://github.com/MochaLxtte/ConnectSphere/pull/48"
+  },
+  {
+    "author": {
+      "id": "U_kgDOCVZiNA",
+      "is_bot": false,
+      "login": "irfanmno",
+      "name": ""
+    },
+    "commits": [
+      {
+        "authoredDate": "2026-10-20T18:09:34Z",
+        "authors": [
+          {
+            "email": "arvintay@gmail.com",
+            "id": "U_kgDOCa7PTA",
+            "login": "arvinty",
+            "name": "arvinty"
+          }
+        ],
+        "committedDate": "2026-10-20T18:09:34Z",
+        "messageBody": "",
+        "messageHeadline": "fix(KAN-34): validate calendar dates and verify draft editing",
+        "oid": "0b08802f0422434450cfb87eb94aed58c5b5f43d"
+      },
+      {
+        "authoredDate": "2026-10-20T18:09:34Z",
+        "authors": [
+          {
+            "email": "arvintay@gmail.com",
+            "id": "U_kgDOCa7PTA",
+            "login": "arvinty",
+            "name": "arvinty"
+          }
+        ],
+        "committedDate": "2026-10-20T18:09:34Z",
+        "messageBody": "",
+        "messageHeadline": "feat(KAN-78): apply occupied venue intervals and expose booking warnings",
+        "oid": "2396cce40cbbb3807f5464396aab3999de60c8d8"
+      },
+      {
+        "authoredDate": "2026-10-20T18:09:34Z",
+        "authors": [
+          {
+            "email": "arvintay@gmail.com",
+            "id": "U_kgDOCa7PTA",
+            "login": "arvinty",
+            "name": "arvinty"
+          }
+        ],
+        "committedDate": "2026-10-20T18:09:34Z",
+        "messageBody": "",
+        "messageHeadline": "test(KAN-78): cover buffered conflicts, history and concurrent writes",
+        "oid": "afea8cf84052698ce0e30108b018d3e647297036"
+      },
+      {
+        "authoredDate": "2026-10-20T18:10:12Z",
+        "authors": [
+          {
+            "email": "arvintay@gmail.com",
+            "id": "U_kgDOCa7PTA",
+            "login": "arvinty",
+            "name": "arvinty"
+          }
+        ],
+        "committedDate": "2026-10-20T18:10:12Z",
+        "messageBody": "",
+        "messageHeadline": "docs(KAN-78): record KAN-78 and KAN-34 contracts and verification",
+        "oid": "6a5951c8cc6ae0ad29e9902c8c6e64620cc6d3bd"
+      },
+      {
+        "authoredDate": "2026-10-20T19:16:12Z",
+        "authors": [
+          {
+            "email": "arvintay@gmail.com",
+            "id": "U_kgDOCa7PTA",
+            "login": "arvinty",
+            "name": "arvinty"
+          }
+        ],
+        "committedDate": "2026-10-20T19:16:12Z",
+        "messageBody": "",
+        "messageHeadline": "merge(KAN-78): reconcile KAN-34 and buffered planning with main",
+        "oid": "2d138be079a74b3714db1e63190591cd26b1f05c"
+      },
+      {
+        "authoredDate": "2026-10-20T19:19:36Z",
+        "authors": [
+          {
+            "email": "arvintay@gmail.com",
+            "id": "U_kgDOCa7PTA",
+            "login": "arvinty",
+            "name": "arvinty"
+          }
+        ],
+        "committedDate": "2026-10-20T19:19:36Z",
+        "messageBody": "",
+        "messageHeadline": "docs(KAN-78): record KAN-34 and KAN-78 PR review handoff",
+        "oid": "32016ed76eb5fe97500c2d8077c78c05b7dd0fed"
+      },
+      {
+        "authoredDate": "2026-10-20T20:30:57Z",
+        "authors": [
+          {
+            "email": "kaijie.leo.2024@computing.smu.edu.sg",
+            "id": "",
+            "login": "",
+            "name": "NahIts-Leo"
+          },
+          {
+            "email": "noreply@anthropic.com",
+            "id": "MDQ6VXNlcjgxODQ3",
+            "login": "claude",
+            "name": "Claude Opus 5.5"
+          }
+        ],
+        "committedDate": "2026-10-20T20:30:57Z",
+        "messageBody": "Saving an outage records one VENUE_OUTAGE_RECOVERY_REQUIRED notice per\naffected event for its current coordinator, in the outage transaction and\nkeyed per outage and event. Booking responses carry their recovery list\n(KAN-81-AC5, AC6).\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01P5QCEa5HQYyAcQdoCV6HYQ",
+        "messageHeadline": "feat(KAN-81): notify each affected event's coordinator of an outage",
+        "oid": "f2491c2827b01a168498f59da807cd13f102b9a6"
+      },
+      {
+        "authoredDate": "2026-10-20T20:30:57Z",
+        "authors": [
+          {
+            "email": "kaijie.leo.2024@computing.smu.edu.sg",
+            "id": "",
+            "login": "",
+            "name": "NahIts-Leo"
+          },
+          {
+            "email": "noreply@anthropic.com",
+            "id": "MDQ6VXNlcjgxODQ3",
+            "login": "claude",
+            "name": "Claude Opus 5.5"
+          }
+        ],
+        "committedDate": "2026-10-20T20:30:57Z",
+        "messageBody": "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01P5QCEa5HQYyAcQdoCV6HYQ",
+        "messageHeadline": "feat(KAN-81): show outage recovery on booking pages and the venue panel",
+        "oid": "dc24220b8cfdcc9d280f090b82db4f3f1663339f"
+      },
+      {
+        "authoredDate": "2026-10-20T20:30:57Z",
+        "authors": [
+          {
+            "email": "kaijie.leo.2024@computing.smu.edu.sg",
+            "id": "",
+            "login": "",
+            "name": "NahIts-Leo"
+          },
+          {
+            "email": "noreply@anthropic.com",
+            "id": "MDQ6VXNlcjgxODQ3",
+            "login": "claude",
+            "name": "Claude Opus 5.5"
+          }
+        ],
+        "committedDate": "2026-10-20T20:30:57Z",
+        "messageBody": "\u2026reSQL\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01P5QCEa5HQYyAcQdoCV6HYQ",
+        "messageHeadline": "test(KAN-81): cover outage notices and booking recovery against Postg\u2026",
+        "oid": "b78f669252fc1ec674bee05cfddef75328f8b19c"
+      },
+      {
+        "authoredDate": "2026-10-20T20:30:57Z",
+        "authors": [
+          {
+            "email": "kaijie.leo.2024@computing.smu.edu.sg",
+            "id": "",
+            "login": "",
+            "name": "NahIts-Leo"
+          },
+          {
+            "email": "noreply@anthropic.com",
+            "id": "MDQ6VXNlcjgxODQ3",
+            "login": "claude",
+            "name": "Claude Opus 5.5"
+          }
+        ],
+        "committedDate": "2026-10-20T20:30:57Z",
+        "messageBody": "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01P5QCEa5HQYyAcQdoCV6HYQ",
+        "messageHeadline": "docs(KAN-81): record phase 2 implementation, evidence and decisions",
+        "oid": "8688bf6f77bdc4f572d9af0150d70d8ed681dab4"
+      },
+      {
+        "authoredDate": "2026-10-20T20:36:08Z",
+        "authors": [
+          {
+            "email": "kaijie.leo.2024@computing.smu.edu.sg",
+            "id": "",
+            "login": "",
+            "name": "NahIts-Leo"
+          },
+          {
+            "email": "noreply@anthropic.com",
+            "id": "MDQ6VXNlcjgxODQ3",
+            "login": "claude",
+            "name": "Claude Opus 5.5"
+          }
+        ],
+        "committedDate": "2026-10-20T20:36:08Z",
+        "messageBody": "CI run 39492721585 showed the case inserting an approved booking into a\nperiod it had just blocked, which the venue_bookings_conflict trigger\ncorrectly refuses. The feature code is unchanged.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01P5QCEa5HQYyAcQdoCV6HYQ",
+        "messageHeadline": "test(KAN-81): use a second venue for the reprocessing notice case",
+        "oid": "f87b59d88d105d27a94db1a163a2df52dca4bded"
+      },
+      {
+        "authoredDate": "2026-10-20T20:44:06Z",
+        "authors": [
+          {
+            "email": "kaijie.leo.2024@computing.smu.edu.sg",
+            "id": "",
+            "login": "",
+            "name": "NahIts-Leo"
+          },
+          {
+            "email": "noreply@anthropic.com",
+            "id": "MDQ6VXNlcjgxODQ3",
+            "login": "claude",
+            "name": "Claude Opus 5.5"
+          }
+        ],
+        "committedDate": "2026-10-20T20:44:06Z",
+        "messageBody": "\u2026 TC-09-20\n\nKeeps the failing first run (test-fixture fault) alongside the passing\nretest, following the scoped execution style adopted for phase 1.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01P5QCEa5HQYyAcQdoCV6HYQ",
+        "messageHeadline": "docs(KAN-81): record phase 2 CI results with scoped cases TC-09-18 to\u2026",
+        "oid": "26d17fdd23ad58004b526529223766e69ad04085"
+      },
+      {
+        "authoredDate": "2026-10-20T20:59:49Z",
+        "authors": [
+          {
+            "email": "kaijie.leo.2024@computing.smu.edu.sg",
+            "id": "",
+            "login": "",
+            "name": "NahIts-Leo"
+          },
+          {
+            "email": "noreply@anthropic.com",
+            "id": "MDQ6VXNlcjgxODQ3",
+            "login": "claude",
+            "name": "Claude Opus 5.5"
+          }
+        ],
+        "committedDate": "2026-10-20T20:59:49Z",
+        "messageBody": "\u2026kings\n\nMigration 011 links a replacement to the outage-affected booking it\nreplaces. A replacement must target a same-event booking that still needs\nrecovery and pass capacity and opening-hours checks; approving it locks the\noriginal last, resolves its recovery and cancels it, and a second\nreplacement or removed outage is refused (KAN-81-AC7, AC8).\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01P5QCEa5HQYyAcQdoCV6HYQ",
+        "messageHeadline": "feat(KAN-81): request and approve replacement venues for affected boo\u2026",
+        "oid": "e8310367face54ecbec4ef71de4369a6957b5129"
+      },
+      {
+        "authoredDate": "2026-10-20T20:59:49Z",
+        "authors": [
+          {
+            "email": "kaijie.leo.2024@computing.smu.edu.sg",
+            "id": "",
+            "login": "",
+            "name": "NahIts-Leo"
+          },
+          {
+            "email": "noreply@anthropic.com",
+            "id": "MDQ6VXNlcjgxODQ3",
+            "login": "claude",
+            "name": "Claude Opus 5.5"
+          }
+        ],
+        "committedDate": "2026-10-20T20:59:49Z",
+        "messageBody": "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01P5QCEa5HQYyAcQdoCV6HYQ",
+        "messageHeadline": "feat(KAN-81): choose the booking a venue request replaces",
+        "oid": "ac9639ee0832a7a0981e2c9bf842bf32c372def9"
+      },
+      {
+        "authoredDate": "2026-10-20T20:59:49Z",
+        "authors": [
+          {
+            "email": "kaijie.leo.2024@computing.smu.edu.sg",
+            "id": "",
+            "login": "",
+            "name": "NahIts-Leo"
+          },
+          {
+            "email": "noreply@anthropic.com",
+            "id": "MDQ6VXNlcjgxODQ3",
+            "login": "claude",
+            "name": "Claude Opus 5.5"
+          }
+        ],
+        "committedDate": "2026-10-20T20:59:49Z",
+        "messageBody": "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01P5QCEa5HQYyAcQdoCV6HYQ",
+        "messageHeadline": "test(KAN-81): cover replacement bookings against PostgreSQL",
+        "oid": "981f8abece2130394f9de1ebfd654cff35499f18"
+      },
+      {
+        "authoredDate": "2026-10-20T20:59:49Z",
+        "authors": [
+          {
+            "email": "kaijie.leo.2024@computing.smu.edu.sg",
+            "id": "",
+            "login": "",
+            "name": "NahIts-Leo"
+          },
+          {
+            "email": "noreply@anthropic.com",
+            "id": "MDQ6VXNlcjgxODQ3",
+            "login": "claude",
+            "name": "Claude Opus 5.5"
+          }
+        ],
+        "committedDate": "2026-10-20T20:59:49Z",
+        "messageBody": "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01P5QCEa5HQYyAcQdoCV6HYQ",
+        "messageHeadline": "docs(KAN-81): record phase 3 implementation, evidence, decisions and ERD",
+        "oid": "e86cb05c6f7c4a66ecc487535089e45c6276eed8"
+      },
+      {
+        "authoredDate": "2026-10-20T21:05:04Z",
+        "authors": [
+          {
+            "email": "kaijie.leo.2024@computing.smu.edu.sg",
+            "id": "",
+            "login": "",
+            "name": "NahIts-Leo"
+          },
+          {
+            "email": "noreply@anthropic.com",
+            "id": "MDQ6VXNlcjgxODQ3",
+            "login": "claude",
+            "name": "Claude Opus 5.5"
+          }
+        ],
+        "committedDate": "2026-10-20T21:05:04Z",
+        "messageBody": "\u2026e test\n\nCI run 39496812442: the KAN-77 migration test now also applies migration 011,\nwhich adds a null replaces_booking_id to each existing booking. Feature code\nunchanged.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01P5QCEa5HQYyAcQdoCV6HYQ",
+        "messageHeadline": "test(KAN-81): expect the null replacement column in the KAN-77 upgrad\u2026",
+        "oid": "c0d164c35604a7e5279cf0df0b8d1d8d026dbe85"
+      },
+      {
+        "authoredDate": "2026-10-20T21:13:45Z",
+        "authors": [
+          {
+            "email": "kaijie.leo.2024@computing.smu.edu.sg",
+            "id": "",
+            "login": "",
+            "name": "NahIts-Leo"
+          },
+          {
+            "email": "noreply@anthropic.com",
+            "id": "MDQ6VXNlcjgxODQ3",
+            "login": "claude",
+            "name": "Claude Opus 5.5"
+          }
+        ],
+        "committedDate": "2026-10-20T21:13:45Z",
+        "messageBody": "\u2026 TC-09-23\n\nKeeps the failing first run (KAN-77 migration expectation) alongside the\npassing retest.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01P5QCEa5HQYyAcQdoCV6HYQ",
+        "messageHeadline": "docs(KAN-81): record phase 3 CI results with scoped cases TC-09-21 to\u2026",
+        "oid": "03904254792cafb7eb69be996dd29441f4af2731"
+      },
+      {
+        "authoredDate": "2026-10-21T02:07:25Z",
+        "authors": [
+          {
+            "email": "ryan.chua.2024@computing.smu.edu.sg",
+            "id": "U_kgDOCwXFOQ",
+            "login": "ryanc9029",
+            "name": "ryanc9029"
+          }
+        ],
+        "committedDate": "2026-10-21T02:07:25Z",
+        "messageBody": "Date.parse silently rolled 30 Feb 2026 over to 2 Mar 2026, so availability was checked for a period the coordinator never asked for. Parse startsAt and endsAt as ISO 8601 with a time zone and check every part is a real calendar value, leap years included. Refuse anything else with a 400 that names the field. Date-only and zone-less values are now refused too.\n\nKAN-12-AC101",
+        "messageHeadline": "feat(KAN-12-bug-fix): refuse impossible dates in venue search query",
+        "oid": "1ae595e37140f66d217999686c75b904c836a8c8"
+      },
+      {
+        "authoredDate": "2026-10-21T02:08:43Z",
+        "authors": [
+          {
+            "email": "ryan.chua.2024@computing.smu.edu.sg",
+            "id": "U_kgDOCwXFOQ",
+            "login": "ryanc9029",
+            "name": "ryanc9029"
+          }
+        ],
+        "committedDate": "2026-10-21T02:08:43Z",
+        "messageBody": "Add isRealLocalDateTime and validatePeriod for field-level feedback on an incomplete period, an end not after the start, an impossible date and an unreadable date. localToIso now throws on an impossible date, and searchVenues refuses a bad period before any request is built.\n\nKAN-12-AC14, KAN-12-AC101",
+        "messageHeadline": "feat(KAN-12): validate venue search period before sending",
+        "oid": "d8f7f5d83e908c22d8a3483a4f1ca9bc0189a5d5"
+      },
+      {
+        "authoredDate": "2026-10-21T02:09:43Z",
+        "authors": [
+          {
+            "email": "ryan.chua.2024@computing.smu.edu.sg",
+            "id": "U_kgDOCwXFOQ",
+            "login": "ryanc9029",
+            "name": "ryanc9029"
+          }
+        ],
+        "committedDate": "2026-10-21T02:09:43Z",
+        "messageBody": "Rewrite the backend suite as TC-VS-01 to 46, each tagged with its KAN-12-ACn and test type. Add AC101 cases for 30 Feb, 29 Feb in a non-leap year, 31 Apr, month 13, hour 24, minute and second 60, a +24:00 offset, a real leap day, and date-only or zone-less input. Add AC14 boundary cases for an end equal to the start.",
+        "messageHeadline": "test(KAN-12): Add testcases for added ACs",
+        "oid": "2d0fe72a3b20e41ca7fe58b480b5b9cc36dcb5be"
+      },
+      {
+        "authoredDate": "2026-10-21T02:10:22Z",
+        "authors": [
+          {
+            "email": "ryan.chua.2024@computing.smu.edu.sg",
+            "id": "U_kgDOCwXFOQ",
+            "login": "ryanc9029",
+            "name": "ryanc9029"
+          }
+        ],
+        "committedDate": "2026-10-21T02:10:22Z",
+        "messageBody": "Add TC-VS-47 to 83 for the page and API client: each filter reaching the request, no match versus empty catalogue, change and clear, authorisation messages, AC14 field messages, AC15 stale and failing earlier searches, AC16 missing filter lists, and AC101 impossible and unreadable dates.",
+        "messageHeadline": "test(KAN-12): add venue search page and API client tests",
+        "oid": "2ce0acabad55068bf7cca6b5ae329477c263074a"
+      },
+      {
+        "authoredDate": "2026-10-21T02:11:13Z",
+        "authors": [
+          {
+            "email": "ryan.chua.2024@computing.smu.edu.sg",
+            "id": "U_kgDOCwXFOQ",
+            "login": "ryanc9029",
+            "name": "ryanc9029"
+          }
+        ],
+        "committedDate": "2026-10-21T02:11:13Z",
+        "messageBody": "Show period errors under the start or end field with aria-invalid, and disable Search while the period is invalid. Track dates the browser cannot read so they are not mistaken for blank fields. Keep Search and Clear enabled while a search runs so a newer search can replace an older one, and name the missing filter lists when they fail to load.\n\nKAN-12-AC14, KAN-12-AC15, KAN-12-AC16, KAN-12-AC101",
+        "messageHeadline": "feat(KAN-12): show date errors per field on venue search page",
+        "oid": "80318005d9057a234683a011985bb3208ce492af"
+      },
+      {
+        "authoredDate": "2026-10-21T02:20:57Z",
+        "authors": [
+          {
+            "email": "ryan.chua.2024@computing.smu.edu.sg",
+            "id": "U_kgDOCwXFOQ",
+            "login": "ryanc9029",
+            "name": "ryanc9029"
+          }
+        ],
+        "committedDate": "2026-10-21T02:20:57Z",
+        "messageBody": "",
+        "messageHeadline": "Merge branch 'main' into KAN-12-bug-fix",
+        "oid": "2f1762936302f59dee8109bcd3ce495e16ff5308"
+      },
+      {
+        "authoredDate": "2026-10-20T18:01:45Z",
+        "authors": [
+          {
+            "email": "156656180+irfanmno@users.noreply.github.com",
+            "id": "U_kgDOCVZiNA",
+            "login": "irfanmno",
+            "name": "Muhammad Irfan Bin Muhd Noor"
+          },
+          {
+            "email": "noreply@anthropic.com",
+            "id": "MDQ6VXNlcjgxODQ3",
+            "login": "claude",
+            "name": "Claude Opus 5.5"
+          }
+        ],
+        "committedDate": "2026-10-22T07:06:57Z",
+        "messageBody": "\u2026 API error\n\nA REJECTED review now needs a nonblank reason, and every review reason uses\nthe shared 2,000-character workflow limit. Input errors name the field, and\nthe router returns it as field in 400 INVALID_REVIEW_INPUT.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01WL3LSdpmk8LGSBCNfKTauh",
+        "messageHeadline": "fix(KAN-60): require a trimmed rejection reason with a field-specific\u2026",
+        "oid": "7c881229c790cc4cb2d2335bbad7d70642643185"
+      },
+      {
+        "authoredDate": "2026-10-20T18:01:49Z",
+        "authors": [
+          {
+            "email": "156656180+irfanmno@users.noreply.github.com",
+            "id": "U_kgDOCVZiNA",
+            "login": "irfanmno",
+            "name": "Muhammad Irfan Bin Muhd Noor"
+          },
+          {
+            "email": "noreply@anthropic.com",
+            "id": "MDQ6VXNlcjgxODQ3",
+            "login": "claude",
+            "name": "Claude Opus 5.5"
+          }
+        ],
+        "committedDate": "2026-10-22T07:06:57Z",
+        "messageBody": "The reason is labelled required while Reject is selected; a blank or\nover-long reason shows an inline error and no request is sent.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01WL3LSdpmk8LGSBCNfKTauh",
+        "messageHeadline": "feat(KAN-60): mark the rejection reason required in the review panel",
+        "oid": "af038ec0e333371e8085fa3d606bc428721802df"
+      },
+      {
+        "authoredDate": "2026-10-20T18:01:54Z",
+        "authors": [
+          {
+            "email": "156656180+irfanmno@users.noreply.github.com",
+            "id": "U_kgDOCVZiNA",
+            "login": "irfanmno",
+            "name": "Muhammad Irfan Bin Muhd Noor"
+          },
+          {
+            "email": "noreply@anthropic.com",
+            "id": "MDQ6VXNlcjgxODQ3",
+            "login": "claude",
+            "name": "Claude Opus 5.5"
+          }
+        ],
+        "committedDate": "2026-10-22T07:06:58Z",
+        "messageBody": "Adds input, HTTP, PostgreSQL, component and browser cases, and gives the\nexisting rejection tests a reason now that one is required.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01WL3LSdpmk8LGSBCNfKTauh",
+        "messageHeadline": "test(KAN-60): cover blank, limit and unchanged-state rejection cases",
+        "oid": "672f257db480e1c459e2d712e6f26f76aba29cff"
+      },
+      {
+        "authoredDate": "2026-10-20T18:01:59Z",
+        "authors": [
+          {
+            "email": "156656180+irfanmno@users.noreply.github.com",
+            "id": "U_kgDOCVZiNA",
+            "login": "irfanmno",
+            "name": "Muhammad Irfan Bin Muhd Noor"
+          },
+          {
+            "email": "noreply@anthropic.com",
+            "id": "MDQ6VXNlcjgxODQ3",
+            "login": "claude",
+            "name": "Claude Opus 5.5"
+          }
+        ],
+        "committedDate": "2026-10-22T07:08:57Z",
+        "messageBody": "Records AUTO-20261021-01, the functional cases and traceability, the\nreview contract change, the implementation decisions and ownership.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01WL3LSdpmk8LGSBCNfKTauh",
+        "messageHeadline": "docs(KAN-60): record tests, traceability, contract and sprint updates",
+        "oid": "b05861b429f2a1367bcaa82da694f9cf931fa9bf"
+      },
+      {
+        "authoredDate": "2026-10-20T18:45:35Z",
+        "authors": [
+          {
+            "email": "156656180+irfanmno@users.noreply.github.com",
+            "id": "U_kgDOCVZiNA",
+            "login": "irfanmno",
+            "name": "Muhammad Irfan Bin Muhd Noor"
+          },
+          {
+            "email": "noreply@anthropic.com",
+            "id": "MDQ6VXNlcjgxODQ3",
+            "login": "claude",
+            "name": "Claude Opus 5.5"
+          }
+        ],
+        "committedDate": "2026-10-22T07:11:05Z",
+        "messageBody": "\u2026mpotent expiry (migration 011)\n\nAdds HELD and EXPIRED booking statuses with hold deadline, audit and\ncancellation columns, a conflict trigger that treats live holds as\noccupying, and expire_venue_holds(), scheduled by pg_cron where enabled.\nThe migration-list tests now include 008.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01WL3LSdpmk8LGSBCNfKTauh",
+        "messageHeadline": "feat(KAN-83): add venue hold states, deadline-aware conflicts and ide\u2026",
+        "oid": "80cbf7531488318815329efdafd9f8b5e37c542d"
+      },
+      {
+        "authoredDate": "2026-10-20T18:45:38Z",
+        "authors": [
+          {
+            "email": "156656180+irfanmno@users.noreply.github.com",
+            "id": "U_kgDOCVZiNA",
+            "login": "irfanmno",
+            "name": "Muhammad Irfan Bin Muhd Noor"
+          },
+          {
+            "email": "noreply@anthropic.com",
+            "id": "MDQ6VXNlcjgxODQ3",
+            "login": "claude",
+            "name": "Claude Opus 5.5"
+          }
+        ],
+        "committedDate": "2026-10-22T07:11:51Z",
+        "messageBody": "\u2026upancy rule\n\nVenue Staff hold a pending request until a database-checked deadline,\nthen approve, reject or cancel it. Calendar, search, suitability, request\ncreation, approval and blocks share occupancy.ts; blocks release live\nholds; the API runs expiry at startup and every minute.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01WL3LSdpmk8LGSBCNfKTauh",
+        "messageHeadline": "feat(KAN-83): place, approve, reject and cancel holds through one occ\u2026",
+        "oid": "1e72a5bd9af3f3ff83ffd3c0bcd0ecc79b353065"
+      },
+      {
+        "authoredDate": "2026-10-20T18:45:41Z",
+        "authors": [
+          {
+            "email": "156656180+irfanmno@users.noreply.github.com",
+            "id": "U_kgDOCVZiNA",
+            "login": "irfanmno",
+            "name": "Muhammad Irfan Bin Muhd Noor"
+          },
+          {
+            "email": "noreply@anthropic.com",
+            "id": "MDQ6VXNlcjgxODQ3",
+            "login": "claude",
+            "name": "Claude Opus 5.5"
+          }
+        ],
+        "committedDate": "2026-10-22T07:11:52Z",
+        "messageBody": "Staff get place-hold and cancel-hold forms in Singapore time; staff and\ncoordinators see the deadline, expired outcome and cancellation reason;\nthe calendar labels live holds as Held.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01WL3LSdpmk8LGSBCNfKTauh",
+        "messageHeadline": "feat(KAN-83): show hold deadlines and expiry to staff and coordinators",
+        "oid": "bde80ab28004931ef604b9823cd910a99e3fb6eb"
+      },
+      {
+        "authoredDate": "2026-10-20T18:45:44Z",
+        "authors": [
+          {
+            "email": "156656180+irfanmno@users.noreply.github.com",
+            "id": "U_kgDOCVZiNA",
+            "login": "irfanmno",
+            "name": "Muhammad Irfan Bin Muhd Noor"
+          },
+          {
+            "email": "noreply@anthropic.com",
+            "id": "MDQ6VXNlcjgxODQ3",
+            "login": "claude",
+            "name": "Claude Opus 5.5"
+          }
+        ],
+        "committedDate": "2026-10-22T07:11:52Z",
+        "messageBody": "\u2026nents and browser\n\nAdds 41 PostgreSQL cases (deadline, conflicts, approval-expiry race,\nreplay, catch-up, outage release, access) plus unit, component and\nbrowser cases, and updates existing expectations for the new fields.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01WL3LSdpmk8LGSBCNfKTauh",
+        "messageHeadline": "test(KAN-83): cover holds across input, HTTP, PostgreSQL races, compo\u2026",
+        "oid": "bcd835dc485dd1a7fe702a9c82d29eaa71510e21"
+      },
+      {
+        "authoredDate": "2026-10-20T18:45:47Z",
+        "authors": [
+          {
+            "email": "156656180+irfanmno@users.noreply.github.com",
+            "id": "U_kgDOCVZiNA",
+            "login": "irfanmno",
+            "name": "Muhammad Irfan Bin Muhd Noor"
+          },
+          {
+            "email": "noreply@anthropic.com",
+            "id": "MDQ6VXNlcjgxODQ3",
+            "login": "claude",
+            "name": "Claude Opus 5.5"
+          }
+        ],
+        "committedDate": "2026-10-22T07:14:05Z",
+        "messageBody": "\u2026s and diagrams\n\nRecords AUTO-20261021-02, the TC-14 functional cases and traceability, the\nhold API contract, the migration 008 rollout and pg_cron steps, the\nimplementation decisions, ownership and re-exported diagrams.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01WL3LSdpmk8LGSBCNfKTauh",
+        "messageHeadline": "docs(KAN-83): record tests, traceability, contract, rollout, decision\u2026",
+        "oid": "cd3e78ddb7704f41f0044ae1f3735fe20b9af469"
+      },
+      {
+        "authoredDate": "2026-10-22T07:17:02Z",
+        "authors": [
+          {
+            "email": "156656180+irfanmno@users.noreply.github.com",
+            "id": "U_kgDOCVZiNA",
+            "login": "irfanmno",
+            "name": "Muhammad Irfan Bin Muhd Noor"
+          },
+          {
+            "email": "noreply@anthropic.com",
+            "id": "MDQ6VXNlcjgxODQ3",
+            "login": "claude",
+            "name": "Claude Opus 5.5"
+          }
+        ],
+        "committedDate": "2026-10-22T07:17:16Z",
+        "messageBody": "The rebase renumbered the hold migration to 011 and corrected a block-service\ncomment now that KAN-81 keeps approved bookings. This commit extends the KAN-83\ndecision unit-test fake to answer the KAN-64 notification read and records the\nrebase, the renamed run ID and the pending diagram re-export.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
+        "messageHeadline": "fix(KAN-83): align holds with main after rebase onto KAN-64/KAN-81",
+        "oid": "1744def03761c4043f11d529b558fb6ea74337ee"
+      },
+      {
+        "authoredDate": "2026-10-22T07:17:17Z",
+        "authors": [
+          {
+            "email": "156656180+irfanmno@users.noreply.github.com",
+            "id": "U_kgDOCVZiNA",
+            "login": "irfanmno",
+            "name": "Muhammad Irfan Bin Muhd Noor"
+          },
+          {
+            "email": "noreply@anthropic.com",
+            "id": "MDQ6VXNlcjgxODQ3",
+            "login": "claude",
+            "name": "Claude Opus 5.5"
+          }
+        ],
+        "committedDate": "2026-10-22T07:17:17Z",
+        "messageBody": "\u2026ecutions\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
+        "messageHeadline": "docs(KAN-60): record the rebase onto main and move results to test ex\u2026",
+        "oid": "f9f6cdc180c4dd7e55dfd1baef9a2d956be93ead"
+      },
+      {
+        "authoredDate": "2026-10-22T07:36:44Z",
+        "authors": [
+          {
+            "email": "156656180+irfanmno@users.noreply.github.com",
+            "id": "U_kgDOCVZiNA",
+            "login": "irfanmno",
+            "name": "Muhammad Irfan Bin Muhd Noor"
+          },
+          {
+            "email": "noreply@anthropic.com",
+            "id": "MDQ6VXNlcjgxODQ3",
+            "login": "claude",
+            "name": "Claude Opus 5.5"
+          }
+        ],
+        "committedDate": "2026-10-22T07:36:44Z",
+        "messageBody": "The AC207 test repeats an initial rejection to prove it adds no notification.\nKAN-60 now refuses a blank rejection reason before the decided-state check, so\nthe repeat must carry a reason to still reach REVIEW_ALREADY_DECIDED.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
+        "messageHeadline": "test(KAN-60): give the KAN-64 repeated-rejection check a reason",
+        "oid": "4e843ab1b9fb28dce2967035a2b57a03402347ce"
+      },
+      {
+        "authoredDate": "2026-10-22T07:37:11Z",
+        "authors": [
+          {
+            "email": "156656180+irfanmno@users.noreply.github.com",
+            "id": "U_kgDOCVZiNA",
+            "login": "irfanmno",
+            "name": "Muhammad Irfan Bin Muhd Noor"
+          },
+          {
+            "email": "noreply@anthropic.com",
+            "id": "MDQ6VXNlcjgxODQ3",
+            "login": "claude",
+            "name": "Claude Opus 5.5"
+          }
+        ],
+        "committedDate": "2026-10-22T07:37:11Z",
+        "messageBody": "The KAN-77 upgrade test compared venue bookings column by column across the\npending migrations. With migration 011 also pending, existing bookings gain the\nseven hold and cancellation columns as NULL; the original values still match.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
+        "messageHeadline": "test(KAN-83): expect empty hold columns in the KAN-77 upgrade check",
+        "oid": "e29a6ab337df2da7cd123e92d62b4b2f1cb1f94e"
+      },
+      {
+        "authoredDate": "2026-10-22T08:20:06Z",
+        "authors": [
+          {
+            "email": "156656180+irfanmno@users.noreply.github.com",
+            "id": "U_kgDOCVZiNA",
+            "login": "irfanmno",
+            "name": "Muhammad Irfan Bin Muhd Noor"
+          }
+        ],
+        "committedDate": "2026-10-22T08:20:06Z",
+        "messageBody": "\u2026o feat/sprint-3-integration2",
+        "messageHeadline": "Merge remote-tracking branch 'origin/fix/KAN-60-rejection-reason' int\u2026",
+        "oid": "b0fe691fb4d4fd64d17082350741be72406c79ea"
+      },
+      {
+        "authoredDate": "2026-10-22T08:20:27Z",
+        "authors": [
+          {
+            "email": "156656180+irfanmno@users.noreply.github.com",
+            "id": "U_kgDOCVZiNA",
+            "login": "irfanmno",
+            "name": "Muhammad Irfan Bin Muhd Noor"
+          }
+        ],
+        "committedDate": "2026-10-22T08:20:27Z",
+        "messageBody": "\u2026s' into feat/sprint-3-integration2\n\n# Conflicts:\n#\tdocs/requirements/assumptions-and-questions.md\n#\tdocs/scrum/sprint-03/daily-progress.md\n#\tdocs/testing/test-evidence.md\n#\tdocs/testing/test-executions.csv",
+        "messageHeadline": "Merge remote-tracking branch 'origin/feat/KAN-81-phase-2-notification\u2026",
+        "oid": "940b16ace77c70cdefa99529d9c3a63f7848241e"
+      },
+      {
+        "authoredDate": "2026-10-22T08:20:44Z",
+        "authors": [
+          {
+            "email": "156656180+irfanmno@users.noreply.github.com",
+            "id": "U_kgDOCVZiNA",
+            "login": "irfanmno",
+            "name": "Muhammad Irfan Bin Muhd Noor"
+          }
+        ],
+        "committedDate": "2026-10-22T08:20:44Z",
+        "messageBody": "\u2026' into feat/sprint-3-integration2",
+        "messageHeadline": "Merge remote-tracking branch 'origin/feat/KAN-81-phase-3-replacements\u2026",
+        "oid": "ea8cf529b7f88bdebf5eb857defd528b828eb6bc"
+      },
+      {
+        "authoredDate": "2026-10-22T08:27:11Z",
+        "authors": [
+          {
+            "email": "156656180+irfanmno@users.noreply.github.com",
+            "id": "U_kgDOCVZiNA",
+            "login": "irfanmno",
+            "name": "Muhammad Irfan Bin Muhd Noor"
+          },
+          {
+            "email": "noreply@anthropic.com",
+            "id": "MDQ6VXNlcjgxODQ3",
+            "login": "claude",
+            "name": "Claude Opus 5.5"
+          }
+        ],
+        "committedDate": "2026-10-22T08:27:11Z",
+        "messageBody": "Resolved with Kai Jie's #48 review: migration renumbered 012 after KAN-81's 010\nand 011; the block trigger only takes the venue lock, so KAN-81 outages over\napproved bookings are saved and flagged instead of refused; createVenueBlock keeps\nmain's no-refusal path; outage impact uses the buffered occupied interval; the\nstaff queue leaves out approved bookings whose only warning is an outage; KAN-78\nrun IDs qualified as AUTO-20261021-KAN78-01/02. Shared docs keep both sides.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
+        "messageHeadline": "Merge KAN-78 buffered venue planning (#48) into sprint 3 integration",
+        "oid": "708b6a06043537248476aa4789398b0c7554109b"
+      },
+      {
+        "authoredDate": "2026-10-22T08:28:47Z",
+        "authors": [
+          {
+            "email": "156656180+irfanmno@users.noreply.github.com",
+            "id": "U_kgDOCVZiNA",
+            "login": "irfanmno",
+            "name": "Muhammad Irfan Bin Muhd Noor"
+          },
+          {
+            "email": "noreply@anthropic.com",
+            "id": "MDQ6VXNlcjgxODQ3",
+            "login": "claude",
+            "name": "Claude Opus 5.5"
+          }
+        ],
+        "committedDate": "2026-10-22T08:28:47Z",
+        "messageBody": "\u2026t rule\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
+        "messageHeadline": "test(KAN-81): expect the KAN-78 occupied interval in the outage impac\u2026",
+        "oid": "5d1702794ea23fe295b193aa75a6a4cf36397912"
+      },
+      {
+        "authoredDate": "2026-10-22T08:39:39Z",
+        "authors": [
+          {
+            "email": "156656180+irfanmno@users.noreply.github.com",
+            "id": "U_kgDOCVZiNA",
+            "login": "irfanmno",
+            "name": "Muhammad Irfan Bin Muhd Noor"
+          },
+          {
+            "email": "noreply@anthropic.com",
+            "id": "MDQ6VXNlcjgxODQ3",
+            "login": "claude",
+            "name": "Claude Opus 5.5"
+          }
+        ],
+        "committedDate": "2026-10-22T08:39:39Z",
+        "messageBody": "Holds now use KAN-78's buffered occupied interval: migration renumbered 013 and\nits trigger extends migration 012's buffered checks (hours, reserved buffers,\nunchanged approved rows not re-judged) with live holds; the view is rebuilt to\nexpose hold columns. The app-level buffered check also refuses live holds\n(VENUE_HELD), and a hold deadline may be no later than the buffered occupied\nstart. Calendar, search and suitability apply occupyingBookingSql to occupied\nintervals. Decisions keep KAN-81 replacement locking and KAN-64 notifications.\nThe unused occupiedStart hook is removed; test fakes answer the buffered query.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
+        "messageHeadline": "Merge KAN-83 temporary venue holds (#53) into sprint 3 integration",
+        "oid": "67a518e5272d46b5b5bb771440048ed82be601f4"
+      },
+      {
+        "authoredDate": "2026-10-22T08:42:01Z",
+        "authors": [
+          {
+            "email": "156656180+irfanmno@users.noreply.github.com",
+            "id": "U_kgDOCVZiNA",
+            "login": "irfanmno",
+            "name": "Muhammad Irfan Bin Muhd Noor"
+          },
+          {
+            "email": "noreply@anthropic.com",
+            "id": "MDQ6VXNlcjgxODQ3",
+            "login": "claude",
+            "name": "Claude Opus 5.5"
+          }
+        ],
+        "committedDate": "2026-10-22T08:42:01Z",
+        "messageBody": "Keeps #51's strict ISO 8601 date-time parsing (impossible dates and values without\na time zone are refused, naming the field) and its search page and API client\nvalidation. The search service otherwise stays on the integrated version: #51's\nbranch carried an older copy that dropped the operational-block exclusion, the\nshared opening-hours rule and KAN-78 buffers, and added public. schema prefixes,\nwhich caused its 11 failing PostgreSQL tests. Its AC101 unit tests are kept.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
+        "messageHeadline": "Merge KAN-12 search date validation (#51) into sprint 3 integration",
+        "oid": "96fe6e689e97659b84686363c2c614b4bd314126"
+      },
+      {
+        "authoredDate": "2026-10-22T08:47:27Z",
+        "authors": [
+          {
+            "email": "156656180+irfanmno@users.noreply.github.com",
+            "id": "U_kgDOCVZiNA",
+            "login": "irfanmno",
+            "name": "Muhammad Irfan Bin Muhd Noor"
+          },
+          {
+            "email": "noreply@anthropic.com",
+            "id": "MDQ6VXNlcjgxODQ3",
+            "login": "claude",
+            "name": "Claude Opus 5.5"
+          }
+        ],
+        "committedDate": "2026-10-22T08:47:27Z",
+        "messageBody": "\u2026heck\n\nIntegration CI found two cases where the combined rules differ from each\nbranch's own tests. A KAN-81 replacement at a closed venue reported the buffered\nhours error instead of VENUE_CLOSED_DURING_PERIOD, so the objective checks now\nrun first. A KAN-78 test still expected an outage over a booking's turnaround to\nbe refused; under KAN-81-AC2 it is saved and the booking flagged.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
+        "messageHeadline": "fix(KAN-81): run replacement suitability before the KAN-78 buffered c\u2026",
+        "oid": "9094ee61a1957f567be8011207e9c8f1f533c3ba"
+      },
+      {
+        "authoredDate": "2026-10-22T08:58:19Z",
+        "authors": [
+          {
+            "email": "156656180+irfanmno@users.noreply.github.com",
+            "id": "U_kgDOCVZiNA",
+            "login": "irfanmno",
+            "name": "Muhammad Irfan Bin Muhd Noor"
+          },
+          {
+            "email": "noreply@anthropic.com",
+            "id": "MDQ6VXNlcjgxODQ3",
+            "login": "claude",
+            "name": "Claude Opus 5.5"
+          }
+        ],
+        "committedDate": "2026-10-22T08:58:19Z",
+        "messageBody": "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
+        "messageHeadline": "docs: record sprint 3 integration 2, decisions, CI evidence and review",
+        "oid": "380fb839d03a8c1209012cd94d14edb60b5ff480"
+      }
+    ],
+    "mergeCommit": {
+      "oid": "f0ce5fa241080f86b3ba07eed8b64ab154de5b69"
+    },
+    "mergedAt": "2026-10-22T09:08:09Z",
+    "number": 54,
+    "reviews": [],
+    "title": "Sprint 3 integration 2: KAN-60, KAN-81, KAN-78/KAN-34, KAN-83, KAN-12 (#48\u2013#53)",
+    "url": "https://github.com/MochaLxtte/ConnectSphere/pull/54"
+  }
+]

@@ -85,3 +85,13 @@ The sprint's Jira closure is complete. The evidence checklist below remains open
 - [ ] Missing evidence and its impact are recorded; notes completed later show their preparation date and source.
 
 At final submission, include this sprint's process records and evidence in numbered folder **4 (Scrum evidence)**. The full final backlog goes in **1**, C4 in **2**, test cases/results in **3**, the self-contained PDF deck using the prescribed template in **5**, working code and CI scripts in **6**, and repository README/access details in **7**. Check the [submission checklist](../../../submission/checklist.md) for the complete release requirements.
+
+## 25 October 2026 — Arvin contribution reconciliation (Sprints 1–3)
+
+**S1-E22 — Arvin historical contribution readback, registered 25 October.**
+
+**KAN-24 — infrastructure, Arvin, 5 SP.** [PR #10](https://github.com/MochaLxtte/ConnectSphere/pull/10) merged on **20 September 22:43 Singapore time**, after Sprint 1’s planned 19 September end. It supplied first-release database/schema, ERD and persistence work, but also introduced business workflows beyond the infrastructure story. Arvin subsequently removed uncommitted future-scope application features in [PR #19](https://github.com/MochaLxtte/ConnectSphere/pull/19), merged **26 September 18:54**; database migration history and required shared dependencies remained. The removed workflows are not delivery credit for KAN-24 or for other members’ stories. Initial scaffolding authored by Mochs is not attributed to Arvin.
+
+The retained Jira Done entry and the original closure totals do not establish that this 20 September merge met the Definition of Done by 19 September. PR #10 was self-merged; neither #10 nor #19 has a submitted human review in the GitHub readback. PR-reported tests are historical reported results, not newly executed manual checks. Preserve `KAN-24-AC1`–`AC4`, `TC-DB-201`–`205` and `S1-T31`–`S1-T33`; reproducible setup, hosted security configuration and diagram verification must retain their existing evidence limits. No additional Done SP or revised velocity is asserted.
+
+The retained [GitHub metadata](../../sprint-03/evidence/arvin-contributions-github-2026-10-25.json) contains authors, commits, merge timestamps and submitted reviews. Readback date is distinct from actual delivery dates; no new tests were run.

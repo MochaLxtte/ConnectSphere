@@ -1289,3 +1289,17 @@ Source: phase 3 design approved in chat by Kai Jie, the story owner, on 21 Octob
 **Source:** a Codex review and manual run MAN-20261025-KAN83-01 both found that an outage-released hold gets no `venue_outage_impacts` row, which conflicted with the earlier AC3 wording ("identifies every … approved booking or live tentative hold") and AC7 (replacement for any affected arrangement).
 
 **Changes:** KAN-81-AC3 and AC7 clarified and AC4 reworded in Jira (comment 25 October) and in the [Sprint 3 backlog](../scrum/sprint-03/sprint-backlog.md); test cases TC-09-03 and TC-09-07; KAN-81 traceability rows; CR-2 in the [change requests](change-requests.md). Classified as a clarification of unfinished work (SPM Master §10.1 step 2), so no new story and no estimate change (KAN-81 stays 8 SP). Separate from the pending KAN-81-AC9 readiness split.
+
+## 25 October 2026 — Arvin KAN-78 and KAN-34 documentation reconciliation
+
+**Source:** Arvin instructed a documentation update limited to his KAN-78/KAN-34 work and requested the latest main. Codex inspected main `96a0d10`, PR #48's reviews/merge record, PR #54's integration record, existing scenario assertions and CI run 40192394546. This is evidence reconciliation, not a new customer requirement, meeting or team vote.
+
+**Existing decisions retained:** the 22 October integration renumbered KAN-78 to migration 012 after KAN-81's 010/011; migration 009 retains the KAN-77 duration columns and 013 extends guards with live holds. Outages over approved buffered bookings stay permitted and flagged; outage-only warnings use recovery instead of the staff decision queue. `TC-14-303` is clarified accordingly while previous versioned outcomes remain history. KAN-34's real-calendar/explicit-offset and draft update semantics remain unchanged.
+
+**Provenance and limits:** original reviewer Leo Kai Jie requested changes; Irfan later approved their integration resolutions. Leo's post-integration re-review is Not recorded. The last recorded Jira state is In Review on 21 October, not a fresh current tracker read. The [25 October manual run](../testing/test-evidence.md#25-october-2026--kan-60-and-kan-83-manual-hosted-runs) reports migrations 001–013 applied and a KAN-78 affected-bookings display issue; it does not complete S3-T06/S3-T19. No AC wording, estimate, shared data, acceptance, sprint date or velocity is changed by this reconciliation. [Executed automation and remaining limits](../testing/test-evidence.md#25-october-2026--arvin-kan-78-and-kan-34-documentation-reconciliation) are recorded separately.
+
+## 25 October 2026 — Arvin contribution reconciliation (Sprints 1–3)
+
+This is a dated evidence backfill prepared with Codex on 25 October, not a new ceremony, Jira transition, test execution or acceptance decision. Historical entries, other members’ ownership and agreed estimates are preserved.
+
+Evidence interpretation: Arvin’s original KAN-24 work included premature business features subsequently removed in PR #19. KAN-51 combines Ernest’s original implementation with Arvin’s later fixes. PR #47 is Kai Jie’s story with Arvin review/correction support. Missing independent approvals, hosted acceptance and ceremony evidence remain **Not recorded** or **Not assessed** as applicable. These are evidence boundaries, not new customer or team decisions.

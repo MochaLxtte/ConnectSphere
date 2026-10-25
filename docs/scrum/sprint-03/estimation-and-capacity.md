@@ -1,5 +1,7 @@
 # Sprint 3 estimation and capacity
 
+**Scoped ownership and delivery reconciliation — 25 October 2026.** Arvin owns KAN-34 **3 SP** and KAN-78 **8 SP**. Leo Kai Jie supplied the requested-changes review; Irfan recorded integration approval on PR #48/#54 on 22 October. Leo's later re-review is Not recorded. [The current evidence](../../testing/test-evidence.md#25-october-2026--arvin-kan-78-and-kan-34-documentation-reconciliation) records automated main verification, not hosted acceptance or a planning meeting. The last recorded Jira state is In Review (21 October); no new Jira read is claimed. Estimates, sprint scope and dates are unchanged; the historical unassigned rows below are superseded only for these two stories.
+
 **Estimation status:** The current 63-SP allocation is a planning baseline. Team confirmation of relative estimates, capacity and the sprint commitment is **To agree**; no planning-poker vote is recorded. The 10 to 11 SP selection target is guidance, not an individual quota. Keep existing estimates until a team-agreed change is logged.
 
 **Current selected allocation: 13 parent items / 63 SP.** Relative anchors remain KAN-33 and KAN-16 at 2 SP. Points are not hours and equal sprint totals do not demonstrate equal elapsed effort or guaranteed completion.
@@ -33,14 +35,14 @@ Velocity reference: Sprint 1 reported 24 SP; historical Sprint 2 acceptance/velo
 | --- | --- | ---: | --- | --- |
 | KAN-6 | Submit an Event Request | 3 | Unassigned — team member to choose | Retain full original carry-over estimate; complete original criteria and specific audit regression. Prior evidence remains historical; no Jira estimate is zeroed. |
 | KAN-12 | Search and Filter Venues | 5 | Unassigned — team member to choose | Retain full original carry-over estimate; complete original criteria and specific audit regression. Prior evidence remains historical; no Jira estimate is zeroed. |
-| KAN-34 | Resume/Edit Draft Event Request | 3 | Unassigned — team member to choose | Retain full original carry-over estimate; complete original criteria and specific audit regression. Prior evidence remains historical; no Jira estimate is zeroed. |
+| KAN-34 | Resume/Edit Draft Event Request | 3 | Arvin | Retain full original carry-over estimate; complete original criteria and specific audit regression. Prior evidence remains historical; no Jira estimate is zeroed. |
 | KAN-50 | Maintain Venue Catalog | 5 | Unassigned — team member to choose | Retain full original carry-over estimate; complete original criteria and specific audit regression. Prior evidence remains historical; no Jira estimate is zeroed. |
 | KAN-52 | Check Venue Suitability | 3 | Unassigned — team member to choose | Retain full original carry-over estimate; complete original criteria and specific audit regression. Prior evidence remains historical; no Jira estimate is zeroed. |
 | KAN-60 | Require a reason when rejecting an event request | 2 | Unassigned — team member to choose | Retain 2 SP: bounded rejection-reason correction, counted once and linked to KAN-36. |
 | KAN-64 | Receive Request, Assignment and Venue Notifications | 5 | Unassigned — team member to choose | Unstarted original 8-SP notification scope split: 5 SP for usable inbox/delivery plus request/assignment/venue integrations; remaining trigger groups move to KAN-80 (3). |
 | KAN-65 | Reassign Event Coordinator | 3 | Unassigned — team member to choose | Retain 3 SP: Lead-authorised reassignment, audit, race handling and access revocation; reuse KAN-79. |
 | KAN-77 | Configure Venue Setup and Turnaround Durations | 2 | Unassigned — team member to choose | Retain 2 SP: bounded catalogue/persistence extension for two validated buffer settings. |
-| KAN-78 | Apply Venue Buffers to Availability and Booking Conflicts | 8 | Unassigned — team member to choose | Retain 8 SP: shared interval calculation across venue consumers, existing-booking effects and races. |
+| KAN-78 | Apply Venue Buffers to Availability and Booking Conflicts | 8 | Arvin | Retain 8 SP: shared interval calculation across venue consumers, existing-booking effects and races. |
 | KAN-79 | Assign Submitted Events Through a Coordinator Lead Queue | 8 | Unassigned — team member to choose | Retain 8 SP: replacement submission policy, trusted Lead role, queue, assignment and oversight. |
 | KAN-81 | Recover venue arrangements affected by operational unavailability | 8 | Unassigned — team member to choose | 8 SP: extends the 3-SP KAN-55 block and 3-SP KAN-8 decision workflows with affected-booking persistence, recovery links/UI, transactional notifications and approval/outage concurrency. Existing venue search and booking paths are reused; their original implementation is not estimated again. |
 | KAN-83 | Manage temporary venue holds with expiry and automatic release | 8 | Unassigned — team member to choose | 8 SP: a new timed reservation state, database clock and replay-safe expiry worker, approval/expiry locking, all availability consumers, UI and transactional notices exceed the 3-SP KAN-8 decision scope while reusing the booking model. |
@@ -180,3 +182,9 @@ Never overwrite an estimate. Log it here and in the daily-progress scope change 
 | 16 October 2026 | KAN-6, KAN-34, KAN-50, KAN-12, KAN-52 | 19 original; 6 in initial repair proposal | 19 full carry-over | The five outstanding parents were selected for completion/re-verification at full original points. This is a disposition change from the proposal, not a change to their original Jira estimates. | Confirmed carry-over scope; full-point rule applied |
 
 </details>
+
+## 25 October 2026 — Arvin contribution reconciliation (Sprints 1–3)
+
+This is a dated evidence backfill prepared with Codex on 25 October, not a new ceremony, Jira transition, test execution or acceptance decision. Historical entries, other members’ ownership and agreed estimates are preserved.
+
+The 12 October capacity template is preparation, not recorded member availability or estimation votes. KAN-34 remains 3 SP, KAN-78 8 SP; review, rollout and preparation contributions add no separate points. The selected Sprint 3 total remains 63 SP.

@@ -1,0 +1,288 @@
+{
+  "recorded_at": "2026-10-25",
+  "scope": "Arvin contributions across Sprints 1, 2, 3; supporting work does not transfer story ownership",
+  "source_main": "d06131f7ccf739bb21820adc0bc36efa16a220c9",
+  "owned_stories": {
+    "KAN-24": 5,
+    "KAN-51": 5,
+    "KAN-34": 3,
+    "KAN-78": 8
+  },
+  "github_metadata": "arvin-contributions-github-2026-10-25.json",
+  "preparation_snapshots": [
+    {
+      "source": "C:\\Users\\arvin\\Downloads\\GitHub\\ConnectSphere\\docs\\scrum\\arvin-consultation-actions.md",
+      "retained": "arvin-consultation-preparation-20261012.txt",
+      "sha256": "5aab0f3be5c91dfac83329da19d59f61b99c675d0929debee9381c7250b3b141"
+    },
+    {
+      "source": "C:\\Users\\arvin\\Downloads\\GitHub\\ConnectSphere\\docs\\architecture\\c4\\README.md",
+      "retained": "arvin-c4-preparation-20261012.txt",
+      "sha256": "2db285d110030c1213f357cb2392b943668ccf4f42e4f5a8eba1a80d0681a821"
+    },
+    {
+      "source": "C:\\Users\\arvin\\Downloads\\GitHub\\ConnectSphere\\docs\\submission\\4\\README.md",
+      "retained": "arvin-submission-preparation-20261012.txt",
+      "sha256": "a9c85f3aac0e2eb10d18d4aac6aaea0dbbd166140da0288c592bcb9159d1881c"
+    }
+  ],
+  "shared_rollout": {
+    "artifact": "shared-migrations-008-009-20261021.json",
+    "sha256": "0805fb53899c3eb81d49e3a2ff3377ddf4cae655f33f4c13e57ae06eed9b614c",
+    "executor": "Codex",
+    "authorization": "Arvin; historical rollout record",
+    "not_feature_acceptance": true
+  },
+  "application_tests_run_for_documentation_change": false,
+  "jira_refreshed": false,
+  "historical_velocity_recomputed": false,
+  "validation": {
+    "status": "Pass",
+    "checks": [
+      {
+        "check": "Changes stay under docs",
+        "passed": true,
+        "detail": "50 files"
+      },
+      {
+        "check": "Documentation branch based on pulled main",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "13 selected parents retained",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "63 story points retained",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "Only Arvin selected story rows changed",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "Arvin owner and 3 plus 8 points",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "Stable story acceptance criteria unchanged",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "Current acceptance rows have four columns",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "Correct S3-T06 and S3-T19 evidence columns",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "42 master parents and 174 points retained",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "Other master story rows unchanged",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "Only recorded Arvin owner and tracker state updated",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "All specification IDs retained uniquely",
+        "passed": true,
+        "detail": "467"
+      },
+      {
+        "check": "Only nine owned specifications clarified",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "Case creation metadata preserved",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "Earlier execution history unchanged",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "Nine supported case readback rows only",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "Execution IDs unique and results constrained",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "Executions reference existing specifications",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "Imported results identify build and non-hosted boundary",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "Traceability count preserved",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "Only owned traceability rows changed",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "Owned implementation and test paths exist",
+        "passed": true,
+        "detail": "35 unique paths"
+      },
+      {
+        "check": "KAN-78 current feature mappings no longer placeholders",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "CSV schemas remain intact",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "No new Markdown document requiring AGENTS map entry",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "Added local Markdown links and anchors resolve",
+        "passed": true,
+        "detail": "1205 links; []"
+      },
+      {
+        "check": "No conflict markers in added lines",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "Detailed venue ERD has one duration pair",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "Three current design exports readable",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "No application changes need a new runtime result",
+        "passed": true,
+        "detail": ""
+      }
+    ],
+    "check_count": 31,
+    "application_tests_run_for_this_docs_change": false,
+    "prior_CI_import_only": true
+  },
+  "diagrams": {
+    "renderer": "Mermaid CLI 12.0.0; neutral theme; white background; size 2600; scale 2; local Chromium 1243",
+    "exports": {
+      "class": {
+        "path": "docs/architecture/exports/class.png",
+        "sha256": "bad528de851ccefb6b21e914c8b0ce03c6ee307986a35f3d637e7e1a8c2e4c5d",
+        "dimensions": [
+          5200,
+          4448
+        ],
+        "mermaid_source_sha256": "9c821211fc738916c319a17e7a79da48c91f525b624143c07e6188509afd80b3"
+      },
+      "erd-planning": {
+        "path": "docs/architecture/exports/erd-planning.png",
+        "sha256": "961dea6db87c3a29dd86c62cc8e14879da842057424cf778144b61c4d5f39bf0",
+        "dimensions": [
+          5200,
+          2970
+        ],
+        "mermaid_source_sha256": "77b2282c11dfd8cce7e3208f8e7c20a4a897848361f27d3370f84a6fef722be7"
+      },
+      "seq-lead-assignment": {
+        "path": "docs/architecture/exports/seq-lead-assignment.png",
+        "sha256": "6d751216b7c424367abb902efef79cb1ef970a038494e719070243a6e84ed356",
+        "dimensions": [
+          3250,
+          5200
+        ],
+        "mermaid_source_sha256": "6b3decaaaa37fae25de1ad70da734fa155484dbd4ee264e677655fb91f713498"
+      }
+    },
+    "visually_inspected_by": "Codex",
+    "visual_result": "Pass: all three exports inspected for legibility, relationships and clipping"
+  },
+  "changed_records": [
+    "docs/architecture/README.md",
+    "docs/architecture/api-contract.md",
+    "docs/architecture/exports/class.png",
+    "docs/architecture/exports/erd-planning.png",
+    "docs/architecture/exports/seq-lead-assignment.png",
+    "docs/database-diagram.md",
+    "docs/requirements/README.md",
+    "docs/requirements/assumptions-and-questions.md",
+    "docs/requirements/change-requests.md",
+    "docs/requirements/product-backlog.md",
+    "docs/requirements/traceability.csv",
+    "docs/scrum/README.md",
+    "docs/scrum/release-burndown.md",
+    "docs/scrum/sprint-01/README.md",
+    "docs/scrum/sprint-01/daily-progress.md",
+    "docs/scrum/sprint-01/estimation-and-capacity.md",
+    "docs/scrum/sprint-01/evidence/README.md",
+    "docs/scrum/sprint-01/planning.md",
+    "docs/scrum/sprint-01/review.md",
+    "docs/scrum/sprint-01/sprint-backlog.md",
+    "docs/scrum/sprint-02/README.md",
+    "docs/scrum/sprint-02/daily-progress.md",
+    "docs/scrum/sprint-02/estimation-and-capacity.md",
+    "docs/scrum/sprint-02/evidence/README.md",
+    "docs/scrum/sprint-02/planning.md",
+    "docs/scrum/sprint-02/review.md",
+    "docs/scrum/sprint-02/sprint-backlog.md",
+    "docs/scrum/sprint-03/README.md",
+    "docs/scrum/sprint-03/daily-progress.md",
+    "docs/scrum/sprint-03/estimation-and-capacity.md",
+    "docs/scrum/sprint-03/evidence/AUTO-20261025-ARVIN-01-ci.txt",
+    "docs/scrum/sprint-03/evidence/README.md",
+    "docs/scrum/sprint-03/evidence/arvin-all-sprints-reconciliation-2026-10-25.json",
+    "docs/scrum/sprint-03/evidence/arvin-c4-preparation-20261012.txt",
+    "docs/scrum/sprint-03/evidence/arvin-consultation-preparation-20261012.txt",
+    "docs/scrum/sprint-03/evidence/arvin-contributions-github-2026-10-25.json",
+    "docs/scrum/sprint-03/evidence/arvin-reconciliation-2026-10-25.json",
+    "docs/scrum/sprint-03/evidence/arvin-submission-preparation-20261012.txt",
+    "docs/scrum/sprint-03/evidence/shared-migrations-008-009-20261021.json",
+    "docs/scrum/sprint-03/planning.md",
+    "docs/scrum/sprint-03/review.md",
+    "docs/scrum/sprint-03/sprint-backlog.md",
+    "docs/submission/1/README.md",
+    "docs/submission/checklist.md",
+    "docs/testing/README.md",
+    "docs/testing/coverage-reports/2026-10-25-kan78-kan34-ci.txt",
+    "docs/testing/coverage-reports/README.md",
+    "docs/testing/test-cases.csv",
+    "docs/testing/test-evidence.md",
+    "docs/testing/test-executions.csv"
+  ]
+}

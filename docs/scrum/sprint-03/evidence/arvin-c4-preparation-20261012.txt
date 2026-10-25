@@ -1,0 +1,40 @@
+# C4 architecture handoff
+
+Prepared 12 October 2026 against application source at `8f29d35`. These views describe the implemented system, with the planned attendee flow explicitly dashed. They do not establish hosted acceptance or implementation of the consultation change requests.
+
+| View | Editable source | PNG export |
+| --- | --- | --- |
+| C1: people, system and identity provider | [Mermaid](c1-system-context.mmd) | [PNG](exports/c1-system-context.png) |
+| C2: web, API and database containers | [Mermaid](c2-containers.mmd) | [PNG](exports/c2-containers.png) |
+| C3: components inside the API container | [Mermaid](c3-api-components.mmd) | [PNG](exports/c3-api-components.png) |
+
+[Three-page PDF for instructor review](exports/connectsphere-c4.pdf). Arvin should obtain a second developer's architecture review and send the reviewed exports to the instructor using the team's agreed channel. Review and delivery have not been recorded.
+
+## Source mapping
+
+| Component | Source | Responsibility |
+| --- | --- | --- |
+| HTTP composition | `backend/src/app.ts`, `backend/src/runtime-app.ts` | Mount routes and wire dependencies |
+| Authentication | `backend/src/modules/auth/` | Verify Supabase tokens, sessions, trusted profiles and access policies |
+| Event workflow | `backend/src/modules/events/` | Drafts, submission, initial assignment, clarification, review and history |
+| Venue planning | `backend/src/modules/venues/` | Catalogue, search, availability, suitability, booking and blocks |
+| Workflow HTTP boundary | `backend/src/modules/events/workflow-http.ts` | Shared request authentication, roles, identifiers and errors |
+| Shared workflow support | `backend/src/modules/events/workflow-support.ts` | Transaction and event helpers also consumed by venue workflows |
+| Database pool | `backend/src/db/pool.ts` | Server-side PostgreSQL connections |
+| Health endpoints | `backend/src/app.ts` | Liveness and database readiness |
+
+The API is one process. Domain services execute parameterised SQL and share transaction clients where required. The browser exchanges Supabase credentials for an access token and then establishes an HttpOnly API session. Application data access goes through Express. Supabase hosting does not imply that the frontend/API have been deployed.
+
+Equipment, registration and notification tables do not imply implemented application modules. Coordinator Lead, Safety Officer, multi-venue arrangements and tentative holds remain consultation proposals. Technical Support Staff currently have venue-calendar access; equipment workflows are future work.
+
+## Re-export
+
+Use Node.js and Mermaid CLI (`@mermaid-js/mermaid-cli`), with Chromium available to Puppeteer. For each `.mmd` file run:
+
+```text
+mmdc -i c1-system-context.mmd -o exports/c1-system-context.png -c mermaid-config.json --size 2400 -s 2
+```
+
+Repeat for C2 and C3. When supplying an existing Chromium installation, pass `-p` with a local Puppeteer JSON configuration containing `executablePath`. Keep machine-specific paths outside the repository. Visually check every export after changing a source. The PDF packages the three PNGs with view titles and source metadata.
+
+The view boundaries follow the [C4 container](https://c4model.com/diagrams/container) and [component](https://c4model.com/diagrams/component) definitions. A component view expands one container.

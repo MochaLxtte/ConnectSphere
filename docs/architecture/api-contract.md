@@ -722,3 +722,19 @@ The relevant business services insert these notices before committing, using the
 ## KAN-78 integrated buffer-save reporting — 21 October 2026
 
 The KAN-77 editor is now present from main. On a successful buffer-field PATCH, the catalogue response adds optional `venue.affectedBookings: { id: string, warnings: string[] }[]`, evaluated in the same venue-locked transaction. The editor displays these warnings with booking-detail links. This reports affected arrangements without cancelling or moving them. Existing field-aware stale checks remain unchanged. Earlier KAN-77 pending-editor notes describe the pre-integration branch. Schema source is now shared migration 009 plus extension 010, not the superseded private 008.
+
+## KAN-78 and KAN-34 current integrated contract — 25 October 2026
+
+This current readback supersedes the private migration 008, extension 010 and pending-editor statements in the dated KAN-78 sections above; their original branch context is retained. KAN-77 migration **009** owns venue duration columns and field-aware stale edits. KAN-78 migration **012** owns approval snapshots, `venue_occupied_start/end`, `venue_interval_within_hours`, `venue_booking_intervals` and `venue_booking_warnings`. Migration **013** subsequently extends the view/guard with KAN-83 hold fields and live occupancy.
+
+Search, calendar, suitability, request submission and approval use `[event start - setup, event end + turnaround)`. Exact occupied adjacency is allowed. Approved bookings and unexpired holds block new overlapping reservations; pending/rejected/cancelled/expired rows do not. A writer rechecks the database clock, current durations, hours, occupied bookings and blocks after taking the venue lock; an expired hold cannot keep blocking because a writer waited. Ended/completed historical rows use approval snapshots. Existing approved-booking warnings cover other approved reservations, operational blocks and hours; warning calculation does not currently report a live hold as an overlap.
+
+The venue catalogue PATCH response may include `venue.affectedBookings: { id, warnings }[]`, computed in the buffer-save transaction. Staff booking lists include pending requests, live holds and approved bookings with warnings other than an outage-only `OPERATIONAL_BLOCK_OVERLAP`. KAN-81 recovery handles those outage cases. A later outage overlapping an approved buffered interval is saved and flags recovery; new conflicting booking/approval attempts remain refused. Existing reservations are never silently moved or cancelled by buffer edits. Known hosted display gap: affected-booking links show a raw warning code without an event name; no fix is claimed.
+
+KAN-34 retains the real-calendar/explicit-offset validation on all four draft date fields, PATCH omission/nullable-clear semantics, Draft state and ownership restrictions. Its registration-toggle/save/reopen browser test uses substituted API responses; separate PostgreSQL tests verify persisted values and direct HTTP guards. [Evidence and exact-case boundaries](../testing/test-evidence.md#25-october-2026--arvin-kan-78-and-kan-34-documentation-reconciliation) do not establish complete hosted S3-T06/S3-T19 acceptance or a fresh Jira state.
+
+## 25 October 2026 — Arvin contribution reconciliation (Sprints 1–3)
+
+This is a dated evidence backfill prepared with Codex on 25 October, not a new ceremony, Jira transition, test execution or acceptance decision. Historical entries, other members’ ownership and agreed estimates are preserved.
+
+KAN-51 PR #28 synchronized client route/history and selected venue and added spoofed-role API denial regressions. Client route guards do not replace server authorization. KAN-81 PR #47 corrections refresh both views after stale 404/409 write refusals without automatically retrying the refused write. These are historical implementation provenance notes; current endpoint shapes and error contracts above remain authoritative.

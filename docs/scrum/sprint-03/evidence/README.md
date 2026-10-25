@@ -137,3 +137,32 @@ AUTO-20261021-KAN78-02: [backend coverage output](AUTO-20261021-KAN78-02-coverag
 ## 21 October — reconciled KAN-78 / KAN-34 verification
 
 AUTO-20261021-90: [check](AUTO-20261021-90-check.txt), [PostgreSQL integration](AUTO-20261021-90-integration.txt), [Chromium](AUTO-20261021-90-browser.txt), [frontend coverage](AUTO-20261021-90-frontend-coverage.txt), [backend coverage](AUTO-20261021-90-backend-coverage.txt). These supersede the earlier branch-only results for the current merged tree. Hosted acceptance remains Not executed.
+
+## Arvin delivery reconciliation — 25 October 2026
+
+| ID | Artifact | Source / result | Limits |
+| --- | --- | --- | --- |
+| S3-E21 | [Source metadata and validation](arvin-reconciliation-2026-10-25.json), [retained CI excerpt](AUTO-20261025-ARVIN-01-ci.txt), [run narrative](../../../testing/test-evidence.md#25-october-2026--arvin-kan-78-and-kan-34-documentation-reconciliation), [coverage](../../../testing/coverage-reports/2026-10-25-kan78-kan34-ci.txt), [PR #48](https://github.com/MochaLxtte/ConnectSphere/pull/48) / [integration #54](https://github.com/MochaLxtte/ConnectSphere/pull/54) | `AUTO-20261025-ARVIN-01` imports successful current-main CI at `96a0d10`: 770 frontend / 1,354 backend, 482 PostgreSQL, 156 browser; owned interval 11/11 and draft persistence 19/19. Nine existing permanent cases receive supported automated readback rows. Leo requested changes; Irfan approved integration. Current class/planning ERD/sequence exports refreshed. | Not a new local or hosted run, full manual group, fresh Jira export, Leo re-review, held review or sprint-close report. Acceptance Not assessed; no estimates, points, dates or velocity changed. Earlier failing integration and original branch runs retained. |
+
+## 25 October 2026 — Arvin contribution reconciliation (Sprints 1–3)
+
+This is a dated evidence backfill prepared with Codex on 25 October, not a new ceremony, Jira transition, test execution or acceptance decision. Historical entries, other members’ ownership and agreed estimates are preserved.
+
+**Supporting contributions, separate from owned KAN-34 (3 SP) and KAN-78 (8 SP):**
+
+- **12 October preparation:** Arvin’s consultation action list, C4 preparation record and submission runbook are retained as TXT source snapshots in this sprint’s evidence folder. They prepared Sprint 2 closure, Sprint 3 planning, capacity inputs, C4 exports and packaging; they do not establish that meetings occurred, votes were cast, artifacts were independently reviewed or instructor access was delivered. The original worktree remains untouched. Current committed design supersedes those historical C4 snapshots.
+- **21 October 02:26:27 Singapore time — shared migrations 008/009:** Arvin authorized the reviewed rollout; Codex executed it from `cf65c05e5d7b91675d74f7281439d0e9c2b1a766`. The retained JSON records both ledger checksums, four columns, two indexes and zero venues with nonzero initial buffers. This is deployment verification, not KAN-64/KAN-77 authorship, hosted functional acceptance or a new team-wide decision. No fixture, booking or cleanup writes were part of that run.
+- **21 October — KAN-81 PR #47 review and corrections:** Arvin requested changes, implemented stale 404/409 refresh corrections in `18ac27d`/`30da68a`, updated tests/evidence and then approved the phase-one work while disclosing his own fixes. His follow-up approval is not a second independent review of his corrections. Kai Jie remains KAN-81’s owner at 8 SP. Existing **S3-E20**, the KAN-81 review JSON and 21 October test narrative retain the scope and CI results.
+
+Owned KAN-34/KAN-78 merge, CI and acceptance limits remain in the preceding 25 October reconciliation. Supporting work adds no story points and does not convert other members’ stories to Done.
+
+### Retained Arvin contribution sources
+
+| Artifact | Provenance / limitation |
+| --- | --- |
+| [GitHub contribution metadata](arvin-contributions-github-2026-10-25.json) | PR authors, commits, merges and submitted reviews read back on 25 October |
+| [All-sprint reconciliation and validation](arvin-all-sprints-reconciliation-2026-10-25.json) | Four owned stories, supporting contributions, source hashes and documentation checks |
+| [Shared migration 008/009 readback](shared-migrations-008-009-20261021.json) | Exact retained rollout JSON from the migration worktree; deployment checks only |
+| [12 October consultation preparation](arvin-consultation-preparation-20261012.txt) | Original uncommitted source snapshot; preparation rather than ceremony outcomes |
+| [12 October C4 preparation](arvin-c4-preparation-20261012.txt) | Historical source snapshot; independent review and delivery not recorded |
+| [12 October submission preparation](arvin-submission-preparation-20261012.txt) | Historical runbook snapshot; not final submission approval |

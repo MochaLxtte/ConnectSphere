@@ -1,5 +1,7 @@
 # ConnectSphere Database Diagram
 
+**KAN-78 schema reconciliation — 25 October 2026.** For current source `96a0d10`, venue duration columns come from migration **009**, while approval snapshots, internal interval/hours helpers and `venue_booking_warnings` come from **012_venue_occupied_intervals.sql**. Migration **013** rebuilds the interval view with hold/cancellation fields and extends the occupancy guard. `venue_booking_intervals` is a view, not an extra stored table. The dated 21 October schema and private migration-008 descriptions below are historical. The [25 October shared-development run](testing/test-evidence.md#25-october-2026--kan-60-and-kan-83-manual-hosted-runs) reports migrations 001–013 present in `schema_migrations`; this is a reported setup check, not a newly executed complete schema audit or KAN-78/KAN-34 hosted acceptance. Existing rows, ownership and approval history are preserved.
+
 Repository schema through migration 009, updated on 21 October 2026. Migration 008 adds notification booking links and outcome deduplication; migration 009 adds venue setup/turnaround minutes. The last recorded shared Supabase structure verification was on 30 September for migrations 001-006. The 14 application tables and two support tables are retained; shared application of migrations 008/009 is not recorded.
 
 **19 October implementation checkpoint:** migration 007 expanded the allowed application roles without changing tables, columns or relationships. Its application to shared Supabase was not recorded at that checkpoint.
@@ -123,8 +125,6 @@ erDiagram
     }
 
     venues {
-        integer setup_minutes "0..1440, default 0"
-        integer turnaround_minutes "0..1440, default 0"
         uuid id PK
         text name
         text description "nullable"
@@ -298,3 +298,9 @@ The diagrams describe stored tables and relationships. The [database guide](../d
 ## KAN-78 internal interval model — 21 October 2026
 
 Migration 008 adds two zero-default constrained venue duration columns and two booking approval-snapshot columns shown above. `venue_booking_intervals` is an internal view, not another persistent table: live non-completed bookings use current venue durations; ended/completed bookings use the recorded snapshots. `venue_booking_warnings(uuid)` derives current conflicts/operational violations without writing bookings. These database objects do not grant a new Data API access path.
+
+## 25 October 2026 — Arvin contribution reconciliation (Sprints 1–3)
+
+This is a dated evidence backfill prepared with Codex on 25 October, not a new ceremony, Jira transition, test execution or acceptance decision. Historical entries, other members’ ownership and agreed estimates are preserved.
+
+Arvin’s KAN-24 schema/ERD work merged in PR #10; its subsequently removed application workflows do not imply their current availability. Shared migration 008/009 ledger/schema verification on 21 October is retained in `docs/scrum/sprint-03/evidence/shared-migrations-008-009-20261021.json`. It confirms rollout checks, not hosted behavior or ownership of the dependent stories.
