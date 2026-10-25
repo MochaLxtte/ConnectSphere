@@ -1277,3 +1277,15 @@ Source: phase 3 design approved in chat by Kai Jie, the story owner, on 21 Octob
 **Source and date:** Kai Jie, 25 October 2026, while checking KAN-81 against `main` after the 22 October integration (AI-assisted). A correction to make the code meet the existing KAN-81-AC3 wording; no AC or estimate changes.
 
 **Correction.** Saving an outage released only live holds whose *event* interval overlapped it, while approved bookings were already judged by their buffered occupied interval (22 October decision 2). An outage covering only a hold's setup or turnaround time therefore left the hold live and still reserving the venue, contrary to AC3 ("every non-ended approved booking or live tentative hold … whose buffered occupied interval overlaps the outage"). The hold query in `createVenueBlock` now reads `venue_booking_intervals`, the same interval the hold reserves under the 013 trigger. Exact adjacency remains unaffected (half-open intervals). Released holds keep KAN-83-AC10's behaviour: cancelled with the outage reason and the coordinator notified; they are not recorded as recovery items.
+
+## 25 October 2026 — KAN-81 holds hit by an outage are released, not flagged
+
+**Decision:** an operational outage flags overlapping non-ended **approved** bookings for recovery (KAN-81). An overlapping **live hold** is released instead: it is cancelled with the outage reason, its history is kept and its assigned coordinator is notified (KAN-83-AC10). It gets no recovery flag and no linked replacement; the coordinator requests a venue again through the normal request process (KAN-83-AC11).
+
+**Who and how:** Irfan as Product Owner, 25 October 2026, after advice in an AI-assisted session (Claude). Not a team vote. Kai Jie (KAN-81 owner) is informed; Tristan reviews and approves the records PR (#58).
+
+**Why:** a hold is a provisional reservation that is never a confirmed arrangement and can expire on its own, so a linked replacement adds little over a normal new request. The rule matches KAN-83's existing criteria, needs no code change, and the behaviour is already tested (TC-09-24 from PR #55, KAN-83 hold tests and manual run MAN-20261025-KAN83-01).
+
+**Source:** a Codex review and manual run MAN-20261025-KAN83-01 both found that an outage-released hold gets no `venue_outage_impacts` row, which conflicted with the earlier AC3 wording ("identifies every … approved booking or live tentative hold") and AC7 (replacement for any affected arrangement).
+
+**Changes:** KAN-81-AC3 and AC7 clarified and AC4 reworded in Jira (comment 25 October) and in the [Sprint 3 backlog](../scrum/sprint-03/sprint-backlog.md); test cases TC-09-03 and TC-09-07; KAN-81 traceability rows; CR-2 in the [change requests](change-requests.md). Classified as a clarification of unfinished work (SPM Master §10.1 step 2), so no new story and no estimate change (KAN-81 stays 8 SP). Separate from the pending KAN-81-AC9 readiness split.

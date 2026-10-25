@@ -162,6 +162,8 @@ The existing KAN-60 rejection-reason correction predates Week 7. Resolve its rel
 
 **Implementation progress — 21 October 2026.** KAN-81 phase 1 replaces KAN-55's refusal of an outage over approved bookings, flags the affected arrangements in a new `venue_outage_impacts` table and gives Venue Staff a recovery view. Coordinator notification (phase 2) and linked replacements (phase 3) follow. See the [phase 1 decisions](assumptions-and-questions.md#21-october-2026--kan-81-phase-1-outage-recovery-decisions). Acceptance is Not assessed.
 
+**Clarification — 25 October 2026 (PO).** Live holds hit by an outage are released and their coordinator notified (KAN-83-AC10); only approved bookings are flagged for recovery and can get a linked replacement. KAN-81-AC3/AC4/AC7 are reworded accordingly; no new story, no estimate change. See the [decision](assumptions-and-questions.md#25-october-2026--kan-81-holds-hit-by-an-outage-are-released-not-flagged).
+
 ## CR-3 — Multiple venues for one event
 
 1. **Requested change / baseline:** one event can use multiple venues; each arrangement is checked independently and changing/cancelling one must not implicitly remove others. Multiple booking rows already exist, so this is not a claim that all supporting code is absent. Independent cancellation/change behaviour is not established by the existing creation flow. Source: page 1, item 3. Classification of the gap **To agree** after comparing existing criteria.
