@@ -31,19 +31,6 @@ const actionError = ref('');
 const savedMessage = ref('');
 const bufferConflict = ref(false);
 let controller: AbortController | undefined;
-let saveController: AbortController | undefined;
-
-/**
- * KAN-50-AC101: a save belongs to the venue and account it was started for. Leaving that venue,
- * reloading, changing account or leaving the page invalidates it, so its late success or failure
- * is ignored and can never replace another venue's editor or retarget a later save. (The server may
- * still have stored the change for the original venue; only the UI response is discarded.)
- */
-function invalidateSave() {
-  saveController?.abort();
-  saveController = undefined;
-  busy.value = false;
-}
 
 const errors = computed(() => validateForm(form));
 const changes = computed(() => (venue.value ? buildUpdate(venue.value, form) : {}));
@@ -57,7 +44,6 @@ function show(saved: CatalogueVenue) {
 
 async function load() {
   controller?.abort();
-  invalidateSave();
   const current = new AbortController();
   controller = current;
   state.value = { status: 'loading' };
@@ -66,10 +52,8 @@ async function load() {
   savedMessage.value = '';
   bufferConflict.value = false;
   try {
-    const loaded = await fetchCatalogueVenue(venueId.value, current.signal);
-    if (current.signal.aborted) return;
-    show(loaded);
-    state.value = { status: 'ready' };
+    show(await fetchCatalogueVenue(venueId.value, current.signal));
+    if (!current.signal.aborted) state.value = { status: 'ready' };
   } catch (error) {
     if (current.signal.aborted) return;
     if (error instanceof ApiError && error.status === 401) {
@@ -87,22 +71,14 @@ async function load() {
 
 async function save() {
   if (!canSave.value || !venue.value) return;
-  // Fix the target and payload now; nothing read after the await may choose the venue (AC101).
-  const targetId = venue.value.id;
-  const update = changes.value;
-  const current = new AbortController();
-  saveController = current;
   busy.value = true;
   actionError.value = '';
   savedMessage.value = '';
   bufferConflict.value = false;
   try {
-    const saved = await updateCatalogueVenue(targetId, update, current.signal);
-    if (current.signal.aborted) return;
-    show(saved);
+    show(await updateCatalogueVenue(venue.value.id, changes.value));
     savedMessage.value = 'Venue information saved.';
   } catch (error) {
-    if (current.signal.aborted) return;
     if (error instanceof ApiError && error.status === 401) {
       clearLocalSession();
       return;
@@ -113,11 +89,7 @@ async function save() {
       ? 'Someone else changed the setup or turnaround time after you opened this venue, so nothing was saved. Reload to see the current values, then make your change again.'
       : error instanceof Error ? error.message : 'The changes could not be saved.';
   } finally {
-    // Only the current save clears the busy flag; an invalidated save must not touch a newer state.
-    if (saveController === current) {
-      busy.value = false;
-      saveController = undefined;
-    }
+    busy.value = false;
   }
 }
 
@@ -134,7 +106,6 @@ watch(
     if (authSession.loading) return;
     if (!isStaff.value) {
       controller?.abort();
-      invalidateSave();
       state.value = { status: 'idle' };
       venue.value = null;
       return;
@@ -143,10 +114,7 @@ watch(
   },
   { immediate: true, flush: 'sync' },
 );
-onBeforeUnmount(() => {
-  controller?.abort();
-  invalidateSave();
-});
+onBeforeUnmount(() => controller?.abort());
 </script>
 
 <template>
