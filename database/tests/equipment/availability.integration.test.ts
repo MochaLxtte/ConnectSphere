@@ -149,6 +149,43 @@ describe('KAN-9 read-only equipment availability against real PostgreSQL', () =>
       peakReservedQuantity: 7, availableQuantity: 0, shortfallQuantity: 1 })] });
   });
 
+  it('fulfils mixed equipment types at equality and reports only the deficient type without writing records', async () => {
+    const target = await event();
+    const competing = await event();
+    const typeA = await equipment({ total: 10, damaged: 2, maintenance: 1 });
+    const typeB = await equipment({ total: 5, damaged: 0, maintenance: 0 });
+    await line(competing, typeA, 4, 'RESERVED');
+    await line(target, typeA, 3);
+    await line(target, typeB, 1);
+    const before = await snapshot();
+
+    const equality = await saved(target);
+    expect(equality.status).toBe(200);
+    expect(equality.body.assessment).toMatchObject({ outcome: 'FULFILLABLE', mode: 'saved', advisory: true });
+    expect(equality.body.assessment.items).toHaveLength(2);
+    expect(equality.body.assessment.items).toEqual(expect.arrayContaining([
+      expect.objectContaining({ equipmentTypeId: typeA, requestedQuantity: 3, operationalQuantity: 7,
+        peakReservedQuantity: 4, availableQuantity: 3, shortfallQuantity: 0 }),
+      expect.objectContaining({ equipmentTypeId: typeB, requestedQuantity: 1, operationalQuantity: 5,
+        peakReservedQuantity: 0, availableQuantity: 5, shortfallQuantity: 0 }),
+    ]));
+    expect(await snapshot()).toEqual(before);
+
+    const shortage = await whatIf(target, [
+      { equipmentTypeId: typeA, quantity: 4 }, { equipmentTypeId: typeB, quantity: 1 },
+    ]);
+    expect(shortage.status).toBe(200);
+    expect(shortage.body.assessment).toMatchObject({ outcome: 'SHORTFALL', mode: 'what-if', advisory: true });
+    expect(shortage.body.assessment.items).toHaveLength(2);
+    expect(shortage.body.assessment.items).toEqual(expect.arrayContaining([
+      expect.objectContaining({ equipmentTypeId: typeA, requestedQuantity: 4,
+        operationalQuantity: 7, peakReservedQuantity: 4, availableQuantity: 3, shortfallQuantity: 1 }),
+      expect.objectContaining({ equipmentTypeId: typeB, requestedQuantity: 1,
+        operationalQuantity: 5, peakReservedQuantity: 0, availableQuantity: 5, shortfallQuantity: 0 }),
+    ]));
+    expect(await snapshot()).toEqual(before);
+  });
+
   it('preserves PostgreSQL microsecond overlap and adjacency boundaries', async () => {
     const target = await event();
     const competing = await event();
