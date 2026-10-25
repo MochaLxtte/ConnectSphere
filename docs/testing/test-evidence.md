@@ -1448,3 +1448,16 @@ The fix runs KAN-81 replacement suitability before the KAN-78 buffered check and
 **Conflict resolutions that change behaviour** are listed in the [22 October decisions](../requirements/assumptions-and-questions.md#22-october-2026--sprint-3-integration-2-decisions). Test changes made only to fit the combined code: `outage-impact.test.ts` (buffered condition), `venue-holds.test.ts` (fake answers the buffered check, KAN-81 fixture fields, parameter order), `database.integration.test.ts` (migration lists 012/013 and new empty booking columns), `VenueBookingHold.test.ts` and `venue-holds.spec.ts` (KAN-81 fixture fields), `venue-search.test.ts` (keeps the integrated tests plus #51's KAN-12-AC101 cases), and the staff-queue heading in `VenueBookingsPage.test.ts` and `venue-bookings.spec.ts`. KAN-78 run IDs are renamed `AUTO-20261021-KAN78-01/02`, including the evidence file names.
 
 **Not executed / not done:** manual and hosted acceptance cases for every story; the combined `class.png`/`erd-planning.png` re-export (Mermaid CLI not available; main's exports kept); applying migrations 010–013 to shared Supabase. No case result in `test-executions.csv` is changed by this run.
+
+## 25 October 2026 — KAN-81-AC3 hold release by buffered interval
+
+**Run ID: AUTO-20261025-KAN81-01.** Branch `fix/KAN-81-hold-buffered-release` from `main` `f0ce5fa`. Actual execution date: 25 October 2026, Asia/Singapore. Environment: Windows, Node.js 24, Vitest. No isolated PostgreSQL database locally; shared Supabase not used. See the [25 October correction](../requirements/assumptions-and-questions.md#25-october-2026--kan-81-outages-release-holds-by-their-buffered-interval).
+
+| Command / check | Actual result |
+| --- | --- |
+| `npm run check` | Pass: type checks; 759 frontend tests (36 files), 1354 backend tests (46 files); both production builds |
+| `npm run test:integration` (three new `KAN-81-AC3` cases in `venue-holds.integration.test.ts`: setup-only and turnaround-only outages release the hold; exactly adjacent outages leave it live) | **Not executed** locally (no disposable PostgreSQL). The pull request's CI run is the reference |
+
+No test case result in `test-executions.csv` is changed by this run.
+
+**CI follow-up — 25 October 2026, PR #55 (KAN-81 AC3 hold fix).** Run [40141272223](https://github.com/MochaLxtte/ConnectSphere/actions/runs/40141272223) (`AUTO-20261025-KAN81-CI-01`, merge `f2b1ece` of head `d870cf6`) passed every step: check and coverage, migrate, seed, integration **482/482** (`venue-holds` 44/44, including the three new `KAN-81-AC3` cases) and browser **156/156**. Recorded as scoped TC-09-24 in `test-executions.csv`; the broader TC-09-03 remains unexecuted.
