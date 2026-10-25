@@ -75,7 +75,7 @@ Every row requires its complete active criterion set plus applicable Definition 
 
 ### KAN-6 — Submit an Event Request
 
-**Owner:** Unassigned — team member to choose · **Independent reviewer:** To agree after owner chosen · **Estimate:** 3 SP · **Jira status:** To Do · **Acceptance:** Not assessed · **Test group:** S3-T05
+**Implementation by Ernest (EarnestErnest), merged in PR #46; Jira assignee Ernest per his statement of 25 October 2026, Jira status Not recorded; independent reviewer To agree.** **Owner:** Unassigned — team member to choose · **Independent reviewer:** To agree after owner chosen · **Estimate:** 3 SP · **Jira status:** To Do · **Acceptance:** Not assessed · **Test group:** S3-T05
 
 **User story:** As an Event Organiser, I want to submit my event request to ConnectSphere so that it can be reviewed and the event planning process can proceed.
 
@@ -492,7 +492,7 @@ Implementation defaults: docs/scrum/sprint-03/planning.md and docs/requirements/
 
 ### KAN-52 — Check Venue Suitability
 
-**Owner:** Unassigned — team member to choose · **Independent reviewer:** To agree after owner chosen · **Estimate:** 3 SP · **Jira status:** To Do · **Acceptance:** Not assessed · **Test group:** S3-T17
+**Implementation by Ernest (EarnestErnest), merged in PR #46; Jira assignee Ernest per his statement of 25 October 2026, Jira status Not recorded; independent reviewer To agree.** **Owner:** Unassigned — team member to choose · **Independent reviewer:** To agree after owner chosen · **Estimate:** 3 SP · **Jira status:** To Do · **Acceptance:** Not assessed · **Test group:** S3-T17
 
 **User story:** As an Event Coordinator, I want to check whether a venue appears suitable for an event so that I can avoid selecting a venue that does not meet important event requirements.
 
@@ -831,7 +831,7 @@ Implementation defaults: docs/scrum/sprint-03/planning.md and docs/requirements/
 
 ### KAN-64 — Receive Request, Assignment and Venue Notifications
 
-**Owner:** Unassigned — team member to choose · **Independent reviewer:** To agree after owner chosen · **Estimate:** 5 SP · **Jira status:** To Do · **Acceptance:** Not assessed · **Test group:** S3-T22
+**Implementation by Ernest (EarnestErnest), merged in PR #46; Jira assignee Ernest per his statement of 25 October 2026, Jira status Not recorded; independent reviewer To agree.** **Owner:** Unassigned — team member to choose · **Independent reviewer:** To agree after owner chosen · **Estimate:** 5 SP · **Jira status:** To Do · **Acceptance:** Not assessed · **Test group:** S3-T22
 
 **User story:** As a relevant organiser or internal user, I want request, assignment and venue updates in my inbox so that I can understand the outcome and take action.
 
