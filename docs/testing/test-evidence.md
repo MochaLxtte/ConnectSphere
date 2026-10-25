@@ -1496,3 +1496,5 @@ Result: TC-14-08, -11, -12, -13, -14, -17, -19 **Pass (scoped)** and TC-14-18 **
 - **KAN-36/KAN-60 UI:** the coordinator review page shows proposed start/end as raw UTC ISO strings (for example `2027-03-10T06:00:00.000Z`).
 - **KAN-78 UI:** the catalogue's affected-bookings list shows "— OUTSIDE_OPERATING_HOURS" with no event name.
 - **Records:** migrations 010–013 are applied on shared Supabase, although earlier notes (including the 22 October integration record) say they are not.
+
+**25 October 2026 — follow-up to MAN-20261025-KAN83-01:** the finding that an outage-released hold gets no KAN-81 recovery record is resolved by a PO clarification, not a code change: holds are released, only approved bookings are flagged (see the [decision log](../requirements/assumptions-and-questions.md#25-october-2026--kan-81-holds-hit-by-an-outage-are-released-not-flagged)). The observed behaviour in steps 8 of that run and TC-09-24 therefore matches the clarified KAN-81-AC3. No case result is changed.
