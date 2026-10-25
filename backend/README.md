@@ -19,6 +19,8 @@ The normal server also mounts these business routes:
 | Method and path | Current behaviour |
 | --- | --- |
 | `POST /api/auth/login`, `GET /api/auth/me`, `POST /api/auth/logout` | Verify a Supabase token, establish/read/end the application session. |
+| `GET /api/equipment/availability/events`, `GET /api/equipment/availability/events/:id` | KAN-9 Technical Support-only eligible-event list and minimal equipment context; no broader event-detail access. |
+| `POST /api/equipment/availability/events/:id` | KAN-9 read-only saved or unsaved what-if assessment, using current operational stock and peak simultaneous reservations. |
 | `GET /api/events` | An organiser's own drafts, or the assigned coordinator's pending queue; organiser `?scope=all` includes all owned statuses. |
 | `GET /api/events/:id` | One shared detail response with status, recorded review and caller-specific actions. |
 | `POST /api/events` | Create an organiser-owned draft; permitted fields and submission validation remain separate. |
@@ -55,6 +57,12 @@ Readiness checks only the scaffold metadata and connection, not every table or f
 
 **21 October integration follow-up:** the KAN-64 dependency recorded as pending on 19 October is now implemented for submission, clarification, review, initial allocation, handover and venue decisions. Notification insert failures roll back the action, and same-coordinator handovers write no notices. Shared rollout and hosted acceptance remain pending; these are in-app notifications, with later triggers owned by KAN-80. The combined backend also requires `009_venue_buffer_durations.sql` for KAN-77. It exposes `setupMinutes`/`turnaroundMinutes` to catalogue, search, suitability and availability callers, while intervals and conflict checks remain unchanged until KAN-78. AC6 booking re-evaluation and warnings are incomplete. Follow the [migration order and rollout notes](../database/README.md#shared-schema-and-migrations) before deployment.
 
+## KAN-9 read-only equipment checks
+
+`createRuntimeApp` mounts the equipment router with the existing verified session and shared PostgreSQL pool. Only `TECHNICAL_SUPPORT_STAFF` may call it; Lead or venue-calendar access does not grant equipment-check access. Each assessment reads eligible event fields, saved requirements, current stock and overlapping reserved quantities in one SQL statement snapshot, checks the source version, then returns advisory quantities without writes. Unknown/invalid inputs fail explicitly; a missing saved requirement never produces a green result.
+
+Apply migration `014_equipment_operational_quantities.sql` only after team coordination. It preserves existing data and defaults both stock-loss fields to zero; it does not implement KAN-18 stock maintenance or KAN-26 operational-capacity locking. KAN-63 request editing/review also remains pending. Shared migration application and manual integrated acceptance are **Not executed**. See [the complete contract](../docs/architecture/api-contract.md#equipment-availability-kan-9-cf-16).
+
 ## Team extension points
 
 - `src/app.ts`: app composition, health endpoints, and error responses. Tests can inject a database without opening a real connection.
@@ -64,6 +72,7 @@ Readiness checks only the scaffold metadata and connection, not every table or f
 - `src/modules/auth/`: Supabase token verification, application-user mapping, session routes and six role contracts, including the trusted Coordinator Lead.
 - `src/modules/events/`: draft editing/submission, queue and shared detail, decision validation, Lead assignment/reassignment, access policies and transactional persistence.
 - `src/modules/venues/`: KAN-12 search, KAN-51 availability, KAN-52 suitability, KAN-53 booking submission, KAN-8 decisions, KAN-55 operational blocks, KAN-50 catalogue and KAN-77 buffer settings, using `workflowRoute` for verified sessions, role gates and error mapping. See the [venue module](src/modules/venues/README.md) for transactional decision rules.
+- `src/modules/equipment/`: KAN-9 input validation, microsecond-aware quantity-pool rules and read-only availability routes. [Module contract](src/modules/equipment/README.md); migration 014 is required before use.
 - `src/modules/notifications/`: recipient-scoped inbox and read state, trigger/recipient mapping and same-transaction outcome writes.
 
 Organisers can read their own requests; coordinators can read non-drafts assigned to their `app_users.id`. Leads have separate allocation and oversight endpoints for `SUBMITTED`, `UNDER_REVIEW`, `CLARIFICATION_REQUESTED`, `APPROVED` and `CONFIRMED` events. A Lead is not an Event Coordinator for shared-detail, review, venue or roster permissions. Initial event approval/rejection requires `SUBMITTED` or `UNDER_REVIEW` status with no recorded decision. The write rechecks assignment and state against a locked row. Venue booking decisions are separate: only Venue Staff may write, and only a `PENDING` booking can change to `APPROVED` or `REJECTED`. Approval requires an `APPROVED` event and active venue; rejection can close a stale pending request. Keep server checks when extending routes; frontend flags are only presentation guidance.

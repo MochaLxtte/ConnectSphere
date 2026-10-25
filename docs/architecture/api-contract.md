@@ -437,6 +437,8 @@ Client navigation is not access control; every page relies on the API responses 
 
 | Path | Page | Sidebar visibility |
 | --- | --- | --- |
+| `/equipment/availability` | KAN-9 approved/confirmed event picker | TS after session resolution; protected access gate on direct navigation |
+| `/equipment/availability/:id` | Saved or unsaved what-if equipment assessment with per-item shortages | TS only; no event/request/reservation write controls |
 | `/events`, `/events/new` | Organiser request list; new event request form | Signed out or EO |
 | `/events/:id`, `/events/:id/edit` | Organiser detail with the planning panels; draft editing | Linked from the list |
 | `/reviews` | Assigned coordinator review queue | EC after session resolution |
@@ -748,3 +750,46 @@ KAN-34 retains the real-calendar/explicit-offset validation on all four draft da
 This is a dated evidence backfill prepared with Codex on 25 October, not a new ceremony, Jira transition, test execution or acceptance decision. Historical entries, other members’ ownership and agreed estimates are preserved.
 
 KAN-51 PR #28 synchronized client route/history and selected venue and added spoofed-role API denial regressions. Client route guards do not replace server authorization. KAN-81 PR #47 corrections refresh both views after stale 404/409 write refusals without automatically retrying the refused write. These are historical implementation provenance notes; current endpoint shapes and error contracts above remain authoritative.
+
+
+## Equipment availability (KAN-9, CF-16)
+
+**Implemented 26 October 2026.** Mounted through the runtime's verified `workspace` session. Only Technical Support Staff (`TS`, `TECHNICAL_SUPPORT_STAFF`) can use these routes, including direct service entry points. Event eligibility is `APPROVED` or `CONFIRMED`, independent of venue confirmation. All responses set `Cache-Control: no-store`. This narrow context does not grant access to `/api/events/:id` or expose event owners, other-event identities, attendee details or reservation records belonging to others.
+
+| Method / route | Success | Errors |
+| --- | --- | --- |
+| `GET /api/equipment/availability/events` | `200 { items: EquipmentEventSummary[] }`, ordered by event start (null last), then ID | `401 AUTHENTICATION_REQUIRED`; `403 ACTION_FORBIDDEN` |
+| `GET /api/equipment/availability/events/:id` | `200 EquipmentAvailabilityContext` | Same role errors; `400 INVALID_EVENT_REQUEST_ID`; `404 EVENT_REQUEST_NOT_FOUND` for absent/ineligible events |
+| `POST /api/equipment/availability/events/:id` | `200 { assessment: EquipmentAvailabilityAssessment }`; advisory read only | Same role/ID/event errors; `400 INVALID_EQUIPMENT_AVAILABILITY_INPUT`, `EQUIPMENT_REQUIREMENTS_EMPTY`, `EQUIPMENT_TYPE_NOT_FOUND`; `409 EQUIPMENT_CONTEXT_CHANGED`, `EQUIPMENT_REQUEST_PERIOD_MISMATCH` |
+
+`EquipmentEventSummary` is `{ id, name, status, startsAt, endsAt }`, with nullable name/times and status `APPROVED | CONFIRMED`. The context is `{ event, requirementsVersion, equipmentTypes, savedRequests }`. `event` adds nullable `equipmentRequirements`. Each type contains `{ id, name, category, totalQuantity, damagedQuantity, maintenanceQuantity, isActive }`; the context includes active types and inactive types referenced by a saved non-cancelled line. Each saved line contains `{ id, equipmentTypeId, quantity, status, startsAt, endsAt, notes }`, with status `REQUESTED | RESERVED | REJECTED`. Cancelled lines are omitted. Requirements text is displayed for interpretation, not automatically converted into stock quantities.
+
+The `requirementsVersion` is a SHA-256 hash of current source event and saved-line values, ordered by saved ID. It includes quantity, status, period and text rather than trusting `updated_at`. POST reloads these values and rejects a stale version before assessing. The caller refreshes context and explicitly checks again. Current stock and competing reservations are read afresh; they are not frozen by the version.
+
+Saved input:
+
+```json
+{ "mode": "saved", "requirementsVersion": "<64 lowercase hex characters from context>" }
+```
+
+The server aggregates all non-cancelled saved lines by type. Each saved line must exactly match the current event window; a mismatch returns a conflict rather than silently moving the reservation. Empty saved requirements return `EQUIPMENT_REQUIREMENTS_EMPTY`. Only the exact server-loaded `RESERVED` line IDs being assessed are excluded from competing demand, preventing self-double-counting. Rejected/requested lines remain requirements without being counted as existing reservations.
+
+Unsaved what-if input:
+
+```json
+{
+  "mode": "what-if",
+  "requirementsVersion": "<64 lowercase hex characters from context>",
+  "startsAt": "2031-01-12T10:00:00+08:00",
+  "endsAt": "2031-01-12T14:00:00+08:00",
+  "items": [{ "equipmentTypeId": "09000000-0000-4000-8000-000000000001", "quantity": 3 }]
+}
+```
+
+What-if mode checks exactly the explicit window/items and counts every overlapping reservation, including those already reserved for the same event. It neither replaces saved requirements nor claims they were fulfilled. Unknown fields, caller exclusion lists, unknown equipment, empty items and nonpositive/noninteger quantities are refused. Duplicate types aggregate; each quantity and aggregate must fit `1..2147483647`. Dates require a real calendar date/time and explicit `Z` or `±HH:MM`, with at most six fractional digits; end must be strictly after start. Calculation preserves database microseconds. API input supports UTC years 0001–9999; UI fields use Singapore time.
+
+Each item result is `{ equipmentTypeId, equipmentTypeName, requestedQuantity, totalQuantity, damagedQuantity, maintenanceQuantity, operationalQuantity, peakReservedQuantity, availableQuantity, shortfallQuantity, isActive }`. Active operational stock is total minus damaged and maintenance quantities; inactive stock is zero. Peak demand uses only simultaneously overlapping `RESERVED` quantities in the half-open interval `[start, end)`. Exact adjacency is allowed; disjoint bookings do not accumulate as concurrent demand. Available stock is `max(0, operational - peakReserved)` and shortfall is `max(0, requested - available)`. Selected equipment deactivated after context loading remains a zero-operational shortfall rather than disappearing from the assessment.
+
+`assessment` also contains `{ eventId, eventName, mode, startsAt, endsAt, checkedAt, advisory: true, outcome, items }`, with outcome `FULFILLABLE` only when all requested items have zero shortfall, otherwise `SHORTFALL`. The UI displays a green confirmation or **Shortfall / Unfulfillable** with specific item deficits. The SQL statement snapshot includes event requirements, saved lines, stock and reservations together. No check writes requests, reservations, event status, history or notifications. A later reservation must perform its own live check under lock; results are not booking guarantees.
+
+**Setup and dependencies:** migration 014 adds the two loss quantities while retaining historical migration-005 total-capacity guards. Shared migration application and manual integrated acceptance are **Not executed**. KAN-18 stock maintenance, KAN-63 request editing/review and KAN-26 operational-capacity reservation integration remain pending. Technical source/test paths and verification boundaries are in the [equipment module](../../backend/src/modules/equipment/README.md) and [test evidence](../testing/test-evidence.md).

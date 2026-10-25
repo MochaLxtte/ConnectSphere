@@ -14,6 +14,7 @@ The dev server runs at `http://127.0.0.1:5173` and fails clearly if that port is
 ## What works now
 
 - Responsive application shell, navigation, page titles, and unknown-route handling.
+- KAN-9 Technical Support-only equipment event picker at `/equipment/availability` and saved/unsaved what-if checks at `/equipment/availability/:id`, with per-item stock and shortfall results.
 - Live API liveness and database readiness checks on the overview, with separate loading, error, success, and retry states.
 - A shared JSON API client that preserves structured backend error codes.
 - Component and API contract tests for the connection checks and failure recovery.
@@ -71,6 +72,14 @@ A confirmed response displays the previous and new coordinator with the reason, 
 The panel clears protected data, reason and saved messages on account, role or event changes and ignores late responses. A Lead retains oversight after handover; the old coordinator's subsequent protected requests are denied by the backend and the new coordinator uses the existing review/planning pages. The Lead role itself still does not grant those actions. Migration 007 application and Lead login were reported successful; the shared manual workflow checks remain **Not executed** and will run after the remaining features are finished. Notification delivery remains KAN-64 work. See [AUTO-20261019-02](../docs/testing/test-evidence.md#19-october-2026--kan-65-coordinator-reassignment) for local automated verification and the separate setup report.
 
 **21 October integration follow-up:** KAN-64 now records handover notices for the organiser, new coordinator and previous coordinator. The previous coordinator's notice contains no event details or link after access is lost. The inbox and unread counter clear on session changes, and pending actions cannot restore another account's rows or read state. The backend rechecks recipients and target permissions; a successful assignment response does not prove that anyone has opened their inbox. Shared migration 008 and hosted workflow checks remain pending. The combined venue backend additionally requires migration 009 before catalogue, search, suitability and calendar use.
+
+## KAN-9 equipment availability
+
+`src/features/equipment/` contains the typed API wrapper, Singapore-time and quantity validation, access boundary, eligible-event list and event assessment page. Technical Support Staff can inspect saved types, quantities and dates, or enter a clearly labelled unsaved what-if item list/window. Requirements text is displayed for reference and is never guessed into stock quantities. The assessment distinguishes **Fulfillable** from **Shortfall / Unfulfillable**, highlights each deficit, and shows current total, damaged, maintenance, operational, peak reserved and available quantities. It neither saves the form nor reserves stock.
+
+Saved checks use current event dates and server-loaded lines; mismatched saved dates require reconciliation. What-if checks include all reservations, including this event's existing reserved lines. Changing mode, dates or items immediately invalidates a displayed/pending result. A source-version conflict refreshes the context, clears the unsaved form and asks for a new check; it does not replay the old input. Refresh, navigation, account changes, role changes and sign-out clear protected data and abort pending requests. Only the current session's 401 clears that session; other-role users see the access gate before event data loads.
+
+Migration 014 and a provisioned Technical Support account are required for the connected local workflow. Stock maintenance, request editing and reservation controls remain KAN-18/KAN-63/KAN-26 dependencies. Component tests beside the feature and `tests/e2e/equipment-availability.spec.ts` use API fixtures; real database behavior is covered separately in `database/tests/equipment/availability.integration.test.ts`. Browser fixtures do not establish manual integrated acceptance. Record connected manual results through the [testing guide](../docs/testing/README.md); KAN-9 manual cases remain **Not executed**.
 
 ## Team work areas
 

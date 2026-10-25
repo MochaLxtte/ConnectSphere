@@ -14,6 +14,8 @@ The base diagram records the schema through migration 009 on 21 October 2026; la
 
 Relationship labels name the foreign-key column in the child table. `||` means exactly one parent, `|o` means zero or one parent, and `o{` means zero or more child rows.
 
+**26 October KAN-9 update:** the equipment type below now includes `damaged_quantity` and `maintenance_quantity` from additive migration 014. Both default to zero, cannot be negative and together cannot exceed total stock. Existing stock, requests and reservation history are preserved. The repository model and isolated migration tests include 014; its shared Supabase application is **Not executed**. KAN-9 uses these fields for read-only operational availability; KAN-18/KAN-63/KAN-26 write workflows remain pending.
+
 ## Application tables
 
 ```mermaid
@@ -202,6 +204,8 @@ erDiagram
         text category "nullable"
         text description "nullable"
         integer total_quantity
+        integer damaged_quantity "default 0, nonnegative; migration 014"
+        integer maintenance_quantity "default 0, nonnegative; combined losses <= total"
         boolean is_active
         timestamptz created_at
         timestamptz updated_at
@@ -310,3 +314,10 @@ Arvin’s KAN-24 schema/ERD work merged in PR #10; its subsequently removed appl
 ## 25 October 2026 — Expiry scheduling verification
 
 No table, relationship or numbered migration changes in the closeout repair. The shared migration-013 checksum matches the repository. `pg_cron` 1.6.4 is now enabled with the named every-minute `public.expire_venue_holds()` job; successful runs were observed from 21:58 SGT. This is operational configuration, not a new application table or proof of an expiry journey with a test hold. See [configuration evidence](scrum/sprint-03/evidence/supabase-hold-expiry-20261025.json).
+
+
+## KAN-9 operational equipment model — 26 October 2026
+
+Migration `014_equipment_operational_quantities.sql` adds two `integer NOT NULL DEFAULT 0` columns to `equipment_types`. `damaged_quantity >= 0`, `maintenance_quantity >= 0`, and `damaged_quantity::bigint + maintenance_quantity::bigint <= total_quantity::bigint` are database constraints. The widened sum avoids integer-overflow bypasses. No table, relationship, policy, trigger or existing reservation is removed or rewritten.
+
+The derived assessment is not a stored table. For an active type it subtracts damaged and maintenance quantities, then peak simultaneous `RESERVED` demand in a half-open period; inactive types have zero operational stock. Saved mode excludes only the exact reserved lines under assessment. Unsaved mode excludes none. Both preserve requests, event status/history and notifications. Migration 005 still enforces historical total-capacity reservations; KAN-26 must add operational-capacity revalidation under the pool lock. Shared migration 014 application and connected manual checks are **Not executed**.
