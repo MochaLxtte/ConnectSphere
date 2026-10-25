@@ -1,5 +1,7 @@
 # Scrum evidence
 
+**26 October 2026 KAN-9 development:** the authorised Sprint4 equipment checker is implemented on a local feature branch. KAN-9 is In Progress / Tristan; KAN-26 is To Do / Tristan. [S4-E10](sprint-04/evidence/README.md#kan-9-equipment-availability--26-october-2026) records automated verification and unperformed integrated acceptance. This targeted development update does not replace the dated administrative snapshots or claim a new sprint ceremony.
+
 ## Acceptance and closure inputs — 26 October 2026
 
 Acceptance decisions are now supplied. All six members — Arvin, Ernest, Irfan, Kai Jie, Ryan and Tristan — are reported to have collectively agreed against the stories' ACs and Definition of Done at each sprint review. These historical decisions were confirmed on 26 October; the confirmation is not a newly held review or a historical artifact. Reviewed build/commit/branch identifiers were not retained and stay **Not recorded**.

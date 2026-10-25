@@ -1721,3 +1721,29 @@ These rows express the reported successful outcomes of the supplied checklist; i
 The TC-14-308 transaction barriers and concurrent-operation orderings remain supported by the isolated PostgreSQL runs; the manual smoke report does not claim those barriers were run by hand. TC-14-311 separates the observable local workflow from that deterministic race case and from the cron-configuration-only TC-14-310. The automated repair results and SHA manifest are unchanged; no new automated run is asserted in this documentation update.
 
 This follow-up supersedes the earlier same-day pending repair-retest and deployed-URL actions. The fixes are complete locally. Commit/PR integration, explicit story review/closure decisions, team burndown evidence, agreed retrospective actions and the remaining Sprint 4 consumers retain their separate workflow and evidence requirements. No Jira status, historical Done date, story estimate or sprint velocity is changed here.
+
+## 26 October 2026 — KAN-9 equipment availability
+
+**Run:** AUTO-20261026-KAN9-01. **Branch:** `feat/KAN-9-equipment-availability`. **Source:** the full check source was captured in `5c0dc98dc3d4e0a55347415006c9d03008260f6f`; an additional mixed-type database regression was subsequently verified in the focused run and captured in `50e8ef983efddbe84baeaef8d165fa06ca593299`. The [summary and SHA-256 manifest](../scrum/sprint-04/evidence/kan9-20261026/summary.json) identify the final code/test files. Executor: Codex using automated tools on Windows, Node 24.21.0, Vitest 4.1.11, disposable local PostgreSQL 17 and Chromium. Database HTTP tests use real SQL with substituted authentication; browser cases substitute API responses. No shared database cleanup or real-login manual acceptance occurred.
+
+| Command / scope | Observed result |
+| --- | --- |
+| `npm run check` | Pass: tools/backend/frontend types, frontend 881 tests, backend 1,451 tests and both builds |
+| `npm run test:coverage` | Pass, same unit/component totals; [coverage record](coverage-reports/2026-10-26-kan9.txt) |
+| `npm run test:integration` | 528 Pass in 27 files, 55.25 s; isolated database |
+| Focused `database/tests/equipment/availability.integration.test.ts` | 18 Pass after adding the mixed-type equality/shortfall regression; the full suite was not rerun for this test-only addition |
+| Focused `tests/e2e/equipment-availability.spec.ts` | 10 Pass |
+| Initial `npm run test:e2e` (10 workers, concurrent with other checks) | 163 Pass / 5 Fail; all 10 new equipment tests passed |
+| `npm run test:e2e -- --workers=2` | 168 Pass, 1.9 minutes; no product code changed before this rerun |
+
+Equipment backend coverage is **100% statements, branches, functions and lines**. Equipment frontend is **100% statements/functions/lines, 98.04% branches (301/307)**; six defensive ready-state/non-Error fallback branches remain uncovered. The API client throws `Error` objects. Whole-project coverage is lower and is recorded separately; database integration is not instrumented by that command. The existing frontend bundle warning (526.56 kB minified) did not fail the build.
+
+**Failures and retests.** The first focused database run was 30 Pass / 1 Fail because unrelated inactive catalogue items were visible. Filtering the context to active or saved-reference types corrected it; subsequent focused and full runs passed. Initial frontend work had two transient loading-selector failures and two test-only type errors; those were corrected. The first root check found a missing `.js` extension in a NodeNext type import; the final check passed. These earlier development failures are retained here; no case-level Pass is inferred from them.
+
+The five full-browser failures were existing navigation cases: KAN-16 list retry/empty (`event-requests.spec.ts:102`), KAN-34 draft editing (`kan34-draft-edit.spec.ts:4`), two KAN-79 denial cases (`lead-assignment.spec.ts:189`, coordinator oversight and Technical Support `/lead`) and KAN-64 retry (`notifications.spec.ts:158`). They reported navigation timeouts / `net::ERR_ABORTED`. Concurrent load may have contributed, but the root cause is **Not assessed**. The [initial output](../scrum/sprint-04/evidence/kan9-20261026/browser-initial.txt) and [two-worker rerun](../scrum/sprint-04/evidence/kan9-20261026/browser-retest.txt) preserve both outcomes; no existing test was weakened or skipped.
+
+**Case-level evidence.** TC-16-11–18 have specific automated results in the execution register: protected minimal context, no-write checks, saved/self-reservation handling, live data and stale source detection, invalid saved demand/inactive stock, UI response races, mixed-type deficits, and migration constraints. Original TC-16-06–10 planning records remain; this automated evidence does not overwrite their complete integrated/manual scenarios. In particular, **TC-16-09's reservation-write portion is Not executed pending KAN-26**.
+
+**Remaining acceptance/setup.** Migration 014 application to shared Supabase and all integrated localhost manual checks are **Not executed**. KAN-9 remains In Progress, acceptance Not assessed, with independent human review pending. KAN-18 stock administration and KAN-63 request entry/review require integration when available. KAN-26 must enforce operational capacity under lock; the historical reservation trigger still checks total stock. Follow the [manual procedure](README.md#kan-9-integrated-local-verification), recording real test data, build, executor, outcomes and cleanup. No new equipment data was left in shared Supabase by this work.
+
+**Presentation evidence.** The [desktop shortfall](../scrum/sprint-04/evidence/kan9-20261026/equipment-shortfall-desktop.png) and [mobile what-if form](../scrum/sprint-04/evidence/kan9-20261026/equipment-what-if-mobile.png) were captured by Playwright with synthetic API data and visually inspected. They show layout, not manual integrated acceptance.

@@ -1,5 +1,7 @@
 # Sprint 4 overview
 
+**26 October 2026 development update:** KAN-9 is implemented and verified locally on `feat/KAN-9-equipment-availability`, with manual acceptance **Not executed** and acceptance **Not assessed**. Tristan owns KAN-9/KAN-26 (11SP); KAN-26 remains To Do. [S4-E10](evidence/README.md#kan-9-implementation-verification--26-october-2026) records evidence. The dated Future-sprint snapshot below is retained; this development note does not claim a sprint-start ceremony or completed story.
+
 **Estimation status:** The current 63-SP allocation is a planning baseline. Team confirmation of relative estimates, capacity and the sprint commitment is **To agree**; no planning-poker vote is recorded. The 10 to 11 SP selection target is guidance, not an individual quota. Keep existing estimates until a team-agreed change is logged.
 
 **Current release allocation: 15 parent items / 63 SP.** Sprint window: **18–31 October 2026**. Sprint 3 and Sprint 4 each contain 63 SP; this supersedes the earlier 97/29 allocation while keeping 126 SP remaining across the two sprints.

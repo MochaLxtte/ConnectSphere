@@ -47,3 +47,9 @@ This is a pre-sprint selection. Any actual Sprint 3 carry-over or newly discover
 | 16 October 2026, pre-start | 63 | 0 selected parent points evidenced complete | 63 | Not assessed | Current Jira administrative selection: Future sprint id 68; no sprint meeting or product acceptance implied |
 
 At actual start and close, capture the board. At close export the burndown, register evidence and update the [release burndown](../release-burndown.md). Work after 31 October retains its actual date.
+
+## 26 October 2026 — KAN-9 development update
+
+Outside a Daily Scrum: KAN-9 is In Progress / Tristan (8 SP), with unestimated subtasks KAN-101/102/103. Implemented strict quantity/time rules, operational counters, protected minimal event context, saved/unsaved read-only checks and an interface that discards stale results. Four local code commits separate the rules/schema, API, interface and database regression slices; subsequent documentation and focused test commits retain the KAN-9 ID. See AUTO-20261026-KAN9-01 / S4-E10 for commands, failed attempts/retests and coverage.
+
+KAN-26 is assigned to Tristan but remains To Do (3 SP). Migration 014 application to shared Supabase, integrated real-login manual scenarios, independent review and merge remain outstanding. Stock administration (KAN-18), request entry/review (KAN-63) and reservation writes (KAN-26) are not claimed complete. Scope remains 63 SP; no Done points, meeting attendance, estimates or burndown observations are added.

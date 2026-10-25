@@ -395,3 +395,27 @@ The full local suites pass in `AUTO-20261025-CLOSEOUT-01`. Historical team manua
 5. Agree on one synthetic held booking, let the enabled Supabase job pass its deadline without manually calling expiry, and verify expiry plus the coordinator's inbox. Job execution itself is verified in `TC-14-310`; the integrated journey/build must be recorded separately. A public app/API URL is not required. KAN-79 uses the same complete local candidate for its integrated queue/allocation check; Sprint 4 confirmation/safety consumers remain future integration work.
 
 Formal story acceptance, Done dates and sprint velocity require the team's review decision; neither local suite counts nor broad historical result reports create that decision.
+
+## KAN-9 integrated local verification
+
+**Status: Not executed.** Use `http://127.0.0.1:5173`, the running Express API, real Supabase Auth and only coordinated synthetic data in the agreed development project. The person enters passwords. Record the actual tested commit, date, executor, fixture IDs and cleanup in a new MAN run and append case results; do not replace existing placeholders.
+
+### Setup
+
+1. Coordinate migration 014 with the team, then apply `npm run db:migrate` from the intended branch using the agreed development connection. Verify `equipment_types.damaged_quantity` and `maintenance_quantity` exist with zero defaults. It has been tested in isolated PostgreSQL, **not applied to shared Supabase** by this implementation.
+2. Use a Supabase Auth test account mapped through `app_users.supabase_user_id`, with trusted role `TECHNICAL_SUPPORT_STAFF`. Use separate organiser/coordinator/Lead/venue/attendee accounts for denial checks. Do not change your real account's role solely to test.
+3. Prepare an APPROVED synthetic event E-A with an assigned coordinator, an explicit future window and equipment requirement text. A venue booking may remain Pending; equipment checking must work. Prepare EQ-A total 10 / damaged 2 / maintenance 1 and active EQ-B total 5 / no losses. KAN-18's stock editor and KAN-63's request UI are separate work: until available, coordinate fixture rows through Supabase Table Editor/SQL, recording original values and inserted IDs.
+4. For saved-mode and overlap checks, prepare non-CANCELLED `equipment_requests` linked to the correct event and equipment IDs, with exactly matching event windows. RESERVED rows require decision metadata and must satisfy the existing guard. Use a separate synthetic event for competing reservations. Never disable triggers to force a fixture. The automated isolated fixture in `database/tests/equipment/availability.integration.test.ts` shows the required columns; **do not run its cleanup suite on shared Supabase**.
+
+### Manual scenarios
+
+| Cases | Steps | Expected outcome |
+| --- | --- | --- |
+| TC-16-06 / TC-16-08 | Sign in as Technical Support, open **Equipment availability**, select E-A and verify its saved types/quantities/window. Check with venue still Pending. In unsaved mode choose explicit types and quantities. | Correct event and quantities; venue confirmation is not required. Adequate stock shows green **Fulfillable**. No request or reservation is saved by the checker. |
+| TC-16-07 / TC-16-17 | Use the event window 10:00–12:00 Singapore time. Reserve EQ-A 4 elsewhere for 10:00–11:00 and 3 for 11:00–12:00. Request EQ-A 3 plus EQ-B 1, then increase EQ-A to 4. | Operational 7 minus peak 4 gives available 3. Equality is Fulfillable; quantity 4 yields only EQ-A deficit 1. Requested/Rejected/Cancelled rows do not consume stock. Results show all quantities, checked time and advisory wording. |
+| TC-16-10 | Enter February 30, end equal/before start and quantities 0, -1 or 1.5. Check a valid leap day and exact adjacency. | Invalid fields are identified; no assessment is sent for invalid form input. Valid dates work; adjacent periods do not overlap. |
+| TC-16-13 / TC-16-15 | Check combined saved same-type lines including an existing RESERVED line; compare the same quantities in unsaved mode. Try an empty event, inactive stock and a saved period mismatch. | Saved demand counts its existing reservation once; unsaved demand excludes none. Empty/mismatched saved checks do not pass; inactive stock shows its deficit. |
+| TC-16-11 / TC-16-14 / TC-16-16 | After a result, edit an input; change the event's saved requirements in a separate coordinated session and recheck; sign out or use another role and open the URL directly. Optionally use browser offline mode to check a failed request. | Old result clears. Changed source requires refreshed context and a new check; current stock changes are reflected. Unauthorised users cannot see private equipment context. Failed/late responses do not restore a green result. |
+| TC-16-12 | Compare event/request/reservation/history/notification records before and after saved and unsaved checks; reload. | No persisted change caused by the check. Record and restore only authorised fixture changes; list anything deliberately retained. |
+
+**Defer the reservation portion of TC-16-09 until KAN-26 is integrated.** A green advisory result does not reserve equipment. Its later reservation must recheck operational capacity under lock. Keep that combined case Not executed until the whole scenario runs. KAN-18 and KAN-63 integrations need rechecking when their editors/workflows arrive.
