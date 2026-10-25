@@ -1,5 +1,7 @@
 # Sprint 1 daily progress and burndown
 
+**Review outcome confirmed — 26 October 2026:** the team reports collective acceptance of seven items / **24 SP** at the 19 September review, with three items / **8 SP** carried. See the [current review record](review.md#current-acceptance-and-closure--26-october-2026). This supplies a reported review outcome; the daily observations below are unchanged. The team will supply closing-board evidence, review feedback and a burndown chart with its dated source data.
+
 **Record check — 15 October 2026:** the dated observations below are preserved. Missing standup participation and daily burndown values are **Not recorded**; they have not been reconstructed from today's Jira state. Later repairs to the four review findings are linked from the [Sprint 2 review register](../sprint-02/review.md#baseline-and-later-delivery-register--15-october-2026).
 
 Sprint: **6–19 September 2026, Asia/Singapore**. Record daily progress, decisions and burndown observations here, with supporting Jira exports and screenshots in the [evidence register](evidence/README.md). Blank values are awaiting an observation; they do not represent zero.

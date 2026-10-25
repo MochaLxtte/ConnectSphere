@@ -1,5 +1,20 @@
 # Sprint 2
 
+## Current acceptance and closure — 26 October 2026
+
+Use the [current review and closure register](review.md#current-acceptance-and-closure--26-october-2026) for the consolidated state. The historical **12-story / 43-SP** commitment reconciles as **7 accepted stories / 24 SP + 5 carried stories / 19 SP**. Planning on **20 September**, review/retrospective on **3 October**, and attendance of all six members are confirmed in the 25 October report. The **26 October confirmation** records the collective acceptance decision by Arvin, Ernest, Irfan, Kai Jie, Ryan and Tristan at the **3 October review**. The [26 October Jira metadata read](../sprint-03/evidence/jira-sprint-metadata-20261026.json) confirms the sprint is Closed, with administrative completion **16 October 02:06:49 Singapore time**.
+
+- Original-scope manual reports for all twelve stories are linked; detailed historical builds and captures remain **Not recorded**.
+- **KAN-29/51/53/8/54/55/33 were accepted at the 3 October review: 24 SP delivered.** The five selected carry-over stories, **KAN-6/34/50/12/52**, retain **19 original SP** in Sprint 3 and contribute **0 delivered SP** to Sprint 2. Later customer-change-only work does not revoke original acceptance; none of these five is currently classified as customer-change-only. KAN-52's carry concerns original-policy clarification and verification, not a demonstrated direct breach of the over-capacity criterion.
+- The team will supply closing-board evidence, review feedback/actions and the Sprint 2 burndown chart with underlying observations. The exact reviewed build is **Not recorded** and confirmed unavailable; it can be linked if recovered later.
+- Current repair retests are reported successful in the [later closeout record](../../testing/test-evidence.md#25-october-2026--closeout-retest-confirmation); current acceptance can be local. These updates do not change the original Sprint 2 criteria or historical disposition.
+
+The records below preserve earlier dated snapshots. Their former missing-attendance, missing-acceptance and pending-test notes are superseded within the scope of the later linked reports and the current acceptance register. Original KAN-29 remains accepted despite CR-5/KAN-79 later replacing automatic assignment; the original criteria and new customer-change scope remain separately documented.
+
+## Retained earlier overview records
+
+**25 October 2026 reconciliation:** The [new supplied report](#25-october-2026--team-meeting-and-manual-result-reconciliation) records meeting attendance and/or manual results separately from earlier dated evidence. It does not backdate new fixes or infer acceptance.
+
 ## Documentation reconciliation — 17 October 2026
 
 The [dated acceptance reconciliation and functional crosswalk](sprint-backlog.md#acceptance-reconciliation--17-october-2026) now map all **93 original criteria for the nine new stories**, their **12 later numbered refinements**, and the two restored no-automatic-event-rejection guardrails to explicit functional specifications. It clarifies the outdated repo-only labels, attendance-zero decision, mandatory block reason/valid period and competing-approval protection while preserving the earlier dated records. New specifications are **Not executed**; this update supplies no new acceptance or run evidence.
@@ -110,3 +125,26 @@ This is a dated evidence backfill prepared with Codex on 25 October, not a new c
 The existing **MAN-20261006-KAN51-01** walkthrough used a real local API with isolated PostgreSQL and locally signed fixture tokens: 15 checks passed as recorded. It did not exercise hosted Supabase password sign-in. The original ignored captures were not retained in this documentation checkout; no replacement screenshot is invented. GitHub readback records no submitted human approval for #28. `KAN-51-AC1`–`AC6`, `TC-09-201`–`203` and `S2-T05/T06` remain subject to their recorded scope and hosted acceptance gaps; the later shared buffers/holds requirements do not retroactively redefine the original checks. No new acceptance or velocity is inferred.
 
 See the [evidence index](evidence/README.md) and [master contribution register](../../requirements/product-backlog.md).
+
+## Manual-result follow-up — recorded 25 October 2026
+
+Tristan reports that the documented manual scenarios for his original **KAN-29, KAN-8 and KAN-52** work passed on **3 October 2026**, using localhost before the later push. The local commit, database environment, fixture identifiers and captures are **Not recorded**. [REPORT-20261025-TRISTAN-S2](../../testing/test-evidence.md#25-october-2026--reported-manual-results-for-original-stories), registered as [S2-E34](evidence/README.md#25-october-2026--reported-original-story-manual-results), records this retrospective executor report and the [backlog follow-up](sprint-backlog.md#25-october-2026--reported-original-story-manual-results) defines its baseline scope. KAN-29's original automatic allocation and KAN-52's original suitability are distinct from the later Lead workflow, buffers/holds and Ernest's revised KAN-52 work. The original **43-point commitment**, carry-over decisions and missing historical acceptance evidence remain unchanged.
+
+## 25 October 2026 — Ryan story verification records
+
+Tristan reports that Ryan passed the original **KAN-12** manual scenarios on **3 October 2026**. [REPORT-20261025-RYAN-S2](../../testing/test-evidence.md#25-october-2026--ryan-story-verification-records) records six original-baseline case results, `TC-10-201–206`, in `MAN-20261003-02`; see [S2-E33](evidence/README.md#25-october-2026--ryan-story-verification-records) and the [backlog follow-up](sprint-backlog.md#25-october-2026--ryan-story-verification-records). Tested build, environment, fixtures and captures are **Not recorded**. The later AC14/AC15/AC16 refinements and AC101 repair are recorded with Sprint 3 verification. This 25 October report does not revise the original 43-point commitment, carry-over disposition or unrecorded historical acceptance.
+
+## 25 October 2026 — Team meeting and manual-result reconciliation
+
+The supplied **25 October 2026** report confirms planning on **20 September 2026**, and review and retrospective on **3 October 2026**, with **Arvin, Ernest, Irfan, Kai Jie, Ryan and Tristan** attending all three. **Arvin is Scrum Master; Irfan is Product Owner.** Exact times, location, facilitator, note taker, original notes/recordings and individual estimation votes are **Not recorded**. Attendance does not establish who voted, accepted each story, or agreed a particular retrospective action.
+
+[REPORT-20261025-TEAM-S2](../../testing/test-evidence.md#25-october-2026--team-manual-result-reports) appends **52 reported Pass** manual case results for the owners below. Reported execution date: **3 October 2026**. Tested build, environment, exact observations and captures are **Not recorded**. Existing Tristan/Ryan reports and all earlier outcomes remain separate. Current fixes require new retests; no acceptance or Done-SP change is inferred. Burndown artifacts remain for the team to supply.
+
+| Reported executor | Historical story scope | Reported manual case rows |
+| --- | --- | --- |
+| Irfan | KAN-50 / KAN-33 | 18 Pass |
+| Arvin | KAN-51 | 3 Pass |
+| Ernest | KAN-54 | 4 Pass |
+| Kai Jie | KAN-53 / KAN-55 / KAN-6 / KAN-34 | 27 Pass |
+
+Evidence: [S2-E36](evidence/README.md#25-october-2026--team-manual-result-reports). Formal story acceptance and any new velocity calculation remain **Not assessed**. Previously recorded historical dispositions are preserved.

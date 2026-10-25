@@ -1,5 +1,7 @@
 # Sprint 1 planning and meeting record
 
+**25 October 2026 reconciliation:** The [new supplied report](#25-october-2026--team-meeting-and-manual-result-reconciliation) records meeting attendance and/or manual results separately from earlier dated evidence. It does not backdate new fixes or infer acceptance.
+
 **Record check — 15 October 2026:** this is the retained 6 September plan and dated handoff, not the current assignment register. Historical attendance, times, decision participants and working-agreement adoption are **Not recorded** where indicated. Current carry-over outcomes are indexed in the [Sprint 2 review register](../sprint-02/review.md#baseline-and-later-delivery-register--15-october-2026); they do not rewrite this plan.
 
 ## Sprint boundary and goal
@@ -159,3 +161,11 @@ This is a dated evidence backfill prepared with Codex on 25 October, not a new c
 The retained Jira Done entry and the original closure totals do not establish that this 20 September merge met the Definition of Done by 19 September. PR #10 was self-merged; neither #10 nor #19 has a submitted human review in the GitHub readback. PR-reported tests are historical reported results, not newly executed manual checks. Preserve `KAN-24-AC1`–`AC4`, `TC-DB-201`–`205` and `S1-T31`–`S1-T33`; reproducible setup, hosted security configuration and diagram verification must retain their existing evidence limits. No additional Done SP or revised velocity is asserted.
 
 This readback supplies no additional planning participants, votes, goal or commitment decisions.
+
+## 25 October 2026 — Team meeting and manual-result reconciliation
+
+The supplied **25 October 2026** report confirms planning on **6 September 2026**, and review and retrospective on **19 September 2026**, with **Arvin, Ernest, Irfan, Kai Jie, Ryan and Tristan** attending all three. **Arvin is Scrum Master; Irfan is Product Owner.** Exact times, location, facilitator, note taker, original notes/recordings and individual estimation votes are **Not recorded**. Attendance does not establish who voted, accepted each story, or agreed a particular retrospective action.
+
+The confirmation fills meeting attendance only. Original estimates, scope-change dates, votes and decisions keep their existing evidence and dates. Current story ownership is recorded separately from the historical planning record.
+
+[REPORT-20261025-TEAM-S1](../../testing/test-evidence.md#25-october-2026--team-manual-result-reports) appends **60 reported Pass** manual case results for the owners below. Reported execution date: **19 September 2026**. Tested build, environment, exact observations and captures are **Not recorded**. Existing Tristan/Ryan reports and all earlier outcomes remain separate. Current fixes require new retests; no acceptance or Done-SP change is inferred. Burndown artifacts remain for the team to supply. The known S1-DEF-01…04 findings and 24 Done / 8 carried points remain unchanged; the broad reported passes do not identify the build/path needed to reconcile these contradictions.

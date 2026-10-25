@@ -1,5 +1,9 @@
 # Sprint 3 backlog and acceptance test plan
 
+**Acceptance reconciliation — 26 October 2026:** the [current review decision register](review.md#current-acceptance-and-closure--26-october-2026) records the team's collective acceptance of all 13 stories / 63 SP at the 17 October review and no carry-over, confirmed on 26 October. This supplies the review decision separately from historical build-level verification, which remains Not assessed where evidence conflicts. Earlier case outcomes, failures, pending placeholders and dated fixes remain unchanged; whole-story acceptance does not convert unperformed cases into Pass.
+
+**25 October 2026 reconciliation:** The [new supplied report](#25-october-2026--team-meeting-and-manual-result-reconciliation) records meeting attendance and/or manual results separately from earlier dated evidence. It does not backdate new fixes or infer acceptance.
+
 ## 25 October 2026 — Arvin KAN-78 and KAN-34 documentation reconciliation
 
 This scoped readback covers Arvin's **KAN-78 (8 SP)** and **KAN-34 (3 SP)** only, against `main` `96a0d10`. [PR #48](https://github.com/MochaLxtte/ConnectSphere/pull/48) was integrated through [PR #54](https://github.com/MochaLxtte/ConnectSphere/pull/54) on **22 October, 17:08 Singapore time**. Leo Kai Jie requested changes; Irfan subsequently approved the integration resolutions. Leo's post-integration re-review is **Not recorded**. The last recorded Jira state for both stories is **In Review** (21 October); this update does not claim a fresh Jira read or change Jira.
@@ -7,6 +11,10 @@ This scoped readback covers Arvin's **KAN-78 (8 SP)** and **KAN-34 (3 SP)** only
 The current schema is shared duration columns in migration **009**, occupied intervals and approval snapshots in **012**, and the later live-hold extension in **013**. The 22 October integration preserves KAN-81 outages over approved bookings and uses buffered intervals for recovery. Older dated 008/010 and pending-integration statements below are historical checkpoints, superseded for these two stories by this readback.
 
 [AUTO-20261025-ARVIN-01](../../testing/test-evidence.md#25-october-2026--arvin-kan-78-and-kan-34-documentation-reconciliation) imports the existing green main CI, including the two owned PostgreSQL suites and fixture-browser draft regression; it is not a new local or hosted run. Reusable cases `TC-03-301/302` and `TC-14-301`–`TC-14-307` link the automated evidence. The full hosted groups and formal acceptance remain **Not executed** / **Not assessed**. No original criterion, estimate, sprint date, Done date or velocity is changed. Missing review/retrospective records remain **Not recorded**; work after 17 October is not backdated into the configured sprint window.
+
+**Ryan verification update — 25 October 2026.** [REPORT-20261025-RYAN-S3](../../testing/test-evidence.md#25-october-2026--ryan-story-verification-records) records Tristan's report that Ryan passed revised KAN-12 cases TC-10-02–12/TC-10-210 and the KAN-50 AC101 case TC-08-14 on **17 October 2026**. Run `MAN-20261017-02` has 13 reported case results; tested build, environment, fixtures and captures are **Not recorded**. [S3-E22](evidence/README.md#25-october-2026--ryan-story-verification-records) preserves later PR/CI dates separately. This updates current ownership and S3-T15/S3-T16 evidence without replacing old failures, proving every KAN-50 criterion or changing acceptance/velocity.
+
+**KAN-79 / KAN-65 manual-test report — 25 October 2026.** The manual scenarios for these two stories are reported **Pass on localhost** by Tristan, with a reported execution date of **17 October 2026** using local work before it was pushed; see [REPORT-20261025-TRISTAN-S3](../../testing/test-evidence.md#25-october-2026--reported-manual-results-for-original-stories) and S3-E23. Tested builds are **Not recorded**. This updates S3-T20/S3-T21's manual-test evidence, not the complete S3-T27 journey, deployed-site verification, story acceptance or sprint velocity. Prior dated results and failures remain preserved.
 
 **Combined-branch verification — 21 October 2026.** `feat/sprint-3-integration`
 includes PRs #37/#38/#40–45 and the KAN-79 reliability/test-documentation work.
@@ -35,8 +43,8 @@ This rebalanced allocation replaces the earlier 97/29 split with **63/63**, with
 | [KAN-6](https://smu-g7-grp1.atlassian.net/browse/KAN-6) | Submit an Event Request | 3 | Unassigned — team member to choose | To agree after owner chosen | Sprint 2 carry-over: full original points | S3-T05 |
 | [KAN-34](https://smu-g7-grp1.atlassian.net/browse/KAN-34) | Resume/Edit Draft Event Request | 3 | Arvin | Leo Kai Jie (requested changes); Irfan (integration approval); Leo re-review Not recorded | Sprint 2 carry-over: full original points | S3-T06 |
 | [KAN-60](https://smu-g7-grp1.atlassian.net/browse/KAN-60) | Require a reason when rejecting an event request | 2 | Irfan | To agree | Existing release backlog | S3-T07 |
-| [KAN-50](https://smu-g7-grp1.atlassian.net/browse/KAN-50) | Maintain Venue Catalog | 5 | Unassigned — team member to choose | To agree after owner chosen | Sprint 2 carry-over: full original points | S3-T15 |
-| [KAN-12](https://smu-g7-grp1.atlassian.net/browse/KAN-12) | Search and Filter Venues | 5 | Unassigned — team member to choose | To agree after owner chosen | Sprint 2 carry-over: full original points | S3-T16 |
+| [KAN-50](https://smu-g7-grp1.atlassian.net/browse/KAN-50) | Maintain Venue Catalog | 5 | Ryan (current repair) | Tristan ([PR #56](https://github.com/MochaLxtte/ConnectSphere/pull/56), 25 October) | Sprint 2 carry-over: full original points; In Progress; AC101 repair merged 25 October | S3-T15 |
+| [KAN-12](https://smu-g7-grp1.atlassian.net/browse/KAN-12) | Search and Filter Venues | 5 | Ryan | Irfan ([PR #51](https://github.com/MochaLxtte/ConnectSphere/pull/51), included in 22 October integration) | Sprint 2 carry-over: full original points; Jira Done in 25 October check; acceptance Not assessed | S3-T16 |
 | [KAN-52](https://smu-g7-grp1.atlassian.net/browse/KAN-52) | Check Venue Suitability | 3 | Unassigned — team member to choose | To agree after owner chosen | Sprint 2 carry-over: full original points | S3-T17 |
 | [KAN-77](https://smu-g7-grp1.atlassian.net/browse/KAN-77) | Configure Venue Setup and Turnaround Durations | 2 | Unassigned — team member to choose | To agree after owner chosen | CR-1 | S3-T18 |
 | [KAN-78](https://smu-g7-grp1.atlassian.net/browse/KAN-78) | Apply Venue Buffers to Availability and Booking Conflicts | 8 | Arvin | Leo Kai Jie (requested changes); Irfan (integration approval); Leo re-review Not recorded | CR-1 | S3-T19 |
@@ -49,7 +57,7 @@ This rebalanced allocation replaces the earlier 97/29 split with **63/63**, with
 
 ## Shared test data and execution rules
 
-These are specifications, **Not executed**, with acceptance **Not assessed**. The original 26 aggregate/audit rows and historical dated evidence remain unchanged; a past Fail is not replaced by a planned repair Pass.
+These are reusable specifications; each acceptance-plan row links its recorded execution status. Unperformed scenarios remain **Not executed**, with acceptance **Not assessed**. The original 26 aggregate/audit rows and historical dated evidence remain unchanged; a past Fail is not replaced by a planned repair Pass.
 
 - Use synthetic **O1/O2** organisers, **C1/C2** coordinators, **T** Technical Support, **V** Venue Staff, **L1/L2** Leads, **A1/A2** attendees and **S** Safety Officer. Record real mapped account aliases at execution; a person signs in themselves and no credentials are recorded.
 - **E-A/E-B**, venues **A/B** and equipment **EQ-A/EQ-B** are separate fixtures. Default future period: **12 January 2031, 10:00–12:00 Asia/Singapore**. Each case sets specific boundaries, quantities, statuses, revisions and clocks.
@@ -67,13 +75,13 @@ Every row requires its complete active criterion set plus applicable Definition 
 | S3-T05 | KAN-6: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC101 | TC-02-02, TC-02-03, TC-02-04, TC-02-05, TC-02-06, TC-02-07, TC-02-08, TC-02-09; TC-02-10 | **Partly executed**: AC101 (TC-02-01) and the integration cases TC-02-05, -07, -08 passed 21 October, AUTO-20261021-KAN6-02; the manual cases (TC-02-02, -03, -04, -06, -09) are **Not executed** / Not recorded 20 October component evidence remains in AUTO-20261020-02. **21 October combined follow-up: TC-02-10 passes INTEGRATION-04 (36 component tests); PostgreSQL/browser regressions pass INTEGRATION-05/06. Full manual group remains Not executed.** |
 | S3-T06 | KAN-34: AC1, AC2, AC3, AC101 | TC-03-02, TC-03-03, TC-03-04, TC-03-05, TC-03-06; TC-03-301; TC-03-302 | **Partly executed.** Permanent strict-date, persistence, ownership/state and fixture-browser registration/clear regressions pass in `AUTO-20261021-90` and `AUTO-20261025-ARVIN-01` (`TC-03-301/302`; current CI: 19 draft PostgreSQL tests). Full hosted AC1?AC3 group **Not executed**; acceptance **Not assessed**. Original 15 October failure and earlier runs remain in the execution history. |
 | S3-T07 | KAN-60: AC1, AC2, AC3, AC4, AC5, AC101, AC102, AC103 | TC-04-01, TC-04-02, TC-04-03, TC-04-04, TC-04-05, TC-04-06 | Automated: **Pass** 21 October (AUTO-20261021-KAN60-01; TC-04-01, TC-04-02). Manual hosted TC-04-03/04/05 and records check TC-04-06: **Not executed** 25 October manual hosted run MAN-20261025-KAN60-01 on `2f056bf`: TC-04-03, TC-04-04 and TC-04-05 **Pass**; TC-04-06 records check Not executed. Acceptance is decided at the Sprint 3 review. |
-| S3-T15 | KAN-50: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12, AC13, AC14, AC15, AC16, AC17, AC18, AC19, AC20, AC21, AC101 | TC-08-02, TC-08-03, TC-08-04, TC-08-05, TC-08-06, TC-08-07, TC-08-08, TC-08-09, TC-08-10, TC-08-11, TC-08-12, TC-08-13, TC-08-14 | **Not executed** / Not recorded |
-| S3-T16 | KAN-12: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12, AC13, AC14, AC15, AC16, AC101, AC102 | TC-10-02, TC-10-03, TC-10-04, TC-10-05, TC-10-06, TC-10-07, TC-10-08, TC-10-09, TC-10-10, TC-10-11, TC-10-12, TC-10-210 | **Not executed** / Not recorded |
+| S3-T15 | KAN-50: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12, AC13, AC14, AC15, AC16, AC17, AC18, AC19, AC20, AC21, AC101 | TC-08-02, TC-08-03, TC-08-04, TC-08-05, TC-08-06, TC-08-07, TC-08-08, TC-08-09, TC-08-10, TC-08-11, TC-08-12, TC-08-13, TC-08-14 | **Partly executed**: TC-08-14 / AC101 manual Pass reported for 17 October, `MAN-20261017-02` / REPORT-20261025-RYAN-S3. PR #56 CI passes on its later candidate (S3-E22). This does not establish the full catalogue group's execution; other cases retain their separate evidence, acceptance / DoD Not assessed. |
+| S3-T16 | KAN-12: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12, AC13, AC14, AC15, AC16, AC101, AC102 | TC-10-02, TC-10-03, TC-10-04, TC-10-05, TC-10-06, TC-10-07, TC-10-08, TC-10-09, TC-10-10, TC-10-11, TC-10-12, TC-10-210 | Twelve manual scenarios reported **Pass**, Ryan, 17 October; `MAN-20261017-02` / REPORT-20261025-RYAN-S3. Tested build/environment Not recorded. The failed PR #51 source run and passing later integration are retained in S3-E22; acceptance / DoD Not assessed. |
 | S3-T17 | KAN-52: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC101, AC102 | TC-11-02, TC-11-03, TC-11-04, TC-11-05, TC-11-06, TC-11-07, TC-11-205 | **Partly executed**: AC101 (TC-11-01, TC-11-07 automated layers) passed 21 October, AUTO-20261021-KAN52-01; the other cases and the manual run are **Not executed** / Not recorded **21 October combined follow-up: zero-attendance and adjacent suitability regressions pass AUTO-20261021-INTEGRATION-01/05/06; complete hosted group remains Not executed.** |
 | S3-T18 | KAN-77: AC1, AC2, AC3, AC4, AC5, AC6 | TC-08-15, TC-08-16, TC-08-17, TC-08-18, TC-08-19, TC-08-20; TC-DB-206 | **Not executed** as a complete group. 21 October 2026: AC1–AC5 unit/component checks pass in `AUTO-20261021-KAN77-02`; PostgreSQL and browser cases await CI; AC6 Not executed (depends on KAN-78). **21 October combined follow-up: migration upgrade/alias, buffer PostgreSQL tests and both browser cases pass AUTO-20261021-INTEGRATION-05/06. Shared migration 009 and hosted checks remain pending; AC6 depends on KAN-78.**  Source PR #45 CI follow-up (AUTO-20261021-KAN77-CI-01) also passes358 database/133 browser tests on its own candidate; TC-08-17 has a separate CI Pass; the full TC-08-16 matrix and manual cases remain Not executed. See exact-case qualifications in test evidence. |
 | S3-T19 | KAN-78: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8 | TC-14-01, TC-14-02, TC-14-03, TC-14-04, TC-14-05, TC-14-06, TC-14-07; TC-14-301?TC-14-307 | **Partly executed.** Owned buffered-interval PostgreSQL suite: 11/11 in `AUTO-20261025-ARVIN-01`; permanent `TC-14-301`?`TC-14-307` also retain `AUTO-20261021-90`. Integration PR #54 reconciles migration 012, permitted outages, staff queue and live-hold extension 013. Broad original cases and complete hosted acceptance are not inferred from scoped automation: **Not executed** / **Not assessed**. |
-| S3-T20 | KAN-79: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10 | TC-05-01, TC-05-02, TC-05-03, TC-05-04, TC-05-05, TC-05-06, TC-05-07, TC-05-08, TC-05-09, TC-05-17–28; TC-05-46–47 | Automated AC1–8/local AC10 pass: AUTO-20261019-01; AC9 reassignment locally verified by AUTO-20261019-02; 21 October timing regressions pass AUTO-20261021-KAN79-02/03 (S3-E18); KAN-64 and hosted workflow checks **Not executed**; acceptance **Not assessed** **21 October combined follow-up: allocation-notification transactions/privacy pass AUTO-20261021-INTEGRATION-05; deterministic browser regression passes INTEGRATION-06. Complete hosted AC9/AC10 remains Not executed.** |
-| S3-T21 | KAN-65: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC101, AC102, AC103, AC104 | TC-05-10–16; TC-05-48; automated cases linked in traceability | Automated reassignment checks pass: AUTO-20261019-02; 21 October logout regression passes AUTO-20261021-KAN79-02/03 (S3-E18); KAN-64 notifications and manual/hosted checks **Not executed**; acceptance **Not assessed** **21 October combined follow-up: handover/no-op notification integration passes AUTO-20261021-INTEGRATION-05; browser regression passes INTEGRATION-06. Complete hosted group remains Not executed.** |
+| S3-T20 | KAN-79: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10 | TC-05-01, TC-05-02, TC-05-03, TC-05-04, TC-05-05, TC-05-06, TC-05-07, TC-05-08, TC-05-09, TC-05-17–28; TC-05-46–47 | Automated AC1–8/local AC10 pass: AUTO-20261019-01; AC9 reassignment locally verified by AUTO-20261019-02; 21 October timing regressions pass AUTO-20261021-KAN79-02/03 (S3-E18); KAN-64 and hosted workflow checks **Not executed**; acceptance **Not assessed** **21 October combined follow-up: allocation-notification transactions/privacy pass AUTO-20261021-INTEGRATION-05; deterministic browser regression passes INTEGRATION-06. Complete hosted AC9/AC10 remains Not executed.** **25 October report: manual scenarios reported Pass on localhost for 17 October; REPORT-20261025-TRISTAN-S3 / S3-E23. TC-05-09 covers the local candidate only; deployed-site verification Not executed; acceptance / DoD Not assessed.** |
+| S3-T21 | KAN-65: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC101, AC102, AC103, AC104 | TC-05-10–16; TC-05-48; automated cases linked in traceability | Automated reassignment checks pass: AUTO-20261019-02; 21 October logout regression passes AUTO-20261021-KAN79-02/03 (S3-E18); KAN-64 notifications and manual/hosted checks **Not executed**; acceptance **Not assessed** **21 October combined follow-up: handover/no-op notification integration passes AUTO-20261021-INTEGRATION-05; browser regression passes INTEGRATION-06. Complete hosted group remains Not executed.** **25 October report: manual scenarios reported Pass on localhost for 17 October; REPORT-20261025-TRISTAN-S3 / S3-E23. Deployed-site verification Not executed; acceptance / DoD Not assessed.** |
 | S3-T22 | KAN-64: AC201, AC202, AC203, AC204, AC205, AC206, AC207, AC208, AC209 | TC-20-12, TC-20-13, TC-20-14, TC-20-15, TC-20-16, TC-20-17, TC-20-18, TC-20-19, TC-20-20; TC-20-30–37 | **Partly executed**: TC-20-17 privacy integration passes in AUTO-20261021-KAN64-03. Other recorded automated checks support portions of TC-20-12–16/18/19; the full concurrency/overlapping-recipient cases, manual runs and TC-20-20 remain **Not executed**. Acceptance **Not assessed**. **21 October combined follow-up: eight lifecycle cases pass AUTO-20261021-INTEGRATION-02; notification PostgreSQL/browser checks pass INTEGRATION-05/06. Full TC-20-18/19/20 and hosted acceptance remain Not executed / Not assessed.** |
 | S3-T25 | KAN-81: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12 | TC-09-01, TC-09-02, TC-09-03, TC-09-04, TC-09-05, TC-09-06, TC-09-07, TC-09-08, TC-09-09, TC-09-10, TC-09-11, TC-09-12 | **Not executed** as a complete group. 21 October 2026, phase 1: AC1–AC4, AC9 (planning effects), AC10, AC11 and the staff side of AC6/AC12 have passing unit/component checks in `AUTO-20261021-08`; PostgreSQL and browser cases passed in PR #47 CI; scoped results are TC-09-13–17 in the phase-1 review follow-up. Phase 2 (AC5, coordinator side of AC6/AC12): unit/component checks pass in `AUTO-20261021-09`; scoped TC-09-18–20 pass in PR #49 CI (`AUTO-20261021-KAN81-P2-CI-02`) after a failing test-fixture run (`AUTO-20261021-KAN81-P2-CI-01`). Phase 3 (AC7, AC8): unit/component checks pass in `AUTO-20261021-10`; scoped TC-09-21–23 pass in PR #50 CI (`AUTO-20261021-KAN81-P3-CI-02`). Hold cases and the readiness half of AC9 are Not executed. |
 | S3-T26 | KAN-83: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12 | TC-14-08, TC-14-09, TC-14-10, TC-14-11, TC-14-12, TC-14-13, TC-14-14, TC-14-15, TC-14-16, TC-14-17, TC-14-18, TC-14-19 | Automated: **Pass** 21 October (AUTO-20261021-KAN83-01; all twelve cases at integration, unit and browser levels). Manual hosted run, shared-database migration 008 and KAN-64 inbox display: **Not executed** 25 October manual hosted run MAN-20261025-KAN83-01 on `2f056bf`: TC-14-18 **Pass**; TC-14-08, -11, -12, -13, -14, -17, -19 **Pass (scoped)**; TC-14-15 **Blocked** (no deployed API, pg_cron not enabled, so AC8 is not operational); TC-14-09, -10, -16 Not executed. Migrations 010–013 are on shared Supabase. Acceptance is decided at the Sprint 3 review. |
@@ -308,7 +316,7 @@ Implementation defaults: docs/scrum/sprint-03/planning.md and docs/requirements/
 
 ### KAN-50 — Maintain Venue Catalog
 
-**Owner:** Unassigned — team member to choose · **Independent reviewer:** To agree after owner chosen · **Estimate:** 5 SP · **Jira status:** To Do · **Acceptance:** Not assessed · **Test group:** S3-T15
+**Owner:** Ryan (current stale-save repair; original catalogue work is separately attributed) · **Independent reviewer:** Tristan, PR #56 · **Estimate:** 5 SP · **Jira status:** In Progress (25 October check) · **Acceptance:** Not assessed · **Test group:** S3-T15
 
 **User story:** As a Venue Staff member, I want to maintain accurate information about ConnectSphere venues so that Event Coordinators and Venue Staff can use reliable venue information when planning events.
 
@@ -405,7 +413,7 @@ Implementation defaults: docs/scrum/sprint-03/planning.md and docs/requirements/
 
 ### KAN-12 — Search and Filter Venues
 
-**Owner:** Unassigned — team member to choose · **Independent reviewer:** To agree after owner chosen · **Estimate:** 5 SP · **Jira status:** To Do · **Acceptance:** Not assessed · **Test group:** S3-T16
+**Owner:** Ryan · **Independent reviewer:** Irfan, PR #51 integration · **Estimate:** 5 SP · **Jira status:** Done (25 October check) · **Acceptance:** Not assessed · **Test group:** S3-T16
 
 **User story:** As an Event Coordinator, I want to search and filter venues using an event’s requirements so that I can identify potential venues efficiently.
 
@@ -1446,3 +1454,67 @@ This is a dated evidence backfill prepared with Codex on 25 October, not a new c
 - **21 October — KAN-81 PR #47 review and corrections:** Arvin requested changes, implemented stale 404/409 refresh corrections in `18ac27d`/`30da68a`, updated tests/evidence and then approved the phase-one work while disclosing his own fixes. His follow-up approval is not a second independent review of his corrections. Kai Jie remains KAN-81’s owner at 8 SP. Existing **S3-E20**, the KAN-81 review JSON and 21 October test narrative retain the scope and CI results.
 
 Owned KAN-34/KAN-78 merge, CI and acceptance limits remain in the preceding 25 October reconciliation. Supporting work adds no story points and does not convert other members’ stories to Done.
+
+## 25 October 2026 — Team meeting and manual-result reconciliation
+
+[REPORT-20261025-TEAM-S3](../../testing/test-evidence.md#25-october-2026--team-manual-result-reports) appends **41 reported Pass** manual case results for the owners below. Reported execution date: **17 October 2026**. Tested build, environment, exact observations and captures are **Not recorded**. Existing Tristan/Ryan reports and all earlier outcomes remain separate. Current fixes require new retests; no acceptance or Done-SP change is inferred. Burndown artifacts remain for the team to supply. The 4 October planning attendance confirmation does not change the earlier report that scope was not finalised then or the later 16 October selection record.
+
+| Acceptance-plan references | Story / reported executor | Current evidence interpretation |
+| --- | --- | --- |
+| S3-T05; S3-T17; S3-T22 | KAN-6 / KAN-52 / KAN-64 / Ernest | Manual scenarios linked in REPORT-20261025-TEAM-S3: reported Pass. Unrun automated-only checks and hosted/build-specific acceptance remain separate. |
+| S3-T06; S3-T19 | KAN-34 / KAN-78 / Arvin | Manual scenarios linked in REPORT-20261025-TEAM-S3: reported Pass. Unrun automated-only checks and hosted/build-specific acceptance remain separate. |
+| S3-T18; S3-T25 | KAN-77 / KAN-81 / Kai Jie | Manual scenarios linked in REPORT-20261025-TEAM-S3: reported Pass. Unrun automated-only checks and hosted/build-specific acceptance remain separate. |
+| S3-T07; S3-T26 | KAN-60 / KAN-83 / Irfan | Manual scenarios linked in REPORT-20261025-TEAM-S3: reported Pass. Unrun automated-only checks and hosted/build-specific acceptance remain separate. |
+| S3-T27 | Integrated Sprint 3 journey / Team (reported) | Manual scenarios linked in REPORT-20261025-TEAM-S3: reported Pass. Unrun automated-only checks and hosted/build-specific acceptance remain separate. |
+
+Use the explicit case IDs in [REPORT-20261025-TEAM-S3](../../testing/test-evidence.md#25-october-2026--team-manual-result-reports) and their appended execution rows. This is not a blanket pass of every subcase in an S3-T plan or a formal acceptance decision. Historical failed and unperformed rows remain evidence; automated-only scenarios are not changed by the reported manual results.
+
+### Current Sprint 3 ownership and status snapshot — 25 October 2026
+
+| Story | Current owner | Jira status in inspected 25 October snapshot |
+| --- | --- | --- |
+| KAN-6 | Ernest | Done |
+| KAN-12 | Ryan | Done |
+| KAN-34 | Arvin | In Review |
+| KAN-50 | Ryan | In Progress |
+| KAN-52 | Ernest | Done |
+| KAN-60 | Irfan | In Review |
+| KAN-64 | Ernest | Done |
+| KAN-65 | Tristan | In Progress |
+| KAN-77 | Kai Jie | To Do |
+| KAN-78 | Arvin | In Review |
+| KAN-79 | Tristan | In Progress |
+| KAN-81 | Kai Jie | In Progress |
+| KAN-83 | Irfan | In Review |
+
+These are current tracker labels, not reconstructed 17 October acceptance or completion dates. Historical owner rows retain their original scope and dates. In particular, original Sprint 2 KAN-52 remains Tristan’s implementation record; the Sprint 3 revision belongs to Ernest. The audit and current-fix evidence determine remaining work independently of Jira labels.
+
+## 25 October 2026 — Current closeout verification
+
+| Acceptance group | New supported evidence | Remaining boundary |
+| --- | --- | --- |
+| S3-T06 / KAN-34 | TC-03-303 PostgreSQL date bounds, AUTO-20261025-CLOSEOUT-01 | Current-build manual repair retest |
+| S3-T07 / KAN-60 | TC-04-303 Singapore review/clarification display | Current-build display retest; historical report retained |
+| S3-T17 / KAN-52 | TC-11-03 exact capacity/equality/over-capacity assessment, AUTO-20261025-CLOSEOUT-02 | Formal review acceptance remains separate |
+| S3-T19 / KAN-78 | TC-14-307 named/readable affected-booking warnings, AUTO-20261025-CLOSEOUT-01 | Current-build staff UI retest |
+| S3-T22 / KAN-64 | TC-20-18/19 real concurrent dedupe, post-insert rollback and overlapping recipients; TC-20-20 ownership trace | Later KAN-80/82/84 trigger groups remain their Sprint 4 scope |
+| S3-T25 / KAN-81 | TC-09-25 confirmed-event replacement controls; TC-14-308 deterministic outage/hold mutation orders | Current-build replacement retest; AC9 final-confirmation/safety consumer integration remains Sprint 4 |
+| S3-T26 / KAN-83 | TC-14-309 buffered hint; TC-14-10/16 boundary and three-way contention; TC-14-310 actual shared cron execution | Current-build held-booking expiry/inbox journey; configured job execution is separately verified |
+| S3-T27 / integrated journey | Historical team report retained as REPORT-20261025-TEAM-S3 | Does not retest today's changes or unimplemented Sprint 4 consumers |
+
+All local suites pass, including the final 510-test isolated database run. Current source and limitations are in S3-E25. No new story points, automatic Jira transitions, formal acceptance decisions or historical velocity are inferred. Test specifications, executions and dated run records remain separate.
+
+## 25 October 2026 — Reported closeout repair pass
+
+The later report `REPORT-20261025-CLOSEOUT-RETEST` supersedes the preceding table's manual repair follow-ups. The fixes are complete locally and the following smoke scopes are **reported Pass**:
+
+| Acceptance group | Completed repair smoke |
+| --- | --- |
+| S3-T06 / KAN-34 | TC-03-303 date-bound validation |
+| S3-T07 / KAN-60 | TC-04-303 Singapore timestamp display |
+| S3-T19 / KAN-78 | TC-14-307 readable affected-booking warnings |
+| S3-T25 / KAN-81 | TC-09-25 confirmed replacement controls; TC-14-311 outage release |
+| S3-T26 / KAN-83 | TC-14-309 buffered deadline; TC-14-311 scheduled expiry/inbox |
+| S3-T27 / connected repair flow | The above local smoke scopes; future Sprint 4 consumers are outside this report |
+
+Source and missing execution metadata are retained in [S3-E26](evidence/README.md#s3-e26--local-acceptance-and-repair-retest-confirmation). Controlled races remain automated TC-14-308, not inferred manual barrier runs. The [current DoD](../definition-of-done.md#local-acceptance-policy--25-october-2026) accepts the complete local frontend/API with real authentication and the shared development database; no public app/API URL is required. KAN-79-AC10 retains its coordinated policy/Lead/queue requirement on that same local candidate. No AC is removed, and no Jira status or historical velocity is changed by this report.

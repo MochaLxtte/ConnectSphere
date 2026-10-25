@@ -76,7 +76,7 @@ function fakePool(scenario: Scenario = {}) {
         return { rows: [{ withinHours: true, booked: scenario.booked ?? false, held: scenario.held ?? false,
           blocked: scenario.blocked ?? false }] };
       }
-      if (/FOR UPDATE SKIP LOCKED/.test(sql)) {
+      if (/ORDER BY id FOR UPDATE/.test(sql)) {
         return { rows: (scenario.overlappingHolds ?? []).map((id) => ({ id })) };
       }
       if (/^\s*UPDATE venue_bookings/.test(sql) && scenario.updateError) throw scenario.updateError;
@@ -111,10 +111,11 @@ const cancel = (pool: never, input: unknown = { reason: 'Released' }, actor = st
   cancelVenueHold({ pool }, { bookingId, actor, input });
 
 describe('KAN-83 placeVenueHold', () => {
-  it('KAN-83-AC1/AC7 holds a pending request under booking -> event -> venue locks and notifies in the same transaction', async () => {
+  it('KAN-83-AC1/AC7 takes the venue gate before booking -> event -> venue locks and notifies in the same transaction', async () => {
     const { pool, index, find, wrote } = fakePool();
     await expect(place(pool)).resolves.toMatchObject({ status: 'HELD' });
     const order = [
+      index(/pg_advisory_xact_lock/),
       index(/FROM venue_bookings WHERE id = \$1 FOR UPDATE/),
       index(/FROM event_requests WHERE id = \$1 FOR UPDATE/),
       index(/FROM venues WHERE id = \$1 FOR UPDATE/),
@@ -276,7 +277,9 @@ describe('KAN-83 expiry and operational blocks', () => {
       ['hold-a', staff.id, 'Venue unavailable: Burst pipe'],
       ['hold-b', staff.id, 'Venue unavailable: Burst pipe'],
     ]);
-    expect(index(/FOR UPDATE SKIP LOCKED/)).toBeGreaterThan(index(/FROM venues WHERE id = \$1 FOR UPDATE/));
+    expect(index(/pg_advisory_xact_lock/)).toBeLessThan(index(/FROM venues WHERE id = \$1 FOR UPDATE/));
+    expect(index(/ORDER BY id FOR UPDATE/)).toBeGreaterThan(index(/FROM venues WHERE id = \$1 FOR UPDATE/));
+    expect(calls.some((call) => /SKIP LOCKED/.test(call.sql))).toBe(false);
     expect(index(/INSERT INTO venue_unavailability/)).toBeGreaterThan(index(/SET status = 'CANCELLED'/));
   });
 

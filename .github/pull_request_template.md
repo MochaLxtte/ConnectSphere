@@ -19,7 +19,7 @@ Required for story work
 - [ ] `docs/testing/test-cases.csv`: reusable scenarios, preconditions, steps, test data and expected results (step 9)
 - [ ] `docs/requirements/traceability.csv`: feature → story → AC → specification → actual test files (step 10)
 - [ ] `docs/testing/test-executions.csv`: case-level actual results, run references and metadata; retests appended and unperformed tests Not executed (step 11)
-- [ ] `docs/testing/test-evidence.md`: run ID, commit SHA, environment, commands, suite results and coverage gaps; no case or hosted Pass inferred from suite totals (step 11)
+- [ ] `docs/testing/test-evidence.md`: run ID, commit SHA, environment, commands, suite results and coverage gaps; no case or integrated manual Pass inferred from suite totals (step 11)
 - [ ] `sprint-0N/daily-progress.md`: development note (step 15)
 
 If applicable
@@ -33,5 +33,9 @@ If applicable
 ## AI assistance
 
 <!-- Which parts were AI-assisted and how you verified them. You must be able to explain this work at the Week 13 Q&A. -->
+
+## Integrated acceptance
+
+- [ ] Relevant connected workflows verified on localhost with the running API, authentication and agreed development database; execution evidence linked. Application deployment is not required.
 
 ## Open assumptions / limitations

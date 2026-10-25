@@ -1,5 +1,7 @@
 # Sprint 2 planning and meeting record
 
+**25 October 2026 reconciliation:** The [new supplied report](#25-october-2026--team-meeting-and-manual-result-reconciliation) records meeting attendance and/or manual results separately from earlier dated evidence. It does not backdate new fixes or infer acceptance.
+
 **Record check — 15 October 2026:** the original selection remains 12 PBIs / 43 points. Preserve the dated plan and subsequent decisions below; current implementation/status does not supply missing historical attendance, capacity or estimate votes. Use the [baseline and later delivery register](review.md#baseline-and-later-delivery-register--15-october-2026) for current evidence and dates. The 4 October Sprint 3 start below was a cadence projection; actual Sprint 3 planning/commitment is **Not recorded**. New customer requirements and proposed existing-story repairs are separated in [Sprint 3 planning](../sprint-03/planning.md).
 
 ## Sprint boundary and goal
@@ -138,3 +140,11 @@ This is a dated evidence backfill prepared with Codex on 25 October, not a new c
 The existing **MAN-20261006-KAN51-01** walkthrough used a real local API with isolated PostgreSQL and locally signed fixture tokens: 15 checks passed as recorded. It did not exercise hosted Supabase password sign-in. The original ignored captures were not retained in this documentation checkout; no replacement screenshot is invented. GitHub readback records no submitted human approval for #28. `KAN-51-AC1`–`AC6`, `TC-09-201`–`203` and `S2-T05/T06` remain subject to their recorded scope and hosted acceptance gaps; the later shared buffers/holds requirements do not retroactively redefine the original checks. No new acceptance or velocity is inferred.
 
 This readback supplies no additional planning participants, votes, goal or commitment decisions.
+
+## 25 October 2026 — Team meeting and manual-result reconciliation
+
+The supplied **25 October 2026** report confirms planning on **20 September 2026**, and review and retrospective on **3 October 2026**, with **Arvin, Ernest, Irfan, Kai Jie, Ryan and Tristan** attending all three. **Arvin is Scrum Master; Irfan is Product Owner.** Exact times, location, facilitator, note taker, original notes/recordings and individual estimation votes are **Not recorded**. Attendance does not establish who voted, accepted each story, or agreed a particular retrospective action.
+
+The confirmation fills meeting attendance only. Original estimates, scope-change dates, votes and decisions keep their existing evidence and dates. Current story ownership is recorded separately from the historical planning record.
+
+[REPORT-20261025-TEAM-S2](../../testing/test-evidence.md#25-october-2026--team-manual-result-reports) appends **52 reported Pass** manual case results for the owners below. Reported execution date: **3 October 2026**. Tested build, environment, exact observations and captures are **Not recorded**. Existing Tristan/Ryan reports and all earlier outcomes remain separate. Current fixes require new retests; no acceptance or Done-SP change is inferred. Burndown artifacts remain for the team to supply.

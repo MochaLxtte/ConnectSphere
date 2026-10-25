@@ -21,6 +21,7 @@ const serialised = { ...row, updatedAt: '2026-10-01T02:00:00.000Z' };
 interface Script {
   locked?: { isActive: boolean; opensAt: string | null; closesAt: string | null } | null;
   saved?: typeof row;
+  affected?: { id: string; eventName: string | null; startsAt: Date; endsAt: Date; warnings: string[] }[];
   failOn?: RegExp;
 }
 
@@ -39,6 +40,7 @@ function fakePool(script: Script = {}) {
         return { rows: locked ? [locked] : [] };
       }
       if (/^SELECT id, name/.test(sql.trim())) return { rows: [script.saved ?? row] };
+      if (/FROM venue_booking_intervals b/.test(sql)) return { rows: script.affected ?? [] };
       return { rows: [], rowCount: 1 };
     }),
   };
@@ -217,6 +219,25 @@ describe('KAN-50 catalogue service: updating (AC3-AC11, AC14)', () => {
 describe('KAN-77 catalogue service: buffer durations', () => {
   const lockedWith = (setupMinutes: number, turnaroundMinutes: number) => ({
     isActive: true, opensAt: '08:00', closesAt: '22:00', setupMinutes, turnaroundMinutes,
+  });
+
+  it('KAN-78-AC7 returns the affected event and serialised booking period to Venue Staff', async () => {
+    const affected = [
+      { id: 'booking-a', eventName: 'Career fair', startsAt: new Date('2026-12-01T02:00:00Z'),
+        endsAt: new Date('2026-12-01T04:00:00Z'), warnings: ['APPROVED_BOOKING_OVERLAP'] },
+      { id: 'booking-b', eventName: null, startsAt: new Date('2026-12-01T04:00:00Z'),
+        endsAt: new Date('2026-12-01T06:00:00Z'), warnings: ['APPROVED_BOOKING_OVERLAP'] },
+    ];
+    const { pool } = fakePool({ locked: lockedWith(0, 0), affected });
+    const result = await updateCatalogueVenue({ pool }, {
+      actor: staff, venueId, input: { setupMinutes: 30, expectedSetupMinutes: 0 },
+    });
+    expect(result.affectedBookings).toEqual([
+      { id: 'booking-a', eventName: 'Career fair', startsAt: '2026-12-01T02:00:00.000Z',
+        endsAt: '2026-12-01T04:00:00.000Z', warnings: ['APPROVED_BOOKING_OVERLAP'] },
+      { id: 'booking-b', eventName: null, startsAt: '2026-12-01T04:00:00.000Z',
+        endsAt: '2026-12-01T06:00:00.000Z', warnings: ['APPROVED_BOOKING_OVERLAP'] },
+    ]);
   });
 
   it('saves a buffer when the stored value still matches the loaded one (AC1, AC4, AC5)', async () => {

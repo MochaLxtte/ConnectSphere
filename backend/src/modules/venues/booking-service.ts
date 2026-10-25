@@ -238,6 +238,7 @@ export async function createVenueBooking(
   }
   const submission = parseBookingSubmission(input);
   return inActorTransaction(pool, actor.id, async (client) => {
+    await lockVenuePlanning(client, submission.venueId);
     const event = await lockEventRequest(client, eventRequestId);
     requireRelation(actor, event, ['ASSIGNED_COORDINATOR'],
       'Only the assigned Event Coordinator can submit a venue booking request for this event.');
@@ -284,7 +285,21 @@ interface LockedBooking {
   holdLive: boolean;
 }
 
+/**
+ * KAN-81/KAN-83: serialize outage and booking writers before either takes row locks.
+ * An outage must wait for every overlapping hold, rather than skip a hold whose approval
+ * later rolls back. The gate leaves the existing booking -> event -> venue row order intact.
+ * It is transaction-scoped, so both commit and rollback release it automatically.
+ */
+export async function lockVenuePlanning(client: Pick<PoolClient, 'query'>, venueId: string): Promise<void> {
+  await client.query("SELECT pg_advisory_xact_lock(hashtextextended('connectsphere:venue:' || $1::uuid::text, 0))", [venueId]);
+}
+
 async function lockBooking(client: Pick<PoolClient, 'query'>, bookingId: string): Promise<LockedBooking> {
+  // Booking venue IDs are immutable in the application. Read only the gate key first;
+  // the following row lock still reads/validates the latest booking state after waiting.
+  await client.query(`SELECT pg_advisory_xact_lock(hashtextextended('connectsphere:venue:' || venue_id::text, 0))
+    FROM venue_bookings WHERE id = $1`, [bookingId]);
   const locked = await client.query<Omit<LockedBooking, 'holdLive'>>(`SELECT status,
     event_request_id AS "eventRequestId", venue_id AS "venueId", starts_at AS "startsAt",
     ends_at AS "endsAt", replaces_booking_id AS "replacesBookingId", hold_expires_at AS "holdExpiresAt"

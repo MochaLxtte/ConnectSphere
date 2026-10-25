@@ -64,7 +64,7 @@ Match the request to a row and follow that procedure in order.
 | **Development** | | |
 | "Let's work on KAN-xx", "build / fix KAN-xx" | Story work | §4 |
 | "Write test cases for CF-xx / KAN-xx" (no code) | Any one member | §4 steps 9–12 |
-| "Run the manual / hosted test for KAN-xx", "accept KAN-xx on the hosted app" | Any one member | §5.12 |
+| "Run the manual / integrated test for KAN-xx", "accept KAN-xx on the local app" | Any one member | §5.12 |
 | "Review PR #n" | Any one member (not the author) | §5.11 |
 | "Merge main into my branch", "fix conflicts" | Story work | §7.1 |
 | "Add a migration", "change the schema" | Story work | §7.3 |
@@ -126,14 +126,14 @@ branch as the code, before the PR is opened. *(if)* steps apply only when the si
 | 9 | Write or update reusable test specifications for each AC: scenario, preconditions, steps, data and expected result; keep execution outcomes separate | `docs/testing/test-cases.csv` (§6.1) |
 | 10 | Link feature → story → AC → test case → real test file paths | `docs/requirements/traceability.csv` |
 | 11 | Append supported case-level execution results; record run ID, date, commit SHA, environment, command or manual steps, result and coverage gaps. Leave unperformed cases Not executed | `docs/testing/test-executions.csv` (case results), `docs/testing/test-evidence.md` (run narratives and suite results) |
-| 12 | Update the acceptance test status (`S#-Txx`) using the relevant execution evidence; an automated suite pass alone does not establish hosted acceptance | `sprint-0N/sprint-backlog.md` |
+| 12 | Update the acceptance test status (`S#-Txx`) using the relevant execution evidence; an automated suite pass alone does not establish integrated acceptance | `sprint-0N/sprint-backlog.md` |
 | 13 | *(if)* Captured screenshots, CI runs or exports: register them | `sprint-0N/evidence/README.md` |
 | 14 | *(if)* Endpoints, schema, modules or setup changed: update contracts, diagrams, module/setup READMEs; re-export diagram images | `docs/architecture/*`, `docs/database-diagram.md`, `database/README.md`, `backend/`/`frontend/` READMEs, module READMEs |
 | 15 | Add a dated development note (what finished, evidence IDs, what remains) | `sprint-0N/daily-progress.md` § Development updates |
 | 16 | Commit in small steps naming the story: `feat(KAN-xx): ...`, `test(KAN-xx): ...`, `docs(KAN-xx): ...` | git |
 | 17 | Open the PR with the template fully ticked; request a reviewer who is not the author | GitHub (`.github/pull_request_template.md`) |
 | 18 | Move the card to In Review | Jira |
-| 19 | After review and merge: subtasks Done; story Done **only** when the Definition of Done is met (hosted check included) | Jira |
+| 19 | After review and merge: subtasks Done; story Done **only** when the Definition of Done is met (integrated local acceptance included; application deployment is not required) | Jira |
 | 20 | Update the story's status, sprint and Done date | `docs/requirements/product-backlog.md` § Master backlog register |
 
 ## 5. Non-development activities
@@ -238,7 +238,13 @@ it, otherwise in the sprint's scope change log. Then follow §4.
 3. Leave the review on GitHub (approve or request changes, with reasons). The GitHub review is the
    record; a self-merge without review must be stated in the PR text.
 
-### 5.12 Manual or hosted acceptance testing (any one member)
+### 5.12 Manual integrated acceptance testing (any one member)
+
+Application deployment is not required. Use the complete frontend and API running locally with
+real authentication and the agreed shared Supabase development database. Check persisted outcomes,
+role restrictions and relevant background jobs; mocked browser responses alone do not establish
+this acceptance. Record the local URL and tested build when available. See the 25 October 2026
+policy amendment in `docs/scrum/definition-of-done.md`; earlier hosted-only notes are historical.
 1. Use only the shared development database with test accounts; never production data. The person
    signs in themselves; AI assistants never type passwords.
 2. Record original values before changing shared data and restore them afterwards; list any test
@@ -356,7 +362,7 @@ that every linked case passed. Add case-level Pass/Fail only when the source ide
 or its specific scenario and observed result. Preserve older run ID formats and original records.
 The unchanged migration snapshot `docs/testing/archive/test-cases-2026-10-21.csv` is historical
 source evidence, not the current specification or execution register.
-Counts of recorded case outcomes do not establish complete feature coverage or hosted acceptance;
+Counts of recorded case outcomes do not establish complete feature coverage or integrated acceptance;
 check their scope, source limitations and the relevant Definition of Done.
 
 **Test selection.** Cover normal, boundary, conflict and failure scenarios at the appropriate
@@ -470,7 +476,7 @@ the team and records their name (§2).
 | `docs/requirements/traceability.csv` | Feature → story → AC → test case → test file | Required |
 | `docs/testing/test-evidence.md` | Run narratives, suite results, source limitations and coverage gaps | Required |
 | `docs/testing/archive/test-cases-2026-10-21.csv` | Unchanged pre-standardisation register retained as historical source evidence | Never edit; current records live in the separate registers |
-| `docs/testing/README.md` | Register workflow, test levels, environments and hosted check scripts | If (testing workflow or hosted check changes) |
+| `docs/testing/README.md` | Register workflow, test levels, environments and integrated check scripts | If (testing workflow or integrated check changes) |
 | `docs/testing/coverage-reports/` | Coverage summary per sprint | Any one member, sprint close |
 
 ### 8.5 Scrum records (folder 4)

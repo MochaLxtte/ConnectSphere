@@ -356,13 +356,34 @@ describe('KAN-50 venue edit page: access (AC14)', () => {
 describe('KAN-77 venue edit page: buffer durations', () => {
   it('KAN-78 displays affected booking warnings returned by a buffer save', async () => {
     stubApi({ patch: () => json({ venue: { ...saved, setupMinutes: 30,
-      affectedBookings: [{ id: 'booking-1', warnings: ['APPROVED_BOOKING_OVERLAP'] }] } }) });
+      affectedBookings: [{ id: 'booking-1', eventName: 'Career fair',
+        startsAt: '2026-12-01T02:00:00Z', endsAt: '2026-12-01T04:00:00Z',
+        warnings: ['APPROVED_BOOKING_OVERLAP', 'OPERATIONAL_BLOCK_OVERLAP', 'OUTSIDE_OPERATING_HOURS'] },
+      { id: 'booking-2', eventName: 'Awards ceremony', warnings: ['OUTSIDE_OPERATING_HOURS'] }] } }) });
     await renderPage();
     await screen.findByRole('heading', { name: 'Harbour Hall' });
     await fireEvent.update(screen.getByLabelText(/Setup before each booking/), '30');
     await fireEvent.click(saveButton());
-    await waitFor(() => expect(screen.getByRole('link', { name: 'Review affected booking' })).toHaveAttribute('href', '/venue-bookings/booking-1'));
-    expect(screen.getByLabelText('Affected bookings')).toHaveTextContent('APPROVED_BOOKING_OVERLAP');
+    await waitFor(() => expect(screen.getByRole('link', { name: 'Review Career fair' })).toHaveAttribute('href', '/venue-bookings/booking-1'));
+    expect(screen.getByRole('link', { name: 'Review Awards ceremony' })).toHaveAttribute('href', '/venue-bookings/booking-2');
+    const affected = screen.getByLabelText('Affected bookings');
+    expect(affected).toHaveTextContent('1 Dec 2026, 10:00 am – 1 Dec 2026, 12:00 pm (Singapore time)');
+    expect(affected).toHaveTextContent('Overlaps another approved booking.');
+    expect(affected).toHaveTextContent('Overlaps a period of venue unavailability.');
+    expect(affected).toHaveTextContent('Extends outside the venue operating hours.');
+    expect(affected).not.toHaveTextContent('APPROVED_BOOKING_OVERLAP');
+  });
+
+  it.each([null, undefined, ' '])('KAN-78 identifies an unnamed historical booking (%s) with its stable ID', async (eventName) => {
+    stubApi({ patch: () => json({ venue: { ...saved, setupMinutes: 30,
+      affectedBookings: [{ id: 'booking-1', eventName, warnings: ['FUTURE_WARNING'] }] } }) });
+    await renderPage();
+    await screen.findByRole('heading', { name: 'Harbour Hall' });
+    await fireEvent.update(screen.getByLabelText(/Setup before each booking/), '30');
+    await fireEvent.click(saveButton());
+    expect(await screen.findByRole('link', { name: 'Review booking booking-1' })).toHaveAttribute('href', '/venue-bookings/booking-1');
+    expect(screen.getByLabelText('Affected bookings')).toHaveTextContent('This booking needs an availability review.');
+    expect(screen.getByLabelText('Affected bookings')).not.toHaveTextContent('Time unavailable');
   });
   it('shows the saved buffers and saves a changed one with its loaded value (AC4, AC5)', async () => {
     const fetchMock = stubApi({ get: json({ venue: { ...saved, setupMinutes: 15, turnaroundMinutes: 30 } }) });

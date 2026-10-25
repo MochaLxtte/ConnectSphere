@@ -83,7 +83,7 @@ describe('KAN-52 current-data venue suitability against PostgreSQL', () => {
     expect(JSON.stringify(context)).not.toContain(organiser.id);
   });
 
-  it('passes a fitting venue and leaves all event, venue, booking, block and audit records untouched', async () => {
+  it('TC-11-03 passes capacity equality, explains excess attendance and leaves saved records untouched', async () => {
     const pair = await setup();
     const input = await inputFor(pair.eventId, pair.venueId);
     const snapshot = async () => ({
@@ -98,8 +98,24 @@ describe('KAN-52 current-data venue suitability against PostgreSQL', () => {
     expect(result).toMatchObject({ eventId: pair.eventId, venueId: pair.venueId, outcome: 'SUITABLE' });
     expect(result.checks).toHaveLength(7);
     expect(result.checks.every(check => check.status === 'PASS')).toBe(true);
+    expect(result.checks.find(check => check.key === 'capacity')).toEqual({ key: 'capacity', status: 'PASS',
+      message: 'Expected attendance (50) fits the venue capacity (50).' });
     expect(Number.isNaN(Date.parse(result.checkedAt))).toBe(false);
     expect(await snapshot()).toEqual(before);
+
+    // Keep the venue at 50 and change only attendance, matching the reusable case's exact boundary.
+    // Reload the context so this checks capacity rather than the separate stale-context rejection.
+    await fixture.pool.query('UPDATE event_requests SET expected_attendance=51 WHERE id=$1', [pair.eventId]);
+    const aboveBefore = await snapshot();
+    const above = await assess(pair.eventId, await inputFor(pair.eventId, pair.venueId));
+    expect(above.outcome).toBe('UNSUITABLE');
+    expect(above.checks.find(check => check.key === 'capacity')).toEqual({ key: 'capacity', status: 'FAIL',
+      message: 'Expected attendance (51) exceeds the venue capacity (50).' });
+    expect(above.checks.filter(check => check.key !== 'capacity').every(check => check.status === 'PASS')).toBe(true);
+    expect(await snapshot()).toEqual(aboveBefore);
+    const reloaded = await getVenueSuitabilityContext(fixture.dependencies, { actor: coordinator, eventId: pair.eventId });
+    expect(reloaded.event.expectedAttendance).toBe(51);
+    expect(reloaded.venues.find(item => item.id === pair.venueId)?.capacity).toBe(50);
   });
 
   it.each([

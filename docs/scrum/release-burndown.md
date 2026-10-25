@@ -1,5 +1,7 @@
 # Release burndown
 
+**Closure reconciliation — 26 October 2026:** the [current review summaries](README.md#acceptance-and-closure-inputs--26-october-2026) now record team-reported outcomes: Sprint 1 **24 accepted / 8 carried**, Sprint 2 **24 accepted / 19 carried**, Sprint 3 **63 accepted / 0 carried**. Collective review decisions were confirmed on 26 October for 19 September, 3 October and 17 October respectively. Sprint 3's historical build-level DoD evidence remains unresolved against later reproduced failures; its 63 SP is explicitly a team-reported outcome. These reported totals are not substituted for missing daily observations or a verified historical release baseline. The team will supply closing boards, review feedback and burndown charts/source data; no chart or ideal line is generated here.
+
 Release 1 must be finished by Friday Week 12, **6 November 2026 at 23:59, Singapore time** (Week 12 dates supplied by Tristan on 16 October). This tracks **remaining release story points after each sprint** against an ideal line, so the team can answer "are we on track?" at every planning and review. Any one member updates it (write "Recorded by" in the row's evidence column) at every sprint close (after the review) and whenever release scope changes.
 
 Rules (`AGENTS.md` §5): only stories that meet the Definition of Done by the sprint's last day burn points. Unfinished stories burn 0 in that sprint and carry their full points forward. Scope added by customer changes is recorded as a separate increase, never hidden inside remaining work.
@@ -59,6 +61,16 @@ Sprint 2 id 34 was administratively closed on **16 October at 02:06 Singapore ti
 
 
 </details>
+
+## Reported review outcomes — confirmation received 26 October 2026
+
+| Sprint | Reported acceptance date | Accepted stories / SP | Carried stories / SP | Decision source / limitation |
+| --- | --- | --- | --- | --- |
+| 1 | 19 September | 7 / 24 | 3 / 8 | All six collectively agreed at review; confirmed 26 October. Reviewed build Not recorded. |
+| 2 | 3 October | 7 / 24 | 5 / 19 | All six collectively agreed; original-scope carry-over is distinct from new customer changes. Reviewed build Not recorded. |
+| 3 | 17 October | 13 / 63 | 0 / 0 | All six collectively agreed, reported 26 October. Later reproduced failures/fixes retained; historical build-level DoD compliance Not assessed. |
+
+The following older per-sprint table is retained as its dated accounting snapshot. Use the reported outcomes above for the current review summary, with their limitations; do not treat them as source data for missing daily observations. Original release baseline, ideal line and independently reconciled remaining-release points remain Not recorded.
 
 ## Per-sprint data
 

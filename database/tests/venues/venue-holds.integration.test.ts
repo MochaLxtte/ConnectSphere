@@ -1,9 +1,10 @@
 import { randomUUID } from 'node:crypto';
+import type { PoolClient } from 'pg';
 import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { createRuntimeApp } from '../../../backend/src/runtime-app.js';
 import type { EventStatus } from '../../../backend/src/modules/events/types.js';
-import type { WorkflowActor } from '../../../backend/src/modules/events/workflow-support.js';
+import type { WorkflowActor, WorkflowDependencies } from '../../../backend/src/modules/events/workflow-support.js';
 import {
   cancelVenueHold, createVenueBooking, decideVenueBooking, expireVenueHolds, getVenueBooking,
   listVenueBookings, placeVenueHold,
@@ -13,7 +14,7 @@ import { searchVenues, parseVenueSearchQuery } from '../../../backend/src/module
 import {
   checkVenueSuitability, getVenueSuitabilityContext,
 } from '../../../backend/src/modules/venues/suitability-service.js';
-import { createVenueBlock } from '../../../backend/src/modules/venues/block-service.js';
+import { createVenueBlock, deleteVenueBlock } from '../../../backend/src/modules/venues/block-service.js';
 import { createWorkflowFixture, type WorkflowFixture } from '../events/workflow-fixture.js';
 
 let fixture: WorkflowFixture;
@@ -169,6 +170,42 @@ describe('KAN-83 placing a venue hold (AC1, AC2, AC3, AC7)', () => {
     await expect(hold(target.id)).rejects.toMatchObject({ kind: 'CONFLICT', code });
     expect(await row(target.id)).toMatchObject({ status: 'PENDING', hold_expires_at: null });
     expect(await fixture.notifications(target.eventRequestId)).toEqual([]);
+  });
+
+  describe.each(['APPROVED', 'HELD'] as const)('KAN-83-AC3 buffered hold placement against %s', (status) => {
+    it.each([
+      ['preceding turnaround touches existing setup', 'before', 0, true],
+      ['preceding turnaround overlaps existing setup by one minute', 'before', 1, false],
+      ['following setup touches existing turnaround', 'after', 0, true],
+      ['following setup overlaps existing turnaround by one minute', 'after', -1, false],
+    ] as const)('%s', async (_label, side, offsetMinutes, allowed) => {
+      const minute = 60_000;
+      const venueId = await createVenue();
+      await fixture.pool.query('UPDATE venues SET setup_minutes = 60, turnaround_minutes = 30 WHERE id = $1', [venueId]);
+      const existing = await pending({ venueId });
+      if (status === 'HELD') await hold(existing.id);
+      else await decide(existing.id, 'APPROVED');
+
+      // Every event interval is disjoint; only the setup/turnaround boundary can clash.
+      const candidateEnd = Date.parse(startsAt) - 90 * minute + offsetMinutes * minute;
+      const candidateStart = Date.parse(endsAt) + 90 * minute + offsetMinutes * minute;
+      const candidate = await pending({ venueId,
+        startsAt: new Date(side === 'before' ? candidateEnd - 4 * 60 * minute : candidateStart).toISOString(),
+        endsAt: new Date(side === 'before' ? candidateEnd : candidateStart + 4 * 60 * minute).toISOString(),
+      });
+      if (allowed) {
+        await expect(hold(candidate.id)).resolves.toMatchObject({ status: 'HELD' });
+        expect((await fixture.notifications(candidate.eventRequestId)).filter((notice) => notice.type === 'VENUE_HOLD_PLACED'))
+          .toHaveLength(1);
+      } else {
+        await expect(hold(candidate.id)).rejects.toMatchObject({
+          code: status === 'HELD' ? 'VENUE_HELD' : 'VENUE_BOOKING_CONFLICT',
+        });
+        expect(await row(candidate.id)).toMatchObject({ status: 'PENDING', hold_expires_at: null });
+        expect(await fixture.notifications(candidate.eventRequestId)).toEqual([]);
+      }
+      expect((await row(existing.id)).status).toBe(status);
+    });
   });
 
   it('KAN-83-AC3 ignores an overlapping hold that has already lapsed', async () => {
@@ -470,6 +507,315 @@ describe('KAN-81 an outage releases a live hold by its buffered interval (AC3)',
     await block(target.venueId, shift(startsAt, -2 * HOUR), shift(startsAt, -HOUR));
     await block(target.venueId, shift(endsAt, HOUR / 2), shift(endsAt, HOUR));
     expect((await row(target.id)).status).toBe('HELD');
+  });
+});
+
+describe('KAN-81-AC3 / KAN-83-AC10 outage and live-hold concurrency', () => {
+  function signal() {
+    let resolve!: () => void;
+    const promise = new Promise<void>((done) => { resolve = done; });
+    return { promise, resolve };
+  }
+
+  /** Real PostgreSQL transactions with explicit barriers; no mocked SQL results or timing sleeps. */
+  function intercepted(hooks: { before?: (sql: string) => void; after?: (sql: string) => Promise<void> }): WorkflowDependencies {
+    return { pool: {
+      query: fixture.pool.query.bind(fixture.pool),
+      async connect() {
+        const client = await fixture.pool.connect();
+        return {
+          async query(sql: string, values?: unknown[]) {
+            hooks.before?.(sql);
+            const result = await client.query(sql, values);
+            await hooks.after?.(sql);
+            return result;
+          },
+          release: client.release.bind(client),
+        } as unknown as PoolClient;
+      },
+    } };
+  }
+
+  async function overlap<A, B>(
+    first: (dependencies: WorkflowDependencies) => Promise<A>,
+    second: (dependencies: WorkflowDependencies) => Promise<B>,
+    pauseAfter: RegExp,
+  ) {
+    const paused = signal();
+    const resume = signal();
+    const secondAttempted = signal();
+    let stopped = false;
+    const firstResult = first(intercepted({ after: async (sql) => {
+      if (!stopped && pauseAfter.test(sql)) {
+        stopped = true;
+        paused.resolve();
+        await resume.promise;
+      }
+    } })).then((value) => ({ value }), (error: unknown) => ({ error }));
+    let secondResult: Promise<{ value: B } | { error: unknown }> | undefined;
+    try {
+      await Promise.race([paused.promise, firstResult.then((result) => {
+        throw new Error(`The first operation finished before reaching its barrier: ${JSON.stringify(result)}`);
+      })]);
+      secondResult = second(intercepted({
+        before(sql) {
+          if (/pg_advisory_xact_lock/.test(sql)) secondAttempted.resolve();
+          // Also exercise the old outage implementation: its first contended statement was the venue lock.
+          if (/FROM venues WHERE id = \$1 FOR UPDATE/.test(sql)) secondAttempted.resolve();
+        },
+        async after(sql) {
+          // Without the venue gate, force the original bug: approval already owns the held row.
+          if (/FROM venue_bookings WHERE id = \$1 FOR UPDATE/.test(sql)) secondAttempted.resolve();
+        },
+      })).then((value) => ({ value }), (error: unknown) => ({ error }));
+      await Promise.race([secondAttempted.promise, secondResult.then((result) => {
+        throw new Error(`The competing operation finished before reaching its barrier: ${JSON.stringify(result)}`);
+      })]);
+    } finally {
+      resume.resolve();
+    }
+    return { first: await firstResult, second: await secondResult! };
+  }
+
+  const outage = (venueId: string) => (dependencies: WorkflowDependencies) => createVenueBlock(dependencies, {
+    actor: staff, venueId, input: { startsAt, endsAt, reason: 'Emergency pipe repair' },
+  });
+  const approval = (bookingId: string) => (dependencies: WorkflowDependencies) => decideVenueBooking(dependencies, {
+    actor: staff, bookingId, input: { decision: 'APPROVED' },
+  });
+  const placement = (bookingId: string) => (dependencies: WorkflowDependencies) => placeVenueHold(dependencies, {
+    actor: staff, bookingId, input: { expiresAt: tomorrow() },
+  });
+  const bookingLock = /FROM venue_bookings WHERE id = \$1 FOR UPDATE/;
+  const venueLock = /FROM venues WHERE id = \$1 FOR UPDATE/;
+  const cancellationNotices = async (eventId: string) =>
+    (await fixture.notifications(eventId)).filter((notice) => notice.type === 'VENUE_HOLD_CANCELLED');
+
+  it('an outage that owns the venue cancels the hold even when approval starts before the outage commits', async () => {
+    const target = await pending();
+    await hold(target.id);
+    // The route can supply uppercase UUID text; both writers must still use the same gate.
+    const results = await overlap(outage(target.venueId.toUpperCase()), approval(target.id), venueLock);
+    expect(results.first).toMatchObject({ value: { venueId: target.venueId } });
+    expect(results.second).toMatchObject({ error: { code: 'BOOKING_ALREADY_DECIDED' } });
+    expect(await row(target.id)).toMatchObject({ status: 'CANCELLED', cancelled_by: staff.id,
+      cancellation_reason: 'Venue unavailable: Emergency pipe repair', held_by: staff.id });
+    expect(await cancellationNotices(target.eventRequestId)).toHaveLength(1);
+    // Removing the outage must never resurrect the cancelled hold or permit a later approval.
+    if (!('value' in results.first)) throw results.first.error;
+    await deleteVenueBlock(fixture.dependencies, { actor: staff, blockId: results.first.value.id });
+    await expect(decide(target.id, 'APPROVED')).rejects.toMatchObject({ code: 'BOOKING_ALREADY_DECIDED' });
+    expect((await row(target.id)).status).toBe('CANCELLED');
+  });
+
+  it('an approval that wins first is retained and flagged for outage recovery instead of being cancelled', async () => {
+    const target = await pending();
+    await hold(target.id);
+    const results = await overlap(approval(target.id), outage(target.venueId), bookingLock);
+    expect(results.first).toMatchObject({ value: { status: 'APPROVED' } });
+    expect(results.second).toMatchObject({ value: { affected: [expect.objectContaining({
+      bookingId: target.id, status: 'RECOVERY_REQUIRED',
+    })] } });
+    expect((await row(target.id)).status).toBe('APPROVED');
+    expect(await cancellationNotices(target.eventRequestId)).toHaveLength(0);
+  });
+
+  it('an approval that fails releases its gate and the waiting outage still cancels and notifies once', async () => {
+    const target = await pending();
+    await hold(target.id);
+    await fixture.pool.query("UPDATE event_requests SET status = 'SUBMITTED' WHERE id = $1", [target.eventRequestId]);
+    const results = await overlap(approval(target.id), outage(target.venueId), bookingLock);
+    expect(results.first).toMatchObject({ error: { code: 'EVENT_NOT_APPROVED' } });
+    expect(results.second).toMatchObject({ value: { venueId: target.venueId } });
+    expect((await row(target.id)).status).toBe('CANCELLED');
+    expect(await cancellationNotices(target.eventRequestId)).toHaveLength(1);
+  });
+
+  it('a hold placed first is cancelled by the waiting outage, including its reason and notification', async () => {
+    const target = await pending();
+    const results = await overlap(placement(target.id), outage(target.venueId), /UPDATE venue_bookings SET status = 'HELD'/);
+    expect(results.first).toMatchObject({ value: { status: 'HELD' } });
+    expect(results.second).toMatchObject({ value: { venueId: target.venueId } });
+    expect(await row(target.id)).toMatchObject({ status: 'CANCELLED', cancellation_reason: 'Venue unavailable: Emergency pipe repair' });
+    expect(await cancellationNotices(target.eventRequestId)).toHaveLength(1);
+  });
+
+  it('an outage saved first prevents a waiting hold placement without creating hold or cancellation notices', async () => {
+    const target = await pending();
+    const results = await overlap(outage(target.venueId), placement(target.id), venueLock);
+    expect(results.first).toMatchObject({ value: { venueId: target.venueId } });
+    expect(results.second).toMatchObject({ error: { code: 'VENUE_UNAVAILABLE' } });
+    expect((await row(target.id)).status).toBe('PENDING');
+    expect(await fixture.notifications(target.eventRequestId)).toEqual([]);
+  });
+});
+
+describe('KAN-83-AC9 approval, expiry and overlapping hold contention at the deadline', () => {
+  function signal() {
+    let resolve!: () => void;
+    const promise = new Promise<void>((done) => { resolve = done; });
+    return { promise, resolve };
+  }
+
+  function tracked(after?: (sql: string) => Promise<void>) {
+    let connected!: (pid: number) => void;
+    const pid = new Promise<number>((resolve) => { connected = resolve; });
+    const dependencies: WorkflowDependencies = { pool: {
+      query: fixture.pool.query.bind(fixture.pool),
+      async connect() {
+        const client = await fixture.pool.connect();
+        connected((await client.query<{ pid: number }>('SELECT pg_backend_pid() AS pid')).rows[0]!.pid);
+        return {
+          async query(sql: string, values?: unknown[]) {
+            const result = await client.query(sql, values);
+            if (sql.startsWith('BEGIN')) await client.query("SET LOCAL statement_timeout = '10s'");
+            await after?.(sql);
+            return result;
+          },
+          release: client.release.bind(client),
+        } as unknown as PoolClient;
+      },
+    } };
+    return { dependencies, pid };
+  }
+
+  const settle = <T>(work: Promise<T>) => work.then((value) => ({ value }), (error: unknown) => ({ error }));
+  const approve = (dependencies: WorkflowDependencies, bookingId: string) => decideVenueBooking(dependencies, {
+    bookingId, actor: staff, input: { decision: 'APPROVED' },
+  });
+  const place = (dependencies: WorkflowDependencies, bookingId: string) => placeVenueHold(dependencies, {
+    bookingId, actor: staff, input: { expiresAt: tomorrow() },
+  });
+
+  async function waitForBlock(observer: PoolClient, waiter: number, blocker: number) {
+    const stop = Date.now() + 3_000;
+    let blockers: number[] = [];
+    do {
+      blockers = (await observer.query<{ blockers: number[] }>(
+        'SELECT pg_blocking_pids($1) AS blockers', [waiter])).rows[0]!.blockers;
+      if (blockers.includes(blocker)) return;
+    } while (Date.now() < stop);
+    throw new Error(`Expected backend ${waiter} to wait for ${blocker}; observed blockers ${blockers.join(',')}`);
+  }
+
+  it('TC-14-16 expiry wins while approval waits on its row and a new hold waits on approval; retries have no duplicate effects', async () => {
+    // Clear overdue fixtures left by earlier independent cases before asserting this worker's count.
+    await expireVenueHolds(fixture.pool);
+    const original = await pending();
+    const replacement = await pending({ venueId: original.venueId });
+    await hold(original.id);
+    const expiryOwner = await fixture.pool.connect();
+    const observer = await fixture.pool.connect();
+    const work: Promise<unknown>[] = [];
+    try {
+      await expiryOwner.query('BEGIN');
+      const expiryPid = (await expiryOwner.query<{ pid: number }>('SELECT pg_backend_pid() AS pid')).rows[0]!.pid;
+      await expiryOwner.query('SELECT id FROM venue_bookings WHERE id = $1 FOR UPDATE', [original.id]);
+      const approval = tracked();
+      const approvalResult = settle(approve(approval.dependencies, original.id));
+      work.push(approvalResult);
+      const approvalPid = await approval.pid;
+      await waitForBlock(observer, approvalPid, expiryPid);
+      const placement = tracked();
+      const placementResult = settle(place(placement.dependencies, replacement.id));
+      work.push(placementResult);
+      await waitForBlock(observer, await placement.pid, approvalPid);
+
+      // Advance this fixture's deadline to the database clock while both other writers are
+      // demonstrably blocked. No arbitrary sleep or mocked expiry result determines the winner.
+      await expiryOwner.query('UPDATE venue_bookings SET hold_expires_at = clock_timestamp() WHERE id = $1', [original.id]);
+      expect(await expireVenueHolds({ query: expiryOwner.query.bind(expiryOwner) })).toBe(1);
+      await expiryOwner.query('COMMIT');
+      expect(await approvalResult).toMatchObject({ error: { code: 'BOOKING_ALREADY_DECIDED' } });
+      expect(await placementResult).toMatchObject({ value: { status: 'HELD' } });
+    } finally {
+      await expiryOwner.query('ROLLBACK');
+      expiryOwner.release();
+      observer.release();
+      await Promise.all(work);
+    }
+    expect((await row(original.id)).status).toBe('EXPIRED');
+    expect((await row(replacement.id)).status).toBe('HELD');
+    expect(await expireVenueHolds(fixture.pool)).toBe(0);
+    await expect(decide(original.id, 'APPROVED')).rejects.toMatchObject({ code: 'BOOKING_ALREADY_DECIDED' });
+    await expect(hold(replacement.id)).rejects.toMatchObject({ code: 'BOOKING_ALREADY_HELD' });
+    expect((await fixture.notifications(original.eventRequestId)).map((notice) => notice.type))
+      .toEqual(['VENUE_HOLD_EXPIRED', 'VENUE_HOLD_PLACED']);
+    expect((await fixture.notifications(replacement.eventRequestId)).map((notice) => notice.type))
+      .toEqual(['VENUE_HOLD_PLACED']);
+  });
+
+  it.each([true, false])('TC-14-16 approval is eligible before the boundary (commit before expiry: %s); expiry and competing-hold retries cannot overbook', async (commitBeforeExpiry) => {
+    await expireVenueHolds(fixture.pool);
+    const original = await pending();
+    const replacement = await pending({ venueId: original.venueId });
+    const expiryWorker = await fixture.pool.connect();
+    const observer = await fixture.pool.connect();
+    const updated = signal();
+    const resume = signal();
+    const work: Promise<unknown>[] = [];
+    try {
+      const deadline = (await observer.query<{ deadline: Date }>(
+        "SELECT clock_timestamp() + interval '5 seconds' AS deadline")).rows[0]!.deadline.toISOString();
+      // Placing the fixture hold is a separate completed operation, before any competing writer.
+      await hold(original.id, deadline);
+      const approval = tracked(async (sql) => {
+        if (/UPDATE venue_bookings SET status = \$1/.test(sql)) {
+          updated.resolve();
+          await resume.promise;
+        }
+      });
+      const approvalResult = settle(approve(approval.dependencies, original.id));
+      work.push(approvalResult);
+      await Promise.race([updated.promise, approvalResult.then((result) => {
+        throw new Error(`Approval finished before its guarded update: ${JSON.stringify(result)}`);
+      })]);
+      const approvalPid = await approval.pid;
+      expect((await observer.query<{ live: boolean }>(
+        'SELECT clock_timestamp() < $1::timestamptz AS live', [deadline])).rows[0]!.live).toBe(true);
+      const placement = tracked();
+      const placementResult = settle(place(placement.dependencies, replacement.id));
+      work.push(placementResult);
+      await waitForBlock(observer, await placement.pid, approvalPid);
+
+      if (commitBeforeExpiry) {
+        resume.resolve();
+        expect(await approvalResult).toMatchObject({ value: { status: 'APPROVED' } });
+        expect((await observer.query<{ live: boolean }>(
+          'SELECT clock_timestamp() < $1::timestamptz AS live', [deadline])).rows[0]!.live).toBe(true);
+      }
+
+      // Wait for the actual database-clock boundary, not an assumed elapsed delay. The approval
+      // has already performed its final eligibility check and APPROVED update under row locks.
+      // Test both its commit-before-boundary outcome and a commit delayed by a queued expiry.
+      while (!(await observer.query<{ elapsed: boolean }>(
+        'SELECT clock_timestamp() >= $1::timestamptz AS elapsed', [deadline])).rows[0]!.elapsed) { /* clock barrier */ }
+      const expiryPid = (await expiryWorker.query<{ pid: number }>('SELECT pg_backend_pid() AS pid')).rows[0]!.pid;
+      const expiryResult = settle(expireVenueHolds({ query: expiryWorker.query.bind(expiryWorker) }));
+      work.push(expiryResult);
+      if (!commitBeforeExpiry) {
+        await waitForBlock(observer, expiryPid, approvalPid);
+        resume.resolve();
+      }
+      expect(await approvalResult).toMatchObject({ value: { status: 'APPROVED' } });
+      expect(await expiryResult).toEqual({ value: 0 });
+      expect(await placementResult).toMatchObject({ error: { code: 'VENUE_BOOKING_CONFLICT' } });
+    } finally {
+      resume.resolve();
+      await Promise.all(work);
+      expiryWorker.release();
+      observer.release();
+    }
+    expect((await row(original.id)).status).toBe('APPROVED');
+    expect((await row(replacement.id)).status).toBe('PENDING');
+    expect(await expireVenueHolds(fixture.pool)).toBe(0);
+    await expect(decide(original.id, 'APPROVED')).rejects.toMatchObject({ code: 'BOOKING_ALREADY_DECIDED' });
+    await expect(hold(replacement.id)).rejects.toMatchObject({ code: 'VENUE_BOOKING_CONFLICT' });
+    const originalNotices = await fixture.notifications(original.eventRequestId);
+    expect(originalNotices.filter((notice) => notice.type === 'VENUE_HOLD_EXPIRED')).toHaveLength(0);
+    expect(originalNotices.filter((notice) => notice.type === 'VENUE_BOOKING_APPROVED')
+      .map((notice) => notice.recipient_id).sort()).toEqual([organiser.id, coordinator.id, staff.id].sort());
+    expect(await fixture.notifications(replacement.eventRequestId)).toEqual([]);
   });
 });
 

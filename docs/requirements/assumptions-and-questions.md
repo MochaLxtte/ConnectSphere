@@ -1303,3 +1303,27 @@ Source: phase 3 design approved in chat by Kai Jie, the story owner, on 21 Octob
 This is a dated evidence backfill prepared with Codex on 25 October, not a new ceremony, Jira transition, test execution or acceptance decision. Historical entries, other members’ ownership and agreed estimates are preserved.
 
 Evidence interpretation: Arvin’s original KAN-24 work included premature business features subsequently removed in PR #19. KAN-51 combines Ernest’s original implementation with Arvin’s later fixes. PR #47 is Kai Jie’s story with Arvin review/correction support. Missing independent approvals, hosted acceptance and ceremony evidence remain **Not recorded** or **Not assessed** as applicable. These are evidence boundaries, not new customer or team decisions.
+
+## 25 October 2026 — Closeout fixes and approved expiry configuration
+
+The team approval for configuring the existing KAN-83 expiry schedule on shared Supabase was reported in chat. The existing migration-013 function was verified before enabling `pg_cron` 1.6.4 and scheduling only `connectsphere-expire-venue-holds` every minute. Actual successful job executions are retained in `sprint-03/evidence/supabase-hold-expiry-20261025.json`. No business test fixtures, cleanup tests, migration renumbering or new schema migration were applied to the shared database.
+
+The implementation repairs satisfy existing input-validation, conflict, replacement and display criteria; they add no story points or new customer requirement. Venue writes acquire one transaction-scoped venue gate before row locks, so an outage cannot skip an in-flight hold. If an outage wins, the hold is cancelled and a later decision is refused; if approval wins, the approved booking is retained and flagged for recovery. This implements the existing PO clarification that recovery flags belong to approved bookings, while live holds are released and may be requested again.
+
+Full attendance at planning/review/retrospective meetings and unchanged team agreement with the current DoD were reported on 25 October. Actual retrospective feedback/action agreement, individual estimation votes, and board/burndown artifacts remain separately recorded or **Not recorded**; suggested retrospective actions are **To agree**. No review acceptance decision or new historical velocity is inferred.
+
+## 25 October 2026 — Local acceptance and repair retest confirmation
+
+Application deployment is out of the team's delivery plan. Acceptance uses the complete local frontend/API with real authentication and the agreed Supabase development database. The Week 4 project instructions require working software, clear run instructions and test/CI code, but do not prescribe public application hosting. KAN-79's coordinated policy/Lead/queue rollout still applies to the integrated local candidate; shared database migrations and KAN-83 scheduling remain operational requirements.
+
+Decision source: Tristan communicated the project decision in chat and authorised updating the DoD. Additional participants, meeting details and votes are **Not recorded**. This is a current process amendment, not a customer-requirement change or retrospective acceptance decision.
+
+The same report confirms that the latest fixes were tested and work. [REPORT-20261025-CLOSEOUT-RETEST](../testing/test-evidence.md#25-october-2026--closeout-retest-confirmation) closes the repair-smoke follow-up with reported Pass outcomes. The reporting date is 25 October; actual execution date, individual executors and exact tested build are **Not recorded**. Earlier failures, placeholders and reported sprint-review tests remain intact.
+
+## 26 October 2026 — Collective review decisions and evidence follow-up
+
+Source: project-discussion confirmation from Tristan on behalf of the team. Arvin, Ernest, Irfan, Kai Jie, Ryan and Tristan collectively agreed against ACs/DoD at each reported sprint review. Sprint 1 retains 7 accepted / 24 SP and 3 carried / 8 SP at 19 September. Sprint 2's seven non-carried stories were accepted at 3 October; customer-change additions do not retrospectively revoke original acceptance. Sprint 3 is reported as all 13 stories / 63 SP accepted at 17 October with no carry-over. These reported historical decisions were documented on 26 October.
+
+The team describes later fixes as small improvements. The retained audit also contains reproduced existing-requirement failures, so that description does not replace the technical findings or their dates. The exact historical build is unavailable; whether those failures existed in the reviewed candidate remains Not assessed. Current repairs and retests remain separately evidenced. No Jira status or point field is changed by this record.
+
+The team will supply closing-board exports, review feedback and burndown charts/source data for all three sprints. Reviewed build/commit/branch identifiers were not retained and remain Not recorded. Feedback text, action owners and artifact locations remain Not recorded until supplied.

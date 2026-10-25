@@ -59,3 +59,7 @@ See the [API contract](../../../../docs/architecture/api-contract.md) and [decis
 ## KAN-34 date validation — 21 October 2026
 
 `draft-update-input.ts` validates the actual calendar day before a draft create/update reaches SQL; `Date.parse` alone normalises impossible dates. All four editable date fields retain explicit timezone offsets and nullable clears. Unit cases include leap/century boundaries; PostgreSQL HTTP regressions verify 400 and unchanged storage. Form/browser regressions verify saved registration toggles and explicit clearing. AUTO-20261021-KAN78-01 records local results; hosted acceptance remains Not executed.
+
+## 25 October 2026 — PostgreSQL-compatible draft date bounds
+
+The shared create/update parser additionally refuses year `0000` and offsets beyond `±15:59`. Valid four-digit AD years and supported offsets retain their ISO input; null clears and omitted fields keep their existing behavior. Unit tests cover both create/update paths; real PostgreSQL HTTP tests cover all four editable date fields, valid edges and unchanged drafts after HTTP 400. The dedicated parser coverage is 100%; full verification is recorded as `AUTO-20261025-CLOSEOUT-01`. Review decision and clarification times use the shared Singapore formatter in the review page.

@@ -32,15 +32,22 @@ const reasonError = computed(() => reason.value.trim().length > 2000 ? 'Use at m
 // KAN-83: a pending request or a live hold can be decided; approving a hold completes it.
 const decidable = computed(() => state.value.status === 'ready'
   && (state.value.booking.status === 'PENDING' || state.value.booking.status === 'HELD'));
+// KAN-81: an outage replacement can restore the venue for an already confirmed event.
+// The server still checks that the referenced booking needs recovery when saving the decision.
+const approvalEligible = computed(() => state.value.status === 'ready'
+  && (state.value.booking.eventStatus === 'APPROVED'
+    || (state.value.booking.eventStatus === 'CONFIRMED' && !!state.value.booking.replacesBookingId)));
 const holdDeadline = ref('');
 const cancelReason = ref('');
 const holdDeadlineIso = computed(() => fromSingaporeInputValue(holdDeadline.value));
+const holdLatestExpiry = computed(() => state.value.status === 'ready'
+  ? state.value.booking.occupiedStartsAt ?? state.value.booking.startsAt : null);
 // Local checks only explain obvious mistakes; the server decides with its own clock (KAN-83-AC12).
 const holdError = computed(() => {
   // Browsers clear an incomplete datetime-local value, so a non-null ISO value is all that can arrive.
   if (!holdDeadlineIso.value || state.value.status !== 'ready') return '';
-  return Date.parse(holdDeadlineIso.value) > Date.parse(state.value.booking.startsAt)
-    ? 'The hold deadline must be no later than the start of the booked period.' : '';
+  return Date.parse(holdDeadlineIso.value) > Date.parse(holdLatestExpiry.value!)
+    ? 'The hold deadline must be no later than the occupied start, including setup time.' : '';
 });
 const canHold = computed(() => state.value.status === 'ready' && staff.value
   && state.value.booking.status === 'PENDING' && state.value.booking.eventStatus === 'APPROVED'
@@ -52,7 +59,7 @@ const canCancelHold = computed(() => state.value.status === 'ready' && staff.val
   && !cancelReasonError.value && !saving.value && !needsRefresh.value);
 const canSubmit = computed(() => state.value.status === 'ready' && staff.value
   && decidable.value && decision.value !== null
-  && (decision.value !== 'APPROVED' || state.value.booking.eventStatus === 'APPROVED')
+  && (decision.value !== 'APPROVED' || approvalEligible.value)
   && !saving.value && !needsRefresh.value && !reasonError.value);
 let readController: AbortController | undefined;
 let writeController: AbortController | undefined;
@@ -311,10 +318,10 @@ onBeforeUnmount(resetView);
           <template v-else>
             <form @submit.prevent="submit">
               <p class="booking-caption">{{ state.booking.status === 'HELD' ? 'Approval converts the hold into the confirmed booking for this period.' : 'Approval reserves the venue for this period.' }} It does not change the event's status.</p>
-              <p v-if="state.booking.eventStatus !== 'APPROVED'" class="booking-error">The event is not approved, so this booking cannot be approved. You can still reject it.</p>
+              <p v-if="!approvalEligible" class="booking-error">This event's current status does not allow this booking to be approved. You can still reject it.</p>
               <fieldset :disabled="saving" class="decision-fields">
                 <legend>Choose a decision</legend>
-                <label><input v-model="decision" type="radio" value="APPROVED" :disabled="state.booking.eventStatus !== 'APPROVED'" /> Approve booking</label>
+                <label><input v-model="decision" type="radio" value="APPROVED" :disabled="!approvalEligible" /> Approve booking</label>
                 <label><input v-model="decision" type="radio" value="REJECTED" /> Reject booking</label>
                 <label for="booking-reason" class="reason-label">Reason or information (optional)</label>
                 <textarea id="booking-reason" v-model="reason" rows="4" maxlength="2000" aria-describedby="booking-reason-help booking-reason-error" />
@@ -330,7 +337,7 @@ onBeforeUnmount(resetView);
               <fieldset :disabled="saving" class="decision-fields">
                 <label for="hold-deadline" class="reason-label">Hold deadline (Singapore time)</label>
                 <input id="hold-deadline" v-model="holdDeadline" type="datetime-local" required aria-describedby="hold-deadline-help hold-deadline-error" />
-                <p id="hold-deadline-help" class="booking-caption">Must be in the future and no later than the booking start ({{ formatEventTime(state.booking.startsAt) }}).</p>
+                <p id="hold-deadline-help" class="booking-caption">Must be in the future and no later than the occupied start, including setup time ({{ formatEventTime(holdLatestExpiry) }}).</p>
                 <p v-if="holdError" id="hold-deadline-error" role="alert" class="booking-error">{{ holdError }}</p>
               </fieldset>
               <button type="submit" class="button button-secondary" :disabled="!canHold">{{ saving ? 'Saving…' : 'Place hold' }}</button>

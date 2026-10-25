@@ -1,6 +1,16 @@
 # Sprint 3 overview
 
+**Current closure summary — 26 October 2026:** all six members collectively accepted all **13 stories / 63 SP** at the 17 October review, with **no Sprint 4 carry-over**, according to the confirmation supplied today. The [current review record](review.md#current-acceptance-and-closure--26-october-2026) retains that report alongside the later reproduced failures and successful repairs; historical build-level DoD compliance cannot be independently assessed without the reviewed build. Closing-board artifacts, review feedback and team-prepared burndown charts/source data remain to be supplied. Jira Sprint 3 is still Active and Sprint 4 Future; no administrative transition is made here.
+
+**25 October 2026 closeout update:** The latest repair smoke checks are reported **Pass** in [REPORT-20261025-CLOSEOUT-RETEST](../../testing/test-evidence.md#25-october-2026--closeout-retest-confirmation), supplied on 25 October. Actual execution date, tested build, individual executor, captures and cleanup details are **Not recorded**. This completes the reported repair retest follow-up; it does not backdate new fixes. Formal story review/closure, team burndown charts and agreement on retrospective actions remain outstanding. Final confirmation/safety consumers remain Sprint 4 scope.
+
+**Acceptance environment clarified — 25 October 2026.** The [Definition of Done](../definition-of-done.md) permits integrated local frontend/API acceptance with real mapped authentication and the shared development database. The application will not be deployed, so no deployed app/API URL or public-hosted check is outstanding. Coherent workflows and operational Supabase configuration remain required. Earlier dated hosted/deployed requirements and pending retest notes below describe previous checkpoints; this update supersedes those current blockers while preserving their history.
+
 **Scoped ownership and delivery reconciliation — 25 October 2026.** Arvin owns KAN-34 **3 SP** and KAN-78 **8 SP**. Leo Kai Jie supplied the requested-changes review; Irfan recorded integration approval on PR #48/#54 on 22 October. Leo's later re-review is Not recorded. [The current evidence](../../testing/test-evidence.md#25-october-2026--arvin-kan-78-and-kan-34-documentation-reconciliation) records automated main verification, not hosted acceptance or a planning meeting. The last recorded Jira state is In Review (21 October); no new Jira read is claimed. Estimates, sprint scope and dates are unchanged; the historical unassigned rows below are superseded only for these two stories.
+
+**Ryan verification update — 25 October 2026.** Tristan reports that Ryan passed the revised KAN-12 manual scenarios and KAN-50's stale-save repair check on **17 October 2026**. [REPORT-20261025-RYAN-S3](../../testing/test-evidence.md#25-october-2026--ryan-story-verification-records) records 13 case results in `MAN-20261017-02`; [S3-E22](evidence/README.md#25-october-2026--ryan-story-verification-records) also links later PR/CI evidence. Tested build, environment, fixtures and captures are **Not recorded**. KAN-12 is Done / Ryan in Jira; KAN-50 remains In Progress / Ryan, and this report covers its AC101 repair only. The KAN-12 repair from PR #51 was integrated on 22 October after Irfan's review; PR #56 was merged on 25 October after Tristan's review. Those dates remain distinct from reported manual execution. Acceptance, Definition of Done and velocity are unchanged.
+
+**KAN-79 / KAN-65 verification update — 25 October 2026.** Manual scenarios for both stories are reported **Pass on localhost** by Tristan, with a reported execution date of **17 October 2026** using local work before it was pushed. [REPORT-20261025-TRISTAN-S3](../../testing/test-evidence.md#25-october-2026--reported-manual-results-for-original-stories) is registered as [S3-E23](evidence/README.md#reported-kan-79-and-kan-65-manual-results--25-october-2026); tested builds are **Not recorded**. S3-T20/S3-T21 link this report alongside the existing automated evidence. Acceptance and Definition of Done remain **Not assessed**; this does not establish a deployed-site test or revise the later recorded implementation, integration and merge dates. Earlier dated records below are preserved.
 
 **KAN-65 follow-up — 19 October 2026.** KAN-65 and subtasks KAN-88/89/90 are In Progress / Tristan; the estimate remains 3 SP. Branch `feat/KAN-65-coordinator-reassignment` includes KAN-79 and implements Lead-only reassignment with a required reason, assignment-version checks, atomic audit history and current-assignment permissions. `AUTO-20261019-02` records local verification. KAN-64 notifications, manual/hosted workflow checks, independent review and acceptance remain pending. The earlier KAN-79 dependency notes below describe that earlier implementation stage. This targeted update does not change sprint scope, historical evidence or velocity.
 
@@ -10,16 +20,16 @@
 
 **Current release allocation: 13 parent items / 63 SP.** Sprint window: **4–17 October 2026**. Sprint 3 and Sprint 4 each contain 63 SP; this supersedes the earlier 97/29 allocation while keeping 126 SP remaining across the two sprints.
 
-Scope and estimates follow the recorded planning decisions. Stories are unassigned for team members to choose. Planning votes and meeting attendance are **Not recorded**; see [record preparation](../README.md#record-preparation).
+Scope and estimates follow the recorded planning decisions. KAN-79 and KAN-65 are assigned to Tristan; other ownership follows the latest story record rather than the historical unassigned pool. Planning votes and meeting attendance are **Not recorded**; see [record preparation](../README.md#record-preparation).
 
 | Field | Current value |
 | --- | --- |
 | Sprint window | 4–17 October 2026 |
-| Jira state | Active (id 67); KAN-79 and KAN-65 In Progress on 19 October; acceptance Not assessed |
+| Jira state | Active (id 67) in the last sprint administration record; 25 October targeted issue check: KAN-12 Done / Ryan, KAN-50 In Progress / Ryan, KAN-79 and KAN-65 In Progress / Tristan; acceptance Not assessed |
 | Goal | Deliver reliable request review and Lead assignment, then coherent venue planning with buffered availability, expiring holds, outage recovery and relevant notifications. |
 | Selected scope | 13 parent items / 63 SP; [story cards](sprint-backlog.md) |
 | Unclaimed story pool | 55 SP in the last recorded allocation after KAN-79 (8 SP) was claimed; other ownership not re-audited |
-| Independent review | To agree after each owner is chosen; reviewer must be another member; see [planning](planning.md#selected-backlog) |
+| Independent review | KAN-79/KAN-65: Irfan's PR #34 approval is recorded in S3-E16 with its review limitations. Other stories follow their latest review record; see [planning](planning.md#selected-backlog) |
 | Integration owner | To agree; coordinate contracts, migration order and combined verification |
 | Actual planning attendance / votes | Not recorded |
 | Review / retrospective | Planned 17 October; actual attendance, demonstrated build and outcomes Not recorded |
@@ -115,3 +125,39 @@ This is a dated evidence backfill prepared with Codex on 25 October, not a new c
 - **21 October — KAN-81 PR #47 review and corrections:** Arvin requested changes, implemented stale 404/409 refresh corrections in `18ac27d`/`30da68a`, updated tests/evidence and then approved the phase-one work while disclosing his own fixes. His follow-up approval is not a second independent review of his corrections. Kai Jie remains KAN-81’s owner at 8 SP. Existing **S3-E20**, the KAN-81 review JSON and 21 October test narrative retain the scope and CI results.
 
 Owned KAN-34/KAN-78 merge, CI and acceptance limits remain in the preceding 25 October reconciliation. Supporting work adds no story points and does not convert other members’ stories to Done.
+
+## 25 October 2026 — Team meeting and manual-result reconciliation
+
+The supplied **25 October 2026** report confirms planning on **4 October 2026**, and review and retrospective on **17 October 2026**, with **Arvin, Ernest, Irfan, Kai Jie, Ryan and Tristan** attending all three. **Arvin is Scrum Master; Irfan is Product Owner.** Exact times, location, facilitator, note taker, original notes/recordings and individual estimation votes are **Not recorded**. Attendance does not establish who voted, accepted each story, or agreed a particular retrospective action.
+
+[REPORT-20261025-TEAM-S3](../../testing/test-evidence.md#25-october-2026--team-manual-result-reports) appends **41 reported Pass** manual case results for the owners below. Reported execution date: **17 October 2026**. Tested build, environment, exact observations and captures are **Not recorded**. Existing Tristan/Ryan reports and all earlier outcomes remain separate. Current fixes require new retests; no acceptance or Done-SP change is inferred. Burndown artifacts remain for the team to supply. The 4 October planning attendance confirmation does not change the earlier report that scope was not finalised then or the later 16 October selection record.
+
+| Reported executor | Historical story scope | Reported manual case rows |
+| --- | --- | --- |
+| Ernest | KAN-6 / KAN-52 / KAN-64 | 16 Pass |
+| Arvin | KAN-34 / KAN-78 | 10 Pass |
+| Kai Jie | KAN-77 / KAN-81 | 7 Pass |
+| Irfan | KAN-60 / KAN-83 | 7 Pass |
+| Team (reported) | Integrated Sprint 3 journey | 1 Pass |
+
+Evidence: [S3-E24](evidence/README.md#25-october-2026--team-manual-result-reports). Formal story acceptance and any new velocity calculation remain **Not assessed**. Previously recorded historical dispositions are preserved.
+
+### Current Sprint 3 ownership and status snapshot — 25 October 2026
+
+| Story | Current owner | Jira status in inspected 25 October snapshot |
+| --- | --- | --- |
+| KAN-6 | Ernest | Done |
+| KAN-12 | Ryan | Done |
+| KAN-34 | Arvin | In Review |
+| KAN-50 | Ryan | In Progress |
+| KAN-52 | Ernest | Done |
+| KAN-60 | Irfan | In Review |
+| KAN-64 | Ernest | Done |
+| KAN-65 | Tristan | In Progress |
+| KAN-77 | Kai Jie | To Do |
+| KAN-78 | Arvin | In Review |
+| KAN-79 | Tristan | In Progress |
+| KAN-81 | Kai Jie | In Progress |
+| KAN-83 | Irfan | In Review |
+
+These are current tracker labels, not reconstructed 17 October acceptance or completion dates. Historical owner rows retain their original scope and dates. In particular, original Sprint 2 KAN-52 remains Tristan’s implementation record; the Sprint 3 revision belongs to Ernest. The audit and current-fix evidence determine remaining work independently of Jira labels.

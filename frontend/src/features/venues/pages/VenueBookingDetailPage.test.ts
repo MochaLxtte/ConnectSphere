@@ -377,6 +377,47 @@ describe('KAN-81 phase 2: recovery state on the booking detail page (AC6, AC12)'
 });
 
 describe('KAN-81 phase 3: replacement link on the booking page (AC8)', () => {
+  it('KAN-81-AC7 lets Venue Staff approve a replacement for a confirmed event', async () => {
+    const replacement = { ...booking, eventStatus: 'CONFIRMED', replacesBookingId: 'original-1' };
+    const fetchMock = vi.fn().mockResolvedValueOnce(json({ booking: replacement }))
+      .mockResolvedValueOnce(json({ booking: { ...replacement, status: 'APPROVED', decidedBy: 'staff-1' } }));
+    vi.stubGlobal('fetch', fetchMock);
+    await open();
+    expect(await screen.findByRole('radio', { name: 'Approve booking' })).toBeEnabled();
+    expect(screen.queryByText(/current status does not allow/)).not.toBeInTheDocument();
+    await choose('APPROVED');
+    expect(await screen.findByText('Venue booking approved.')).toBeInTheDocument();
+    expect(screen.getByText('Confirmed')).toBeInTheDocument();
+    expect(JSON.parse((fetchMock.mock.calls[1]![1] as RequestInit).body as string))
+      .toEqual({ decision: 'APPROVED', reason: null });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it.each([
+    ['CONFIRMED', null], ['REJECTED', 'original-1'], ['CANCELLED', 'original-1'],
+    ['COMPLETED', 'original-1'], ['SUBMITTED', 'original-1'],
+  ])('KAN-81 keeps approval disabled for %s with replacement %s', async (eventStatus, replacesBookingId) => {
+    const fetchMock = vi.fn().mockResolvedValue(json({ booking: { ...booking, eventStatus, replacesBookingId } }));
+    vi.stubGlobal('fetch', fetchMock);
+    await open();
+    expect(await screen.findByRole('radio', { name: 'Approve booking' })).toBeDisabled();
+    expect(screen.getByRole('radio', { name: 'Reject booking' })).toBeEnabled();
+    expect(screen.getByText(/current status does not allow/)).toBeInTheDocument();
+    await fireEvent.submit(screen.getByRole('button', { name: 'Record decision' }).closest('form')!);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('KAN-81-AC10 does not give the coordinator staff decision controls on a confirmed replacement', async () => {
+    session.user = user('EVENT_COORDINATOR');
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(json({ booking: {
+      ...booking, eventStatus: 'CONFIRMED', replacesBookingId: 'original-1',
+    } })));
+    await open();
+    await screen.findByRole('heading', { name: 'Career fair' });
+    expect(screen.queryByRole('radio')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Record decision' })).not.toBeInTheDocument();
+  });
+
   it('links a replacement to the booking it replaces', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(json({ booking: { ...booking, replacesBookingId: 'original-1' } })));
     await open();

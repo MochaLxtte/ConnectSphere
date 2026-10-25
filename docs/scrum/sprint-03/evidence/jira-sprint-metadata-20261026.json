@@ -1,0 +1,47 @@
+{
+  "recorded_date": "2026-10-26",
+  "timezone": "Asia/Singapore",
+  "source": "Jira listJiraBoardSprints, board 2; read-only",
+  "site": "https://smu-g7-grp1.atlassian.net",
+  "sprints": [
+    {
+      "id": 1,
+      "state": "closed",
+      "name": "Sprint 1",
+      "startDate": "2026-09-05T16:00:34.660Z",
+      "endDate": "2026-09-19T16:00:00.000Z",
+      "completeDate": "2026-09-20T16:29:55.591Z",
+      "originBoardId": 2,
+      "goal": "Enable an Event Organiser to securely create, save and submit an event request, and allow an Event Coordinator to review and reach an outcome on the request."
+    },
+    {
+      "id": 34,
+      "state": "closed",
+      "name": "Sprint 2",
+      "startDate": "2026-09-19T16:00:55.000Z",
+      "endDate": "2026-10-03T16:00:00.000Z",
+      "completeDate": "2026-10-15T18:06:49.200Z",
+      "originBoardId": 2,
+      "goal": "Enable submitted requests to reach an assigned coordinator, and enable coordinators to identify suitable available venues from a maintained catalogue, request bookings, and receive Venue Staff decisions without conflicting bookings."
+    },
+    {
+      "id": 67,
+      "state": "active",
+      "name": "Sprint 3",
+      "startDate": "2026-10-03T16:00:00.000Z",
+      "endDate": "2026-10-17T15:59:00.000Z",
+      "originBoardId": 2,
+      "goal": "Complete carried request and venue fixes; deliver Lead assignment, buffered venue planning, outage recovery, expiring holds and request/venue notifications. Rebalanced allocation: 63 SP; historical acceptance remains separately evidenced."
+    },
+    {
+      "id": 68,
+      "state": "future",
+      "name": "Sprint 4",
+      "startDate": "2026-10-17T16:00:00.000Z",
+      "endDate": "2026-10-31T15:59:00.000Z",
+      "originBoardId": 2,
+      "goal": "Complete equipment planning, event lifecycle and attendee registration, independent venue arrangements and Safety Officer review; integrate and verify the full Release 1 workflow."
+    }
+  ],
+  "note": "Administrative states and timestamps only. They do not establish review acceptance, tested builds, or sprint-end velocity. Planned review windows remain in the corresponding sprint records."
+}

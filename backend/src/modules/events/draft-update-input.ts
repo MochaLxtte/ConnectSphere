@@ -35,19 +35,20 @@ const allowedFields = new Set<string>([
 
 const maxCount = 2_147_483_647;
 
-// Seconds and fractions are optional; the offset is required (see docs/architecture/api-contract.md).
-const isoDateTime = /^(\d{4})-(\d{2})-(\d{2})T([01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d{1,6})?)?(?:Z|[+-](?:[01]\d|2[0-3]):[0-5]\d)$/;
+// Seconds and fractions are optional; require an offset supported by PostgreSQL (at most 15:59).
+const isoDateTime = /^(\d{4})-(\d{2})-(\d{2})T([01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d{1,6})?)?(?:Z|[+-](?:0\d|1[0-5]):[0-5]\d)$/;
 
 /**
  * Date.parse rolls impossible days such as 30 February into March, and PostgreSQL then refuses the
- * write with an unexpected error, so the calendar date is checked here (KAN-34-AC101).
+ * write with an unexpected error. PostgreSQL also has no year zero. Validate those boundaries
+ * before attempting the write, for creation and every editable draft date (KAN-34-AC101).
  */
 function isIsoDateTime(value: string): boolean {
   const match = isoDateTime.exec(value);
   if (!match) return false;
   const [year, month, day] = [Number(match[1]), Number(match[2]), Number(match[3])];
   const date = new Date(Date.UTC(2000, month - 1, day));
-  return month >= 1 && month <= 12 && date.getUTCMonth() === month - 1 &&
+  return year >= 1 && month >= 1 && month <= 12 && date.getUTCMonth() === month - 1 &&
     (month !== 2 || day !== 29 || (year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0)));
 }
 

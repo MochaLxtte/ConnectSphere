@@ -97,6 +97,27 @@ test('KAN-83 Venue Staff place a hold in Singapore time, see it survive a reload
   expect(fixture.unexpected).toEqual([]);
 });
 
+test('KAN-83 buffered deadline blocks setup time and accepts the exact occupied start', async ({ page }) => {
+  const fixture = await holdFixtures(page, 'VENUE_STAFF', {
+    occupiedStartsAt: '2026-12-01T01:30:00.000Z', occupiedEndsAt: '2026-12-01T06:45:00.000Z',
+  });
+  await page.goto(`/venue-bookings/${bookingId}`);
+  await expect(page.getByText(/including setup time \(1 Dec 2026, 9:30 am\)/)).toBeVisible();
+  const deadline = page.getByLabel('Hold deadline (Singapore time)');
+  const hold = page.getByRole('button', { name: 'Place hold', exact: true });
+  await deadline.fill('2026-12-01T09:31');
+  await expect(page.getByRole('alert')).toContainText('no later than the occupied start');
+  await expect(hold).toBeDisabled();
+  expect(fixture.writes).toEqual([]);
+  await deadline.fill('2026-12-01T09:30');
+  await expect(hold).toBeEnabled();
+  await hold.click();
+  await expect(page.getByText('Held until 1 Dec 2026, 9:30 am', { exact: true })).toBeVisible();
+  expect(fixture.writes).toEqual([{ path: `/api/venue-bookings/${bookingId}/hold`,
+    body: { expiresAt: '2026-12-01T01:30:00.000Z' } }]);
+  expect(fixture.unexpected).toEqual([]);
+});
+
 test('KAN-83 Venue Staff cancel a hold with a required reason', async ({ page }) => {
   const fixture = await holdFixtures(page, 'VENUE_STAFF', {
     status: 'HELD', holdExpiresAt: '2026-11-28T10:00:00.000Z', heldBy: userId, heldAt: '2026-10-21T01:00:00.000Z',

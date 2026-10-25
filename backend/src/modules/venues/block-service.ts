@@ -1,5 +1,5 @@
 import type { PoolClient } from 'pg';
-import { releaseHold } from './booking-service.js';
+import { lockVenuePlanning, releaseHold } from './booking-service.js';
 import {
   inActorTransaction, iso, WorkflowError, type WorkflowActor, type WorkflowDependencies,
 } from '../events/workflow-support.js';
@@ -72,8 +72,9 @@ export async function listVenueBlocks(
  * KAN-81-AC2 (CR-2) replaces KAN-55's refusal of a block that overlaps an APPROVED booking: the
  * outage is saved and every affected arrangement is flagged for recovery in the same transaction
  * (AC3/AC4), together with one notice per affected event to its current coordinator (AC5), so a
- * rolled-back outage leaves neither. The venue row lock is the same one booking submission and approval take, so an outage
- * and an approval for that venue never interleave (AC10). Booking rows are not locked or updated.
+ * rolled-back outage leaves neither. The shared venue planning gate precedes row locks, so outage
+ * and booking mutations for that venue serialize (AC10). Approved bookings are retained; overlapping
+ * live holds are locked and released under KAN-83-AC10.
  */
 export async function createVenueBlock(
   { pool }: WorkflowDependencies,
@@ -82,23 +83,24 @@ export async function createVenueBlock(
   requireVenueStaff(actor);
   const submission = parseBlockSubmission(input);
   return inActorTransaction(pool, actor.id, async (client) => {
+    await lockVenuePlanning(client, venueId);
     const venue = await lockActiveVenue(client, venueId);
     if (!venue) throw new WorkflowError('NOT_FOUND', 'VENUE_NOT_FOUND', 'The venue was not found.');
     if (!venue.isActive) conflict('VENUE_INACTIVE', 'This venue is no longer active.');
 
     // KAN-83-AC10: an operational block invalidates any live hold it overlaps. Each hold is
     // released with the block's reason and its coordinator is notified; approved bookings are kept
-    // and flagged for recovery below (KAN-81). Hold writers lock booking -> venue, so rows another writer has
-    // locked are skipped instead of waited for: that writer then needs this venue lock, sees the
-    // committed block and refuses itself (no deadlock, no hold surviving the block).
+    // and flagged for recovery below (KAN-81). The venue planning gate is acquired before row
+    // locks by both operations, so no hold writer can own a booking and wait for this venue.
+    // Wait for every matching hold; skipping one can leave it live when its approval fails.
     // KAN-81-AC3: overlap uses the hold's buffered occupied interval, the same one it reserves, so
     // an outage covering only its setup or turnaround also releases it. Only venue_bookings is
     // locked; the view is read in a subquery so its joined venue and event rows are not.
     const held = await client.query<{ id: string }>(
-      `SELECT id FROM venue_bookings WHERE id IN (
+      `SELECT id FROM venue_bookings WHERE status = 'HELD' AND hold_expires_at > clock_timestamp() AND id IN (
         SELECT id FROM venue_booking_intervals WHERE venue_id = $1 AND status = 'HELD'
           AND hold_expires_at > clock_timestamp() AND occupied_starts_at < $3 AND occupied_ends_at > $2)
-        ORDER BY id FOR UPDATE SKIP LOCKED`,
+        ORDER BY id FOR UPDATE`,
       [venueId, submission.startsAt, submission.endsAt],
     );
     for (const hold of held.rows) {
@@ -140,6 +142,7 @@ export async function deleteVenueBlock(
     const found = await client.query<{ venueId: string }>(
       'SELECT venue_id AS "venueId" FROM venue_unavailability WHERE id = $1', [blockId]);
     if (!found.rows[0]) throw notFound();
+    await lockVenuePlanning(client, found.rows[0].venueId);
     await lockActiveVenue(client, found.rows[0].venueId);
 
     const clearedBookingIds = await clearOutageImpacts(client, blockId);

@@ -1,5 +1,7 @@
 # Database
 
+**Current shared configuration — 25 October 2026.** The shared development project has the existing migration-013 expiry function and a matching ledger checksum. With team approval, `pg_cron` 1.6.4 was enabled and the single named job `connectsphere-expire-venue-holds` scheduled every minute with `SELECT public.expire_venue_holds()`. Actual runs succeeded from **21:58 Singapore time**; sanitized [evidence](../docs/scrum/sprint-03/evidence/supabase-hold-expiry-20261025.json) retains version/job/run metadata. No business test data or cleanup suite was run against shared Supabase. Earlier dated “pg_cron disabled” / unapplied-migration notes describe their earlier checkpoints. Do not rerun or edit applied migrations to enable this job. The API scheduler remains an idempotent fallback; a cron return message of `1 row` is a SQL result-row count, not a count of expired holds.
+
 Supabase hosts the team's PostgreSQL development database. Vue calls Express, and Express uses `pg` to run SQL. Docker is optional; the local Compose service and CI use PostgreSQL 17 for isolated testing.
 
 ## Configure Supabase
