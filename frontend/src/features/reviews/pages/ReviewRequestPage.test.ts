@@ -126,6 +126,25 @@ describe('KAN-33 review request detail page', () => {
 });
 
 describe('KAN-36 review page permissions and saved outcomes', () => {
+  it('KAN-36/KAN-60 formats proposed times in Singapore across a date boundary', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonResponse(detail)));
+    await renderDetail();
+    await screen.findByRole('heading', { name: 'Career fair' });
+    expect(screen.getByText('All dates and times are in Singapore time.')).toBeInTheDocument();
+    expect(screen.getByText('1 Oct 2026, 5:00 pm')).toBeInTheDocument();
+    expect(screen.getByText('2 Oct 2026, 1:00 am')).toBeInTheDocument();
+    expect(screen.queryByText(detail.startsAt!)).not.toBeInTheDocument();
+    expect(screen.queryByText(detail.endsAt!)).not.toBeInTheDocument();
+  });
+
+  it('KAN-36 keeps missing proposed dates readable', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonResponse({ ...detail, startsAt: null, endsAt: null })));
+    await renderDetail();
+    await screen.findByRole('heading', { name: 'Career fair' });
+    expect(screen.getByText('Proposed start').nextElementSibling).toHaveTextContent('Not provided');
+    expect(screen.getByText('Proposed end').nextElementSibling).toHaveTextContent('Not provided');
+  });
+
   it.each([false, undefined])('hides decision inputs when the backend action flag is %s', async (canMakeInitialDecision) => {
     const fetchMock = vi.fn().mockResolvedValue(jsonResponse({
       ...detail, actions: { canEditDraft: false, canMakeInitialDecision },

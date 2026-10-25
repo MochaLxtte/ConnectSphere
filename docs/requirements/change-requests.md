@@ -213,3 +213,11 @@ Arvin's KAN-78 contribution (8 SP) is integrated through PR #48/#54. KAN-77's 2 
 This is a dated evidence backfill prepared with Codex on 25 October, not a new ceremony, Jira transition, test execution or acceptance decision. Historical entries, other members’ ownership and agreed estimates are preserved.
 
 PR #19 corrected premature application scope introduced under KAN-24; it was not a newly approved customer change or a new estimate. KAN-51’s later buffer/hold-dependent behavior belongs to the later change scope, not the original Sprint 2 acceptance evidence. Existing KAN-34/KAN-78 change mappings remain unchanged.
+
+## 25 October 2026 — Current integration and notification ownership
+
+CR-1 buffers, CR-2 outage recovery, CR-4 holds and CR-5 Lead assignment/reassignment are implemented in the integrated code. The closeout branch repairs existing criteria: outage/hold serialization, confirmed-event replacement controls, buffered deadline guidance and affected-booking identification. These are corrections within KAN-78/81/83, not additional customer scope. KAN-34 date bounds and KAN-36/60 time display are original-workflow corrections. Estimates and the 2 October change-receipt date are unchanged.
+
+`TC-20-20` was checked against the split above, the Sprint 3/4 cards, traceability and the notification module. KAN-64 retains request/submission/clarification/review and assignment/reassignment/venue-decision notices (AC201–209, 5 SP). KAN-80 retains equipment, lifecycle, registration and significant-change triggers (3 SP). KAN-81 owns outage/recovery notices; KAN-83 owns hold/release/expiry; KAN-82 owns independent arrangement changes; KAN-84 owns safety. Their specification IDs remain separate. The original 8 points remain 5+3. Future trigger implementation is not claimed by this trace check.
+
+The KAN-81 venue-readiness predicate is delivered. Its later final-confirmation/preparation/safety consumers remain Sprint 4 integration work, with combined acceptance **Not executed**. This dependency must remain visible when assessing KAN-81-AC9; a historical broad manual report does not execute an unimplemented consumer. See `AUTO-20261025-CLOSEOUT-01` and the current [test register](../testing/test-evidence.md#25-october-2026--sprint-closeout-reconciliation).

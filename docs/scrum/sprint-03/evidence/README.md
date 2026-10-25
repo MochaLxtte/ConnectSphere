@@ -166,3 +166,57 @@ Owned KAN-34/KAN-78 merge, CI and acceptance limits remain in the preceding 25 O
 | [12 October consultation preparation](arvin-consultation-preparation-20261012.txt) | Original uncommitted source snapshot; preparation rather than ceremony outcomes |
 | [12 October C4 preparation](arvin-c4-preparation-20261012.txt) | Historical source snapshot; independent review and delivery not recorded |
 | [12 October submission preparation](arvin-submission-preparation-20261012.txt) | Historical runbook snapshot; not final submission approval |
+
+## Reported KAN-79 and KAN-65 manual results — 25 October 2026
+
+| ID | Artifact | Source / result | Limits |
+| --- | --- | --- | --- |
+| S3-E23 | [Reported manual results](../../../testing/test-evidence.md#25-october-2026--reported-manual-results-for-original-stories) and [case execution register](../../../testing/test-executions.csv) | REPORT-20261025-TRISTAN-S3: Tristan reports the KAN-79/KAN-65 manual scenarios passed on localhost on 17 October 2026 using local work before it was pushed. The report was supplied on 25 October; it supports S3-T20/S3-T21's reported manual outcomes. | Tested builds and contemporaneous screenshots are Not recorded. This is an executor's report, not an independently observed rerun or a deployed-site test. Acceptance and Definition of Done are Not assessed; later dated implementation/integration/merge evidence and sprint velocity remain unchanged. |
+
+## 25 October 2026 — Ryan story verification records
+
+| ID | Artifact | Source / result | Limits |
+| --- | --- | --- | --- |
+| S3-E22 | [REPORT-20261025-RYAN-S3](../../../testing/test-evidence.md#25-october-2026--ryan-story-verification-records), [execution register](../../../testing/test-executions.csv), [PR #51](https://github.com/MochaLxtte/ConnectSphere/pull/51), [PR #56](https://github.com/MochaLxtte/ConnectSphere/pull/56) | Tristan reports that Ryan passed TC-10-02–12/TC-10-210 and TC-08-14 on 17 October 2026, run `MAN-20261017-02` (13 cases). KAN-12 source [CI 39532519646](https://github.com/MochaLxtte/ConnectSphere/actions/runs/39532519646) failed PostgreSQL checks and skipped browser tests; repaired integration [CI 39750396624](https://github.com/MochaLxtte/ConnectSphere/actions/runs/39750396624) passed on 22 October. The repair from PR #51 was integrated after Irfan's review. KAN-50 PR #56 [CI 40175958221](https://github.com/MochaLxtte/ConnectSphere/actions/runs/40175958221) passed check, coverage, PostgreSQL and browser jobs; PR #56 merged on 25 October after Tristan's review. | The manual report was recorded on 25 October; its tested build, environment, fixtures and captures are Not recorded. Later CI is separate evidence, not the historical manual build. Ryan's KAN-50 report covers AC101 only, not original catalogue authorship or whole-story acceptance. No independent manual replay, acceptance decision or velocity change. |
+
+## 25 October 2026 — Team manual result reports
+
+| Evidence ID | Artifact | Source and limits |
+| --- | --- | --- |
+| S3-E24 | [REPORT-20261025-TEAM-S3](../../../testing/test-evidence.md#25-october-2026--team-manual-result-reports); [execution register](../../../testing/test-executions.csv), EX-TEAM-20261025-S3-001 onward | Supplied 25 October; 41 manual scenario Pass reports dated 17 October 2026. Build/environment, individual observed output, captures and cleanup Not recorded. Attendance confirmed for all six at planning/review/retro. Does not establish formal acceptance, hosted checks or new velocity; existing failures and current-fix retests remain separate. |
+
+## S3-E25 — Closeout fixes and verification, 25 October 2026
+
+| Artifact | Scope |
+| --- | --- |
+| [closeout-test-summary-20261025.txt](closeout-test-summary-20261025.txt) | Pre-fix findings, local full-suite/coverage results and limitations |
+| [closeout-build-20261025.json](closeout-build-20261025.json) | Base commit and SHA256of tested uncommitted code/test files |
+| [supabase-hold-expiry-20261025.json](supabase-hold-expiry-20261025.json) | Approved pg_cron configuration and observed successful scheduled executions; no application data |
+| [Targeted Jira CSV](../../../submission/1/jira-sprint3-targeted-20261025.csv) | Current13 Sprint 3parent statuses/owners/criteria; not a full-project export |
+| [Venue-write sequence](../../../architecture/exports/seq-venue-write-locking.png) | Current gate/row ordering and atomic outcome/notifications |
+
+Runs: `AUTO-20261025-CLOSEOUT-BASELINE`, `AUTO-20261025-CLOSEOUT-01`, `DOC-20261025-NOTIFICATION-SPLIT-01`, `OPS-20261025-HOLD-EXPIRY-01`. None establishes historical sprint-end acceptance, new velocity or a deployed browser journey. Current-build manual repair retests remain pending.
+
+**S3-E25 supplementary run:** AUTO-20261025-CLOSEOUT-02 records the expanded full PostgreSQL suite 510/510 and exact TC-14-10/16/TC-11-03 boundaries. Earlier AUTO-01 totals remain unchanged. The code/test manifest is refreshed for the final local test tree.
+
+## S3-E26 — Local acceptance and repair retest confirmation
+
+| Artifact | Source and scope |
+| --- | --- |
+| [REPORT-20261025-CLOSEOUT-RETEST](../../../testing/test-evidence.md#25-october-2026--closeout-retest-confirmation) and [execution register](../../../testing/test-executions.csv) | Latest repair smoke reported Pass in chat on 25 October; six separate case rows. Actual execution date, individual executors, exact build, captures and cleanup Not recorded. Earlier outcomes retained. |
+| [DoD amendment](../../definition-of-done.md#local-acceptance-policy--25-october-2026) | Complete integrated local acceptance replaces application-hosting prerequisite from this confirmation onward; real authentication, persistence and scheduled-job checks remain. |
+
+This report closes the manual repair follow-up after S3-E25. It is separate from historical review reports and formal per-story closure decisions. Current code/test hashes and automated suite results are unchanged.
+
+## S3-E27 — Acceptance and closure preparation, 26 October 2026
+
+| Artifact | What it establishes | Limits |
+| --- | --- | --- |
+| [Jira sprint metadata](jira-sprint-metadata-20261026.json) | Read-only 26 October snapshot: Sprint 1 closed 21 September 00:29:55 SGT; Sprint 2 closed 16 October 02:06:49 SGT; Sprint 3 Active and Sprint 4 Future | Administrative timestamps do not establish review dates, story acceptance or velocity; no sprint changed |
+| [Current decision register](../review.md#current-acceptance-and-closure--26-october-2026) | All 13 current stories / 63 SP, owner and criterion/test links, known attendance, and exact remaining inputs | All 13 / 63 SP accepted at 17 October review and zero carry-over, reported on 26 October; all six collectively agreed. Reviewed build Not recorded; later failures/fixes retained and historical build-level DoD assessment remains unresolved |
+
+Burndown chart and its source data will be supplied by the team. The reserved start/end-board artifacts remain Not recorded until genuine retained evidence or a clearly dated current export is supplied. No historical screenshots, chart data or daily point observations are generated by this update.
+
+## S3-E28 — Collective review acceptance confirmation, 26 October 2026
+
+Source: confirmation supplied in the project discussion on 26 October. Reported decision: all six members collectively accepted all 13 Sprint 3 stories against ACs/DoD at the 17 October review, with no carry-over into Sprint 4. This is a retrospective team report, not a contemporaneous board export or new test run. The reviewed build is Not recorded. The [current review summary](../review.md#current-acceptance-and-closure--26-october-2026) retains the later reproduced failures and repairs rather than classifying them all as cosmetic improvements. Closing-board evidence, review feedback and burndown charts/source data will be supplied by the team; their content and files are Not recorded until supplied.

@@ -1577,3 +1577,147 @@ The existing **MAN-20261006-KAN51-01** walkthrough used a real local API with is
 Owned KAN-34/KAN-78 merge, CI and acceptance limits remain in the preceding 25 October reconciliation. Supporting work adds no story points and does not convert other members’ stories to Done.
 
 Historical PR-reported checks (not re-executed or converted into new case-level Pass rows): PR #10 reports 737 unit, 212 integration and 17 browser passes; PR #19 reports 190 frontend, 372 backend, 119 PostgreSQL and 32 browser passes. Their CI references are [35517145750](https://github.com/MochaLxtte/ConnectSphere/actions/runs/35517145750) and [36237060903](https://github.com/MochaLxtte/ConnectSphere/actions/runs/36237060903). PR #28’s initial full-check totals predate its final additions; final targeted checks and the existing 15-check walkthrough retain their original scope. Its CI reference is [37503225237](https://github.com/MochaLxtte/ConnectSphere/actions/runs/37503225237). Suite totals do not prove every KAN-24/51 criterion; no missing dashboard/RLS, hosted-login or acceptance checks are marked passed by this backfill. The original execution register and failures remain preserved.
+
+## 25 October 2026 — reported manual results for original stories
+
+**Source and recording date:** confirmation from the test executor, Tristan, in the project conversation on **25 October 2026**. The report covers all manual scenarios for his original KAN-36, KAN-16, KAN-29, KAN-8, KAN-52, KAN-79 and KAN-65 implementations, grouped by their original sprint. He reports that all scenarios succeeded on **localhost**, on the sprint-review days, using local commits before pushing them later. The dates below are the reported review-day execution dates, not dates inferred from Git history or independently reconstructed runs. This entry records the report on 25 October; it does not backdate documentation.
+
+| Report reference | Run reference | Reported execution date | Original story scope | Reported result |
+| --- | --- | --- | --- | --- |
+| REPORT-20261025-TRISTAN-S1 | MAN-20260919-01 | 19 September 2026 | KAN-36: TC-04-208–217, TC-04-230; KAN-16: TC-06-201–209 | 20 manual scenarios Pass, as reported |
+| REPORT-20261025-TRISTAN-S2 | MAN-20261003-01 | 3 October 2026 | KAN-29: TC-05-201–203; KAN-8: TC-13-201–204; original KAN-52: TC-11-201–205 | 12 manual scenarios Pass, as reported |
+| REPORT-20261025-TRISTAN-S3 | MAN-20261017-01 | 17 October 2026 | KAN-79: TC-05-01–05, TC-05-07–09; KAN-65: TC-05-10–14, TC-05-16 | 14 manual scenarios Pass, as reported; TC-05-09 is scoped to the local candidate |
+
+**Execution metadata.** Executor: Tristan. Environment: localhost. Exact tested commit/branch, database target, browser version, actual account aliases and fixture values, detailed HTTP/database output, screenshots, and retained/restored test data: **Not recorded**. The reusable case specifications describe the scenario coverage; this retrospective report does not independently establish that every listed example input was used. Per-case observations are recorded as reported successful outcomes rather than copied expected-result text. No tests were rerun during this documentation update.
+
+**Scope and version boundaries.** The original KAN-29 result concerns automatic initial assignment before CR-5; it is not a claim that current main automatically assigns new submissions. Original KAN-52 results belong to the Sprint 2 baseline and do not complete Ernest's later Sprint 3 correction or buffer/hold integration. Original KAN-36 results do not retrospectively establish the later KAN-60 rejection-reason requirement. KAN-79/KAN-65 permissions, conflict handling and notification scenarios are included in the executor's report. The two integration-labelled concurrency cases TC-05-06/15 and automated timing regressions TC-05-46–48 retain their separate evidence; no new automated result is inferred. TC-05-09 establishes only the reported local candidate workflow, not a deployed release or operational Lead coverage. The full cross-story venue/hold/outage journey TC-14-20 remains outside this report.
+
+**Records.** Added 46 execution rows, EX-TRISTAN-20261025-S1-01–20, EX-TRISTAN-20261025-S2-01–12 and EX-TRISTAN-20261025-S3-01–14. The date within these execution IDs is the report-recording date; `date_of_execution` contains the separately reported run date. Original placeholders, observed failures and retests remain intact. The three sprint evidence registers link this report. Historical meeting/acceptance decisions and velocity are unchanged. Current Jira KAN-79/KAN-65 remain In Progress; recording successful manual scenarios does not supply a missing team acceptance decision or deployed-environment evidence.
+
+## 25 October 2026 — Ryan story verification records
+
+**Manual-report source.** Tristan reported on 25 October that Ryan (`ryanc9029`) completed all manual tests for his work on the sprint-review dates. The table below records that report; the dates and Pass outcomes were not independently observed. Exact tested commits, environment/URL/database, accounts and fixture values, individual responses/screenshots and data restoration are **Not recorded**. Earlier observations and failed runs remain intact. The report does not establish formal acceptance, a deployed-site check or sprint velocity, and does not change Jira.
+
+| Report | Run | Reported execution date | Story version and cases | Result |
+| --- | --- | --- | --- | --- |
+| REPORT-20261025-RYAN-S1 | MAN-20260919-02 | 19 September 2026 | KAN-25 original authentication: TC-01-201–209 | 9 scenarios Pass, as reported |
+| REPORT-20261025-RYAN-S2 | MAN-20261003-02 | 3 October 2026 | Original KAN-12 AC1–13: TC-10-201–206 | 6 scenarios Pass, as reported |
+| REPORT-20261025-RYAN-S3 | MAN-20261017-02 | 17 October 2026 | Revised KAN-12: TC-10-02–12 and TC-10-210; KAN-50 AC101 repair: TC-08-14 | 13 scenarios Pass, as reported |
+
+The specifications supply reusable steps/data, not a transcript of these runs. TC-01-209 formalises the existing S1-T02/DEMO-01 invalid-credential scenario on 25 October; it is not a newly invented historical observation. TC-10-10 explicitly separates UI and direct-API date validation, but the report has no captured per-input output. KAN-50's original catalogue implementation and Irfan's existing manual runs remain separately credited; Ryan's report covers its stale-save repair only. The isolated timing-harness case TC-10-208 is not converted into a manual run. Later calendar, hold, outage and full integrated-journey acceptance are not established by this report.
+
+**Implementation and review chronology.** [PR #26](https://github.com/MochaLxtte/ConnectSphere/pull/26) contains Ryan's original search refinements. [PR #51](https://github.com/MochaLxtte/ConnectSphere/pull/51) contains the strict-date/search-page repair and was integrated on 22 October after Irfan's review; [PR #56](https://github.com/MochaLxtte/ConnectSphere/pull/56) contains the catalogue stale-save repair and was approved by Tristan and merged on 25 October. These later Git/review dates are preserved. The reported 17 October manual result has no identifiable local build and does not prove either later merged revision was tested then. A 25 October Jira read confirms KAN-25 and KAN-12 Done / Ryan, and KAN-50 In Progress / Ryan. No story transition or retrospective acceptance is inferred.
+
+**KAN-12 source failure and integrated verification.** PR #51 head `2f1762936302f59dee8109bcd3ce495e16ff5308` had a failing [CI run 39532519646](https://github.com/MochaLxtte/ConnectSphere/actions/runs/39532519646): check/coverage passed, PostgreSQL integration failed, and browser tests were skipped. Irfan's review identifies the older search implementation's lost block/buffer/hour rules and fixed public-schema prefixes; integration retained those safeguards while applying strict dates. The later passing [CI run 39750396624](https://github.com/MochaLxtte/ConnectSphere/actions/runs/39750396624), totals and intermediate failure are already recorded under [AUTO-20261022-INTEGRATION2-01](#22-october-2026--sprint-3-integration-2-prs-4853). This is historical automated evidence, not a new test run or an erased failure.
+
+**AUTO-20261025-KAN50-CI-01.** Existing [PR #56 CI run 40175958221](https://github.com/MochaLxtte/ConnectSphere/actions/runs/40175958221), job `121116563667`, inspected on 25 October. The log checks out PR test merge `89c2cb0`, combining head `6f629530f2f971b8ffde5bda6516e518f017c3c3` with base `5fbd2d53e7e30518f1cfb07498f7cc55f8235cf7`. Environment: GitHub Actions Ubuntu, Node.js 24, isolated PostgreSQL 17 and Chromium; shared Supabase was not used by this CI job.
+
+| Check | Observed existing CI result |
+| --- | --- |
+| `npm run check` | Pass: types/builds, 770 frontend tests and 1,354 backend tests |
+| `npm run test:coverage` | Pass; frontend statements/branches/functions/lines 95.32% / 92.42% / 97.48% / 97.57%; backend 89.56% / 91.48% / 89.44% / 89.89%. These are workspace totals, not a claim of 100% new-code coverage. |
+| Migration/seed and `npm run test:integration` | Pass: 479 tests in 26 files |
+| `npm run test:e2e` | Pass: 156 browser tests |
+| KAN-50 component regression | `VenueCatalogueEditPage.test.ts` 52/52, including 11 added AC101/adjacent regression cases: delayed success/error/409/401, route/account changes, leaving the page, correct next save, and normal-save/data-retention regressions |
+
+The actual component cases support a new scoped automated Pass for TC-08-01; its earlier Fail remains. The run does not manufacture case-level results for every test specification. The 28 reported manual rows are EX-RYAN-20261025-S1-01–09, S2-01–06 and S3-01–13; EX-RYAN-20261025-CI-01 records the separate automated retest. Documentation verification does not run the application again.
+
+## 25 October 2026 — Team manual result reports
+
+The supplied team report states that Arvin, Ernest, Irfan and Kai Jie completed all their manual scenarios successfully on the Sprint 1, 2 and 3 review dates. It also confirms that all six members attended planning, review and retrospective meetings. The report was supplied on **25 October 2026**; reported execution dates are **19 September, 3 October and 17 October 2026**. Existing Tristan and Ryan reports are retained separately. Run IDs below group this reported evidence; they do not claim a newly observed or independently executed run.
+
+| Sprint / reported date | Report and manual run IDs | Executors / scope | Case rows |
+| --- | --- | --- | --- |
+| 1 / 19 September 2026 | REPORT-20261025-TEAM-S1; MAN-20260919-TEAM-01 | Ernest: KAN-31 / KAN-4; Kai Jie: KAN-6 / KAN-34; Irfan: KAN-27 / KAN-33; Arvin: KAN-24 | 60 reported Pass |
+| 2 / 3 October 2026 | REPORT-20261025-TEAM-S2; MAN-20261003-TEAM-01 | Irfan: KAN-50 / KAN-33; Arvin: KAN-51; Ernest: KAN-54; Kai Jie: KAN-53 / KAN-55 / KAN-6 / KAN-34 | 52 reported Pass |
+| 3 / 17 October 2026 | REPORT-20261025-TEAM-S3; MAN-20261017-TEAM-01 | Ernest: KAN-6 / KAN-52 / KAN-64; Arvin: KAN-34 / KAN-78; Kai Jie: KAN-77 / KAN-81; Irfan: KAN-60 / KAN-83; Team (reported): Integrated Sprint 3 journey | 41 reported Pass |
+
+**Evidence limits.** Exact tested builds, environments, commands, fixture values, observed responses, screenshots and cleanup are **Not recorded**. The scenario-level outcomes below are reported Pass; expected results have not been copied into actual results as if independently observed. Sprint 1's recorded draft/submission/coordinator-navigation defects, its 24/8 closure disposition, subsequent carry-over, later implementation dates and the 25 October audit findings remain unchanged. Where those sources differ from the broad retrospective report, the build and precise paths needed to reconcile them are **Not recorded**. These reports do not establish acceptance, deployed-site checks, original Done dates or sprint velocity. Today's repairs need their own automated and manual retests.
+
+**Selection boundaries.** Detailed manual or manual/integration specifications are selected by historical owner and story version. Sprint 1/2 use baseline specifications; Sprint 3 uses the narrowed notification scope and revised requirements. Historical summary TC-01…TC-20, superseded notification TC-20-01…11, automated-only cases, new October 25 regression cases and Sprint 4 lifecycle/registration/safety/readiness cases are excluded. KAN-81-AC9's final-confirmation/safety portion is not recorded as completed by this report. TC-04-05 bundles command-based regression layers, so this manual report does not establish its full outcome. KAN-24's later-added diagram criterion is not retrospectively marked passed in Sprint 1. Existing Not executed and Fail rows are retained; new rows are appended with unique execution IDs.
+
+### Sprint 1 reported case selection
+
+- **Ernest:** TC-02-201, TC-02-202, TC-02-203, TC-02-204, TC-02-205, TC-02-206, TC-02-207, TC-02-208, TC-02-209, TC-02-210, TC-02-211, TC-02-212, TC-02-221, TC-03-201, TC-03-202, TC-03-203, TC-03-204, TC-03-205, TC-03-206, TC-03-207, TC-03-217.
+- **Kai Jie:** TC-03-208, TC-03-209, TC-03-210, TC-03-211, TC-03-212, TC-03-213, TC-03-214, TC-03-215, TC-03-216, TC-02-213, TC-02-214, TC-02-215, TC-02-216, TC-02-217, TC-02-218, TC-02-219, TC-02-220, TC-02-222, TC-02-223.
+- **Irfan:** TC-04-201, TC-04-202, TC-04-203, TC-04-204, TC-04-205, TC-04-206, TC-04-207, TC-04-218, TC-04-219, TC-04-220, TC-04-221, TC-04-222, TC-04-223, TC-04-224, TC-04-225, TC-04-226, TC-04-227, TC-04-231.
+- **Arvin:** TC-DB-201, TC-DB-203.
+
+### Sprint 2 reported case selection
+
+- **Irfan:** TC-08-201, TC-08-202, TC-08-203, TC-08-204, TC-08-205, TC-08-206, TC-08-207, TC-08-209, TC-08-210, TC-04-201, TC-04-202, TC-04-203, TC-04-204, TC-04-205, TC-04-206, TC-04-207, TC-04-228, TC-04-229.
+- **Arvin:** TC-09-201, TC-09-202, TC-09-203.
+- **Ernest:** TC-14-201, TC-14-202, TC-14-203, TC-14-205.
+- **Kai Jie:** TC-12-201, TC-12-202, TC-12-203, TC-14-207, TC-14-208, TC-14-209, TC-14-210, TC-14-211, TC-03-208, TC-03-209, TC-03-210, TC-03-211, TC-03-212, TC-03-213, TC-03-214, TC-03-215, TC-03-216, TC-02-213, TC-02-214, TC-02-215, TC-02-216, TC-02-217, TC-02-218, TC-02-219, TC-02-220, TC-02-222, TC-02-223.
+
+### Sprint 3 reported case selection
+
+- **Ernest:** TC-02-02, TC-02-03, TC-02-04, TC-02-06, TC-02-09, TC-11-02, TC-11-04, TC-11-05, TC-11-06, TC-11-07, TC-11-205, TC-20-12, TC-20-13, TC-20-14, TC-20-15, TC-20-16.
+- **Arvin:** TC-03-02, TC-03-03, TC-03-04, TC-03-06, TC-14-01, TC-14-02, TC-14-03, TC-14-04, TC-14-06, TC-14-07.
+- **Kai Jie:** TC-08-15, TC-08-18, TC-08-19, TC-08-20, TC-09-02, TC-09-07, TC-09-12.
+- **Irfan:** TC-04-03, TC-04-04, TC-04-06, TC-14-09, TC-14-14, TC-14-18, TC-14-19.
+- **Team (reported):** TC-14-20.
+
+**Follow-up.** Attach build/environment and any retained captures if available; reconcile reported passes with the dated defects; execute manual checks for the current fixes; record a separate story-by-story acceptance decision against the unchanged Definition of Done. Burndown artifacts will be supplied by the team; none are invented from these reported outcomes.
+
+## 25 October 2026 — Sprint closeout reconciliation
+
+**Build:** `fix/sprint-3-closeout`, based on `71e58b49077ea0666fafd26ad6ac4366665ee4ba`, with the uncommitted code/test files identified by [SHA-256 manifest](../scrum/sprint-03/evidence/closeout-build-20261025.json). **Executor:** Codex, Windows/Node 24, local synthetic fixtures. No commit, push or application deployment is asserted.
+
+`AUTO-20261025-CLOSEOUT-BASELINE` retains three pre-fix findings on `96a0d10`: PostgreSQL-incompatible date bounds returned HTTP500 for8 inputs; a confirmed-event replacement had disabled staff approval; and a deterministic outage/failed-approval interleaving left a hold live. Latest main `71e58b4` differed from that source only in documentation. Repaired cases have separate Pass rows; failures remain.
+
+### Automated repair verification — AUTO-20261025-CLOSEOUT-01
+
+| Check | Observed result |
+| --- | --- |
+| `npm run check` | Pass: type checks, frontend 785, backend 1,364, both builds |
+| `npm run test:coverage` | Pass: frontend 97.54% lines / 92.54% branches; backend 89.93% lines / 91.49% branches |
+| KAN-34 dedicated parser coverage | 129 tests;100% statement/branch/function/line coverage |
+| `npm run test:integration` | 499 Pass in26 files, isolated PostgreSQL 17 |
+| `npm run test:e2e -- --workers=2` | 158 Pass, Chromium/API fixtures |
+| Static second-agent review | No actionable venue-gate/permission/UI finding; not a human PR approval |
+
+The readable [run summary](../scrum/sprint-03/evidence/closeout-test-summary-20261025.txt) and [coverage record](coverage-reports/2026-10-25-closeout.txt) retain counts and limits. Tests use explicit disposable `TEST_DATABASE_URL`; fixture schemas are cleaned there, never on shared Supabase. Browser tests substitute responses and do not establish live integrated acceptance. Existing bundle-size warnings do not fail the build. Whole-project coverage remains below 100%; the workspace coverage run excludes PostgreSQL integration instrumentation, and existing runtime/session/error paths remain uncovered.
+
+Specific repaired cases: `TC-03-303` draft year/offset bounds; `TC-09-25` confirmed replacement controls; `TC-14-308` outage/hold ordering; `TC-14-309` buffered deadline; `TC-14-307` named/readable catalogue warnings; `TC-04-303` Singapore review times. `TC-20-18` now proves actual concurrent dedupe and post-insert rollback; `TC-20-19` proves overlapping recipients using a legitimate role transition. An initial notification fixture reused a unique synthetic venue name (17 Pass / 1 Fail); correcting the fixture produced 46/46 targeted Pass before the full 499 Pass. This test-fixture failure is retained, not reported as product success.
+
+`DOC-20261025-NOTIFICATION-SPLIT-01` completes `TC-20-20` by tracing the original notification criteria to KAN-64 (5 SP), KAN-80 (3 SP) and CR-specific 81/82/83/84 owners. The source matrix, current trigger writer, both sprint cards and traceability agree on ownership; future trigger implementation is not claimed. See the [change record](../requirements/change-requests.md#25-october-2026--current-integration-and-notification-ownership).
+
+### Shared expiry configuration — OPS-20261025-HOLD-EXPIRY-01
+
+Team approval was supplied in chat. A read-only check verified the existing shared migration 013 checksum, expiry function and pg_cron availability before enabling extension 1.6.4 and creating only the named `connectsphere-expire-venue-holds` job. Job 1 is active every minute with `SELECT public.expire_venue_holds()` in database `postgres`. The first real scheduled run succeeded at **21:58:00 SGT**, followed by later successful ticks. Sanitized [job evidence](../scrum/sprint-03/evidence/supabase-hold-expiry-20261025.json) is retained. Return message `1 row` denotes one SQL result row, not one expired hold. No business fixture, cleanup suite, historical migration edit or application deployment was performed on shared Supabase. `TC-14-310` Pass is configuration/execution evidence; a held-booking/inbox journey remains a distinct check.
+
+### Report reconciliation and remaining decisions
+
+The pending Tristan/Ryan records were backed up and merged with the latest team documentation. Colliding evidence IDs were disambiguated without deleting their sources: Tristan reports use S1-E24/S2-E34/S3-E23, Ryan retains S1-E23/S2-E33/S3-E22, and the new team reports use S1-E25/S2-E36/S3-E24. Sprint 2's administrative snapshot uses S2-E35; the earlier audit remains S2-E30. Original executions and failures are retained.
+
+The team report supplies manual Pass outcomes on the historical review dates, with exact builds/environments/details **Not recorded**. Earlier explicit unperformed/failing/later-executed records remain and are not overwritten. These historical reports cannot retest today's fixes or execute future Sprint 4 consumers. The [short current-build retest](README.md#25-october-2026--closeout-retest) remains **Not executed**. The deployed app/API URL, formal story acceptance decisions and remaining ceremony artifacts are **Not recorded**. The current DoD is confirmed unchanged; retrospective suggestions remain **To agree** and burndown artifacts will be supplied by the team. Jira statuses are current tracker values, not recreated review dates or velocity. No story was transitioned or re-estimated by this reconciliation.
+
+### Supplementary specification verification — AUTO-20261025-CLOSEOUT-02
+
+After the first full pass, a specification-to-test check identified narrower assertions in TC-14-10/16 and TC-11-03. Eleven tests were added to the hold suite (60/60 targeted Pass), and the existing suitability test was strengthened (34/34 targeted Pass). No additional product code changed. The complete isolated PostgreSQL suite was then rerun: **510/510 Pass in 26 files**, 40.88 seconds. `npm run test:integration` used the same explicit disposable test database. Types and whitespace checks also passed. The earlier 499-test run remains the original AUTO-01 result; this new run records the expanded test tree.
+
+TC-14-10 now exercises exact setup/turnaround adjacency and one-minute buffer-only overlaps for both approved and held blockers. TC-14-16 exercises three real clock/lock orderings among approval, expiry and an overlapping new hold, with actual blocked-writer inspection and retries. Approval that was validly updated before its deadline can retain that decision when expiry waits for its commit; expiry rechecks committed state rather than overwriting it. TC-11-03 explicitly checks the 50/50 suitable and 51/50 unsuitable outcomes, explanation and unchanged state. Initial new hold-test failures were fixture-count/recipient-expectation mismatches; those assertions were corrected before the final passing runs. They were not hidden product failures or shared-data tests.
+
+The current tested source is identified by the updated SHA-256 manifest. Frontend 785, backend 1,364, browser 158 and coverage from AUTO-01 remain applicable because the supplementary changes only strengthen database tests. Current-build manual retests and formal review acceptance remain separate.
+
+## 25 October 2026 — Closeout retest confirmation
+
+**Report ID:** `REPORT-20261025-CLOSEOUT-RETEST`. **Report received:** 25 October 2026. **Source:** Tristan's project-chat confirmation: “We have tested the fixes, you can document that the fixes work and are done.” This follows the current-fix smoke checklist, rather than the earlier reports for the sprint-review dates.
+
+**Outcome:** the closeout fixes and integrated smoke follow-up are **complete, reported Pass**. Application deployment is not planned or required by the [current DoD](../scrum/definition-of-done.md#local-acceptance-policy--25-october-2026). The application testing context is localhost; the existing shared Supabase expiry configuration remains operational evidence in `OPS-20261025-HOLD-EXPIRY-01`.
+
+| Specification | Reported scope / actual result |
+| --- | --- |
+| TC-03-303 | Draft invalid year/offset validation and unchanged-draft repair smoke passed. |
+| TC-09-25 | Valid confirmed-event replacement controls and refreshed outcome work; ordinary confirmed-event restrictions retained. |
+| TC-14-309 | Buffered hold deadline hint and boundary validation work. |
+| TC-14-307 | Affected-booking warnings identify the event/period with readable explanations. |
+| TC-04-303 | Review and clarification timestamps display Singapore time. |
+| TC-14-311 | Integrated outage/hold release and scheduled-expiry/inbox smoke checks passed. |
+
+These rows express the reported successful outcomes of the supplied checklist; individual observed output and exact inputs were not supplied. Actual execution date, individual executors, exact SHA, fixture identifiers, screenshots, cleanup and per-run database configuration are **Not recorded**. The documentation date is not used as an execution date or a dated MAN run ID. Six separate Pass rows are appended in `test-executions.csv`; earlier Not executed placeholders, failures and reported historical runs remain intact.
+
+The TC-14-308 transaction barriers and concurrent-operation orderings remain supported by the isolated PostgreSQL runs; the manual smoke report does not claim those barriers were run by hand. TC-14-311 separates the observable local workflow from that deterministic race case and from the cron-configuration-only TC-14-310. The automated repair results and SHA manifest are unchanged; no new automated run is asserted in this documentation update.
+
+This follow-up supersedes the earlier same-day pending repair-retest and deployed-URL actions. The fixes are complete locally. Commit/PR integration, explicit story review/closure decisions, team burndown evidence, agreed retrospective actions and the remaining Sprint 4 consumers retain their separate workflow and evidence requirements. No Jira status, historical Done date, story estimate or sprint velocity is changed here.

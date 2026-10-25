@@ -2,10 +2,29 @@ import { describe, expect, it } from 'vitest';
 import { parseDraftCreateInput, parseDraftUpdateInput, DraftUpdateInputError } from '../../src/modules/events/draft-update-input.js';
 
 describe('KAN-34 draft update input', () => {
-  it.each(['2026-02-30', '2026-02-29', '1900-02-29', '2026-04-31', '2026-00-01', '2026-13-01', '2026-01-00'])(
+  it.each(['0000-01-01', '2026-02-30', '2026-02-29', '1900-02-29', '2026-04-31', '2026-00-01', '2026-13-01', '2026-01-00'])(
     'KAN-34-AC101 refuses impossible date %s for every editable date', (day) => {
       for (const field of ['startsAt', 'endsAt', 'registrationOpensAt', 'registrationClosesAt']) {
         expect(() => parseDraftUpdateInput({ [field]: `${day}T10:00:00+08:00` })).toThrow(DraftUpdateInputError);
+        expect(() => parseDraftCreateInput({ [field]: `${day}T10:00:00+08:00` })).toThrow(DraftUpdateInputError);
+      }
+    },
+  );
+  it.each(['+16:00', '-16:00', '+23:59', '-23:59'])(
+    'KAN-34-AC101 refuses PostgreSQL-invalid offset %s in new and edited drafts', (offset) => {
+      for (const field of ['startsAt', 'endsAt', 'registrationOpensAt', 'registrationClosesAt']) {
+        const input = { [field]: `2026-01-01T12:00:00${offset}` };
+        expect(() => parseDraftUpdateInput(input)).toThrow(DraftUpdateInputError);
+        expect(() => parseDraftCreateInput(input)).toThrow(DraftUpdateInputError);
+      }
+    },
+  );
+  it.each(['0001-01-01T00:00:00Z', '9999-12-31T23:59:59Z', '2026-01-01T12:00:00+15:59', '2026-01-01T12:00:00-15:59'])(
+    'KAN-34-AC101 accepts database-supported year and offset boundaries: %s', (date) => {
+      for (const field of ['startsAt', 'endsAt', 'registrationOpensAt', 'registrationClosesAt']) {
+        const input = { [field]: date };
+        expect(parseDraftUpdateInput(input)).toEqual(input);
+        expect(parseDraftCreateInput(input)).toEqual(input);
       }
     },
   );

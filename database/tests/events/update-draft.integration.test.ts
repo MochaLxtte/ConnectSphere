@@ -62,7 +62,9 @@ async function createEvent(
 async function readState(id: string) {
   const result = await pool.query(
     `SELECT organiser_id AS "organiserId", status, name, purpose, description,
-       expected_attendance AS "expectedAttendance", updated_at AS "updatedAt"
+       expected_attendance AS "expectedAttendance", updated_at AS "updatedAt",
+       starts_at AS "startsAt", ends_at AS "endsAt",
+       registration_opens_at AS "registrationOpensAt", registration_closes_at AS "registrationClosesAt"
      FROM event_requests WHERE id = $1`,
     [id],
   );
@@ -70,7 +72,11 @@ async function readState(id: string) {
 }
 
 describe('KAN-34 draft update persistence', () => {
-  it.each(['2026-02-30T10:00:00+08:00', '2026-02-29T10:00:00Z', '1900-02-29T10:00:00Z', '2026-04-31T10:00:00Z'])(
+  it.each([
+    '2026-02-30T10:00:00+08:00', '2026-02-29T10:00:00Z', '1900-02-29T10:00:00Z', '2026-04-31T10:00:00Z',
+    '0000-01-01T00:00:00Z', '2026-01-01T12:00:00+16:00', '2026-01-01T12:00:00-16:00',
+    '2026-01-01T12:00:00+23:59', '2026-01-01T12:00:00-23:59',
+  ])(
     'KAN-34-AC101 returns HTTP 400 for %s without changing the draft', async (invalid) => {
       const eventRequestId = await createEvent();
       const before = await readState(eventRequestId);
@@ -82,6 +88,9 @@ describe('KAN-34 draft update persistence', () => {
         const response = await request(app).patch(`/api/events/${eventRequestId}`)
           .send({ name: 'Must not be saved', [field]: invalid });
         expect(response.status).toBe(400);
+        expect(response.body.error).toEqual({
+          code: 'INVALID_DRAFT_UPDATE', message: `${field} must be an ISO 8601 date-time string or null.`,
+        });
         expect(await readState(eventRequestId)).toEqual(before);
       }
     },
@@ -196,6 +205,25 @@ describe('KAN-34 draft update persistence', () => {
 
     expect(response.status).toBe(404);
     expect(await readState(eventRequestId)).toEqual(before);
+  });
+
+  it.each([
+    ['0001-01-01T00:00:00Z', '0001-01-01T00:00:00.000Z'],
+    ['9999-12-31T23:59:59Z', '9999-12-31T23:59:59.000Z'],
+    ['2026-01-01T12:00:00+15:59', '2025-12-31T20:01:00.000Z'],
+    ['2026-01-01T12:00:00-15:59', '2026-01-02T03:59:00.000Z'],
+  ])('preserves valid PostgreSQL boundary %s in every editable date field', async (date, stored) => {
+    const app = createApp({ database: pool, submittedRequests: {
+      pool, canViewRequest: () => true, canReviewRequest: () => false,
+      authenticate: async () => organiser,
+    } });
+    for (const field of ['startsAt', 'endsAt', 'registrationOpensAt', 'registrationClosesAt']) {
+      const eventRequestId = await createEvent();
+      const response = await request(app).patch(`/api/events/${eventRequestId}`).send({ [field]: date });
+      expect(response.status).toBe(200);
+      expect((await readState(eventRequestId))[field].toISOString()).toBe(stored);
+      expect(response.body.status).toBe('DRAFT');
+    }
   });
 });
 

@@ -66,7 +66,7 @@ describe('KAN-83 placing a hold from the booking page', () => {
     await open();
     const button = screen.getByRole('button', { name: 'Place hold' });
     expect(button).toBeDisabled();
-    expect(screen.getByText(/no later than the booking start \(1 Dec 2026, 10:00 am\)/)).toBeInTheDocument();
+    expect(screen.getByText(/no later than the occupied start, including setup time \(1 Dec 2026, 10:00 am\)/)).toBeInTheDocument();
     await fireEvent.update(screen.getByLabelText('Hold deadline (Singapore time)'), '2026-11-28T18:00');
     expect(button).toBeEnabled();
     await fireEvent.click(button);
@@ -84,8 +84,35 @@ describe('KAN-83 placing a hold from the booking page', () => {
     serve(pending);
     await open();
     await fireEvent.update(screen.getByLabelText('Hold deadline (Singapore time)'), '2026-12-01T10:01');
-    expect(screen.getByRole('alert')).toHaveTextContent('The hold deadline must be no later than the start of the booked period.');
+    expect(screen.getByRole('alert')).toHaveTextContent('The hold deadline must be no later than the occupied start, including setup time.');
     expect(screen.getByRole('button', { name: 'Place hold' })).toBeDisabled();
+  });
+
+  it('KAN-83-AC1 rejects a deadline inside setup time before the event starts, without a request', async () => {
+    const { calls } = serve({ ...pending, occupiedStartsAt: '2026-12-01T01:30:00.000Z' });
+    await open();
+    expect(screen.getByText(/including setup time \(1 Dec 2026, 9:30 am\)/)).toBeInTheDocument();
+    await fireEvent.update(screen.getByLabelText('Hold deadline (Singapore time)'), '2026-12-01T09:31');
+    expect(screen.getByRole('alert')).toHaveTextContent('no later than the occupied start');
+    const button = screen.getByRole('button', { name: 'Place hold' });
+    expect(button).toBeDisabled();
+    await fireEvent.submit(button.closest('form')!);
+    expect(calls.filter(call => call.method === 'POST')).toEqual([]);
+  });
+
+  it.each([true, false])('KAN-83-AC1 accepts exact start equality with buffered response %s', async (buffered) => {
+    const deadline = buffered ? '2026-12-01T01:30:00.000Z' : pending.startsAt;
+    const source = buffered ? { ...pending, occupiedStartsAt: deadline } : pending;
+    const { calls } = serve(source, () => json({ booking: { ...held, holdExpiresAt: deadline } }));
+    await open();
+    await fireEvent.update(screen.getByLabelText('Hold deadline (Singapore time)'),
+      buffered ? '2026-12-01T09:30' : '2026-12-01T10:00');
+    const button = screen.getByRole('button', { name: 'Place hold' });
+    expect(button).toBeEnabled();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    await fireEvent.click(button);
+    await screen.findByText(/Venue held until/);
+    expect(calls.find(call => call.method === 'POST')?.body).toEqual({ expiresAt: deadline });
   });
 
   it('KAN-83-AC1 shows the server refusal for a deadline it rejects', async () => {

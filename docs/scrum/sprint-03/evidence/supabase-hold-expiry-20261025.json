@@ -1,0 +1,57 @@
+{
+  "project": "llgqfsdaagmpihioslmm",
+  "observedAt": "2026-10-25T14:01:04.802Z",
+  "extension": {
+    "extname": "pg_cron",
+    "extversion": "1.6.4"
+  },
+  "migration": {
+    "name": "013_venue_holds.sql",
+    "checksum": "11c46aaeae1002568744558fe3c45f2cacda6634639ebd5eb041cdeaf73dd0ee",
+    "applied_at": "2026-10-25T00:19:02.420Z",
+    "checksumMatchesLocal": true
+  },
+  "jobs": [
+    {
+      "jobid": "1",
+      "jobname": "connectsphere-expire-venue-holds",
+      "schedule": "* * * * *",
+      "command": "SELECT public.expire_venue_holds()",
+      "database": "postgres",
+      "username": "postgres",
+      "active": true
+    }
+  ],
+  "runs": [
+    {
+      "runid": "4",
+      "jobid": "1",
+      "status": "succeeded",
+      "return_message": "1 row",
+      "start_time": "2026-10-25T14:01:00.115Z",
+      "end_time": "2026-10-25T14:01:00.120Z"
+    },
+    {
+      "runid": "3",
+      "jobid": "1",
+      "status": "succeeded",
+      "return_message": "1 row",
+      "start_time": "2026-10-25T14:00:00.017Z",
+      "end_time": "2026-10-25T14:00:00.022Z"
+    },
+    {
+      "runid": "2",
+      "jobid": "1",
+      "status": "succeeded",
+      "return_message": "1 row",
+      "start_time": "2026-10-25T13:59:00.024Z",
+      "end_time": "2026-10-25T13:59:00.029Z"
+    }
+  ],
+  "setupVerifiedAt": "2026-10-25T13:57:40.399Z",
+  "limitations": [
+    "Cron success verifies scheduled function execution; no shared business test data was created.",
+    "The return message 1 row is one SQL result row, not the number of holds expired.",
+    "This is operational scheduler evidence, not manual end-to-end acceptance."
+  ]
+}

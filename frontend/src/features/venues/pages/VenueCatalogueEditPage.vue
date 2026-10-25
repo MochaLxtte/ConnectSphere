@@ -3,6 +3,7 @@ import { computed, onBeforeUnmount, reactive, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { ApiError } from '../../../lib/api-client';
 import { authSession, clearLocalSession } from '../../auth/session.js';
+import { formatEventTime } from '../../events/presentation';
 import { fetchCatalogueVenue, updateCatalogueVenue, type CatalogueVenue } from '../api/venue-catalogue';
 import {
   buildUpdate, MAX_BUFFER_MINUTES, toFormValues, validateForm, type CatalogueFormValues,
@@ -49,6 +50,14 @@ const errors = computed(() => validateForm(form));
 const changes = computed(() => (venue.value ? buildUpdate(venue.value, form) : {}));
 const hasChanges = computed(() => Object.keys(changes.value).length > 0);
 const canSave = computed(() => !busy.value && hasChanges.value && Object.keys(errors.value).length === 0);
+
+const bookingWarningLabels: Record<string, string> = {
+  APPROVED_BOOKING_OVERLAP: 'Overlaps another approved booking.',
+  OPERATIONAL_BLOCK_OVERLAP: 'Overlaps a period of venue unavailability.',
+  OUTSIDE_OPERATING_HOURS: 'Extends outside the venue operating hours.',
+};
+const bookingWarningLabel = (warning: string): string =>
+  bookingWarningLabels[warning] ?? 'This booking needs an availability review.';
 
 function show(saved: CatalogueVenue) {
   venue.value = saved;
@@ -177,8 +186,9 @@ onBeforeUnmount(() => {
       <section v-if="venue?.affectedBookings?.length" aria-label="Affected bookings" role="status">
         <h2>Bookings need review</h2>
         <ul><li v-for="booking in venue.affectedBookings" :key="booking.id">
-          <RouterLink :to="`/venue-bookings/${booking.id}`">Review affected booking</RouterLink>
-          — {{ booking.warnings.join(', ') }}
+          <RouterLink :to="`/venue-bookings/${booking.id}`">Review {{ booking.eventName?.trim() || `booking ${booking.id}` }}</RouterLink>
+          <p v-if="booking.startsAt && booking.endsAt">{{ formatEventTime(booking.startsAt) }} – {{ formatEventTime(booking.endsAt) }} (Singapore time)</p>
+          <ul><li v-for="warning in booking.warnings" :key="warning">{{ bookingWarningLabel(warning) }}</li></ul>
         </li></ul>
       </section>
       <p v-if="savedMessage" class="panel-saved" role="status">{{ savedMessage }}</p>

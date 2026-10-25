@@ -1,5 +1,7 @@
 # Sprint 2 daily progress and burndown
 
+**Review outcome confirmed — 26 October 2026:** the team reports collective acceptance of seven stories / **24 SP** at the 3 October review, with five original-scope stories / **19 SP** carried. See the [current review record](review.md#current-acceptance-and-closure--26-october-2026). This supplies the reported review outcome without creating missing daily observations or re-dating later fixes. The team will supply closing-board evidence, review feedback and a burndown chart with its dated source data.
+
 **Record check — 15 October 2026:** the log preserves original dates. Entries from 4 October onward are follow-up development after the planned 3 October boundary; their presence in this folder does not backdate delivery. Missing Daily Scrum and burndown cells mean **Not recorded**. The [review register](review.md#baseline-and-later-delivery-register--15-october-2026) separates current Jira state, later verification and missing acceptance/closure decisions.
 
 Sprint 2 runs **20 September–3 October 2026**, Asia/Singapore. The starting baseline is **43 points across 12 PBIs**, comprising 35 new points and 8 carried points. Record actual observations below; an empty cell means not recorded, not zero work or a missed meeting.

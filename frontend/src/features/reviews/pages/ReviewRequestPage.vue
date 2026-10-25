@@ -5,6 +5,7 @@ import { ApiError } from '../../../lib/api-client';
 import { clearLocalSession } from '../../auth/session.js';
 import ReviewDecisionPanel from '../components/ReviewDecisionPanel.vue';
 import EventPlanningPanels from '../../events/components/EventPlanningPanels.vue';
+import { formatEventTime } from '../../events/presentation';
 import { singaporeDateKey } from '../../venues/availability';
 import { fetchReviewRequestDetail, submitReview } from '../api/submitted-requests';
 import type { ReviewFeedback, ReviewRequestDetail, ReviewSubmission } from '../types';
@@ -115,12 +116,13 @@ onBeforeUnmount(() => {
   <template v-else>
     <section class="panel event-detail" aria-labelledby="event-detail-title">
       <h2 id="event-detail-title">{{ state.detail.name ?? 'Untitled event request' }}</h2>
+      <p>All dates and times are in Singapore time.</p>
       <dl>
         <div><dt>Status</dt><dd>{{ state.detail.status }}</dd></div>
         <div><dt>Purpose</dt><dd>{{ state.detail.purpose ?? 'Not provided' }}</dd></div>
         <div><dt>Description</dt><dd>{{ state.detail.description ?? 'Not provided' }}</dd></div>
-        <div><dt>Proposed start</dt><dd>{{ state.detail.startsAt ?? 'Not provided' }}</dd></div>
-        <div><dt>Proposed end</dt><dd>{{ state.detail.endsAt ?? 'Not provided' }}</dd></div>
+        <div><dt>Proposed start</dt><dd>{{ formatEventTime(state.detail.startsAt) }}</dd></div>
+        <div><dt>Proposed end</dt><dd>{{ formatEventTime(state.detail.endsAt) }}</dd></div>
         <div><dt>Expected attendance</dt><dd>{{ state.detail.expectedAttendance ?? 'Not provided' }}</dd></div>
         <div><dt>Venue requirements</dt><dd>{{ state.detail.venueRequirements ?? 'Not provided' }}</dd></div>
         <div><dt>Accessibility needs</dt><dd>{{ state.detail.accessibilityNeeds ?? 'Not provided' }}</dd></div>

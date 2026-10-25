@@ -2,7 +2,7 @@
 
 **Current selected scope: 13 parents / 63 SP after the 16 October rebalance.** Earlier 84/97-point statements below are dated planning snapshots. No implementation completion is claimed by changing scope.
 
-**Current ownership:** unassigned for members to choose; reviewers and integration lead To agree. Earlier named allocation entries below are historical.
+**Current ownership:** KAN-79 and KAN-65 are assigned to Tristan; their PR #34 review is recorded in S3-E16. Other ownership and review assignments follow their latest story records. Earlier allocation entries below are historical; the integration lead remains To agree.
 
 Daily Scrums: Tuesday, Thursday, Saturday. Each person writes their own row; any one member adds the burndown checkpoint the same day. Notes written outside a meeting go under "Development updates" and say so.
 
@@ -200,3 +200,33 @@ This is a dated evidence backfill prepared with Codex on 25 October, not a new c
 - **21 October — KAN-81 PR #47 review and corrections:** Arvin requested changes, implemented stale 404/409 refresh corrections in `18ac27d`/`30da68a`, updated tests/evidence and then approved the phase-one work while disclosing his own fixes. His follow-up approval is not a second independent review of his corrections. Kai Jie remains KAN-81’s owner at 8 SP. Existing **S3-E20**, the KAN-81 review JSON and 21 October test narrative retain the scope and CI results.
 
 Owned KAN-34/KAN-78 merge, CI and acceptance limits remain in the preceding 25 October reconciliation. Supporting work adds no story points and does not convert other members’ stories to Done.
+
+**25 October 2026 — KAN-79 / KAN-65 manual-result documentation, outside a Daily Scrum.** Tristan reports that the manual scenarios for both stories passed on localhost on **17 October 2026**, using local work before it was pushed. [REPORT-20261025-TRISTAN-S3](../../testing/test-evidence.md#25-october-2026--reported-manual-results-for-original-stories) retains the report and its limits; the tested builds are **Not recorded**. Updated S3-T20/S3-T21 and the current review rows, and registered the report as S3-E23. Existing automated runs, failures/retests, implementation dates and merge records are preserved. Both Jira stories remain In Progress; acceptance and Definition of Done are Not assessed, with no velocity change or deployed-site verification inferred from this localhost report.
+
+**25 October 2026 — Ryan story verification documentation, outside a Daily Scrum.** Tristan reports that Ryan passed original KAN-25 scenarios on 19 September, original KAN-12 scenarios on 3 October, and revised KAN-12 plus the KAN-50 stale-save repair on 17 October. [REPORT-20261025-RYAN-S1/S2/S3](../../testing/test-evidence.md#25-october-2026--ryan-story-verification-records) links 9, 6 and 13 reported case results respectively; tested builds, environments, fixtures and captures are Not recorded. S1-E23/S2-E33/S3-E22 retain the source and reported execution dates. The KAN-12 repair from PR #51 was integrated on 22 October after Irfan's review; its failing source PostgreSQL CI and passing repaired integration remain separate records. PR #56's KAN-50 AC101 repair merged on 25 October after Tristan's review and passing check/coverage/PostgreSQL/browser CI. Current Jira: KAN-25 and KAN-12 Done / Ryan, KAN-50 In Progress / Ryan. This updates the current evidence and ownership; it is not Ryan's Daily Scrum statement, an independent test rerun, original KAN-50 acceptance or a change to sprint velocity.
+
+## 25 October 2026 — Closeout implementation and reconciliation
+
+The `fix/sprint-3-closeout` branch starts from current `main` `71e58b4`. Existing pending Tristan/Ryan records were backed up and merged with newer Arvin/Ernest/Irfan/Kai Jie contributions without removing earlier outcomes. This is a development/evidence update, not a reconstructed Daily Scrum row.
+
+Existing criteria repaired: KAN-34 PostgreSQL date bounds; KAN-81 confirmed replacement controls; KAN-81/83 outage versus hold/decision concurrency; KAN-83 buffered deadline display; KAN-78 readable affected-booking information; KAN-36/60 Singapore timestamps. KAN-64 concurrent-dedupe and post-insert rollback/recipient-overlap coverage was completed. No estimate or scope change, new application migration, or historical velocity adjustment.
+
+`AUTO-20261025-CLOSEOUT-01`: type checks/builds pass; frontend 785, backend 1,364, isolated PostgreSQL 499 and browser 158 tests pass. Frontend line coverage 97.54%; backend 89.93%. Shared pg_cron setup and actual successful runs are `OPS-20261025-HOLD-EXPIRY-01`; no shared cleanup tests. Remaining: current-build manual repair retest, deployed URL/check, review acceptance/closure records, agreed retrospective actions and team-supplied burndown evidence. Sprint 4 confirmation/safety consumers retain their existing ownership.
+
+**Supplementary closeout verification — 25 October:** exact hold-placement boundary and three-way expiry contention tests added; existing suitability capacity test strengthened. AUTO-20261025-CLOSEOUT-02 passes the final complete 510-test PostgreSQL suite. No additional application code or scope/estimate change.
+
+## 25 October 2026 — Repair smoke confirmed and acceptance environment clarified
+
+The latest fixes were manually tested and reported working in REPORT-20261025-CLOSEOUT-RETEST / S3-E26. The repair smoke follow-up is complete; actual execution date, individual executors and exact build remain Not recorded. This is a report/documentation update, not a new Daily Scrum or a rerun by the assistant.
+
+Updated the DoD, project guide, PR checklist, test specifications/executions, traceability and current backlog/submission summaries: a complete local frontend/API with real authentication and the agreed Supabase development project satisfies the acceptance environment. Application deployment is not required. Automated results remain unchanged, including 510 passing isolated database tests. Remaining work is commit/review/integration, explicit story/closure decisions, team burndown artifacts, agreed retrospective actions and the separate Sprint 4 consumers.
+
+## 26 October 2026 — Acceptance and closure record preparation
+
+Consolidated the current review decision register using existing story criteria, verification, supplied attendance and later repair reports. Read Jira sprint metadata without mutation: Sprint 3 remains Active and Sprint 4 Future. Earlier meeting and development entries are preserved. No new test run, acceptance decision, estimate, Done point or Daily Scrum statement is added.
+
+The team will supply its per-story acceptance decisions/decision-makers and prepare the burndown charts. Reviewed-build identifiers and original board evidence are retained only where available. Until those decisions arrive, closure and velocity remain Not assessed / Not recorded as appropriate.
+
+### 26 October 2026 — Review-decision confirmation
+
+The team supplied collective acceptance decisions for the three reviews and confirmed that reviewed build identifiers were not retained. Current review summaries and the master register record the reported outcomes separately from the later failed/passing evidence and administrative Jira states. No daily Scrum row, test execution, chart point or acceptance date for later code was invented. Closing boards, review feedback and burndown charts/source data will be provided by the team. This is a documentation reconciliation, not a new sprint review or Jira closure.

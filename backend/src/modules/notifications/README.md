@@ -24,3 +24,7 @@ Migration `008_notification_inbox.sql` adds `venue_booking_id` and `dedupe_key`.
 Saving a venue outage records `VENUE_OUTAGE_RECOVERY_REQUIRED` for each affected event's current coordinator
 (`outageRecoveryNotifications` in `trigger-matrix.ts`), keyed per outage and event and linked to the first affected
 booking. It is written in the outage's transaction from `venues/block-service.ts`.
+
+## 25 October 2026 — Concurrent outcomes and recipient overlap verification
+
+`notification-inbox.integration.test.ts` now proves actual simultaneous insert contention for the same outcome/recipient, uses a deferred trigger to fail after the booking decision and all notifications have been inserted, and verifies complete rollback. A valid organiser-to-coordinator role transition exercises overlapping recipient rules without inventing simultaneous application roles. Actor acknowledgements remain; each intended person receives one notice and an unrelated account receives none. These regressions complete the previously missing TC-20-18/19 scenario boundaries. TC-20-20's original-scope/CR ownership is checked in the change register; later KAN-80/82/84 triggers are not claimed implemented.

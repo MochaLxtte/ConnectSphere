@@ -1,6 +1,12 @@
 # Testing and evidence
 
+**Current acceptance policy and repair result — 25 October 2026.** Application deployment is not required; use the complete local frontend/API with real authentication and the agreed Supabase development database. The latest closeout fixes were manually tested and reported working in [REPORT-20261025-CLOSEOUT-RETEST](test-evidence.md#25-october-2026--closeout-retest-confirmation). The follow-up smoke check is complete as a reported Pass. Earlier dated hosted-only requirements and pending outcomes below are retained history, superseded for current acceptance by the [DoD amendment](../scrum/definition-of-done.md#local-acceptance-policy--25-october-2026).
+
 **Arvin verification readback — 25 October 2026.** KAN-34 and KAN-78 are integrated in main `96a0d10`; [AUTO-20261025-ARVIN-01](test-evidence.md#25-october-2026--arvin-kan-78-and-kan-34-documentation-reconciliation) imports existing current-main CI without a new local/hosted run. KAN-78 uses migration 012 after KAN-77 settings in 009, with the later hold extension in 013. The dated 21 October prerequisites below retain that earlier checkpoint. The [25 October hosted record](test-evidence.md#25-october-2026--kan-60-and-kan-83-manual-hosted-runs) reports migrations 001–013 applied, but does not complete S3-T06 or S3-T19. Use the scoped planned walkthroughs at the end of this guide and retain actual execution separately.
+
+**25 October 2026 — original-story manual records.** [Reported manual results](test-evidence.md#25-october-2026--reported-manual-results-for-original-stories) now cover KAN-36/KAN-16 (Sprint 1), KAN-29/KAN-8/original KAN-52 (Sprint 2), and KAN-79/KAN-65 (Sprint 3). The 46 appended executions record reported localhost success, the reported review-day dates and unavailable build/fixture metadata. TC-05-09 covers the local candidate only. Original KAN-52 evidence stays separate from Ernest's revision, and KAN-29 remains a superseded baseline. Older dated pending notes describe their original checkpoints. Current KAN-65/KAN-64 integration is implemented; deployed verification and team acceptance retain their own records.
+
+**25 October 2026 — Ryan's story records.** [Verification records](test-evidence.md#25-october-2026--ryan-story-verification-records) now distinguish KAN-25 authentication (Sprint 1), original KAN-12 venue search (Sprint 2), and KAN-12/KAN-50 repairs (Sprint 3). `REPORT-20261025-RYAN-S1/S2/S3` record Tristan's report of Ryan's manual passes on the respective 19 September, 3 October and 17 October review dates. Tested builds and environments remain **Not recorded**; these reports do not establish team acceptance. Earlier failed runs and their later automated repairs remain separate evidence.
 
 ## Current test-document structure — 21 October 2026
 
@@ -156,7 +162,9 @@ are rewritten by the packaging script. The archived CSV is retained unchanged as
 
 The excellent course rubric asks for 100% coverage unless infeasible and explained. Agree what coverage measures apply, report the measured result, and explain gaps. Line coverage alone cannot demonstrate all requirements or concurrency behavior; the release traceability matrix must also be complete.
 
-## KAN-79 hosted verification
+<a id="kan-79-hosted-verification"></a>
+
+## KAN-79 integrated local verification
 
 **Prepared 19 October 2026; manual execution: Not executed.** Use the current KAN-79 criteria and S3-T20. The local run `AUTO-20261019-01` covers unit/component checks, 304 PostgreSQL integration tests and 119 browser tests. Browser fixtures and an isolated database do not prove real Supabase identity mapping, deployment or hosted acceptance. `TC-05-17`–`TC-05-28` record those automated scenarios; the manual cases below require their own evidence.
 
@@ -166,7 +174,7 @@ Use only the shared development project with the team's agreed synthetic fixture
 
 Prepare distinct fixtures rather than reusing one completed allocation: E-new is a complete unassigned draft; E-active contains one unassigned event for each of `SUBMITTED`, `UNDER_REVIEW`, `CLARIFICATION_REQUESTED`, `APPROVED` and `CONFIRMED`; E-draft and E-closed test excluded states; E-old retains an existing `AUTOMATIC` assignment. Use fictional names, purpose, venue requirements, positive attendance, registration off and a valid future start/end in Singapore time (for example, 12 January 2031, 10:00–12:00). Record every concrete ID and input used. Prepare otherwise unreachable states through agreed synthetic setup, not by rewriting a teammate's event.
 
-Run `npm.cmd run dev` for a local candidate against the agreed development database, or use the hosted candidate URL. Use separate browser profiles for L1/L2 and coordinators. Lead entry points are `/lead` (**Assignment queue**), `/lead/oversight` (**Event oversight**) and `/lead/oversight/:id` (**Event allocation**). Same-origin API calls use the existing signed-in session; see the [current contract](../architecture/api-contract.md#kan-79-submission-and-lead-allocation--19-october-2026).
+Run `npm.cmd run dev` for the complete local candidate against the agreed development database. Public application deployment is not required. Use separate browser profiles for L1/L2 and coordinators. Lead entry points are `/lead` (**Assignment queue**), `/lead/oversight` (**Event oversight**) and `/lead/oversight/:id` (**Event allocation**). Same-origin API calls use the existing signed-in session; see the [current contract](../architecture/api-contract.md#kan-79-submission-and-lead-allocation--19-october-2026).
 
 | Group / case links | Steps and test data | Expected result |
 | --- | --- | --- |
@@ -317,7 +325,7 @@ Automated suites: `backend/test/events/submit-input.test.ts`, `submit-request.te
 
 ## KAN-50 hosted verification
 
-Use S2-T03/S2-T04 and KAN-50-AC1–AC21. These are instructions, not recorded passes. Record commit, date, tester, environment, synthetic IDs, inputs, expected/actual results and defects in [test evidence](test-evidence.md). No migration is required. Local automated tests do not establish hosted login, authorization or customer acceptance.
+Use S2-T03/S2-T04 and KAN-50-AC1–AC21 for the original catalogue, plus S3-T15 / KAN-50-AC101 / TC-08-14 for the stale-save repair. These are reusable instructions; actual outcomes belong in the execution register and [test evidence](test-evidence.md). Record commit, date, tester, environment, synthetic IDs, inputs, expected/actual results and defects for each new run. No migration is required for the original catalogue or stale-save repair. Local automated tests do not establish hosted login, authorization or customer acceptance.
 
 Prepare two or three synthetic active venues with known values and one inactive one. Provision mapped accounts (a Supabase user plus an `app_users` row with `supabase_user_id`; accounts are provisioned manually, Q-01) for **two Venue Staff members**, an Event Coordinator, an Event Organiser and a Technical Support Staff member. Use an isolated project or coordinate dashboard fixture changes with Arvin and restore the original values afterwards; a Git branch does not isolate the shared database.
 
@@ -335,10 +343,13 @@ Run `npm.cmd run dev` (with `NODE_EXTRA_CA_CERTS` set if a TLS-intercepting anti
 | Access — AC14; S2-T04 | Coordinator, organiser and technical support see no Venue catalogue link; opening `/venue-catalogue` or `/venue-catalogue/<id>` directly shows the staff-only message and requests no venue data. `GET`/`PATCH /api/venues/catalogue…` return 403 for them and 401 when signed out. A `PATCH` containing `name` returns 400 and the stored name is unchanged. |
 | Inactive or missing venue — AC19; S2-T04 robustness | Deactivate a synthetic venue in the dashboard: it leaves the list, its direct page shows "not in the active catalogue", and a `PATCH` returns 409 `VENUE_INACTIVE`. Restore it afterwards. |
 | Save failure — AC21; S2-T04 robustness | Interrupt the connection or expire the session while saving: a clear message appears, the entered values stay, and nothing is reported as saved. |
+| Stale save — AC101; S3-T15; TC-08-14 | Using controlled response delays in an isolated fixture, start saving venue A, navigate to B, then release A's delayed success or error. B's URL, editor and messages remain aligned; a later save targets B. Repeat with an account change, including delayed 401 and buffer-conflict errors. An old completion must not clear a newer save's busy state. Aborting the old request only invalidates its UI response; inspect and restore any original-venue change that the server already committed. |
 
 For API checks, use the authenticated same-origin session; see [the routes, body rules and errors](../architecture/api-contract.md#venue-catalogue-maintenance-kan-50-cf-08). Keep cookies and tokens out of evidence.
 
 Automated suites: `backend/test/venues/venue-catalogue-input.test.ts`, `venue-catalogue-service.test.ts`, `venue-catalogue-router.test.ts`, `database/tests/venues/venue-catalogue.integration.test.ts`, the four files under `frontend/src/features/venues/` named `catalogue-form`, `api/venue-catalogue`, `VenueCataloguePage` and `VenueCatalogueEditPage`, and `tests/e2e/venue-catalogue.spec.ts`. [AUTO-20261009-KAN50-01](test-evidence.md#9-october-venue-catalogue-maintenance-kan-50) records which have been executed.
+
+**25 October 2026 repair verification:** PR #56 adds 11 component regressions for KAN-50-AC101. [CI run 40175958221](https://github.com/MochaLxtte/ConnectSphere/actions/runs/40175958221) on merge build `89c2cb0` passed 770 frontend tests, 1,354 backend tests, 479 PostgreSQL integration tests and 156 browser tests, with the coverage checks passing. This automated result is separate from [Ryan's reported manual outcomes](test-evidence.md#25-october-2026--ryan-story-verification-records). KAN-12 regression coverage also needs the [current search contract](../architecture/api-contract.md#venue-search-kan-12-cf-10): real calendar dates with explicit time zones, setup/turnaround boundaries and live-versus-expired holds. The original PR #51 integration failure and skipped E2E run remain historical; the repaired integration run `39750396624` is recorded in the 22 October evidence.
 
 ## Rebalanced Release 1 verification plan — 16 October 2026
 
@@ -370,3 +381,17 @@ S3 connected verification ends with usable request/venue decisions, Lead access,
 This is a dated evidence backfill prepared with Codex on 25 October, not a new ceremony, Jira transition, test execution or acceptance decision. Historical entries, other members’ ownership and agreed estimates are preserved.
 
 Historical KAN-24 and KAN-51 results retain their test-environment boundaries in [test evidence](test-evidence.md). Before acceptance, complete the outstanding setup/security/diagram checks for KAN-24 and hosted role, venue and session checks for KAN-51 against their existing criteria. The local fixture-token walkthrough is not hosted sign-in evidence. No new case results are added by this historical contribution readback.
+
+## 25 October 2026 — Closeout retest
+
+**Outcome: reported Pass.** The team confirms the fixes work; see [REPORT-20261025-CLOSEOUT-RETEST](test-evidence.md#25-october-2026--closeout-retest-confirmation). The checklist below remains the reusable procedure. Exact execution date, individual executors, build, fixture identifiers and captures are **Not recorded**. The report covers the integrated smoke checks; controlled race/fault-injection assertions remain separately proved by automation.
+
+The full local suites pass in `AUTO-20261025-CLOSEOUT-01`. Historical team manual reports are retained separately as `REPORT-20261025-TEAM-S1/S2/S3`; they do not retest code changed afterwards. Use the current build with agreed synthetic accounts/data, record original values and restore them after the test. Record the tested build, environment, screenshots and leftover data with the results.
+
+1. As Venue Staff, approve a linked replacement for a confirmed event; refresh and verify the replacement/recovery outcome. Check an ordinary confirmed-event request remains non-reviewable (`TC-09-25`).
+2. Place a hold with setup time: the hint must show the buffered occupied start; the exact deadline boundary is accepted, one minute later refused (`TC-14-309`). Create an overlapping outage and verify the hold is released with one notice. Deterministic races remain covered by the isolated PostgreSQL test (`TC-14-308`).
+3. Increase venue buffers around existing bookings. Confirm the warning identifies each event/period and explains the problem; verify bookings are unchanged (`TC-14-307`). Review decision/clarification times must display Singapore time (`TC-04-303`).
+4. Verify an invalid year/offset submitted to each draft date field returns HTTP 400 and leaves the draft unchanged (`TC-03-303`). The automated HTTP/database regression already exercises this without shared data.
+5. Agree on one synthetic held booking, let the enabled Supabase job pass its deadline without manually calling expiry, and verify expiry plus the coordinator's inbox. Job execution itself is verified in `TC-14-310`; the integrated journey/build must be recorded separately. A public app/API URL is not required. KAN-79 uses the same complete local candidate for its integrated queue/allocation check; Sprint 4 confirmation/safety consumers remain future integration work.
+
+Formal story acceptance, Done dates and sprint velocity require the team's review decision; neither local suite counts nor broad historical result reports create that decision.

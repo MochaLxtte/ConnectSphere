@@ -10,7 +10,7 @@ import { isAssignedCoordinator } from '../../../backend/src/modules/events/coord
 import { recordInitialReview } from '../../../backend/src/modules/events/review-decision.js';
 import { submitEventRequest } from '../../../backend/src/modules/events/submit-request.js';
 import type { WorkflowActor } from '../../../backend/src/modules/events/workflow-support.js';
-import { recordNotifications } from '../../../backend/src/modules/notifications/notify.js';
+import { recordNotifications, type NotificationInput } from '../../../backend/src/modules/notifications/notify.js';
 import { REASSIGNED_AWAY_MESSAGE } from '../../../backend/src/modules/notifications/trigger-matrix.js';
 import { createVenueBooking, decideVenueBooking } from '../../../backend/src/modules/venues/booking-service.js';
 import { createWorkflowFixture, type WorkflowFixture } from '../events/workflow-fixture.js';
@@ -330,5 +330,141 @@ describe('KAN-64-AC207 persistence is part of the business transaction', () => {
       await fixture.pool.query('DROP TRIGGER kan64_block_assign ON notifications');
       await fixture.pool.query('DROP FUNCTION kan64_block_assignment()');
     }
+  });
+});
+
+describe('KAN-64-AC207/AC208 concurrent delivery and overlapping recipients', () => {
+  async function pendingBooking(eventId: string, coordinator: Profile) {
+    const venueId = randomUUID();
+    await fixture.pool.query('INSERT INTO venues(id,name,capacity) VALUES($1,$2,100)', [venueId, `Delivery test hall ${venueId}`]);
+    return createVenueBooking(fixture.dependencies, { eventRequestId: eventId, actor: coordinator, input: {
+      venueId, startsAt: '2026-12-01T02:00:00.000Z', endsAt: '2026-12-01T04:00:00.000Z', layout: 'Theatre', notes: null,
+    } });
+  }
+
+  it('TC-20-18 serialises simultaneous writes for one outcome and recipient without duplicate delivery', async () => {
+    const eventId = await fixture.createEvent({ organiserId: organiser.id });
+    const note = { recipientId: organiser.id, eventRequestId: eventId, type: 'REQUEST_SUBMITTED',
+      title: 'Submitted', message: 'Original outcome', dedupeKey: `REQUEST_SUBMITTED:${eventId}` };
+    const first = await fixture.pool.connect();
+    const second = await fixture.pool.connect();
+    let retry: Promise<{ count: number } | { error: unknown }> | undefined;
+    try {
+      await first.query('BEGIN');
+      await second.query('BEGIN');
+      const firstPid = (await first.query<{ pid: number }>('SELECT pg_backend_pid() AS pid')).rows[0]!.pid;
+      const secondPid = (await second.query<{ pid: number }>('SELECT pg_backend_pid() AS pid')).rows[0]!.pid;
+      expect(await recordNotifications(first, [note])).toBe(1);
+      // Hold the first insert uncommitted until PostgreSQL confirms the retry is contending for it.
+      // This proves overlap without relying on a timer or the speed of the test machine.
+      retry = recordNotifications(second, [{ ...note, message: 'Retry must not replace the original' }])
+        .then((written) => ({ count: written }), (error: unknown) => ({ error }));
+      await expect.poll(async () => (await fixture.pool.query<{ blockers: number[] }>(
+        'SELECT pg_blocking_pids($1) AS blockers', [secondPid])).rows[0]!.blockers,
+      { timeout: 3_000 }).toContain(firstPid);
+      await first.query('COMMIT');
+      expect(await retry).toEqual({ count: 0 });
+      await second.query('COMMIT');
+      expect(await fixture.notifications(eventId)).toEqual([
+        { recipient_id: organiser.id, type: 'REQUEST_SUBMITTED', message: 'Original outcome' },
+      ]);
+    } finally {
+      await first.query('ROLLBACK');
+      await retry;
+      await second.query('ROLLBACK');
+      first.release();
+      second.release();
+    }
+  });
+
+  it('TC-20-18 rolls back a venue decision after notices are inserted, then commits and deduplicates concurrent retries', async () => {
+    const eventId = await fixture.createEvent({ organiserId: organiser.id, coordinatorId: alex.id, status: 'APPROVED' });
+    const booking = await pendingBooking(eventId, alex);
+    const readBooking = async () => (await fixture.pool.query('SELECT * FROM venue_bookings WHERE id=$1', [booking.id])).rows[0];
+    const beforeBooking = await readBooking();
+    const beforeEvent = await fixture.eventRow(eventId);
+    // A deferred AFTER trigger fails at COMMIT, after both the decision and all three recipient
+    // inserts have happened. The test therefore covers rollback after insertion, not just refusal.
+    await fixture.pool.query(`CREATE FUNCTION kan64_fail_venue_commit() RETURNS trigger LANGUAGE plpgsql AS $$
+      BEGIN
+        IF NEW.event_request_id = '${eventId}' AND NEW.type = 'VENUE_BOOKING_APPROVED' THEN
+          IF (SELECT status FROM venue_bookings WHERE id = NEW.venue_booking_id) <> 'APPROVED'
+            OR (SELECT count(*) FROM notifications WHERE event_request_id = NEW.event_request_id
+                AND type = 'VENUE_BOOKING_APPROVED') <> 3 THEN
+            RAISE EXCEPTION 'decision and all notices must already be written';
+          END IF;
+          RAISE EXCEPTION 'forced rollback after venue notice insertion';
+        END IF;
+        RETURN NEW;
+      END $$`);
+    await fixture.pool.query(`CREATE CONSTRAINT TRIGGER kan64_fail_venue_commit
+      AFTER INSERT ON notifications DEFERRABLE INITIALLY DEFERRED
+      FOR EACH ROW EXECUTE FUNCTION kan64_fail_venue_commit()`);
+    try {
+      await expect(decideVenueBooking(fixture.dependencies, {
+        bookingId: booking.id, actor: staff, input: { decision: 'APPROVED' },
+      })).rejects.toThrow('forced rollback after venue notice insertion');
+      expect(await readBooking()).toEqual(beforeBooking);
+      expect(await fixture.eventRow(eventId)).toEqual(beforeEvent);
+      expect(await fixture.notifications(eventId)).toEqual([]);
+    } finally {
+      await fixture.pool.query('DROP TRIGGER kan64_fail_venue_commit ON notifications');
+      await fixture.pool.query('DROP FUNCTION kan64_fail_venue_commit()');
+    }
+
+    expect((await decideVenueBooking(fixture.dependencies, {
+      bookingId: booking.id, actor: staff, input: { decision: 'APPROVED' },
+    })).status).toBe('APPROVED');
+    const committedBooking = await readBooking();
+    const notes = (await fixture.pool.query<NotificationInput>(`SELECT recipient_id AS "recipientId",
+      event_request_id AS "eventRequestId", venue_booking_id AS "venueBookingId", type, title, message,
+      dedupe_key AS "dedupeKey" FROM notifications WHERE event_request_id=$1 ORDER BY recipient_id`, [eventId])).rows;
+    expect(notes.map((note) => note.recipientId).sort()).toEqual([organiser.id, alex.id, staff.id].sort());
+    expect(await Promise.all([
+      recordNotifications(fixture.pool, notes), recordNotifications(fixture.pool, notes),
+    ])).toEqual([0, 0]);
+    await expect(decideVenueBooking(fixture.dependencies, {
+      bookingId: booking.id, actor: staff, input: { decision: 'APPROVED' },
+    })).rejects.toMatchObject({ code: 'BOOKING_ALREADY_DECIDED' });
+    expect(await readBooking()).toEqual(committedBooking);
+    expect(await fixture.eventRow(eventId)).toEqual(beforeEvent);
+    expect(await rowsFor(eventId)).toEqual([
+      ['VENUE_BOOKING_APPROVED', organiser.id], ['VENUE_BOOKING_APPROVED', alex.id], ['VENUE_BOOKING_APPROVED', staff.id],
+    ].sort());
+  });
+
+  it('TC-20-19 acknowledges the actor and deduplicates overlapping historical-owner/current-coordinator recipients', async () => {
+    const owner = await profile('EVENT_ORGANISER', 'Later appointed coordinator');
+    const eventId = await fixture.createEvent({ organiserId: owner.id, status: 'DRAFT', name: 'Overlap recipient event' });
+    await submitEventRequest(fixture.dependencies, { eventRequestId: eventId, actor: owner });
+    expect(await rowsFor(eventId)).toEqual([['REQUEST_SUBMITTED', owner.id]]);
+    expect((await inbox(owner)).map((item) => item.type)).toEqual(['REQUEST_SUBMITTED']);
+
+    // Profiles have one current role. A trusted role change can leave the same person owning an
+    // older event while now coordinating it; do not fabricate an unsupported multi-role account.
+    await fixture.pool.query("UPDATE app_users SET role='EVENT_COORDINATOR', coordinator_available=true WHERE id=$1", [owner.id]);
+    const coordinator: Profile = { ...owner, role: 'EVENT_COORDINATOR' };
+    await assignCoordinator(fixture.dependencies, { eventRequestId: eventId, actor: lead, input: { coordinatorId: owner.id } });
+    expect((await rowsFor(eventId)).filter(([type]) => type === 'COORDINATOR_ASSIGNED'))
+      .toEqual([['COORDINATOR_ASSIGNED', owner.id]]);
+    expect((await inbox(coordinator)).filter((item) => item.type === 'COORDINATOR_ASSIGNED')).toHaveLength(1);
+    await review(eventId, coordinator, { decision: 'APPROVED' });
+    const booking = await pendingBooking(eventId, coordinator);
+    await decideVenueBooking(fixture.dependencies, { bookingId: booking.id, actor: staff, input: { decision: 'APPROVED' } });
+    expect((await rowsFor(eventId)).filter(([type]) => type === 'VENUE_BOOKING_APPROVED')).toEqual([
+      ['VENUE_BOOKING_APPROVED', owner.id], ['VENUE_BOOKING_APPROVED', staff.id],
+    ].sort());
+    const owned = (await inbox(coordinator)).filter((item) => item.type === 'VENUE_BOOKING_APPROVED');
+    expect(owned).toHaveLength(1);
+    expect(owned[0]).toMatchObject({ event: { id: eventId }, booking: { id: booking.id }, link: `/venue-bookings/${booking.id}` });
+    const acknowledgement = (await inbox(staff)).filter((item) => item.booking?.id === booking.id);
+    expect(acknowledgement).toHaveLength(1);
+    expect(acknowledgement[0]!.message).toContain('You approved');
+
+    const unrelated = await login(otherOrganiser);
+    expect((await unrelated.get('/api/notifications')).body.items).toEqual([]);
+    expect((await unrelated.get('/api/notifications/unread-count')).body.unreadCount).toBe(0);
+    expect((await unrelated.post(`/api/notifications/${owned[0]!.id}/read`)).status).toBe(404);
+    expect((await fixture.pool.query('SELECT read_at FROM notifications WHERE id=$1', [owned[0]!.id])).rows[0].read_at).toBeNull();
   });
 });

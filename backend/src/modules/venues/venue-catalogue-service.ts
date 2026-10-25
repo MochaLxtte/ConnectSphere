@@ -8,7 +8,7 @@ import type { VenueResult } from './venue-search.js';
 
 /** Same shape as a venue search result, so search, suitability and maintenance agree on a venue. */
 export type CatalogueVenue = VenueResult & {
-  affectedBookings?: { id: string; warnings: string[] }[];
+  affectedBookings?: { id: string; eventName: string | null; startsAt: string; endsAt: string; warnings: string[] }[];
 };
 
 type CatalogueRow = Omit<CatalogueVenue, 'updatedAt'> & { updatedAt: Date };
@@ -120,11 +120,17 @@ export async function updateCatalogueVenue(
     const saved = await client.query<CatalogueRow>(`${catalogueSelect} WHERE id = $1`, [venueId]);
     const venue = serialize(saved.rows[0]!);
     if (BUFFER_FIELDS.some(field => update[field] !== undefined)) {
-      const affected = await client.query<{ id: string; warnings: string[] }>(
-        `SELECT b.id, venue_booking_warnings(b.id) AS warnings FROM venue_booking_intervals b
+      const affected = await client.query<{
+        id: string; eventName: string | null; startsAt: Date; endsAt: Date; warnings: string[];
+      }>(
+        `SELECT b.id, e.name AS "eventName", b.starts_at AS "startsAt", b.ends_at AS "endsAt",
+          venue_booking_warnings(b.id) AS warnings FROM venue_booking_intervals b
+         JOIN event_requests e ON e.id = b.event_request_id
          WHERE b.venue_id = $1 AND cardinality(venue_booking_warnings(b.id)) > 0
          ORDER BY b.starts_at, b.id`, [venueId]);
-      return { ...venue, affectedBookings: affected.rows };
+      return { ...venue, affectedBookings: affected.rows.map(row => ({
+        ...row, startsAt: iso(row.startsAt), endsAt: iso(row.endsAt),
+      })) };
     }
     return venue;
   });

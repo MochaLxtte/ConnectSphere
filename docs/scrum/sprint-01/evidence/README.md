@@ -1,5 +1,23 @@
 # Sprint 1 evidence register
 
+## Closure evidence position — 26 October 2026
+
+The [current review and closure summary](../review.md#current-acceptance-and-closure--26-october-2026) consolidates existing source records. This is a documentation reconciliation, not a new sprint review, test execution or screenshot. The 26 October confirmation now documents the collective acceptance decision at the 19 September review; the original **32 committed / 24 accepted / 8 carried** point outcome is unchanged.
+
+| Evidence / closure need | Available source | Remaining input |
+| --- | --- | --- |
+| Review date, participation and Scrum roles | 25 October team report, S1-E25; planning 6 September, review/retro 19 September, all six members | Exact times/location **Not recorded**; attendance need not be supplied again |
+| Original dispositions, acceptance and review feedback | E13/E19; DEMO-01–11, S1-DEF-01–04, S1-FB-01–05; current review table and its 26 October decision-source note | All six collectively accepted the seven stories against applicable criteria/DoD at the 19 September review; no further acceptance-maker input needed |
+| Tests and later contribution evidence | E10/E11, S1-E22–S1-E25, linked test specifications/executions | Exact demonstrated build/fixtures and retained captures **Not recorded**; the team has no retained build identifier; later evidence keeps its own date and scope |
+| Applicable historical criteria and DoD | Criterion crosswalk and retained story baseline | Adoption/version reference for the reviewed increment **Not recorded**; the later local-acceptance amendment does not rewrite historical acceptance |
+| Jira administrative completion | [26 October metadata read](../../sprint-03/evidence/jira-sprint-metadata-20261026.json): Sprint 1/id 1 closed, completed 21 September 2026 00:29:55 SGT | Current administration confirmed; not a closing-board screenshot or story acceptance record |
+| Closing board / report | E12; later Jira snapshots retained | Closing capture **Not recorded**; the team will supply evidence, retaining the actual capture date |
+| Burndown source data / chart | E08; original 32-point baseline and reported final 24/8 split | **Not recorded**; team prepares and supplies the chart and source values |
+| Additional review feedback / follow-ups | Existing S1-FB-01–05 | The team will supply additional review feedback/actions with agreed owners/dates; until then those details are **Not recorded** |
+
+Earlier register rows remain historical checkpoints. Acceptance decision details are supplied; unavailable build/version references and artifacts remain explicitly **Not recorded**; do not create replacement historical captures or infer daily completion from final totals. Retrospective actions are tracked separately in [retrospective.md](../retrospective.md).
+
+
 ## Preservation check — 15 October 2026
 
 **Record updated 15 October 2026.** This folder retains the [scaffold Git metadata](2026-09-07-repository-baseline.txt) and the register below. Historical test observations are in [test evidence](../../../testing/test-evidence.md); most original meeting, board, burndown and demo captures are **Not recorded**. The dated register remains a record of what was available then, not a current tracker snapshot.
@@ -95,3 +113,21 @@ At final submission, include this sprint's process records and evidence in numbe
 The retained Jira Done entry and the original closure totals do not establish that this 20 September merge met the Definition of Done by 19 September. PR #10 was self-merged; neither #10 nor #19 has a submitted human review in the GitHub readback. PR-reported tests are historical reported results, not newly executed manual checks. Preserve `KAN-24-AC1`–`AC4`, `TC-DB-201`–`205` and `S1-T31`–`S1-T33`; reproducible setup, hosted security configuration and diagram verification must retain their existing evidence limits. No additional Done SP or revised velocity is asserted.
 
 The retained [GitHub metadata](../../sprint-03/evidence/arvin-contributions-github-2026-10-25.json) contains authors, commits, merge timestamps and submitted reviews. Readback date is distinct from actual delivery dates; no new tests were run.
+
+## 25 October 2026 — reported original-story manual results
+
+| Evidence ID | Source | Scope and limitations |
+| --- | --- | --- |
+| S1-E24 | [REPORT-20261025-TRISTAN-S1](../../../testing/test-evidence.md#25-october-2026--reported-manual-results-for-original-stories); executor confirmation in chat, recorded 25 October 2026 | Tristan reports all documented original KAN-36/KAN-16 manual scenarios passed on 19 September 2026 using localhost before the later push. [Case mapping](../sprint-backlog.md#25-october-2026--reported-original-story-manual-results). Exact local commit, database environment, fixtures and captures Not recorded. No independent replay, new acceptance decision or changed closure/velocity is claimed. |
+
+## 25 October 2026 — Ryan story verification records
+
+| Evidence ID | Source | Scope and limitations |
+| --- | --- | --- |
+| S1-E23 | [REPORT-20261025-RYAN-S1](../../../testing/test-evidence.md#25-october-2026--ryan-story-verification-records); Tristan's report recorded 25 October 2026 | Ryan reportedly passed original KAN-25 cases TC-01-201–209 on 19 September 2026; run `MAN-20260919-02`. Tested build, environment, fixtures and captures Not recorded. No independent replay, new acceptance, changed closure figures or later-role verification is claimed. |
+
+## 25 October 2026 — Team manual result reports
+
+| Evidence ID | Artifact | Source and limits |
+| --- | --- | --- |
+| S1-E25 | [REPORT-20261025-TEAM-S1](../../../testing/test-evidence.md#25-october-2026--team-manual-result-reports); [execution register](../../../testing/test-executions.csv), EX-TEAM-20261025-S1-001 onward | Supplied 25 October; 60 manual scenario Pass reports dated 19 September 2026. Build/environment, individual observed output, captures and cleanup Not recorded. Attendance confirmed for all six at planning/review/retro. Does not establish formal acceptance, hosted checks or new velocity; existing failures and current-fix retests remain separate. |

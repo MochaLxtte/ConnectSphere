@@ -1,0 +1,28 @@
+Current available Sprint 3-related verification, performed25 October after planned17 October boundary. Not a reconstructed sprint-end coverage capture.
+
+ConnectSphere Sprint 3 closeout verification — 25 October 2026 (Asia/Singapore)
+Branch: fix/sprint-3-closeout
+Base: 71e58b49077ea0666fafd26ad6ac4366665ee4ba plus uncommitted changes (see closeout-build-20261025.json)
+
+AUTO-20261025-CLOSEOUT-01
+npm run check: PASS — types, frontend 785/36 files, backend 1,364/46 files, both builds.
+npm run test:coverage: PASS — same785+1364 tests.
+Frontend coverage: statements 95.37%(2517/2639), branches 92.54%(3127/3379), functions 97.49%(623/639), lines 97.54%(2102/2155).
+Backend coverage: statements 89.60%(1594/1779), branches 91.49%(1172/1281), functions 89.50%(307/343), lines 89.93%(1438/1599).
+Dedicated KAN-34 parser:129/129;100% statements 55/55,branches 55/55,functions 5/5,lines 50/50.
+npm run test:integration: PASS499/26 files — TEST_DATABASE_URL explicitly points to disposable PostgreSQL 17 on127.0.0.1:55544; isolated schemas reset/removed by fixtures. No shared DB cleanup.
+npm run test:e2e -- --workers=2: PASS158 — Chromium; substituted API response fixtures; no hosted/Supabase sign-in acceptance inferred.
+Independent static review: venue gate/lock interactions, permission boundaries, catalogue response and confirmed replacement controls reviewed by a second agent; no actionable finding. This is not a teammate GitHub approval.
+
+Pre-fix audit AUTO-20261025-CLOSEOUT-BASELINE on96a0d10:
+- KAN-34 year0000/offset+23:59:all 4 date fields returned HTTP 500 (8 failing boundary inputs).
+- KAN-81 real component disabled confirmed linked replacement approval.
+- KAN-81/83 real PostgreSQL interleaving left an overlapping live hold after an outage and failed approval.
+Fresh local reproductions use synthetic isolated data; retained as Fail rows separate from repaired Pass rows.
+Initial new notification test attempt:17pass/1fail due duplicate synthetic venue name; fixture corrected; targeted46/46 passed before full 499/499. No product failure hidden by this test-fixture correction.
+
+OPS-20261025-HOLD-EXPIRY-01:approved shared Supabase configuration; migration 013checksum verified; pg_cron1.6.4 enabled; namedjob 1 everyminute SELECT public.expire_venue_holds(); realcronruns succeeded21:58 onwardSGT. No sharedtestdata/cleanup. '1 row' means SQL result row, not expiredholdcount.
+
+Limitations: full coverage is not100%; existing uncovered runtime/session/error/service branches remain. PostgreSQL integration is not included in workspace unit coverage totals. API-fixture browser tests do not prove hosted integration. Current-code manual repair retests, deployed URL/Leaddeploymentcheck and Sprint 4confirmation/safety consumers remain. Historical reported manualPass dates are not retests of this diff. Story acceptance, new Done SP and historical velocity are not inferred.
+
+AUTO-20261025-CLOSEOUT-02: supplementary existing-specification coverage; hold suite60/60, suitability34/34; final full PostgreSQL integration510/510 in26files (40.88s). Added11hold tests; strengthened existing suitability assertions. Product code unchanged; earlier499-test run retained. Actual row/gate waits verified using pg_blocking_pids. Initial fixture-count/notification-expectation mismatches corrected before final pass. No shared-data cleanup.

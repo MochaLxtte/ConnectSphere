@@ -1,6 +1,36 @@
 # Scrum evidence
 
+## Acceptance and closure inputs — 26 October 2026
+
+Acceptance decisions are now supplied. All six members — Arvin, Ernest, Irfan, Kai Jie, Ryan and Tristan — are reported to have collectively agreed against the stories' ACs and Definition of Done at each sprint review. These historical decisions were confirmed on 26 October; the confirmation is not a newly held review or a historical artifact. Reviewed build/commit/branch identifiers were not retained and stay **Not recorded**.
+
+| Sprint / review | Reported review outcome | Current record |
+| --- | --- | --- |
+| 1 / 19 September | 7 accepted / 24 SP; KAN-6, KAN-33 and KAN-34 carried / 8 SP | [Review](sprint-01/review.md#current-acceptance-and-closure--26-october-2026) |
+| 2 / 3 October | Seven non-carried stories accepted / 24 SP; five original-scope completion stories / 19 SP remain the recorded carry-over disposition. Customer-change additions do not revoke original acceptance. | [Review and carry-over classification](sprint-02/review.md#current-acceptance-and-closure--26-october-2026) |
+| 3 / 17 October | All 13 stories / 63 SP accepted; no carry-over, according to the team report | [Review and evidence reconciliation](sprint-03/review.md#current-acceptance-and-closure--26-october-2026) |
+
+Later audit failures, repairs, PRs and test runs retain their dates. In particular, the Sprint 3 report does not resolve whether the failures reproduced on 25 October existed in the unknown 17 October build. The review report and its evidence limitation both remain visible; historical DoD compliance is not inferred from the later passing candidate.
+
+**The team will supply these three items for each sprint:**
+
+1. **Closing board:** screenshot or export, with its capture date and file/link. A newly captured board is labelled current; it does not become an original sprint-end screenshot.
+2. **Review feedback:** feedback raised, affected story if any, and each agreed action with owner and target date. Say explicitly if there was no feedback or no agreed action. Retrospective feedback/actions are separate; existing proposed retrospective actions remain To agree until confirmed.
+3. **Burndown chart and source data:** the chart export and the dated scope/remaining-point observations used to produce it, including scope changes. The team prepares these. Keep reported review totals and actual observation dates distinct; no daily data is generated here.
+
+Place files in the relevant `sprint-01/evidence/`, `sprint-02/evidence/` or `sprint-03/evidence/` folder and provide the paths. Each evidence register will link the supplied artifact with its source/capture date. Until supplied, the artifact and feedback details remain **Not recorded**. The missing reviewed builds are recorded as unavailable and are not a repeated request.
+
+The [26 October Jira metadata](sprint-03/evidence/jira-sprint-metadata-20261026.json) confirms Sprint 1 and Sprint 2 Closed, Sprint 3 Active and Sprint 4 Future. Administrative closure remains separate from reported acceptance; no Jira changes were made. There is no public application-deployment requirement and no request to repeat all manual tests.
+
+**25 October 2026 closeout reconciliation.** The latest repair smoke checks are reported **Pass** in [REPORT-20261025-CLOSEOUT-RETEST](../testing/test-evidence.md#25-october-2026--closeout-retest-confirmation). The report was supplied on 25 October; actual execution date, tested build, individual executor, captures and cleanup details are **Not recorded**. Sprint 1–3 historical results, current ownership and full meeting attendance reports remain preserved. Local automated checks pass, and the approved Supabase hold-expiry job has run successfully. Formal story review/closure, missing process artifacts, burndown charts and agreed retrospective actions remain separate; historical sprint dates and velocity are unchanged.
+
+**Acceptance environment clarified — 25 October 2026.** The application will run locally; public app/API deployment and a deployed URL are not required. The [Definition of Done](definition-of-done.md) permits acceptance through the integrated local frontend/API with real mapped authentication and the shared development database. Reproducible connected workflows and operational Supabase setup remain required. Earlier dated hosted/deployed wording below records previous checkpoints and is superseded for the current acceptance environment.
+
 **25 October scoped readback — Arvin:** KAN-34 (3 SP) and KAN-78 (8 SP) were integrated through PR #48/#54 on 22 October. The [Sprint 3 backlog](sprint-03/sprint-backlog.md#25-october-2026--arvin-kan-78-and-kan-34-documentation-reconciliation) distinguishes Arvin's ownership, independent review history, latest automated evidence and remaining hosted acceptance. Other stories and sprint administration were not re-audited; no sprint-end delivery or velocity is inferred.
+
+**Ryan story verification records — 25 October 2026.** Tristan reports that Ryan completed the original KAN-25 manual scenarios on **19 September**, original KAN-12 scenarios on **3 October**, and revised KAN-12 plus the KAN-50 stale-save repair on **17 October 2026**. The [reported results](../testing/test-evidence.md#25-october-2026--ryan-story-verification-records) distinguish these reported execution dates from the 25 October documentation date; tested builds, environments, fixtures and captures are **Not recorded**. KAN-25 and KAN-12 are currently Done / Ryan in Jira; KAN-50 remains In Progress / Ryan. The KAN-50 report covers AC101 only. Later PR/CI dates, original acceptance records and sprint velocity are unchanged.
+
+**KAN-79 / KAN-65 manual-test report — 25 October 2026.** Tristan reports that the manual scenarios for both Sprint 3 stories passed on localhost on **17 October 2026**, using local work before it was pushed. [REPORT-20261025-TRISTAN-S3](../testing/test-evidence.md#25-october-2026--reported-manual-results-for-original-stories) and [S3-E23](sprint-03/evidence/README.md#reported-kan-79-and-kan-65-manual-results--25-october-2026) retain this reported date; the tested builds are **Not recorded**. KAN-64 integration and the PR #34 merge remain documented on their actual recorded dates. Both stories remain In Progress in Jira, with acceptance and Definition of Done **Not assessed**; the report does not establish a deployed-site test or change historical velocity.
 
 **KAN-65 follow-up — 19 October 2026.** KAN-65 and subtasks KAN-88/89/90 are In Progress / Tristan; the estimate remains 3 SP. Branch `feat/KAN-65-coordinator-reassignment` includes KAN-79 and implements Lead-only reassignment with a required reason, assignment-version checks, atomic audit history and current-assignment permissions. `AUTO-20261019-02` records local verification. KAN-64 notifications, manual/hosted workflow checks, independent review and acceptance remain pending. The earlier KAN-79 dependency notes below describe that earlier implementation stage. This targeted update does not change sprint scope, historical evidence or velocity.
 

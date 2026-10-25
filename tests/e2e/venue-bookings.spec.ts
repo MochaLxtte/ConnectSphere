@@ -120,6 +120,25 @@ test('KAN-8 running backend requires login for booking list, detail and decision
   }
 });
 
+test('KAN-81 Venue Staff approve a confirmed event replacement and retain its confirmed event status', async ({ page }) => {
+  const originalId = '81000000-0000-4000-8000-000000000001';
+  const fixture = await bookingFixtures(page, 'VENUE_STAFF', { bookings: [makeBooking({
+    eventStatus: 'CONFIRMED', replacesBookingId: originalId,
+  })] });
+  await page.goto(`/venue-bookings/${bookingId}`);
+  await expect(page.getByRole('link', { name: 'The outage-affected booking' }))
+    .toHaveAttribute('href', `/venue-bookings/${originalId}`);
+  await page.getByRole('radio', { name: 'Approve booking' }).check();
+  await page.getByRole('button', { name: 'Record decision' }).click();
+  await expect(page.getByText('Venue booking approved.', { exact: true })).toBeVisible();
+  await page.reload();
+  await expect(page.getByRole('region', { name: 'Booking decision', exact: true })
+    .getByText('Approved', { exact: true })).toBeVisible();
+  await expect(page.getByText('Confirmed', { exact: true })).toBeVisible();
+  expect(fixture.decisions).toEqual([{ decision: 'APPROVED', reason: null }]);
+  expect(fixture.unexpected).toEqual([]);
+});
+
 for (const scenario of [
   { decision: 'APPROVED' as const, label: 'Approve booking', outcome: 'Approved', reason: '' },
   { decision: 'REJECTED' as const, label: 'Reject booking', outcome: 'Rejected', reason: 'Capacity is insufficient.' },

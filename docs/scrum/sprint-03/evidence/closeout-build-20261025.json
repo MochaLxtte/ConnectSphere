@@ -1,0 +1,30 @@
+{
+  "base_commit": "71e58b49077ea0666fafd26ad6ac4366665ee4ba",
+  "branch": "fix/sprint-3-closeout",
+  "captured_on": "2026-10-25",
+  "state": "Uncommitted tested working tree; no application deployment asserted",
+  "files": {
+    "backend/src/modules/events/draft-update-input.ts": "4cb9771c39a794dd204877119bb0e1405e96b3a98bf79a58e1dbadf2ba6ef6a5",
+    "backend/src/modules/venues/block-service.ts": "ab5e1747503f9eac9c878da747b51ddce810ddec898be0a06485a755e28d4990",
+    "backend/src/modules/venues/booking-service.ts": "5da1aafdf729913405ad508a7ff0c7eca9397c05de3dc540a3b2c4c5bbcd26c3",
+    "backend/src/modules/venues/venue-catalogue-service.ts": "f84c171b8873684aaf556c41a46a4d2d508145f1d831e53012fb8d012778258c",
+    "backend/test/events/draft-update-input.test.ts": "cf7e65c34949800dba87a521e058317e44f3c29b87b20ce3d11625ac2d7ed488",
+    "backend/test/venues/venue-catalogue-service.test.ts": "827f96741e88808c45162b4710e2bad18cf73214d90ba0e008de954bb76e2c96",
+    "backend/test/venues/venue-holds.test.ts": "347fee2af68ff167fcb68fdadc5d80720bc52114e880a0169fa83f4d5d59f038",
+    "database/tests/events/update-draft.integration.test.ts": "baeaaa92652ff1f0ec7b29b8a5390a20eaa5eb38c02cf2f5db7510c7a41fd862",
+    "database/tests/notifications/notification-inbox.integration.test.ts": "3cc6cb12f6bb3e2bf52bd34f24d0fc735c725ba08d45d28500a63a58300352e3",
+    "database/tests/venues/venue-buffers.integration.test.ts": "1961cca4c473346d0bdc90060d214e9e06752893eaafcddf8b73a711b70de186",
+    "database/tests/venues/venue-holds.integration.test.ts": "9405786aae340dbf1ad98bfc0d8e37e12107c4efd48bbcb9b62ce604a40c5c00",
+    "database/tests/venues/venue-suitability.integration.test.ts": "f5d392bfa7de7c5e6e12b3d93f83e3b028b20eef741d5c86630d5fc89b389129",
+    "frontend/src/features/reviews/pages/ReviewRequestPage.test.ts": "494e97901828ba867acb8a03cfe76912ec51f4f2383bd8fb4006016b0b0a18d2",
+    "frontend/src/features/reviews/pages/ReviewRequestPage.vue": "a1ceae8c60319f5678cc74eaccd3c558ed80552a5bbd7fe7d8c54711117b3de2",
+    "frontend/src/features/venues/api/venue-catalogue.ts": "46342100ae291bde4a1e233ccc47724811cd61c13fbc653e4d759e1e27d9ca8f",
+    "frontend/src/features/venues/pages/VenueBookingDetailPage.test.ts": "b53ef96f189b6641bcc1a62dbc36ff38d445d9ebb8eed213ef7b8ffc4107d193",
+    "frontend/src/features/venues/pages/VenueBookingDetailPage.vue": "f90d4f4007c79c817d46536256aa573b65fcb435d09984b842eb65d5064b42de",
+    "frontend/src/features/venues/pages/VenueBookingHold.test.ts": "b96b9a7f1cd4f0126adf395f3d710216abb8ca65ce57609bdd3f8f24ff66b1e0",
+    "frontend/src/features/venues/pages/VenueCatalogueEditPage.test.ts": "fa615bdc15ea3e40a84d51cccfc391b7a398cea4bf37e90a8b5526ce1482c1ef",
+    "frontend/src/features/venues/pages/VenueCatalogueEditPage.vue": "1a7c632a8e7114a0a559572091a0c630ea76d801f46878a37c38a76e81dcf0fa",
+    "tests/e2e/venue-bookings.spec.ts": "2313c065f60045e7f86f339f6d3893203771fdeb2d018043ca5793bf3bf8b271",
+    "tests/e2e/venue-holds.spec.ts": "bc1e01680871ed72e6e739db379442e571940419168eee50329a4cfe08c41472"
+  }
+}

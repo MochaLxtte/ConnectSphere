@@ -103,11 +103,19 @@ describe('KAN-78 occupied intervals with real PostgreSQL', () => {
     const id = await venue(0, 0);
     const a = await request(id); await approve(a.id);
     const b = await request(id, end, '2030-12-01T06:00:00Z'); await approve(b.id);
+    await f.pool.query('UPDATE event_requests SET name=$2 WHERE id=$1', [a.eventRequestId, 'Career fair']);
+    await f.pool.query('UPDATE event_requests SET name=$2 WHERE id=$1', [b.eventRequestId, 'Awards ceremony']);
     const other = await venue(0, 0); const c = await request(other); await approve(c.id);
     const before = (await f.pool.query('SELECT * FROM venue_bookings WHERE venue_id=$1 ORDER BY id', [id])).rows;
     const edited = await updateCatalogueVenue(f.dependencies, { actor: staff, venueId: id,
       input: { setupMinutes: 30, expectedSetupMinutes: 0, turnaroundMinutes: 45, expectedTurnaroundMinutes: 0 } });
     expect(edited.affectedBookings?.map(b => b.id)).toEqual(expect.arrayContaining([a.id, b.id]));
+    expect(edited.affectedBookings).toEqual([
+      { id: a.id, eventName: 'Career fair', startsAt: start, endsAt: end,
+        warnings: ['APPROVED_BOOKING_OVERLAP'] },
+      { id: b.id, eventName: 'Awards ceremony', startsAt: end, endsAt: '2030-12-01T06:00:00.000Z',
+        warnings: ['APPROVED_BOOKING_OVERLAP'] },
+    ]);
     for (const booking of [a, b]) expect((await getVenueBooking(f.dependencies, { actor: staff, bookingId: booking.id })).warnings).toContain('APPROVED_BOOKING_OVERLAP');
     expect((await listVenueBookings(f.dependencies, { actor: staff })).map(b => b.id)).toEqual(expect.arrayContaining([a.id, b.id]));
     expect((await getVenueBooking(f.dependencies, { actor: staff, bookingId: c.id })).warnings).toEqual([]);

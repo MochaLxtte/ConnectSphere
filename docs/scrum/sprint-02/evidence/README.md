@@ -1,5 +1,25 @@
 # Sprint 2 evidence register
 
+## Current acceptance and closure — 26 October 2026
+
+The [current twelve-story decision register](../review.md#current-acceptance-and-closure--26-october-2026) records **7 accepted stories / 24 SP at the 3 October review**, confirmed on **26 October**, and retains **5 carried stories / 19 SP**. **S2-E37** registers the supplied acceptance confirmation and closure reconciliation; it is not a newly performed test, review meeting or contemporaneous 3 October capture.
+
+| Evidence / requirement | Current source and remaining detail |
+| --- | --- |
+| S2-E33 / Ryan original search report | Six original KAN-12 manual Pass scenarios reported for 3 October; exact build and captures **Not recorded** |
+| S2-E34 / Tristan original stories report | KAN-29/KAN-8/KAN-52 manual Pass scenarios reported for 3 October on localhost; exact build and captures **Not recorded** |
+| S2-E36 / team meeting and manual report | 52 manual Pass rows for the remaining owners; all-six attendance confirmed for 20 September planning and 3 October review/retrospective |
+| S2-E35 / administrative closure | Retained 16 October administrative closure and five selected carry-over parents / 19 SP; the [26 October metadata read](../../sprint-03/evidence/jira-sprint-metadata-20261026.json) confirms Closed and actual completion 16 October 02:06:49 Singapore time. This is not a 3 October end-board capture |
+| S2-E37 / acceptance confirmation and closure reconciliation | [26 October current review summary](../review.md#current-acceptance-and-closure--26-october-2026); all 12 stories, original criterion links, test reports and retained carry-over. All six members collectively agreed at the 3 October review, according to the confirmation supplied on 26 October. |
+| Historical acceptance / velocity | **24 SP:** KAN-29/51/53/8/54/55/33 accepted 3 October. KAN-6/34/50/12/52 retain **19 SP** in Sprint 3 and contribute **0 delivered SP** to Sprint 2. Customer-change-only work does not revoke earlier acceptance; the five carried stories are recorded as original-work repairs/clarification, not new customer scope. |
+| Original reviewed build | **Not recorded**, confirmed unavailable; retain any identifier if recovered, without substituting a later build |
+| Closing board and review feedback/actions | **Not recorded** beyond retained findings; the team will supply artifacts and actual feedback/actions |
+| Sprint 2 burndown | Team-owned preparation; chart and underlying observations **Not recorded** until supplied. No chart or daily values generated here. |
+
+Later fixes and successful retests remain [current closeout evidence](../../../testing/test-evidence.md#25-october-2026--closeout-retest-confirmation). Earlier rows below retain their source dates and limitations; the reports above supersede outdated blanket pending-test/attendance/acceptance statements only for their documented scope. No later DoD amendment or customer change is applied retrospectively to the original Sprint 2 outcome. In particular, KAN-29's accepted original automatic-assignment workflow remains separate from CR-5, while KAN-52's retained carry decision concerns original zero-attendance policy clarification rather than a demonstrated direct failure of its over-capacity criterion.
+
+## Retained earlier evidence records
+
 ## 15 October current evidence position
 
 **Record updated 15 October 2026.** All 12 parent stories and KAN-57/KAN-58/KAN-76 subtasks are currently Done in Jira; Sprint 2 remains active. Their latest administrative labels supersede the current-status interpretation of the dated register rows below. No new hosted run accompanies the subtask transitions in the inspected sources, and PR #33 has no submitted peer review in the 15 October check. The [review baseline register](../review.md#baseline-and-later-delivery-register--15-october-2026) is the current story-by-story reference.
@@ -92,7 +112,7 @@ At closure, check that story acceptance, executed tests, board state, scope chan
 
 ## Current administrative close — 16 October 2026
 
-The [current CSV and workbook](../../../submission/1/README.md) were refreshed after Jira Sprint 2 (id 34) was closed at 16 October 02:06 Singapore time and Sprint 3 (id 67) was activated. This is **S2-E30**, a later administrative reconciliation, not a 3 October end-board or review record.
+The [current CSV and workbook](../../../submission/1/README.md) were refreshed after Jira Sprint 2 (id 34) was closed at 16 October 02:06 Singapore time and Sprint 3 (id 67) was activated. This is **S2-E35**, a later administrative reconciliation, not a 3 October end-board or review record.
 
 KAN-6/34/50/12/52 are now To Do in Sprint 3 at their original 19 SP. The [review assessment](../review.md#current-evidence-assessment--16-october-2026) records the user's statement that historical acceptance was not recorded and separates the five defects from unchanged/untested criteria. The remaining seven parents / 24 SP are not automatically accepted. Original 43 SP commitment and historical evidence are preserved. No new product tests were run by this planning/documentation activity.
 
@@ -105,3 +125,21 @@ KAN-6/34/50/12/52 are now To Do in Sprint 3 at their original 19 SP. The [review
 The existing **MAN-20261006-KAN51-01** walkthrough used a real local API with isolated PostgreSQL and locally signed fixture tokens: 15 checks passed as recorded. It did not exercise hosted Supabase password sign-in. The original ignored captures were not retained in this documentation checkout; no replacement screenshot is invented. GitHub readback records no submitted human approval for #28. `KAN-51-AC1`–`AC6`, `TC-09-201`–`203` and `S2-T05/T06` remain subject to their recorded scope and hosted acceptance gaps; the later shared buffers/holds requirements do not retroactively redefine the original checks. No new acceptance or velocity is inferred.
 
 The retained [GitHub metadata](../../sprint-03/evidence/arvin-contributions-github-2026-10-25.json) contains authors, commits, merge timestamps and submitted reviews. Readback date is distinct from actual delivery dates; no new tests were run.
+
+## 25 October 2026 — reported original-story manual results
+
+| Evidence ID | Source | Scope and limitations |
+| --- | --- | --- |
+| S2-E34 | [REPORT-20261025-TRISTAN-S2](../../../testing/test-evidence.md#25-october-2026--reported-manual-results-for-original-stories); executor confirmation in chat, recorded 25 October 2026 | Tristan reports all documented original KAN-29/KAN-8/KAN-52 manual scenarios passed on 3 October 2026 using localhost before the later push. [Case mapping](../sprint-backlog.md#25-october-2026--reported-original-story-manual-results). Exact local commit, database environment, fixtures and captures Not recorded. Historical allocation/suitability scope only; no current Lead/buffer/hold or revised KAN-52 acceptance, independent replay, changed 43-point baseline or new velocity is claimed. |
+
+## 25 October 2026 — Ryan story verification records
+
+| Evidence ID | Source | Scope and limitations |
+| --- | --- | --- |
+| S2-E33 | [REPORT-20261025-RYAN-S2](../../../testing/test-evidence.md#25-october-2026--ryan-story-verification-records); Tristan's report recorded 25 October 2026 | Ryan reportedly passed original KAN-12 cases TC-10-201–206 on 3 October 2026; run `MAN-20261003-02`. Tested build, environment, fixtures and captures Not recorded. Later AC14/AC15/AC16/AC101 scenarios remain in the Sprint 3 verification record. No independent replay, new acceptance, full cross-story run or velocity change is claimed. |
+
+## 25 October 2026 — Team manual result reports
+
+| Evidence ID | Artifact | Source and limits |
+| --- | --- | --- |
+| S2-E36 | [REPORT-20261025-TEAM-S2](../../../testing/test-evidence.md#25-october-2026--team-manual-result-reports); [execution register](../../../testing/test-executions.csv), EX-TEAM-20261025-S2-001 onward | Supplied 25 October; 52 manual scenario Pass reports dated 3 October 2026. Build/environment, individual observed output, captures and cleanup Not recorded. Attendance confirmed for all six at planning/review/retro. Does not establish formal acceptance, hosted checks or new velocity; existing failures and current-fix retests remain separate. |
