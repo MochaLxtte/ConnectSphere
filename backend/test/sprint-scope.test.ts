@@ -12,7 +12,6 @@ const recordId = '20000000-0000-4000-8000-000000000001';
 // absent from the mounted application until their stories enter the sprint scope.
 const futureRoutes = [
   ['post', `/api/events/${eventId}/confirm`, 'EVENT_COORDINATOR'],
-  ['post', `/api/events/${eventId}/cancel`, 'EVENT_ORGANISER'],
   ['post', `/api/events/${eventId}/complete`, 'EVENT_COORDINATOR'],
   ['get', `/api/events/${eventId}/change-requests`, 'EVENT_COORDINATOR'],
   ['post', `/api/events/${eventId}/change-requests`, 'EVENT_ORGANISER'],
@@ -24,10 +23,8 @@ const futureRoutes = [
   ['get', `/api/equipment/${recordId}/availability`, 'TECHNICAL_SUPPORT_STAFF'],
   ['post', '/api/equipment', 'TECHNICAL_SUPPORT_STAFF'],
   ['patch', `/api/equipment/${recordId}`, 'TECHNICAL_SUPPORT_STAFF'],
-  ['get', '/api/equipment-requests', 'EVENT_COORDINATOR'],
   ['post', '/api/equipment-requests', 'EVENT_COORDINATOR'],
   ['patch', `/api/equipment-requests/${recordId}`, 'EVENT_COORDINATOR'],
-  ['post', `/api/equipment-requests/${recordId}/cancel`, 'EVENT_COORDINATOR'],
   ['post', `/api/equipment-requests/${recordId}/decision`, 'TECHNICAL_SUPPORT_STAFF'],
   ['get', '/api/registrations/events', 'ATTENDEE'],
   ['get', '/api/registrations/mine', 'ATTENDEE'],

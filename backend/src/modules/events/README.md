@@ -1,5 +1,35 @@
 # Event proposal workstream
 
+## KAN-62 event cancellation
+
+`POST /api/events/:id/cancel` accepts `{ "reason": "...", "confirmAffectedArrangements": true }`.
+Only the owning organiser or currently assigned coordinator may cancel an event in
+SUBMITTED, UNDER_REVIEW, CLARIFICATION_REQUESTED, APPROVED or CONFIRMED. The transaction
+locks the event, cancels active venue bookings and equipment lines, closes active
+registrations, stores immutable cancellation details, records the status transition, and
+writes organiser/coordinator/attendee inbox notifications through KAN-64. Attendee messages
+contain the outcome and omit the internal reason. `GET /api/events/:id/cancellation` returns
+the saved organiser/coordinator outcome. Repeated, draft, rejected and completed actions
+write nothing.
+The organiser/coordinator detail page includes the cancellation form and displays the saved
+reason/time after reload; attendee inbox notices state the outcome without exposing the reason.
+
+## KAN-63 equipment request workflow
+
+`POST /api/events/:id/equipment-requests` lets the assigned coordinator of an APPROVED event
+save REQUESTED lines with equipment type, positive quantity, period and technical requirements.
+Set `notRequired: true` with an empty `lines` list only when no non-cancelled required line
+exists. `GET /api/equipment-requests` is available to Technical Support Staff and assigned
+coordinators; `eventId` narrows the list. Technical Support Staff review a line at
+`POST /api/equipment-requests/:id/review` with `RESERVED` or `REJECTED` and a required rejection
+reason. The existing database availability trigger rechecks pooled quantities while reserving.
+A reserved line is immutable; the assigned coordinator must use
+`POST /api/equipment-requests/:id/replace` with its current revision and a replacement line.
+The old reservation is cancelled atomically and the replacement returns to REQUESTED for staff
+review. The routes use verified-session identity and request-specific access checks.
+Coordinators use the event planning panel; Technical Support Staff use the request queue. Both
+views reload persisted request lines and review outcomes from the API.
+
 Ernest owns event creation and draft saving; Kai Jie owns draft editing and submission. Irfan owns coordinator review and clarification; Tristan owns approval/rejection, organiser-facing status and the KAN-29 automatic-assignment implementation. These workstreams share this directory, with Arvin supporting database setup and cross-feature integration. Coordinate the field names in `types.ts` with the frontend event forms and database migrations before changing a contract.
 
 The normal server exposes organiser lists, shared request details, owned-draft updates and submission, the assigned coordinator's review queue, and approval/rejection. For organisers, `GET /api/events` preserves the own-draft list; `GET /api/events?scope=all` includes all of their request statuses, newest update first, and supplies the organiser page at `/events`. The shared detail GET returns `review` and caller-specific `actions` alongside the event fields. The coordinator interface consumes these fields, and KAN-16's request titles link to a read-only organiser view at `/events/:id` using the same GET. It displays status and any recorded outcome, reason and time without exposing write controls. No additional handler or schema change is needed for this view. Hosted organiser checks cover outcome display/refresh, signed-out detail access, Draft/Submitted detail states and another organiser's denied detail access and empty list (MAN-20260917-01 through MAN-20260917-04). Opening `/events` directly after signing out showed a sign-in prompt without request names or statuses (MAN-20260917-05). The request list showed matching Draft, Submitted, Rejected and Approved labels, and Draft/Submitted detail statuses and review messages remained correct after refresh (MAN-20260917-06). The remaining submission-to-status check is in [test evidence](../../../../docs/testing/test-evidence.md).
