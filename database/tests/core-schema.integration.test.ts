@@ -152,6 +152,9 @@ test('CORE-DB-03 a venue decision requires its decision maker and time', async (
 });
 
 test('CORE-DB-04 equipment reservations cannot exceed the pooled quantity', async () => {
+  // KAN-26 allocations require approved events whose period matches the saved equipment line.
+  await pool.query("UPDATE event_requests SET status='APPROVED',starts_at=$1,ends_at=$2 WHERE id=ANY($3::uuid[])",
+    [...morning, [eventA, eventB]]);
   const two = await requestEquipment(eventA, 2);
   const another = await requestEquipment(eventB, 2);
   const one = await requestEquipment(eventB, 1);

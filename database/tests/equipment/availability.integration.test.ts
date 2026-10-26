@@ -30,9 +30,9 @@ function app(actor: WorkflowActor | null = technician, pool = fixture.pool) {
   return createApp({ database: pool, workspace: { pool, authenticate: async () => actor } });
 }
 
-async function event(status: 'APPROVED' | 'CONFIRMED' | 'DRAFT' | 'SUBMITTED' | 'REJECTED' = 'APPROVED') {
+async function event(status: 'APPROVED' | 'CONFIRMED' | 'DRAFT' | 'SUBMITTED' | 'REJECTED' = 'APPROVED', start = startsAt, end = endsAt) {
   return fixture.createEvent({ organiserId: organiser.id, coordinatorId: coordinator.id,
-    status, startsAt, endsAt, name: `Equipment planning ${randomUUID()}` });
+    status, startsAt: start, endsAt: end, name: `Equipment planning ${randomUUID()}` });
 }
 
 async function equipment(options: { total?: number; damaged?: number; maintenance?: number; active?: boolean } = {}) {
@@ -114,11 +114,13 @@ describe('KAN-9 read-only equipment availability against real PostgreSQL', () =>
 
   it('uses operational stock minus simultaneous peak, with half-open adjacency and equality allowed', async () => {
     const target = await event();
-    const competing = await event();
+    // Each committed reservation matches its event period under the KAN-26 integrity guard.
+    const competing = await event('APPROVED', startsAt, middle);
+    const adjacent = await event('APPROVED', middle, endsAt);
     const type = await equipment();
     await line(target, type, 3);
     await line(competing, type, 4, 'RESERVED', startsAt, middle);
-    await line(competing, type, 3, 'RESERVED', middle, endsAt);
+    await line(adjacent, type, 3, 'RESERVED', middle, endsAt);
     // These overlap but consume no stock, unlike RESERVED lines.
     for (const status of ['REQUESTED', 'REJECTED', 'CANCELLED'] as const) await line(competing, type, 100, status);
     const before = await snapshot();
@@ -139,10 +141,11 @@ describe('KAN-9 read-only equipment availability against real PostgreSQL', () =>
 
   it('sums simultaneous reservations rather than taking the biggest individual reservation', async () => {
     const target = await event();
-    const competing = await event();
+    const competing = await event('APPROVED', startsAt, middle);
+    const overlapping = await event('APPROVED', '2031-01-12T03:00:00Z', endsAt);
     const type = await equipment();
     await line(competing, type, 4, 'RESERVED', startsAt, middle);
-    await line(competing, type, 3, 'RESERVED', '2031-01-12T03:00:00Z', endsAt);
+    await line(overlapping, type, 3, 'RESERVED', '2031-01-12T03:00:00Z', endsAt);
     const response = await whatIf(target, [{ equipmentTypeId: type, quantity: 1 }]);
     expect(response.status).toBe(200);
     expect(response.body.assessment).toMatchObject({ outcome: 'SHORTFALL', items: [expect.objectContaining({
@@ -188,7 +191,7 @@ describe('KAN-9 read-only equipment availability against real PostgreSQL', () =>
 
   it('preserves PostgreSQL microsecond overlap and adjacency boundaries', async () => {
     const target = await event();
-    const competing = await event();
+    const competing = await event('APPROVED', startsAt, '2031-01-12T04:00:00.000501Z');
     const type = await equipment();
     await line(competing, type, 4, 'RESERVED', startsAt, '2031-01-12T04:00:00.000501Z');
     const touching = await whatIf(target, [{ equipmentTypeId: type, quantity: 7 }], '2031-01-12T04:00:00.000501Z', endsAt);
