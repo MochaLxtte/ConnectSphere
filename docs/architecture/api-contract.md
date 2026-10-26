@@ -439,6 +439,7 @@ Client navigation is not access control; every page relies on the API responses 
 | --- | --- | --- |
 | `/events`, `/events/new` | Organiser request list; new event request form | Signed out or EO |
 | `/events/:id`, `/events/:id/edit` | Organiser detail with the planning panels; draft editing | Linked from the list |
+| `/events/:id/details` | KAN-66 post-submission edits: owner before approval, assigned coordinator name/description after approval | Linked from the detail and review pages; fields decided by the API |
 | `/reviews` | Assigned coordinator review queue | EC after session resolution |
 | `/reviews/unassigned` | Legacy route redirects to `/lead` | Destination requires ECL; ordinary coordinators see no queue data |
 | `/lead`, `/lead/oversight` | Submitted/unassigned allocation queue; active-event oversight | ECL after session resolution |
@@ -748,3 +749,38 @@ KAN-34 retains the real-calendar/explicit-offset validation on all four draft da
 This is a dated evidence backfill prepared with Codex on 25 October, not a new ceremony, Jira transition, test execution or acceptance decision. Historical entries, other members’ ownership and agreed estimates are preserved.
 
 KAN-51 PR #28 synchronized client route/history and selected venue and added spoofed-role API denial regressions. Client route guards do not replace server authorization. KAN-81 PR #47 corrections refresh both views after stale 404/409 write refusals without automatically retrying the refused write. These are historical implementation provenance notes; current endpoint shapes and error contracts above remain authoritative.
+
+## KAN-66 planning edits and revisions — 26 October 2026
+
+`PATCH /api/events/:id` now serves owner drafts (KAN-34, unchanged), owner edits before approval and assigned-coordinator ordinary edits after approval. Roles `EVENT_ORGANISER` and `EVENT_COORDINATOR` reach the service; other roles still receive `403 DRAFT_EDIT_FORBIDDEN`. The body is any subset of the editable fields plus `expectedRevision` (a positive whole number). Fields the caller may not change are refused server-side regardless of the client.
+
+| Status | Who may edit directly | Fields | Revision | Extra validation |
+| --- | --- | --- | --- | --- |
+| `DRAFT` | Owning organiser | All editable fields | Optional; checked if sent | KAN-34 draft rules |
+| `SUBMITTED`, `UNDER_REVIEW`, `CLARIFICATION_REQUESTED` | Owning organiser | All editable fields | Required | Merged request must pass submission validation |
+| `APPROVED`, `CONFIRMED` | Assigned coordinator | `name`, `description` | Required | Merged request must pass submission validation |
+| `REJECTED`, `CANCELLED`, `COMPLETED` | Nobody | — | — | — |
+
+Success returns `200` with the flat event record including `revision`. A save whose values equal the stored ones (dates compared as instants) returns the current record without a new revision or audit row. Each non-draft change writes one `event_request_edits` row in the same transaction; status and coordinator are never changed by an edit.
+
+| Error | When |
+| --- | --- |
+| `400 INVALID_DRAFT_UPDATE` | Body is not an object, has no editable field, contains an unknown or server-owned field (`status`, `coordinatorId`, `organiserId`, `revision`, ...) or a malformed value |
+| `400 EXPECTED_REVISION_REQUIRED` / `400 INVALID_INPUT` | Non-draft edit without `expectedRevision`, or a malformed one |
+| `400 SUBMISSION_INCOMPLETE` / `400 SUBMISSION_INVALID` | A non-draft edit would leave a required field empty or an invalid date order; same body shape as submission (`missingFields`, `fieldErrors`) |
+| `403 EDIT_ROLE_NOT_PERMITTED` | Related user at the wrong stage: the coordinator before approval, or the organiser editing name/description after approval |
+| `404 EVENT_REQUEST_NOT_FOUND` | Missing request, unrelated organiser or coordinator, or a coordinator addressing a draft |
+| `409 SIGNIFICANT_CHANGE_REQUIRED` | Significant field after approval; `fields` lists the refused fields. Use the KAN-15 change-request workflow |
+| `409 EVENT_REVISION_CONFLICT` | `expectedRevision` differs from the current revision; nothing is written |
+| `409 EVENT_NOT_EDITABLE` | Rejected, cancelled or completed event |
+
+Significant fields (KAN-15-AC102): `purpose`, `startsAt`, `endsAt`, `expectedAttendance`, `venueRequirements`, `accessibilityNeeds`, `equipmentRequirements`, `registrationRequired`, `registrationCapacity`, `registrationOpensAt`, `registrationClosesAt`.
+
+`GET /api/events/:id` additionally returns `revision` and three actions: `canEditDetails` (a non-draft direct edit is available to this viewer), `editMode` (`DRAFT`, `PRE_APPROVAL`, `PLANNING` or `null`) and `editableFields`. They advise the interface; the PATCH rechecks everything under the row lock.
+
+**Reviewer actions.** `POST /api/events/:id/start-review`, `POST /api/events/:id/clarifications` and `POST /api/events/:id/reviews` accept an optional `expectedRevision`. When it is sent and differs from the locked row, the action returns `409 EVENT_REVISION_CONFLICT` and records nothing. Requests without it behave as before. The coordinator review page sends the revision it displayed. The revision advances on every update of the event row, including status and assignment changes.
+
+**Frontend route.** `/events/:id/details` (`EventDetailsEditPage.vue`) loads the detail response, shows only `editableFields` and sends changed fields with `expectedRevision`. Organisers reach it from **Edit details** on `/events/:id`; assigned coordinators from **Edit name or description** on `/reviews/:id`.
+
+Database: [migration 014](../database-diagram.md#26-october-2026--migration-014-event-revisions-kan-66). Decisions: [D1–D4](../requirements/assumptions-and-questions.md#26-october-2026--kan-66-planning-edit-implementation-decisions).
+

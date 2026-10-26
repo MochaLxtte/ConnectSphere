@@ -584,3 +584,8 @@ sequenceDiagram
 ![Venue write ordering](exports/seq-venue-write-locking.png)
 
 Export generated from the source above on 25 October. State/notices commit atomically. This is an implementation diagram, not a manual acceptance result.
+
+## 26 October 2026 — KAN-66 planning edits
+
+The events component gains `planning-edit-policy.ts` (edit rules by status, role and relationship) used by the detail read and the PATCH write. `event_requests.revision` (migration 014) gives every writer an optimistic-concurrency token; edits and reviewer actions compare it under the existing row lock, so no new lock ordering is introduced. The class diagram, ERD and C3 exports do not yet show these additions; the combined re-export remains **pending**. See the [API contract](api-contract.md#kan-66-planning-edits-and-revisions--26-october-2026).
+

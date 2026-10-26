@@ -40,3 +40,10 @@ Current story ownership is unassigned for team selection; reviewers and integrat
 | --- | --- | --- | --- |
 | S4-E08 | [Current ownership snapshot](../../sprint-03/evidence/jira-ownership-state-2026-10-16.json) | Live Jira read on 16 October: all 28 unfinished parents are unassigned; Sprint 4 remains Future with 15 parents / 63 SP. Historical Done subtasks KAN-57/KAN-58 also have unassigned metadata. | Assignment metadata only; no sprint start, implementation, acceptance or estimate change. Earlier named allocation is history. |
 | S4-E09 | [Handover validation](../../sprint-03/evidence/handover-validation-2026-10-16.json) | Course-format Jira/export/card/case checks 17/17; 28 active cards, 299 criteria, 256 cases and 76 traceability rows. Workbook source refresh, saved readback, formulas, preserved formatting and changed views passed. Final link/whitespace results are in the artifact. | Planning artifacts only; future product tests and acceptance remain unexecuted/unassessed. |
+
+## KAN-66 automated verification — 26 October 2026
+
+| ID | Artifact | Source / result | Limits |
+| --- | --- | --- | --- |
+| S4-E10 | [KAN-66 coverage and run summary](../../../testing/coverage-reports/2026-10-26-kan66.txt) | `AUTO-20261026-KAN66-01` unit/component Pass with coverage; `AUTO-20261026-KAN66-02` browser fixtures, KAN-66 tests Pass, 156/161 overall with five environment/timing failures and a passing rerun of the timed-out spec | Uncommitted working tree on base `c849ebf`; PostgreSQL integration Not executed; no live authentication or acceptance |
+

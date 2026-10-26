@@ -22,7 +22,7 @@ This rebalanced allocation replaces the earlier 97/29 split with **63/63**, with
 | [KAN-14](https://smu-g7-grp1.atlassian.net/browse/KAN-14) | Register for an Event | 5 | Unassigned — team member to choose | To agree after owner chosen | Existing release backlog | S4-T08 |
 | [KAN-17](https://smu-g7-grp1.atlassian.net/browse/KAN-17) | Withdraw Attendee Registration | 2 | Unassigned — team member to choose | To agree after owner chosen | Existing release backlog | S4-T09 |
 | [KAN-67](https://smu-g7-grp1.atlassian.net/browse/KAN-67) | View Event Registrations | 2 | Unassigned — team member to choose | To agree after owner chosen | Existing release backlog | S4-T10 |
-| [KAN-66](https://smu-g7-grp1.atlassian.net/browse/KAN-66) | Update Event Information During Planning | 3 | Unassigned — team member to choose | To agree after owner chosen | Existing release backlog | S4-T11 |
+| [KAN-66](https://smu-g7-grp1.atlassian.net/browse/KAN-66) | Update Event Information During Planning | 3 | Irfan (assigned in Jira 26 October 2026) | To agree | Existing release backlog | S4-T11 |
 | [KAN-15](https://smu-g7-grp1.atlassian.net/browse/KAN-15) | Submit and Review Event Change Requests | 5 | Unassigned — team member to choose | To agree after owner chosen | Existing release backlog | S4-T12 |
 | [KAN-80](https://smu-g7-grp1.atlassian.net/browse/KAN-80) | Receive Equipment, Lifecycle, Change and Registration Notifications | 3 | Unassigned — team member to choose | To agree after owner chosen | Explicit original notification split | S4-T13 |
 | [KAN-82](https://smu-g7-grp1.atlassian.net/browse/KAN-82) | Manage each venue arrangement independently for an event | 5 | Unassigned — team member to choose | To agree after owner chosen | Customer change CR-3 | S4-T14 |
@@ -56,7 +56,7 @@ Every row requires its complete active criterion set plus applicable Definition 
 | S4-T08 | KAN-14: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC101, AC102, AC103, AC104 | TC-18-01, TC-18-02, TC-18-03, TC-18-04, TC-18-05, TC-18-06 | **Not executed** / Not recorded |
 | S4-T09 | KAN-17: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC101, AC102, AC103 | TC-18-07, TC-18-08, TC-18-09, TC-18-10, TC-18-11 | **Not executed** / Not recorded |
 | S4-T10 | KAN-67: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC101, AC102, AC103 | TC-18-12, TC-18-13, TC-18-14, TC-18-15, TC-18-16, TC-18-17 | **Not executed** / Not recorded |
-| S4-T11 | KAN-66: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC101, AC102, AC103 | TC-07-01, TC-07-02, TC-07-03, TC-07-04, TC-07-05 | **Not executed** / Not recorded |
+| S4-T11 | KAN-66: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC101, AC102, AC103 | TC-07-01, TC-07-02, TC-07-03, TC-07-04, TC-07-05 | **In progress (26 October 2026):** automated unit/component and browser-fixture runs Pass (`AUTO-20261026-KAN66-01`, `-02`); PostgreSQL integration suite **Not executed** (pending CI); local integrated acceptance **Not executed**; acceptance **Not assessed** |
 | S4-T12 | KAN-15: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC101, AC102, AC103, AC104, AC105 | TC-19-01, TC-19-02, TC-19-03, TC-19-04, TC-19-05, TC-19-06, TC-19-07, TC-19-08, TC-19-09 | **Not executed** / Not recorded |
 | S4-T13 | KAN-80: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9 | TC-20-21, TC-20-22, TC-20-23, TC-20-24, TC-20-25, TC-20-26, TC-20-27, TC-20-28, TC-20-29 | **Not executed** / Not recorded |
 | S4-T14 | KAN-82: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12 | TC-12-01, TC-12-02, TC-12-03, TC-12-04, TC-12-05, TC-12-06, TC-12-07, TC-12-08, TC-12-09, TC-12-10, TC-12-11, TC-12-12 | **Not executed** / Not recorded |
@@ -736,7 +736,7 @@ Implementation defaults: docs/scrum/sprint-03/planning.md and docs/requirements/
 
 ### KAN-66 — Update Event Information During Planning
 
-**Owner:** Unassigned — team member to choose · **Independent reviewer:** To agree after owner chosen · **Estimate:** 3 SP · **Jira status:** To Do · **Acceptance:** Not assessed · **Test group:** S4-T11
+**Owner:** Irfan (assigned in Jira 26 October 2026; subtasks KAN-107/108/109) · **Independent reviewer:** To agree · **Estimate:** 3 SP (unchanged) · **Jira status:** In Progress · **Acceptance:** Not assessed · **Test group:** S4-T11
 
 **User story:** As an authorised event manager, I want to update relevant event information during planning so that the event record remains accurate as arrangements are made.
 
@@ -756,7 +756,20 @@ Implementation defaults: docs/scrum/sprint-03/planning.md and docs/requirements/
 | **KAN-66-AC102** | For APPROVED or CONFIRMED events, ordinary direct editing is restricted to the assigned coordinator and to name/description; other planning requirement fields use KAN-15. | TC-07-03 |
 | **KAN-66-AC103** | Changes must preserve audit information and use an expected revision to reject stale overwrites; unauthorised fields are refused server-side, even if a client sends them. | TC-07-05 |
 
-**Implementation location:** Not recorded. **Automated test files:** Not recorded. Record real files when implemented; historical schema or removed code is not feature completion.
+**Implementation location (26 October 2026, branch `feat/KAN-66-planning-edits`):** `database/migrations/014_event_request_revisions.sql`; `backend/src/modules/events/planning-edit-policy.ts`, `update-draft.ts`, `draft-update-input.ts`, `draft-eligibility.ts`, `event-request-detail.ts`, `submitted-requests-router.ts`, `workflow-support.ts`, `review-input.ts`, `review-decision.ts`, `review-router.ts`, `clarifications.ts`, `clarification-router.ts`; `frontend/src/features/events/pages/EventDetailsEditPage.vue` (route `/events/:id/details`), `EventRequestDetailPage.vue`, `EventDraftEditPage.vue`, `api/event-requests.ts`, `api/clarifications.ts`, `components/ClarificationPanel.vue`, `components/EventPlanningPanels.vue`; `frontend/src/features/reviews/pages/ReviewRequestPage.vue`, `components/ReviewDecisionPanel.vue`, `types.ts`.
+
+**Automated test files:** `backend/test/events/planning-edit-policy.test.ts`, `update-event-request.test.ts`, `submitted-requests-router.test.ts`, `event-request-detail.test.ts`, `review-input.test.ts`, `review-router.test.ts`, `workflow-support.test.ts`; `database/tests/events/planning-edits.integration.test.ts`, `update-draft.integration.test.ts`; `frontend/src/features/events/pages/EventDetailsEditPage.test.ts`, `EventRequestDetailPage.test.ts`, `EventDraftEditPage.test.ts`, `api/event-requests.test.ts`, `components/ClarificationPanel.test.ts`; `frontend/src/features/reviews/pages/ReviewRequestPage.test.ts`; `tests/e2e/kan66-planning-edits.spec.ts`.
+
+**Implementation decisions (26 October 2026, approved by Irfan in the working session):** D1 integer `event_requests.revision` advanced by a trigger on every update; D2 `event_request_edits` audit table; D3 reviewer actions (start review, clarification request, initial decision) accept `expectedRevision`; D4 the existing `PATCH /api/events/:id` is extended rather than a new route. See the [decision log](../../requirements/assumptions-and-questions.md#26-october-2026--kan-66-planning-edit-implementation-decisions).
+
+**Acceptance dependency:** KAN-66-AC8 needs the KAN-15 review workflow. KAN-66 refuses significant fields after approval with `409 SIGNIFICANT_CHANGE_REQUIRED` and directs users to a reviewed change request; full AC8 acceptance is assessed together with KAN-15.
+
+| Test | 26 October 2026 status |
+| --- | --- |
+| Unit/component (`npm run check`) | Pass — `AUTO-20261026-KAN66-01` |
+| Browser fixtures (`tests/e2e/kan66-planning-edits.spec.ts`) | Pass — `AUTO-20261026-KAN66-02` (substituted API responses; not live integration) |
+| PostgreSQL integration (`planning-edits.integration.test.ts`) | **Not executed** — no isolated test database available locally; to run in CI |
+| Local integrated acceptance (AGENTS.md §5.12) | **Not executed** |
 
 <details>
 <summary>Preserved Jira description before self-selection (historical ownership)</summary>

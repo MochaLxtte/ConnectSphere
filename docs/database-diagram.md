@@ -21,6 +21,8 @@ erDiagram
     app_users |o..o{ coordinator_assignments : "assigned_by"
     app_users ||..o{ coordinator_assignments : "coordinator_id"
     event_requests ||..o{ coordinator_assignments : "event_request_id"
+    event_requests ||..o{ event_request_edits : "event_request_id"
+    app_users ||..o{ event_request_edits : "edited_by"
     app_users |o..o{ equipment_requests : "decided_by"
     equipment_types ||..o{ equipment_requests : "equipment_type_id"
     event_requests ||..o{ equipment_requests : "event_request_id"
@@ -85,6 +87,18 @@ erDiagram
         integer registration_capacity "nullable"
         timestamptz registration_opens_at "nullable"
         timestamptz registration_closes_at "nullable"
+        integer revision "migration 014"
+    }
+
+    event_request_edits {
+        uuid id PK
+        uuid event_request_id FK
+        integer revision "resulting revision"
+        uuid edited_by FK
+        text editor_role
+        text event_status
+        jsonb changes "field from/to"
+        timestamptz created_at
     }
 
     coordinator_assignments {
@@ -310,3 +324,10 @@ Arvin’s KAN-24 schema/ERD work merged in PR #10; its subsequently removed appl
 ## 25 October 2026 — Expiry scheduling verification
 
 No table, relationship or numbered migration changes in the closeout repair. The shared migration-013 checksum matches the repository. `pg_cron` 1.6.4 is now enabled with the named every-minute `public.expire_venue_holds()` job; successful runs were observed from 21:58 SGT. This is operational configuration, not a new application table or proof of an expiry journey with a test hold. See [configuration evidence](scrum/sprint-03/evidence/supabase-hold-expiry-20261025.json).
+
+## 26 October 2026 — Migration 014 event revisions (KAN-66)
+
+[014_event_request_revisions.sql](../database/migrations/014_event_request_revisions.sql) is additive. It adds `event_requests.revision` (integer, not null, default 1, at least 1); the `event_requests_advance_revision` `BEFORE UPDATE` trigger sets it to the previous value plus one on every update and ignores any written value. Writers compare a client's `expectedRevision` with the locked row. The new `event_request_edits` table records each post-submission edit: `revision` (the resulting revision, unique per event, at least 2), `edited_by` (`app_users`), `editor_role` (organiser or coordinator), `event_status` at the time of the edit and a non-empty `changes` object of `{ "<apiField>": { "from", "to" } }`. Rows cascade with their event. Row-level security is enabled and Data API roles have no privileges, matching the other application tables. Draft edits and status changes are not recorded here; status changes remain in `event_status_history`.
+
+Migration 014 has **not** been applied to shared Supabase; announce it to the team first (AGENTS.md §7.3). The PNG export `erd-planning.png` does not yet include it; the combined diagram re-export remains **pending** as recorded in the [architecture README](architecture/README.md).
+

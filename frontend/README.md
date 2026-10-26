@@ -158,3 +158,5 @@ The coordinator's event-review page links to its booking outcomes using `eventRe
 ## 25 October 2026 closeout corrections
 
 Venue Staff can decide a linked replacement for a confirmed event; ordinary confirmed bookings remain blocked. Hold deadlines use the buffered occupied start. Catalogue buffer warnings show event identity and readable reasons, and review timestamps use Singapore time. Component and fixture-based browser regressions pass; they do not replace the [manual retest](../docs/testing/README.md#25-october-2026--closeout-retest) on the current integrated app.
+
+**KAN-66 — 26 October 2026.** `/events/:id/details` (`EventDetailsEditPage.vue`) edits a submitted request (owner, before approval) or the name/description of an approved event (assigned coordinator). It shows only the fields listed in the detail response's `actions.editableFields`, sends changed fields with `expectedRevision`, and after `409 EVENT_REVISION_CONFLICT` disables saving and offers **Reload latest details**. The review page and clarification panel send the displayed revision with decisions, start review and questions.

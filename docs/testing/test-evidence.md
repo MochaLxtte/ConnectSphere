@@ -1721,3 +1721,24 @@ These rows express the reported successful outcomes of the supplied checklist; i
 The TC-14-308 transaction barriers and concurrent-operation orderings remain supported by the isolated PostgreSQL runs; the manual smoke report does not claim those barriers were run by hand. TC-14-311 separates the observable local workflow from that deterministic race case and from the cron-configuration-only TC-14-310. The automated repair results and SHA manifest are unchanged; no new automated run is asserted in this documentation update.
 
 This follow-up supersedes the earlier same-day pending repair-retest and deployed-URL actions. The fixes are complete locally. Commit/PR integration, explicit story review/closure decisions, team burndown evidence, agreed retrospective actions and the remaining Sprint 4 consumers retain their separate workflow and evidence requirements. No Jira status, historical Done date, story estimate or sprint velocity is changed here.
+
+## 26 October 2026 — KAN-66 planning edits automated runs
+
+**Runs:** `AUTO-20261026-KAN66-01` (unit/component, `npm run check` and workspace coverage) and `AUTO-20261026-KAN66-02` (browser fixtures). **Executor:** Claude Code (AI agent) in Irfan's working session. **Build:** uncommitted working tree on `feat/KAN-66-planning-edits`, based on `c849ebf`; the commit SHA is added when committed. **Environment:** local Windows 11 workstation, Node 24. Full output summary: [coverage report](coverage-reports/2026-10-26-kan66.txt).
+
+| Run | Command | Result |
+| --- | --- | --- |
+| AUTO-20261026-KAN66-01 | `npm run check`; `vitest run --coverage` per workspace | Pass — frontend 810 tests / 37 files, backend 1,414 / 48, typecheck and builds. Backend 91.17% statements / 92.80% branches; frontend 95.90% / 92.69%. |
+| AUTO-20261026-KAN66-02 | `npx playwright test --workers=2` | 156 passed / 5 failed of 161. All 3 KAN-66 tests passed. Rerun of `coordinator-reassignment.spec.ts` + `kan66-planning-edits.spec.ts` with one worker: 16/16 passed. |
+| PostgreSQL integration | `npm run test:integration` | **Not executed** — no isolated test database available locally (see below). |
+
+**AUTO-20261026-KAN66-02 failures, not caused by KAN-66.** The three `scaffold.spec.ts` checks (SCF-E2E-01/03/04) need the API's live database health check to report "Connected". No reachable migrated test database was configured on this workstation, and the API dev server also logged a failed hold-expiry run. Two `coordinator-reassignment.spec.ts` cases timed out in `page.goto` (30 s) under load and passed when rerun alone. These are recorded as observed and not hidden.
+
+**Coverage of new code.** `planning-edit-policy.ts`, `update-draft.ts`, `draft-update-input.ts`, `draft-eligibility.ts`, `review-input.ts` and `review-router.ts` are at 100% lines and branches; `EventDetailsEditPage.vue` at 100% lines / 92.69% branches. Remaining gaps in changed files are pre-existing lines (`event-request-detail.ts` date-null branches, router `next(error)` fallbacks, `workflow-support.ts` helpers). The `expectedRevision` checks added inside `review-decision.ts` and `clarifications.ts` are reached only by the PostgreSQL suite, so their execution is **Not executed** in this record.
+
+**Case-level results.** `test-executions.csv` rows `EX-07-01-A01` to `EX-07-06-A01` record Pass at the stated unit/component or browser-fixture boundary only; each row states that boundary. `EX-07-06-P01` and `EX-07-07-P01` are new Not executed placeholders for the PostgreSQL run. Earlier `EX-07-0x-P01` placeholders are retained.
+
+**Integration suite not executed.** The new `database/tests/events/planning-edits.integration.test.ts` (23 cases: migration 014 trigger and audit constraints, owner pre-approval edits, concurrent saves, significant-field refusals, venue-booking preservation, unauthorised edits, stale reviewer decision/start-review/clarification) has not run. Docker Desktop could not start an isolated PostgreSQL in reasonable time and was stopped. The shared Supabase database was not used: AGENTS.md §7.3 forbids cleanup-based tests there, and migration 013 re-schedules the named `pg_cron` hold-expiry job into each temporary test schema, which would break the live job once that schema is dropped. The suite runs in GitHub CI on the KAN-66 pull request.
+
+**Limitations.** Unit tests use fake database clients and browser tests substitute API responses; neither proves PostgreSQL locking, migration 014 or live authentication. Local integrated acceptance (§5.12), independent review and AC8 assessment with KAN-15 remain outstanding. No story acceptance, Done SP or Jira transition follows from these runs.
+

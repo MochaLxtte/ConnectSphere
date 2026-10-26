@@ -1,0 +1,35 @@
+ConnectSphere KAN-66 automated verification — 26 October 2026 (Asia/Singapore)
+Branch: feat/KAN-66-planning-edits
+Base: c849ebf (origin/main) plus uncommitted KAN-66 changes; commit SHA to be added when committed.
+Executor: Claude Code (AI agent) in Irfan's working session, local Windows 11 workstation, Node 24.
+
+AUTO-20261026-KAN66-01
+npm run check: PASS — root/workspace typecheck, frontend 810 tests/37 files, backend 1,414 tests/48 files, both builds.
+Workspace coverage (vitest --coverage, unit/component only):
+Backend: statements 91.17% (1704/1869), branches 92.80% (1277/1376), functions 90.44% (322/356), lines 91.37% (1537/1682).
+Frontend: statements 95.90% (2718/2834), branches 92.69% (3349/3613), functions 97.80% (669/684), lines 97.96% (2262/2309).
+New or changed KAN-66 files at 100% lines and branches: planning-edit-policy.ts, update-draft.ts, draft-update-input.ts,
+draft-eligibility.ts, review-input.ts, review-router.ts. EventDetailsEditPage.vue: lines 100%, branches 92.69%.
+Not 100%: event-request-detail.ts branches 89.18% (existing date-null branches 105-108); submitted-requests-router.ts
+98.42% (existing next(error) fallbacks 244, 291); workflow-support.ts lines 92.1% (existing readEventRequest and
+setEventStatus, exercised by PostgreSQL suites). The KAN-66 expectedRevision checks inside review-decision.ts and
+clarifications.ts are reached only by PostgreSQL integration tests, which were not executed in this run.
+
+AUTO-20261026-KAN66-02
+npx playwright test --workers=2: 156 passed / 5 failed of 161 (Chromium headless shell 1243; API responses substituted).
+The 3 KAN-66 tests in tests/e2e/kan66-planning-edits.spec.ts passed.
+Failures, not caused by KAN-66: scaffold.spec.ts SCF-E2E-01/03/04 expect the live database health check to report
+"Connected"; no reachable migrated test database was configured locally, and the API dev server log also reported
+"Venue hold expiry run failed; it will be retried." coordinator-reassignment.spec.ts (SUBMITTED, UNDER_REVIEW) hit the
+30 s page.goto timeout under load.
+Rerun: npx playwright test coordinator-reassignment.spec.ts kan66-planning-edits.spec.ts --workers=1: 16/16 passed.
+
+Not executed: npm run test:integration (database/tests/**, including the new planning-edits.integration.test.ts with
+23 cases). Docker Desktop could not start an isolated PostgreSQL in reasonable time on this workstation and was stopped.
+The shared Supabase database was deliberately not used: AGENTS.md section 7.3 forbids cleanup-based tests there, and
+migration 013 re-schedules the named pg_cron hold-expiry job into each temporary test schema, which would break the live
+job once that schema is dropped. The suite is expected to run in GitHub CI (.github/workflows/ci.yml, PostgreSQL 17).
+
+Limitations: unit tests use fake database clients; browser tests substitute API responses. Neither proves PostgreSQL
+locking, migration 014 or live authentication. Local integrated acceptance (AGENTS.md section 5.12) and independent
+review are outstanding. No story acceptance or Done SP is inferred.
