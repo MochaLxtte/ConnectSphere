@@ -90,6 +90,9 @@ onBeforeUnmount(() => controller?.abort());
 
   <div v-else-if="state.status === 'not-editable'" class="panel edit-panel" role="alert">
     <p>This request is no longer a draft and can no longer be edited here.</p>
+    <!-- KAN-66: a submitted request may still be edited, with submission rules, until approval. -->
+    <RouterLink v-if="state.request.actions.canEditDetails" :to="`/events/${state.request.id}/details`"
+      class="button button-primary">Edit submitted details</RouterLink>
     <RouterLink :to="`/events/${state.request.id}`" class="button button-secondary">View request</RouterLink>
   </div>
 

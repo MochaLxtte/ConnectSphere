@@ -46,16 +46,28 @@ export interface ReviewRequestDetail {
   accessibilityNeeds: string | null;
   equipmentRequirements: string | null;
   registrationRequired: boolean | null;
+  registrationCapacity?: number | null;
+  registrationOpensAt?: string | null;
+  registrationClosesAt?: string | null;
+  /** KAN-66: sent back as `expectedRevision` so stale edits and decisions are refused. */
+  revision?: number;
   createdAt: string;
   updatedAt: string;
   review: RecordedReview | null;
-  actions: { canEditDraft: boolean; canMakeInitialDecision: boolean };
+  actions: {
+    canEditDraft: boolean;
+    canMakeInitialDecision: boolean;
+    /** KAN-66: a post-submission edit is available to this viewer now. */
+    canEditDetails?: boolean;
+    editMode?: 'DRAFT' | 'PRE_APPROVAL' | 'PLANNING' | null;
+    editableFields?: string[];
+  };
 }
 
 /** The request ID selects the URL; only input belongs in the POST body. */
 export interface ReviewSubmission {
   eventRequestId: string;
-  input: { decision: ReviewDecision; reason: string | null };
+  input: { decision: ReviewDecision; reason: string | null; expectedRevision?: number };
 }
 
 /** Scope feedback to its request so a late response cannot affect another open request. */

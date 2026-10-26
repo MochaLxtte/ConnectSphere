@@ -187,6 +187,10 @@ onBeforeUnmount(() => controller?.abort());
           </ul>
         </div>
       </div>
+      <!-- KAN-66-AC101: the owner may edit a submitted request until it is approved. -->
+      <div v-else-if="state.request.actions.canEditDetails" class="draft-actions">
+        <RouterLink :to="`/events/${state.request.id}/details`" class="button button-secondary">Edit details</RouterLink>
+      </div>
     </section>
 
     <section class="panel detail-panel outcome-panel" aria-labelledby="review-outcome-heading">

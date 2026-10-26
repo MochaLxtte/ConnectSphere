@@ -27,7 +27,10 @@ const canAnswer = computed(() => props.isOwner === true && props.status === 'CLA
 async function ask() {
   const text = message.value.trim();
   if (!text) return;
-  if (await run(() => requestClarification(props.eventRequestId, text), 'Your question was sent to the organiser.')) {
+  if (await run(
+    () => requestClarification(props.eventRequestId, text, undefined, props.revision),
+    'Your question was sent to the organiser.',
+  )) {
     message.value = '';
   }
 }
@@ -42,7 +45,7 @@ async function answer(clarificationId: string) {
 }
 
 function beginReview() {
-  return run(() => startReview(props.eventRequestId), 'The request is now under review.');
+  return run(() => startReview(props.eventRequestId, undefined, props.revision), 'The request is now under review.');
 }
 </script>
 

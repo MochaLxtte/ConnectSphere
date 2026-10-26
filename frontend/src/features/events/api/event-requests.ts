@@ -153,6 +153,18 @@ export function updateDraft(
   return sendJson<SavedEventRequest>('PATCH', `/api/events/${encodeURIComponent(id)}`, changes, signal);
 }
 
+/**
+ * KAN-66: edit a submitted or approved request. The server applies the role/stage field rules,
+ * so send only changed fields and the revision the user was shown; a stale revision returns 409.
+ */
+export function updateEventDetails(
+  id: string, changes: Partial<EventDraftInput>, expectedRevision: number, signal?: AbortSignal,
+): Promise<SavedEventRequest & { revision: number }> {
+  return sendJson<SavedEventRequest & { revision: number }>(
+    'PATCH', `/api/events/${encodeURIComponent(id)}`, { ...changes, expectedRevision }, signal,
+  );
+}
+
 /** CF-02: submit an owned draft. Throws SubmissionIncompleteError when fields are still missing. */
 export function submitRequest(id: string, signal?: AbortSignal): Promise<SavedEventRequest> {
   return sendJson<SavedEventRequest>('POST', `/api/events/${encodeURIComponent(id)}/submit`, {}, signal);
