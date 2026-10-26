@@ -1,0 +1,36 @@
+
+ RUN  v4.1.11 C:/Users/trist/Documents/School Stuff/Y3S1/IS212/ConnectSphere
+
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > reserves the full saved quantity independently of venue approval and persists one decision plus recipient notices 83ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > serializes competing events and reserves at most operational stock 58ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > makes concurrent retries on the same line idempotent without duplicate notices 42ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > manually cancels once, preserves the reservation decision and never increments stock 84ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > releases on actual cancellation and completion transitions once, preserving other events and unknown actors 158ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > allows exact half-open adjacency and refuses a one-microsecond overlap 80ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > uses peak simultaneous consumption rather than summing disjoint reservations 92ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > requires every active full line and current stock for readiness, without treating empty requirements as ready 78ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > refuses stale saved requirements without overwriting a newer quantity or creating notifications 58ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > refuses old successful reserve and cancellation replays after another saved requirement changes 128ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > refuses partial quantity overrides, invalid stored periods, missing assignment and non-approved events 94ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > rechecks role permissions in PostgreSQL and hides another event line from the requested event 170ms
+stderr | database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > rolls back the decision and every notice if a deferred notification constraint fails at commit
+Unexpected API error.
+
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > rolls back the decision and every notice if a deferred notification constraint fails at commit 116ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > enforces release metadata completeness and preserves original decision, allocation and release history 276ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > applies operational and eligibility guards to direct database reservation writes too 72ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > serializes a simultaneous terminal transition with reservation without leaving terminal stock committed 32ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > serializes manual cancellation and event completion while retaining exactly one release cause 70ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > rechecks damage after waiting for a concurrent stock writer 70ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > rechecks deactivation after waiting for a concurrent stock writer 55ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > notifies the current coordinator after waiting for a reassignment transaction 72ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > refuses a demoted assigned coordinator without recording a reservation or undeliverable confirmation 66ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > limits equipment notifications to their recipients and current permissions, including terminal historical acknowledgements 193ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > uses bigint capacity checks at the PostgreSQL integer limit without overflowing the total demand 86ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > serializes competing direct database allocations through the migration guard 25ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > rolls back terminal release metadata and status history together when the surrounding transaction fails 66ms
+
+ Test Files  1 passed (1)
+      Tests  25 passed (25)
+   Start at  14:40:36
+   Duration  4.45s (transform 359ms, setup 0ms, import 1.72s, tests 2.59s, environment 0ms)

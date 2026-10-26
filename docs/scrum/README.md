@@ -1,5 +1,7 @@
 # Scrum evidence
 
+**26 October 2026 equipment development follow-up:** Sprint 4 KAN-26 is In Progress on a local branch containing KAN-9. [Current card and acceptance boundary](sprint-04/sprint-backlog.md#kan-26--reserve-equipment) distinguish automated verification, pending shared migration 015 and unperformed integrated tests. This update does not change the recorded administrative Future sprint or closed-sprint outcomes.
+
 **26 October 2026 KAN-9 development:** the authorised Sprint4 equipment checker is implemented on a local feature branch. KAN-9 is In Progress / Tristan; KAN-26 is To Do / Tristan. [S4-E10](sprint-04/evidence/README.md#kan-9-equipment-availability--26-october-2026) records automated verification and unperformed integrated acceptance. This targeted development update does not replace the dated administrative snapshots or claim a new sprint ceremony.
 
 ## Acceptance and closure inputs — 26 October 2026

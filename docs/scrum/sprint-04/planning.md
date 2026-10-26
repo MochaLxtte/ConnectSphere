@@ -1,5 +1,7 @@
 # Sprint 4 planning
 
+**26 October 2026 implementation follow-up:** the approved KAN-26 plan retains 3 SP, with full saved-line reservation, audited manual cancellation and terminal-event release protection. AC105–108 clarify cancellation, idempotency, readiness and scoped staff confirmation. KAN-9 local commits are included; KAN-18/KAN-63/KAN-62/KAN-10 UI integration remains pending. Ownership remains Tristan for KAN-9/KAN-26, independent reviewer **To agree**. This is an implementation refinement, not a new planning meeting or estimate change.
+
 **26 October 2026 ownership/refinement update:** Tristan selected KAN-9 (8 SP) and KAN-26 (3 SP), an11SP pair. KAN-9 development is authorised and In Progress; KAN-26 remains To Do. Independent reviewers are **To agree**. The approved unsaved-check and migration 014 choices are in the [decision log](../../requirements/assumptions-and-questions.md#26-october-2026--kan-9-equipment-availability-boundary). No sprint-start meeting, vote, estimate change or acceptance is inferred.
 
 **Estimation status:** The current 63-SP allocation is a planning baseline. Team confirmation of relative estimates, capacity and the sprint commitment is **To agree**; no planning-poker vote is recorded. The 10 to 11 SP selection target is guidance, not an individual quota. Keep existing estimates until a team-agreed change is logged.

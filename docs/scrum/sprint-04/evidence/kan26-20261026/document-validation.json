@@ -1,0 +1,20 @@
+{
+  "date": "2026-10-26",
+  "criteria_mapped": 15,
+  "KAN26_specifications": 18,
+  "historical_execution_rows_preserved": 807,
+  "new_case_results": 11,
+  "manual_cases_untouched_by_automated_passes": [
+    "TC-17-01",
+    "TC-17-03",
+    "TC-17-04",
+    "TC-17-05",
+    "TC-17-06",
+    "TC-17-07",
+    "TC-17-08"
+  ],
+  "existing_source_test_paths_checked": 18,
+  "new_markdown_file_links_checked": 24,
+  "source_manifest_files_verified": 24,
+  "result": "Pass"
+}

@@ -1,5 +1,7 @@
 # Product backlog
 
+**26 October 2026 KAN-26 follow-up:** KAN-26 is **In Progress / Tristan / 3 SP**, with unestimated KAN-104/105/106 subtasks In Progress. Local `feat/KAN-26-equipment-reservations` includes the seven KAN-9 commits and adds full saved-request reservation, audited cancellation, scoped notifications and automatic database release on terminal event transitions. Migration 015 is prepared; shared application, integrated acceptance, review and merge remain pending. Migration 014 and test-account setup were reported complete. [Verification](../testing/test-evidence.md#26-october-2026--kan-26-equipment-reservations) keeps automated results separate from manual **Not executed**. Scope, estimates and Done dates are unchanged; this follow-up supersedes the earlier KAN-26 To Do observation below.
+
 **26 October 2026 equipment update:** KAN-9 is In Progress / Tristan (8 SP), with local implementation and AUTO-20261026-KAN9-01 verification. KAN-26 is selected by Tristan and remains To Do (3 SP). Subtasks KAN-101/102/103 are In Progress and unestimated. AC104–107 clarify the approved read-only/saved/unsaved boundary; see the [Sprint 4 card](../scrum/sprint-04/sprint-backlog.md#kan-9--check-equipment-availability-for-an-event). Manual acceptance, migration 014 on shared Supabase, review and merge remain pending. The174SP parent inventory, sprint totals, historical records and Done dates are unchanged.
 
 **Acceptance confirmation — 26 October 2026:** [current review records](../scrum/README.md#acceptance-and-closure-inputs--26-october-2026) now contain the team's collective review decisions: Sprint 1 24 accepted / 8 carried SP; Sprint 2 24 accepted / 19 carried SP; Sprint 3 all 13 stories / 63 SP accepted with no carry-over. The report dates and historical decision dates are separate. Sprint 3's later reproduced failures and repairs remain visible; its historical reviewed build and independent DoD assessment remain unavailable. Jira snapshot statuses, original estimates and administrative resolution dates below are preserved rather than overwritten with reported acceptance dates. Closing-board evidence, review feedback and team-prepared charts remain to be supplied.
@@ -59,7 +61,7 @@ Jira Done/resolution dates are administrative values, not proof of acceptance or
 | High | [KAN-18](https://smu-g7-grp1.atlassian.net/browse/KAN-18) | Update Equipment Availability Status | CF-16 | 3 | To Do | Sprint 4 | Not resolved | Unassigned | blocks: KAN-9; relates to: KAN-80 |
 | Highest | [KAN-24](https://smu-g7-grp1.atlassian.net/browse/KAN-24) | Setup Database | Infrastructure | 5 | Done | Sprint 1 | 2026-09-21 | Arvin | None recorded |
 | Highest | [KAN-25](https://smu-g7-grp1.atlassian.net/browse/KAN-25) | User Authorisation and Authentication | CF-01 | 5 | Done | Sprint 1 | 2026-09-21 | Ryan | relates to: KAN-79; relates to: KAN-84 |
-| High | [KAN-26](https://smu-g7-grp1.atlassian.net/browse/KAN-26) | Reserve Equipment | CF-17 | 3 | To Do | Sprint 4 | Not resolved | Tristan | is blocked by: KAN-9; relates to: KAN-63; blocks: KAN-61; relates to: KAN-84; relates to: KAN-80 |
+| High | [KAN-26](https://smu-g7-grp1.atlassian.net/browse/KAN-26) | Reserve Equipment | CF-17 | 3 | In Progress | Sprint 4 | Not resolved | Tristan | is blocked by: KAN-9; relates to: KAN-63; blocks: KAN-61; relates to: KAN-84; relates to: KAN-80 |
 | Medium | [KAN-27](https://smu-g7-grp1.atlassian.net/browse/KAN-27) | Request Clarification on an Event Request | CF-04 | 3 | Done | Sprint 1 | 2026-09-21 | Irfan | None recorded |
 | Medium | [KAN-29](https://smu-g7-grp1.atlassian.net/browse/KAN-29) | Automatically Assign Event Coordinator | CF-05 | 3 | Done | Sprint 2 | 2026-10-04 | Tristan | relates to: KAN-65; relates to: KAN-79 |
 | Medium | [KAN-31](https://smu-g7-grp1.atlassian.net/browse/KAN-31) | Create Event Request | CF-02 | 3 | Done | Sprint 1 | 2026-09-21 | Ernest | None recorded |
@@ -403,6 +405,8 @@ The cards below define the remaining scope before selection into a future sprint
 **Refinement:** Agree interval boundaries and reservation states that consume quantities. Availability is checked again when reserving; an earlier positive check is not a guarantee against intervening reservations. Equipment location does not restrict allocation under the recorded rule.
 
 ### KAN-26 — Reserve Equipment
+
+**26 October current implementation:** the active [Sprint 4 card](../scrum/sprint-04/sprint-backlog.md#kan-26--reserve-equipment) now resolves the planning questions below: full saved REQUESTED quantities on APPROVED events, operational-capacity locking, audited manual cancellation and terminal release. It retains 3 SP and links current ACs, tests and pending integration; the earlier refinement text below remains source history.
 
 **User story:** As a Technical Support Staff member, I want to reserve available equipment for an event so that its quantity remains committed to that event during the required period.
 
