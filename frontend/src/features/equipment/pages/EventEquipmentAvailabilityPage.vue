@@ -7,6 +7,7 @@ import { eventStatusLabel, formatEventTime } from '../../events/presentation';
 import { assessEquipmentAvailability, fetchEquipmentContext,
   type EquipmentAvailabilityAssessment, type EquipmentAvailabilityContext } from '../api/equipment-availability';
 import { equipmentInputTime, equipmentWhatIfInput, type EquipmentInputRow } from '../availability-form';
+import EquipmentReservationPanel from './EquipmentReservationPanel.vue';
 
 type State = { status: 'idle' | 'loading' } | { status: 'ready'; context: EquipmentAvailabilityContext }
   | { status: 'error'; message: string; retryable: boolean };
@@ -19,6 +20,7 @@ const startsAt = ref(''), endsAt = ref('');
 const rows = ref<EquipmentInputRow[]>([]);
 const submitted = ref(false);
 const assessing = ref(false);
+const reservationPending = ref(false), sourceNeedsRefresh = ref(false);
 const assessment = ref<EquipmentAvailabilityAssessment | null>(null);
 const errorMessage = ref<string | null>(null), notice = ref<string | null>(null);
 let readController: AbortController | undefined;
@@ -26,7 +28,7 @@ let checkController: AbortController | undefined;
 const form = computed(() => equipmentWhatIfInput(startsAt.value, endsAt.value, rows.value,
   state.value.status === 'ready' ? state.value.context.equipmentTypes : [],
   state.value.status === 'ready' ? state.value.context.requirementsVersion : ''));
-const canCheck = computed(() => !assessing.value && state.value.status === 'ready'
+const canCheck = computed(() => !assessing.value && !reservationPending.value && !sourceNeedsRefresh.value && state.value.status === 'ready'
   && state.value.context.equipmentTypes.length > 0
   && (mode.value === 'what-if' || state.value.context.savedRequests.length > 0));
 const fulfillable = computed(() => assessment.value?.outcome === 'FULFILLABLE' && assessment.value.items.length > 0
@@ -45,6 +47,7 @@ function showReadError(error: unknown) {
 }
 async function load(message: string | null = null) {
   readController?.abort(); discardAssessment();
+  reservationPending.value = false; sourceNeedsRefresh.value = false;
   state.value = { status: 'idle' }; submitted.value = false;
   rows.value = []; startsAt.value = ''; endsAt.value = ''; notice.value = message;
   if (authSession.loading || authSession.user?.role !== 'TECHNICAL_SUPPORT_STAFF' || !eventId.value) return;
@@ -61,6 +64,28 @@ async function load(message: string | null = null) {
     if (current.signal.aborted) return;
     if (error instanceof ApiError && error.status === 401) { clearLocalSession(); return; }
     showReadError(error);
+  }
+}
+function invalidateReservationSource() {
+  reservationPending.value = true; sourceNeedsRefresh.value = true; discardAssessment();
+}
+async function refreshAfterReservation() {
+  reservationPending.value = false;
+  readController?.abort(); discardAssessment();
+  if (authSession.loading || authSession.user?.role !== 'TECHNICAL_SUPPORT_STAFF' || !eventId.value) return;
+  const current = new AbortController(); readController = current;
+  try {
+    const context = await fetchEquipmentContext(eventId.value, current.signal);
+    if (current.signal.aborted) return;
+    state.value = { status: 'ready', context }; sourceNeedsRefresh.value = false;
+    mode.value = context.savedRequests.length ? 'saved' : 'what-if';
+    rows.value = [{ equipmentTypeId: '', quantity: '' }]; submitted.value = false;
+    startsAt.value = equipmentInputTime(context.event.startsAt); endsAt.value = equipmentInputTime(context.event.endsAt);
+  } catch (error) {
+    if (current.signal.aborted) return;
+    if (error instanceof ApiError && error.status === 401) { clearLocalSession(); return; }
+    if (error instanceof ApiError && [403, 404].includes(error.status)) showReadError(error);
+    else notice.value = 'The reservation action finished, but availability information could not be refreshed. Refresh equipment information before checking again.';
   }
 }
 async function check() {
@@ -133,6 +158,7 @@ onBeforeUnmount(() => { readController?.abort(); checkController?.abort(); });
         </li>
       </ul>
     </section>
+    <EquipmentReservationPanel :event-id="eventId" @invalidate="invalidateReservationSource" @settled="refreshAfterReservation" />
     <form class="panel equipment-panel" novalidate @submit.prevent="check">
       <h2>Choose what to check</h2>
       <fieldset class="mode-options"><legend>Check mode</legend>
