@@ -1,6 +1,6 @@
-# Equipment availability (KAN-9 / CF-16)
+# Equipment availability and reservations (KAN-9 / CF-16, KAN-26 / CF-17)
 
-Technical Support Staff can assess equipment for an `APPROVED` or `CONFIRMED` event independently of venue confirmation. The implementation is read-only. It does not save requests, reserve stock, change event status, create history or send notifications. Stock maintenance (KAN-18), request editing/review (KAN-63) and operational-capacity reservation writes (KAN-26) remain separate pending workflows.
+Technical Support Staff can assess equipment for an `APPROVED` or `CONFIRMED` event independently of venue confirmation. KAN-9 checks are read-only: they do not save requests, reserve stock, change event status, create history or send notifications. KAN-26 separately reserves complete saved requests or cancels existing reservations on an `APPROVED` event. Stock maintenance (KAN-18), request creation/editing/review (KAN-63), event cancellation (KAN-62) and completion (KAN-10) remain separate workflows.
 
 | File | Responsibility |
 | --- | --- |
@@ -9,6 +9,9 @@ Technical Support Staff can assess equipment for an `APPROVED` or `CONFIRMED` ev
 | `availability-rules.ts` | Half-open simultaneous-reservation peak and operational/available/shortfall calculations |
 | `availability-service.ts` | Role enforcement, parameterized single-statement SQL snapshots, source versions and saved-request reconciliation |
 | `availability-router.ts` | Three authenticated routes, UUID checks and standard workflow error mapping |
+| `reservation-types.ts`, `reservation-input.ts` | Saved-line/readiness DTOs and strict version/reason input validation |
+| `reservation-service.ts` | Full saved-request reservation, reasoned cancellation, current-stock readiness, locking and same-transaction notifications |
+| `reservation-router.ts` | Technical Support context, reserve and cancel endpoints |
 
 ## API and permissions
 
@@ -27,9 +30,25 @@ One SQL statement reads the event, saved lines, catalogue and relevant reservati
 
 ## Migration and dependent integration
 
-Migration `014_equipment_operational_quantities.sql` adds nonnegative, non-null damaged and maintenance quantities with default zero and a combined loss limit against total stock. It preserves existing records. It has been tested only on disposable PostgreSQL schemas; shared application and manual acceptance are **Not executed**. Coordinate with the team before applying it and use a provisioned Technical Support Supabase login mapped to `app_users`.
+Migration `014_equipment_operational_quantities.sql` adds nonnegative, non-null damaged and maintenance quantities with default zero and a combined loss limit against total stock. It preserves existing records. Automated checks used disposable PostgreSQL schemas. The user subsequently reported 014 and test-account setup complete; manual acceptance remains **Not executed**. Coordinate with the team before applying it and use a provisioned Technical Support Supabase login mapped to `app_users`.
 
-The historical migration-005 reservation trigger still protects total quantity. KAN-26 must implement a fresh operational-capacity check under the equipment-pool lock before reserving. An advisory KAN-9 result is never permission to reserve later without another check. KAN-18/KAN-63/KAN-26 integration remains pending.
+Migration `015_equipment_reservations.sql` replaces the historical migration-005 total-capacity trigger with live operational-capacity protection, adds release audit fields and a notification link, and releases reservations on terminal event transitions. An advisory KAN-9 result is never permission to reserve later without another check. Migration 014/account setup is reported complete. Shared 015 application and connected manual acceptance are **Not executed**; coordinate 015 before using the matching API. KAN-18/KAN-63 integration remains pending.
+
+## Saved reservations (KAN-26)
+
+`GET /api/equipment/reservations/events/:id` returns the same minimal eligible-event projection, `requirementsVersion`, all saved `requests` including retained `CANCELLED` rows, and `readiness`. It adds decision/release metadata and `canReserve`/`canCancel` flags without granting general event-detail access. `CONFIRMED` events are read-only.
+
+- `POST /api/equipment/reservations/events/:id/requests/:requestId/reserve` accepts only `{ requirementsVersion }`. It changes one `REQUESTED` line to `RESERVED` for its full positive whole saved quantity and exact current event period. The event must be `APPROVED` and have an assigned profile whose current role is `EVENT_COORDINATOR`. Venue state is not a precondition. Unsaved what-if inputs are never accepted here.
+- `POST /api/equipment/reservations/events/:id/requests/:requestId/cancel` accepts only `{ requirementsVersion, reason }`; a trimmed reason of 1–2,000 characters is required. It changes one `RESERVED` line to `CANCELLED`, preserving its original allocation and decision while adding release actor/time/reason/cause. Editing quantity, period, type, stock or rejection is outside these endpoints.
+- Both return `{ changed, context }`. A repeat returns `changed: false` only when its version matches the current source or the exact reconstructed pre-action source; cancellation must also repeat the recorded reason. An intervening source change still returns `409 EQUIPMENT_CONTEXT_CHANGED`. A retry never adds stock or sends another notice.
+
+Writes lock and validate the trusted Technical Support profile inside the transaction, then lock event → assigned coordinator profile (reserve only) → equipment pools in UUID order → saved lines in UUID order. The coordinator role is rechecked under its profile lock before a new reservation. Operational capacity and competing reservations are read **after** the locks. Availability uses peak half-open overlap and current losses/activation. Stock conflict returns `409 EQUIPMENT_STOCK_CONFLICT` with no partial reservation. A notification insert failure rolls back the reservation. The database trigger independently protects new reservations, including SQL callers.
+
+Readiness is derived on every read: `NO_REQUIREMENTS` for zero active lines (not an explicit Not Required decision); `INVALID_REQUIREMENTS` for invalid/mismatched saved quantities or periods; `SHORTFALL` if current operational stock cannot cover all active demand; `PENDING` until every active line is reserved; otherwise `READY`. `REQUESTED` and `REJECTED` lines remain active demand; `CANCELLED` lines are excluded. Existing reservations are retained after stock loss, so an all-reserved event can still report `SHORTFALL`.
+
+Migration 015's event-status trigger changes only live `RESERVED` rows to `CANCELLED` when an event actually transitions to `CANCELLED` or `COMPLETED`. Release time/cause/reason are retained; the actor comes from the transaction's `app.actor_id` when supplied. Repeating the terminal status does nothing, and no stock counter is incremented. Old cancellations keep their original null metadata. KAN-62/KAN-10 must connect their future lifecycle APIs to this existing trigger; their user workflows are not implemented by KAN-26.
+
+The KAN-80 slice here is `EQUIPMENT_RESERVED`: the assigned coordinator and acting Technical Support user each receive one in-app notice in the same transaction. The Technical Support link goes only to `/equipment/availability/:id` while the event is eligible; after a terminal transition its acknowledgement remains with no link. Other equipment/lifecycle notification triggers remain KAN-80 work.
 
 ## Verification
 
@@ -37,5 +56,6 @@ The historical migration-005 reservation trigger still protects total quantity. 
 - `database/tests/equipment/availability.integration.test.ts`: real PostgreSQL and HTTP with substituted trusted identity; calculations, source/stock/deactivation changes, exact microseconds, saved exclusions, refusals and no-write checks, including a PostgreSQL read-only session.
 - `database/tests/database.integration.test.ts`: migration 014 fresh/upgrade defaults, retained records/history, constraints and unchanged Data API restrictions.
 - `frontend/src/features/equipment/`: API, form and component tests; `tests/e2e/equipment-availability.spec.ts`: browser flows with substituted API responses.
+- `backend/test/equipment/reservation-*.test.ts`: reservation input/service/HTTP and transactional notification rules; `database/tests/equipment/reservations.integration.test.ts`: real stock races, atomic writes, history, idempotency, terminal release and notification visibility. `tests/e2e/equipment-reservations.spec.ts` covers the saved-reservation UI with explicitly mocked authenticated API responses and separate live unauthenticated refusal checks.
 
 Run the root check/coverage commands and dedicated-database integration/browser commands from [AGENTS.md](../../../../AGENTS.md). [Test evidence](../../../../docs/testing/test-evidence.md) records `AUTO-20261026-KAN9-01` and its actual boundaries. Mocked browser flows do not establish connected local acceptance; use the maintained manual specifications and append actual executions separately.

@@ -14,7 +14,7 @@ The base diagram records the schema through migration 009 on 21 October 2026; la
 
 Relationship labels name the foreign-key column in the child table. `||` means exactly one parent, `|o` means zero or one parent, and `o{` means zero or more child rows.
 
-**26 October KAN-9 update:** the equipment type below now includes `damaged_quantity` and `maintenance_quantity` from additive migration 014. Both default to zero, cannot be negative and together cannot exceed total stock. Existing stock, requests and reservation history are preserved. The repository model and isolated migration tests include 014; its shared Supabase application is **Not executed**. KAN-9 uses these fields for read-only operational availability; KAN-18/KAN-63/KAN-26 write workflows remain pending.
+**26 October KAN-9 update:** the equipment type below now includes `damaged_quantity` and `maintenance_quantity` from additive migration 014. Both default to zero, cannot be negative and together cannot exceed total stock. Existing stock, requests and reservation history are preserved. The repository model and isolated migration tests include 014. At the initial KAN-9 checkpoint, shared application and the write workflows were pending. The later 26 October follow-up reports 014 and test accounts ready; KAN-26 is now covered by the separate migration-015 section below, while KAN-18/KAN-63 remain pending.
 
 ## Application tables
 
@@ -24,6 +24,7 @@ erDiagram
     app_users ||..o{ coordinator_assignments : "coordinator_id"
     event_requests ||..o{ coordinator_assignments : "event_request_id"
     app_users |o..o{ equipment_requests : "decided_by"
+    app_users |o..o{ equipment_requests : "released_by"
     equipment_types ||..o{ equipment_requests : "equipment_type_id"
     event_requests ||..o{ equipment_requests : "event_request_id"
     app_users ||..o{ equipment_requests : "requested_by"
@@ -43,6 +44,7 @@ erDiagram
     event_requests |o..o{ notifications : "event_request_id"
     app_users ||..o{ notifications : "recipient_id"
     venue_bookings |o..o{ notifications : "venue_booking_id"
+    equipment_requests |o..o{ notifications : "equipment_request_id"
     app_users |o..o{ venue_bookings : "decided_by"
     app_users |o..o{ venue_bookings : "held_by"
     app_users |o..o{ venue_bookings : "cancelled_by"
@@ -224,6 +226,10 @@ erDiagram
         uuid decided_by FK "nullable"
         timestamptz decided_at "nullable"
         text decision_reason "nullable"
+        timestamptz released_at "nullable, migration 015"
+        uuid released_by FK "nullable, migration 015"
+        text release_reason "nullable, retained"
+        text release_cause "nullable, manual or terminal release"
         timestamptz created_at
         timestamptz updated_at
     }
@@ -256,6 +262,7 @@ erDiagram
         uuid recipient_id FK
         uuid event_request_id FK "nullable"
         uuid venue_booking_id FK "nullable, migration 008"
+        uuid equipment_request_id FK "nullable, migration 015"
         text dedupe_key "nullable, unique with recipient_id, migration 008"
         text type
         text title
@@ -320,4 +327,14 @@ No table, relationship or numbered migration changes in the closeout repair. The
 
 Migration `014_equipment_operational_quantities.sql` adds two `integer NOT NULL DEFAULT 0` columns to `equipment_types`. `damaged_quantity >= 0`, `maintenance_quantity >= 0`, and `damaged_quantity::bigint + maintenance_quantity::bigint <= total_quantity::bigint` are database constraints. The widened sum avoids integer-overflow bypasses. No table, relationship, policy, trigger or existing reservation is removed or rewritten.
 
-The derived assessment is not a stored table. For an active type it subtracts damaged and maintenance quantities, then peak simultaneous `RESERVED` demand in a half-open period; inactive types have zero operational stock. Saved mode excludes only the exact reserved lines under assessment. Unsaved mode excludes none. Both preserve requests, event status/history and notifications. Migration 005 still enforces historical total-capacity reservations; KAN-26 must add operational-capacity revalidation under the pool lock. Shared migration 014 application and connected manual checks are **Not executed**.
+The derived assessment is not a stored table. For an active type it subtracts damaged and maintenance quantities, then peak simultaneous `RESERVED` demand in a half-open period; inactive types have zero operational stock. Saved mode excludes only the exact reserved lines under assessment. Unsaved mode excludes none. Both preserve requests, event status/history and notifications. Migration 005 still enforces historical total-capacity reservations; KAN-26 must add operational-capacity revalidation under the pool lock. The user subsequently reported migration 014/account setup complete. Connected manual checks remain **Not executed**; migration 015 below supersedes the earlier reservation-trigger dependency.
+
+## KAN-26 reservation and release model — 26 October 2026
+
+The current equipment/notification sections in the diagram include migration `015_equipment_reservations.sql`. Its four nullable release columns on `equipment_requests` preserve who released a reservation (when known), when, why and whether the cause was manual cancellation, event cancellation or completion. `released_by` references `app_users`; `notifications.equipment_request_id` references the original request. Existing cancelled rows retain null metadata, and existing decisions/allocations remain unchanged. Release metadata must be wholly absent or describe a cancelled line with time, nonempty reason and a valid cause; manual cancellation requires an actor.
+
+The same request row changes from `REQUESTED` to `RESERVED`, then optionally `CANCELLED`; there is no extra reservation table or incrementing/decrementing stock balance. The history trigger forbids rewriting reserved/released allocation and decision fields, reusing a cancelled row or changing recorded release metadata. API mutations additionally require Technical Support and an approved event; confirmed events are read-only.
+
+Migration 015 replaces the historical total-capacity reservation check described above. New reservations lock event/pool rows, require the current approved event period and compare peak overlapping reserved demand against operational capacity after damage/maintenance losses. Later stock loss retains existing reservations and is exposed as a readiness shortfall. An actual event-status transition to `CANCELLED`/`COMPLETED` releases only live reservations once, preserving their original decision and recording release cause/time/reason and transaction actor when available. KAN-62/KAN-10 lifecycle APIs are still pending; the database trigger does not create those user workflows.
+
+The notification FK links the KAN-80 `EQUIPMENT_RESERVED` slice to the exact saved request. Reservation and coordinator/acting-staff notices commit or roll back together. Current C3, class, equipment-reservation sequence and planning ERD exports are in [architecture exports](architecture/README.md#diagram-exports). Shared migration 015 application and connected manual acceptance are **Not executed**.

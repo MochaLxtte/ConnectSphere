@@ -12,7 +12,7 @@ ConnectSphere uses one Git repository, one Vue frontend, one Express backend, Su
 
 The context diagram includes the KAN-79 Coordinator Lead role and KAN-65 reassignment implemented on **19 October 2026**, with KAN-64 notifications integrated on **21 October 2026**. The Safety Officer remains planned under KAN-84. KAN-79 replaces automatic initial allocation with a Lead queue: valid submissions remain unassigned, Leads allocate available coordinators, and ordinary coordinators manage only their assigned events. KAN-65 adds versioned handover with a required reason and retained history; the new coordinator gains assignment-derived access and the old coordinator loses it. Separate basic oversight endpoints do not grant Leads review, booking-decision or attendee-roster authority. Migration 007 and Lead login were reported successful. The 25 October original-story report records successful localhost manual scenarios for KAN-79/KAN-65; deployed-environment acceptance remains **Not assessed**. KAN-64 writes the relevant in-app notices in the same transaction as the action. Migration 008 adds notification inbox fields and 009 adds venue buffers. The 25 October KAN-60/KAN-83 run records a shared Supabase ledger check showing migrations 001–013 applied; that ledger check is distinct from the earlier structural schema audit. No schema change is added for KAN-65. See the [change register](../requirements/change-requests.md) and [test evidence](../testing/test-evidence.md).
 
-Implemented request workflows also include draft creation/editing, clarification, review decisions and read-only status history. KAN-51 provides the internal availability calendar and KAN-12 venue search is integrated. KAN-8 adds staff booking decisions and assigned-coordinator outcomes. KAN-52 provides read-only event-specific suitability and KAN-55 provides Venue Staff block management. KAN-53 booking submission was integrated on 5 October with current reservation/block checks. Catalogue maintenance and the KAN-50 stale-save repair are merged, including PR #56 on 25 October. KAN-77 stores and exposes setup/turnaround minutes; KAN-78 applies buffered occupancy and affected-booking warnings. These implementation updates do not supply another owner's missing acceptance results. KAN-64 provides an in-app inbox for submission, clarification, review, assignment and venue-decision outcomes. Equipment, registration, significant changes and later lifecycle workflows remain to implement; KAN-80 owns their future notification triggers. Migration 004 provides supporting tables and guards. The [current sprint plan](../scrum/sprint-03/planning.md) separates existing repairs from new customer requirements. The test evidence register separates local automated results from the hosted Sprint 1 observations below; the diagram does not imply acceptance. Venue Staff, Technical Support Staff and Attendee accounts need trusted Supabase Auth provisioning and an `app_users.supabase_user_id` mapping before their workflows can be tested.
+Implemented request workflows also include draft creation/editing, clarification, review decisions and read-only status history. KAN-51 provides the internal availability calendar and KAN-12 venue search is integrated. KAN-8 adds staff booking decisions and assigned-coordinator outcomes. KAN-52 provides read-only event-specific suitability and KAN-55 provides Venue Staff block management. KAN-53 booking submission was integrated on 5 October with current reservation/block checks. Catalogue maintenance and the KAN-50 stale-save repair are merged, including PR #56 on 25 October. KAN-77 stores and exposes setup/turnaround minutes; KAN-78 applies buffered occupancy and affected-booking warnings. These implementation updates do not supply another owner's missing acceptance results. KAN-64 provides an in-app inbox for submission, clarification, review, assignment and venue-decision outcomes. KAN-9 availability and KAN-26 saved equipment reservations are implemented. Equipment stock/request editing, registration, significant changes and later lifecycle APIs remain to implement; KAN-80 owns their notification triggers beyond the equipment-reserved slice supplied by KAN-26. Migration 004 provides supporting tables and guards. The [current sprint plan](../scrum/sprint-04/planning.md) separates existing repairs from new customer requirements. The test evidence register separates local automated results from the hosted Sprint 1 observations below; the diagram does not imply acceptance. Venue Staff, Technical Support Staff and Attendee accounts need trusted Supabase Auth provisioning and an `app_users.supabase_user_id` mapping before their workflows can be tested.
 
 The organiser's approved outcome and rejected status/reason remained visible after refresh in the 17 September hosted check (MAN-20260917-01). Reopening a request URL after sign-out showed a sign-in prompt without request details or the review reason (MAN-20260917-02). Draft and Submitted detail statuses and their no-decision messages also passed (MAN-20260917-03). A second organiser received the unavailable/no-permission message for the first organiser's request and saw an empty request list (MAN-20260917-04). Opening `/events` directly after signing out showed a sign-in prompt without request names or statuses (MAN-20260917-05). The request list showed matching Draft, Submitted, Rejected and Approved labels, and Draft/Submitted detail statuses and review messages remained correct after refresh (MAN-20260917-06). The remaining submission-to-status check is in the [test evidence](../testing/test-evidence.md).
 
@@ -66,7 +66,7 @@ The browser obtains a Supabase access token through sign-in and exchanges it at 
 | auth          | Identity, session lifecycle, role and event access policies           | Supabase sign-in, token verification, mapped profiles and sessions |
 | events        | Requests, drafts, assignment/reassignment, review and status | Draft creation/edit/submit, shared detail, assigned-coordinator queue and decisions, Lead queue/oversight and initial allocation, versioned reassignment with retained history, review start, clarification and protected read-only status history. Later lifecycle writes and significant changes are deferred. Dated validation is in the test evidence register. |
 | venues        | Catalogue, suitability, availability, booking decisions and conflicts | Tables and the booking-conflict trigger exist in migration 004. The read-only KAN-51 availability calendar (`GET /api/venues/availability`, `/venues/availability`) is implemented with automated tests for the three internal roles; hosted acceptance and peer review remain. KAN-12 search and KAN-8 pending-booking decisions/outcomes are integrated. KAN-8 rechecks conflicts during approval; KAN-52 assesses latest event/venue data with explicitly interpreted requirements and explained tri-state checks; KAN-55 creates/lists/removes operational blocks. KAN-53 now creates pending bookings after current approved-booking/block checks under the venue lock. KAN-50 catalogue maintenance includes the stale-save repair merged in PR #56. KAN-77 stores setup/turnaround settings through migration 009; KAN-78 buffered occupancy and affected-booking warnings are integrated through migration 012; full KAN-54 acceptance, policy review and hosted workflow evidence remain pending |
-| equipment     | Requests, quantity availability, reservations                         | KAN-9 Technical Support-only event context and saved/unsaved availability checks at `/equipment/availability`; one read-only SQL snapshot, operational losses and peak overlapping reservations. Migration 014 adds loss quantities. KAN-18 maintenance, KAN-63 request editing and KAN-26 reservation writes remain pending; shared 014 application and manual KAN-9 acceptance are Not executed. |
+| equipment     | Requests, quantity availability, reservations                         | KAN-9 Technical Support-only saved/unsaved availability checks and KAN-26 full saved-line reservations/cancellation/readiness at `/equipment/availability/:id`. Reads remain advisory; approved-only writes lock live operational pools and record notifications atomically. Migration 014 adds losses; 015 adds release history, notification links and terminal release. KAN-18 maintenance, KAN-63 request editing and KAN-62/KAN-10 lifecycle APIs remain pending; 014/account setup is reported complete; shared 015 application and connected manual acceptance are Not executed. |
 | registrations | Attendee eligibility, registration and withdrawal                     | Tables and the capacity trigger exist in migration 004; no services or pages. Planned |
 | notifications | Relevant recipients and notification delivery                         | KAN-64 (21 October 2026): `modules/notifications` writes in-app notifications inside the request, clarification, review, assignment and venue-decision transactions and serves `/api/notifications`; the UI has a bell and `/notifications`. KAN-80 owns later triggers. Shared ledger application through migration 013 reported in the 25 October KAN-60/KAN-83 run |
 
@@ -88,6 +88,8 @@ flowchart LR
   venues["Venue services<br/>Staff and assigned-coordinator policies"]
   equipment["Equipment router and service<br/>Technical Support only; minimal eligible-event context"]
   equipmentRules["Availability rules<br/>Saved or unsaved inputs; operational pools; half-open peak"]
+  reservations["Reservation service<br/>Approved saved lines; source version; live readiness"]
+  equipmentGuards["Equipment database guards<br/>Operational peak; immutable history; terminal release"]
   inbox["Inbox router and service<br/>Current recipient and target access"]
   notify["Notification writer<br/>Trigger matrix and outcome deduplication"]
   transactions["Business transactions<br/>Workflow row locks and shared client"]
@@ -105,6 +107,12 @@ flowchart LR
   equipment -->|Verified Technical Support| auth
   equipment --> equipmentRules
   equipment -->|One read-only SQL snapshot| db
+  browser --> reservations
+  reservations -->|Verified Technical Support| auth
+  reservations --> equipmentRules
+  reservations -->|Event, ordered pool and request locks| transactions
+  db --> equipmentGuards
+  equipmentGuards -->|Retain decisions; release live lines once| db
   allocation -->|Verified Lead| auth
   submit -->|Verified organiser| auth
   events --> auth
@@ -122,7 +130,7 @@ flowchart LR
 
 The displayed authentication dependencies are policy checks, not a second sign-in operation. Assignment services use parameterized SQL through the shared pool; queue/oversight reads have no write side effects. Reassignment checks the active-history version under event/history locks before changing linkage. Assignment, clarification and status-history reads hold a shared event lock across authorisation and their data query; a handover cannot expose newly protected rows through an earlier permission check. The KAN-64 writer uses the caller's transaction client: business changes and notification rows commit or roll back together. A unique recipient/outcome key suppresses duplicate rows. Inbox queries recheck the current recipient, role and event/booking access; they do not reuse the permissions held when a notice was created. Delivery is in-app polling, with no email service or background delivery worker.
 
-KAN-9's equipment service has its own minimal approved/confirmed event projection rather than widening shared event-detail access. One SQL statement reads source requirements, saved requests, stock and relevant reservations; the service validates the source version and calculates advisory quantities without joining a write transaction or notification flow. What-if input is explicitly unsaved; saved input reloads persisted lines and excludes only its own reserved IDs. Migration 014 provides damaged/maintenance quantities, while stock maintenance/request editing/reservation writes remain separate stories.
+KAN-9's equipment service has its own minimal approved/confirmed event projection rather than widening shared event-detail access. One SQL statement reads source requirements, saved requests, stock and relevant reservations; the service validates the source version and calculates advisory quantities without joining a write transaction or notification flow. What-if input is explicitly unsaved; saved input reloads persisted lines and excludes only its own reserved IDs. Migration 014 provides damaged/maintenance quantities. KAN-26 uses a separate mutation service for full saved requests on approved events, locking current source/pools/lines before checking capacity and writing notices. Migration 015 protects operational stock, immutable allocation/release history and one-time terminal release. Stock maintenance/request editing and lifecycle APIs remain separate stories.
 
 ## Class diagram
 
@@ -203,6 +211,22 @@ classDiagram
     RequestStatus status
     Date startsAt
     Date endsAt
+    UUID decidedBy
+    Date decidedAt
+    UUID releasedBy
+    Date releasedAt
+    string releaseReason
+    string releaseCause
+  }
+  class EquipmentReservationContext {
+    UUID eventId
+    string requirementsVersion
+    EquipmentReadiness readiness
+  }
+  class EquipmentReadiness {
+    string status
+    integer activeCount
+    integer reservedCount
   }
   class EquipmentAvailabilityAssessment {
     UUID eventId
@@ -224,6 +248,7 @@ classDiagram
     UUID recipientId
     UUID eventRequestId
     UUID venueBookingId
+    UUID equipmentRequestId
     String type
     String dedupeKey
     Date readAt
@@ -244,12 +269,17 @@ classDiagram
   EquipmentAvailabilityAssessment ..> EventRequest : reads source
   EquipmentAvailabilityItem ..> EquipmentType : reads operational stock
   EquipmentAvailabilityItem ..> EquipmentRequest : reads reservations
+  EquipmentReservationContext "1" *-- "1" EquipmentReadiness : derived current state
+  EquipmentReservationContext ..> EquipmentRequest : saved lines and retained history
+  EquipmentReadiness ..> EquipmentType : current operational capacity
+  AppUser "0..1" --> "0..*" EquipmentRequest : decision or release actor
   AppUser "1" --> "0..*" Notification : recipient
   EventRequest "0..1" --> "0..*" Notification : outcome
   VenueBooking "0..1" --> "0..*" Notification : booking outcome
+  EquipmentRequest "0..1" --> "0..*" Notification : reserved outcome
 ```
 
-`coordinatorId`, `assignmentVersion` and automatic-history `assignedBy` may be null. A partial unique index permits at most one assignment with null `unassignedAt` per event. New initial allocations and handovers are MANUAL with the Lead actor; historical AUTOMATIC rows retain their null actor. `assignmentVersion` is the UUID of matching active history rather than a new database column. Handover records its required reason in `note` and uses the same instant for the old end/new start. Notification event/booking links, legacy `dedupeKey` and unread `readAt` may be null; `(recipientId, dedupeKey)` is unique for keyed outcomes. Venue buffer values are integers from 0 to 1,440, defaulting to 0. They are returned as planning inputs; no buffered occupancy calculation or affected-booking warning is implemented yet. KAN-83 adds `HELD`/`EXPIRED` booking states and a hold deadline: `occupiesVenue()` is the shared rule in `occupancy.ts` (approved, or held with the deadline still in the future), and `expire_venue_holds()` marks overdue holds expired.
+`coordinatorId`, `assignmentVersion` and automatic-history `assignedBy` may be null. A partial unique index permits at most one assignment with null `unassignedAt` per event. New initial allocations and handovers are MANUAL with the Lead actor; historical AUTOMATIC rows retain their null actor. `assignmentVersion` is the UUID of matching active history rather than a new database column. Handover records its required reason in `note` and uses the same instant for the old end/new start. Notification event/booking/equipment-request links, legacy `dedupeKey` and unread `readAt` may be null; `(recipientId, dedupeKey)` is unique for keyed outcomes. Venue buffer values are integers from 0 to 1,440, defaulting to 0. They are returned as planning inputs; no buffered occupancy calculation or affected-booking warning is implemented yet. KAN-83 adds `HELD`/`EXPIRED` booking states and a hold deadline: `occupiesVenue()` is the shared rule in `occupancy.ts` (approved, or held with the deadline still in the future), and `expire_venue_holds()` marks overdue holds expired.
 
 ## Sequence diagrams
 
@@ -372,18 +402,62 @@ sequenceDiagram
   Note over UI,DB: No requests, reservations, status, history or notifications are written
 ```
 
-The result is valid only for the snapshot checked. KAN-26 must recheck operational capacity under the equipment-pool lock when reserving; this sequence never reserves equipment. Venue confirmation is not a precondition. Missing saved requirements and mismatched saved periods return explicit errors rather than empty success or silent date changes.
+The result is valid only for the snapshot checked. KAN-26 rechecks operational capacity under the equipment-pool lock in its separate reservation sequence below; the availability sequence never reserves equipment. Venue confirmation is not a precondition. Missing saved requirements and mismatched saved periods return explicit errors rather than empty success or silent date changes.
+
+## Equipment reservation sequence (KAN-26)
+
+```mermaid
+sequenceDiagram
+  actor TS as Technical Support
+  participant UI as Saved reservation panel
+  participant API as Equipment API
+  participant DB as PostgreSQL
+  participant Notify as Transactional notification writer
+  TS->>UI: Load saved requests and current readiness
+  UI->>API: GET reservations/events/id
+  API->>DB: Read eligible event, all saved lines and current stock
+  DB-->>API: One snapshot including retained release history
+  API-->>UI: Context, source version, action flags and readiness
+  TS->>UI: Confirm full saved request
+  UI->>UI: Clear old advisory and pending readiness success
+  UI->>API: POST requests/requestId/reserve with version
+  API->>DB: BEGIN, verify trusted Technical Support profile
+  API->>DB: Lock approved event and assigned coordinator profile
+  API->>DB: Lock ordered pools and saved requests
+  API->>DB: Read live operational stock and overlapping reservations
+  alt Stale source, invalid request or insufficient stock
+    API->>DB: ROLLBACK
+    API-->>UI: 409 conflict
+    UI->>API: Reload saved context without repeating mutation
+  else Exact already-applied action
+    API->>DB: COMMIT without new allocation or notice
+    API-->>UI: changed false and current context
+  else Whole request fits current capacity
+    API->>DB: Mark saved line RESERVED and record actor/time
+    DB->>DB: Enforce approved period and operational peak guard
+    API->>Notify: EQUIPMENT_RESERVED for coordinator and actor
+    Notify->>DB: Insert deduplicated notices on same transaction
+    Note over API,DB: Any notice failure rolls back reservation and notices
+    API->>DB: Read new context and COMMIT
+    API-->>UI: changed true, saved status and current readiness
+    UI->>API: Refresh advisory source before another check
+  end
+  Note over TS,DB: Manual cancel uses the same locks/version and a required reason, retaining the original decision
+  Note over API,DB: Terminal transitions release live lines once<br/>Lifecycle APIs remain separate
+```
+
+The request row is both the requirement and, while `RESERVED`, its reservation. Cancellation adds release metadata without rewriting its original allocation/decision. Readiness re-evaluates current stock rather than trusting the saved status: empty requirements are not ready, and stock loss can make all-reserved requirements unfulfillable. KAN-63 owns request creation; what-if checks supply no mutation input. Migration 015 supports future KAN-62/KAN-10 terminal transitions, but those user workflows remain pending.
 
 ## Diagram exports
 
-GitHub's Mermaid rendering is not part of the submission. PNG exports live in `docs/architecture/exports/`: `c1-context.png`, `c2-containers.png`, `c3-components.png`, `class.png`, `seq-lead-assignment.png`, `seq-venue-write-locking.png`, `seq-equipment-availability.png`, `erd-events.png` and `erd-planning.png`. On 26 October 2026 the affected C3, class and planning-ERD images were re-exported from the current source, and the KAN-9 read-only sequence was added, using Mermaid CLI. These depict implementation boundaries, not manual acceptance. Re-export affected diagrams after subsequent design changes.
+GitHub's Mermaid rendering is not part of the submission. PNG exports live in `docs/architecture/exports/`: `c1-context.png`, `c2-containers.png`, `c3-components.png`, `class.png`, `seq-lead-assignment.png`, `seq-venue-write-locking.png`, `seq-equipment-availability.png`, `seq-equipment-reservation.png`, `erd-events.png` and `erd-planning.png`. On 26 October 2026 the affected C3, class and planning-ERD images were re-exported from the current source for KAN-9 and KAN-26, with separate availability and reservation sequences, using Mermaid CLI. These depict implementation boundaries, not manual acceptance. Re-export affected diagrams after subsequent design changes.
 
 ## ERD
 
 Migrations 001–003 provide the Sprint 1 request/authentication foundation. Migration 004 adds the
 broader first-release tables, 005 corrects the equipment availability guard and 006 adds
 historical automatic coordinator assignment fields. Migration 007 adds the trusted Lead role to the profile constraint without rewriting assignments. Migration 008 (KAN-64) adds notification booking links and deduplication keys. Migration 009 (KAN-77) adds per-venue setup and turnaround minutes, defaulting to 0; KAN-78 will apply them to occupancy. Migration 010 adds per-outage booking recovery flags with retained outage history. The diagram omits
-housekeeping timestamps, migration metadata and the unused legacy auth fields/tables. Migration 014 adds zero-default damaged and maintenance quantities to equipment types; their nonnegative sum cannot exceed total stock. Its shared application is Not executed.
+housekeeping timestamps, migration metadata and the unused legacy auth fields/tables. Migration 014 adds zero-default damaged and maintenance quantities to equipment types; their nonnegative sum cannot exceed total stock. Migration 015 adds request release metadata, equipment notification linkage, operational-capacity guards and terminal release. Migration 014/account setup is reported complete; shared 015 application is Not executed.
 [docs/database-diagram.md](../database-diagram.md) holds the detailed schema reference and its verification dates, including foreign keys this curated view leaves out. Local migration 007 tests passed, and its shared application plus Lead login were subsequently reported successful. Full hosted workflow acceptance remains pending. KAN-65 uses the existing fields and active-row constraint without a new migration.
 
 ### Sprint 1 request workflow
@@ -467,6 +541,8 @@ erDiagram
   VENUE_BOOKINGS ||--o{ VENUE_OUTAGE_IMPACTS : "flagged by"
   VENUE_BOOKINGS |o--o{ VENUE_BOOKINGS : "replaced by"
   EQUIPMENT_TYPES ||--o{ EQUIPMENT_REQUESTS : "drawn from"
+  EQUIPMENT_REQUESTS o|--o{ NOTIFICATIONS : "reservation outcome"
+  APP_USERS |o--o{ EQUIPMENT_REQUESTS : "release actor"
   APP_USERS ||--o{ EVENT_REGISTRATIONS : attends
   APP_USERS ||--o{ NOTIFICATIONS : receives
   VENUES {
@@ -533,6 +609,11 @@ erDiagram
     timestamptz starts_at
     timestamptz ends_at
     uuid decided_by FK "set with decided_at on a decision"
+    timestamptz decided_at "nullable until decided"
+    timestamptz released_at "nullable; migration 015"
+    uuid released_by FK "nullable actor"
+    text release_reason "nullable, retained"
+    text release_cause "manual cancellation or terminal event"
   }
   EVENT_REGISTRATIONS {
     uuid id PK
@@ -555,6 +636,7 @@ erDiagram
     uuid recipient_id FK
     uuid event_request_id FK "nullable"
     uuid venue_booking_id FK "nullable"
+    uuid equipment_request_id FK "nullable, migration 015"
     text dedupe_key "nullable, unique per recipient"
     text type
     text title
@@ -581,7 +663,7 @@ Numbered migrations define the reproducible local and CI schema; coordinate equi
 - Keep optional draft values nullable. Do not reuse draft validation as submission validation. Record confirmed required fields in the clarification log.
 - Use the nine statuses defined by migration 004: `DRAFT`, `SUBMITTED`, `UNDER_REVIEW`, `CLARIFICATION_REQUESTED`, `APPROVED`, `REJECTED`, `CONFIRMED`, `CANCELLED` and `COMPLETED`. The six Sprint 1 statuses are unchanged; the migration adds the three later lifecycle states. Implemented transitions are draft submission, review start, clarification and its answer, and initial approval/rejection. Later status values remain readable for compatibility with existing records and KAN-29 workload counting; the application cannot confirm, cancel or complete events. Request approval remains distinct from future final confirmation.
 - A coordinator may record an initial decision from `SUBMITTED` or `UNDER_REVIEW`, so starting a review does not block the decision it precedes. A pending clarification must be answered first, which returns the request to `SUBMITTED`.
-- The 26 September scope correction removed the broader venue, equipment, registration, change-request and notification feature modules. Their schema and database guards remain, but do not establish working interfaces or accepted stories. The 4 October integration adds KAN-12 search, KAN-51 availability and KAN-8 booking decisions within Sprint 2 scope. KAN-9 subsequently adds read-only equipment assessment on 26 October; equipment stock maintenance, request editing and reservation writes remain pending, alongside attendee registration and change-request application workflows. Notification application workflows are limited to the KAN-64 inbox for request, assignment and venue outcomes (see the notifications row above).
+- The 26 September scope correction removed the broader venue, equipment, registration, change-request and notification feature modules. Their schema and database guards remain, but do not establish working interfaces or accepted stories. The 4 October integration adds KAN-12 search, KAN-51 availability and KAN-8 booking decisions within Sprint 2 scope. KAN-9 subsequently adds read-only equipment assessment on 26 October and KAN-26 adds full saved-line reservations, release history and current readiness. Equipment stock maintenance, request editing and lifecycle APIs remain pending, alongside attendee registration and change-request application workflows. Notification application workflows include the KAN-64 inbox for request, assignment and venue outcomes plus KAN-26’s equipment-reserved slice (see the notifications row above).
 
 Record significant changes in the [decision log](../requirements/assumptions-and-questions.md), including context, options, the chosen approach, consequences, linked stories and any superseded decision. Keep implementation assumptions separate from customer clarifications.
 
