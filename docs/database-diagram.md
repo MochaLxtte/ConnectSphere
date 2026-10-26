@@ -1,5 +1,14 @@
 # ConnectSphere Database Diagram
 
+**KAN-62 / KAN-63 schema update — 26 October 2026.** Migration 014 adds `event_cancellations`
+(one immutable row per cancelled event, with actor, timestamp, internal reason and
+affected-arrangement counts). `event_status_history.reason` retains the cancellation
+explanation alongside the trigger-recorded status change. `event_registrations` retains rows
+with `status = CANCELLED` and `cancellation_outcome_at`; `equipment_requests` retains cancelled
+request/reservation rows with actor, time and reason, plus technical requirements and a revision
+counter. `event_requests` stores equipment planning state (`REQUIRED` or `NOT_REQUIRED`).
+Existing rows are not deleted and unrelated event arrangements remain unchanged.
+
 **KAN-78 schema reconciliation — 25 October 2026.** For current source `96a0d10`, venue duration columns come from migration **009**, while approval snapshots, internal interval/hours helpers and `venue_booking_warnings` come from **012_venue_occupied_intervals.sql**. Migration **013** rebuilds the interval view with hold/cancellation fields and extends the occupancy guard. `venue_booking_intervals` is a view, not an extra stored table. The dated 21 October schema and private migration-008 descriptions below are historical. The [25 October shared-development run](testing/test-evidence.md#25-october-2026--kan-60-and-kan-83-manual-hosted-runs) reports migrations 001–013 present in `schema_migrations`; this is a reported setup check, not a newly executed complete schema audit or KAN-78/KAN-34 hosted acceptance. Existing rows, ownership and approval history are preserved.
 
 **25 October 2026 verification note.** [Original-story manual results](testing/test-evidence.md#25-october-2026--reported-manual-results-for-original-stories) are reported against the original sprint versions. KAN-29 automatic assignment remains historical; KAN-79/KAN-65 use the current Lead workflow. Original KAN-52 evidence does not complete the later revised story. No schema or relationship changes are made by recording these results.

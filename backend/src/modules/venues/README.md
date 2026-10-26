@@ -1,5 +1,8 @@
 # Venues
 
+KAN-62 event cancellation releases active venue bookings within the event transaction and
+retains each booking with cancellation actor/time/reason. No unrelated event booking changes.
+
 - `venue-search.ts` / `venue-router.ts`: KAN-12 coordinator search and filter options.
 - `availability.ts` / `availability-router.ts`: KAN-51 read-only availability for
   coordinators, Venue Staff and Technical Support Staff. Approved bookings and operational

@@ -4,6 +4,8 @@ import AssignmentPanel from './AssignmentPanel.vue';
 import ClarificationPanel from './ClarificationPanel.vue';
 import StatusHistoryPanel from './StatusHistoryPanel.vue';
 import VenueBookingPanel from './VenueBookingPanel.vue';
+import EquipmentRequestPanel from './EquipmentRequestPanel.vue';
+import EventCancellationPanel from './EventCancellationPanel.vue';
 
 /** Workflow panels shared by the organiser and coordinator pages for a submitted request. */
 const props = defineProps<{
@@ -26,7 +28,9 @@ const shared = computed(() => ({
     <AssignmentPanel v-bind="shared" :current-coordinator-id="currentCoordinatorId" @changed="emit('changed')" />
     <ClarificationPanel v-bind="shared" @changed="emit('changed')" />
     <VenueBookingPanel v-if="viewerRole === 'EVENT_COORDINATOR'" v-bind="shared" @changed="emit('changed')" />
+    <EquipmentRequestPanel v-if="viewerRole === 'EVENT_COORDINATOR'" v-bind="shared" @changed="emit('changed')" />
     <StatusHistoryPanel :event-request-id="eventRequestId" :status="status" />
+    <EventCancellationPanel :event-request-id="eventRequestId" :status="status" @changed="emit('changed')" />
   </div>
 </template>
 
