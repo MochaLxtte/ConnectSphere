@@ -37,10 +37,12 @@ export interface LockedEventRequest {
   status: EventStatus;
   /** Used in notification text (KAN-64); nullable because drafts may be unnamed. */
   name: string | null;
+  /** KAN-66: increases on every update of the row (migration 014). */
+  revision: number;
 }
 
 const eventColumns = `
-  id, organiser_id AS "organiserId", coordinator_id AS "coordinatorId", status, name
+  id, organiser_id AS "organiserId", coordinator_id AS "coordinatorId", status, name, revision
 `;
 
 /** Competing writers wait on this row lock, then inspect the latest committed state. */
@@ -199,6 +201,34 @@ export function optionalText(body: Record<string, unknown>, field: string): stri
     throw new WorkflowError('INVALID_INPUT', 'INVALID_INPUT', `${field} must be at most ${MAX_TEXT_LENGTH} characters.`);
   }
   return value.trim() || null;
+}
+
+/**
+ * KAN-66: an optional or required `expectedRevision` body field. Returns null when it is absent
+ * and allowed to be. Clients send the revision they displayed (KAN-66-AC103, AC101).
+ */
+export function parseExpectedRevision(value: unknown, required: boolean): number | null {
+  if (value === undefined && !required) return null;
+  if (value === undefined) {
+    throw new WorkflowError(
+      'INVALID_INPUT', 'EXPECTED_REVISION_REQUIRED',
+      'expectedRevision is required; reload the event request and try again.',
+    );
+  }
+  if (typeof value !== 'number' || !Number.isInteger(value) || value < 1 || value > 2_147_483_647) {
+    throw new WorkflowError('INVALID_INPUT', 'INVALID_INPUT', 'expectedRevision must be a positive whole number.');
+  }
+  return value;
+}
+
+/** Compare under the row lock, so a page showing older data cannot act on it (KAN-66-AC103). */
+export function assertExpectedRevision(current: number, expected: number | null): void {
+  if (expected !== null && expected !== current) {
+    throw new WorkflowError(
+      'CONFLICT', 'EVENT_REVISION_CONFLICT',
+      'This event request changed after you opened it. Refresh to see the latest details.',
+    );
+  }
 }
 
 export const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;

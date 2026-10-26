@@ -2,9 +2,12 @@ import type { Pool } from 'pg';
 import type { AuthenticatedUser } from '../auth/types.js';
 import type { EventRecord } from './types.js';
 import {
-  parseDraftUpdateInput, type DraftRegistrationFields, type DraftUpdateInput,
+  parseEventUpdateInput, type DraftRegistrationFields, type DraftUpdateInput,
 } from './draft-update-input.js';
-import { assertCanEditDraft, DraftEligibilityError } from './draft-eligibility.js';
+import { DraftEligibilityError } from './draft-eligibility.js';
+import { assertCanEditFields } from './planning-edit-policy.js';
+import { assertReadyForSubmission } from './submit-input.js';
+import { assertExpectedRevision, parseExpectedRevision } from './workflow-support.js';
 
 export type DraftActor = Pick<AuthenticatedUser, 'id' | 'role'>;
 
@@ -29,7 +32,10 @@ export class DraftRequestNotFoundError extends Error {
 }
 
 /** The flat event shape returned by draft writes, including the CF-18 registration settings. */
-export type DraftEventRecord = EventRecord & DraftRegistrationFields;
+export type DraftEventRecord = EventRecord & DraftRegistrationFields & {
+  /** KAN-66: send back as `expectedRevision` with the next edit. */
+  revision: number;
+};
 
 type DraftDateField = 'startsAt' | 'endsAt' | 'registrationOpensAt' | 'registrationClosesAt';
 
@@ -66,7 +72,7 @@ export const draftSelectColumns = `
   registration_required AS "registrationRequired",
   registration_capacity AS "registrationCapacity",
   registration_opens_at AS "registrationOpensAt", registration_closes_at AS "registrationClosesAt",
-  created_at AS "createdAt", updated_at AS "updatedAt"
+  revision, created_at AS "createdAt", updated_at AS "updatedAt"
 `;
 
 export function toDraftEventRecord(row: DraftRow): DraftEventRecord {
@@ -81,13 +87,30 @@ export function toDraftEventRecord(row: DraftRow): DraftEventRecord {
   };
 }
 
-/** Save an owned draft's changed fields, using the existing schema; unsupplied fields are untouched. */
-export async function updateOwnedDraft(
+const dateFields = new Set<keyof DraftUpdateInput>([
+  'startsAt', 'endsAt', 'registrationOpensAt', 'registrationClosesAt',
+]);
+
+/** Equal stored and requested values, comparing instants rather than their offset spelling. */
+function sameValue(field: keyof DraftUpdateInput, stored: unknown, requested: unknown): boolean {
+  if (dateFields.has(field) && typeof stored === 'string' && typeof requested === 'string') {
+    return Date.parse(stored) === Date.parse(requested);
+  }
+  return stored === requested;
+}
+
+/**
+ * Save an event request's changed fields; unsupplied fields are untouched.
+ * KAN-34 drafts keep their incomplete-draft rules. KAN-66 adds owner edits before approval
+ * (complete submission validation) and assigned-coordinator name/description edits after
+ * approval. Those require the displayed revision and write an audit row in the same transaction.
+ */
+export async function updateEventRequest(
   { pool }: UpdateDraftDependencies,
   { eventRequestId, actor, input }: UpdateDraftCommand,
 ): Promise<DraftEventRecord> {
-  const changes = parseDraftUpdateInput(input);
-  if (!actor || actor.role !== 'EVENT_ORGANISER') {
+  const { changes, expectedRevision: suppliedRevision } = parseEventUpdateInput(input);
+  if (!actor || (actor.role !== 'EVENT_ORGANISER' && actor.role !== 'EVENT_COORDINATOR')) {
     throw new DraftEligibilityError(
       'DRAFT_EDIT_FORBIDDEN',
       'You are not authorised to edit this event request.',
@@ -98,36 +121,64 @@ export async function updateOwnedDraft(
   let releaseError: Error | undefined;
   try {
     await client.query('BEGIN ISOLATION LEVEL READ COMMITTED');
+    await client.query("SELECT set_config('app.actor_id', $1, true)", [actor.id]);
 
-    // Competing edits or a concurrent submission must wait here, then see the latest committed state.
-    const requests = await client.query<Pick<EventRecord, 'id' | 'organiserId' | 'status'>>(`
-      SELECT id, organiser_id AS "organiserId", status
-      FROM event_requests WHERE id = $1 FOR UPDATE
+    // Competing edits, reviews or a concurrent submission wait here, then see the latest commit.
+    const requests = await client.query<DraftRow>(`
+      SELECT ${draftSelectColumns} FROM event_requests WHERE id = $1 FOR UPDATE
     `, [eventRequestId]);
     const found = requests.rows[0];
     if (!found) throw new DraftRequestNotFoundError();
-
-    assertCanEditDraft({
-      actorId: actor.id,
-      actorRole: actor.role,
-      ownerId: found.organiserId,
-      status: found.status,
-    });
+    const current = toDraftEventRecord(found);
 
     const fields = Object.keys(changes) as (keyof DraftUpdateInput)[];
-    const setClauses = fields.map((field, index) => `${draftColumnByField[field]} = $${index + 2}`);
-    const values = fields.map((field) => changes[field]);
+    const mode = assertCanEditFields({
+      actorId: actor.id,
+      actorRole: actor.role,
+      ownerId: current.organiserId,
+      coordinatorId: current.coordinatorId,
+      status: current.status,
+    }, fields);
 
+    // Drafts keep KAN-34's contract, so the revision is optional there and checked if sent.
+    const expectedRevision = parseExpectedRevision(suppliedRevision, mode !== 'DRAFT');
+    assertExpectedRevision(current.revision, expectedRevision);
+
+    const changed = fields.filter((field) => !sameValue(field, current[field], changes[field]));
+    // A repeated save of the same values creates no revision or audit entry.
+    if (changed.length === 0) {
+      await client.query('COMMIT');
+      return current;
+    }
+
+    if (mode !== 'DRAFT') {
+      // KAN-66-AC101: a submitted request must remain complete and valid after the edit.
+      assertReadyForSubmission({ ...current, ...changes });
+    }
+
+    const setClauses = changed.map((field, index) => `${draftColumnByField[field]} = $${index + 2}`);
+    const values = changed.map((field) => changes[field]);
     const updated = await client.query<DraftRow>(`
       UPDATE event_requests SET ${setClauses.join(', ')}, updated_at = now()
       WHERE id = $1
       RETURNING ${draftSelectColumns}
     `, [eventRequestId, ...values]);
     const saved = updated.rows[0];
-    if (!saved) throw new Error('The draft could not be updated.');
+    if (!saved) throw new Error('The event request could not be updated.');
+    const record = toDraftEventRecord(saved);
+
+    if (mode !== 'DRAFT') {
+      // KAN-66-AC103: who changed which fields, from what to what, at which revision.
+      const audit = Object.fromEntries(changed.map((field) => [field, { from: current[field], to: record[field] }]));
+      await client.query(`
+        INSERT INTO event_request_edits
+          (event_request_id, revision, edited_by, editor_role, event_status, changes)
+        VALUES ($1, $2, $3, $4, $5, $6)
+      `, [record.id, record.revision, actor.id, actor.role, record.status, JSON.stringify(audit)]);
+    }
 
     await client.query('COMMIT');
-    return toDraftEventRecord(saved);
+    return record;
   } catch (error) {
     try {
       await client.query('ROLLBACK');

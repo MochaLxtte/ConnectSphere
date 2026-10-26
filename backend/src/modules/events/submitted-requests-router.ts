@@ -12,7 +12,7 @@ import {
   type SubmittedRequestQueryDependencies,
 } from './submitted-requests.js';
 import { createDraft, DraftCreateForbiddenError, type CreateDraftDependencies } from './create-draft.js';
-import { updateOwnedDraft, DraftRequestNotFoundError, type UpdateDraftDependencies } from './update-draft.js';
+import { updateEventRequest, DraftRequestNotFoundError, type UpdateDraftDependencies } from './update-draft.js';
 import { DraftEligibilityError } from './draft-eligibility.js';
 import { DraftUpdateInputError } from './draft-update-input.js';
 import {
@@ -21,6 +21,7 @@ import {
 } from './submit-request.js';
 import { SubmitEligibilityError } from './submit-eligibility.js';
 import { SubmissionValidationError } from './submit-input.js';
+import { WorkflowError } from './workflow-support.js';
 
 export interface SubmittedRequestsRouterDependencies
   extends SubmittedRequestQueryDependencies, CreateDraftDependencies, UpdateDraftDependencies,
@@ -39,6 +40,21 @@ const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const unavailableRequest = {
   error: { code: 'EVENT_REQUEST_NOT_FOUND', message: 'The event request was not found.' },
 };
+
+/** Missing-only keeps the original code; any invalid value adds per-field messages (KAN-59). */
+function submissionErrorBody(error: SubmissionValidationError) {
+  const invalid = error.invalidFields.length > 0;
+  return {
+    error: {
+      code: invalid ? 'SUBMISSION_INVALID' : 'SUBMISSION_INCOMPLETE',
+      message: error.message,
+      missingFields: error.missingFields,
+      ...(invalid
+        ? { fieldErrors: Object.fromEntries(error.invalidFields.map(({ field, message }) => [field, message])) }
+        : {}),
+    },
+  };
+}
 
 /** Role-scoped lists and one shared KAN-34/KAN-33/KAN-16 detail route, with explicit policies. */
 export function createSubmittedRequestsRouter(dependencies: SubmittedRequestsRouterDependencies) {
@@ -169,9 +185,13 @@ export function createSubmittedRequestsRouter(dependencies: SubmittedRequestsRou
         });
         return;
       }
-      if (actor.role !== 'EVENT_ORGANISER') {
+      // KAN-66: assigned coordinators may make ordinary edits to approved events.
+      if (actor.role !== 'EVENT_ORGANISER' && actor.role !== 'EVENT_COORDINATOR') {
         response.status(403).json({
-          error: { code: 'DRAFT_EDIT_FORBIDDEN', message: 'Only event organisers can edit a draft event request.' },
+          error: {
+            code: 'DRAFT_EDIT_FORBIDDEN',
+            message: 'Only event organisers and coordinators can edit an event request.',
+          },
         });
         return;
       }
@@ -182,7 +202,7 @@ export function createSubmittedRequestsRouter(dependencies: SubmittedRequestsRou
         });
         return;
       }
-      const updated = await updateOwnedDraft(dependencies, {
+      const updated = await updateEventRequest(dependencies, {
         eventRequestId: request.params.id,
         actor,
         input: request.body,
@@ -193,14 +213,32 @@ export function createSubmittedRequestsRouter(dependencies: SubmittedRequestsRou
         response.status(400).json({ error: { code: 'INVALID_DRAFT_UPDATE', message: error.message } });
         return;
       }
-      // An unrelated organiser must not learn whether this request exists or its current state.
+      if (error instanceof SubmissionValidationError) {
+        response.status(400).json(submissionErrorBody(error));
+        return;
+      }
+      // An unrelated user must not learn whether this request exists or its current state.
       if (error instanceof DraftRequestNotFoundError ||
           (error instanceof DraftEligibilityError && error.code === 'DRAFT_EDIT_FORBIDDEN')) {
         response.status(404).json(unavailableRequest);
         return;
       }
       if (error instanceof DraftEligibilityError) {
-        response.status(409).json({ error: { code: error.code, message: error.message } });
+        const status = error.code === 'EDIT_ROLE_NOT_PERMITTED' ? 403 : 409;
+        response.status(status).json({
+          error: {
+            code: error.code,
+            message: error.message,
+            ...(error.fields.length > 0 ? { fields: error.fields } : {}),
+          },
+        });
+        return;
+      }
+      // Revision problems from KAN-66: 400 when missing or malformed, 409 when stale.
+      if (error instanceof WorkflowError) {
+        response.status(error.kind === 'CONFLICT' ? 409 : 400).json({
+          error: { code: error.code, message: error.message },
+        });
         return;
       }
       next(error);
@@ -237,18 +275,7 @@ export function createSubmittedRequestsRouter(dependencies: SubmittedRequestsRou
       response.status(200).json(submitted);
     } catch (error) {
       if (error instanceof SubmissionValidationError) {
-        // Missing-only keeps the original code; any invalid value adds per-field messages (KAN-59).
-        const invalid = error.invalidFields.length > 0;
-        response.status(400).json({
-          error: {
-            code: invalid ? 'SUBMISSION_INVALID' : 'SUBMISSION_INCOMPLETE',
-            message: error.message,
-            missingFields: error.missingFields,
-            ...(invalid
-              ? { fieldErrors: Object.fromEntries(error.invalidFields.map(({ field, message }) => [field, message])) }
-              : {}),
-          },
-        });
+        response.status(400).json(submissionErrorBody(error));
         return;
       }
       // An unrelated organiser must not learn whether this request exists or its current state.

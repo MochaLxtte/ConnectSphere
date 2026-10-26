@@ -14,7 +14,9 @@ export function createClarificationRouter(dependencies: ClarificationRouterDepen
 
   router.post('/:id/start-review', workflowRoute(
     dependencies, { signInMessage, roles: ['EVENT_COORDINATOR'] },
-    (actor, request) => startReview(dependencies, { eventRequestId: param(request, 'id'), actor }),
+    (actor, request) => startReview(dependencies, {
+      eventRequestId: param(request, 'id'), actor, input: request.body,
+    }),
   ));
 
   router.get('/:id/clarifications', workflowRoute(

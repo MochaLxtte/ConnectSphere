@@ -10,12 +10,20 @@ export interface DraftEditContext {
   status: EventStatus;
 }
 
-export type DraftEligibilityErrorCode = 'DRAFT_EDIT_FORBIDDEN' | 'DRAFT_NOT_EDITABLE';
+/** KAN-66 adds the last three codes for post-submission edits; see planning-edit-policy.ts. */
+export type DraftEligibilityErrorCode =
+  | 'DRAFT_EDIT_FORBIDDEN'
+  | 'DRAFT_NOT_EDITABLE'
+  | 'EVENT_NOT_EDITABLE'
+  | 'EDIT_ROLE_NOT_PERMITTED'
+  | 'SIGNIFICANT_CHANGE_REQUIRED';
 
 export class DraftEligibilityError extends Error {
   constructor(
     public readonly code: DraftEligibilityErrorCode,
     message: string,
+    /** For SIGNIFICANT_CHANGE_REQUIRED: the refused fields, so the UI can point to KAN-15. */
+    public readonly fields: readonly string[] = [],
   ) {
     super(message);
     this.name = 'DraftEligibilityError';

@@ -5,6 +5,7 @@ import { parseReviewInput, type ReviewDecision } from './review-input.js';
 import { assertCanMakeInitialReview, ReviewEligibilityError } from './review-eligibility.js';
 import { recordNotifications } from '../notifications/notify.js';
 import { reviewNotifications } from '../notifications/trigger-matrix.js';
+import { assertExpectedRevision } from './workflow-support.js';
 
 export type ReviewActor = Pick<AuthenticatedUser, 'id' | 'role'>;
 export type ReviewRequest = Pick<EventRecord, 'id' | 'organiserId' | 'coordinatorId' | 'status'>;
@@ -62,8 +63,8 @@ export async function recordInitialReview(
     await client.query('BEGIN ISOLATION LEVEL READ COMMITTED');
 
     // Competing decisions must wait here, then inspect the latest committed request state.
-    const requests = await client.query<ReviewRequest & { name: string | null }>(`
-      SELECT id, organiser_id AS "organiserId", coordinator_id AS "coordinatorId", status, name
+    const requests = await client.query<ReviewRequest & { name: string | null; revision: number }>(`
+      SELECT id, organiser_id AS "organiserId", coordinator_id AS "coordinatorId", status, name, revision
       FROM event_requests WHERE id = $1 FOR UPDATE
     `, [eventRequestId]);
     const request = requests.rows[0];
@@ -80,6 +81,8 @@ export async function recordInitialReview(
       status: request.status,
       hasRecordedDecision: existing.rows[0]!.exists,
     });
+    // KAN-66-AC101: the organiser may have edited the request since the reviewer loaded it.
+    assertExpectedRevision(request.revision, review.expectedRevision ?? null);
 
     const inserted = await client.query<{ id: string }>(`
       INSERT INTO event_reviews (event_request_id, reviewed_by, decision, reason)

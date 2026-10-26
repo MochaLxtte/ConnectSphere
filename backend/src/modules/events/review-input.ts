@@ -1,14 +1,16 @@
-import { MAX_TEXT_LENGTH } from './workflow-support.js';
+import { MAX_TEXT_LENGTH, WorkflowError, parseExpectedRevision } from './workflow-support.js';
 
 export type ReviewDecision = 'APPROVED' | 'REJECTED';
 
 export interface ReviewInput {
   decision: ReviewDecision;
   reason: string | null;
+  /** KAN-66-AC101: the revision the reviewer saw; a stale decision is refused. */
+  expectedRevision?: number;
 }
 
 /** The submitted field an input error refers to, so clients can show it beside that field. */
-export type ReviewInputField = 'decision' | 'reason';
+export type ReviewInputField = 'decision' | 'reason' | 'expectedRevision';
 
 /** The HTTP handler can distinguish invalid input from unexpected failures. */
 export class ReviewInputError extends Error {
@@ -28,8 +30,8 @@ export function parseReviewInput(input: unknown): ReviewInput {
   }
 
   const body = input as Record<string, unknown>;
-  if (Object.keys(body).some((key) => key !== 'decision' && key !== 'reason')) {
-    throw new ReviewInputError('Only decision and reason may be supplied.');
+  if (Object.keys(body).some((key) => key !== 'decision' && key !== 'reason' && key !== 'expectedRevision')) {
+    throw new ReviewInputError('Only decision, reason and expectedRevision may be supplied.');
   }
 
   if (body.decision !== 'APPROVED' && body.decision !== 'REJECTED') {
@@ -48,5 +50,16 @@ export function parseReviewInput(input: unknown): ReviewInput {
   if (body.decision === 'REJECTED' && reason === '') {
     throw new ReviewInputError('Enter a reason to reject this event request.', 'reason');
   }
-  return { decision: body.decision, reason: reason || null };
+  let expectedRevision: number | null;
+  try {
+    expectedRevision = parseExpectedRevision(body.expectedRevision, false);
+  } catch (error) {
+    // parseExpectedRevision reports only WorkflowError input problems.
+    throw new ReviewInputError((error as WorkflowError).message, 'expectedRevision');
+  }
+  return {
+    decision: body.decision,
+    reason: reason || null,
+    ...(expectedRevision === null ? {} : { expectedRevision }),
+  };
 }

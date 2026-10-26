@@ -1,5 +1,6 @@
 import {
-  inActorTransaction, iso, isoOrNull, lockEventRequest, parseObjectBody,
+  assertExpectedRevision, inActorTransaction, iso, isoOrNull, lockEventRequest, parseExpectedRevision,
+  parseObjectBody,
   inEventReadTransaction, requiredText, requireRelation, setEventStatus, WorkflowError,
   type WorkflowActor, type WorkflowDependencies,
 } from './workflow-support.js';
@@ -31,13 +32,21 @@ interface Command {
 
 const coordinatorOnly = 'Only the assigned coordinator can perform this action.';
 
+/** KAN-66-AC101: reviewer actions may carry the revision they displayed; an empty body is allowed. */
+function reviewerRevision(input: unknown, allowedKeys: readonly string[]): { body: Record<string, unknown>; expectedRevision: number | null } {
+  const body = input === undefined ? {} : parseObjectBody(input, [...allowedKeys, 'expectedRevision']);
+  return { body, expectedRevision: parseExpectedRevision(body.expectedRevision, false) };
+}
+
 export async function startReview(
   { pool }: WorkflowDependencies,
-  { eventRequestId, actor }: Command,
+  { eventRequestId, actor, input }: Command & { input?: unknown },
 ): Promise<{ eventRequestId: string; status: 'UNDER_REVIEW' }> {
+  const { expectedRevision } = reviewerRevision(input, []);
   return inActorTransaction(pool, actor.id, async (client) => {
     const event = await lockEventRequest(client, eventRequestId);
     requireRelation(actor, event, ['ASSIGNED_COORDINATOR'], coordinatorOnly);
+    assertExpectedRevision(event.revision, expectedRevision);
     if (event.status !== 'SUBMITTED') {
       throw new WorkflowError('CONFLICT', 'REVIEW_NOT_STARTABLE', 'Only a submitted request can be moved to under review.');
     }
@@ -51,11 +60,13 @@ export async function requestClarification(
   command: Command & { input: unknown },
 ): Promise<{ clarificationId: string; eventRequestId: string; status: 'CLARIFICATION_REQUESTED' }> {
   const { eventRequestId, actor } = command;
-  const message = requiredText(parseObjectBody(command.input, ['message']), 'message');
+  const { body, expectedRevision } = reviewerRevision(command.input, ['message']);
+  const message = requiredText(body, 'message');
 
   return inActorTransaction(pool, actor.id, async (client) => {
     const event = await lockEventRequest(client, eventRequestId);
     requireRelation(actor, event, ['ASSIGNED_COORDINATOR'], coordinatorOnly);
+    assertExpectedRevision(event.revision, expectedRevision);
     if (event.status !== 'SUBMITTED' && event.status !== 'UNDER_REVIEW') {
       throw new WorkflowError('CONFLICT', 'CLARIFICATION_NOT_ALLOWED', 'Clarification can only be requested while the request awaits review.');
     }
