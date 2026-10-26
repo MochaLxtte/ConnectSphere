@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { parseAssignmentInput } from '../../src/modules/events/assignment.js';
 import {
-  parseObjectBody, relationTo, requiredText, requireRelation,
+  assertExpectedRevision, parseExpectedRevision, parseObjectBody, relationTo, requiredText, requireRelation,
   type LockedEventRequest, type WorkflowActor,
 } from '../../src/modules/events/workflow-support.js';
 
@@ -9,8 +9,35 @@ const organiser: WorkflowActor = { id: '10000000-0000-4000-8000-000000000001', r
 const coordinator: WorkflowActor = { id: '20000000-0000-4000-8000-000000000001', role: 'EVENT_COORDINATOR' };
 const event: LockedEventRequest = {
   id: '30000000-0000-4000-8000-000000000001', organiserId: organiser.id, coordinatorId: coordinator.id,
-  status: 'APPROVED', name: 'Open day',
+  status: 'APPROVED', name: 'Open day', revision: 1,
 };
+
+describe('KAN-66 revision helpers', () => {
+  it('accepts an absent optional revision and positive whole numbers', () => {
+    expect(parseExpectedRevision(undefined, false)).toBeNull();
+    expect(parseExpectedRevision(1, true)).toBe(1);
+    expect(parseExpectedRevision(2_147_483_647, false)).toBe(2_147_483_647);
+  });
+
+  it('requires the revision when asked and rejects invalid values', () => {
+    expect(() => parseExpectedRevision(undefined, true)).toThrow(
+      expect.objectContaining({ kind: 'INVALID_INPUT', code: 'EXPECTED_REVISION_REQUIRED' }),
+    );
+    for (const value of [0, -2, 1.5, '1', null, 2_147_483_648]) {
+      expect(() => parseExpectedRevision(value, false)).toThrow(
+        expect.objectContaining({ kind: 'INVALID_INPUT', code: 'INVALID_INPUT' }),
+      );
+    }
+  });
+
+  it('refuses a stale revision and ignores an absent one', () => {
+    expect(() => assertExpectedRevision(4, 4)).not.toThrow();
+    expect(() => assertExpectedRevision(4, null)).not.toThrow();
+    expect(() => assertExpectedRevision(5, 4)).toThrow(
+      expect.objectContaining({ kind: 'CONFLICT', code: 'EVENT_REVISION_CONFLICT' }),
+    );
+  });
+});
 
 describe('workflow access rules', () => {
   it('recognises only the owner and the assigned coordinator', () => {

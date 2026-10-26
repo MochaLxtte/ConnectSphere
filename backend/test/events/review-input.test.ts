@@ -50,10 +50,28 @@ describe('KAN-36 review request input', () => {
     'rejects a caller-supplied %s field',
     (field) => {
       expect(() => parseReviewInput({ decision: 'APPROVED', [field]: 'forged' })).toThrow(
-        'Only decision and reason may be supplied.',
+        'Only decision, reason and expectedRevision may be supplied.',
       );
     },
   );
+});
+
+describe('KAN-66 reviewer revision', () => {
+  it('passes a positive whole-number expectedRevision through and omits it when absent', () => {
+    expect(parseReviewInput({ decision: 'APPROVED', expectedRevision: 3 }))
+      .toEqual({ decision: 'APPROVED', reason: null, expectedRevision: 3 });
+    expect(parseReviewInput({ decision: 'APPROVED' })).toEqual({ decision: 'APPROVED', reason: null });
+  });
+
+  it.each([0, -1, 1.5, '3', null])('rejects expectedRevision %j with a field-specific error', (expectedRevision) => {
+    try {
+      parseReviewInput({ decision: 'APPROVED', expectedRevision });
+      throw new Error('expected a failure');
+    } catch (error) {
+      expect(error).toBeInstanceOf(ReviewInputError);
+      expect(error).toMatchObject({ field: 'expectedRevision', message: 'expectedRevision must be a positive whole number.' });
+    }
+  });
 });
 
 describe('KAN-60 required rejection reason', () => {

@@ -4,7 +4,7 @@ import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { createApp } from '../../../backend/src/app.js';
 import { createDraft, DraftCreateForbiddenError } from '../../../backend/src/modules/events/create-draft.js';
-import { updateOwnedDraft, type DraftActor } from '../../../backend/src/modules/events/update-draft.js';
+import { updateEventRequest, type DraftActor } from '../../../backend/src/modules/events/update-draft.js';
 import { migrate } from '../../migrate.js';
 
 const testUrl = process.env.TEST_DATABASE_URL;
@@ -119,7 +119,7 @@ describe('CF-02/CF-03 draft creation persistence', () => {
 
   it('lets the owner keep editing the new draft, including its registration settings', async () => {
     const created = await createDraft(dependencies, { actor: organiser, input: { name: 'First save' } });
-    const updated = await updateOwnedDraft(dependencies, {
+    const updated = await updateEventRequest(dependencies, {
       eventRequestId: created.id, actor: organiser,
       input: { registrationRequired: true, registrationCapacity: 40, registrationClosesAt: '2026-10-01T00:00:00Z' },
     });
@@ -128,7 +128,7 @@ describe('CF-02/CF-03 draft creation persistence', () => {
       name: 'First save', status: 'DRAFT', registrationRequired: true, registrationCapacity: 40,
       registrationOpensAt: null, registrationClosesAt: '2026-10-01T00:00:00.000Z',
     });
-    const cleared = await updateOwnedDraft(dependencies, {
+    const cleared = await updateEventRequest(dependencies, {
       eventRequestId: created.id, actor: organiser,
       input: { registrationRequired: false, registrationCapacity: null, registrationClosesAt: null },
     });
