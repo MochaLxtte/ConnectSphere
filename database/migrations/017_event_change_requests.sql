@@ -1,6 +1,5 @@
 -- KAN-15: reviewed change requests for significant fields of APPROVED or CONFIRMED events.
--- Numbered 017 because KAN-9/KAN-26 (014, 015) and KAN-66 (to be renumbered 016) are pending
--- merge; the runner applies files by name, so the gap is harmless.
+-- Follows KAN-9/KAN-26 (014, 015) and KAN-66 (016).
 --
 -- Migration 004 created a provisional event_change_requests table that no code has used. This
 -- migration completes it rather than replacing it (shared migrations are never edited):

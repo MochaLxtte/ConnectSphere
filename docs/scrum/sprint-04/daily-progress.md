@@ -22,7 +22,9 @@ Daily Scrums follow Tuesday, Thursday and Saturday: planned dates 20, 22, 24, 27
 
 **27 October 2026 — KAN-66 development update outside a Daily Scrum (Irfan).** Re-ran `npm run check` and coverage on the committed branch (`AUTO-20261027-KAN66-03`, Pass) and opened the KAN-66 pull request so CI runs the PostgreSQL integration and browser suites. Commit messages were rewritten to remove AI co-author trailers (content unchanged). Heads-up: the KAN-9/KAN-26 and KAN-62/KAN-63 branches also add a `014_*` migration; whichever merges after KAN-66 should renumber. Remaining: CI result, independent review (Tristan; reviewer changed from Kai Jie the same day), migration 014 team notice and shared rollout after merge, local integrated acceptance, AC8 with KAN-15.
 
-**27 October 2026 — KAN-15 development update outside a Daily Scrum (Irfan).** Design D1–D8 approved and implemented on `feat/KAN-15-change-requests`, stacked on the KAN-66 branch because approval reuses KAN-66's revision and edit audit. Migration 017 completes the unused 004 `event_change_requests` table. Evidence: `AUTO-20261027-KAN15-01` (unit/component and browser fixtures Pass; full browser suite 164/164 locally). Remaining: PostgreSQL integration in CI, independent review, migrations 014/017 notice and shared rollout after merge, local integrated acceptance (planned via Claude in Chrome), and the equipment cancellation model once #62/#63 settle (D8). Estimate unchanged at 5 SP.
+**27 October 2026 — KAN-15 development update outside a Daily Scrum (Irfan).** Design D1–D8 approved and implemented on `feat/KAN-15-change-requests`, stacked on the KAN-66 branch because approval reuses KAN-66's revision and edit audit. Migration 017 completes the unused 004 `event_change_requests` table. Evidence: `AUTO-20261027-KAN15-01` (unit/component and browser fixtures Pass; full browser suite 164/164 locally). Remaining: PostgreSQL integration in CI, independent review, migrations 016/017 notice and shared rollout after merge, local integrated acceptance (planned via Claude in Chrome), and the equipment cancellation model once #62/#63 settle (D8). Estimate unchanged at 5 SP.
+
+**27 October 2026 — KAN-66 integration update outside a Daily Scrum (Irfan).** After #62 (KAN-9/KAN-26) merged, `main` was merged into `feat/KAN-66-planning-edits`; shared-document conflicts kept both sides. KAN-66's migration was renumbered 014 to 016 (KAN-9's 014 is already reported applied on shared Supabase) and its evidence ID S4-E10 became S4-E14 because KAN-9 used S4-E10 to S4-E13. On the stacked KAN-15 branch, KAN-15's S4-E11 became S4-E15 for the same reason. Earlier dated run records keep their original wording.
 
 ## Impediments
 
@@ -54,3 +56,21 @@ This is a pre-sprint selection. Any actual Sprint 3 carry-over or newly discover
 | 16 October 2026, pre-start | 63 | 0 selected parent points evidenced complete | 63 | Not assessed | Current Jira administrative selection: Future sprint id 68; no sprint meeting or product acceptance implied |
 
 At actual start and close, capture the board. At close export the burndown, register evidence and update the [release burndown](../release-burndown.md). Work after 31 October retains its actual date.
+
+## 26 October 2026 — KAN-9 development update
+
+Outside a Daily Scrum: KAN-9 is In Progress / Tristan (8 SP), with unestimated subtasks KAN-101/102/103. Implemented strict quantity/time rules, operational counters, protected minimal event context, saved/unsaved read-only checks and an interface that discards stale results. Four local code commits separate the rules/schema, API, interface and database regression slices; subsequent documentation and focused test commits retain the KAN-9 ID. See AUTO-20261026-KAN9-01 / S4-E10 for commands, failed attempts/retests and coverage.
+
+KAN-26 is assigned to Tristan but remains To Do (3 SP). Migration 014 application to shared Supabase, integrated real-login manual scenarios, independent review and merge remain outstanding. Stock administration (KAN-18), request entry/review (KAN-63) and reservation writes (KAN-26) are not claimed complete. Scope remains 63 SP; no Done points, meeting attendance, estimates or burndown observations are added.
+
+## 26 October 2026 — KAN-26 development update
+
+Outside a Daily Scrum: implemented full saved-request reservation, current operational-capacity locking, transactionally committed coordinator/staff notices, audited manual cancellation and automatic release on actual CANCELLED/COMPLETED database transitions. The new branch includes local KAN-9 commits. KAN-26 remains In Progress / Tristan at 3 SP; KAN-104/105/106 are unestimated In Progress subtasks. AC105–108 and the decision log record the approved edge-case refinements; the estimate remains unchanged.
+
+AUTO-20261026-KAN26-01 / S4-E12 records the exact automated tests, failed attempts/retests, coverage and environment boundaries. S4-E13 captures API-fixture browser views, not manual acceptance. Migration 014 and test accounts were reported ready; additive migration 015 is prepared but not applied to shared Supabase. KAN-63 request-entry, KAN-18 stock-editor and KAN-62/KAN-10 lifecycle UI acceptance remain pending. Manual integrated tests are Not executed; independent review, merge and formal acceptance remain outstanding. Scope remains 63 SP; no standup, team vote or new Done points are invented.
+
+## 26 October 2026 — Combined KAN-9 and KAN-26 handoff
+
+Prepared `feat/KAN-9-KAN-26-equipment-workflow` for a single GitHub pull request containing the existing 13 feature/test/documentation commits, with their history preserved. The branch contains the latest fetched `main` (`c849ebf`) and both complete local feature branches. This handoff adds only branch-navigation notes and a detailed commit message; it does not change the tested application or database source.
+
+The recorded verification remains frontend 945 / backend 1,518 tests, isolated PostgreSQL 555 tests and browser 179 tests, with types, builds and coverage passing in AUTO-20261026-KAN26-01. Manual acceptance remains Not executed, migration 015 shared application is pending, and KAN-18/63/62/10 dependent UI checks remain separate. A push does not establish CI success, human review, merge or Done status; no acceptance or sprint-point changes are recorded.

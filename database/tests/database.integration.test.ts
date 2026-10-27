@@ -86,7 +86,7 @@ test('SCF-DB-01 migrations persist schema, seeds preserve edits, and HTTP readin
     '001_initial_scaffold.sql', '002_restrict_data_api_access.sql',
     '003_add_supabase_user_id.sql', '004_core_feature_schema.sql',
     '005_equipment_peak_availability.sql', '006_automatic_coordinator_assignment.sql',
-    '007_add_coordinator_lead.sql', '008_notification_inbox.sql', '009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_event_request_revisions.sql', '017_event_change_requests.sql',
+    '007_add_coordinator_lead.sql', '008_notification_inbox.sql', '009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_equipment_operational_quantities.sql', '015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql',
   ]);
   expect(await migrate(scopedUrl.toString())).toEqual([]);
   expect((await pool.query("SELECT to_regclass('app_user_identities') AS legacy_table")).rows)
@@ -112,6 +112,8 @@ test('SCF-DB-01 migrations persist schema, seeds preserve edits, and HTTP readin
   expect((await pool.query('SELECT id, name, total_quantity FROM equipment_types')).rows).toEqual([
     { id: retainedEquipmentId, name: 'Existing equipment record', total_quantity: 7 },
   ]);
+  expect((await pool.query('SELECT damaged_quantity, maintenance_quantity FROM equipment_types')).rows)
+    .toEqual([{ damaged_quantity: 0, maintenance_quantity: 0 }]);
   const users = await pool.query('SELECT role, password_hash FROM app_users ORDER BY role');
   expect(users.rows).toEqual([
     { role: 'EVENT_COORDINATOR', password_hash: null },
@@ -165,7 +167,7 @@ test('SCF-DB-02 upgrading the original schema preserves data and removes existin
     '002_restrict_data_api_access.sql',
     '003_add_supabase_user_id.sql', '004_core_feature_schema.sql',
     '005_equipment_peak_availability.sql', '006_automatic_coordinator_assignment.sql',
-    '007_add_coordinator_lead.sql', '008_notification_inbox.sql', '009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_event_request_revisions.sql', '017_event_change_requests.sql',
+    '007_add_coordinator_lead.sql', '008_notification_inbox.sql', '009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_equipment_operational_quantities.sql', '015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql',
   ]);
   expect(await migrate(legacyUrl.toString())).toEqual([]);
   expect((await legacyPool.query("SELECT to_regclass('app_user_identities') AS legacy_table")).rows)
@@ -278,18 +280,18 @@ test.each([
       assignments: (await database.query('SELECT * FROM coordinator_assignments')).rows,
       migrations: (await database.query('SELECT * FROM schema_migrations ORDER BY name')).rows,
     };
-    expect(await migrate(connectionString)).toEqual(['006_automatic_coordinator_assignment.sql', '007_add_coordinator_lead.sql', '008_notification_inbox.sql', '009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_event_request_revisions.sql', '017_event_change_requests.sql']);
+    expect(await migrate(connectionString)).toEqual(['006_automatic_coordinator_assignment.sql', '007_add_coordinator_lead.sql', '008_notification_inbox.sql', '009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_equipment_operational_quantities.sql', '015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql']);
     expect(await migrate(connectionString)).toEqual([]);
     expect((await database.query('SELECT * FROM app_user_identities')).rows).toEqual(before.identities);
     expect((await database.query('SELECT * FROM app_users ORDER BY id')).rows)
       .toEqual(before.users.map((user) => ({ ...user, coordinator_available: false })));
-    // Migration 014 (KAN-66) gives every existing request revision 1 and changes nothing else.
+    // Migration 016 (KAN-66) gives every existing request revision 1 and changes nothing else.
     expect((await database.query('SELECT * FROM event_requests')).rows)
       .toEqual(before.events.map((event) => ({ ...event, revision: 1 })));
     expect((await database.query('SELECT * FROM coordinator_assignments')).rows)
       .toEqual(before.assignments.map((assignment) => ({ ...assignment, assignment_method: 'MANUAL' })));
     const oldHistory = await database.query(
-      "SELECT * FROM schema_migrations WHERE name NOT IN ('006_automatic_coordinator_assignment.sql', '007_add_coordinator_lead.sql', '008_notification_inbox.sql', '009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_event_request_revisions.sql', '017_event_change_requests.sql') ORDER BY name",
+      "SELECT * FROM schema_migrations WHERE name NOT IN ('006_automatic_coordinator_assignment.sql', '007_add_coordinator_lead.sql', '008_notification_inbox.sql', '009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_equipment_operational_quantities.sql', '015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql') ORDER BY name",
     );
     expect(oldHistory.rows).toEqual(before.migrations);
     if (historicalMigration.name !== retiredFirebaseName) {
@@ -331,9 +333,9 @@ test('SCF-DB-05 databases with old 007 keep their complete history without rerun
       assignments: (await database.query('SELECT * FROM coordinator_assignments')).rows,
       identities: (await database.query('SELECT * FROM app_user_identities')).rows,
     };
-    expect(await migrate(connectionString)).toEqual(['007_add_coordinator_lead.sql', '008_notification_inbox.sql', '009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_event_request_revisions.sql', '017_event_change_requests.sql']);
+    expect(await migrate(connectionString)).toEqual(['007_add_coordinator_lead.sql', '008_notification_inbox.sql', '009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_equipment_operational_quantities.sql', '015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql']);
     expect(await migrate(connectionString)).toEqual([]);
-    expect((await database.query("SELECT * FROM schema_migrations WHERE name NOT IN ('007_add_coordinator_lead.sql', '008_notification_inbox.sql', '009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_event_request_revisions.sql', '017_event_change_requests.sql') ORDER BY name")).rows).toEqual(before.migrations);
+    expect((await database.query("SELECT * FROM schema_migrations WHERE name NOT IN ('007_add_coordinator_lead.sql', '008_notification_inbox.sql', '009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_equipment_operational_quantities.sql', '015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql') ORDER BY name")).rows).toEqual(before.migrations);
     expect((await database.query('SELECT * FROM app_users ORDER BY id')).rows).toEqual(before.users);
     expect((await database.query('SELECT * FROM coordinator_assignments')).rows).toEqual(before.assignments);
     expect((await database.query('SELECT * FROM app_user_identities')).rows).toEqual(before.identities);
@@ -351,7 +353,7 @@ test('SCF-DB-06 a dashboard-era Supabase history name is preserved but is not tr
     const usersBefore = (await database.query('SELECT * FROM app_users ORDER BY id')).rows;
     expect(await migrate(connectionString)).toEqual([
       '003_add_supabase_user_id.sql', '006_automatic_coordinator_assignment.sql', '007_add_coordinator_lead.sql',
-      '008_notification_inbox.sql', '009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_event_request_revisions.sql', '017_event_change_requests.sql',
+      '008_notification_inbox.sql', '009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_equipment_operational_quantities.sql', '015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql',
     ]);
     expect(await migrate(connectionString)).toEqual([]);
     expect((await database.query("SELECT * FROM schema_migrations WHERE name = '003_add_supabase_auth.sql'")).rows)
@@ -396,9 +398,9 @@ test('SCF-DB-08 matching current and prior ledger names are both retained withou
       SELECT '004_core_feature_schema.sql', checksum FROM schema_migrations
       WHERE name = '005_core_feature_schema.sql'`);
     const before = (await database.query('SELECT * FROM schema_migrations ORDER BY name')).rows;
-    expect(await migrate(connectionString)).toEqual(['006_automatic_coordinator_assignment.sql', '007_add_coordinator_lead.sql', '008_notification_inbox.sql', '009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_event_request_revisions.sql', '017_event_change_requests.sql']);
+    expect(await migrate(connectionString)).toEqual(['006_automatic_coordinator_assignment.sql', '007_add_coordinator_lead.sql', '008_notification_inbox.sql', '009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_equipment_operational_quantities.sql', '015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql']);
     expect((await database.query(
-      "SELECT * FROM schema_migrations WHERE name NOT IN ('006_automatic_coordinator_assignment.sql', '007_add_coordinator_lead.sql', '008_notification_inbox.sql', '009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_event_request_revisions.sql', '017_event_change_requests.sql') ORDER BY name",
+      "SELECT * FROM schema_migrations WHERE name NOT IN ('006_automatic_coordinator_assignment.sql', '007_add_coordinator_lead.sql', '008_notification_inbox.sql', '009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_equipment_operational_quantities.sql', '015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql') ORDER BY name",
     )).rows).toEqual(before);
     expect(await migrate(connectionString)).toEqual([]);
   });
@@ -414,13 +416,13 @@ test('KAN-79 migration adds trusted Lead profiles while preserving existing auto
       assignments: (await database.query('SELECT * FROM coordinator_assignments ORDER BY id')).rows,
       migrations: (await database.query('SELECT * FROM schema_migrations ORDER BY name')).rows,
     };
-    expect(await migrate(connectionString)).toEqual(['007_add_coordinator_lead.sql', '008_notification_inbox.sql', '009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_event_request_revisions.sql', '017_event_change_requests.sql']);
+    expect(await migrate(connectionString)).toEqual(['007_add_coordinator_lead.sql', '008_notification_inbox.sql', '009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_equipment_operational_quantities.sql', '015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql']);
     expect(await migrate(connectionString)).toEqual([]);
     expect((await database.query('SELECT * FROM app_users ORDER BY id')).rows).toEqual(before.users);
     expect((await database.query('SELECT * FROM event_requests ORDER BY id')).rows)
       .toEqual(before.events.map((event) => ({ ...event, revision: 1 })));
     expect((await database.query('SELECT * FROM coordinator_assignments ORDER BY id')).rows).toEqual(before.assignments);
-    expect((await database.query("SELECT * FROM schema_migrations WHERE name NOT IN ('007_add_coordinator_lead.sql', '008_notification_inbox.sql', '009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_event_request_revisions.sql', '017_event_change_requests.sql') ORDER BY name")).rows).toEqual(before.migrations);
+    expect((await database.query("SELECT * FROM schema_migrations WHERE name NOT IN ('007_add_coordinator_lead.sql', '008_notification_inbox.sql', '009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_equipment_operational_quantities.sql', '015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql') ORDER BY name")).rows).toEqual(before.migrations);
     await database.query("INSERT INTO app_users (email, display_name, role) VALUES ('lead@example.test', 'Lead', 'EVENT_COORDINATOR_LEAD')");
     await expect(database.query("INSERT INTO app_users (email, display_name, role) VALUES ('invalid@example.test', 'Invalid', 'SUPER_ADMIN')"))
       .rejects.toMatchObject({ code: '23514' });
@@ -449,7 +451,7 @@ test('KAN-77 migration gives existing venues zero buffers and preserves bookings
       migrations: (await database.query('SELECT * FROM schema_migrations ORDER BY name')).rows,
     };
 
-    expect(await migrate(connectionString)).toEqual(['009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_event_request_revisions.sql', '017_event_change_requests.sql']);
+    expect(await migrate(connectionString)).toEqual(['009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_equipment_operational_quantities.sql', '015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql']);
     expect(await migrate(connectionString)).toEqual([]);
 
     expect((await database.query('SELECT * FROM venues ORDER BY id')).rows)
@@ -463,7 +465,7 @@ test('KAN-77 migration gives existing venues zero buffers and preserves bookings
         hold_expires_at: null, held_by: null, held_at: null, expired_at: null,
         cancelled_by: null, cancelled_at: null, cancellation_reason: null,
       })));
-    expect((await database.query("SELECT * FROM schema_migrations WHERE name NOT IN ('009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_event_request_revisions.sql', '017_event_change_requests.sql') ORDER BY name")).rows)
+    expect((await database.query("SELECT * FROM schema_migrations WHERE name NOT IN ('009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_equipment_operational_quantities.sql', '015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql') ORDER BY name")).rows)
       .toEqual(before.migrations);
 
     await database.query('UPDATE venues SET setup_minutes = 1440, turnaround_minutes = 0 WHERE id = $1', [venue.id]);
@@ -483,14 +485,125 @@ test('KAN-77 integration preserves the original branch migration name without re
     await applyHistoricalMigration(database, '007_add_coordinator_lead.sql', '007_add_coordinator_lead.sql');
     await applyHistoricalMigration(database, '009_venue_buffer_durations.sql', '008_venue_buffer_durations.sql');
     const before = (await database.query('SELECT * FROM schema_migrations ORDER BY name')).rows;
-    expect(await migrate(connectionString)).toEqual(['008_notification_inbox.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_event_request_revisions.sql', '017_event_change_requests.sql']);
+    expect(await migrate(connectionString)).toEqual(['008_notification_inbox.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_equipment_operational_quantities.sql', '015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql']);
     expect(await migrate(connectionString)).toEqual([]);
-    expect((await database.query("SELECT * FROM schema_migrations WHERE name NOT IN ('008_notification_inbox.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_event_request_revisions.sql', '017_event_change_requests.sql') ORDER BY name")).rows)
+    expect((await database.query("SELECT * FROM schema_migrations WHERE name NOT IN ('008_notification_inbox.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_equipment_operational_quantities.sql', '015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql') ORDER BY name")).rows)
       .toEqual(before);
     expect((await database.query(
       "SELECT name FROM schema_migrations WHERE name IN ('009_venue_buffer_durations.sql')",
     )).rows).toEqual([]);
     await database.query("UPDATE schema_migrations SET checksum = 'changed' WHERE name = '008_venue_buffer_durations.sql'");
     await expect(migrate(connectionString)).rejects.toThrow('Applied migration 008_venue_buffer_durations.sql was modified');
+  });
+});
+
+test('KAN-9 migration 014 preserves existing equipment and reservations and enforces operational stock bounds', async () => {
+  await withPreAutomaticDatabase({ name: retiredFirebaseName, checksum: retiredFirebaseChecksum }, async (database, connectionString) => {
+    for (const name of [
+      '006_automatic_coordinator_assignment.sql', '007_add_coordinator_lead.sql',
+      '008_notification_inbox.sql', '009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql',
+      '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql',
+    ]) await applyHistoricalMigration(database, name, name);
+    const event = (await database.query('SELECT id, coordinator_id FROM event_requests LIMIT 1')).rows[0];
+    const equipmentId = randomUUID();
+    await database.query('INSERT INTO equipment_types (id, name, total_quantity) VALUES ($1, $2, 10)',
+      [equipmentId, 'Existing projector pool']);
+    await database.query(`INSERT INTO equipment_requests
+      (event_request_id, equipment_type_id, requested_by, quantity, status, starts_at, ends_at, decided_by, decided_at)
+      VALUES ($1, $2, $3, 4, 'RESERVED', '2031-01-12T02:00:00Z', '2031-01-12T04:00:00Z', $3, now())`,
+    [event.id, equipmentId, event.coordinator_id]);
+    const before = {
+      equipment: (await database.query('SELECT * FROM equipment_types ORDER BY id')).rows,
+      requests: (await database.query('SELECT * FROM equipment_requests ORDER BY id')).rows,
+      events: (await database.query('SELECT * FROM event_requests ORDER BY id')).rows,
+      history: (await database.query('SELECT * FROM event_status_history ORDER BY id')).rows,
+      migrations: (await database.query('SELECT * FROM schema_migrations ORDER BY name')).rows,
+    };
+    expect(await migrate(connectionString)).toEqual(['014_equipment_operational_quantities.sql', '015_equipment_reservations.sql']);
+    expect(await migrate(connectionString)).toEqual([]);
+    expect((await database.query('SELECT * FROM equipment_types ORDER BY id')).rows)
+      .toEqual(before.equipment.map(row => ({ ...row, damaged_quantity: 0, maintenance_quantity: 0 })));
+    expect((await database.query('SELECT * FROM equipment_requests ORDER BY id')).rows).toEqual(before.requests.map(row => ({ ...row, released_at: null, released_by: null, release_reason: null, release_cause: null })));
+    expect((await database.query('SELECT * FROM event_requests ORDER BY id')).rows).toEqual(before.events);
+    expect((await database.query('SELECT * FROM event_status_history ORDER BY id')).rows).toEqual(before.history);
+    expect((await database.query("SELECT * FROM schema_migrations WHERE name NOT IN ('014_equipment_operational_quantities.sql', '015_equipment_reservations.sql') ORDER BY name")).rows)
+      .toEqual(before.migrations);
+
+    // Equality is valid: all stock may be non-operational. Reservations are retained for reassessment.
+    await database.query('UPDATE equipment_types SET damaged_quantity = 7, maintenance_quantity = 3 WHERE id = $1', [equipmentId]);
+    for (const [damaged, maintenance] of [[-1, 0], [0, -1], [8, 3], [2_147_483_647, 2_147_483_647]]) {
+      await expect(database.query('UPDATE equipment_types SET damaged_quantity = $2, maintenance_quantity = $3 WHERE id = $1',
+        [equipmentId, damaged, maintenance])).rejects.toMatchObject({ code: '23514' });
+    }
+    for (const column of ['damaged_quantity', 'maintenance_quantity']) {
+      await expect(database.query(`UPDATE equipment_types SET ${column} = NULL WHERE id = $1`, [equipmentId]))
+        .rejects.toMatchObject({ code: '23502' });
+    }
+    await expect(database.query('UPDATE equipment_types SET total_quantity = 9 WHERE id = $1', [equipmentId]))
+      .rejects.toMatchObject({ code: '23514' });
+    expect((await database.query('SELECT * FROM equipment_requests ORDER BY id')).rows).toEqual(before.requests.map(row => ({ ...row, released_at: null, released_by: null, release_reason: null, release_cause: null })));
+    await expectDataApiAccessBlocked(database, ['app_user_identities', ...applicationTables]);
+  });
+});
+
+test('KAN-26 migration 015 preserves legacy decisions and unknown release metadata while adding protected operational guards', async () => {
+  await withPreAutomaticDatabase({ name: retiredFirebaseName, checksum: retiredFirebaseChecksum }, async (database, connectionString) => {
+    for (const name of [
+      '006_automatic_coordinator_assignment.sql', '007_add_coordinator_lead.sql', '008_notification_inbox.sql',
+      '009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql',
+      '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_equipment_operational_quantities.sql',
+    ]) await applyHistoricalMigration(database, name, name);
+    const event = (await database.query('SELECT id,coordinator_id FROM event_requests LIMIT 1')).rows[0];
+    const type = randomUUID();
+    await database.query('INSERT INTO equipment_types(id,name,total_quantity) VALUES($1,$2,10)', [type, `Legacy pool ${type}`]);
+    const reserved = randomUUID(); const cancelled = randomUUID();
+    await database.query(`INSERT INTO equipment_requests
+      (id,event_request_id,equipment_type_id,requested_by,quantity,status,starts_at,ends_at,decided_by,decided_at,decision_reason)
+      VALUES($1,$3,$4,$5,4,'RESERVED','2031-01-12T02:00:00Z','2031-01-12T06:00:00Z',$5,'2026-10-01T02:00:00Z','Existing decision'),
+        ($2,$3,$4,$5,2,'CANCELLED','2031-01-12T02:00:00Z','2031-01-12T06:00:00Z',$5,'2026-10-01T02:00:00Z','Earlier cancelled reservation')`,
+    [reserved, cancelled, event.id, type, event.coordinator_id]);
+    await database.query(`INSERT INTO notifications(recipient_id,event_request_id,type,title,message,dedupe_key)
+      VALUES($1,$2,'LEGACY','Existing notice','Keep this original notice','legacy:kan26')`, [event.coordinator_id, event.id]);
+    const before = {
+      requests: (await database.query('SELECT * FROM equipment_requests ORDER BY id')).rows,
+      equipment: (await database.query('SELECT * FROM equipment_types ORDER BY id')).rows,
+      events: (await database.query('SELECT * FROM event_requests ORDER BY id')).rows,
+      history: (await database.query('SELECT * FROM event_status_history ORDER BY id')).rows,
+      notices: (await database.query('SELECT * FROM notifications ORDER BY id')).rows,
+      migrations: (await database.query('SELECT * FROM schema_migrations ORDER BY name')).rows,
+    };
+    expect(await migrate(connectionString)).toEqual(['015_equipment_reservations.sql']);
+    expect(await migrate(connectionString)).toEqual([]);
+    const upgraded = before.requests.map(row => ({ ...row, released_at: null, released_by: null,
+      release_reason: null, release_cause: null }));
+    expect((await database.query('SELECT * FROM equipment_requests ORDER BY id')).rows).toEqual(upgraded);
+    expect((await database.query('SELECT * FROM equipment_types ORDER BY id')).rows).toEqual(before.equipment);
+    expect((await database.query('SELECT * FROM event_requests ORDER BY id')).rows).toEqual(before.events);
+    expect((await database.query('SELECT * FROM event_status_history ORDER BY id')).rows).toEqual(before.history);
+    expect((await database.query('SELECT * FROM notifications ORDER BY id')).rows)
+      .toEqual(before.notices.map(row => ({ ...row, equipment_request_id: null })));
+    expect((await database.query("SELECT * FROM schema_migrations WHERE name<>'015_equipment_reservations.sql' ORDER BY name")).rows)
+      .toEqual(before.migrations);
+    // A future operational loss must not rewrite or invalidate existing historical commitments.
+    await database.query('UPDATE equipment_types SET damaged_quantity=9 WHERE id=$1', [type]);
+    await database.query("UPDATE equipment_requests SET notes='Retained after stock loss' WHERE id=$1", [reserved]);
+    await expect(database.query("UPDATE equipment_requests SET status='RESERVED' WHERE id=$1", [cancelled]))
+      .rejects.toMatchObject({ code: '23514' });
+    expect((await database.query('SELECT * FROM equipment_requests WHERE id=$1', [cancelled])).rows[0])
+      .toEqual(upgraded.find(row => row.id === cancelled));
+    await expect(database.query('UPDATE equipment_requests SET quantity=3 WHERE id=$1', [reserved]))
+      .rejects.toMatchObject({ code: '23514' });
+    const functions = await database.query(`SELECT p.proname,
+      EXISTS(SELECT 1 FROM aclexplode(COALESCE(p.proacl,acldefault('f',p.proowner))) a
+        WHERE a.grantee=0 AND a.privilege_type='EXECUTE') AS public_execute,
+      p.proconfig FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+      WHERE n.nspname=current_schema() AND p.proname=ANY($1::text[]) ORDER BY p.proname`,
+    [['prevent_equipment_overbooking', 'protect_equipment_reservation_history', 'release_terminal_event_equipment']]);
+    expect(functions.rows).toHaveLength(3);
+    for (const fn of functions.rows) {
+      expect(fn.public_execute).toBe(false);
+      expect(fn.proconfig).toEqual([expect.stringMatching(/^search_path=test_[a-f0-9]+, pg_temp$/)]);
+    }
+    await expectDataApiAccessBlocked(database, ['app_user_identities', ...applicationTables]);
   });
 });

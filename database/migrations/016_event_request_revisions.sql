@@ -5,7 +5,9 @@
 -- decide on information the reviewer has not seen. updated_at is not used for this because
 -- JavaScript dates drop PostgreSQL's microseconds.
 -- event_request_edits records who changed which fields after submission, with old and new values.
--- Additive only: existing rows start at revision 1 and migrations 001-013 are unchanged.
+-- Additive only: existing rows start at revision 1 and migrations 001-015 are unchanged.
+-- Written as 014 on 26 October 2026; renumbered 016 on 27 October because KAN-9 merged its own
+-- 014 (equipment quantities) and 015 first. The SQL is unchanged.
 
 ALTER TABLE event_requests
   ADD COLUMN revision integer NOT NULL DEFAULT 1 CHECK (revision >= 1);

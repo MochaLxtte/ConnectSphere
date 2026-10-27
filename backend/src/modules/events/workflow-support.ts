@@ -37,7 +37,7 @@ export interface LockedEventRequest {
   status: EventStatus;
   /** Used in notification text (KAN-64); nullable because drafts may be unnamed. */
   name: string | null;
-  /** KAN-66: increases on every update of the row (migration 014). */
+  /** KAN-66: increases on every update of the row (migration 016). */
   revision: number;
 }
 

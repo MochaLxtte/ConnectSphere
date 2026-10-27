@@ -1,0 +1,73 @@
+
+ RUN  v4.1.11 C:/Users/trist/Documents/School Stuff/Y3S1/IS212/ConnectSphere
+
+ ✓ database/tests/database.integration.test.ts > SCF-DB-01 migrations persist schema, seeds preserve edits, and HTTP readiness reaches PostgreSQL 951ms
+ ✓ database/tests/database.integration.test.ts > SCF-DB-02 upgrading the original schema preserves data and removes existing Data API grants 733ms
+ ✓ database/tests/database.integration.test.ts > SCF-DB-03 upgrading a legacy database preserves '003_add_firebase_identities.sql' and existing records 1011ms
+ ✓ database/tests/database.integration.test.ts > SCF-DB-03 upgrading a legacy database preserves '003_add_supabase_auth.sql' and existing records 1022ms
+ ✓ database/tests/database.integration.test.ts > SCF-DB-04 a changed retired checksum prevents pending migrations and preserves historical data 510ms
+ ✓ database/tests/database.integration.test.ts > SCF-DB-05 databases with old 007 keep their complete history without rerunning or adding renamed entries 825ms
+ ✓ database/tests/database.integration.test.ts > SCF-DB-06 a dashboard-era Supabase history name is preserved but is not treated as a renamed migration 768ms
+ ✓ database/tests/database.integration.test.ts > SCF-DB-07 a changed '005_core_feature_schema.sql' with duplicate=false prevents pending migrations 478ms
+ ✓ database/tests/database.integration.test.ts > SCF-DB-07 a changed '005_core_feature_schema.sql' with duplicate=true prevents pending migrations 547ms
+ ✓ database/tests/database.integration.test.ts > SCF-DB-07 a changed '004_core_feature_schema.sql' with duplicate=true prevents pending migrations 505ms
+ ✓ database/tests/database.integration.test.ts > SCF-DB-08 matching current and prior ledger names are both retained without duplicate execution 849ms
+ ✓ database/tests/database.integration.test.ts > KAN-79 migration adds trusted Lead profiles while preserving existing automatic assignments and history 881ms
+ ✓ database/tests/database.integration.test.ts > KAN-77 migration gives existing venues zero buffers and preserves bookings and history 818ms
+ ✓ database/tests/database.integration.test.ts > KAN-77 integration preserves the original branch migration name without reapplying its columns 1092ms
+ ✓ database/tests/database.integration.test.ts > KAN-9 migration 014 preserves existing equipment and reservations and enforces operational stock bounds 1134ms
+ ✓ database/tests/database.integration.test.ts > KAN-26 migration 015 preserves legacy decisions and unknown release metadata while adding protected operational guards 627ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > reserves the full saved quantity independently of venue approval and persists one decision plus recipient notices 139ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > serializes competing events and reserves at most operational stock 81ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > makes concurrent retries on the same line idempotent without duplicate notices 67ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > manually cancels once, preserves the reservation decision and never increments stock 121ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > releases on actual cancellation and completion transitions once, preserving other events and unknown actors 162ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > allows exact half-open adjacency and refuses a one-microsecond overlap 115ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > uses peak simultaneous consumption rather than summing disjoint reservations 125ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > requires every active full line and current stock for readiness, without treating empty requirements as ready 127ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > refuses stale saved requirements without overwriting a newer quantity or creating notifications 46ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > refuses partial quantity overrides, invalid stored periods, missing assignment and non-approved events 110ms
+stderr | database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > rolls back the decision and every notice if a deferred notification constraint fails at commit
+Unexpected API error.
+
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > rechecks role permissions in PostgreSQL and hides another event line from the requested event 133ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > rolls back the decision and every notice if a deferred notification constraint fails at commit 105ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > enforces release metadata completeness and preserves original decision, allocation and release history 281ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > applies operational and eligibility guards to direct database reservation writes too 87ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > serializes a simultaneous terminal transition with reservation without leaving terminal stock committed 48ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > serializes manual cancellation and event completion while retaining exactly one release cause 69ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > rechecks damage after waiting for a concurrent stock writer 62ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > rechecks deactivation after waiting for a concurrent stock writer 53ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > notifies the current coordinator after waiting for a reassignment transaction 68ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > refuses a demoted assigned coordinator without recording a reservation or undeliverable confirmation 66ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > limits equipment notifications to their recipients and current permissions, including terminal historical acknowledgements 177ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > uses bigint capacity checks at the PostgreSQL integer limit without overflowing the total demand 82ms
+ ✓ database/tests/equipment/availability.integration.test.ts > KAN-9 read-only equipment availability against real PostgreSQL > lists only eligible events and returns minimal context with saved requirements and referenced inactive equipment 67ms
+ ✓ database/tests/equipment/availability.integration.test.ts > KAN-9 read-only equipment availability against real PostgreSQL > uses operational stock minus simultaneous peak, with half-open adjacency and equality allowed 105ms
+ ✓ database/tests/equipment/availability.integration.test.ts > KAN-9 read-only equipment availability against real PostgreSQL > sums simultaneous reservations rather than taking the biggest individual reservation 42ms
+ ✓ database/tests/equipment/availability.integration.test.ts > KAN-9 read-only equipment availability against real PostgreSQL > fulfils mixed equipment types at equality and reports only the deficient type without writing records 62ms
+ ✓ database/tests/equipment/availability.integration.test.ts > KAN-9 read-only equipment availability against real PostgreSQL > preserves PostgreSQL microsecond overlap and adjacency boundaries 64ms
+ ✓ database/tests/equipment/availability.integration.test.ts > KAN-9 read-only equipment availability against real PostgreSQL > aggregates saved duplicate lines and excludes those reservations only in saved mode 57ms
+ ✓ database/tests/equipment/availability.integration.test.ts > KAN-9 read-only equipment availability against real PostgreSQL > reports every equipment type and its exact deficit, including inactive and zero-operational pools 37ms
+ ✓ database/tests/equipment/availability.integration.test.ts > KAN-9 read-only equipment availability against real PostgreSQL > rejects stale event text even when updated_at was not changed 41ms
+ ✓ database/tests/equipment/availability.integration.test.ts > KAN-9 read-only equipment availability against real PostgreSQL > rejects stale saved quantity even when updated_at was not changed 35ms
+ ✓ database/tests/equipment/availability.integration.test.ts > KAN-9 read-only equipment availability against real PostgreSQL > rejects stale saved status even when updated_at was not changed 32ms
+ ✓ database/tests/equipment/availability.integration.test.ts > KAN-9 read-only equipment availability against real PostgreSQL > rejects stale saved period even when updated_at was not changed 31ms
+ ✓ database/tests/equipment/availability.integration.test.ts > KAN-9 read-only equipment availability against real PostgreSQL > refuses mismatched saved periods and missing saved requirements instead of silently retiming or passing 57ms
+ ✓ database/tests/equipment/availability.integration.test.ts > KAN-9 read-only equipment availability against real PostgreSQL > reads current reservation and stock changes without accepting a stale cached capacity result 37ms
+ ✓ database/tests/equipment/availability.integration.test.ts > KAN-9 read-only equipment availability against real PostgreSQL > reports a newly deactivated selected type as a shortfall without dropping the unsaved demand 28ms
+ ✓ database/tests/equipment/availability.integration.test.ts > KAN-9 read-only equipment availability against real PostgreSQL > protects all three endpoints from anonymous and every non-technical role without changing records 73ms
+ ✓ database/tests/equipment/availability.integration.test.ts > KAN-9 read-only equipment availability against real PostgreSQL > refuses ineligible and missing events for direct context and assessment calls 62ms
+ ✓ database/tests/equipment/availability.integration.test.ts > KAN-9 read-only equipment availability against real PostgreSQL > rejects invalid or empty quantities, unknown equipment, and overflow when aggregating duplicate lines 52ms
+ ✓ database/tests/equipment/availability.integration.test.ts > KAN-9 read-only equipment availability against real PostgreSQL > works with a PostgreSQL session that prohibits all writes 58ms
+ ✓ database/tests/core-schema.integration.test.ts > CORE-DB-01 status changes are recorded with the transaction actor when supplied 18ms
+ ✓ database/tests/core-schema.integration.test.ts > CORE-DB-02 approved venue bookings cannot overlap each other or blocked periods 93ms
+ ✓ database/tests/core-schema.integration.test.ts > CORE-DB-03 a venue decision requires its decision maker and time 9ms
+ ✓ database/tests/core-schema.integration.test.ts > CORE-DB-04 equipment reservations cannot exceed the pooled quantity 57ms
+ ✓ database/tests/core-schema.integration.test.ts > CORE-DB-05 registrations respect capacity, uniqueness and withdrawal 37ms
+ ✓ database/tests/core-schema.integration.test.ts > CORE-DB-06 one active coordinator assignment and non-empty change requests 50ms
+
+ Test Files  4 passed (4)
+      Tests  62 passed (62)
+   Start at  14:34:35
+   Duration  23.27s (transform 1.48s, setup 0ms, import 4.22s, tests 18.06s, environment 0ms)

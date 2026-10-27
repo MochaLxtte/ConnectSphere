@@ -14,6 +14,8 @@ The base diagram records the schema through migration 009 on 21 October 2026; la
 
 Relationship labels name the foreign-key column in the child table. `||` means exactly one parent, `|o` means zero or one parent, and `o{` means zero or more child rows.
 
+**26 October KAN-9 update:** the equipment type below now includes `damaged_quantity` and `maintenance_quantity` from additive migration 014. Both default to zero, cannot be negative and together cannot exceed total stock. Existing stock, requests and reservation history are preserved. The repository model and isolated migration tests include 014. At the initial KAN-9 checkpoint, shared application and the write workflows were pending. The later 26 October follow-up reports 014 and test accounts ready; KAN-26 is now covered by the separate migration-015 section below, while KAN-18/KAN-63 remain pending.
+
 ## Application tables
 
 ```mermaid
@@ -24,6 +26,7 @@ erDiagram
     event_requests ||..o{ event_request_edits : "event_request_id"
     app_users ||..o{ event_request_edits : "edited_by"
     app_users |o..o{ equipment_requests : "decided_by"
+    app_users |o..o{ equipment_requests : "released_by"
     equipment_types ||..o{ equipment_requests : "equipment_type_id"
     event_requests ||..o{ equipment_requests : "event_request_id"
     app_users ||..o{ equipment_requests : "requested_by"
@@ -43,6 +46,7 @@ erDiagram
     event_requests |o..o{ notifications : "event_request_id"
     app_users ||..o{ notifications : "recipient_id"
     venue_bookings |o..o{ notifications : "venue_booking_id"
+    equipment_requests |o..o{ notifications : "equipment_request_id"
     app_users |o..o{ venue_bookings : "decided_by"
     app_users |o..o{ venue_bookings : "held_by"
     app_users |o..o{ venue_bookings : "cancelled_by"
@@ -87,7 +91,7 @@ erDiagram
         integer registration_capacity "nullable"
         timestamptz registration_opens_at "nullable"
         timestamptz registration_closes_at "nullable"
-        integer revision "migration 014"
+        integer revision "migration 016"
     }
 
     event_request_edits {
@@ -216,6 +220,8 @@ erDiagram
         text category "nullable"
         text description "nullable"
         integer total_quantity
+        integer damaged_quantity "default 0, nonnegative; migration 014"
+        integer maintenance_quantity "default 0, nonnegative; combined losses <= total"
         boolean is_active
         timestamptz created_at
         timestamptz updated_at
@@ -234,6 +240,10 @@ erDiagram
         uuid decided_by FK "nullable"
         timestamptz decided_at "nullable"
         text decision_reason "nullable"
+        timestamptz released_at "nullable, migration 015"
+        uuid released_by FK "nullable, migration 015"
+        text release_reason "nullable, retained"
+        text release_cause "nullable, manual or terminal release"
         timestamptz created_at
         timestamptz updated_at
     }
@@ -270,6 +280,7 @@ erDiagram
         uuid recipient_id FK
         uuid event_request_id FK "nullable"
         uuid venue_booking_id FK "nullable, migration 008"
+        uuid equipment_request_id FK "nullable, migration 015"
         text dedupe_key "nullable, unique with recipient_id, migration 008"
         text type
         text title
@@ -329,14 +340,33 @@ Arvin’s KAN-24 schema/ERD work merged in PR #10; its subsequently removed appl
 
 No table, relationship or numbered migration changes in the closeout repair. The shared migration-013 checksum matches the repository. `pg_cron` 1.6.4 is now enabled with the named every-minute `public.expire_venue_holds()` job; successful runs were observed from 21:58 SGT. This is operational configuration, not a new application table or proof of an expiry journey with a test hold. See [configuration evidence](scrum/sprint-03/evidence/supabase-hold-expiry-20261025.json).
 
-## 26 October 2026 — Migration 014 event revisions (KAN-66)
 
-[014_event_request_revisions.sql](../database/migrations/014_event_request_revisions.sql) is additive. It adds `event_requests.revision` (integer, not null, default 1, at least 1); the `event_requests_advance_revision` `BEFORE UPDATE` trigger sets it to the previous value plus one on every update and ignores any written value. Writers compare a client's `expectedRevision` with the locked row. The new `event_request_edits` table records each post-submission edit: `revision` (the resulting revision, unique per event, at least 2), `edited_by` (`app_users`), `editor_role` (organiser or coordinator), `event_status` at the time of the edit and a non-empty `changes` object of `{ "<apiField>": { "from", "to" } }`. Rows cascade with their event. Row-level security is enabled and Data API roles have no privileges, matching the other application tables. Draft edits and status changes are not recorded here; status changes remain in `event_status_history`.
+## KAN-9 operational equipment model — 26 October 2026
 
-Migration 014 has **not** been applied to shared Supabase; announce it to the team first (AGENTS.md §7.3). The PNG export `erd-planning.png` does not yet include it; the combined diagram re-export remains **pending** as recorded in the [architecture README](architecture/README.md).
+Migration `014_equipment_operational_quantities.sql` adds two `integer NOT NULL DEFAULT 0` columns to `equipment_types`. `damaged_quantity >= 0`, `maintenance_quantity >= 0`, and `damaged_quantity::bigint + maintenance_quantity::bigint <= total_quantity::bigint` are database constraints. The widened sum avoids integer-overflow bypasses. No table, relationship, policy, trigger or existing reservation is removed or rewritten.
+
+The derived assessment is not a stored table. For an active type it subtracts damaged and maintenance quantities, then peak simultaneous `RESERVED` demand in a half-open period; inactive types have zero operational stock. Saved mode excludes only the exact reserved lines under assessment. Unsaved mode excludes none. Both preserve requests, event status/history and notifications. Migration 005 still enforces historical total-capacity reservations; KAN-26 must add operational-capacity revalidation under the pool lock. The user subsequently reported migration 014/account setup complete. Connected manual checks remain **Not executed**; migration 015 below supersedes the earlier reservation-trigger dependency.
+
+## KAN-26 reservation and release model — 26 October 2026
+
+The current equipment/notification sections in the diagram include migration `015_equipment_reservations.sql`. Its four nullable release columns on `equipment_requests` preserve who released a reservation (when known), when, why and whether the cause was manual cancellation, event cancellation or completion. `released_by` references `app_users`; `notifications.equipment_request_id` references the original request. Existing cancelled rows retain null metadata, and existing decisions/allocations remain unchanged. Release metadata must be wholly absent or describe a cancelled line with time, nonempty reason and a valid cause; manual cancellation requires an actor.
+
+The same request row changes from `REQUESTED` to `RESERVED`, then optionally `CANCELLED`; there is no extra reservation table or incrementing/decrementing stock balance. The history trigger forbids rewriting reserved/released allocation and decision fields, reusing a cancelled row or changing recorded release metadata. API mutations additionally require Technical Support and an approved event; confirmed events are read-only.
+
+Migration 015 replaces the historical total-capacity reservation check described above. New reservations lock event/pool rows, require the current approved event period and compare peak overlapping reserved demand against operational capacity after damage/maintenance losses. Later stock loss retains existing reservations and is exposed as a readiness shortfall. An actual event-status transition to `CANCELLED`/`COMPLETED` releases only live reservations once, preserving their original decision and recording release cause/time/reason and transaction actor when available. KAN-62/KAN-10 lifecycle APIs are still pending; the database trigger does not create those user workflows.
+
+The notification FK links the KAN-80 `EQUIPMENT_RESERVED` slice to the exact saved request. Reservation and coordinator/acting-staff notices commit or roll back together. Current C3, class, equipment-reservation sequence and planning ERD exports are in [architecture exports](architecture/README.md#diagram-exports). Shared migration 015 application and connected manual acceptance are **Not executed**.
+
+## 26 October 2026 — Migration 016 event revisions (KAN-66)
+
+**27 October 2026:** written as migration 014 and renumbered 016 after KAN-9/KAN-26 merged their own 014 and 015; the SQL is unchanged.
+
+[016_event_request_revisions.sql](../database/migrations/016_event_request_revisions.sql) is additive. It adds `event_requests.revision` (integer, not null, default 1, at least 1); the `event_requests_advance_revision` `BEFORE UPDATE` trigger sets it to the previous value plus one on every update and ignores any written value. Writers compare a client's `expectedRevision` with the locked row. The new `event_request_edits` table records each post-submission edit: `revision` (the resulting revision, unique per event, at least 2), `edited_by` (`app_users`), `editor_role` (organiser or coordinator), `event_status` at the time of the edit and a non-empty `changes` object of `{ "<apiField>": { "from", "to" } }`. Rows cascade with their event. Row-level security is enabled and Data API roles have no privileges, matching the other application tables. Draft edits and status changes are not recorded here; status changes remain in `event_status_history`.
+
+Migration 016 has **not** been applied to shared Supabase; announce it to the team first (AGENTS.md §7.3). The PNG export `erd-planning.png` does not yet include it; the combined diagram re-export remains **pending** as recorded in the [architecture README](architecture/README.md).
 
 ## 27 October 2026 — Migration 017 change requests (KAN-15)
 
-[017_event_change_requests.sql](../database/migrations/017_event_change_requests.sql) completes the provisional `event_change_requests` table from migration 004 instead of creating a new one. It adds `previous` (values replaced), `base_revision` (the KAN-66 revision the organiser saw), `applied_revision` and `cancelled_arrangements` (set on approval); makes the organiser `reason` optional; replaces 004's decision check so `PENDING` is exactly the undecided state (withdrawals record who and when); requires a reason for rejection; and adds `event_change_requests_one_pending_idx`, a partial unique index allowing one `PENDING` request per event. The two status-coupled checks are `NOT VALID` so an unexpected legacy row cannot block the migration; new and updated rows are still checked. RLS and Data API revokes were already applied by 004. Numbered 017 to leave 014–016 for KAN-9/KAN-26 and KAN-66 while they await merge.
+[017_event_change_requests.sql](../database/migrations/017_event_change_requests.sql) completes the provisional `event_change_requests` table from migration 004 instead of creating a new one. It adds `previous` (values replaced), `base_revision` (the KAN-66 revision the organiser saw), `applied_revision` and `cancelled_arrangements` (set on approval); makes the organiser `reason` optional; replaces 004's decision check so `PENDING` is exactly the undecided state (withdrawals record who and when); requires a reason for rejection; and adds `event_change_requests_one_pending_idx`, a partial unique index allowing one `PENDING` request per event. The two status-coupled checks are `NOT VALID` so an unexpected legacy row cannot block the migration; new and updated rows are still checked. RLS and Data API revokes were already applied by 004. It follows KAN-9/KAN-26 (014, 015) and KAN-66 (016).
 
 Migration 017 has **not** been applied to shared Supabase; announce it first (AGENTS.md §7.3). The PNG exports do not include it yet.

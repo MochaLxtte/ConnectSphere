@@ -1,0 +1,18 @@
+KAN-9 coverage — AUTO-20261026-KAN9-01 — 26 October 2026
+Command: npm run test:coverage
+Frontend 881 tests; backend 1451 tests: Pass.
+                        Statements  Branches  Functions  Lines
+Whole frontend          95.71%      93.00%    97.67%     97.69%
+Whole backend           90.46%      92.23%    90.42%     90.74%
+New equipment backend  100.00%     100.00%   100.00%    100.00%
+New equipment frontend 100.00%      98.04%   100.00%    100.00%
+Backend: 87 focused new tests. Frontend: 301/307 branch outcomes; six
+defensive ready-state/non-Error fallback branches remain uncovered.
+The API client throws Error objects. No claim of 100% full-project coverage.
+PostgreSQL integration is verified separately and not instrumented here.
+Shared Supabase/manual integrated acceptance: Not executed.
+Full logs and exact source hashes: ../../scrum/sprint-04/evidence/kan9-20261026/.
+
+Dedicated backend command:
+npm run test:coverage -w @connectsphere/backend -- test/equipment --coverage.include=src/modules/equipment/*.ts --coverage.reportsDirectory=coverage-equipment
+Final dedicated result: 3 files / 87 tests; statements 161/161, branches 122/122, functions 33/33, lines 139/139.

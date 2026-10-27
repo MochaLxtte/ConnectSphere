@@ -19,8 +19,9 @@ import type { NotificationInput } from './notify.js';
  * | Outage affects approved bookings (Venue     | each affected event's current coordinator, once per event      |
  * | Staff; KAN-81-AC5)                          | and outage                                                     |
  *
- * Out of scope here (KAN-64-AC209): equipment, significant change, final confirmation/cancellation
- * and registration/withdrawal triggers belong to KAN-80.
+ * KAN-26 adds the equipment-reserved KAN-80 slice: assigned coordinator and deciding Technical
+ * Support acknowledgement. Other equipment, significant change, final confirmation/cancellation
+ * and registration/withdrawal triggers remain with KAN-80.
  */
 export const NOTIFICATION_TYPES = [
   'REQUEST_SUBMITTED',
@@ -33,8 +34,22 @@ export const NOTIFICATION_TYPES = [
   'VENUE_BOOKING_APPROVED',
   'VENUE_BOOKING_REJECTED',
   'VENUE_OUTAGE_RECOVERY_REQUIRED',
+  'EQUIPMENT_RESERVED',
 ] as const;
 export type NotificationType = (typeof NOTIFICATION_TYPES)[number];
+
+/** KAN-26 supplies this KAN-80 trigger slice; other equipment/lifecycle triggers remain separate. */
+export function equipmentReservationNotifications(input: {
+  eventId: string; eventName: string | null; coordinatorId: string; technicalSupportId: string;
+  requestId: string; equipmentName: string; quantity: number;
+}): NotificationInput[] {
+  return [...new Set([input.coordinatorId, input.technicalSupportId])].map(recipientId => ({
+    recipientId, eventRequestId: input.eventId, equipmentRequestId: input.requestId,
+    type: 'EQUIPMENT_RESERVED', title: 'Equipment reserved',
+    message: `${input.quantity} × ${input.equipmentName} reserved for ${label({ name: input.eventName })}.`,
+    dedupeKey: `EQUIPMENT_RESERVED:${input.requestId}`,
+  }));
+}
 
 /** Shown to a coordinator who has lost access. It must stay free of event details (AC202, AC206). */
 export const REASSIGNED_AWAY_MESSAGE =

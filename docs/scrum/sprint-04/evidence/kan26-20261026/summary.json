@@ -1,0 +1,52 @@
+{
+  "run_id": "AUTO-20261026-KAN26-01",
+  "date": "2026-10-26",
+  "branch": "feat/KAN-26-equipment-reservations",
+  "base_commit": "e64b226441aebfbb386b102a1490e2e714273962",
+  "build": "Verified code and tests captured in b29dc1261937c4f66708ae35d043779737c99e2e; later commits change documentation only",
+  "environment": "Windows; Node 24.21.0; Vitest 4.1.11; disposable PostgreSQL17 at127.0.0.1:55432; Chromium; substituted authentication in database HTTP tests and substituted authenticated API responses in browser tests",
+  "results": {
+    "check_frontend": 945,
+    "check_backend": 1518,
+    "integration": 555,
+    "integration_files": 28,
+    "new_reservation_integration": 25,
+    "browser": 179,
+    "check": "Pass",
+    "coverage": "Pass"
+  },
+  "limits": [
+    "Manual integrated acceptance Not executed",
+    "Shared migration015 not applied;014/account setup user-reported complete",
+    "Initial focused browser run started API with existing local environment; equipment APIs were intercepted, but existing startup hold-expiry scheduler may have run. Shared effects were not inspected. Full browser rerun explicitly used disposable PostgreSQL after migrations.",
+    "Dependent KAN-63/KAN-18/KAN-62/KAN-10 UI acceptance remains pending"
+  ],
+  "source_sha256": {
+    "backend/src/app.ts": "fb621f4a8fc3285bf3777516ff54b3f73442732d9c98430a110f60bf06d062bb",
+    "backend/src/modules/equipment/reservation-input.ts": "226b8a8e6bdaa1bff5a70c6a3d540c85b6428272af5266d5bc6a229b556319ae",
+    "backend/src/modules/equipment/reservation-router.ts": "a2309987d9030549e3fcf81dd03ebecd8881851fa7dea776a69674631c858a14",
+    "backend/src/modules/equipment/reservation-service.ts": "b62f8d00857321bb498e7a852f51efd255e5d6246c0dec5493c6558082da614f",
+    "backend/src/modules/equipment/reservation-types.ts": "77454ac283e36a5c552df71f893f635458b172c0b0213fa34ee77a6eb6f0de32",
+    "backend/src/modules/notifications/inbox.ts": "0a11fe58479bba6ad95d837a425913f9cc1a6dd771b0d98a0d3df64612e380a5",
+    "backend/src/modules/notifications/notify.ts": "c6306ef7520fe34256e27d34c31ad841920444112cecc427ac81d834356bcf6c",
+    "backend/src/modules/notifications/trigger-matrix.ts": "a5640294e97d548cfa7bbb6d3a843c7ade94366096873e2dba3d9de7cfd9e27c",
+    "backend/test/equipment/reservation-notifications.test.ts": "1e7e184585376a888905b1cebe08e8f9d0d27b82a4bbbb1083669320d9f1d5a9",
+    "backend/test/equipment/reservation-router.test.ts": "566ee305bde6e0d08826103acdf051fb13da4afbe64ace8fe3195fa6d987a620",
+    "backend/test/equipment/reservation-service.test.ts": "c682c3edf5d256bc4ae98bf0b2c02eaa2a551842f02b0e9f7d7dac96c8b0186a",
+    "backend/test/notifications/trigger-matrix.test.ts": "d635b98a2e466402e3f8b162c5472ded4eca93402f24a35c3e58c6b0642082ac",
+    "database/migrations/015_equipment_reservations.sql": "42ac9fa4b111e19ebba2c24fc236698361cd0842e5b85c3e192780e7d1e44c35",
+    "database/tests/core-schema.integration.test.ts": "727aa993bf4587c35dd73a498b0af5bbc256e8aad2dda8965bff86d439d55cc4",
+    "database/tests/database.integration.test.ts": "59f3a2e4a75d5a4de4ada3131eaee527ad24ff518fdbd8bd582954f7fb642f06",
+    "database/tests/equipment/availability.integration.test.ts": "d2641fe3c928b707313ea2bf72bbd0c15e88ddbc44f1f709fff6e633df67390e",
+    "database/tests/equipment/reservations.integration.test.ts": "b2ad85bb7427c215776087944b23355d6ea4953e116aeb93a9d93191b50f74ab",
+    "frontend/src/features/equipment/api/equipment-reservations.test.ts": "6d9cdb23e713595c1fa05e205984de681825be135f1845a71b0871f639893b70",
+    "frontend/src/features/equipment/api/equipment-reservations.ts": "001040d2f2339319cbe6a18b46a691280463d962e9251f516375455723a6df31",
+    "frontend/src/features/equipment/pages/EquipmentReservationPanel.test.ts": "c57e8e618dc59b91123c1e0f82327f4e414a0a03c0cfafe59f64c25d437c8ee7",
+    "frontend/src/features/equipment/pages/EquipmentReservationPanel.vue": "5f826d3ed42b0c2479bfb9862eb5b18319417be95cd66b27a496d1e8d92cbfcb",
+    "frontend/src/features/equipment/pages/EquipmentReservationWorkflow.test.ts": "219ef7621dfe1b3256e3a423b4bdd91dde527aa7fe0988d86d30c3a3176e1cbc",
+    "frontend/src/features/equipment/pages/EventEquipmentAvailabilityPage.vue": "a8b9351e4cfadd5969b228f489df0fd1a7b119b775341a6d054ed2f7dc839b13",
+    "tests/e2e/equipment-reservations.spec.ts": "34302e8f8361c1e2ed49922aa363ff10d2dde79b3d8013a5abb7190377bdc45a"
+  },
+  "source_commit": "b29dc1261937c4f66708ae35d043779737c99e2e",
+  "log_format": "Saved console logs have trailing spaces and surplus terminal blank lines removed; test content and outcomes are unchanged."
+}

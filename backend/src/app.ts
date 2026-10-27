@@ -21,6 +21,8 @@ import { createNotificationRouter } from './modules/notifications/inbox-router.j
 import { createVenueBlockRouter } from './modules/venues/block-router.js';
 import { createVenueCatalogueRouter } from './modules/venues/venue-catalogue-router.js';
 import { createVenueSuitabilityRouter } from './modules/venues/suitability-router.js';
+import { createEquipmentAvailabilityRouter } from './modules/equipment/availability-router.js';
+import { createEquipmentReservationRouter } from './modules/equipment/reservation-router.js';
 
 export interface AppDependencies {
   database: HealthDatabase;
@@ -72,6 +74,9 @@ export function createApp({
   if (auth) app.use('/api/auth', createAuthRouter(auth));
 
   if (workspace) {
+    // KAN-9: equipment context and advisory checks stay separate from general event access.
+    app.use('/api/equipment/availability', createEquipmentAvailabilityRouter(workspace));
+    app.use('/api/equipment/reservations', createEquipmentReservationRouter(workspace));
     // KAN-64: the signed-in user's own in-app inbox.
     app.use('/api/notifications', createNotificationRouter(workspace));
     app.use('/api/venue-bookings', createVenueBookingsRouter(workspace));
