@@ -1,6 +1,6 @@
 # Notifications (KAN-64, CF-20)
 
-In-app inbox for request, assignment and venue outcomes. Email, push and external delivery are out of scope.
+In-app inbox for request, assignment, venue and equipment-reservation outcomes. Email, push and external delivery are out of scope.
 
 | File | Role |
 | --- | --- |
@@ -12,9 +12,9 @@ In-app inbox for request, assignment and venue outcomes. Email, push and externa
 ## Rules to keep
 
 - Write notifications inside the business transaction, after the change succeeds. Never write them after commit and never swallow a notification error: a failed insert must roll the action back.
-- Every notification has a `dedupeKey` of the form `TYPE:outcomeId` (review, clarification, assignment-history or booking id), so a retry cannot create a second one.
+- Every notification has a `dedupeKey` of the form `TYPE:outcomeId` (review, clarification, assignment-history, booking or equipment-request id), so a retry cannot create a second one.
 - Recipients follow each person's relationship to the outcome, not "everyone except the actor"; an actor who is also a recipient gets an acknowledgement.
-- Reads re-check the caller's current access (organiser owns the event; coordinator is the current assignee and the event is not a draft; Venue Staff for bookings). The `COORDINATOR_REASSIGNED_AWAY` notice is the only one visible without access and must name nothing.
+- Reads re-check the caller's current access (organiser owns the event; coordinator is the current assignee and the event is not a draft; Venue Staff for bookings). Technical Support can read its own linked equipment notice without broader event-detail access. A `COORDINATOR_REASSIGNED_AWAY` notice remains visible after event access is lost and must name nothing.
 - To add a trigger (KAN-80 and the change stories), add a builder to `trigger-matrix.ts`, call `recordNotifications` from the service, extend the visibility rule if the new notification points to a new kind of target, and update the decision log and tests.
 
 Migration `008_notification_inbox.sql` adds `venue_booking_id` and `dedupe_key`. Tests: `backend/test/notifications/`, `database/tests/notifications/notification-inbox.integration.test.ts`.
@@ -28,3 +28,11 @@ booking. It is written in the outage's transaction from `venues/block-service.ts
 ## 25 October 2026 — Concurrent outcomes and recipient overlap verification
 
 `notification-inbox.integration.test.ts` now proves actual simultaneous insert contention for the same outcome/recipient, uses a deferred trigger to fail after the booking decision and all notifications have been inserted, and verifies complete rollback. A valid organiser-to-coordinator role transition exercises overlapping recipient rules without inventing simultaneous application roles. Actor acknowledgements remain; each intended person receives one notice and an unrelated account receives none. These regressions complete the previously missing TC-20-18/19 scenario boundaries. TC-20-20's original-scope/CR ownership is checked in the change register; later KAN-80/82/84 triggers are not claimed implemented.
+
+## KAN-26 equipment-reserved notices — 26 October 2026
+
+`equipmentReservationNotifications` adds the `EQUIPMENT_RESERVED` slice of KAN-80. After a saved request becomes reserved, the current assigned coordinator and acting Technical Support user receive notices keyed `EQUIPMENT_RESERVED:<equipment-request-id>`. `recordNotifications` runs on the reservation transaction client; a notification failure rolls back the reservation. Idempotent repeats return without inserting notices. This implements neither cancellation/release notifications nor every KAN-80 trigger.
+
+Migration `015_equipment_reservations.sql` adds the nullable `notifications.equipment_request_id` foreign key and a partial index. Existing notification rows are preserved. The inbox joins the linked request to its correct event. A Technical Support recipient receives a narrow equipment link while the event is `APPROVED`/`CONFIRMED`, with `event: null` and `booking: null`; it never receives the generic event-detail link. For a terminal event its own acknowledgement remains readable, with no link and an explanatory message. A former coordinator loses event-linked visibility after reassignment. Unrelated recipients and users whose role no longer permits access cannot read or mark the protected notice.
+
+The existing inbox DTO and frontend need no new target fields. Automated reservation/notification integration tests cover delivery, rollback, duplicate suppression, current-access checks and the Technical Support target. Shared migration application and connected inbox acceptance remain **Not executed**.

@@ -1,5 +1,11 @@
 # Sprint 4 overview
 
+**26 October 2026 combined handoff:** `feat/KAN-9-KAN-26-equipment-workflow` contains all seven KAN-9 and six KAN-26 implementation, test and documentation commits. Use this branch for the combined pull request into `main`. Earlier branch names below identify the original development/test sources. The verified code/test commit remains `b29dc1261937c4f66708ae35d043779737c99e2e`; the handoff changes documentation only. Migration 015, integrated manual acceptance and independent review remain pending.
+
+**26 October 2026 reservation follow-up:** KAN-26 is implemented locally on `feat/KAN-26-equipment-reservations` with KAN-9 included. Both remain In Progress / Tristan (11 SP together); integrated manual acceptance **Not executed**, acceptance **Not assessed**. Migration 014/account setup reported complete; 015 shared application and dependent UI acceptance remain pending. [S4-E12](evidence/README.md#kan-26-implementation-verification--26-october-2026) links automated verification. No sprint ceremony or Done points are inferred.
+
+**26 October 2026 development update:** KAN-9 is implemented and verified locally on `feat/KAN-9-equipment-availability`, with manual acceptance **Not executed** and acceptance **Not assessed**. Tristan owns KAN-9/KAN-26 (11SP); KAN-26 remains To Do. [S4-E10](evidence/README.md#kan-9-implementation-verification--26-october-2026) records evidence. The dated Future-sprint snapshot below is retained; this development note does not claim a sprint-start ceremony or completed story.
+
 **Estimation status:** The current 63-SP allocation is a planning baseline. Team confirmation of relative estimates, capacity and the sprint commitment is **To agree**; no planning-poker vote is recorded. The 10 to 11 SP selection target is guidance, not an individual quota. Keep existing estimates until a team-agreed change is logged.
 
 **Current release allocation: 15 parent items / 63 SP.** Sprint window: **18–31 October 2026**. Sprint 3 and Sprint 4 each contain 63 SP; this supersedes the earlier 97/29 allocation while keeping 126 SP remaining across the two sprints.

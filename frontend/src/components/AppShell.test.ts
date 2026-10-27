@@ -17,6 +17,23 @@ function open(role: UserRole, dashboard = false) {
   return render(dashboard ? DashboardPage : AppShell, { global: { plugins: [router] } });
 }
 beforeEach(() => { session.loading = false; vi.stubGlobal('fetch', vi.fn(async () => new Response(JSON.stringify({ status: 'ok' })))); });
+
+describe('KAN-9 equipment navigation', () => {
+  it('shows equipment checks to technical support without coordinator controls', () => {
+    open('TECHNICAL_SUPPORT_STAFF');
+    expect(screen.getByRole('link', { name: 'Equipment availability' })).toHaveAttribute('href', '/equipment/availability');
+    expect(screen.queryByRole('link', { name: 'Review queue' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Event requests' })).not.toBeInTheDocument();
+  });
+  it.each(['EVENT_ORGANISER', 'EVENT_COORDINATOR', 'EVENT_COORDINATOR_LEAD', 'VENUE_STAFF', 'ATTENDEE'] as const)(
+    'hides equipment navigation for %s', (role) => {
+      open(role); expect(screen.queryByRole('link', { name: 'Equipment availability' })).not.toBeInTheDocument();
+    });
+  it('hides equipment navigation until the session is restored', () => {
+    session.loading = true; open('TECHNICAL_SUPPORT_STAFF');
+    expect(screen.queryByRole('link', { name: 'Equipment availability' })).not.toBeInTheDocument();
+  });
+});
 describe('KAN-79 Lead navigation and role presentation', () => {
   it('shows the Lead workspace without coordinator review links', () => {
     open('EVENT_COORDINATOR_LEAD');

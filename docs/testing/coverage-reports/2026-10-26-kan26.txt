@@ -1,0 +1,13 @@
+KAN-26 automated verification â€” 26 October 2026
+Run AUTO-20261026-KAN26-01. Verified code/test commit b29dc1261937c4f66708ae35d043779737c99e2e. Full source manifest: docs/scrum/sprint-04/evidence/kan26-20261026/summary.json
+
+Final npm run check: types + 945 frontend / 1518 backend tests + builds PASS.
+Final npm run test:coverage: same test totals PASS.
+Full frontend: statements 95.85% (2864/2988), branches 93.15% (3592/3856), functions 97.74% (695/711), lines 97.78% (2337/2390).
+Full backend: statements 91.14% (1905/2090), branches 92.83% (1413/1522), functions 91.24% (375/411), lines 91.31% (1692/1853).
+
+New reservation backend: 100% statements 139/139, branches 103/103, functions 31/31, lines 108/108 (focused 67-test run and final coverage).
+Equipment frontend: statements 99.42% (347/349), branches 97.48% (465/477), functions 100% (72/72), lines 100% (235/235).
+Reservation API client: 100% all metrics. Reservation panel: 103/104 statements, 145/149 branches, 18/18 functions, 65/65 lines.
+Remaining frontend gaps: defensive empty readiness guard, unknown non-Error failure fallbacks/short-circuit branches and parent-refresh identity guard; child cancellation already prevents the stale event in normal UI flow. No branch was ignored or threshold reduced.
+PostgreSQL integration 555/555; browser 179/179. Database SQL is verified by integration tests, not instrumented by TypeScript coverage. Browser authenticated APIs are fixtures, not live-login acceptance.

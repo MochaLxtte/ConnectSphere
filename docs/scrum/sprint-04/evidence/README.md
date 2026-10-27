@@ -40,3 +40,23 @@ Current story ownership is unassigned for team selection; reviewers and integrat
 | --- | --- | --- | --- |
 | S4-E08 | [Current ownership snapshot](../../sprint-03/evidence/jira-ownership-state-2026-10-16.json) | Live Jira read on 16 October: all 28 unfinished parents are unassigned; Sprint 4 remains Future with 15 parents / 63 SP. Historical Done subtasks KAN-57/KAN-58 also have unassigned metadata. | Assignment metadata only; no sprint start, implementation, acceptance or estimate change. Earlier named allocation is history. |
 | S4-E09 | [Handover validation](../../sprint-03/evidence/handover-validation-2026-10-16.json) | Course-format Jira/export/card/case checks 17/17; 28 active cards, 299 criteria, 256 cases and 76 traceability rows. Workbook source refresh, saved readback, formulas, preserved formatting and changed views passed. Final link/whitespace results are in the artifact. | Planning artifacts only; future product tests and acceptance remain unexecuted/unassessed. |
+
+## KAN-9 implementation verification — 26 October 2026
+
+| ID | Artifact | Source / result | Limits |
+| --- | --- | --- | --- |
+| S4-E10 | [Run summary and source hashes](kan9-20261026/summary.json), [check](kan9-20261026/check.txt), [coverage](kan9-20261026/coverage.txt), [PostgreSQL](kan9-20261026/integration.txt), [initial browser failures](kan9-20261026/browser-initial.txt), [browser retest](kan9-20261026/browser-retest.txt) | AUTO-20261026-KAN9-01: frontend 881/backend 1,451; full PostgreSQL 528 plus focused 18 after a test-only addition; final browser 168 Pass. See [run narrative](../../../testing/test-evidence.md#26-october-2026--kan-9-equipment-availability). | Full source captured in 5c0dc98; supplemental test hash retained. Real isolated SQL, substituted authentication and browser APIs. Shared migration/manual acceptance Not executed. Earlier failed attempts are preserved. |
+| S4-E11 | [Desktop shortfall](kan9-20261026/equipment-shortfall-desktop.png), [mobile what-if form](kan9-20261026/equipment-what-if-mobile.png) | Automated Chromium captures, visually inspected for readable layout. | Synthetic fixtures/API responses; not shared Supabase or manual acceptance evidence. |
+
+KAN-9 is In Progress / Tristan (8 SP), with KAN-101/102/103 subtasks; KAN-26 is To Do / Tristan (3 SP). These are targeted development updates to the earlier ownership snapshot. No sprint-start ceremony, Done points or review acceptance is recorded.
+
+The [document validation](kan9-20261026/document-validation.json) checks stable CSV IDs, all 12 criterion mappings, existing test paths, preservation of earlier executions and added file links. Workbook formulas/native structures and diagram rendering were checked separately. These checks validate records, not integrated product acceptance.
+
+## KAN-26 implementation verification — 26 October 2026
+
+| ID | Artifact | Source / result | Limits |
+| --- | --- | --- | --- |
+| S4-E12 | [Summary/source hashes](kan26-20261026/summary.json), [check](kan26-20261026/check.txt), [coverage](kan26-20261026/coverage.txt), [migration](kan26-20261026/migrate-local.txt), [first full database run](kan26-20261026/integration-first.txt), [final database run](kan26-20261026/integration.txt), [browser](kan26-20261026/browser.txt), [workbook validation](kan26-20261026/workbook-validation.json), [document validation](kan26-20261026/document-validation.json) | AUTO-20261026-KAN26-01:945 frontend / 1,518 backend; 555 isolated PostgreSQL; 179 browser tests Pass. New reservation backend 100% coverage. | Authentication/browser boundaries, earlier browser environment limitation and dependencies are detailed in the [run narrative](../../../testing/test-evidence.md#26-october-2026--kan-26-equipment-reservations). Shared migration 015/manual acceptance Not executed. |
+| S4-E13 | [Desktop readiness](kan26-20261026/equipment-reservations-ready-desktop.png), [mobile cancellation](kan26-20261026/equipment-cancellation-confirmation-mobile-detail.png), [history](kan26-20261026/equipment-reservation-history.png), [mobile empty state](kan26-20261026/equipment-reservation-empty-mobile.png) | Playwright fixture captures visually inspected for readable controls and retained outcomes. | Synthetic authenticated API responses; not shared Supabase or manual acceptance. |
+
+KAN-26 is In Progress / Tristan (3 SP), with unestimated KAN-104–106 In Progress. KAN-9 local commits are included; migration 014 and account setup are reported ready. Migration 015 shared application, dependent KAN-18/63/62/10 UI acceptance, independent review and merge remain pending. Scope and Done points are unchanged.

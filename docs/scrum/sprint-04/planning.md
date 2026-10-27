@@ -1,5 +1,9 @@
 # Sprint 4 planning
 
+**26 October 2026 implementation follow-up:** the approved KAN-26 plan retains 3 SP, with full saved-line reservation, audited manual cancellation and terminal-event release protection. AC105–108 clarify cancellation, idempotency, readiness and scoped staff confirmation. KAN-9 local commits are included; KAN-18/KAN-63/KAN-62/KAN-10 UI integration remains pending. Ownership remains Tristan for KAN-9/KAN-26, independent reviewer **To agree**. This is an implementation refinement, not a new planning meeting or estimate change.
+
+**26 October 2026 ownership/refinement update:** Tristan selected KAN-9 (8 SP) and KAN-26 (3 SP), an11SP pair. KAN-9 development is authorised and In Progress; KAN-26 remains To Do. Independent reviewers are **To agree**. The approved unsaved-check and migration 014 choices are in the [decision log](../../requirements/assumptions-and-questions.md#26-october-2026--kan-9-equipment-availability-boundary). No sprint-start meeting, vote, estimate change or acceptance is inferred.
+
 **Estimation status:** The current 63-SP allocation is a planning baseline. Team confirmation of relative estimates, capacity and the sprint commitment is **To agree**; no planning-poker vote is recorded. The 10 to 11 SP selection target is guidance, not an individual quota. Keep existing estimates until a team-agreed change is logged.
 
 **Current selection: 15 parents / 63 SP.** Jira: **Future, not started (id 68)**. Planned window: **18–31 October 2026**. This is the balanced release allocation recorded on 16 October, superseding the earlier 97/29 selection.
@@ -29,13 +33,13 @@ Complete the event journey through equipment arrangements, event lifecycle, regi
 
 | Jira | Story | SP | Owner | Independent reviewer | Source / dependency |
 | --- | --- | ---: | --- | --- | --- |
-| KAN-9 | Check Equipment Availability for an Event | 8 | Unassigned — team member to choose | To agree after owner chosen | KAN-18 operational quantities; KAN-63 event demand and KAN-26 reservation contract |
+| KAN-9 | Check Equipment Availability for an Event | 8 | Tristan | To agree | KAN-18 operational quantities; KAN-63 event demand and KAN-26 reservation contract |
 | KAN-10 | Mark Event as Completed | 3 | Unassigned — team member to choose | To agree after owner chosen | KAN-61 lifecycle and KAN-26 once-only equipment release; KAN-80 |
 | KAN-14 | Register for an Event | 5 | Unassigned — team member to choose | To agree after owner chosen | KAN-61 eligible event; atomic capacity and KAN-80 notifications |
 | KAN-15 | Submit and Review Event Change Requests | 5 | Unassigned — team member to choose | To agree after owner chosen | KAN-66 edit routing, venue/equipment impact, KAN-82 per-arrangement boundary and KAN-80 |
 | KAN-17 | Withdraw Attendee Registration | 2 | Unassigned — team member to choose | To agree after owner chosen | KAN-14 owned registration and once-only capacity release; KAN-80 |
 | KAN-18 | Update Equipment Availability Status | 3 | Unassigned — team member to choose | To agree after owner chosen | Pooled stock contract; KAN-9/KAN-26 shortfall effects; KAN-80 notifications |
-| KAN-26 | Reserve Equipment | 3 | Unassigned — team member to choose | To agree after owner chosen | KAN-9, KAN-63; KAN-62/KAN-10 lifecycle release; KAN-80 notifications |
+| KAN-26 | Reserve Equipment | 3 | Tristan | To agree | KAN-9, KAN-63; KAN-62/KAN-10 lifecycle release; KAN-80 notifications |
 | KAN-61 | Confirm Event After Planning Arrangements | 3 | Unassigned — team member to choose | To agree after owner chosen | Current venue readiness, KAN-26 equipment, KAN-15 pending-change check; separate KAN-84 preparation gate |
 | KAN-62 | Cancel Event and Release Its Arrangements | 5 | Unassigned — team member to choose | To agree after owner chosen | Venue/hold release, KAN-26 equipment and KAN-14/KAN-17 registration consistency; KAN-80 |
 | KAN-63 | Submit and Review Event Equipment Requests | 5 | Unassigned — team member to choose | To agree after owner chosen | KAN-9 availability, KAN-26 atomic reservation and KAN-80 notification integration |

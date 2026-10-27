@@ -1327,3 +1327,30 @@ Source: project-discussion confirmation from Tristan on behalf of the team. Arvi
 The team describes later fixes as small improvements. The retained audit also contains reproduced existing-requirement failures, so that description does not replace the technical findings or their dates. The exact historical build is unavailable; whether those failures existed in the reviewed candidate remains Not assessed. Current repairs and retests remain separately evidenced. No Jira status or point field is changed by this record.
 
 The team will supply closing-board exports, review feedback and burndown charts/source data for all three sprints. Reviewed build/commit/branch identifiers were not retained and remain Not recorded. Feedback text, action owners and artifact locations remain Not recorded until supplied.
+
+## 26 October 2026 — KAN-9 equipment availability boundary
+
+**Decision source:** Tristan approved the implementation plan in chat, including unsaved check mode and migration 014. This is a story-level implementation decision, not a new team estimation vote or acceptance decision. KAN-9 remains 8 SP; KAN-26 remains 3 SP.
+
+- Technical Support Staff receive a separate minimal APPROVED/CONFIRMED event context. The organiser/coordinator detail endpoint is not widened; venue confirmation is not a prerequisite.
+- Saved mode reads current non-CANCELLED equipment requests, combines same-type quantities and excludes only the exact saved RESERVED lines being assessed. Saved request windows must equal the event window. REJECTED demand stays visible but is not approved by a check.
+- Unsaved what-if mode accepts explicit type/quantity/window inputs, prefilled from the event. It never interprets free text, saves requests or excludes existing reservations. It allows an explicit hypothetical window without changing the event.
+- Operational stock is active total minus damaged and maintenance quantities. Availability subtracts peak simultaneous RESERVED demand using half-open periods and exact microseconds. Inactive stock has zero availability; empty requirements cannot pass.
+- A source-value version catches changed event/saved requirements even when updated_at is unchanged. Each assessment reads one current PostgreSQL snapshot; the UI clears stale results on edits, errors, navigation and session changes.
+- Migration 014 adds loss counters and overflow-safe constraints, preserving existing records and historical migrations. Shared Supabase application is **Not executed**. KAN-18 owns stock administration; KAN-63 owns request entry/review. KAN-26 must enforce operational capacity under lock: the existing historical reservation trigger only checks total stock.
+
+These edge conditions are recorded as KAN-9-AC104–107 in Jira and the Sprint 4 card. Manual integrated acceptance and independent review remain outstanding.
+
+## 26 October 2026 — KAN-26 reservation and release boundary
+
+**Decision source:** Tristan approved the implementation plan in chat, including bringing the local KAN-9 commits into `feat/KAN-26-equipment-reservations`, migration 015, small local commits and dependent acceptance remaining pending. This is an implementation decision, not a new estimation vote or sprint acceptance. The 3 SP estimate is retained. KAN-26 is In Progress; KAN-104/105/106 track backend, interface and verification work.
+
+- Reserve only a saved REQUESTED line's full quantity on an APPROVED event. Read type, quantity and period from that line; KAN-9's unsaved inputs remain read-only. Venue confirmation is independent.
+- Lock the event, equipment pools and request rows consistently; re-read current operational capacity after waiting. Decision, reservation and notices commit together. Retried unchanged outcomes do not duplicate writes; changed source versions require refresh.
+- Technical Support may manually cancel a RESERVED line on an APPROVED event with a reason. Retain original decision metadata and append release actor/time/cause. Operational stock edits remain KAN-18; coordinator request entry/review and explicit Not Required remain KAN-63.
+- Migration 015 replaces the total-stock guard with operational-capacity protection and automatically releases recorded reservations when an event actually transitions to CANCELLED or COMPLETED. It never increments a stock counter. Retain old records without inventing missing actors. The event lifecycle API/UI remains KAN-62/KAN-10 and its connected acceptance remains pending.
+- Readiness requires a nonempty active requirement set with every line RESERVED and currently fulfilable. Empty, unresolved, rejected, mismatched-period or degraded requirements cannot be silently marked ready.
+- Reservation confirmations use KAN-64's transactional/deduplicated inbox for the current assigned coordinator and deciding Technical Support actor. Equipment notices grant only equipment-planning access; a closed event retains its notice without a planning link. Other KAN-80 triggers remain separate.
+- Added KAN-26-AC105–108 in Jira and the Sprint 4 card to make these edge conditions traceable. Manual tests remain Not executed until actual results are supplied.
+
+**Setup report:** migration 014 application and creation of the test accounts were reported in chat before this work. No hosted schema inspection or KAN-9/KAN-26 manual acceptance was performed by this update. Migration 015 shared application remains Not executed.

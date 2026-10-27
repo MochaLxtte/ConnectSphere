@@ -1,0 +1,569 @@
+
+> connectsphere@0.1.0 test:integration
+> vitest run --config vitest.integration.config.ts --reporter=verbose
+
+
+ RUN  v4.1.11 C:/Users/trist/Documents/School Stuff/Y3S1/IS212/ConnectSphere
+
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83 placing a venue hold (AC1, AC2, AC3, AC7) > KAN-83-AC1/AC2/AC7 holds one pending request with its creator, time, deadline and a Singapore-time notice 42ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83 placing a venue hold (AC1, AC2, AC3, AC7) > KAN-83-AC2 leaves ordinary pending requests unheld and lists live holds separately for Venue Staff 39ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83 placing a venue hold (AC1, AC2, AC3, AC7) > KAN-83-AC1 refuses a missing deadline without creating a hold 12ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83 placing a venue hold (AC1, AC2, AC3, AC7) > KAN-83-AC1 refuses a null deadline without creating a hold 11ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83 placing a venue hold (AC1, AC2, AC3, AC7) > KAN-83-AC1 refuses a not a date deadline without creating a hold 11ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83 placing a venue hold (AC1, AC2, AC3, AC7) > KAN-83-AC1 refuses a without a zone deadline without creating a hold 10ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83 placing a venue hold (AC1, AC2, AC3, AC7) > KAN-83-AC1 refuses a deadline in the past using the database clock 16ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83 placing a venue hold (AC1, AC2, AC3, AC7) > KAN-83-AC1 refuses a deadline after the booked period starts using the database clock 26ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83 placing a venue hold (AC1, AC2, AC3, AC7) > KAN-83-AC1 accepts a deadline exactly at the booked start 39ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83 placing a venue hold (AC1, AC2, AC3, AC7) > KAN-83-AC1/AC12 refuses a EVENT_COORDINATOR 11ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83 placing a venue hold (AC1, AC2, AC3, AC7) > KAN-83-AC1/AC12 refuses a EVENT_ORGANISER 11ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83 placing a venue hold (AC1, AC2, AC3, AC7) > KAN-83-AC1/AC12 refuses a TECHNICAL_SUPPORT_STAFF 11ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83 placing a venue hold (AC1, AC2, AC3, AC7) > KAN-83-AC3 refuses a hold that overlaps an approved booking and writes nothing 48ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83 placing a venue hold (AC1, AC2, AC3, AC7) > KAN-83-AC3 refuses a hold that overlaps another live hold and writes nothing 85ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83 placing a venue hold (AC1, AC2, AC3, AC7) > KAN-83-AC3 refuses a hold that overlaps an operational block and writes nothing 25ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83 placing a venue hold (AC1, AC2, AC3, AC7) > KAN-83-AC3 buffered hold placement against APPROVED > preceding turnaround touches existing setup 51ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83 placing a venue hold (AC1, AC2, AC3, AC7) > KAN-83-AC3 buffered hold placement against APPROVED > preceding turnaround overlaps existing setup by one minute 38ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83 placing a venue hold (AC1, AC2, AC3, AC7) > KAN-83-AC3 buffered hold placement against APPROVED > following setup touches existing turnaround 55ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83 placing a venue hold (AC1, AC2, AC3, AC7) > KAN-83-AC3 buffered hold placement against APPROVED > following setup overlaps existing turnaround by one minute 40ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83 placing a venue hold (AC1, AC2, AC3, AC7) > KAN-83-AC3 buffered hold placement against HELD > preceding turnaround touches existing setup 94ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83 placing a venue hold (AC1, AC2, AC3, AC7) > KAN-83-AC3 buffered hold placement against HELD > preceding turnaround overlaps existing setup by one minute 94ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83 placing a venue hold (AC1, AC2, AC3, AC7) > KAN-83-AC3 buffered hold placement against HELD > following setup touches existing turnaround 50ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83 placing a venue hold (AC1, AC2, AC3, AC7) > KAN-83-AC3 buffered hold placement against HELD > following setup overlaps existing turnaround by one minute 48ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83 placing a venue hold (AC1, AC2, AC3, AC7) > KAN-83-AC3 ignores an overlapping hold that has already lapsed 63ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83 placing a venue hold (AC1, AC2, AC3, AC7) > KAN-83-AC3 refuses a hold when the event is no longer approved 22ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83 placing a venue hold (AC1, AC2, AC3, AC7) > KAN-83-AC3 refuses a hold when the venue is too small 19ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83 placing a venue hold (AC1, AC2, AC3, AC7) > KAN-83-AC3 refuses a hold when the period is outside opening hours 18ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83 placing a venue hold (AC1, AC2, AC3, AC7) > KAN-83-AC3 refuses a hold on an inactive venue 19ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83 placing a venue hold (AC1, AC2, AC3, AC7) > KAN-83-AC1 only holds a pending request, not a APPROVED one 27ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83 placing a venue hold (AC1, AC2, AC3, AC7) > KAN-83-AC1 only holds a pending request, not a REJECTED one 34ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83 placing a venue hold (AC1, AC2, AC3, AC7) > KAN-83-AC1 does not place a second hold on a request that already has a live hold 40ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83 placing a venue hold (AC1, AC2, AC3, AC7) > KAN-83-AC7 writes no notice when the event has no assigned coordinator 27ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83 placing a venue hold (AC1, AC2, AC3, AC7) > KAN-83-AC3/AC9 lets only one of two competing holds for the same period succeed 49ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83 a live hold occupies the venue everywhere until its deadline (AC4) > KAN-83-AC4 blocks the calendar, search, suitability, new requests and other approvals, then frees them at the deadline 128ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83 a live hold occupies the venue everywhere until its deadline (AC4) > KAN-83-AC4 the database trigger refuses an approval that overlaps a live hold even without the app check 31ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83 completing, expiring, rejecting and cancelling holds (AC5, AC6, AC8, AC9, AC10) > KAN-83-AC5 approval before the deadline converts the hold into the approved booking once 57ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83 completing, expiring, rejecting and cancelling holds (AC5, AC6, AC8, AC9, AC10) > KAN-83-AC5 a hold can be rejected before its deadline and is released 35ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83 completing, expiring, rejecting and cancelling holds (AC5, AC6, AC8, AC9, AC10) > KAN-83-AC6/AC9 refuses a late approval or rejection after the deadline; nothing is revived 54ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83 completing, expiring, rejecting and cancelling holds (AC5, AC6, AC8, AC9, AC10) > KAN-83-AC6/AC7/AC8 expiry marks overdue holds EXPIRED once, notifies once and is replay-safe 93ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83 completing, expiring, rejecting and cancelling holds (AC5, AC6, AC8, AC9, AC10) > KAN-83-AC9 an approval that waited past the deadline is refused and expiry then wins 1560ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83 completing, expiring, rejecting and cancelling holds (AC5, AC6, AC8, AC9, AC10) > KAN-83-AC9 an approval that commits first is not undone by a later expiry run 80ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83 completing, expiring, rejecting and cancelling holds (AC5, AC6, AC8, AC9, AC10) > KAN-83-AC10 refuses a cancellation with reason undefined 32ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83 completing, expiring, rejecting and cancelling holds (AC5, AC6, AC8, AC9, AC10) > KAN-83-AC10 refuses a cancellation with reason "" 25ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83 completing, expiring, rejecting and cancelling holds (AC5, AC6, AC8, AC9, AC10) > KAN-83-AC10 refuses a cancellation with reason "   \n" 23ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83 completing, expiring, rejecting and cancelling holds (AC5, AC6, AC8, AC9, AC10) > KAN-83-AC10 cancelling releases only that hold, keeps its history and notifies the coordinator 76ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83 completing, expiring, rejecting and cancelling holds (AC5, AC6, AC8, AC9, AC10) > KAN-83-AC10 a lapsed hold cannot be cancelled; it is already released 29ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83 completing, expiring, rejecting and cancelling holds (AC5, AC6, AC8, AC9, AC10) > KAN-83-AC10 an operational block releases an overlapping live hold with the block reason 35ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-81 an outage releases a live hold by its buffered interval (AC3) > KAN-81-AC3 an outage covering only the setup time releases the hold 36ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-81 an outage releases a live hold by its buffered interval (AC3) > KAN-81-AC3 an outage covering only the turnaround time releases the hold 38ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-81 an outage releases a live hold by its buffered interval (AC3) > KAN-81-AC3 an outage exactly adjacent to the buffered interval leaves the hold live 47ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-81-AC3 / KAN-83-AC10 outage and live-hold concurrency > an outage that owns the venue cancels the hold even when approval starts before the outage commits 49ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-81-AC3 / KAN-83-AC10 outage and live-hold concurrency > an approval that wins first is retained and flagged for outage recovery instead of being cancelled 55ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-81-AC3 / KAN-83-AC10 outage and live-hold concurrency > an approval that fails releases its gate and the waiting outage still cancels and notifies once 39ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-81-AC3 / KAN-83-AC10 outage and live-hold concurrency > a hold placed first is cancelled by the waiting outage, including its reason and notification 32ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-81-AC3 / KAN-83-AC10 outage and live-hold concurrency > an outage saved first prevents a waiting hold placement without creating hold or cancellation notices 26ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83-AC9 approval, expiry and overlapping hold contention at the deadline > TC-14-16 expiry wins while approval waits on its row and a new hold waits on approval; retries have no duplicate effects 86ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83-AC9 approval, expiry and overlapping hold contention at the deadline > TC-14-16 approval is eligible before the boundary (commit before expiry: true); expiry and competing-hold retries cannot overbook 5069ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83-AC9 approval, expiry and overlapping hold contention at the deadline > TC-14-16 approval is eligible before the boundary (commit before expiry: false); expiry and competing-hold retries cannot overbook 5064ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83 coordinator visibility and access (AC11, AC12) > KAN-83-AC11 the assigned coordinator sees the deadline and the expired outcome; others cannot 78ms
+ ✓ database/tests/venues/venue-holds.integration.test.ts > KAN-83 runtime HTTP hold workflow > KAN-83-AC1/AC5/AC10/AC12 holds, refuses other roles, cancels and approves through the mounted API 293ms
+ ✓ database/tests/database.integration.test.ts > SCF-DB-01 migrations persist schema, seeds preserve edits, and HTTP readiness reaches PostgreSQL 425ms
+ ✓ database/tests/database.integration.test.ts > SCF-DB-02 upgrading the original schema preserves data and removes existing Data API grants 269ms
+ ✓ database/tests/database.integration.test.ts > SCF-DB-03 upgrading a legacy database preserves '003_add_firebase_identities.sql' and existing records 431ms
+ ✓ database/tests/database.integration.test.ts > SCF-DB-03 upgrading a legacy database preserves '003_add_supabase_auth.sql' and existing records 429ms
+ ✓ database/tests/database.integration.test.ts > SCF-DB-04 a changed retired checksum prevents pending migrations and preserves historical data 270ms
+ ✓ database/tests/database.integration.test.ts > SCF-DB-05 databases with old 007 keep their complete history without rerunning or adding renamed entries 480ms
+ ✓ database/tests/database.integration.test.ts > SCF-DB-06 a dashboard-era Supabase history name is preserved but is not treated as a renamed migration 508ms
+ ✓ database/tests/database.integration.test.ts > SCF-DB-07 a changed '005_core_feature_schema.sql' with duplicate=false prevents pending migrations 386ms
+ ✓ database/tests/database.integration.test.ts > SCF-DB-07 a changed '005_core_feature_schema.sql' with duplicate=true prevents pending migrations 367ms
+ ✓ database/tests/database.integration.test.ts > SCF-DB-07 a changed '004_core_feature_schema.sql' with duplicate=true prevents pending migrations 368ms
+ ✓ database/tests/database.integration.test.ts > SCF-DB-08 matching current and prior ledger names are both retained without duplicate execution 487ms
+ ✓ database/tests/database.integration.test.ts > KAN-79 migration adds trusted Lead profiles while preserving existing automatic assignments and history 591ms
+ ✓ database/tests/database.integration.test.ts > KAN-77 migration gives existing venues zero buffers and preserves bookings and history 454ms
+ ✓ database/tests/database.integration.test.ts > KAN-77 integration preserves the original branch migration name without reapplying its columns 460ms
+ ✓ database/tests/database.integration.test.ts > KAN-9 migration 014 preserves existing equipment and reservations and enforces operational stock bounds 740ms
+ ✓ database/tests/database.integration.test.ts > KAN-26 migration 015 preserves legacy decisions and unknown release metadata while adding protected operational guards 544ms
+ ✓ database/tests/events/reassignment.integration.test.ts > KAN-65 atomic versioned coordinator handovers against PostgreSQL > hands over SUBMITTED with one shared audit boundary and no status change 74ms
+ ✓ database/tests/events/reassignment.integration.test.ts > KAN-65 atomic versioned coordinator handovers against PostgreSQL > hands over UNDER_REVIEW with one shared audit boundary and no status change 47ms
+ ✓ database/tests/events/reassignment.integration.test.ts > KAN-65 atomic versioned coordinator handovers against PostgreSQL > hands over CLARIFICATION_REQUESTED with one shared audit boundary and no status change 60ms
+ ✓ database/tests/events/reassignment.integration.test.ts > KAN-65 atomic versioned coordinator handovers against PostgreSQL > hands over APPROVED with one shared audit boundary and no status change 61ms
+ ✓ database/tests/events/reassignment.integration.test.ts > KAN-65 atomic versioned coordinator handovers against PostgreSQL > hands over CONFIRMED with one shared audit boundary and no status change 52ms
+ ✓ database/tests/events/reassignment.integration.test.ts > KAN-65 atomic versioned coordinator handovers against PostgreSQL > preserves event information, approval, clarification, venue/equipment arrangements and registrations 88ms
+ ✓ database/tests/events/reassignment.integration.test.ts > KAN-65 atomic versioned coordinator handovers against PostgreSQL > treats the current coordinator as a true no-op without timestamps, history or other changes 40ms
+ ✓ database/tests/events/reassignment.integration.test.ts > KAN-65 atomic versioned coordinator handovers against PostgreSQL > preserves a same-target no-op even when the existing coordinator is no longer available 47ms
+ ✓ database/tests/events/reassignment.integration.test.ts > KAN-65 atomic versioned coordinator handovers against PostgreSQL > never creates a negative interval for an assignment whose stored start is ahead of the database clock 30ms
+ ✓ database/tests/events/reassignment.integration.test.ts > KAN-65 atomic versioned coordinator handovers against PostgreSQL > rejects an old version even after A-to-B-to-A returns to the original coordinator 77ms
+ ✓ database/tests/events/reassignment.integration.test.ts > KAN-65 atomic versioned coordinator handovers against PostgreSQL > rejects a DRAFT event without mutating history 36ms
+ ✓ database/tests/events/reassignment.integration.test.ts > KAN-65 atomic versioned coordinator handovers against PostgreSQL > rejects a REJECTED event without mutating history 32ms
+ ✓ database/tests/events/reassignment.integration.test.ts > KAN-65 atomic versioned coordinator handovers against PostgreSQL > rejects a CANCELLED event without mutating history 33ms
+ ✓ database/tests/events/reassignment.integration.test.ts > KAN-65 atomic versioned coordinator handovers against PostgreSQL > rejects a COMPLETED event without mutating history 33ms
+ ✓ database/tests/events/reassignment.integration.test.ts > KAN-65 atomic versioned coordinator handovers against PostgreSQL > rejects unassigned requests and preserves missing or inconsistent history 88ms
+ ✓ database/tests/events/reassignment.integration.test.ts > KAN-65 atomic versioned coordinator handovers against PostgreSQL > rejects missing, unavailable and non-coordinator targets without closing the original assignment 94ms
+ ✓ database/tests/events/reassignment.integration.test.ts > KAN-65 atomic versioned coordinator handovers against PostgreSQL > rechecks a target after a concurrent availability update commits 113ms
+ ✓ database/tests/events/reassignment.integration.test.ts > KAN-65 atomic versioned coordinator handovers against PostgreSQL > rechecks a target after a concurrent role update commits 55ms
+ ✓ database/tests/events/reassignment.integration.test.ts > KAN-65 atomic versioned coordinator handovers against PostgreSQL > serializes two Leads using one version into one handover and one clear stale conflict 112ms
+ ✓ database/tests/events/reassignment.integration.test.ts > KAN-65 atomic versioned coordinator handovers against PostgreSQL > rolls back the closed assignment and all writes when the history insert fails 71ms
+ ✓ database/tests/events/reassignment.integration.test.ts > KAN-65 atomic versioned coordinator handovers against PostgreSQL > rolls back the closed assignment and all writes when the event update fails 50ms
+ ✓ database/tests/events/reassignment.integration.test.ts > KAN-65 protected history reads serialize with handovers > lets an authorised 'assignment history' read finish before the handover commits 122ms
+ ✓ database/tests/events/reassignment.integration.test.ts > KAN-65 protected history reads serialize with handovers > lets an authorised 'clarifications' read finish before the handover commits 106ms
+ ✓ database/tests/events/reassignment.integration.test.ts > KAN-65 protected history reads serialize with handovers > lets an authorised 'status history' read finish before the handover commits 115ms
+ ✓ database/tests/events/reassignment.integration.test.ts > KAN-65 protected history reads serialize with handovers > denies a former coordinator 'assignment history' read that waits behind a handover 95ms
+ ✓ database/tests/events/reassignment.integration.test.ts > KAN-65 protected history reads serialize with handovers > denies a former coordinator 'clarifications' read that waits behind a handover 95ms
+ ✓ database/tests/events/reassignment.integration.test.ts > KAN-65 protected history reads serialize with handovers > denies a former coordinator 'status history' read that waits behind a handover 97ms
+ ✓ database/tests/events/reassignment.integration.test.ts > KAN-65 signed runtime sessions transfer assignment permissions immediately > revokes the previous coordinator across reads and writes while preserving organiser access 260ms
+ ✓ database/tests/events/reassignment.integration.test.ts > KAN-65 signed runtime sessions transfer assignment permissions immediately > allows the newly assigned coordinator to ask a clarification and the organiser to answer it 70ms
+ ✓ database/tests/events/reassignment.integration.test.ts > KAN-65 signed runtime sessions transfer assignment permissions immediately > transfers venue booking and suitability access without changing existing venue arrangements 244ms
+ ✓ database/tests/events/reassignment.integration.test.ts > KAN-65 signed runtime sessions transfer assignment permissions immediately > returns an HTTP conflict for a competing stale page and leaves the winning assignment untouched 86ms
+ ✓ database/tests/events/reassignment.integration.test.ts > KAN-65 signed runtime sessions transfer assignment permissions immediately > denies EVENT_ORGANISER reassignment without writes 51ms
+ ✓ database/tests/events/reassignment.integration.test.ts > KAN-65 signed runtime sessions transfer assignment permissions immediately > denies EVENT_COORDINATOR reassignment without writes 53ms
+ ✓ database/tests/events/reassignment.integration.test.ts > KAN-65 signed runtime sessions transfer assignment permissions immediately > denies VENUE_STAFF reassignment without writes 64ms
+ ✓ database/tests/events/reassignment.integration.test.ts > KAN-65 signed runtime sessions transfer assignment permissions immediately > denies TECHNICAL_SUPPORT_STAFF reassignment without writes 54ms
+ ✓ database/tests/events/reassignment.integration.test.ts > KAN-65 signed runtime sessions transfer assignment permissions immediately > denies ATTENDEE reassignment without writes 55ms
+ ✓ database/tests/events/reassignment.integration.test.ts > KAN-65 signed runtime sessions transfer assignment permissions immediately > requires a session and rechecks a revoked Lead role for a previously signed-in account 64ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > reserves the full saved quantity independently of venue approval and persists one decision plus recipient notices 114ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > serializes competing events and reserves at most operational stock 73ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > makes concurrent retries on the same line idempotent without duplicate notices 55ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > manually cancels once, preserves the reservation decision and never increments stock 109ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > releases on actual cancellation and completion transitions once, preserving other events and unknown actors 128ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > allows exact half-open adjacency and refuses a one-microsecond overlap 126ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > uses peak simultaneous consumption rather than summing disjoint reservations 97ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > requires every active full line and current stock for readiness, without treating empty requirements as ready 108ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > refuses stale saved requirements without overwriting a newer quantity or creating notifications 41ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > refuses partial quantity overrides, invalid stored periods, missing assignment and non-approved events 96ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > rechecks role permissions in PostgreSQL and hides another event line from the requested event 121ms
+stderr | database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > rolls back the decision and every notice if a deferred notification constraint fails at commit
+Unexpected API error.
+
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > rolls back the decision and every notice if a deferred notification constraint fails at commit 87ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > enforces release metadata completeness and preserves original decision, allocation and release history 261ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > applies operational and eligibility guards to direct database reservation writes too 77ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > serializes a simultaneous terminal transition with reservation without leaving terminal stock committed 61ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > serializes manual cancellation and event completion while retaining exactly one release cause 56ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > rechecks damage after waiting for a concurrent stock writer 68ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > rechecks deactivation after waiting for a concurrent stock writer 50ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > notifies the current coordinator after waiting for a reassignment transaction 59ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > refuses a demoted assigned coordinator without recording a reservation or undeliverable confirmation 49ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > limits equipment notifications to their recipients and current permissions, including terminal historical acknowledgements 209ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > uses bigint capacity checks at the PostgreSQL integer limit without overflowing the total demand 229ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > serializes competing direct database allocations through the migration guard 92ms
+ ✓ database/tests/equipment/reservations.integration.test.ts > KAN-26 equipment reservations against real PostgreSQL > rolls back terminal release metadata and status history together when the surrounding transaction fails 147ms
+ ✓ database/tests/venues/venue-bookings.integration.test.ts > KAN-8 atomic venue booking decisions against PostgreSQL > records APPROVED, attribution and information without changing the event 161ms
+ ✓ database/tests/venues/venue-bookings.integration.test.ts > KAN-8 atomic venue booking decisions against PostgreSQL > records REJECTED, attribution and information without changing the event 108ms
+ ✓ database/tests/venues/venue-bookings.integration.test.ts > KAN-8 atomic venue booking decisions against PostgreSQL > shows staff pending requests with timing and requirements, and coordinator all own outcomes 106ms
+ ✓ database/tests/venues/venue-bookings.integration.test.ts > KAN-8 atomic venue booking decisions against PostgreSQL > hides unrelated and draft event bookings from coordinators, including filtered lists 196ms
+ ✓ database/tests/venues/venue-bookings.integration.test.ts > KAN-8 atomic venue booking decisions against PostgreSQL > denies direct service decisions by EVENT_ORGANISER and leaves the record unchanged 164ms
+ ✓ database/tests/venues/venue-bookings.integration.test.ts > KAN-8 atomic venue booking decisions against PostgreSQL > denies direct service decisions by EVENT_COORDINATOR and leaves the record unchanged 133ms
+ ✓ database/tests/venues/venue-bookings.integration.test.ts > KAN-8 atomic venue booking decisions against PostgreSQL > denies direct service decisions by TECHNICAL_SUPPORT_STAFF and leaves the record unchanged 85ms
+ ✓ database/tests/venues/venue-bookings.integration.test.ts > KAN-8 atomic venue booking decisions against PostgreSQL > denies direct service decisions by ATTENDEE and leaves the record unchanged 102ms
+ ✓ database/tests/venues/venue-bookings.integration.test.ts > KAN-8 atomic venue booking decisions against PostgreSQL > leaves the original decision unchanged after both duplicate and opposite attempts 437ms
+ ✓ database/tests/venues/venue-bookings.integration.test.ts > KAN-8 atomic venue booking decisions against PostgreSQL > permits exactly one winner when approval and rejection compete for the same request 264ms
+ ✓ database/tests/venues/venue-bookings.integration.test.ts > KAN-8 atomic venue booking decisions against PostgreSQL > serializes concurrent overlapping approvals for different events at the same venue 165ms
+ ✓ database/tests/venues/venue-bookings.integration.test.ts > KAN-8 atomic venue booking decisions against PostgreSQL > allows adjacent bookings and ignores rejected and pending requests when checking availability 95ms
+ ✓ database/tests/venues/venue-bookings.integration.test.ts > KAN-8 atomic venue booking decisions against PostgreSQL > rejects approval overlapping an operational block without writing any decision 46ms
+ ✓ database/tests/venues/venue-bookings.integration.test.ts > KAN-8 atomic venue booking decisions against PostgreSQL > refuses approval for a DRAFT event but still lets staff reject the stale pending request 38ms
+ ✓ database/tests/venues/venue-bookings.integration.test.ts > KAN-8 atomic venue booking decisions against PostgreSQL > refuses approval for a SUBMITTED event but still lets staff reject the stale pending request 34ms
+ ✓ database/tests/venues/venue-bookings.integration.test.ts > KAN-8 atomic venue booking decisions against PostgreSQL > refuses approval for a UNDER_REVIEW event but still lets staff reject the stale pending request 45ms
+ ✓ database/tests/venues/venue-bookings.integration.test.ts > KAN-8 atomic venue booking decisions against PostgreSQL > refuses approval for a REJECTED event but still lets staff reject the stale pending request 60ms
+ ✓ database/tests/venues/venue-bookings.integration.test.ts > KAN-8 atomic venue booking decisions against PostgreSQL > refuses approval for a CANCELLED event but still lets staff reject the stale pending request 35ms
+ ✓ database/tests/venues/venue-bookings.integration.test.ts > KAN-8 atomic venue booking decisions against PostgreSQL > refuses approval for a COMPLETED event but still lets staff reject the stale pending request 36ms
+ ✓ database/tests/venues/venue-bookings.integration.test.ts > KAN-8 atomic venue booking decisions against PostgreSQL > refuses an inactive venue approval but permits rejection 42ms
+ ✓ database/tests/venues/venue-bookings.integration.test.ts > KAN-8 atomic venue booking decisions against PostgreSQL > rolls back all decision fields when the database refuses the write 38ms
+ ✓ database/tests/venues/venue-bookings.integration.test.ts > KAN-8 atomic venue booking decisions against PostgreSQL > returns the same not-found response for a missing booking 6ms
+ ✓ database/tests/venues/venue-bookings.integration.test.ts > KAN-53 venue booking submission against PostgreSQL > creates a pending booking associated with the correct event and venue (AC1-AC7, AC9, AC10) 28ms
+ ✓ database/tests/venues/venue-bookings.integration.test.ts > KAN-53 venue booking submission against PostgreSQL > becomes visible to venue staff review and to the coordinator, but not before approval (AC8) 40ms
+ ✓ database/tests/venues/venue-bookings.integration.test.ts > KAN-53 venue booking submission against PostgreSQL > refuses submission by EVENT_ORGANISER without creating a row (AC11) 8ms
+ ✓ database/tests/venues/venue-bookings.integration.test.ts > KAN-53 venue booking submission against PostgreSQL > refuses submission by VENUE_STAFF without creating a row (AC11) 11ms
+ ✓ database/tests/venues/venue-bookings.integration.test.ts > KAN-53 venue booking submission against PostgreSQL > refuses submission by TECHNICAL_SUPPORT_STAFF without creating a row (AC11) 12ms
+ ✓ database/tests/venues/venue-bookings.integration.test.ts > KAN-53 venue booking submission against PostgreSQL > refuses submission by ATTENDEE without creating a row (AC11) 13ms
+ ✓ database/tests/venues/venue-bookings.integration.test.ts > KAN-53 venue booking submission against PostgreSQL > refuses submission by an unrelated or unassigned coordinator with the same not-found response (AC11) 59ms
+ ✓ database/tests/venues/venue-bookings.integration.test.ts > KAN-53 venue booking submission against PostgreSQL > refuses submission for a REJECTED event 11ms
+ ✓ database/tests/venues/venue-bookings.integration.test.ts > KAN-53 venue booking submission against PostgreSQL > refuses submission for a CANCELLED event 10ms
+ ✓ database/tests/venues/venue-bookings.integration.test.ts > KAN-53 venue booking submission against PostgreSQL > refuses submission for a COMPLETED event 8ms
+ ✓ database/tests/venues/venue-bookings.integration.test.ts > KAN-53 venue booking submission against PostgreSQL > refuses submission for a missing or inactive venue 19ms
+ ✓ database/tests/venues/venue-bookings.integration.test.ts > KAN-53 venue booking submission against PostgreSQL > allows several pending requests for the same event and venue without auto-approving any (AC9) 44ms
+ ✓ database/tests/venues/venue-bookings.integration.test.ts > KAN-53 venue booking submission against PostgreSQL > refuses submission overlapping an approved booking without inserting a booking or changing the event 54ms
+ ✓ database/tests/venues/venue-bookings.integration.test.ts > KAN-53 venue booking submission against PostgreSQL > refuses submission overlapping an operational block without inserting a booking or changing the event 61ms
+ ✓ database/tests/venues/venue-bookings.integration.test.ts > KAN-53 venue booking submission against PostgreSQL > permits submission immediately before and after an approved booking 76ms
+ ✓ database/tests/venues/venue-bookings.integration.test.ts > KAN-53 venue booking submission against PostgreSQL > permits submission immediately before and after an operational block 51ms
+ ✓ database/tests/venues/venue-bookings.integration.test.ts > KAN-53 venue booking submission against PostgreSQL > sees an approved booking committed while submission waits for the venue lock 89ms
+ ✓ database/tests/venues/venue-bookings.integration.test.ts > KAN-53 venue booking submission against PostgreSQL > sees an operational block committed while submission waits for the venue lock 55ms
+ ✓ database/tests/venues/venue-bookings.integration.test.ts > KAN-53/KAN-8 runtime submission-to-decision workflow > persists coordinator submission, staff APPROVED and coordinator outcome 317ms
+ ✓ database/tests/venues/venue-bookings.integration.test.ts > KAN-53/KAN-8 runtime submission-to-decision workflow > persists coordinator submission, staff REJECTED and coordinator outcome 179ms
+ ✓ database/tests/venues/venue-bookings.integration.test.ts > KAN-53/KAN-8 runtime submission-to-decision workflow > enforces mapped roles, current assignment and private errors on the running submission endpoint 224ms
+ ✓ database/tests/venues/venue-bookings.integration.test.ts > KAN-8 runtime cookie authentication and database role mapping > uses the mapped role, persists a staff decision and exposes it only to the assigned coordinator 1161ms
+ ✓ database/tests/venues/venue-bookings.integration.test.ts > KAN-54 conflict detection scope against PostgreSQL > does not treat an approved booking at another venue as a conflict (KAN-54-AC3) 630ms
+ ✓ database/tests/venues/venue-bookings.integration.test.ts > KAN-54 conflict detection scope against PostgreSQL > does not treat an operational block at another venue as a conflict (KAN-54-AC3, AC5) 501ms
+ ✓ database/tests/venues/venue-bookings.integration.test.ts > KAN-54 conflict detection scope against PostgreSQL > ignores a cancelled booking when assessing the same venue and period (KAN-54-AC1, AC4) 507ms
+ ✓ database/tests/venues/venue-outage-recovery.integration.test.ts > KAN-81 saving an outage over approved arrangements against PostgreSQL > saves the outage and flags exactly the overlapping non-ended approved bookings (AC2, AC3) 665ms
+ ✓ database/tests/venues/venue-outage-recovery.integration.test.ts > KAN-81 saving an outage over approved arrangements against PostgreSQL > treats a booking that ends exactly when the outage starts, or starts when it ends, as unaffected 372ms
+ ✓ database/tests/venues/venue-outage-recovery.integration.test.ts > KAN-81 saving an outage over approved arrangements against PostgreSQL > does not flag an approved booking that has already ended 346ms
+ ✓ database/tests/venues/venue-outage-recovery.integration.test.ts > KAN-81 saving an outage over approved arrangements against PostgreSQL > keeps the booking, its event and decision history unchanged while marking recovery (AC4) 543ms
+ ✓ database/tests/venues/venue-outage-recovery.integration.test.ts > KAN-81 saving an outage over approved arrangements against PostgreSQL > shows the affected arrangements on the venue block list and the staff recovery list (AC6, AC12) 266ms
+ ✓ database/tests/venues/venue-outage-recovery.integration.test.ts > KAN-81 saving an outage over approved arrangements against PostgreSQL > refuses an outage from EVENT_ORGANISER and writes nothing (AC1) 109ms
+ ✓ database/tests/venues/venue-outage-recovery.integration.test.ts > KAN-81 saving an outage over approved arrangements against PostgreSQL > refuses an outage from EVENT_COORDINATOR and writes nothing (AC1) 105ms
+ ✓ database/tests/venues/venue-outage-recovery.integration.test.ts > KAN-81 saving an outage over approved arrangements against PostgreSQL > refuses an outage from TECHNICAL_SUPPORT_STAFF and writes nothing (AC1) 118ms
+ ✓ database/tests/venues/venue-outage-recovery.integration.test.ts > KAN-81 saving an outage over approved arrangements against PostgreSQL > refuses an outage from ATTENDEE and writes nothing (AC1) 90ms
+ ✓ database/tests/venues/venue-outage-recovery.integration.test.ts > KAN-81 saving an outage over approved arrangements against PostgreSQL > refuses invalid input {"endsAt":"2031-01-12T02:00:00.000Z"} with no partial write (AC1) 81ms
+ ✓ database/tests/venues/venue-outage-recovery.integration.test.ts > KAN-81 saving an outage over approved arrangements against PostgreSQL > refuses invalid input {"startsAt":"not-a-date"} with no partial write (AC1) 65ms
+ ✓ database/tests/venues/venue-outage-recovery.integration.test.ts > KAN-81 saving an outage over approved arrangements against PostgreSQL > refuses invalid input {"reason":"   "} with no partial write (AC1) 59ms
+ ✓ database/tests/venues/venue-outage-recovery.integration.test.ts > KAN-81 saving an outage over approved arrangements against PostgreSQL > records each booking once however often an outage is processed, and nothing on rollback (AC11) 434ms
+ ✓ database/tests/venues/venue-outage-recovery.integration.test.ts > KAN-81 removing an outage against PostgreSQL (AC11) > clears only that outage’s flags, keeps the history and leaves other outages’ flags open 488ms
+ ✓ database/tests/venues/venue-outage-recovery.integration.test.ts > KAN-81 removing an outage against PostgreSQL (AC11) > reports a block that no longer exists without changing anything 61ms
+ ✓ database/tests/venues/venue-outage-recovery.integration.test.ts > KAN-81 outage effects on planning and approval (AC9, AC10) > excludes the venue from calendar, search, new requests and approval immediately (AC9) 386ms
+ ✓ database/tests/venues/venue-outage-recovery.integration.test.ts > KAN-81 outage effects on planning and approval (AC9, AC10) > flags a booking approved before the outage was saved (AC10) 342ms
+ ✓ database/tests/venues/venue-outage-recovery.integration.test.ts > KAN-81 outage effects on planning and approval (AC9, AC10) > refuses an approval that waited on an outage holding the venue lock (AC10) 366ms
+ ✓ database/tests/venues/venue-outage-recovery.integration.test.ts > KAN-81 phase 2: coordinator notice and recovery view against PostgreSQL (AC5, AC6) > notifies each affected event’s current coordinator once, in the outage transaction (AC5) 294ms
+ ✓ database/tests/venues/venue-outage-recovery.integration.test.ts > KAN-81 phase 2: coordinator notice and recovery view against PostgreSQL (AC5, AC6) > sends nothing for an outage that affects no booking, and nothing twice when reprocessed 380ms
+ ✓ database/tests/venues/venue-outage-recovery.integration.test.ts > KAN-81 phase 2: coordinator notice and recovery view against PostgreSQL (AC5, AC6) > shows the recovery state to the assigned coordinator and Venue Staff, and to no one else (AC6) 214ms
+ ✓ database/tests/venues/venue-outage-recovery.integration.test.ts > KAN-81 phase 2: coordinator notice and recovery view against PostgreSQL (AC5, AC6) > links the coordinator’s inbox notice to the protected booking page (AC5, AC6) 183ms
+ ✓ database/tests/venues/venue-outage-recovery.integration.test.ts > KAN-81 phase 2: coordinator notice and recovery view against PostgreSQL (AC5, AC6) > shows a removed outage as cleared on the booking, without deleting the notice 266ms
+ ✓ database/tests/venues/venue-outage-recovery.integration.test.ts > KAN-81 phase 3: replacement bookings against PostgreSQL (AC7, AC8) > records a pending replacement linked to the affected original, leaving the original as it was (AC7) 279ms
+ ✓ database/tests/venues/venue-outage-recovery.integration.test.ts > KAN-81 phase 3: replacement bookings against PostgreSQL (AC7, AC8) > approves the replacement, resolves the recovery and cancels the original while keeping its history (AC8) 340ms
+ ✓ database/tests/venues/venue-outage-recovery.integration.test.ts > KAN-81 phase 3: replacement bookings against PostgreSQL (AC7, AC8) > leaves recovery open after a rejected replacement and accepts another attempt (AC8) 361ms
+ ✓ database/tests/venues/venue-outage-recovery.integration.test.ts > KAN-81 phase 3: replacement bookings against PostgreSQL (AC7, AC8) > refuses a second replacement once the original is resolved, at request and at approval (AC8) 280ms
+ ✓ database/tests/venues/venue-outage-recovery.integration.test.ts > KAN-81 phase 3: replacement bookings against PostgreSQL (AC7, AC8) > refuses to approve a replacement after its outage was removed (AC8, AC11) 133ms
+ ✓ database/tests/venues/venue-outage-recovery.integration.test.ts > KAN-81 phase 3: replacement bookings against PostgreSQL (AC7, AC8) > lets exactly one of two concurrent replacement approvals win (AC8, AC10) 164ms
+ ✓ database/tests/venues/venue-outage-recovery.integration.test.ts > KAN-81 phase 3: replacement bookings against PostgreSQL (AC7, AC8) > refuses a replacement for an unaffected original and creates nothing (AC7) 76ms
+ ✓ database/tests/venues/venue-outage-recovery.integration.test.ts > KAN-81 phase 3: replacement bookings against PostgreSQL (AC7, AC8) > refuses a replacement for another event booking and creates nothing (AC7) 60ms
+ ✓ database/tests/venues/venue-outage-recovery.integration.test.ts > KAN-81 phase 3: replacement bookings against PostgreSQL (AC7, AC8) > refuses a replacement for a venue too small for the attendance and creates nothing (AC7) 52ms
+ ✓ database/tests/venues/venue-outage-recovery.integration.test.ts > KAN-81 phase 3: replacement bookings against PostgreSQL (AC7, AC8) > refuses a replacement for a venue closed during the period and creates nothing (AC7) 56ms
+ ✓ database/tests/venues/venue-outage-recovery.integration.test.ts > KAN-81 phase 3: replacement bookings against PostgreSQL (AC7, AC8) > refuses a replacement for a venue already booked then and creates nothing (AC7) 69ms
+ ✓ database/tests/venues/venue-outage-recovery.integration.test.ts > KAN-81 phase 3: replacement bookings against PostgreSQL (AC7, AC8) > refuses a replacement from a coordinator who is not assigned to the event (AC6, AC7) 53ms
+ ✓ database/tests/events/update-draft.integration.test.ts > KAN-34 draft update persistence > KAN-34-AC101 returns HTTP 400 for 2026-02-30T10:00:00+08:00 without changing the draft 40ms
+ ✓ database/tests/events/update-draft.integration.test.ts > KAN-34 draft update persistence > KAN-34-AC101 returns HTTP 400 for 2026-02-29T10:00:00Z without changing the draft 19ms
+ ✓ database/tests/events/update-draft.integration.test.ts > KAN-34 draft update persistence > KAN-34-AC101 returns HTTP 400 for 1900-02-29T10:00:00Z without changing the draft 19ms
+ ✓ database/tests/events/update-draft.integration.test.ts > KAN-34 draft update persistence > KAN-34-AC101 returns HTTP 400 for 2026-04-31T10:00:00Z without changing the draft 18ms
+ ✓ database/tests/events/update-draft.integration.test.ts > KAN-34 draft update persistence > KAN-34-AC101 returns HTTP 400 for 0000-01-01T00:00:00Z without changing the draft 19ms
+ ✓ database/tests/events/update-draft.integration.test.ts > KAN-34 draft update persistence > KAN-34-AC101 returns HTTP 400 for 2026-01-01T12:00:00+16:00 without changing the draft 19ms
+ ✓ database/tests/events/update-draft.integration.test.ts > KAN-34 draft update persistence > KAN-34-AC101 returns HTTP 400 for 2026-01-01T12:00:00-16:00 without changing the draft 19ms
+ ✓ database/tests/events/update-draft.integration.test.ts > KAN-34 draft update persistence > KAN-34-AC101 returns HTTP 400 for 2026-01-01T12:00:00+23:59 without changing the draft 18ms
+ ✓ database/tests/events/update-draft.integration.test.ts > KAN-34 draft update persistence > KAN-34-AC101 returns HTTP 400 for 2026-01-01T12:00:00-23:59 without changing the draft 18ms
+ ✓ database/tests/events/update-draft.integration.test.ts > KAN-34 draft update persistence > saves a changed field and leaves other fields unchanged 11ms
+ ✓ database/tests/events/update-draft.integration.test.ts > KAN-34 draft update persistence > clears a field when explicitly set to null without touching omitted fields 9ms
+ ✓ database/tests/events/update-draft.integration.test.ts > KAN-34 draft update persistence > keeps the request in DRAFT status after saving changes 12ms
+ ✓ database/tests/events/update-draft.integration.test.ts > KAN-34 draft update persistence > reflects the latest saved values when read again afterwards 18ms
+ ✓ database/tests/events/update-draft.integration.test.ts > KAN-34 draft update persistence > leaves data unchanged for 'a different organiser' 9ms
+ ✓ database/tests/events/update-draft.integration.test.ts > KAN-34 draft update persistence > leaves data unchanged for 'an unauthenticated actor' 6ms
+ ✓ database/tests/events/update-draft.integration.test.ts > KAN-34 draft update persistence > leaves data unchanged for 'a submitted request' 9ms
+ ✓ database/tests/events/update-draft.integration.test.ts > KAN-34 draft update persistence > reports a missing request without recording a change 2ms
+ ✓ database/tests/events/update-draft.integration.test.ts > KAN-34 draft update persistence > saves a draft through HTTP and reflects it on the next GET 19ms
+ ✓ database/tests/events/update-draft.integration.test.ts > KAN-34 draft update persistence > hides another organiser's draft through HTTP and leaves it unchanged 12ms
+ ✓ database/tests/events/update-draft.integration.test.ts > KAN-34 draft update persistence > preserves valid PostgreSQL boundary 0001-01-01T00:00:00Z in every editable date field 58ms
+ ✓ database/tests/events/update-draft.integration.test.ts > KAN-34 draft update persistence > preserves valid PostgreSQL boundary 9999-12-31T23:59:59Z in every editable date field 54ms
+ ✓ database/tests/events/update-draft.integration.test.ts > KAN-34 draft update persistence > preserves valid PostgreSQL boundary 2026-01-01T12:00:00+15:59 in every editable date field 61ms
+ ✓ database/tests/events/update-draft.integration.test.ts > KAN-34 draft update persistence > preserves valid PostgreSQL boundary 2026-01-01T12:00:00-15:59 in every editable date field 101ms
+ ✓ database/tests/events/update-draft.integration.test.ts > KAN-34-AC101 strict calendar-date draft validation > refuses 2026-02-30T09:00:00Z as a validation error and leaves the draft unchanged 29ms
+ ✓ database/tests/events/update-draft.integration.test.ts > KAN-34-AC101 strict calendar-date draft validation > refuses 2027-02-29T09:00:00Z as a validation error and leaves the draft unchanged 29ms
+ ✓ database/tests/events/update-draft.integration.test.ts > KAN-34-AC101 strict calendar-date draft validation > refuses 2026-13-01T09:00:00Z as a validation error and leaves the draft unchanged 27ms
+ ✓ database/tests/events/update-draft.integration.test.ts > KAN-34-AC101 strict calendar-date draft validation > saves the real date-time 2028-02-29T09:00:00Z 35ms
+ ✓ database/tests/events/update-draft.integration.test.ts > KAN-34-AC101 strict calendar-date draft validation > saves the real date-time 2028-02-29T17:00:00+08:00 30ms
+ ✓ database/tests/events/assignment.integration.test.ts > KAN-79 Lead initial assignment persistence and concurrency > shows all Leads only unassigned submitted requests and available coordinator targets 87ms
+ ✓ database/tests/events/assignment.integration.test.ts > KAN-79 Lead initial assignment persistence and concurrency > records one initial assignment for an active SUBMITTED event without changing its status 50ms
+ ✓ database/tests/events/assignment.integration.test.ts > KAN-79 Lead initial assignment persistence and concurrency > records one initial assignment for an active UNDER_REVIEW event without changing its status 49ms
+ ✓ database/tests/events/assignment.integration.test.ts > KAN-79 Lead initial assignment persistence and concurrency > records one initial assignment for an active CLARIFICATION_REQUESTED event without changing its status 42ms
+ ✓ database/tests/events/assignment.integration.test.ts > KAN-79 Lead initial assignment persistence and concurrency > records one initial assignment for an active APPROVED event without changing its status 48ms
+ ✓ database/tests/events/assignment.integration.test.ts > KAN-79 Lead initial assignment persistence and concurrency > records one initial assignment for an active CONFIRMED event without changing its status 39ms
+ ✓ database/tests/events/assignment.integration.test.ts > KAN-79 Lead initial assignment persistence and concurrency > preserves existing initial assignments on both same-target retry and attempted handover 79ms
+ ✓ database/tests/events/assignment.integration.test.ts > KAN-79 Lead initial assignment persistence and concurrency > preserves an existing assignment without history instead of inventing a replacement record 28ms
+ ✓ database/tests/events/assignment.integration.test.ts > KAN-79 Lead initial assignment persistence and concurrency > preserves inconsistent active assignment history instead of closing or overwriting it 33ms
+ ✓ database/tests/events/assignment.integration.test.ts > KAN-79 Lead initial assignment persistence and concurrency > rejects a DRAFT request without changing it 24ms
+ ✓ database/tests/events/assignment.integration.test.ts > KAN-79 Lead initial assignment persistence and concurrency > rejects a REJECTED request without changing it 27ms
+ ✓ database/tests/events/assignment.integration.test.ts > KAN-79 Lead initial assignment persistence and concurrency > rejects a CANCELLED request without changing it 24ms
+ ✓ database/tests/events/assignment.integration.test.ts > KAN-79 Lead initial assignment persistence and concurrency > rejects a COMPLETED request without changing it 25ms
+ ✓ database/tests/events/assignment.integration.test.ts > KAN-79 Lead initial assignment persistence and concurrency > rejects unavailable, missing and non-coordinator targets without writes 91ms
+ ✓ database/tests/events/assignment.integration.test.ts > KAN-79 Lead initial assignment persistence and concurrency > rechecks a target whose role changed after the options were read 52ms
+ ✓ database/tests/events/assignment.integration.test.ts > KAN-79 Lead initial assignment persistence and concurrency > waits for a concurrent target availability change before validating eligibility 130ms
+ ✓ database/tests/events/assignment.integration.test.ts > KAN-79 Lead initial assignment persistence and concurrency > waits for a concurrent target role change before validating eligibility 63ms
+ ✓ database/tests/events/assignment.integration.test.ts > KAN-79 Lead initial assignment persistence and concurrency > denies organisers and ordinary coordinators the former self-assignment API 70ms
+ ✓ database/tests/events/assignment.integration.test.ts > KAN-79 Lead initial assignment persistence and concurrency > scopes history to Leads overseeing active events, the owner and the assigned coordinator 242ms
+ ✓ database/tests/events/assignment.integration.test.ts > KAN-79 Lead initial assignment persistence and concurrency > reports a missing request as not found 24ms
+ ✓ database/tests/events/assignment.integration.test.ts > KAN-79 Lead initial assignment persistence and concurrency > rolls back history when the event update fails and permits one clean retry 92ms
+ ✓ database/tests/events/assignment.integration.test.ts > KAN-79 Lead initial assignment persistence and concurrency > row-locks competing Lead allocations: one winner, one clear conflict, one matching history entry 127ms
+ ✓ database/tests/venues/venue-catalogue.integration.test.ts > KAN-50 venue catalogue viewing against PostgreSQL (AC1, AC2, AC12) > lists only active venues, ordered by name, with their recorded information 18ms
+ ✓ database/tests/venues/venue-catalogue.integration.test.ts > KAN-50 venue catalogue viewing against PostgreSQL (AC1, AC2, AC12) > shows one venue with its current information, and not an inactive or missing one 20ms
+ ✓ database/tests/venues/venue-catalogue.integration.test.ts > KAN-50 venue catalogue updates against PostgreSQL (AC3-AC11) > saves every editable attribute, returns the saved venue and shows it on the next view (AC3-AC9, AC12) 29ms
+ ✓ database/tests/venues/venue-catalogue.integration.test.ts > KAN-50 venue catalogue updates against PostgreSQL (AC3-AC11) > keeps several supported layouts on the venue they were saved for and leaves other venues alone (AC10, AC11) 24ms
+ ✓ database/tests/venues/venue-catalogue.integration.test.ts > KAN-50 venue catalogue updates against PostgreSQL (AC3-AC11) > leaves omitted fields unchanged and clears a field only when null is sent 23ms
+ ✓ database/tests/venues/venue-catalogue.integration.test.ts > KAN-50 venue catalogue updates against PostgreSQL (AC3-AC11) > normalises labels before saving: trimmed and deduplicated ignoring case 13ms
+ ✓ database/tests/venues/venue-catalogue.integration.test.ts > KAN-50 venue catalogue updates against PostgreSQL (AC3-AC11) > allows the lists to be emptied 13ms
+ ✓ database/tests/venues/venue-catalogue.integration.test.ts > KAN-50 venue catalogue updates against PostgreSQL (AC3-AC11) > accepts a single operating-hour change that keeps the stored pair ordered 13ms
+ ✓ database/tests/venues/venue-catalogue.integration.test.ts > KAN-50 venue catalogue refusals leave the venue unchanged (AC14 and failure cases) > refuses EVENT_ORGANISER for every operation and changes nothing 7ms
+ ✓ database/tests/venues/venue-catalogue.integration.test.ts > KAN-50 venue catalogue refusals leave the venue unchanged (AC14 and failure cases) > refuses EVENT_COORDINATOR for every operation and changes nothing 8ms
+ ✓ database/tests/venues/venue-catalogue.integration.test.ts > KAN-50 venue catalogue refusals leave the venue unchanged (AC14 and failure cases) > refuses TECHNICAL_SUPPORT_STAFF for every operation and changes nothing 10ms
+ ✓ database/tests/venues/venue-catalogue.integration.test.ts > KAN-50 venue catalogue refusals leave the venue unchanged (AC14 and failure cases) > refuses ATTENDEE for every operation and changes nothing 10ms
+ ✓ database/tests/venues/venue-catalogue.integration.test.ts > KAN-50 venue catalogue refusals leave the venue unchanged (AC14 and failure cases) > refuses a missing venue and an inactive venue 13ms
+ ✓ database/tests/venues/venue-catalogue.integration.test.ts > KAN-50 venue catalogue refusals leave the venue unchanged (AC14 and failure cases) > rejects invalid input {"capacity":0} before touching the venue 7ms
+ ✓ database/tests/venues/venue-catalogue.integration.test.ts > KAN-50 venue catalogue refusals leave the venue unchanged (AC14 and failure cases) > rejects invalid input {"capacity":1.5} before touching the venue 6ms
+ ✓ database/tests/venues/venue-catalogue.integration.test.ts > KAN-50 venue catalogue refusals leave the venue unchanged (AC14 and failure cases) > rejects invalid input {"name":"Renamed"} before touching the venue 6ms
+ ✓ database/tests/venues/venue-catalogue.integration.test.ts > KAN-50 venue catalogue refusals leave the venue unchanged (AC14 and failure cases) > rejects invalid input {"facilities":"Projector"} before touching the venue 7ms
+ ✓ database/tests/venues/venue-catalogue.integration.test.ts > KAN-50 venue catalogue refusals leave the venue unchanged (AC14 and failure cases) > rejects invalid input {"opensAt":"24:00"} before touching the venue 7ms
+ ✓ database/tests/venues/venue-catalogue.integration.test.ts > KAN-50 venue catalogue refusals leave the venue unchanged (AC14 and failure cases) > rejects invalid input {"opensAt":"10:00","closesAt":"10:00"} before touching the venue 6ms
+ ✓ database/tests/venues/venue-catalogue.integration.test.ts > KAN-50 venue catalogue refusals leave the venue unchanged (AC14 and failure cases) > rejects invalid input {} before touching the venue 6ms
+ ✓ database/tests/venues/venue-catalogue.integration.test.ts > KAN-50 venue catalogue refusals leave the venue unchanged (AC14 and failure cases) > rejects a single hour change {"opensAt":"22:00"} that would reverse the stored 08:00-22:00 pair, with a validation error rather than a database error 11ms
+ ✓ database/tests/venues/venue-catalogue.integration.test.ts > KAN-50 venue catalogue refusals leave the venue unchanged (AC14 and failure cases) > rejects a single hour change {"opensAt":"23:30"} that would reverse the stored 08:00-22:00 pair, with a validation error rather than a database error 11ms
+ ✓ database/tests/venues/venue-catalogue.integration.test.ts > KAN-50 venue catalogue refusals leave the venue unchanged (AC14 and failure cases) > rejects a single hour change {"closesAt":"08:00"} that would reverse the stored 08:00-22:00 pair, with a validation error rather than a database error 11ms
+ ✓ database/tests/venues/venue-catalogue.integration.test.ts > KAN-50 venue catalogue refusals leave the venue unchanged (AC14 and failure cases) > rejects a single hour change {"closesAt":"07:00"} that would reverse the stored 08:00-22:00 pair, with a validation error rather than a database error 11ms
+ ✓ database/tests/venues/venue-catalogue.integration.test.ts > KAN-50 venue catalogue refusals leave the venue unchanged (AC14 and failure cases) > accepts the maximum capacity the database allows 14ms
+ ✓ database/tests/venues/venue-catalogue.integration.test.ts > KAN-50 concurrent venue edits (conflict cases) > keeps both changes when two staff edit different fields at the same time 30ms
+ ✓ database/tests/venues/venue-catalogue.integration.test.ts > KAN-50 concurrent venue edits (conflict cases) > ends with exactly one of the submitted values when staff edit the same field at the same time 51ms
+ ✓ database/tests/venues/venue-catalogue.integration.test.ts > KAN-50 concurrent venue edits (conflict cases) > does not let an edit proceed against a venue deactivated first 12ms
+ ✓ database/tests/venues/venue-catalogue.integration.test.ts > KAN-50 saved changes reach venue search and suitability (AC13) > makes an updated venue findable by search filters it did not match before 28ms
+ ✓ database/tests/venues/venue-catalogue.integration.test.ts > KAN-50 saved changes reach venue search and suitability (AC13) > stops matching a filter once the venue is changed so it no longer satisfies it 16ms
+ ✓ database/tests/venues/venue-catalogue.integration.test.ts > KAN-50 saved changes reach venue search and suitability (AC13) > offers newly saved labels as search filter options 17ms
+ ✓ database/tests/venues/venue-catalogue.integration.test.ts > KAN-50 saved changes reach venue search and suitability (AC13) > gives the suitability check the current saved values 24ms
+ ✓ database/tests/venues/venue-catalogue.integration.test.ts > KAN-50 saved changes reach venue search and suitability (AC13) > does not change an existing booking when capacity or layouts change 28ms
+ ✓ database/tests/venues/venue-catalogue.integration.test.ts > KAN-77 venue buffer durations against PostgreSQL > starts a venue at zero, saves both buffers and shows them on the next read (AC3, AC4) 20ms
+ ✓ database/tests/venues/venue-catalogue.integration.test.ts > KAN-77 venue buffer durations against PostgreSQL > includes the saved buffers in search, suitability and calendar inputs (AC4) 30ms
+ ✓ database/tests/venues/venue-catalogue.integration.test.ts > KAN-77 venue buffer durations against PostgreSQL > refuses {"setupMinutes":-1,"expectedSetupMinutes":0} with a validation error and saves nothing (AC2) 8ms
+ ✓ database/tests/venues/venue-catalogue.integration.test.ts > KAN-77 venue buffer durations against PostgreSQL > refuses {"setupMinutes":1441,"expectedSetupMinutes":0} with a validation error and saves nothing (AC2) 7ms
+ ✓ database/tests/venues/venue-catalogue.integration.test.ts > KAN-77 venue buffer durations against PostgreSQL > refuses {"turnaroundMinutes":7.5,"expectedTurnaroundMinutes":0} with a validation error and saves nothing (AC2) 7ms
+ ✓ database/tests/venues/venue-catalogue.integration.test.ts > KAN-77 venue buffer durations against PostgreSQL > refuses {"turnaroundMinutes":null,"expectedTurnaroundMinutes":0} with a validation error and saves nothing (AC2) 7ms
+ ✓ database/tests/venues/venue-catalogue.integration.test.ts > KAN-77 venue buffer durations against PostgreSQL > refuses {"setupMinutes":10} with a validation error and saves nothing (AC2) 7ms
+ ✓ database/tests/venues/venue-catalogue.integration.test.ts > KAN-77 venue buffer durations against PostgreSQL > refuses a buffer change by EVENT_ORGANISER and leaves the venue unchanged (AC1) 9ms
+ ✓ database/tests/venues/venue-catalogue.integration.test.ts > KAN-77 venue buffer durations against PostgreSQL > refuses a buffer change by EVENT_COORDINATOR and leaves the venue unchanged (AC1) 12ms
+ ✓ database/tests/venues/venue-catalogue.integration.test.ts > KAN-77 venue buffer durations against PostgreSQL > refuses a buffer change by TECHNICAL_SUPPORT_STAFF and leaves the venue unchanged (AC1) 11ms
+ ✓ database/tests/venues/venue-catalogue.integration.test.ts > KAN-77 venue buffer durations against PostgreSQL > refuses a buffer change by ATTENDEE and leaves the venue unchanged (AC1) 10ms
+ ✓ database/tests/venues/venue-catalogue.integration.test.ts > KAN-77 venue buffer durations against PostgreSQL > refuses a stale buffer edit without overwriting the newer value (AC5) 18ms
+ ✓ database/tests/venues/venue-catalogue.integration.test.ts > KAN-77 venue buffer durations against PostgreSQL > preserves an unrelated field edit and refuses only the stale buffer edit (AC5) 28ms
+ ✓ database/tests/venues/venue-catalogue.integration.test.ts > KAN-77 venue buffer durations against PostgreSQL > lets exactly one of two concurrent edits from the same loaded value win (AC5) 16ms
+ ✓ database/tests/venues/venue-catalogue.integration.test.ts > KAN-77 venue buffer durations against PostgreSQL > keeps both changes when a buffer and another field are edited at the same time 25ms
+ ✓ database/tests/venues/venue-catalogue.integration.test.ts > KAN-77 venue buffer durations against PostgreSQL > does not change existing bookings when buffers change (AC6 boundary; re-evaluation is KAN-78) 30ms
+ ✓ database/tests/events/automatic-assignment.integration.test.ts > KAN-79 submission policy supersedes KAN-29 without erasing assignment history > submits without automatic assignment when coordinator availability is none 69ms
+ ✓ database/tests/events/automatic-assignment.integration.test.ts > KAN-79 submission policy supersedes KAN-29 without erasing assignment history > submits without automatic assignment when coordinator availability is unavailable 57ms
+ ✓ database/tests/events/automatic-assignment.integration.test.ts > KAN-79 submission policy supersedes KAN-29 without erasing assignment history > submits without automatic assignment when coordinator availability is available 51ms
+ ✓ database/tests/events/automatic-assignment.integration.test.ts > KAN-79 submission policy supersedes KAN-29 without erasing assignment history > leaves existing automatic assignments and their history unchanged when a new draft is submitted 76ms
+ ✓ database/tests/events/automatic-assignment.integration.test.ts > KAN-79 submission policy supersedes KAN-29 without erasing assignment history > validates completeness before changing the draft and leaves unrelated requests unchanged 53ms
+ ✓ database/tests/events/automatic-assignment.integration.test.ts > KAN-79 submission policy supersedes KAN-29 without erasing assignment history > does not submit for an unauthorised signed out 147ms
+ ✓ database/tests/events/automatic-assignment.integration.test.ts > KAN-79 submission policy supersedes KAN-29 without erasing assignment history > does not submit for an unauthorised other organiser 46ms
+ ✓ database/tests/events/automatic-assignment.integration.test.ts > KAN-79 submission policy supersedes KAN-29 without erasing assignment history > does not submit for an unauthorised coordinator 33ms
+ ✓ database/tests/events/automatic-assignment.integration.test.ts > KAN-79 submission policy supersedes KAN-29 without erasing assignment history > does not submit for an unauthorised lead 34ms
+ ✓ database/tests/events/automatic-assignment.integration.test.ts > KAN-79 submission policy supersedes KAN-29 without erasing assignment history > preserves and reports an inconsistent draft with existing coordinator 51ms
+ ✓ database/tests/events/automatic-assignment.integration.test.ts > KAN-79 submission policy supersedes KAN-29 without erasing assignment history > preserves and reports an inconsistent draft with existing history 88ms
+ ✓ database/tests/events/automatic-assignment.integration.test.ts > KAN-79 submission policy supersedes KAN-29 without erasing assignment history > rolls back submission and status history when saving fails, then allows a clean retry 86ms
+ ✓ database/tests/events/automatic-assignment.integration.test.ts > KAN-79 submission policy supersedes KAN-29 without erasing assignment history > rejects repeated submission without creating assignment or duplicate status history 52ms
+ ✓ database/tests/events/lead-assignment.integration.test.ts > KAN-79 trusted runtime Lead sessions and request-specific authorisation > accepts a provisioned Lead but never grants Lead from token claims, login fields, headers or an unmapped identity 107ms
+ ✓ database/tests/events/lead-assignment.integration.test.ts > KAN-79 trusted runtime Lead sessions and request-specific authorisation > connects owner submission to both Leads, then grants only the chosen coordinator review access 235ms
+ ✓ database/tests/events/lead-assignment.integration.test.ts > KAN-79 trusted runtime Lead sessions and request-specific authorisation > limits Lead supervision to active non-draft basic data and does not grant event or venue decision powers 171ms
+ ✓ database/tests/events/lead-assignment.integration.test.ts > KAN-79 trusted runtime Lead sessions and request-specific authorisation > rejects EVENT_ORGANISER at every protected Lead read and write entry point 49ms
+ ✓ database/tests/events/lead-assignment.integration.test.ts > KAN-79 trusted runtime Lead sessions and request-specific authorisation > rejects EVENT_COORDINATOR at every protected Lead read and write entry point 42ms
+ ✓ database/tests/events/lead-assignment.integration.test.ts > KAN-79 trusted runtime Lead sessions and request-specific authorisation > rejects VENUE_STAFF at every protected Lead read and write entry point 50ms
+ ✓ database/tests/events/lead-assignment.integration.test.ts > KAN-79 trusted runtime Lead sessions and request-specific authorisation > rejects TECHNICAL_SUPPORT_STAFF at every protected Lead read and write entry point 54ms
+ ✓ database/tests/events/lead-assignment.integration.test.ts > KAN-79 trusted runtime Lead sessions and request-specific authorisation > rejects ATTENDEE at every protected Lead read and write entry point 55ms
+ ✓ database/tests/events/lead-assignment.integration.test.ts > KAN-79 trusted runtime Lead sessions and request-specific authorisation > requires a real session and rechecks a revoked Lead role before reading or writing 60ms
+ ✓ database/tests/equipment/availability.integration.test.ts > KAN-9 read-only equipment availability against real PostgreSQL > lists only eligible events and returns minimal context with saved requirements and referenced inactive equipment 77ms
+ ✓ database/tests/equipment/availability.integration.test.ts > KAN-9 read-only equipment availability against real PostgreSQL > uses operational stock minus simultaneous peak, with half-open adjacency and equality allowed 95ms
+ ✓ database/tests/equipment/availability.integration.test.ts > KAN-9 read-only equipment availability against real PostgreSQL > sums simultaneous reservations rather than taking the biggest individual reservation 40ms
+ ✓ database/tests/equipment/availability.integration.test.ts > KAN-9 read-only equipment availability against real PostgreSQL > fulfils mixed equipment types at equality and reports only the deficient type without writing records 56ms
+ ✓ database/tests/equipment/availability.integration.test.ts > KAN-9 read-only equipment availability against real PostgreSQL > preserves PostgreSQL microsecond overlap and adjacency boundaries 37ms
+ ✓ database/tests/equipment/availability.integration.test.ts > KAN-9 read-only equipment availability against real PostgreSQL > aggregates saved duplicate lines and excludes those reservations only in saved mode 44ms
+ ✓ database/tests/equipment/availability.integration.test.ts > KAN-9 read-only equipment availability against real PostgreSQL > reports every equipment type and its exact deficit, including inactive and zero-operational pools 34ms
+ ✓ database/tests/equipment/availability.integration.test.ts > KAN-9 read-only equipment availability against real PostgreSQL > rejects stale event text even when updated_at was not changed 29ms
+ ✓ database/tests/equipment/availability.integration.test.ts > KAN-9 read-only equipment availability against real PostgreSQL > rejects stale saved quantity even when updated_at was not changed 34ms
+ ✓ database/tests/equipment/availability.integration.test.ts > KAN-9 read-only equipment availability against real PostgreSQL > rejects stale saved status even when updated_at was not changed 33ms
+ ✓ database/tests/equipment/availability.integration.test.ts > KAN-9 read-only equipment availability against real PostgreSQL > rejects stale saved period even when updated_at was not changed 34ms
+ ✓ database/tests/equipment/availability.integration.test.ts > KAN-9 read-only equipment availability against real PostgreSQL > refuses mismatched saved periods and missing saved requirements instead of silently retiming or passing 52ms
+ ✓ database/tests/equipment/availability.integration.test.ts > KAN-9 read-only equipment availability against real PostgreSQL > reads current reservation and stock changes without accepting a stale cached capacity result 33ms
+ ✓ database/tests/equipment/availability.integration.test.ts > KAN-9 read-only equipment availability against real PostgreSQL > reports a newly deactivated selected type as a shortfall without dropping the unsaved demand 27ms
+ ✓ database/tests/equipment/availability.integration.test.ts > KAN-9 read-only equipment availability against real PostgreSQL > protects all three endpoints from anonymous and every non-technical role without changing records 43ms
+ ✓ database/tests/equipment/availability.integration.test.ts > KAN-9 read-only equipment availability against real PostgreSQL > refuses ineligible and missing events for direct context and assessment calls 46ms
+ ✓ database/tests/equipment/availability.integration.test.ts > KAN-9 read-only equipment availability against real PostgreSQL > rejects invalid or empty quantities, unknown equipment, and overflow when aggregating duplicate lines 41ms
+ ✓ database/tests/equipment/availability.integration.test.ts > KAN-9 read-only equipment availability against real PostgreSQL > works with a PostgreSQL session that prohibits all writes 51ms
+ ✓ database/tests/venues/venue-suitability.integration.test.ts > KAN-52 current-data venue suitability against PostgreSQL > returns current event context with active catalogue values and no unrelated identity data 30ms
+ ✓ database/tests/venues/venue-suitability.integration.test.ts > KAN-52 current-data venue suitability against PostgreSQL > TC-11-03 passes capacity equality, explains excess attendance and leaves saved records untouched 57ms
+ ✓ database/tests/venues/venue-suitability.integration.test.ts > KAN-52 current-data venue suitability against PostgreSQL > uses the latest venue 'capacity' even when the catalogue timestamp is unchanged 18ms
+ ✓ database/tests/venues/venue-suitability.integration.test.ts > KAN-52 current-data venue suitability against PostgreSQL > uses the latest venue 'facilities' even when the catalogue timestamp is unchanged 17ms
+ ✓ database/tests/venues/venue-suitability.integration.test.ts > KAN-52 current-data venue suitability against PostgreSQL > uses the latest venue 'accessibility_features' even when the catalogue timestamp is unchanged 17ms
+ ✓ database/tests/venues/venue-suitability.integration.test.ts > KAN-52 current-data venue suitability against PostgreSQL > uses the latest venue 'wheelchair_accessible' even when the catalogue timestamp is unchanged 16ms
+ ✓ database/tests/venues/venue-suitability.integration.test.ts > KAN-52 current-data venue suitability against PostgreSQL > uses the latest venue 'layouts' even when the catalogue timestamp is unchanged 18ms
+ ✓ database/tests/venues/venue-suitability.integration.test.ts > KAN-52 current-data venue suitability against PostgreSQL > uses the latest venue 'opens_at' even when the catalogue timestamp is unchanged 21ms
+ ✓ database/tests/venues/venue-suitability.integration.test.ts > KAN-52 current-data venue suitability against PostgreSQL > uses the latest venue 'closes_at' even when the catalogue timestamp is unchanged 21ms
+ ✓ database/tests/venues/venue-suitability.integration.test.ts > KAN-52 current-data venue suitability against PostgreSQL > uses the latest venue 'is_active' even when the catalogue timestamp is unchanged 25ms
+ ✓ database/tests/venues/venue-suitability.integration.test.ts > KAN-52 current-data venue suitability against PostgreSQL > requires reconfirmation after current event 'venue_requirements' changes without an updated_at change 34ms
+ ✓ database/tests/venues/venue-suitability.integration.test.ts > KAN-52 current-data venue suitability against PostgreSQL > requires reconfirmation after current event 'accessibility_needs' changes without an updated_at change 29ms
+ ✓ database/tests/venues/venue-suitability.integration.test.ts > KAN-52 current-data venue suitability against PostgreSQL > requires reconfirmation after current event 'expected_attendance' changes without an updated_at change 29ms
+ ✓ database/tests/venues/venue-suitability.integration.test.ts > KAN-52 current-data venue suitability against PostgreSQL > requires reconfirmation after current event 'starts_at' changes without an updated_at change 116ms
+ ✓ database/tests/venues/venue-suitability.integration.test.ts > KAN-52 current-data venue suitability against PostgreSQL > requires reconfirmation after current event 'ends_at' changes without an updated_at change 26ms
+ ✓ database/tests/venues/venue-suitability.integration.test.ts > KAN-52 current-data venue suitability against PostgreSQL > requires reconfirmation after current event 'name' changes without an updated_at change 23ms
+ ✓ database/tests/venues/venue-suitability.integration.test.ts > KAN-52 current-data venue suitability against PostgreSQL > reports unavailable required facilities even if no catalogue venue offers that value 14ms
+ ✓ database/tests/venues/venue-suitability.integration.test.ts > KAN-52 current-data venue suitability against PostgreSQL > does not treat a PENDING request as confirmed availability usage 46ms
+ ✓ database/tests/venues/venue-suitability.integration.test.ts > KAN-52 current-data venue suitability against PostgreSQL > does not treat a REJECTED request as confirmed availability usage 25ms
+ ✓ database/tests/venues/venue-suitability.integration.test.ts > KAN-52 current-data venue suitability against PostgreSQL > does not treat a CANCELLED request as confirmed availability usage 17ms
+ ✓ database/tests/venues/venue-suitability.integration.test.ts > KAN-52 current-data venue suitability against PostgreSQL > reassesses approved bookings including this event, without exposing another booking identity 24ms
+ ✓ database/tests/venues/venue-suitability.integration.test.ts > KAN-52 current-data venue suitability against PostgreSQL > ignores other venues and permits half-open adjacency for bookings and operational blocks 33ms
+ ✓ database/tests/venues/venue-suitability.integration.test.ts > KAN-52 current-data venue suitability against PostgreSQL > does not approve an overnight interval merely because both clock times fit 22ms
+ ✓ database/tests/venues/venue-suitability.integration.test.ts > KAN-52 current-data venue suitability against PostgreSQL > returns NEEDS_REVIEW for missing data or unconfirmed interpretation instead of asserting suitability 23ms
+ ✓ database/tests/venues/venue-suitability.integration.test.ts > KAN-52 current-data venue suitability against PostgreSQL > KAN-52-AC101 assesses a stored attendance of 0 against capacity and keeps missing attendance distinguishable 38ms
+ ✓ database/tests/venues/venue-suitability.integration.test.ts > KAN-52 current-data venue suitability against PostgreSQL > returns an empty active catalogue normally when no venue is active 16ms
+ ✓ database/tests/venues/venue-suitability.integration.test.ts > KAN-52 current-data venue suitability against PostgreSQL > treats PostgreSQL infinite timestamps as missing timing instead of throwing or claiming suitability 19ms
+ ✓ database/tests/venues/venue-suitability.integration.test.ts > KAN-52 current-data venue suitability against PostgreSQL > denies direct service reads to EVENT_ORGANISER 15ms
+ ✓ database/tests/venues/venue-suitability.integration.test.ts > KAN-52 current-data venue suitability against PostgreSQL > denies direct service reads to VENUE_STAFF 15ms
+ ✓ database/tests/venues/venue-suitability.integration.test.ts > KAN-52 current-data venue suitability against PostgreSQL > denies direct service reads to TECHNICAL_SUPPORT_STAFF 14ms
+ ✓ database/tests/venues/venue-suitability.integration.test.ts > KAN-52 current-data venue suitability against PostgreSQL > denies direct service reads to ATTENDEE 15ms
+ ✓ database/tests/venues/venue-suitability.integration.test.ts > KAN-52 current-data venue suitability against PostgreSQL > hides draft, unrelated, unassigned and missing events before disclosing venue or freshness information 60ms
+ ✓ database/tests/venues/venue-suitability.integration.test.ts > KAN-52 current-data venue suitability against PostgreSQL > rechecks the current assignment on assessment after context was loaded 18ms
+ ✓ database/tests/venues/venue-suitability.integration.test.ts > KAN-52 running app cookie authentication and mapped authorisation > mounts read-only context/assessment with verified profiles, not caller role or event-data overrides 181ms
+ ✓ database/tests/notifications/notification-inbox.integration.test.ts > KAN-64 one event through the whole workflow (AC201–AC203, AC205, AC208) > acknowledges the organiser's submission, and only the organiser sees it 86ms
+ ✓ database/tests/notifications/notification-inbox.integration.test.ts > KAN-64 one event through the whole workflow (AC201–AC203, AC205, AC208) > tells the organiser and the new coordinator about the allocation, not the Lead who made it 69ms
+ ✓ database/tests/notifications/notification-inbox.integration.test.ts > KAN-64 one event through the whole workflow (AC201–AC203, AC205, AC208) > sends the clarification request, then the decision with its reason, to the organiser only 62ms
+ ✓ database/tests/notifications/notification-inbox.integration.test.ts > KAN-64 one event through the whole workflow (AC201–AC203, AC205, AC208) > notifies the organiser, the current coordinator and the deciding staff member of a booking decision 139ms
+ ✓ database/tests/notifications/notification-inbox.integration.test.ts > KAN-64 one event through the whole workflow (AC201–AC203, AC205, AC208) > adds nothing for a repeated or refused action (AC207) 29ms
+ ✓ database/tests/notifications/notification-inbox.integration.test.ts > KAN-64 one event through the whole workflow (AC201–AC203, AC205, AC208) > hides a former coordinator's event notices after reassignment but keeps a minimal notice (AC202, AC206) 133ms
+ ✓ database/tests/notifications/notification-inbox.integration.test.ts > KAN-64 one event through the whole workflow (AC201–AC203, AC205, AC208) > repeating an unchanged reassignment adds nothing 26ms
+ ✓ database/tests/notifications/notification-inbox.integration.test.ts > KAN-64-AC204/AC206 the inbox is private, with read state > requires a verified session 14ms
+ ✓ database/tests/notifications/notification-inbox.integration.test.ts > KAN-64-AC204/AC206 the inbox is private, with read state > lets another user neither list, count nor mark someone else's notification 357ms
+ ✓ database/tests/notifications/notification-inbox.integration.test.ts > KAN-64-AC204/AC206 the inbox is private, with read state > marks one notification read once, keeping its original read time, and updates the count 56ms
+ ✓ database/tests/notifications/notification-inbox.integration.test.ts > KAN-64-AC204/AC206 the inbox is private, with read state > marks everything the caller can see as read, and nobody else's 64ms
+ ✓ database/tests/notifications/notification-inbox.integration.test.ts > KAN-64-AC204/AC206 the inbox is private, with read state > rejects a malformed notification id 9ms
+ ✓ database/tests/notifications/notification-inbox.integration.test.ts > KAN-64-AC207 persistence is part of the business transaction > ignores a repeated outcome for the same recipient but keeps distinct recipients 15ms
+ ✓ database/tests/notifications/notification-inbox.integration.test.ts > KAN-64-AC207 persistence is part of the business transaction > rolls the whole decision back when its notification cannot be written 41ms
+ ✓ database/tests/notifications/notification-inbox.integration.test.ts > KAN-64-AC207 persistence is part of the business transaction > rolls an assignment back when its notification cannot be written 34ms
+ ✓ database/tests/notifications/notification-inbox.integration.test.ts > KAN-64-AC207/AC208 concurrent delivery and overlapping recipients > TC-20-18 serialises simultaneous writes for one outcome and recipient without duplicate delivery 38ms
+ ✓ database/tests/notifications/notification-inbox.integration.test.ts > KAN-64-AC207/AC208 concurrent delivery and overlapping recipients > TC-20-18 rolls back a venue decision after notices are inserted, then commits and deduplicates concurrent retries 130ms
+ ✓ database/tests/notifications/notification-inbox.integration.test.ts > KAN-64-AC207/AC208 concurrent delivery and overlapping recipients > TC-20-19 acknowledges the actor and deduplicates overlapping historical-owner/current-coordinator recipients 149ms
+ ✓ database/tests/events/authenticated-review.integration.test.ts > KAN-16 / KAN-25 / KAN-33 / KAN-36 authenticated event workflow > requires login on every mounted event endpoint 35ms
+ ✓ database/tests/events/authenticated-review.integration.test.ts > KAN-16 / KAN-25 / KAN-33 / KAN-36 authenticated event workflow > rejects invalid signatures and expired tokens at login and on event requests 32ms
+ ✓ database/tests/events/authenticated-review.integration.test.ts > KAN-16 / KAN-25 / KAN-33 / KAN-36 authenticated event workflow > KAN-16 lists every owned status newest first while preserving both draft-list forms 138ms
+ ✓ database/tests/events/authenticated-review.integration.test.ts > KAN-16 / KAN-25 / KAN-33 / KAN-36 authenticated event workflow > KAN-16 returns an empty list for an organiser with no requests 21ms
+ ✓ database/tests/events/authenticated-review.integration.test.ts > KAN-16 / KAN-25 / KAN-33 / KAN-36 authenticated event workflow > KAN-16 denies the all-status list to VENUE_STAFF accounts 12ms
+ ✓ database/tests/events/authenticated-review.integration.test.ts > KAN-16 / KAN-25 / KAN-33 / KAN-36 authenticated event workflow > KAN-16 denies the all-status list to TECHNICAL_SUPPORT_STAFF accounts 15ms
+ ✓ database/tests/events/authenticated-review.integration.test.ts > KAN-16 / KAN-25 / KAN-33 / KAN-36 authenticated event workflow > KAN-16 denies the all-status list to ATTENDEE accounts 12ms
+ ✓ database/tests/events/authenticated-review.integration.test.ts > KAN-16 / KAN-25 / KAN-33 / KAN-36 authenticated event workflow > limits the coordinator queue to assigned pending requests and excludes drafts 65ms
+ ✓ database/tests/events/authenticated-review.integration.test.ts > KAN-16 / KAN-25 / KAN-33 / KAN-36 authenticated event workflow > records APPROVED once, removes it from the queue and keeps the outcome visible to its owner and coordinator 83ms
+ ✓ database/tests/events/authenticated-review.integration.test.ts > KAN-16 / KAN-25 / KAN-33 / KAN-36 authenticated event workflow > records REJECTED once, removes it from the queue and keeps the outcome visible to its owner and coordinator 81ms
+ ✓ database/tests/events/authenticated-review.integration.test.ts > KAN-16 / KAN-25 / KAN-33 / KAN-36 authenticated event workflow > KAN-56 / S1-DEF-02 keeps a APPROVED request reachable through the coordinator history after it leaves the queue 125ms
+ ✓ database/tests/events/authenticated-review.integration.test.ts > KAN-16 / KAN-25 / KAN-33 / KAN-36 authenticated event workflow > KAN-56 / S1-DEF-02 keeps a REJECTED request reachable through the coordinator history after it leaves the queue 113ms
+ ✓ database/tests/events/authenticated-review.integration.test.ts > KAN-16 / KAN-25 / KAN-33 / KAN-36 authenticated event workflow > hides requests assigned elsewhere and unassigned requests without recording a decision 64ms
+ ✓ database/tests/events/authenticated-review.integration.test.ts > KAN-16 / KAN-25 / KAN-33 / KAN-36 authenticated event workflow > uses the application role despite coordinator claims, headers or body fields supplied by an organiser 22ms
+ ✓ database/tests/events/authenticated-review.integration.test.ts > KAN-16 / KAN-25 / KAN-33 / KAN-36 authenticated event workflow > prevents the assigned coordinator from deciding a draft 31ms
+ ✓ database/tests/events/authenticated-review.integration.test.ts > KAN-16 / KAN-25 / KAN-33 / KAN-36 authenticated event workflow > rechecks assignment when submitting a decision after the request was viewed 62ms
+ ✓ database/tests/events/authenticated-review.integration.test.ts > KAN-16 / KAN-25 / KAN-33 / KAN-36 authenticated event workflow > preserves organiser ownership for draft editing and submission 107ms
+ ✓ database/tests/venues/venue-buffers.integration.test.ts > KAN-78 occupied intervals with real PostgreSQL > uses 09:30–12:45 in search, submission, approval, calendar and suitability 75ms
+ ✓ database/tests/venues/venue-buffers.integration.test.ts > KAN-78 occupied intervals with real PostgreSQL > permits exact occupied adjacency but refuses a one-minute buffer overlap 128ms
+ ✓ database/tests/venues/venue-buffers.integration.test.ts > KAN-78 occupied intervals with real PostgreSQL > pending and rejected requests do not reserve time; zero durations preserve event time 143ms
+ ✓ database/tests/venues/venue-buffers.integration.test.ts > KAN-78 occupied intervals with real PostgreSQL > checks buffer-only operational overlaps in both write directions and at approval 214ms
+ ✓ database/tests/venues/venue-buffers.integration.test.ts > KAN-78 occupied intervals with real PostgreSQL > checks full occupied operating hours including invalid and restricted cross-day windows 36ms
+ ✓ database/tests/venues/venue-buffers.integration.test.ts > KAN-78 occupied intervals with real PostgreSQL > re-evaluates both existing overlaps without changing booking rows or unrelated venues 209ms
+ ✓ database/tests/venues/venue-buffers.integration.test.ts > KAN-78 occupied intervals with real PostgreSQL > retains ended booking history when buffers change 55ms
+ ✓ database/tests/venues/venue-buffers.integration.test.ts > KAN-78 occupied intervals with real PostgreSQL > identifies existing operational and hours violations after a duration edit 52ms
+ ✓ database/tests/venues/venue-buffers.integration.test.ts > KAN-78 occupied intervals with real PostgreSQL > serialises concurrent approvals of buffer-only conflicts 56ms
+ ✓ database/tests/venues/venue-buffers.integration.test.ts > KAN-78 occupied intervals with real PostgreSQL > reads a concurrent buffer edit after the venue lock before approval 58ms
+ ✓ database/tests/venues/venue-buffers.integration.test.ts > KAN-78 occupied intervals with real PostgreSQL > enforces existing calendar and booking privacy 48ms
+ ✓ database/tests/events/submit-request.integration.test.ts > KAN-6 submission persistence > transitions a complete draft to SUBMITTED 16ms
+ ✓ database/tests/events/submit-request.integration.test.ts > KAN-6 submission persistence > rejects an incomplete draft, leaves it unchanged and lists the missing fields 8ms
+ ✓ database/tests/events/submit-request.integration.test.ts > KAN-6 submission persistence > leaves data unchanged for 'a different organiser' 7ms
+ ✓ database/tests/events/submit-request.integration.test.ts > KAN-6 submission persistence > leaves data unchanged for 'an unauthenticated actor' 4ms
+ ✓ database/tests/events/submit-request.integration.test.ts > KAN-6 submission persistence > leaves data unchanged for 'an already-submitted request' 7ms
+ ✓ database/tests/events/submit-request.integration.test.ts > KAN-6 submission persistence > reports a missing request without recording a change 2ms
+ ✓ database/tests/events/submit-request.integration.test.ts > KAN-6 submission persistence > commits only one of two competing submission attempts 102ms
+ ✓ database/tests/events/submit-request.integration.test.ts > KAN-6 submission persistence > KAN-79 submits through HTTP but stays out of an ordinary coordinator review queue until allocated 33ms
+ ✓ database/tests/events/submit-request.integration.test.ts > KAN-6 submission persistence > hides another organiser's draft through HTTP and leaves it unchanged 10ms
+ ✓ database/tests/events/submit-request.integration.test.ts > KAN-59 saved drafts with blank or invalid values stay DRAFT (S1-DEF-04, KAN-6-AC2) > refuses a blank name of any whitespace kind and changes nothing 29ms
+ ✓ database/tests/events/submit-request.integration.test.ts > KAN-59 saved drafts with blank or invalid values stay DRAFT (S1-DEF-04, KAN-6-AC2) > refuses a blank purpose of any whitespace kind and changes nothing 26ms
+ ✓ database/tests/events/submit-request.integration.test.ts > KAN-59 saved drafts with blank or invalid values stay DRAFT (S1-DEF-04, KAN-6-AC2) > refuses a blank venue_requirements of any whitespace kind and changes nothing 27ms
+ ✓ database/tests/events/submit-request.integration.test.ts > KAN-59 saved drafts with blank or invalid values stay DRAFT (S1-DEF-04, KAN-6-AC2) > refuses an end equal to the start and changes nothing 11ms
+ ✓ database/tests/events/submit-request.integration.test.ts > KAN-59 saved drafts with blank or invalid values stay DRAFT (S1-DEF-04, KAN-6-AC2) > refuses an end before the start and changes nothing 9ms
+ ✓ database/tests/events/submit-request.integration.test.ts > KAN-59 saved drafts with blank or invalid values stay DRAFT (S1-DEF-04, KAN-6-AC2) > refuses a registration window that closes before it opens, only while registration is required 19ms
+ ✓ database/tests/events/submit-request.integration.test.ts > KAN-59 saved drafts with blank or invalid values stay DRAFT (S1-DEF-04, KAN-6-AC2) > accepts a valid registration window and a blank capacity meaning no limit 18ms
+ ✓ database/tests/events/submit-request.integration.test.ts > KAN-59 saved drafts with blank or invalid values stay DRAFT (S1-DEF-04, KAN-6-AC2) > still accepts an expected attendance of 0 (open question in the 9 October decision entry) 16ms
+ ✓ database/tests/events/submit-request.integration.test.ts > KAN-59 saved drafts with blank or invalid values stay DRAFT (S1-DEF-04, KAN-6-AC2) > reports every problem in one error and the request can be corrected and submitted afterwards 15ms
+ ✓ database/tests/events/submit-request.integration.test.ts > KAN-59 saved drafts with blank or invalid values stay DRAFT (S1-DEF-04, KAN-6-AC2) > returns 400 SUBMISSION_INCOMPLETE through HTTP for a blank name and keeps the draft 10ms
+ ✓ database/tests/events/submit-request.integration.test.ts > KAN-59 saved drafts with blank or invalid values stay DRAFT (S1-DEF-04, KAN-6-AC2) > returns 400 SUBMISSION_INVALID with field messages through HTTP and keeps the draft 9ms
+ ✓ database/tests/events/submit-request.integration.test.ts > KAN-59 saved drafts with blank or invalid values stay DRAFT (S1-DEF-04, KAN-6-AC2) > does not reveal completeness to another organiser: the invalid draft is still a 404 9ms
+ ✓ database/tests/events/review-decision.integration.test.ts > KAN-36 review decision persistence > records APPROVED and the matching request status 21ms
+ ✓ database/tests/events/review-decision.integration.test.ts > KAN-36 review decision persistence > records REJECTED and the matching request status 14ms
+ ✓ database/tests/events/review-decision.integration.test.ts > KAN-36 review decision persistence > leaves data unchanged for 'an unrelated coordinator' 14ms
+ ✓ database/tests/events/review-decision.integration.test.ts > KAN-36 review decision persistence > leaves data unchanged for 'an organiser' 11ms
+ ✓ database/tests/events/review-decision.integration.test.ts > KAN-36 review decision persistence > leaves data unchanged for 'an unauthenticated actor' 9ms
+ ✓ database/tests/events/review-decision.integration.test.ts > KAN-36 review decision persistence > leaves data unchanged for 'a draft request' 11ms
+ ✓ database/tests/events/review-decision.integration.test.ts > KAN-36 review decision persistence > refuses another decision when a review exists even if the request still says SUBMITTED 13ms
+ ✓ database/tests/events/review-decision.integration.test.ts > KAN-36 review decision persistence > commits only one of two competing approval and rejection attempts 95ms
+ ✓ database/tests/events/review-decision.integration.test.ts > KAN-36 review decision persistence > rolls back the review insert when the subsequent status update fails 25ms
+ ✓ database/tests/events/review-decision.integration.test.ts > KAN-36 review decision persistence > reports a missing request without recording a decision 6ms
+ ✓ database/tests/events/review-decision.integration.test.ts > KAN-36 review decision persistence > persists a decision through HTTP using the verified actor and request policy 42ms
+ ✓ database/tests/events/review-decision.integration.test.ts > KAN-36 review decision persistence > hides another coordinator's request through HTTP and leaves it unchanged 20ms
+ ✓ database/tests/events/review-decision.integration.test.ts > KAN-60 required rejection reason persistence > KAN-60-AC3/AC102 writes no decision, status, history or notification for reason undefined 11ms
+ ✓ database/tests/events/review-decision.integration.test.ts > KAN-60 required rejection reason persistence > KAN-60-AC3/AC102 writes no decision, status, history or notification for reason null 11ms
+ ✓ database/tests/events/review-decision.integration.test.ts > KAN-60 required rejection reason persistence > KAN-60-AC3/AC102 writes no decision, status, history or notification for reason "" 15ms
+ ✓ database/tests/events/review-decision.integration.test.ts > KAN-60 required rejection reason persistence > KAN-60-AC3/AC102 writes no decision, status, history or notification for reason "   \n\t " 23ms
+ ✓ database/tests/events/review-decision.integration.test.ts > KAN-60 required rejection reason persistence > KAN-60-AC101 refuses an over-long reason without changing the request 23ms
+ ✓ database/tests/events/review-decision.integration.test.ts > KAN-60 required rejection reason persistence > KAN-60-AC102 keeps the earlier decision checks: a decided request still reports REVIEW_ALREADY_DECIDED 17ms
+ ✓ database/tests/events/review-decision.integration.test.ts > KAN-60 required rejection reason persistence > KAN-60-AC2 saves the trimmed reason on the rejection and shows it on the detail read after a reload 16ms
+ ✓ database/tests/events/review-decision.integration.test.ts > KAN-60 required rejection reason persistence > KAN-60-AC4 still records an approval without a reason 14ms
+ ✓ database/tests/core-schema.integration.test.ts > CORE-DB-01 status changes are recorded with the transaction actor when supplied 14ms
+ ✓ database/tests/core-schema.integration.test.ts > CORE-DB-02 approved venue bookings cannot overlap each other or blocked periods 70ms
+ ✓ database/tests/core-schema.integration.test.ts > CORE-DB-03 a venue decision requires its decision maker and time 5ms
+ ✓ database/tests/core-schema.integration.test.ts > CORE-DB-04 equipment reservations cannot exceed the pooled quantity 44ms
+ ✓ database/tests/core-schema.integration.test.ts > CORE-DB-05 registrations respect capacity, uniqueness and withdrawal 35ms
+ ✓ database/tests/core-schema.integration.test.ts > CORE-DB-06 one active coordinator assignment and non-empty change requests 51ms
+ ✓ database/tests/workflow/sprint2-connected.integration.test.ts > KAN-79 regression of the connected S2-T23 workflow through the running API (automated stand-in for the hosted walkthrough) > takes a draft to an approved venue booking with the right effects at each step 381ms
+ ✓ database/tests/venues/venue-blocks.integration.test.ts > KAN-55 venue-unavailability blocks against PostgreSQL > creates a block associated with the correct venue and records the reason (AC1-AC7) 48ms
+ ✓ database/tests/venues/venue-blocks.integration.test.ts > KAN-55 venue-unavailability blocks against PostgreSQL > refuses creation by EVENT_ORGANISER without inserting a row (AC13) 6ms
+ ✓ database/tests/venues/venue-blocks.integration.test.ts > KAN-55 venue-unavailability blocks against PostgreSQL > refuses creation by EVENT_COORDINATOR without inserting a row (AC13) 9ms
+ ✓ database/tests/venues/venue-blocks.integration.test.ts > KAN-55 venue-unavailability blocks against PostgreSQL > refuses creation by TECHNICAL_SUPPORT_STAFF without inserting a row (AC13) 7ms
+ ✓ database/tests/venues/venue-blocks.integration.test.ts > KAN-55 venue-unavailability blocks against PostgreSQL > refuses creation by ATTENDEE without inserting a row (AC13) 7ms
+ ✓ database/tests/venues/venue-blocks.integration.test.ts > KAN-55 venue-unavailability blocks against PostgreSQL > refuses a missing or inactive venue 9ms
+ ✓ database/tests/venues/venue-blocks.integration.test.ts > KAN-55 venue-unavailability blocks against PostgreSQL > KAN-81-AC2 saves a block overlapping an approved booking and flags it without displacing it 27ms
+ ✓ database/tests/venues/venue-blocks.integration.test.ts > KAN-55 venue-unavailability blocks against PostgreSQL > allows an adjacent block that does not overlap an approved booking 22ms
+ ✓ database/tests/venues/venue-blocks.integration.test.ts > KAN-55 venue-unavailability blocks against PostgreSQL > lists a venue's blocks earliest first and only for that venue 59ms
+ ✓ database/tests/venues/venue-blocks.integration.test.ts > KAN-55 venue-unavailability blocks against PostgreSQL > deletes a block and returns the same not-found response for a missing one 26ms
+ ✓ database/tests/venues/venue-blocks.integration.test.ts > KAN-55 venue-unavailability blocks against PostgreSQL > refuses deletion by a non-staff actor and leaves the row unchanged 14ms
+ ✓ database/tests/events/event-request-detail.integration.test.ts > KAN-34 / KAN-33 / KAN-16 shared request detail with PostgreSQL > returns an owned incomplete draft without losing null, zero or false fields 26ms
+ ✓ database/tests/events/event-request-detail.integration.test.ts > KAN-34 / KAN-33 / KAN-16 shared request detail with PostgreSQL > returns the same submitted request with caller-specific actions and includes it in the queue 16ms
+ ✓ database/tests/events/event-request-detail.integration.test.ts > KAN-34 / KAN-33 / KAN-16 shared request detail with PostgreSQL > masks access denied to 'another organiser' with the same response as a missing request 11ms
+ ✓ database/tests/events/event-request-detail.integration.test.ts > KAN-34 / KAN-33 / KAN-16 shared request detail with PostgreSQL > masks access denied to 'an unrelated coordinator' with the same response as a missing request 10ms
+ ✓ database/tests/events/event-request-detail.integration.test.ts > KAN-34 / KAN-33 / KAN-16 shared request detail with PostgreSQL > masks access denied to 'the assigned coordinator viewing a dr…' with the same response as a missing request 15ms
+ ✓ database/tests/events/event-request-detail.integration.test.ts > KAN-34 / KAN-33 / KAN-16 shared request detail with PostgreSQL > allows coordinator visibility independently of permission to record a decision 28ms
+ ✓ database/tests/events/event-request-detail.integration.test.ts > KAN-34 / KAN-33 / KAN-16 shared request detail with PostgreSQL > keeps UNDER_REVIEW readable and offers the decision only once no clarification is pending 19ms
+ ✓ database/tests/events/event-request-detail.integration.test.ts > KAN-34 / KAN-33 / KAN-16 shared request detail with PostgreSQL > keeps CLARIFICATION_REQUESTED readable and offers the decision only once no clarification is pending 15ms
+ ✓ database/tests/events/event-request-detail.integration.test.ts > KAN-34 / KAN-33 / KAN-16 shared request detail with PostgreSQL > KAN-36 records APPROVED and both roles can refresh the outcome after it leaves the queue 28ms
+ ✓ database/tests/events/event-request-detail.integration.test.ts > KAN-34 / KAN-33 / KAN-16 shared request detail with PostgreSQL > KAN-36 records REJECTED and both roles can refresh the outcome after it leaves the queue 31ms
+ ✓ database/tests/events/event-request-detail.integration.test.ts > KAN-34 / KAN-33 / KAN-16 shared request detail with PostgreSQL > returns the first recorded decision deterministically and disables another initial decision 17ms
+ ✓ database/tests/events/clarifications.integration.test.ts > CF-04 clarification persistence > runs the full start-review, ask, answer cycle with attributed status history 56ms
+ ✓ database/tests/events/clarifications.integration.test.ts > CF-04 clarification persistence > keeps CLARIFICATION_REQUESTED until every open question is answered 29ms
+ ✓ database/tests/events/clarifications.integration.test.ts > CF-04 clarification persistence > does not record a clarification for 'an unrelated coordinator' 8ms
+ ✓ database/tests/events/clarifications.integration.test.ts > CF-04 clarification persistence > does not record a clarification for 'the owning organiser' 8ms
+ ✓ database/tests/events/clarifications.integration.test.ts > CF-04 clarification persistence > does not record a clarification for 'an approved request' 16ms
+ ✓ database/tests/events/clarifications.integration.test.ts > CF-04 clarification persistence > does not record a clarification for 'a request already awaiting clarificat…' 20ms
+ ✓ database/tests/events/clarifications.integration.test.ts > CF-04 clarification persistence > does not record a clarification for 'a draft' 9ms
+ ✓ database/tests/events/clarifications.integration.test.ts > CF-04 clarification persistence > validates the message before touching the database 4ms
+ ✓ database/tests/events/clarifications.integration.test.ts > CF-04 clarification persistence > refuses responses from anyone but the owner, and for another request's clarification 25ms
+ ✓ database/tests/events/clarifications.integration.test.ts > CF-04 clarification persistence > only starts a review from SUBMITTED and only for the assigned coordinator 21ms
+ ✓ database/tests/venues/venue-availability.integration.test.ts > KAN-51 venue availability calendar with PostgreSQL > requires a verified session before revealing any venue information 11ms
+ ✓ database/tests/venues/venue-availability.integration.test.ts > KAN-51 venue availability calendar with PostgreSQL > denies the organiser role without returning venue data 18ms
+ ✓ database/tests/venues/venue-availability.integration.test.ts > KAN-51 venue availability calendar with PostgreSQL > denies the attendee role without returning venue data 7ms
+ ✓ database/tests/venues/venue-availability.integration.test.ts > KAN-51 venue availability calendar with PostgreSQL > shows confirmed bookings and blocked periods on the correct active venue to each internal role 42ms
+ ✓ database/tests/venues/venue-availability.integration.test.ts > KAN-51 venue availability calendar with PostgreSQL > rejects an invalid window without reading venue data 7ms
+ ✓ database/tests/venues/venue-availability.integration.test.ts > KAN-51 venue availability calendar with PostgreSQL > reflects approved, cancelled and newly blocked periods on the next read 29ms
+ ✓ database/tests/auth.integration.test.ts > KAN-25 Supabase identity mapping in PostgreSQL > login and me return the mapped application profile rather than the Supabase identity 43ms
+ ✓ database/tests/auth.integration.test.ts > KAN-25 Supabase identity mapping in PostgreSQL > rejects an unmapped identity without creating an application account 11ms
+ ✓ database/tests/auth.integration.test.ts > KAN-25 Supabase identity mapping in PostgreSQL > reads a changed application role on the next request using the same session 16ms
+ ✓ database/tests/auth.integration.test.ts > KAN-25 Supabase identity mapping in PostgreSQL > prevents one Supabase identity from being mapped to two application users 20ms
+ ✓ database/tests/auth.integration.test.ts > KAN-25 Supabase identity mapping in PostgreSQL > uses the mapped application identity to allow an owned draft and hide another organiser's draft 39ms
+ ✓ database/tests/events/create-draft.integration.test.ts > CF-02/CF-03 draft creation persistence > creates an empty DRAFT owned by the organiser 13ms
+ ✓ database/tests/events/create-draft.integration.test.ts > CF-02/CF-03 draft creation persistence > stores the supplied fields, including the registration settings 8ms
+ ✓ database/tests/events/create-draft.integration.test.ts > CF-02/CF-03 draft creation persistence > attributes the initial status history entry to the organiser 7ms
+ ✓ database/tests/events/create-draft.integration.test.ts > CF-02/CF-03 draft creation persistence > lets the owner keep editing the new draft, including its registration settings 18ms
+ ✓ database/tests/events/create-draft.integration.test.ts > CF-02/CF-03 draft creation persistence > creates nothing for 'an unauthenticated actor' 3ms
+ ✓ database/tests/events/create-draft.integration.test.ts > CF-02/CF-03 draft creation persistence > creates nothing for 'a coordinator' 2ms
+ ✓ database/tests/events/create-draft.integration.test.ts > CF-02/CF-03 draft creation persistence > creates nothing when the input is invalid 2ms
+ ✓ database/tests/events/create-draft.integration.test.ts > CF-02/CF-03 draft creation persistence > creates a draft through HTTP and returns it on the next GET and draft list 59ms
+ ✓ database/tests/events/create-draft.integration.test.ts > CF-02/CF-03 draft creation persistence > ignores a forged owner through HTTP and hides the draft from other organisers 33ms
+ ✓ database/tests/events/create-draft.integration.test.ts > CF-02/CF-03 draft creation persistence > refuses a coordinator through HTTP without creating a row 6ms
+ ✓ database/tests/events/status-history.integration.test.ts > KAN-16 status history persistence and access > shows the owner and assigned coordinator ordered, attributed history from the review workflow 94ms
+ ✓ database/tests/events/status-history.integration.test.ts > KAN-16 status history persistence and access > hides history from unrelated users and reports missing requests in the same way 20ms
+ ✓ database/tests/events/status-history.integration.test.ts > KAN-16 status history persistence and access > lets only the owner read a draft history and does not expose unassigned history to coordinators 25ms
+ ✓ database/tests/events/status-history.integration.test.ts > KAN-16 status history persistence and access > reads retained CONFIRMED records without changing their state 45ms
+ ✓ database/tests/events/status-history.integration.test.ts > KAN-16 status history persistence and access > reads retained CANCELLED records without changing their state 27ms
+ ✓ database/tests/events/status-history.integration.test.ts > KAN-16 status history persistence and access > reads retained COMPLETED records without changing their state 18ms
+ ✓ database/tests/venues/venue-search.integration.test.ts > KAN-12/KAN-8 search excludes approved reservations, but not pending or rejected requests 22ms
+ ✓ database/tests/venues/venue-search.integration.test.ts > KAN-12/KAN-51 search excludes operational blocks and allows adjacent periods 11ms
+ ✓ database/tests/venues/venue-search.integration.test.ts > KAN-12 keeps search restricted to coordinators 1ms
+ ✓ database/tests/venues/venue-search.integration.test.ts > KAN-12/KAN-52 applies continuous venue hours 08:00–20:00 to 2027-02-10T18:00:00+08:00–2027-02-11T10:00:00+08:00 (available=false) 5ms
+ ✓ database/tests/venues/venue-search.integration.test.ts > KAN-12/KAN-52 applies continuous venue hours null–null to 2027-02-10T18:00:00+08:00–2027-02-12T10:00:00+08:00 (available=true) 7ms
+ ✓ database/tests/venues/venue-search.integration.test.ts > KAN-12/KAN-52 applies continuous venue hours 08:00–null to 2027-02-10T18:00:00+08:00–2027-02-11T00:00:00+08:00 (available=true) 11ms
+ ✓ database/tests/venues/venue-search.integration.test.ts > KAN-12/KAN-52 applies continuous venue hours 00:00–24:00 to 2027-02-10T18:00:00+08:00–2027-02-12T10:00:00+08:00 (available=true) 6ms
+ ✓ database/tests/venues/venue-search.integration.test.ts > KAN-12/KAN-52 applies continuous venue hours 09:00:30–18:00 to 2027-02-10T09:00:29+08:00–2027-02-10T12:00:00+08:00 (available=false) 5ms
+ ✓ database/tests/venues/venue-search.integration.test.ts > KAN-12/KAN-52 applies continuous venue hours 09:00:30–18:00 to 2027-02-10T09:00:30+08:00–2027-02-10T12:00:00+08:00 (available=true) 29ms
+
+ Test Files  28 passed (28)
+      Tests  554 passed (554)
+   Start at  14:35:55
+   Duration  81.28s (transform 1.43s, setup 0ms, import 10.09s, tests 65.79s, environment 2ms)
