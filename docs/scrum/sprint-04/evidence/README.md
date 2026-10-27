@@ -47,3 +47,8 @@ Current story ownership is unassigned for team selection; reviewers and integrat
 | --- | --- | --- | --- |
 | S4-E10 | [KAN-66 coverage and run summary](../../../testing/coverage-reports/2026-10-26-kan66.txt) | `AUTO-20261026-KAN66-01` unit/component Pass with coverage; `AUTO-20261026-KAN66-02` browser fixtures, KAN-66 tests Pass, 156/161 overall with five environment/timing failures and a passing rerun of the timed-out spec | Uncommitted working tree on base `c849ebf`; PostgreSQL integration Not executed; no live authentication or acceptance |
 
+## KAN-15 automated verification — 27 October 2026
+
+| ID | Artifact | Source / result | Limits |
+| --- | --- | --- | --- |
+| S4-E11 | [KAN-15 coverage and run summary](../../../testing/coverage-reports/2026-10-27-kan15.txt) | `AUTO-20261027-KAN15-01`: unit/component Pass with coverage; browser fixtures 164/164 including 3 KAN-15 tests | Local Windows run on Node 22; PostgreSQL integration Not executed locally (CI); no live authentication or acceptance |

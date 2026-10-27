@@ -23,7 +23,7 @@ This rebalanced allocation replaces the earlier 97/29 split with **63/63**, with
 | [KAN-17](https://smu-g7-grp1.atlassian.net/browse/KAN-17) | Withdraw Attendee Registration | 2 | Unassigned — team member to choose | To agree after owner chosen | Existing release backlog | S4-T09 |
 | [KAN-67](https://smu-g7-grp1.atlassian.net/browse/KAN-67) | View Event Registrations | 2 | Unassigned — team member to choose | To agree after owner chosen | Existing release backlog | S4-T10 |
 | [KAN-66](https://smu-g7-grp1.atlassian.net/browse/KAN-66) | Update Event Information During Planning | 3 | Irfan (assigned in Jira 26 October 2026) | To agree | Existing release backlog | S4-T11 |
-| [KAN-15](https://smu-g7-grp1.atlassian.net/browse/KAN-15) | Submit and Review Event Change Requests | 5 | Unassigned — team member to choose | To agree after owner chosen | Existing release backlog | S4-T12 |
+| [KAN-15](https://smu-g7-grp1.atlassian.net/browse/KAN-15) | Submit and Review Event Change Requests | 5 | Irfan (assigned in Jira 26 October 2026) | To agree | Existing release backlog | S4-T12 |
 | [KAN-80](https://smu-g7-grp1.atlassian.net/browse/KAN-80) | Receive Equipment, Lifecycle, Change and Registration Notifications | 3 | Unassigned — team member to choose | To agree after owner chosen | Explicit original notification split | S4-T13 |
 | [KAN-82](https://smu-g7-grp1.atlassian.net/browse/KAN-82) | Manage each venue arrangement independently for an event | 5 | Unassigned — team member to choose | To agree after owner chosen | Customer change CR-3 | S4-T14 |
 | [KAN-84](https://smu-g7-grp1.atlassian.net/browse/KAN-84) | Review operational safety before event preparation | 8 | Unassigned — team member to choose | To agree after owner chosen | Customer change CR-6 | S4-T15 |
@@ -57,7 +57,7 @@ Every row requires its complete active criterion set plus applicable Definition 
 | S4-T09 | KAN-17: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC101, AC102, AC103 | TC-18-07, TC-18-08, TC-18-09, TC-18-10, TC-18-11 | **Not executed** / Not recorded |
 | S4-T10 | KAN-67: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC101, AC102, AC103 | TC-18-12, TC-18-13, TC-18-14, TC-18-15, TC-18-16, TC-18-17 | **Not executed** / Not recorded |
 | S4-T11 | KAN-66: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC101, AC102, AC103 | TC-07-01, TC-07-02, TC-07-03, TC-07-04, TC-07-05 | **In progress (27 October 2026):** automated unit/component and browser-fixture runs Pass (`AUTO-20261026-KAN66-01`, `-02`; unit re-run `AUTO-20261027-KAN66-03` on `3ac15d5`); PostgreSQL integration 533/533 and browser 161/161 Pass in CI on `27d5d84` (`CI-20261027-KAN66-02`); local integrated acceptance **Not executed**; acceptance **Not assessed** |
-| S4-T12 | KAN-15: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC101, AC102, AC103, AC104, AC105 | TC-19-01, TC-19-02, TC-19-03, TC-19-04, TC-19-05, TC-19-06, TC-19-07, TC-19-08, TC-19-09 | **Not executed** / Not recorded |
+| S4-T12 | KAN-15: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC101, AC102, AC103, AC104, AC105 | TC-19-01, TC-19-02, TC-19-03, TC-19-04, TC-19-05, TC-19-06, TC-19-07, TC-19-08, TC-19-09 | **In progress (27 October 2026):** unit/component and browser-fixture runs Pass (`AUTO-20261027-KAN15-01`); PostgreSQL integration **Not executed** (pending CI); local integrated acceptance **Not executed**; acceptance **Not assessed** |
 | S4-T13 | KAN-80: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9 | TC-20-21, TC-20-22, TC-20-23, TC-20-24, TC-20-25, TC-20-26, TC-20-27, TC-20-28, TC-20-29 | **Not executed** / Not recorded |
 | S4-T14 | KAN-82: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12 | TC-12-01, TC-12-02, TC-12-03, TC-12-04, TC-12-05, TC-12-06, TC-12-07, TC-12-08, TC-12-09, TC-12-10, TC-12-11, TC-12-12 | **Not executed** / Not recorded |
 | S4-T15 | KAN-84: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12 | TC-06-20, TC-06-21, TC-06-22, TC-06-23, TC-06-24, TC-06-25, TC-06-26, TC-06-27, TC-06-28, TC-06-29, TC-06-30, TC-06-31 | **Not executed** / Not recorded |
@@ -818,7 +818,7 @@ Implementation defaults: docs/scrum/sprint-03/planning.md and docs/requirements/
 
 ### KAN-15 — Submit and Review Event Change Requests
 
-**Owner:** Unassigned — team member to choose · **Independent reviewer:** To agree after owner chosen · **Estimate:** 5 SP · **Jira status:** To Do · **Acceptance:** Not assessed · **Test group:** S4-T12
+**Owner:** Irfan (assigned in Jira 26 October 2026) · **Independent reviewer:** To agree · **Estimate:** 5 SP (unchanged) · **Jira status:** In Progress · **Acceptance:** Not assessed · **Test group:** S4-T12
 
 **User story:** As an Event Organiser, I want to submit significant changes to my event for review by the authorised Event Coordinator so that feasible changes can be agreed without leaving incompatible arrangements in place.
 
@@ -842,7 +842,18 @@ Implementation defaults: docs/scrum/sprint-03/planning.md and docs/requirements/
 | **KAN-15-AC104** | When no affected arrangement is confirmed, apply an approved change only after current validation; cancel affected pending arrangements explicitly for resubmission while preserving unaffected arrangements. | TC-19-08 |
 | **KAN-15-AC105** | Decision and changes are atomic and version-checked; rejection requires a reason. Use KAN-80 (using KAN-64 infrastructure) for acknowledgement, coordinator request, organiser outcome and attendee-relevant changes without imposing a fixed response deadline. | TC-19-09 |
 
-**Implementation location:** Not recorded. **Automated test files:** Not recorded. Record real files when implemented; historical schema or removed code is not feature completion.
+**Implementation location (27 October 2026, branch `feat/KAN-15-change-requests`, stacked on KAN-66):** `database/migrations/017_event_change_requests.sql`; `backend/src/modules/events/change-requests.ts`, `change-request-impact.ts`, `change-request-router.ts`; `backend/src/modules/notifications/change-request-notifications.ts`; `backend/src/modules/events/update-draft.ts` (exports `sameValue`); `backend/src/app.ts`; `frontend/src/features/events/pages/EventChangeRequestPage.vue` (route `/events/:id/change-request`), `components/ChangeRequestPanel.vue`, `components/EventPlanningPanels.vue`, `api/change-requests.ts`, `change-request-fields.ts`, `pages/EventRequestDetailPage.vue`; `frontend/src/app/router.ts`.
+
+**Automated test files:** `backend/test/events/change-requests.test.ts`, `change-request-impact.test.ts`, `backend/test/notifications/change-request-notifications.test.ts`; `database/tests/events/change-requests.integration.test.ts`; `frontend/src/features/events/components/ChangeRequestPanel.test.ts`, `pages/EventChangeRequestPage.test.ts`; `tests/e2e/kan15-change-requests.spec.ts`. Updated: `backend/test/sprint-scope.test.ts` (routes now in scope), `database/tests/database.integration.test.ts` (migration lists), `tests/e2e/workspace-fixtures.ts` (empty change-request reads).
+
+**Implementation decisions (27 October 2026, approved by Irfan in the working session):** D1–D8 in the [decision log](../../requirements/assumptions-and-questions.md#27-october-2026--kan-15-change-request-implementation-decisions).
+
+| Test | 27 October 2026 status |
+| --- | --- |
+| Unit/component (`npm run check`, coverage) | Pass — `AUTO-20261027-KAN15-01` |
+| Browser fixtures (`tests/e2e/kan15-change-requests.spec.ts`; full suite 164/164) | Pass — `AUTO-20261027-KAN15-01` (substituted API responses; not live integration) |
+| PostgreSQL integration (`change-requests.integration.test.ts`) | **Not executed** — no isolated database locally; runs in CI on the pull request |
+| Local integrated acceptance (AGENTS.md §5.12) | **Not executed** — needs migrations 014 and 017 on shared Supabase |
 
 <details>
 <summary>Preserved Jira description before self-selection (historical ownership)</summary>

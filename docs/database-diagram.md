@@ -253,7 +253,11 @@ erDiagram
         uuid requested_by FK
         text status
         jsonb proposed_changes
-        text reason
+        jsonb previous "migration 017"
+        integer base_revision "migration 017"
+        integer applied_revision "nullable, 017"
+        jsonb cancelled_arrangements "nullable, 017"
+        text reason "nullable since 017"
         uuid decided_by FK "nullable"
         timestamptz decided_at "nullable"
         text decision_reason "nullable"
@@ -331,3 +335,8 @@ No table, relationship or numbered migration changes in the closeout repair. The
 
 Migration 014 has **not** been applied to shared Supabase; announce it to the team first (AGENTS.md §7.3). The PNG export `erd-planning.png` does not yet include it; the combined diagram re-export remains **pending** as recorded in the [architecture README](architecture/README.md).
 
+## 27 October 2026 — Migration 017 change requests (KAN-15)
+
+[017_event_change_requests.sql](../database/migrations/017_event_change_requests.sql) completes the provisional `event_change_requests` table from migration 004 instead of creating a new one. It adds `previous` (values replaced), `base_revision` (the KAN-66 revision the organiser saw), `applied_revision` and `cancelled_arrangements` (set on approval); makes the organiser `reason` optional; replaces 004's decision check so `PENDING` is exactly the undecided state (withdrawals record who and when); requires a reason for rejection; and adds `event_change_requests_one_pending_idx`, a partial unique index allowing one `PENDING` request per event. The two status-coupled checks are `NOT VALID` so an unexpected legacy row cannot block the migration; new and updated rows are still checked. RLS and Data API revokes were already applied by 004. Numbered 017 to leave 014–016 for KAN-9/KAN-26 and KAN-66 while they await merge.
+
+Migration 017 has **not** been applied to shared Supabase; announce it first (AGENTS.md §7.3). The PNG exports do not include it yet.
