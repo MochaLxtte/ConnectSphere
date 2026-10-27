@@ -5,6 +5,7 @@ import EventRequestsPage from '../features/events/pages/EventRequestsPage.vue';
 import EventRequestDetailPage from '../features/events/pages/EventRequestDetailPage.vue';
 import EventDraftEditPage from '../features/events/pages/EventDraftEditPage.vue';
 import EventDetailsEditPage from '../features/events/pages/EventDetailsEditPage.vue';
+import EventChangeRequestPage from '../features/events/pages/EventChangeRequestPage.vue';
 import NewEventPage from '../features/events/pages/NewEventPage.vue';
 import ReviewAccessPage from '../features/reviews/pages/ReviewAccessPage.vue';
 import UnassignedRequestsPage from '../features/reviews/pages/UnassignedRequestsPage.vue';
@@ -34,6 +35,7 @@ export const router = createRouter({
     { path: '/events/:id/edit', component: EventDraftEditPage, meta: { title: 'Edit draft' } },
     // KAN-66: post-submission edits by the owner, or name/description by the assigned coordinator.
     { path: '/events/:id/details', component: EventDetailsEditPage, meta: { title: 'Edit event details' } },
+    { path: '/events/:id/change-request', component: EventChangeRequestPage, meta: { title: 'Request a change' } },
     { path: '/events/:id', component: EventRequestDetailPage, meta: { title: 'Event request' } },
     { path: '/venues/availability', component: VenueAvailabilityPage, meta: { title: 'Venue availability' } },
     { path: '/notifications', component: NotificationsPage, meta: { title: 'Notifications' } },

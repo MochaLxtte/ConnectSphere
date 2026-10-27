@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import AssignmentPanel from './AssignmentPanel.vue';
+import ChangeRequestPanel from './ChangeRequestPanel.vue';
 import ClarificationPanel from './ClarificationPanel.vue';
 import StatusHistoryPanel from './StatusHistoryPanel.vue';
 import VenueBookingPanel from './VenueBookingPanel.vue';
@@ -27,6 +28,8 @@ const shared = computed(() => ({
   <div class="planning-panels">
     <AssignmentPanel v-bind="shared" :current-coordinator-id="currentCoordinatorId" @changed="emit('changed')" />
     <ClarificationPanel v-bind="shared" :revision="revision" @changed="emit('changed')" />
+    <!-- KAN-15: significant changes once approved; history stays visible after cancellation or completion. -->
+    <ChangeRequestPanel v-if="['APPROVED', 'CONFIRMED', 'CANCELLED', 'COMPLETED'].includes(status)" v-bind="shared" :revision="revision" @changed="emit('changed')" />
     <VenueBookingPanel v-if="viewerRole === 'EVENT_COORDINATOR'" v-bind="shared" @changed="emit('changed')" />
     <StatusHistoryPanel :event-request-id="eventRequestId" :status="status" />
   </div>
