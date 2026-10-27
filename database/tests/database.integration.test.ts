@@ -519,14 +519,15 @@ test('KAN-9 migration 014 preserves existing equipment and reservations and enfo
       history: (await database.query('SELECT * FROM event_status_history ORDER BY id')).rows,
       migrations: (await database.query('SELECT * FROM schema_migrations ORDER BY name')).rows,
     };
-    expect(await migrate(connectionString)).toEqual(['014_equipment_operational_quantities.sql', '015_equipment_reservations.sql']);
+    expect(await migrate(connectionString)).toEqual(['014_equipment_operational_quantities.sql', '015_equipment_reservations.sql', '016_event_request_revisions.sql']);
     expect(await migrate(connectionString)).toEqual([]);
     expect((await database.query('SELECT * FROM equipment_types ORDER BY id')).rows)
       .toEqual(before.equipment.map(row => ({ ...row, damaged_quantity: 0, maintenance_quantity: 0 })));
     expect((await database.query('SELECT * FROM equipment_requests ORDER BY id')).rows).toEqual(before.requests.map(row => ({ ...row, released_at: null, released_by: null, release_reason: null, release_cause: null })));
-    expect((await database.query('SELECT * FROM event_requests ORDER BY id')).rows).toEqual(before.events);
+    // Migration 016 (KAN-66) also runs: existing requests gain revision 1 and nothing else changes.
+    expect((await database.query('SELECT * FROM event_requests ORDER BY id')).rows).toEqual(before.events.map(row => ({ ...row, revision: 1 })));
     expect((await database.query('SELECT * FROM event_status_history ORDER BY id')).rows).toEqual(before.history);
-    expect((await database.query("SELECT * FROM schema_migrations WHERE name NOT IN ('014_equipment_operational_quantities.sql', '015_equipment_reservations.sql') ORDER BY name")).rows)
+    expect((await database.query("SELECT * FROM schema_migrations WHERE name NOT IN ('014_equipment_operational_quantities.sql', '015_equipment_reservations.sql', '016_event_request_revisions.sql') ORDER BY name")).rows)
       .toEqual(before.migrations);
 
     // Equality is valid: all stock may be non-operational. Reservations are retained for reassessment.
@@ -572,17 +573,18 @@ test('KAN-26 migration 015 preserves legacy decisions and unknown release metada
       notices: (await database.query('SELECT * FROM notifications ORDER BY id')).rows,
       migrations: (await database.query('SELECT * FROM schema_migrations ORDER BY name')).rows,
     };
-    expect(await migrate(connectionString)).toEqual(['015_equipment_reservations.sql']);
+    expect(await migrate(connectionString)).toEqual(['015_equipment_reservations.sql', '016_event_request_revisions.sql']);
     expect(await migrate(connectionString)).toEqual([]);
     const upgraded = before.requests.map(row => ({ ...row, released_at: null, released_by: null,
       release_reason: null, release_cause: null }));
     expect((await database.query('SELECT * FROM equipment_requests ORDER BY id')).rows).toEqual(upgraded);
     expect((await database.query('SELECT * FROM equipment_types ORDER BY id')).rows).toEqual(before.equipment);
-    expect((await database.query('SELECT * FROM event_requests ORDER BY id')).rows).toEqual(before.events);
+    // Migration 016 (KAN-66) also runs: existing requests gain revision 1 and nothing else changes.
+    expect((await database.query('SELECT * FROM event_requests ORDER BY id')).rows).toEqual(before.events.map(row => ({ ...row, revision: 1 })));
     expect((await database.query('SELECT * FROM event_status_history ORDER BY id')).rows).toEqual(before.history);
     expect((await database.query('SELECT * FROM notifications ORDER BY id')).rows)
       .toEqual(before.notices.map(row => ({ ...row, equipment_request_id: null })));
-    expect((await database.query("SELECT * FROM schema_migrations WHERE name<>'015_equipment_reservations.sql' ORDER BY name")).rows)
+    expect((await database.query("SELECT * FROM schema_migrations WHERE name NOT IN ('015_equipment_reservations.sql', '016_event_request_revisions.sql') ORDER BY name")).rows)
       .toEqual(before.migrations);
     // A future operational loss must not rewrite or invalidate existing historical commitments.
     await database.query('UPDATE equipment_types SET damaged_quantity=9 WHERE id=$1', [type]);
