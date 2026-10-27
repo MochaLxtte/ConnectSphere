@@ -57,7 +57,7 @@ Every row requires its complete active criterion set plus applicable Definition 
 | S4-T09 | KAN-17: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC101, AC102, AC103 | TC-18-07, TC-18-08, TC-18-09, TC-18-10, TC-18-11 | **Not executed** / Not recorded |
 | S4-T10 | KAN-67: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC101, AC102, AC103 | TC-18-12, TC-18-13, TC-18-14, TC-18-15, TC-18-16, TC-18-17 | **Not executed** / Not recorded |
 | S4-T11 | KAN-66: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC101, AC102, AC103 | TC-07-01, TC-07-02, TC-07-03, TC-07-04, TC-07-05 | **In progress (27 October 2026):** automated unit/component and browser-fixture runs Pass (`AUTO-20261026-KAN66-01`, `-02`; unit re-run `AUTO-20261027-KAN66-03` on `3ac15d5`); PostgreSQL integration 533/533 and browser 161/161 Pass in CI on `27d5d84` (`CI-20261027-KAN66-02`); local integrated acceptance **Not executed**; acceptance **Not assessed** |
-| S4-T12 | KAN-15: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC101, AC102, AC103, AC104, AC105 | TC-19-01, TC-19-02, TC-19-03, TC-19-04, TC-19-05, TC-19-06, TC-19-07, TC-19-08, TC-19-09 | **In progress (27 October 2026):** unit/component and browser-fixture runs Pass (`AUTO-20261027-KAN15-01`); PostgreSQL integration **Not executed** (pending CI); local integrated acceptance **Not executed**; acceptance **Not assessed** |
+| S4-T12 | KAN-15: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC101, AC102, AC103, AC104, AC105 | TC-19-01, TC-19-02, TC-19-03, TC-19-04, TC-19-05, TC-19-06, TC-19-07, TC-19-08, TC-19-09 | **In progress (27 October 2026):** unit/component and browser-fixture runs Pass (`AUTO-20261027-KAN15-01`); PostgreSQL integration 544/544 and browser 164/164 Pass in CI on `6c5043c` (`CI-20261027-KAN15-02`); local integrated acceptance **Not executed**; acceptance **Not assessed** |
 | S4-T13 | KAN-80: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9 | TC-20-21, TC-20-22, TC-20-23, TC-20-24, TC-20-25, TC-20-26, TC-20-27, TC-20-28, TC-20-29 | **Not executed** / Not recorded |
 | S4-T14 | KAN-82: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12 | TC-12-01, TC-12-02, TC-12-03, TC-12-04, TC-12-05, TC-12-06, TC-12-07, TC-12-08, TC-12-09, TC-12-10, TC-12-11, TC-12-12 | **Not executed** / Not recorded |
 | S4-T15 | KAN-84: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12 | TC-06-20, TC-06-21, TC-06-22, TC-06-23, TC-06-24, TC-06-25, TC-06-26, TC-06-27, TC-06-28, TC-06-29, TC-06-30, TC-06-31 | **Not executed** / Not recorded |
@@ -852,7 +852,7 @@ Implementation defaults: docs/scrum/sprint-03/planning.md and docs/requirements/
 | --- | --- |
 | Unit/component (`npm run check`, coverage) | Pass — `AUTO-20261027-KAN15-01` |
 | Browser fixtures (`tests/e2e/kan15-change-requests.spec.ts`; full suite 164/164) | Pass — `AUTO-20261027-KAN15-01` (substituted API responses; not live integration) |
-| PostgreSQL integration (`change-requests.integration.test.ts`) | **Not executed** — no isolated database locally; runs in CI on the pull request |
+| PostgreSQL integration (`change-requests.integration.test.ts`) | Pass in CI, 11/11 (full suite 544/544) — `CI-20261027-KAN15-02`, run 40509445003 on `6c5043c`; first run `CI-20261027-KAN15-01` failed on two test assumptions, fixed |
 | Local integrated acceptance (AGENTS.md §5.12) | **Not executed** — needs migrations 014 and 017 on shared Supabase |
 
 <details>
