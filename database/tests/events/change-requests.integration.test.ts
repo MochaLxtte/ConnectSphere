@@ -229,8 +229,11 @@ describe('KAN-15 submit and review', () => {
   it('KAN-15-AC105 refuses a stale coordinator page, an outdated request and anyone but the assigned coordinator', async () => {
     const id = await createEvent();
     const change = (await submit(id, { purpose: 'New purpose' })).body;
+    // The coordinator's page shows this revision; an unrelated rename then moves the event on.
+    const shown = await revisionOf(id);
+    await fixture.pool.query("UPDATE event_requests SET name = 'Renamed elsewhere' WHERE id = $1", [id]);
     const stale = await request(appFor(coordinator)).post(`${base(id)}/${change.id}/decision`)
-      .send({ decision: 'APPROVED', expectedRevision: (await revisionOf(id)) - 1 });
+      .send({ decision: 'APPROVED', expectedRevision: shown });
     expect(stale.body.error.code).toBe('EVENT_REVISION_CONFLICT');
     expect((await decide(id, change.id, { decision: 'APPROVED' }, otherCoordinator)).status).toBe(404);
     expect((await decide(id, change.id, { decision: 'APPROVED' }, organiser)).status).toBe(403);
