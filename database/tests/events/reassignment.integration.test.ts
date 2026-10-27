@@ -131,7 +131,8 @@ describe('KAN-65 atomic versioned coordinator handovers against PostgreSQL', () 
       coordinatorId: blair.id, previousCoordinatorId: alex.id, changed: true });
     expect(result.assignmentId).not.toBe(version);
     const after = await snapshot(id);
-    expect(after.event).toEqual({ ...before.event, coordinator_id: blair.id, updated_at: expect.any(Date) });
+    expect(after.event).toEqual({ ...before.event, coordinator_id: blair.id, updated_at: expect.any(Date),
+      revision: before.event.revision + 1 });
     await expectOnlyReassignmentNotices(id, before, after);
     expect(after.assignments).toHaveLength(2);
     const old = after.assignments.find((row) => row.id === version)!;
@@ -173,7 +174,8 @@ describe('KAN-65 atomic versioned coordinator handovers against PostgreSQL', () 
     await handover(id, version);
     const after = await snapshot(id);
     await expectOnlyReassignmentNotices(id, before, after);
-    expect(after.event).toEqual({ ...before.event, coordinator_id: blair.id, updated_at: expect.any(Date) });
+    expect(after.event).toEqual({ ...before.event, coordinator_id: blair.id, updated_at: expect.any(Date),
+      revision: before.event.revision + 1 });
   });
 
   it('treats the current coordinator as a true no-op without timestamps, history or other changes', async () => {

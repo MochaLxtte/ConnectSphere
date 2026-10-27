@@ -283,7 +283,9 @@ test.each([
     expect((await database.query('SELECT * FROM app_user_identities')).rows).toEqual(before.identities);
     expect((await database.query('SELECT * FROM app_users ORDER BY id')).rows)
       .toEqual(before.users.map((user) => ({ ...user, coordinator_available: false })));
-    expect((await database.query('SELECT * FROM event_requests')).rows).toEqual(before.events);
+    // Migration 014 (KAN-66) gives every existing request revision 1 and changes nothing else.
+    expect((await database.query('SELECT * FROM event_requests')).rows)
+      .toEqual(before.events.map((event) => ({ ...event, revision: 1 })));
     expect((await database.query('SELECT * FROM coordinator_assignments')).rows)
       .toEqual(before.assignments.map((assignment) => ({ ...assignment, assignment_method: 'MANUAL' })));
     const oldHistory = await database.query(
@@ -415,7 +417,8 @@ test('KAN-79 migration adds trusted Lead profiles while preserving existing auto
     expect(await migrate(connectionString)).toEqual(['007_add_coordinator_lead.sql', '008_notification_inbox.sql', '009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_event_request_revisions.sql']);
     expect(await migrate(connectionString)).toEqual([]);
     expect((await database.query('SELECT * FROM app_users ORDER BY id')).rows).toEqual(before.users);
-    expect((await database.query('SELECT * FROM event_requests ORDER BY id')).rows).toEqual(before.events);
+    expect((await database.query('SELECT * FROM event_requests ORDER BY id')).rows)
+      .toEqual(before.events.map((event) => ({ ...event, revision: 1 })));
     expect((await database.query('SELECT * FROM coordinator_assignments ORDER BY id')).rows).toEqual(before.assignments);
     expect((await database.query("SELECT * FROM schema_migrations WHERE name NOT IN ('007_add_coordinator_lead.sql', '008_notification_inbox.sql', '009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_event_request_revisions.sql') ORDER BY name")).rows).toEqual(before.migrations);
     await database.query("INSERT INTO app_users (email, display_name, role) VALUES ('lead@example.test', 'Lead', 'EVENT_COORDINATOR_LEAD')");
