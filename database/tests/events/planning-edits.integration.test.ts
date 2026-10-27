@@ -57,7 +57,7 @@ async function edits(id: string) {
   return found.rows;
 }
 
-describe('KAN-66 migration 014 revision trigger', () => {
+describe('KAN-66 migration 016 revision trigger', () => {
   it('starts at 1 and advances on every update, ignoring a written value', async () => {
     const id = await createEvent('SUBMITTED');
     expect((await stored(id)).revision).toBe(1);

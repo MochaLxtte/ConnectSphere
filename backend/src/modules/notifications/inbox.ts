@@ -30,7 +30,8 @@ export const INBOX_LIMIT = 100;
 const FROM = `
   FROM notifications n
   LEFT JOIN event_requests e ON e.id = n.event_request_id
-  LEFT JOIN venue_bookings b ON b.id = n.venue_booking_id`;
+  LEFT JOIN venue_bookings b ON b.id = n.venue_booking_id
+  LEFT JOIN equipment_requests r ON r.id = n.equipment_request_id AND r.event_request_id = e.id`;
 
 const CAN_VIEW_EVENT = `(e.id IS NOT NULL AND (
   ($2 = 'EVENT_ORGANISER' AND e.organiser_id = $1)
@@ -40,10 +41,13 @@ const CAN_VIEW_BOOKING = `(b.id IS NOT NULL AND (
   $2 = 'VENUE_STAFF'
   OR ($2 = 'EVENT_COORDINATOR' AND e.coordinator_id = $1 AND e.status <> 'DRAFT')))`;
 
+// Only the intended recipient's equipment notice is readable, without general event-detail access.
+const CAN_VIEW_EQUIPMENT = `(r.id IS NOT NULL AND $2 = 'TECHNICAL_SUPPORT_STAFF')`;
+
 const VISIBLE = `n.recipient_id = $1 AND (
-  (n.event_request_id IS NULL AND n.venue_booking_id IS NULL)
+  (n.event_request_id IS NULL AND n.venue_booking_id IS NULL AND n.equipment_request_id IS NULL)
   OR n.type = 'COORDINATOR_REASSIGNED_AWAY'
-  OR ${CAN_VIEW_EVENT} OR ${CAN_VIEW_BOOKING})`;
+  OR ${CAN_VIEW_EVENT} OR ${CAN_VIEW_BOOKING} OR ${CAN_VIEW_EQUIPMENT})`;
 
 interface Row {
   id: string;
@@ -57,18 +61,23 @@ interface Row {
   bookingId: string | null;
   canViewEvent: boolean;
   canViewBooking: boolean;
+  canViewEquipment: boolean;
+  equipmentOpen: boolean;
 }
 
 const SELECT = `SELECT n.id, n.type, n.title, n.message, n.read_at AS "readAt", n.created_at AS "createdAt",
   e.id AS "eventId", e.name AS "eventName", b.id AS "bookingId",
-  ${CAN_VIEW_EVENT} AS "canViewEvent", ${CAN_VIEW_BOOKING} AS "canViewBooking"`;
+  ${CAN_VIEW_EVENT} AS "canViewEvent", ${CAN_VIEW_BOOKING} AS "canViewBooking",
+  ${CAN_VIEW_EQUIPMENT} AS "canViewEquipment", e.status IN ('APPROVED', 'CONFIRMED') AS "equipmentOpen"`;
 
 function toItem(row: Row, role: WorkflowActor['role']): InboxItem {
   const link = row.canViewBooking && row.bookingId ? `/venue-bookings/${row.bookingId}`
     : row.canViewEvent && row.eventId ? (role === 'EVENT_ORGANISER' ? `/events/${row.eventId}` : `/reviews/${row.eventId}`)
-      : null;
+      : row.canViewEquipment && row.equipmentOpen ? `/equipment/availability/${row.eventId}` : null;
   return {
-    id: row.id, type: row.type, title: row.title, message: row.message,
+    id: row.id, type: row.type, title: row.title,
+    message: row.canViewEquipment && !row.equipmentOpen
+      ? `${row.message} This event is no longer open for equipment planning.` : row.message,
     read: row.readAt !== null, readAt: row.readAt === null ? null : iso(row.readAt), createdAt: iso(row.createdAt),
     event: row.canViewEvent && row.eventId ? { id: row.eventId, name: row.eventName } : null,
     booking: row.canViewBooking && row.bookingId ? { id: row.bookingId } : null,

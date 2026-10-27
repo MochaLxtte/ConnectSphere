@@ -1,5 +1,7 @@
 # Sprint 4 backlog and acceptance test plan
 
+**26 October 2026 targeted update:** KAN-9 is In Progress / Tristan, with approved AC104–107, implementation and automated evidence. KAN-26 is In Progress / Tristan with local reservation implementation and AUTO-20261026-KAN26-01 evidence. This update does not start the administratively Future sprint, change its 63 SP allocation or record a review. Other stories retain their dated snapshots.
+
 **16 October 2026 update.** Selected scope: **15 parents / 63 SP**. Sprint window: **18–31 October 2026**. Jira: **Future (ID 68); not started**. All selected parents are To Do; tests **Not executed** and acceptance **Not assessed**.
 
 This rebalanced allocation replaces the earlier 97/29 split with **63/63**, without dropping criteria or increasing the 126 remaining release points. Customer changes were received **2 October**, as confirmed on 16 October; Sprint 2 is assessed against its original scope. The five selected carried stories retain **19 SP**; their current unfinished disposition does not invent historical acceptance or reduce Jira estimates to zero.
@@ -13,9 +15,9 @@ This rebalanced allocation replaces the earlier 97/29 split with **63/63**, with
 | Jira | Story | SP | Owner | Independent reviewer | Origin | Test |
 | --- | --- | ---: | --- | --- | --- | --- |
 | [KAN-18](https://smu-g7-grp1.atlassian.net/browse/KAN-18) | Update Equipment Availability Status | 3 | Unassigned — team member to choose | To agree after owner chosen | Existing release backlog | S4-T01 |
-| [KAN-9](https://smu-g7-grp1.atlassian.net/browse/KAN-9) | Check Equipment Availability for an Event | 8 | Unassigned — team member to choose | To agree after owner chosen | Existing release backlog | S4-T02 |
+| [KAN-9](https://smu-g7-grp1.atlassian.net/browse/KAN-9) | Check Equipment Availability for an Event | 8 | Tristan | To agree | Existing release backlog | S4-T02 |
 | [KAN-63](https://smu-g7-grp1.atlassian.net/browse/KAN-63) | Submit and Review Event Equipment Requests | 5 | Unassigned — team member to choose | To agree after owner chosen | Existing release backlog | S4-T03 |
-| [KAN-26](https://smu-g7-grp1.atlassian.net/browse/KAN-26) | Reserve Equipment | 3 | Unassigned — team member to choose | To agree after owner chosen | Existing release backlog | S4-T04 |
+| [KAN-26](https://smu-g7-grp1.atlassian.net/browse/KAN-26) | Reserve Equipment | 3 | Tristan | To agree | Existing release backlog | S4-T04 |
 | [KAN-61](https://smu-g7-grp1.atlassian.net/browse/KAN-61) | Confirm Event After Planning Arrangements | 3 | Unassigned — team member to choose | To agree after owner chosen | Existing release backlog | S4-T05 |
 | [KAN-62](https://smu-g7-grp1.atlassian.net/browse/KAN-62) | Cancel Event and Release Its Arrangements | 5 | Unassigned — team member to choose | To agree after owner chosen | Existing release backlog | S4-T06 |
 | [KAN-10](https://smu-g7-grp1.atlassian.net/browse/KAN-10) | Mark Event as Completed | 3 | Unassigned — team member to choose | To agree after owner chosen | Existing release backlog | S4-T07 |
@@ -36,9 +38,9 @@ These are specifications, **Not executed**, with acceptance **Not assessed**. Th
 - Use synthetic **O1/O2** organisers, **C1/C2** coordinators, **T** Technical Support, **V** Venue Staff, **L1/L2** Leads, **A1/A2** attendees and **S** Safety Officer. Record real mapped account aliases at execution; a person signs in themselves and no credentials are recorded.
 - **E-A/E-B**, venues **A/B** and equipment **EQ-A/EQ-B** are separate fixtures. Default future period: **12 January 2031, 10:00–12:00 Asia/Singapore**. Each case sets specific boundaries, quantities, statuses, revisions and clocks.
 - Use isolated PostgreSQL and a controlled database clock for destructive setup, races, injected failures and expiry processing. Reset each case so prior reservations/registrations/blocks do not contaminate it. Never point cleanup-based tests at shared Supabase.
-- Hosted checks use coordinated synthetic data: record original values, restore them and identify anything retained. Compare UI/API with persisted state, then refresh. Do not invent UI paths for unimplemented features.
+- Integrated localhost checks use coordinated synthetic data: record original values, restore them and identify anything retained. Compare UI/API with persisted state, then refresh. Do not invent UI paths for unimplemented features.
 - An action mentioned in a case is a requirement, not proof an endpoint or scheduler exists. Add actual code/test paths to [traceability](../../requirements/traceability.csv) when implemented; baseline paths for carry-over are only regression targets.
-- Record each real run with its actual date, build SHA, environment, command/steps, fixture identities, outcomes and gaps in [test evidence](../../testing/test-evidence.md). Independent review and hosted checks are still required for Done.
+- Record each real run with its actual date, build SHA, environment, command/steps, fixture identities, outcomes and gaps in [test evidence](../../testing/test-evidence.md). Independent review and integrated localhost acceptance are required for Done under the 25 October Definition of Done amendment; application deployment is not required.
 
 ## Acceptance test plan
 
@@ -47,9 +49,9 @@ Every row requires its complete active criterion set plus applicable Definition 
 | Test | Story / active criteria | Functional cases | Result / evidence |
 | --- | --- | --- | --- |
 | S4-T01 | KAN-18: AC1, AC2, AC3, AC4, AC5, AC6, AC101, AC102, AC103 | TC-16-01, TC-16-02, TC-16-03, TC-16-04, TC-16-05 | **Not executed** / Not recorded |
-| S4-T02 | KAN-9: AC1, AC2, AC3, AC4, AC5, AC101, AC102, AC103 | TC-16-06, TC-16-07, TC-16-08, TC-16-09, TC-16-10 | **Not executed** / Not recorded |
+| S4-T02 | KAN-9: AC1–AC5, AC101–AC107 | TC-16-06–TC-16-18 | Automated evidence: AUTO-20261026-KAN9-01. Integrated manual **Not executed**; acceptance **Not assessed**. TC-16-09 combined reservation path is now implemented locally with KAN-26; its integrated manual run remains Not executed. |
 | S4-T03 | KAN-63: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC101, AC102, AC103, AC104 | TC-15-01, TC-15-02, TC-15-03, TC-15-04, TC-15-05, TC-15-06, TC-15-07 | **Not executed** / Not recorded |
-| S4-T04 | KAN-26: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC101, AC102, AC103, AC104 | TC-17-01, TC-17-02, TC-17-03, TC-17-04, TC-17-05, TC-17-06, TC-17-07 | **Not executed** / Not recorded |
+| S4-T04 | KAN-26: AC1–AC7, AC101–AC108 | TC-17-01–08; automated TC-17-101–110 | AUTO-20261026-KAN26-01 records automated results. Integrated manual **Not executed**; acceptance **Not assessed**. Shared migration 015 and KAN-18/63/62/10 UI integration remain pending. |
 | S4-T05 | KAN-61: AC1, AC2, AC3, AC4, AC5, AC6, AC101, AC102, AC103, AC104 | TC-06-01, TC-06-02, TC-06-03, TC-06-04, TC-06-05, TC-06-06, TC-06-07 | **Not executed** / Not recorded |
 | S4-T06 | KAN-62: AC1, AC2, AC3, AC4, AC5, AC6, AC101, AC102, AC103, AC104 | TC-06-08, TC-06-09, TC-06-10, TC-06-11, TC-06-12, TC-06-13 | **Not executed** / Not recorded |
 | S4-T07 | KAN-10: AC1, AC2, AC3, AC4, AC5, AC101, AC102, AC103 | TC-06-14, TC-06-15, TC-06-16, TC-06-17, TC-06-18 | **Not executed** / Not recorded |
@@ -120,7 +122,7 @@ Implementation defaults: docs/scrum/sprint-03/planning.md and docs/requirements/
 
 ### KAN-9 — Check Equipment Availability for an Event
 
-**Owner:** Unassigned — team member to choose · **Independent reviewer:** To agree after owner chosen · **Estimate:** 8 SP · **Jira status:** To Do · **Acceptance:** Not assessed · **Test group:** S4-T02
+**Owner:** Tristan · **Independent reviewer:** To agree · **Estimate:** 8 SP · **Jira status:** In Progress · **Acceptance:** Not assessed · **Test group:** S4-T02
 
 **User story:** As a Technical Support Staff member, I want to check whether sufficient suitable equipment is available for an event's requested date and time, so that I can determine if the event's technical requirements can be fulfilled.
 
@@ -136,8 +138,14 @@ Implementation defaults: docs/scrum/sprint-03/planning.md and docs/requirements/
 | **KAN-9-AC101** | Availability uses quantity pools and half-open periods: exclude damaged/maintenance quantities and the peak simultaneous RESERVED quantity, without summing disjoint reservations as concurrent demand. | TC-16-07 |
 | **KAN-9-AC102** | Invalid or nonexistent dates, end <= start and nonpositive/noninteger requested quantities are refused with field feedback; exact adjacency does not conflict. | TC-16-10 |
 | **KAN-9-AC103** | A result is advisory and includes each requested/operational/available/shortfall quantity; KAN-26 rechecks live quantities under lock before reserving. | TC-16-09 |
+| **KAN-9-AC104** | Only authenticated Technical Support Staff may access the checker and its minimal APPROVED/CONFIRMED event context. Other roles cannot retrieve protected requirements, and competing reservations disclose quantities rather than other events' identities. | TC-16-11 |
+| **KAN-9-AC105** | Staff can assess saved structured requests or explicitly entered, unsaved what-if quantities and dates. Free text is not automatically interpreted. A check does not create or modify requests, reservations, event state or notifications. | TC-16-12 |
+| **KAN-9-AC106** | Checks reload current stock and reservations; changed event or saved-request context requires refresh. Saved requirements aggregate same-type lines and count their existing reservations only once; unsaved what-if checks consume no stock and exclude no existing reservation. | TC-16-13, TC-16-14 |
+| **KAN-9-AC107** | Empty requirements do not produce Fulfillable. Inactive or insufficient stock is clearly identified, invalid or mismatched saved periods are refused, and changed inputs, accounts, routes or failed requests cannot leave a stale success result on screen. | TC-16-15, TC-16-16 |
 
-**Implementation location:** Not recorded. **Automated test files:** Not recorded. Record real files when implemented; historical schema or removed code is not feature completion.
+**Implementation:** `backend/src/modules/equipment/`, `frontend/src/features/equipment/`, migration 014. **Automated tests:** `backend/test/equipment/`, `database/tests/equipment/availability.integration.test.ts`, frontend equipment tests and `tests/e2e/equipment-availability.spec.ts`. **Evidence:** `AUTO-20261026-KAN9-01` / S4-E10.
+
+**26 October refinement:** unsaved mode and migration 014 approved in chat; AC104–107 now match Jira. Estimate remains 8 SP. Subtasks KAN-101/102/103 are In Progress / Tristan. Checks are advisory and read-only. KAN-18 stock administration, KAN-63 request entry and KAN-26 reservations remain separate. Manual acceptance is **Not executed**, independent review **To agree**, acceptance **Not assessed**. TC-16-17 isolates deficit/advisory behavior; TC-16-09 still requires the later KAN-26 reservation test.
 
 <details>
 <summary>Preserved Jira description before self-selection (historical ownership)</summary>
@@ -251,7 +259,7 @@ Implementation defaults: docs/scrum/sprint-03/planning.md and docs/requirements/
 
 ### KAN-26 — Reserve Equipment
 
-**Owner:** Unassigned — team member to choose · **Independent reviewer:** To agree after owner chosen · **Estimate:** 3 SP · **Jira status:** To Do · **Acceptance:** Not assessed · **Test group:** S4-T04
+**Owner:** Tristan · **Independent reviewer:** To agree · **Estimate:** 3 SP · **Jira status:** In Progress · **Acceptance:** Not assessed · **Test group:** S4-T04
 
 **User story:** As a Technical Support Staff member, I want to reserve equipment for an event being planned so that the required quantities are secured without double-booking.
 
@@ -270,8 +278,16 @@ Implementation defaults: docs/scrum/sprint-03/planning.md and docs/requirements/
 | **KAN-26-AC102** | Use one locked, atomic operation for request decision and reservation; simultaneous reservations may not exceed operational stock at any instant. | TC-17-02 |
 | **KAN-26-AC103** | Cancellation/completion release by recorded reservation state exactly once, preserve history and never increment a separate stock counter repeatedly. | TC-17-04 |
 | **KAN-26-AC104** | The affected assigned coordinator receives a transactional in-app reservation confirmation through KAN-80 (using KAN-64 infrastructure); the lifecycle release path is an acceptance dependency. | TC-17-03 |
+| **KAN-26-AC105** | Technical Support Staff may cancel a RESERVED line on an APPROVED event with a non-empty reason; preserve its original reservation decision and record release actor, time and cause. Operational stock editing remains KAN-18 integration. | TC-17-05 |
+| **KAN-26-AC106** | Reservation and cancellation use the current saved requirements version. Replaying the same unchanged outcome creates no duplicate release or notification; intervening source changes require refresh. | TC-17-08 |
+| **KAN-26-AC107** | Unsaved availability checks cannot create reservations. Empty, unresolved, rejected or currently unfulfillable saved requirements must not be reported as equipment ready. | TC-17-07 |
+| **KAN-26-AC108** | The deciding Technical Support Staff member receives a recipient-scoped confirmation linked only to permitted equipment planning; closed events retain the notice without granting general event-detail access. | TC-17-03 |
 
-**Implementation location:** Not recorded. **Automated test files:** Not recorded. Record real files when implemented; historical schema or removed code is not feature completion.
+**Implementation location:** `backend/src/modules/equipment/reservation-{types,input,service,router}.ts`, notification writer/inbox/trigger matrix, `frontend/src/features/equipment/api/equipment-reservations.ts`, `EquipmentReservationPanel.vue` and its event availability parent; additive `database/migrations/015_equipment_reservations.sql`. The local branch includes the KAN-9 checker commits.
+
+**Automated test files:** `backend/test/equipment/reservation-{service,router,notifications}.test.ts`; `database/tests/equipment/reservations.integration.test.ts`, `database/tests/database.integration.test.ts`, `database/tests/core-schema.integration.test.ts`; frontend reservation API, panel and workflow tests; `tests/e2e/equipment-reservations.spec.ts`. [Traceability](../../requirements/traceability.csv) links every active criterion to reusable cases and real files.
+
+**Verification:** AUTO-20261026-KAN26-01 / S4-E12 records check, coverage, real PostgreSQL and browser-fixture results. These do not establish real-login manual acceptance. The user reports migration 014/account setup complete; migration 015 is not applied to shared Supabase. KAN-63 request entry/revision, KAN-18 stock-editor integration and KAN-62/KAN-10 lifecycle UI acceptance remain pending. This branch supplies KAN-80's equipment-reserved notification slice only. Independent review and merge remain outstanding; no Done points are claimed.
 
 <details>
 <summary>Preserved Jira description before self-selection (historical ownership)</summary>
@@ -756,7 +772,7 @@ Implementation defaults: docs/scrum/sprint-03/planning.md and docs/requirements/
 | **KAN-66-AC102** | For APPROVED or CONFIRMED events, ordinary direct editing is restricted to the assigned coordinator and to name/description; other planning requirement fields use KAN-15. | TC-07-03 |
 | **KAN-66-AC103** | Changes must preserve audit information and use an expected revision to reject stale overwrites; unauthorised fields are refused server-side, even if a client sends them. | TC-07-05 |
 
-**Implementation location (26 October 2026, branch `feat/KAN-66-planning-edits`):** `database/migrations/014_event_request_revisions.sql`; `backend/src/modules/events/planning-edit-policy.ts`, `update-draft.ts`, `draft-update-input.ts`, `draft-eligibility.ts`, `event-request-detail.ts`, `submitted-requests-router.ts`, `workflow-support.ts`, `review-input.ts`, `review-decision.ts`, `review-router.ts`, `clarifications.ts`, `clarification-router.ts`; `frontend/src/features/events/pages/EventDetailsEditPage.vue` (route `/events/:id/details`), `EventRequestDetailPage.vue`, `EventDraftEditPage.vue`, `api/event-requests.ts`, `api/clarifications.ts`, `components/ClarificationPanel.vue`, `components/EventPlanningPanels.vue`; `frontend/src/features/reviews/pages/ReviewRequestPage.vue`, `components/ReviewDecisionPanel.vue`, `types.ts`.
+**Implementation location (26 October 2026, branch `feat/KAN-66-planning-edits`):** `database/migrations/016_event_request_revisions.sql`; `backend/src/modules/events/planning-edit-policy.ts`, `update-draft.ts`, `draft-update-input.ts`, `draft-eligibility.ts`, `event-request-detail.ts`, `submitted-requests-router.ts`, `workflow-support.ts`, `review-input.ts`, `review-decision.ts`, `review-router.ts`, `clarifications.ts`, `clarification-router.ts`; `frontend/src/features/events/pages/EventDetailsEditPage.vue` (route `/events/:id/details`), `EventRequestDetailPage.vue`, `EventDraftEditPage.vue`, `api/event-requests.ts`, `api/clarifications.ts`, `components/ClarificationPanel.vue`, `components/EventPlanningPanels.vue`; `frontend/src/features/reviews/pages/ReviewRequestPage.vue`, `components/ReviewDecisionPanel.vue`, `types.ts`.
 
 **Automated test files:** `backend/test/events/planning-edit-policy.test.ts`, `update-event-request.test.ts`, `submitted-requests-router.test.ts`, `event-request-detail.test.ts`, `review-input.test.ts`, `review-router.test.ts`, `workflow-support.test.ts`; `database/tests/events/planning-edits.integration.test.ts`, `update-draft.integration.test.ts`; `frontend/src/features/events/pages/EventDetailsEditPage.test.ts`, `EventRequestDetailPage.test.ts`, `EventDraftEditPage.test.ts`, `api/event-requests.test.ts`, `components/ClarificationPanel.test.ts`; `frontend/src/features/reviews/pages/ReviewRequestPage.test.ts`; `tests/e2e/kan66-planning-edits.spec.ts`.
 

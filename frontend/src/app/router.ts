@@ -23,6 +23,9 @@ import VenueBlocksPage from '../features/venues/pages/VenueBlocksPage.vue';
 import VenueCataloguePage from '../features/venues/pages/VenueCataloguePage.vue';
 import VenueCatalogueEditPage from '../features/venues/pages/VenueCatalogueEditPage.vue';
 import VenueSuitabilityPage from '../features/venues/pages/VenueSuitabilityPage.vue';
+import EquipmentAccessPage from '../features/equipment/pages/EquipmentAccessPage.vue';
+import EquipmentAvailabilityPage from '../features/equipment/pages/EquipmentAvailabilityPage.vue';
+import EventEquipmentAvailabilityPage from '../features/equipment/pages/EventEquipmentAvailabilityPage.vue';
 
 export const router = createRouter({
   history: createWebHistory(),
@@ -37,6 +40,13 @@ export const router = createRouter({
     { path: '/events/:id', component: EventRequestDetailPage, meta: { title: 'Event request' } },
     { path: '/venues/availability', component: VenueAvailabilityPage, meta: { title: 'Venue availability' } },
     { path: '/notifications', component: NotificationsPage, meta: { title: 'Notifications' } },
+    {
+      path: '/equipment/availability', component: EquipmentAccessPage,
+      children: [
+        { path: '', component: EquipmentAvailabilityPage, meta: { title: 'Equipment availability' } },
+        { path: ':id', component: EventEquipmentAvailabilityPage, meta: { title: 'Check equipment availability' } },
+      ],
+    },
     {
       path: '/reviews', component: ReviewAccessPage,
       children: [

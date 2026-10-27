@@ -1,0 +1,141 @@
+{
+  "run_id": "AUTO-20261026-KAN9-01",
+  "date": "2026-10-26",
+  "branch": "feat/KAN-9-equipment-availability",
+  "tested_code_commit": "5c0dc98dc3d4e0a55347415006c9d03008260f6f",
+  "build_note": "Full checks ran on the same source subsequently captured in this commit. One later added mixed-type database test passed in an 18-test focused rerun; no product code changed.",
+  "executor": "Codex (automated tools)",
+  "environment": {
+    "os": "Windows",
+    "node": "24.21.0",
+    "database": "Disposable local PostgreSQL 17; isolated schema per fixture",
+    "identity": "Substituted actor for HTTP/database tests; browser API routes substituted",
+    "shared_supabase": "Not modified; migration 014 application and real-login manual acceptance Not executed",
+    "cleanup": "All disposable fixture schemas cleaned by tests; task-created local PostgreSQL container stopped and removed. Existing containers left intact."
+  },
+  "checks": [
+    {
+      "command": "npm run check",
+      "result": "Pass",
+      "frontend_tests": 881,
+      "backend_tests": 1451,
+      "typechecks": "Pass",
+      "builds": "Pass"
+    },
+    {
+      "command": "npm run test:coverage",
+      "result": "Pass",
+      "frontend_tests": 881,
+      "backend_tests": 1451
+    },
+    {
+      "command": "npm run test:integration",
+      "result": "Pass",
+      "tests": 528,
+      "files": 27,
+      "seconds": 55.25
+    },
+    {
+      "command": "npx vitest run --config vitest.integration.config.ts database/tests/equipment/availability.integration.test.ts",
+      "result": "Pass",
+      "tests": 18,
+      "seconds": 3.11,
+      "scope": "Supplemental mixed-equipment equality/shortfall test; current focused file, not a 529-test full-suite claim"
+    },
+    {
+      "command": "npm run test:e2e -- tests/e2e/equipment-availability.spec.ts",
+      "result": "Pass",
+      "tests": 10
+    },
+    {
+      "command": "npm run test:e2e",
+      "result": "Fail",
+      "passed": 163,
+      "failed": 5,
+      "workers": 10,
+      "limitation": "Concurrent with other suites. Five existing navigation tests timed out; all 10 KAN-9 cases passed."
+    },
+    {
+      "command": "npm run test:e2e -- --workers=2",
+      "result": "Pass",
+      "tests": 168,
+      "seconds": 114,
+      "limitation": "No product code changed before this rerun; root cause of first-run timeouts is not established."
+    },
+    {
+      "command": "npm run test:coverage -w @connectsphere/backend -- test/equipment --coverage.include=src/modules/equipment/*.ts --coverage.reportsDirectory=coverage-equipment",
+      "result": "Pass",
+      "tests": 87,
+      "files": 3,
+      "covered_totals": {
+        "statements": "161/161",
+        "branches": "122/122",
+        "functions": "33/33",
+        "lines": "139/139"
+      }
+    }
+  ],
+  "coverage_percent": {
+    "whole_frontend": {
+      "statements": 95.71,
+      "branches": 93,
+      "functions": 97.67,
+      "lines": 97.69
+    },
+    "whole_backend": {
+      "statements": 90.46,
+      "branches": 92.23,
+      "functions": 90.42,
+      "lines": 90.74
+    },
+    "new_equipment_backend": {
+      "statements": 100,
+      "branches": 100,
+      "functions": 100,
+      "lines": 100
+    },
+    "new_equipment_frontend": {
+      "statements": 100,
+      "branches": 98.04,
+      "functions": 100,
+      "lines": 100
+    },
+    "gap": "Six defensive frontend state/non-Error fallback branches remain uncovered. PostgreSQL tests are not instrumented by the workspace coverage run."
+  },
+  "limitations": [
+    "Integrated manual acceptance Not executed",
+    "Shared migration 014 application Not executed",
+    "Independent human PR review pending",
+    "KAN-18 stock editor, KAN-63 request entry/review and KAN-26 reservation integration remain separate",
+    "Existing reservation trigger checks total stock; KAN-26 must lock and recheck operational capacity"
+  ],
+  "source_sha256": {
+    "backend/src/app.ts": "a7961e2e4a656e43ed06879e96828d8dadc7b813924a361c58e4d44953bf3adc",
+    "backend/src/modules/equipment/availability-input.ts": "a75804a152d5e5fd7f73ec4a191f233037b9ef8cc3f0af460bd632161e652832",
+    "backend/src/modules/equipment/availability-router.ts": "d5c79f3c7afb5f21285c047d05d924637bf184793152403e3e92cf34d7b07602",
+    "backend/src/modules/equipment/availability-rules.ts": "239dbd32f3c1c32472c3671a47b472f94c174a3b406ece95de45c112725971fe",
+    "backend/src/modules/equipment/availability-service.ts": "d2230113eef47f756a3b1ee93976c098bde687eb4fed196c783f893c54da3333",
+    "backend/src/modules/equipment/availability-types.ts": "d70b63327d4b86edd3906c1c69e4b31a4410ca3a611fee7aa98877955dce33eb",
+    "backend/test/equipment/availability-router.test.ts": "7a46fa5571dec6c3422657530ee727772211f68208f9545439f0bb0f3eace97f",
+    "backend/test/equipment/availability-rules.test.ts": "319842fc33eb123be2be772eef1d1afb1039bc9264afd02aa2cbf7b916ac3c9e",
+    "backend/test/equipment/availability-service.test.ts": "063a21148d19de90e74868101f47c71674ae4afecf56ac23b13918dcb63a6ce3",
+    "database/migrations/014_equipment_operational_quantities.sql": "11282c9991d35aba337db65fe39bcbdf428d89ea80ec31b9230bb20f0f3a7a87",
+    "database/tests/database.integration.test.ts": "f18919645b803e1b49ec296d2780e6c2ef6db01ca1c06ddcc7014efa8f5dd3cb",
+    "database/tests/equipment/availability.integration.test.ts": "675cf29d4d7936c4e7796c99165797559bd31ab6b8d405bf6cdd2ad1010f9ff4",
+    "frontend/src/app/router.ts": "eef4bda4c4af5fc2e7987c552ae85c102c9867dddce838d7fa8087d8e59ba3cb",
+    "frontend/src/components/AppShell.test.ts": "35b56e699745577b4d0a43b607a81c319746fb3850361e46ee36b28538f41c7f",
+    "frontend/src/components/AppShell.vue": "46462716bc9aa2ebb4b75d54fa7e4a2dc59c2df7b548c39f16dca08a103fc8b7",
+    "frontend/src/features/equipment/api/equipment-availability.test.ts": "f05cff83b48114fcbdb80899cc465ce830a98b87b1c0413db4f89ad55096dbbf",
+    "frontend/src/features/equipment/api/equipment-availability.ts": "a002b301b7ff983b3248c4e1aa6561d342c3023211a0926f9019f7b7983246b4",
+    "frontend/src/features/equipment/availability-form.test.ts": "ec1382ccbad2200c47de4878bf699672b4f52d32a90addf32389a413f5bf9ae0",
+    "frontend/src/features/equipment/availability-form.ts": "35ccbcf2621943a04ade45d2158c4e6eb65f237e7dc5034f036635b4db1f3491",
+    "frontend/src/features/equipment/pages/EquipmentAccessPage.vue": "555117202a8c1e6f2690511b21545e4106c46af8ba329478cb3cc1baf189e9bf",
+    "frontend/src/features/equipment/pages/EquipmentAvailabilityPage.test.ts": "1c3e7b8e6be713138f27e773308e4c922309761a09716ebcd8d39629d4d9c282",
+    "frontend/src/features/equipment/pages/EquipmentAvailabilityPage.vue": "b8ec43cec0ea75c6ce4815ef90e94d4cc2c5edbeba0cf9c9ca673ed9e5bd976e",
+    "frontend/src/features/equipment/pages/EventEquipmentAvailabilityPage.vue": "406b08862611d6d775b562476aedbd9535b5452e0f01e49c16cfdcba2e063319",
+    "frontend/vite.config.ts": "395f4ac9c0f3593a9719eec263a555ce32439fbbf333508dad2325c2e9724eb0",
+    "tests/e2e/equipment-availability.spec.ts": "1aed042b12ebbc75970f12f725a5b8fc3ff227e18571a53e48c9f163b0b8b105"
+  },
+  "supplemental_test_commit": "50e8ef983efddbe84baeaef8d165fa06ca593299",
+  "log_format": "ANSI codes, trailing spaces and surplus blank lines removed for repository formatting; diagnostic content preserved."
+}

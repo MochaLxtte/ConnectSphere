@@ -1,0 +1,104 @@
+{
+  "before": {
+    "sheets": 7,
+    "tables": 11,
+    "formulas": 18,
+    "panes": 7,
+    "table_names": [
+      "DeliveryEvidence",
+      "FeatureCoverage",
+      "FeatureFiles",
+      "HistoricalSprintPlan",
+      "ProductBacklog",
+      "ReviewNotes",
+      "SprintBaseline",
+      "SprintLifecycle",
+      "SprintPlan",
+      "StorySpecifications",
+      "SubtasksArchive"
+    ]
+  },
+  "after": {
+    "sheets": 7,
+    "tables": 11,
+    "formulas": 18,
+    "panes": 7,
+    "table_names": [
+      "DeliveryEvidence",
+      "FeatureCoverage",
+      "FeatureFiles",
+      "HistoricalSprintPlan",
+      "ProductBacklog",
+      "ReviewNotes",
+      "SprintBaseline",
+      "SprintLifecycle",
+      "SprintPlan",
+      "StorySpecifications",
+      "SubtasksArchive"
+    ]
+  },
+  "changed_existing_rows": [
+    [
+      "Product backlog",
+      3
+    ],
+    [
+      "Product backlog",
+      11
+    ],
+    [
+      "Product backlog",
+      21
+    ],
+    [
+      "Product backlog",
+      45
+    ],
+    [
+      "Story specifications",
+      723
+    ],
+    [
+      "Story specifications",
+      724
+    ],
+    [
+      "Story specifications",
+      725
+    ],
+    [
+      "Story specifications",
+      726
+    ],
+    [
+      "Delivery evidence",
+      11
+    ],
+    [
+      "Delivery evidence",
+      21
+    ],
+    [
+      "Delivery evidence",
+      45
+    ],
+    [
+      "Feature coverage",
+      24
+    ],
+    [
+      "Sprint record",
+      70
+    ]
+  ],
+  "appended_rows": {
+    "Product backlog": 0,
+    "Story specifications": 0,
+    "Delivery evidence": 0,
+    "Subtasks and archive": 3,
+    "Feature coverage": 15,
+    "Sprint record": 0,
+    "Review notes": 1
+  },
+  "unrelated_existing_rows_and_formulas_preserved": true
+}

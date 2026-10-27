@@ -384,7 +384,7 @@ Conventions shared by every route below:
 - Request bodies reject unknown fields. Timestamps are ISO 8601; intervals are half-open `[startsAt, endsAt)`, so back-to-back periods do not overlap.
 - An event, booking or request the caller has no permitted relationship to returns the same 404 as a missing one. "Owner" means the organiser whose `app_users.id` equals `organiser_id`; "assigned coordinator" means `coordinator_id` equals the caller's `app_users.id`. Coordinators never see drafts. Lead oversight is a separate permitted read scope over active non-draft events and does not create an assigned-coordinator relationship.
 - Role abbreviations: EO Event Organiser, EC Event Coordinator, ECL Event Coordinator Lead, VS Venue Staff, TS Technical Support Staff, AT Attendee.
-- List responses are `{ "items": [...] }` unless stated. Request, clarification, review, assignment and venue-decision workflows write in-app notifications in the same transaction (KAN-64, see [Notifications](#notifications-kan-64-cf-20)); the later-workflow triggers are future KAN-80 work.
+- List responses are `{ "items": [...] }` unless stated. Request, clarification, review, assignment and venue-decision workflows write in-app notifications in the same transaction (KAN-64, see [Notifications](#notifications-kan-64-cf-20)); KAN-26 adds the equipment-reserved slice of KAN-80. Other later-workflow triggers remain pending.
 
 Mount order matters: `app.ts` registers the assignment, clarification and status-history routers on `/api/events` before the shared detail router, so `/unassigned`, `/coordinators` and `/oversight` are not read as event IDs.
 
@@ -429,7 +429,7 @@ Migration 006's `assignmentMethod` vocabulary remains `AUTOMATIC` or `MANUAL`; m
 | --- | --- | --- | --- |
 | `GET /api/events/:id/history` | EO owner, assigned EC | `200` items: `id`, `fromStatus`, `toStatus`, `changedById`, `changedByName`, `createdAt`, oldest first; rows come from the retained status-history trigger | `400 INVALID_EVENT_REQUEST_ID`; `403 ACTION_FORBIDDEN`; `404 EVENT_REQUEST_NOT_FOUND` |
 
-`POST /api/events/:id/confirm`, `/cancel` and `/complete` are not mounted and return `404 NOT_FOUND`. Existing later-status records remain readable; their presence does not enable those actions. Equipment, registration and change-request application endpoints are also absent. KAN-64 mounts the notification inbox routes below; notification triggers for later workflows remain KAN-80 work. KAN-12 search, KAN-51 availability, KAN-52 suitability, KAN-55 operational blocks and KAN-8 booking decisions are mounted under their committed Sprint 2 stories; their contracts are below.
+`POST /api/events/:id/confirm`, `/cancel` and `/complete` are not mounted and return `404 NOT_FOUND`. Existing later-status records remain readable; their presence does not enable those actions. Registration and change-request application endpoints are also absent. Equipment has the narrow KAN-9 availability and KAN-26 saved-reservation endpoints below; equipment stock maintenance and request creation/editing are still pending. KAN-64 mounts the notification inbox, with the KAN-26 equipment-reserved slice of KAN-80; other later-workflow triggers remain pending. KAN-12 search, KAN-51 availability, KAN-52 suitability, KAN-55 operational blocks and KAN-8 booking decisions are mounted under their committed Sprint 2 stories; their contracts are below.
 
 ### Frontend routes
 
@@ -437,6 +437,8 @@ Client navigation is not access control; every page relies on the API responses 
 
 | Path | Page | Sidebar visibility |
 | --- | --- | --- |
+| `/equipment/availability` | KAN-9 approved/confirmed event picker | TS after session resolution; protected access gate on direct navigation |
+| `/equipment/availability/:id` | KAN-9 saved/unsaved assessment and a separate KAN-26 saved-reservation panel with readiness/history | TS only; reserve/cancel full saved lines on approved events, confirmed events read-only; no what-if writes |
 | `/events`, `/events/new` | Organiser request list; new event request form | Signed out or EO |
 | `/events/:id`, `/events/:id/edit` | Organiser detail with the planning panels; draft editing | Linked from the list |
 | `/events/:id/details` | KAN-66 post-submission edits: owner before approval, assigned coordinator name/description after approval | Linked from the detail and review pages; fields decided by the API |
@@ -727,6 +729,8 @@ Visibility is re-checked on every read. An organiser sees notices for their own 
 
 The relevant business services insert these notices before committing, using the same PostgreSQL client. Duplicate `(recipient_id, dedupe_key)` outcomes are ignored; failed notification persistence rolls back the business action. Submission acknowledges the organiser; clarification and review outcomes notify the organiser; initial assignment notifies the organiser and new coordinator; handover additionally sends a minimal notice to the previous coordinator; venue decisions notify the organiser, current coordinator if assigned, and deciding Venue Staff. Same-coordinator reassignment creates no notice. Delivery is an in-app inbox and unread counter, not email or push delivery. Migration 008 must be applied through the coordinated rollout before deploying these routes and writers. The integrated venue queries additionally require migration 009.
 
+**KAN-26 equipment notification extension — 26 October 2026:** migration 015 adds an optional equipment-request target. `EQUIPMENT_RESERVED` notifies the assigned coordinator and acting Technical Support user in the reservation transaction, deduplicated by recipient/request. A Technical Support recipient can read only their own linked equipment acknowledgement without generic event/booking details. Its link is `/equipment/availability/:id` while eligible; after the event closes, `link`, `event` and `booking` are null and the message explains the closed planning state. A coordinator's current-assignee access is still rechecked after handover. Notices with no target require all three event, booking and equipment-request links to be null. This completes only the equipment-reserved slice of KAN-80; other equipment/lifecycle triggers are pending.
+
 
 **KAN-81 staff stale-write handling — 21 October 2026.** A 404/409 refusal of block creation/removal keeps the server error and entered values but refreshes both the selected venue's blocks and cross-venue recovery list. It is still a definite refused write; it is not described as uncertain. Network/5xx/unreadable outcomes also refresh, with uncertain-result wording. Neither branch retries a mutation automatically. Component regressions: TC-09-17.
 
@@ -749,6 +753,78 @@ KAN-34 retains the real-calendar/explicit-offset validation on all four draft da
 This is a dated evidence backfill prepared with Codex on 25 October, not a new ceremony, Jira transition, test execution or acceptance decision. Historical entries, other members’ ownership and agreed estimates are preserved.
 
 KAN-51 PR #28 synchronized client route/history and selected venue and added spoofed-role API denial regressions. Client route guards do not replace server authorization. KAN-81 PR #47 corrections refresh both views after stale 404/409 write refusals without automatically retrying the refused write. These are historical implementation provenance notes; current endpoint shapes and error contracts above remain authoritative.
+
+
+## Equipment availability (KAN-9, CF-16)
+
+**Implemented 26 October 2026.** Mounted through the runtime's verified `workspace` session. Only Technical Support Staff (`TS`, `TECHNICAL_SUPPORT_STAFF`) can use these routes, including direct service entry points. Event eligibility is `APPROVED` or `CONFIRMED`, independent of venue confirmation. All responses set `Cache-Control: no-store`. This narrow context does not grant access to `/api/events/:id` or expose event owners, other-event identities, attendee details or reservation records belonging to others.
+
+| Method / route | Success | Errors |
+| --- | --- | --- |
+| `GET /api/equipment/availability/events` | `200 { items: EquipmentEventSummary[] }`, ordered by event start (null last), then ID | `401 AUTHENTICATION_REQUIRED`; `403 ACTION_FORBIDDEN` |
+| `GET /api/equipment/availability/events/:id` | `200 EquipmentAvailabilityContext` | Same role errors; `400 INVALID_EVENT_REQUEST_ID`; `404 EVENT_REQUEST_NOT_FOUND` for absent/ineligible events |
+| `POST /api/equipment/availability/events/:id` | `200 { assessment: EquipmentAvailabilityAssessment }`; advisory read only | Same role/ID/event errors; `400 INVALID_EQUIPMENT_AVAILABILITY_INPUT`, `EQUIPMENT_REQUIREMENTS_EMPTY`, `EQUIPMENT_TYPE_NOT_FOUND`; `409 EQUIPMENT_CONTEXT_CHANGED`, `EQUIPMENT_REQUEST_PERIOD_MISMATCH` |
+
+`EquipmentEventSummary` is `{ id, name, status, startsAt, endsAt }`, with nullable name/times and status `APPROVED | CONFIRMED`. The context is `{ event, requirementsVersion, equipmentTypes, savedRequests }`. `event` adds nullable `equipmentRequirements`. Each type contains `{ id, name, category, totalQuantity, damagedQuantity, maintenanceQuantity, isActive }`; the context includes active types and inactive types referenced by a saved non-cancelled line. Each saved line contains `{ id, equipmentTypeId, quantity, status, startsAt, endsAt, notes }`, with status `REQUESTED | RESERVED | REJECTED`. Cancelled lines are omitted. Requirements text is displayed for interpretation, not automatically converted into stock quantities.
+
+The `requirementsVersion` is a SHA-256 hash of current source event and saved-line values, ordered by saved ID. It includes quantity, status, period and text rather than trusting `updated_at`. POST reloads these values and rejects a stale version before assessing. The caller refreshes context and explicitly checks again. Current stock and competing reservations are read afresh; they are not frozen by the version.
+
+Saved input:
+
+```json
+{ "mode": "saved", "requirementsVersion": "<64 lowercase hex characters from context>" }
+```
+
+The server aggregates all non-cancelled saved lines by type. Each saved line must exactly match the current event window; a mismatch returns a conflict rather than silently moving the reservation. Empty saved requirements return `EQUIPMENT_REQUIREMENTS_EMPTY`. Only the exact server-loaded `RESERVED` line IDs being assessed are excluded from competing demand, preventing self-double-counting. Rejected/requested lines remain requirements without being counted as existing reservations.
+
+Unsaved what-if input:
+
+```json
+{
+  "mode": "what-if",
+  "requirementsVersion": "<64 lowercase hex characters from context>",
+  "startsAt": "2031-01-12T10:00:00+08:00",
+  "endsAt": "2031-01-12T14:00:00+08:00",
+  "items": [{ "equipmentTypeId": "09000000-0000-4000-8000-000000000001", "quantity": 3 }]
+}
+```
+
+What-if mode checks exactly the explicit window/items and counts every overlapping reservation, including those already reserved for the same event. It neither replaces saved requirements nor claims they were fulfilled. Unknown fields, caller exclusion lists, unknown equipment, empty items and nonpositive/noninteger quantities are refused. Duplicate types aggregate; each quantity and aggregate must fit `1..2147483647`. Dates require a real calendar date/time and explicit `Z` or `±HH:MM`, with at most six fractional digits; end must be strictly after start. Calculation preserves database microseconds. API input supports UTC years 0001–9999; UI fields use Singapore time.
+
+Each item result is `{ equipmentTypeId, equipmentTypeName, requestedQuantity, totalQuantity, damagedQuantity, maintenanceQuantity, operationalQuantity, peakReservedQuantity, availableQuantity, shortfallQuantity, isActive }`. Active operational stock is total minus damaged and maintenance quantities; inactive stock is zero. Peak demand uses only simultaneously overlapping `RESERVED` quantities in the half-open interval `[start, end)`. Exact adjacency is allowed; disjoint bookings do not accumulate as concurrent demand. Available stock is `max(0, operational - peakReserved)` and shortfall is `max(0, requested - available)`. Selected equipment deactivated after context loading remains a zero-operational shortfall rather than disappearing from the assessment.
+
+`assessment` also contains `{ eventId, eventName, mode, startsAt, endsAt, checkedAt, advisory: true, outcome, items }`, with outcome `FULFILLABLE` only when all requested items have zero shortfall, otherwise `SHORTFALL`. The UI displays a green confirmation or **Shortfall / Unfulfillable** with specific item deficits. The SQL statement snapshot includes event requirements, saved lines, stock and reservations together. No check writes requests, reservations, event status, history or notifications. A later reservation must perform its own live check under lock; results are not booking guarantees.
+
+**Setup and dependencies:** migration 014 adds the two loss quantities. Migration 015 separately replaces the historical total-capacity reservation guard with operational-capacity protection for KAN-26 below; neither changes the read-only KAN-9 contract. Migration 014/account setup is reported complete; shared 015 application and manual integrated acceptance are **Not executed**. KAN-18 stock maintenance and KAN-63 request creation/editing/review remain pending. Technical source/test paths and verification boundaries are in the [equipment module](../../backend/src/modules/equipment/README.md) and [test evidence](../testing/test-evidence.md).
+
+## Equipment reservations (KAN-26, CF-17)
+
+**Implemented 26 October 2026.** All routes use the verified Technical Support session and `Cache-Control: no-store`. Reads expose minimal `APPROVED`/`CONFIRMED` event context; writes require `APPROVED`. Venue confirmation is not a precondition. Missing/ineligible read targets share `404 EVENT_REQUEST_NOT_FOUND`, and no route grants general event-detail access.
+
+| Route | Request / response |
+| --- | --- |
+| `GET /api/equipment/reservations/events/:id` | `200 EquipmentReservationContext` |
+| `POST /api/equipment/reservations/events/:id/requests/:requestId/reserve` | `{ requirementsVersion }` → `200 { changed: boolean, context: EquipmentReservationContext }` |
+| `POST /api/equipment/reservations/events/:id/requests/:requestId/cancel` | `{ requirementsVersion, reason }` → same result; trimmed reason must contain 1–2,000 characters |
+
+The version is the 64-character lowercase SHA-256 source version also used by KAN-9. Unknown fields, missing/malformed version and invalid reason fail with `400 INVALID_EQUIPMENT_RESERVATION_INPUT`. Event/request route UUID errors are `400 INVALID_EVENT_REQUEST_ID` / `INVALID_EQUIPMENT_REQUEST_ID`. Missing session returns `401 AUTHENTICATION_REQUIRED`; wrong or revoked role returns `403 ACTION_FORBIDDEN`; a missing line on the named event returns `404 EQUIPMENT_REQUEST_NOT_FOUND`.
+
+`EquipmentReservationContext` contains:
+
+- `event`: `{ id, name, status, startsAt, endsAt, equipmentRequirements }`, matching the minimal availability event.
+- `requirementsVersion`: hashes actual current event and non-cancelled saved-line values; it does not rely on `updated_at` and does not cache stock.
+- `requests`: every saved line, including retained cancelled history: `{ id, equipmentTypeId, equipmentName, quantity, status, startsAt, endsAt, notes, decidedBy, decidedAt, decisionReason, releasedBy, releasedAt, releaseReason, releaseCause, canReserve, canCancel }`. Status is `REQUESTED`, `RESERVED`, `REJECTED` or `CANCELLED`; nullable release cause is `MANUAL_CANCELLATION`, `EVENT_CANCELLED` or `EVENT_COMPLETED`. Timestamps preserve PostgreSQL microseconds in UTC. Action flags are presentation guidance; the server rechecks every mutation.
+- `readiness`: `{ status, activeCount, reservedCount, message }`. Zero non-cancelled lines produces `NO_REQUIREMENTS`, not Not Required/ready. Invalid/mismatched periods or invalid aggregate quantities produce `INVALID_REQUIREMENTS`. Current stock shortfall produces `SHORTFALL`, including after a previously successful reservation. Otherwise any active line not reserved produces `PENDING`; only every active line reserved and still fulfilable produces `READY`. Rejected/requested rows remain active demand; cancelled rows do not.
+
+Reserve changes one full saved `REQUESTED` line to `RESERVED` with the current actor/time. Quantity/type/period come only from the saved row, never a what-if body. A positive whole quantity, exact current event period and assigned profile with current `EVENT_COORDINATOR` role are required. Cancel changes an existing `RESERVED` line to `CANCELLED`, recording release actor/time/reason/cause while preserving its original allocation and decision. Partial reservations, request creation, rejection, quantity/time editing and stock changes are not exposed here. `CONFIRMED` events are read-only, including idempotent write attempts.
+
+Conflicts return `409` with one of: `EQUIPMENT_EVENT_NOT_APPROVED`, `EQUIPMENT_CONTEXT_CHANGED`, `EQUIPMENT_REQUEST_NOT_RESERVABLE`, `EQUIPMENT_REQUEST_NOT_CANCELLABLE`, `EQUIPMENT_REQUEST_PERIOD_MISMATCH`, `EQUIPMENT_COORDINATOR_REQUIRED`, `EQUIPMENT_STOCK_CONFLICT`. The UI discards stale confirmation, reloads context and requires a new action; it never automatically repeats a mutation. A network failure may have followed a committed write, so refreshed saved state is authoritative.
+
+Within one transaction, the service rechecks/locks the trusted Technical Support profile, then locks event → assigned coordinator profile (reserve only) → sorted equipment pools → sorted saved lines. The recipient profile must still have role `EVENT_COORDINATOR` for a new reservation. It reads current operational stock and half-open simultaneous reserved demand after the locks; there is no cached-advisory bypass. A conflict has no partial write. Both mutations return refreshed context. An already-applied action returns `changed: false` only with the current version or the exact reconstructed pre-action version; cancellation also requires the same recorded reason. Unrelated source changes still conflict. Repeats preserve original times/history and create no additional stock or notifications.
+
+Successful reserve writes `EQUIPMENT_RESERVED` in the same transaction for the current coordinator and acting Technical Support user, keyed per recipient and saved-request ID. Notification persistence failure rolls back reservation. Technical Support's inbox target is `/equipment/availability/:id` while the event remains eligible, with no general `event`/`booking` DTO; after a terminal transition the acknowledgement has no link and explains that equipment planning is closed. This is the KAN-80 equipment-reserved slice only; cancellation/release and other lifecycle notification triggers remain separate.
+
+Migration 015 adds release-history fields and `notifications.equipment_request_id`, independently guards new SQL reservations against operational overbooking, and releases live reservations once when event status changes to cancelled/completed. It retains original allocation/decision/release history and never increments a stock counter. KAN-62/KAN-10 lifecycle APIs are pending; KAN-63 owns saved request creation/editing and KAN-18 stock maintenance. Shared migration application and connected manual acceptance are **Not executed**.
 
 ## KAN-66 planning edits and revisions — 26 October 2026
 
@@ -782,5 +858,5 @@ Significant fields (KAN-15-AC102): `purpose`, `startsAt`, `endsAt`, `expectedAtt
 
 **Frontend route.** `/events/:id/details` (`EventDetailsEditPage.vue`) loads the detail response, shows only `editableFields` and sends changed fields with `expectedRevision`. Organisers reach it from **Edit details** on `/events/:id`; assigned coordinators from **Edit name or description** on `/reviews/:id`.
 
-Database: [migration 014](../database-diagram.md#26-october-2026--migration-014-event-revisions-kan-66). Decisions: [D1–D4](../requirements/assumptions-and-questions.md#26-october-2026--kan-66-planning-edit-implementation-decisions).
+Database: [migration 016](../database-diagram.md#26-october-2026--migration-016-event-revisions-kan-66) (numbered 014 until 27 October). Decisions: [D1–D4](../requirements/assumptions-and-questions.md#26-october-2026--kan-66-planning-edit-implementation-decisions).
 
