@@ -1354,3 +1354,11 @@ These edge conditions are recorded as KAN-9-AC104–107 in Jira and the Sprint 4
 - Added KAN-26-AC105–108 in Jira and the Sprint 4 card to make these edge conditions traceable. Manual tests remain Not executed until actual results are supplied.
 
 **Setup report:** migration 014 application and creation of the test accounts were reported in chat before this work. No hosted schema inspection or KAN-9/KAN-26 manual acceptance was performed by this update. Migration 015 shared application remains Not executed.
+
+## 27 October 2026 — KAN-62 / KAN-63 merged-model reconciliation
+
+**Decision source:** Tristan's PR #63 feedback was provided by Ryan; Ryan asked that it be incorporated. This records the accepted implementation contract, not a team meeting or estimation decision.
+
+- Use migration 015's existing released_at, released_by, release_reason and release_cause equipment fields. Event cancellation transitions the event first so the existing database trigger releases RESERVED lines once with EVENT_CANCELLED; the KAN-62 transaction then marks only remaining REQUESTED/REJECTED lines using the same release model.
+- Do not add parallel cancelled_* equipment columns or a second constraint for cancelled equipment rows. Keep event_cancellations as the event-level actor/time/reason audit.
+- Allocate the KAN-62/KAN-63 additive migration as 018, after the parallel 016/017 work. Integration migration expectations and route-mount regressions are updated. Database integration was not executed in this follow-up.

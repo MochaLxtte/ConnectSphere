@@ -203,7 +203,7 @@ Implementation defaults: docs/scrum/sprint-03/planning.md and docs/requirements/
 | **KAN-63-AC103** | Each accepted line connects atomically to a single RESERVED record through KAN-26; no partial fulfilment or substitutions are silently applied. | TC-15-03 |
 | **KAN-63-AC104** | Changing a reserved line requires explicit cancellation/replacement with renewed availability checks and cannot mutate a reservation behind another viewer's stale form. | TC-15-07 |
 
-**Implementation location:** `backend/src/modules/equipment/equipment-service.ts`, `equipment-router.ts`, migration `database/migrations/014_event_cancellation_equipment_workflows.sql`. **Automated test files:** `backend/test/events/KAN-62-63-arrangements.test.ts`; PostgreSQL cases: `database/tests/events/cancellation-equipment.integration.test.ts`. Automated evidence and database-run availability are in `docs/testing/test-evidence.md`; integrated acceptance remains Not assessed.
+**Implementation location:** `backend/src/modules/equipment/equipment-service.ts`, `equipment-router.ts`, backend mount `backend/src/app.ts`, migration `database/migrations/018_event_cancellation_equipment_workflows.sql`. **Automated test files:** `backend/test/events/KAN-62-63-arrangements.test.ts`; PostgreSQL cases: `database/tests/events/cancellation-equipment.integration.test.ts`. Automated evidence is in `docs/testing/test-evidence.md`; database integration and browser workflow acceptance are Not executed; integrated acceptance remains Not assessed.
 
 <details>
 <summary>Preserved Jira description before self-selection (historical ownership)</summary>
@@ -426,7 +426,7 @@ Implementation defaults: docs/scrum/sprint-03/planning.md and docs/requirements/
 | **KAN-62-AC103** | Affected users receive transactional KAN-80 (using KAN-64 infrastructure) notifications. Attendees see a cancellation outcome without internal-only reasons. | TC-06-11 |
 | **KAN-62-AC104** | A repeated cancellation does not repeat resource release or notifications; completion/rejection/draft/unauthorised cancellation leaves data unchanged. | TC-06-12 |
 
-**Implementation location:** `backend/src/modules/events/cancellation.ts`, `cancellation-router.ts`, migration `database/migrations/014_event_cancellation_equipment_workflows.sql`. **Automated test files:** `backend/test/events/KAN-62-63-arrangements.test.ts`; PostgreSQL cases: `database/tests/events/cancellation-equipment.integration.test.ts`. Automated evidence and database-run availability are in `docs/testing/test-evidence.md`; integrated acceptance remains Not assessed.
+**Implementation location:** `backend/src/modules/events/cancellation.ts`, `cancellation-router.ts`, backend mount `backend/src/app.ts`, migration `database/migrations/018_event_cancellation_equipment_workflows.sql`. RESERVED equipment is released through migration 015's existing terminal-event trigger; remaining REQUESTED/REJECTED lines use its released_* audit model. **Automated test files:** `backend/test/events/KAN-62-63-arrangements.test.ts`; PostgreSQL cases: `database/tests/events/cancellation-equipment.integration.test.ts`. Automated evidence is in `docs/testing/test-evidence.md`; database integration and local integrated acceptance are Not executed; acceptance remains Not assessed.
 
 <details>
 <summary>Preserved Jira description before self-selection (historical ownership)</summary>

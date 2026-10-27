@@ -224,3 +224,22 @@ The active sequence is now **001–015**. [015_equipment_reservations.sql](migra
 **Shared 015 application: Not executed.** Migration 014 and test accounts are reported ready. Coordinate 015 with the team, confirm the intended development project, then run the unchanged `npm run db:migrate` runner. Verify both ledger entries, the four request release columns, the notification FK and the new history/release triggers before using the matching API. Do not edit already-applied migration 005 or rewrite historical cancellations. KAN-18 stock maintenance and KAN-63 request creation/editing remain pending; use only agreed saved test fixtures until those workflows exist.
 
 `database/tests/equipment/reservations.integration.test.ts` uses disposable PostgreSQL schemas to verify operational stock races, API/SQL guards, decision/notification rollback, idempotency, retained release history, terminal transitions and recipient access. These automated fixtures do not establish connected shared-data manual acceptance. Keep the Data API disabled and use a provisioned Technical Support test account for later local acceptance.
+
+## KAN-62 / KAN-63 event cancellation and equipment requests — migration 018
+
+`018_event_cancellation_equipment_workflows.sql` adds the immutable `event_cancellations` outcome,
+event-status-history reason, attendee cancellation outcome timestamp, equipment plan state, and
+equipment-line technical requirements/revision. It does not add another equipment cancellation
+metadata model: migration 015's `released_at`, `released_by`, `release_reason` and `release_cause`
+remain authoritative. On an actual event transition to `CANCELLED`, the existing migration-015
+trigger releases RESERVED lines once with cause `EVENT_CANCELLED`; the KAN-62 transaction marks
+remaining REQUESTED/REJECTED lines with the same cause and its acting user. Equipment line
+cancellation/replacement uses `MANUAL_CANCELLATION`. The new cancellation-audit table has RLS
+enabled and direct Data API role privileges revoked; application access remains through the
+authorised backend routes.
+
+Migration 018 is allocated after the parallel migration-016/017 work. This checkout contains
+migrations through 015 plus the new 018 file; apply migrations in numeric order. Fresh-install and
+upgrade integration assertions were updated, but were **Not executed** in this follow-up. Do not
+apply to shared Supabase without the team's deployment coordination. See the event module README
+and `docs/testing/test-evidence.md` for route, automated-check and acceptance boundaries.

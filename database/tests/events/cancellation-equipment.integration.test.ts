@@ -26,7 +26,8 @@ const period = { startsAt: '2031-01-12T02:00:00.000Z', endsAt: '2031-01-12T04:00
 
 describe('KAN-62 cancellation against PostgreSQL', () => {
   it('atomically records the outcome, releases only this event and notifies its affected users once', async () => {
-    const eventId = await fixture.createEvent({ organiserId: organiser.id, coordinatorId: coordinator.id, status: 'APPROVED' });
+    const eventId = await fixture.createEvent({ organiserId: organiser.id, coordinatorId: coordinator.id, status: 'APPROVED',
+      startsAt: period.startsAt, endsAt: period.endsAt });
     const venueId = randomUUID();
     const equipmentTypeId = randomUUID();
     await fixture.pool.query('INSERT INTO venues(id,name,capacity) VALUES($1,$2,100)', [venueId, `Venue ${venueId}`]);
@@ -38,21 +39,33 @@ describe('KAN-62 cancellation against PostgreSQL', () => {
     await fixture.pool.query(`INSERT INTO equipment_requests(id,event_request_id,equipment_type_id,requested_by,quantity,starts_at,ends_at,status,decided_by,decided_at)
       VALUES($1,$2,$3,$4,2,$5,$6,'RESERVED',$7,now())`, [equipmentId, eventId, equipmentTypeId, coordinator.id,
       period.startsAt, period.endsAt, technical.id]);
+    const requestedEquipmentId = randomUUID();
+    await fixture.pool.query(`INSERT INTO equipment_requests(id,event_request_id,equipment_type_id,requested_by,quantity,starts_at,ends_at)
+      VALUES($1,$2,$3,$4,1,$5,$6)`, [requestedEquipmentId, eventId, equipmentTypeId, coordinator.id, period.startsAt, period.endsAt]);
+    const rejectedEquipmentId = randomUUID();
+    await fixture.pool.query(`INSERT INTO equipment_requests(id,event_request_id,equipment_type_id,requested_by,quantity,starts_at,ends_at,status,decided_by,decided_at)
+      VALUES($1,$2,$3,$4,1,$5,$6,'REJECTED',$7,now())`, [rejectedEquipmentId, eventId, equipmentTypeId, coordinator.id,
+      period.startsAt, period.endsAt, technical.id]);
     const registrationId = randomUUID();
     await fixture.pool.query(`INSERT INTO event_registrations(id,event_request_id,attendee_id)
       VALUES($1,$2,$3)`, [registrationId, eventId, attendee.id]);
-    const unrelated = await fixture.createEvent({ organiserId: organiser.id, coordinatorId: coordinator.id, status: 'APPROVED' });
+    const unrelated = await fixture.createEvent({ organiserId: organiser.id, coordinatorId: coordinator.id, status: 'APPROVED',
+      startsAt: period.startsAt, endsAt: period.endsAt });
     const unrelatedEquipment = randomUUID();
     await fixture.pool.query(`INSERT INTO equipment_requests(id,event_request_id,equipment_type_id,requested_by,quantity,starts_at,ends_at)
       VALUES($1,$2,$3,$4,1,$5,$6)`, [unrelatedEquipment, unrelated, equipmentTypeId, coordinator.id, period.startsAt, period.endsAt]);
 
     const saved = await cancelEvent(fixture.pool, { eventRequestId: eventId, actor: organiser,
       input: { reason: 'Venue is unavailable.', confirmAffectedArrangements: true } });
-    expect(saved).toMatchObject({ status: 'CANCELLED', released: { venueBookings: 1, equipmentRequests: 1, registrations: 1 } });
+    expect(saved).toMatchObject({ status: 'CANCELLED', released: { venueBookings: 1, equipmentRequests: 3, registrations: 1 } });
     expect(await fixture.eventRow(eventId)).toMatchObject({ status: 'CANCELLED' });
     expect((await fixture.history(eventId)).at(-1)).toMatchObject({ to_status: 'CANCELLED', changed_by: organiser.id });
-    expect((await fixture.pool.query('SELECT status,cancellation_reason,cancelled_by FROM equipment_requests WHERE id=$1', [equipmentId])).rows[0])
-      .toMatchObject({ status: 'CANCELLED', cancellation_reason: 'Venue is unavailable.', cancelled_by: organiser.id });
+    expect((await fixture.pool.query('SELECT status,release_cause,release_reason,released_by FROM equipment_requests WHERE id=$1', [equipmentId])).rows[0])
+      .toMatchObject({ status: 'CANCELLED', release_cause: 'EVENT_CANCELLED', release_reason: 'Event cancelled.', released_by: organiser.id });
+    for (const id of [requestedEquipmentId, rejectedEquipmentId]) {
+      expect((await fixture.pool.query('SELECT status,release_cause,release_reason,released_by FROM equipment_requests WHERE id=$1', [id])).rows[0])
+        .toMatchObject({ status: 'CANCELLED', release_cause: 'EVENT_CANCELLED', release_reason: 'Venue is unavailable.', released_by: organiser.id });
+    }
     expect((await fixture.pool.query('SELECT status FROM event_registrations WHERE id=$1', [registrationId])).rows[0].status).toBe('CANCELLED');
     expect((await fixture.pool.query('SELECT status FROM equipment_requests WHERE id=$1', [unrelatedEquipment])).rows[0].status).toBe('REQUESTED');
     const notices = await fixture.notifications(eventId);
@@ -74,8 +87,10 @@ describe('KAN-62 cancellation against PostgreSQL', () => {
 
 describe('KAN-63 equipment review and reservation against PostgreSQL', () => {
   it('reserves a complete line once, rejects an over-capacity overlap, and releases/replaces explicitly', async () => {
-    const eventA = await fixture.createEvent({ organiserId: organiser.id, coordinatorId: coordinator.id, status: 'APPROVED' });
-    const eventB = await fixture.createEvent({ organiserId: organiser.id, coordinatorId: coordinator.id, status: 'APPROVED' });
+    const eventA = await fixture.createEvent({ organiserId: organiser.id, coordinatorId: coordinator.id, status: 'APPROVED',
+      startsAt: period.startsAt, endsAt: period.endsAt });
+    const eventB = await fixture.createEvent({ organiserId: organiser.id, coordinatorId: coordinator.id, status: 'APPROVED',
+      startsAt: period.startsAt, endsAt: period.endsAt });
     const typeId = randomUUID();
     await fixture.pool.query('INSERT INTO equipment_types(id,name,total_quantity) VALUES($1,$2,2)', [typeId, `EQ ${typeId}`]);
     const line = (quantity: number) => ({ equipmentTypeId: typeId, quantity, ...period, technicalRequirements: 'Wireless' });

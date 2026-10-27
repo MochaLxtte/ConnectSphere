@@ -25,6 +25,7 @@ import VenueSuitabilityPage from '../features/venues/pages/VenueSuitabilityPage.
 import EquipmentAccessPage from '../features/equipment/pages/EquipmentAccessPage.vue';
 import EquipmentAvailabilityPage from '../features/equipment/pages/EquipmentAvailabilityPage.vue';
 import EventEquipmentAvailabilityPage from '../features/equipment/pages/EventEquipmentAvailabilityPage.vue';
+import EquipmentQueuePage from '../features/events/pages/EquipmentQueuePage.vue';
 
 export const router = createRouter({
   history: createWebHistory(),
@@ -37,6 +38,7 @@ export const router = createRouter({
     { path: '/events/:id', component: EventRequestDetailPage, meta: { title: 'Event request' } },
     { path: '/venues/availability', component: VenueAvailabilityPage, meta: { title: 'Venue availability' } },
     { path: '/notifications', component: NotificationsPage, meta: { title: 'Notifications' } },
+    { path: '/equipment-requests', component: EquipmentQueuePage, meta: { title: 'Equipment requests' } },
     {
       path: '/equipment/availability', component: EquipmentAccessPage,
       children: [

@@ -60,8 +60,9 @@ export async function saveEquipmentRequest(pool: Pick<Pool, 'connect'>,
     if (active.some((row) => row.status !== 'REQUESTED' && lines.some((line) => line.equipmentTypeId === row.equipmentTypeId))) {
       conflict('EQUIPMENT_REPLACEMENT_REQUIRED', 'A decided equipment line cannot be revised; cancel or replace it explicitly.');
     }
-    await client.query(`UPDATE equipment_requests SET status = 'CANCELLED', cancelled_by = $2,
-      cancelled_at = now(), cancellation_reason = 'Superseded by coordinator request', revision = revision + 1,
+    await client.query(`UPDATE equipment_requests SET status = 'CANCELLED', released_by = $2,
+      released_at = now(), release_reason = 'Superseded by coordinator request',
+      release_cause = 'MANUAL_CANCELLATION', revision = revision + 1,
       updated_at = now() WHERE event_request_id = $1 AND status = 'REQUESTED'`, [args.eventId, args.actor.id]);
     await client.query('UPDATE event_requests SET equipment_plan_status = $2, updated_at = now() WHERE id = $1',
       [args.eventId, notRequired ? 'NOT_REQUIRED' : 'REQUIRED']);
@@ -177,8 +178,9 @@ export async function replaceReservedEquipmentLine(pool: Pick<Pool, 'connect'>,
     if (line.status !== 'RESERVED') conflict('EQUIPMENT_NOT_RESERVED', 'Only a reserved line can be replaced.');
     if (body.revision !== line.revision) conflict('STALE_EQUIPMENT_REQUEST', 'This reservation changed. Reload before replacing.');
     await eventForCoordinator(client, line.eventId, args.actor);
-    await client.query(`UPDATE equipment_requests SET status = 'CANCELLED', cancelled_by = $2,
-      cancelled_at = now(), cancellation_reason = 'Explicitly replaced by coordinator', revision = revision + 1,
+    await client.query(`UPDATE equipment_requests SET status = 'CANCELLED', released_by = $2,
+      released_at = now(), release_reason = 'Explicitly replaced by coordinator',
+      release_cause = 'MANUAL_CANCELLATION', revision = revision + 1,
       updated_at = now() WHERE id = $1 AND status = 'RESERVED'`, [args.lineId, args.actor.id]);
     const inserted = await client.query(`INSERT INTO equipment_requests
       (event_request_id, equipment_type_id, requested_by, quantity, starts_at, ends_at, technical_requirements)
@@ -201,8 +203,9 @@ export async function cancelEquipmentLine(pool: Pick<Pool, 'connect'>,
     if (!line) throw new WorkflowError('NOT_FOUND', 'EQUIPMENT_REQUEST_NOT_FOUND', 'The equipment request was not found.');
     await eventForCoordinator(client, line.eventId, args.actor);
     if (line.status !== 'REQUESTED' && line.status !== 'REJECTED') conflict('EQUIPMENT_CANNOT_BE_CANCELLED', 'Only a requested or rejected line can be cancelled directly.');
-    const updated = await client.query(`UPDATE equipment_requests SET status = 'CANCELLED', cancelled_by = $2,
-      cancelled_at = now(), cancellation_reason = $3, revision = revision + 1, updated_at = now()
+    const updated = await client.query(`UPDATE equipment_requests SET status = 'CANCELLED', released_by = $2,
+      released_at = now(), release_reason = $3, release_cause = 'MANUAL_CANCELLATION',
+      revision = revision + 1, updated_at = now()
       WHERE id = $1 AND status = $4 RETURNING id, status, revision`, [args.lineId, args.actor.id, reason, line.status]);
     if (!updated.rows[0]) conflict('STALE_EQUIPMENT_REQUEST', 'This equipment line changed. Reload before cancelling.');
     return updated.rows[0];

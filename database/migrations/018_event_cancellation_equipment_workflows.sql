@@ -1,17 +1,7 @@
 -- KAN-62 / KAN-63: lifecycle cancellation and equipment request/review workflow.
 ALTER TABLE equipment_requests
   ADD COLUMN technical_requirements text,
-  ADD COLUMN revision integer NOT NULL DEFAULT 1 CHECK (revision > 0),
-  ADD COLUMN cancelled_by uuid REFERENCES app_users(id),
-  ADD COLUMN cancelled_at timestamptz,
-  ADD COLUMN cancellation_reason text,
-  ADD CONSTRAINT equipment_requests_cancellation_fields CHECK (
-    (status = 'CANCELLED') = (cancelled_by IS NOT NULL AND cancelled_at IS NOT NULL AND cancellation_reason IS NOT NULL)
-  );
-
-ALTER TABLE equipment_requests DROP CONSTRAINT equipment_requests_status_check;
-ALTER TABLE equipment_requests ADD CONSTRAINT equipment_requests_status_check
-  CHECK (status IN ('REQUESTED', 'RESERVED', 'REJECTED', 'CANCELLED'));
+  ADD COLUMN revision integer NOT NULL DEFAULT 1 CHECK (revision > 0);
 
 ALTER TABLE event_registrations ADD COLUMN cancellation_outcome_at timestamptz;
 ALTER TABLE event_registrations DROP CONSTRAINT event_registrations_status_check;
@@ -34,4 +24,21 @@ CREATE TABLE event_cancellations (
 );
 
 ALTER TABLE event_status_history ADD COLUMN reason text;
+
+-- Event cancellation reasons are internal workflow data; expose them only through the
+-- authenticated application API, not the Supabase Data API roles.
+DO $$
+DECLARE
+  application_schema text := current_schema();
+  api_role text;
+BEGIN
+  EXECUTE format('ALTER TABLE %I.event_cancellations ENABLE ROW LEVEL SECURITY', application_schema);
+  EXECUTE format('REVOKE ALL PRIVILEGES ON TABLE %I.event_cancellations FROM PUBLIC', application_schema);
+  FOREACH api_role IN ARRAY ARRAY['anon', 'authenticated', 'service_role'] LOOP
+    IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = api_role) THEN
+      EXECUTE format('REVOKE ALL PRIVILEGES ON TABLE %I.event_cancellations FROM %I', application_schema, api_role);
+    END IF;
+  END LOOP;
+END
+$$;
 

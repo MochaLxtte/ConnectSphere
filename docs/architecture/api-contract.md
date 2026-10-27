@@ -824,3 +824,27 @@ Within one transaction, the service rechecks/locks the trusted Technical Support
 Successful reserve writes `EQUIPMENT_RESERVED` in the same transaction for the current coordinator and acting Technical Support user, keyed per recipient and saved-request ID. Notification persistence failure rolls back reservation. Technical Support's inbox target is `/equipment/availability/:id` while the event remains eligible, with no general `event`/`booking` DTO; after a terminal transition the acknowledgement has no link and explains that equipment planning is closed. This is the KAN-80 equipment-reserved slice only; cancellation/release and other lifecycle notification triggers remain separate.
 
 Migration 015 adds release-history fields and `notifications.equipment_request_id`, independently guards new SQL reservations against operational overbooking, and releases live reservations once when event status changes to cancelled/completed. It retains original allocation/decision/release history and never increments a stock counter. KAN-62/KAN-10 lifecycle APIs are pending; KAN-63 owns saved request creation/editing and KAN-18 stock maintenance. Shared migration application and connected manual acceptance are **Not executed**.
+
+## KAN-62 / KAN-63 lifecycle and equipment request APIs — 27 October 2026
+
+The following routes are mounted in the current backend when its verified workflow session is
+available:
+
+| Route | Contract |
+| --- | --- |
+| `POST /api/events/:id/cancel` | `{ reason, confirmAffectedArrangements: true }` → `{ cancellation }`; owner/current coordinator and eligible status required. The trimmed reason is required (1–2,000 characters). |
+| `GET /api/events/:id/cancellation` | `{ cancellation }` for the owning organiser/current coordinator; returns null when no saved outcome is visible. |
+| `GET /api/events/:id/equipment-requests` | `{ plan }` for the assigned coordinator or Technical Support Staff. |
+| `GET /api/equipment-types` | Active equipment types for coordinators and Technical Support Staff. |
+| `POST /api/events/:id/equipment-requests` | `{ lines, notRequired? }` → `{ request }`; assigned coordinator of an APPROVED event only. |
+| `GET /api/equipment-requests` | Staff review queue or coordinator-scoped saved lines. |
+| `POST /api/equipment-requests/:id/review` | `{ decision: "RESERVED" | "REJECTED", reason?, revision? }`; Technical Support Staff only; full reservation is availability-checked by migration 015's database trigger. |
+| `POST /api/equipment-requests/:id/replace` | `{ revision, replacement }`; assigned coordinator explicitly cancels a reserved line and creates one REQUESTED replacement. |
+| `POST /api/equipment-requests/:id/cancel` | `{ reason }`; assigned coordinator can cancel a REQUESTED or REJECTED line. |
+
+Migration 018 adds cancellation/audit, registration-outcome and equipment-planning fields without
+adding equipment cancellation columns. A transition to event status `CANCELLED` activates
+migration 015's release trigger for RESERVED rows. The cancellation service records release audit
+metadata for remaining REQUESTED/REJECTED rows, then persists the event cancellation audit and
+notifications in the same transaction. Database integration and connected local acceptance are
+**Not executed** in the 27 October follow-up.

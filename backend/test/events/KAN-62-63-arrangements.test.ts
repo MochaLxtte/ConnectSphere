@@ -32,6 +32,7 @@ describe('KAN-62 transactional cancellation', () => {
       if (sql.includes('FROM event_requests WHERE id = $1 FOR UPDATE')) return { rows: [{
         id: eventId, organiserId: ownerId, coordinatorId, status, name: 'Campus forum',
       }], rowCount: 1 };
+      if (sql.includes('SELECT count(*)::text AS count FROM equipment_requests')) return { rows: [{ count: '1' }], rowCount: 1 };
       if (sql.includes('INSERT INTO event_cancellations')) return { rows: [{ cancelledAt: new Date('2031-01-01T00:00:00Z') }], rowCount: 1 };
       if (sql.includes('UPDATE venue_bookings')) return { rows: [], rowCount: 2 };
       if (sql.includes('UPDATE equipment_requests')) return { rows: [], rowCount: 1 };
@@ -52,6 +53,12 @@ describe('KAN-62 transactional cancellation', () => {
     expect(statements.at(-1)).toBe('COMMIT');
     expect(statements.some((sql) => sql.includes('INSERT INTO notifications'))).toBe(true);
     expect(statements.some((sql) => sql.includes("status = 'CANCELLED'"))).toBe(true);
+    const terminalEventUpdate = statements.findIndex((sql) => sql.includes("UPDATE event_requests SET status = 'CANCELLED'"));
+    const remainingEquipmentUpdate = statements.findIndex((sql) => sql.includes("status IN ('REQUESTED', 'REJECTED')"));
+    expect(terminalEventUpdate).toBeGreaterThan(-1);
+    expect(remainingEquipmentUpdate).toBeGreaterThan(terminalEventUpdate);
+    expect(statements[remainingEquipmentUpdate]).toContain("release_cause = 'EVENT_CANCELLED'");
+    expect(statements[remainingEquipmentUpdate]).toContain('released_by = $2');
   });
   it('rolls back a repeated cancellation before touching any arrangements', async () => {
     const { pool, statements } = fixture('CANCELLED');

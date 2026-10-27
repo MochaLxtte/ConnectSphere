@@ -39,13 +39,20 @@ export async function cancelEvent(
       throw new WorkflowError('CONFLICT', 'EVENT_NOT_CANCELLABLE', 'This event is not in a cancellable state.');
     }
 
+    const equipmentCount = await client.query<{ count: string }>(`SELECT count(*)::text AS count FROM equipment_requests
+      WHERE event_request_id = $1 AND status IN ('REQUESTED', 'RESERVED', 'REJECTED')`, [eventRequestId]);
     const venues = await client.query<{ id: string }>(`UPDATE venue_bookings SET status = 'CANCELLED',
       cancelled_by = $2, cancelled_at = now(), cancellation_reason = $3, updated_at = now()
       WHERE event_request_id = $1 AND status IN ('PENDING', 'APPROVED', 'HELD') RETURNING id`,
     [eventRequestId, actor.id, reason]);
+    await client.query(`UPDATE event_requests SET status = 'CANCELLED', updated_at = now() WHERE id = $1`, [eventRequestId]);
+    // Migration 015's event status trigger releases RESERVED rows and records EVENT_CANCELLED.
+    // Mark only remaining REQUESTED/REJECTED lines here; updating a reservation twice violates
+    // its immutable release record and could break availability accounting.
     const equipment = await client.query<{ id: string }>(`UPDATE equipment_requests SET status = 'CANCELLED',
-      cancelled_by = $2, cancelled_at = now(), cancellation_reason = $3, updated_at = now(), revision = revision + 1
-      WHERE event_request_id = $1 AND status IN ('REQUESTED', 'RESERVED') RETURNING id`,
+      released_by = $2, released_at = now(), release_reason = $3, release_cause = 'EVENT_CANCELLED',
+      updated_at = now(), revision = revision + 1
+      WHERE event_request_id = $1 AND status IN ('REQUESTED', 'REJECTED') RETURNING id`,
     [eventRequestId, actor.id, reason]);
     const registrations = await client.query<{ id: string; attendeeId: string }>(`UPDATE event_registrations
       SET status = 'CANCELLED', cancellation_outcome_at = now()
@@ -54,7 +61,6 @@ export async function cancelEvent(
       (event_request_id, cancelled_by, reason, affected_venue_bookings, affected_equipment_requests, affected_registrations)
       VALUES ($1, $2, $3, $4, $5, $6) RETURNING cancelled_at AS "cancelledAt"`,
     [eventRequestId, actor.id, reason, venues.rowCount ?? 0, equipment.rowCount ?? 0, registrations.rowCount ?? 0]);
-    await client.query(`UPDATE event_requests SET status = 'CANCELLED', updated_at = now() WHERE id = $1`, [eventRequestId]);
     await client.query(`UPDATE event_status_history SET reason = $2 WHERE id = (
       SELECT id FROM event_status_history WHERE event_request_id = $1 ORDER BY created_at DESC, id DESC LIMIT 1)`,
     [eventRequestId, reason]);
@@ -70,7 +76,7 @@ export async function cancelEvent(
     await recordNotifications(client, notices);
     return { eventRequestId, status: 'CANCELLED', cancelledBy: actor.id,
       cancelledAt: audit.rows[0]?.cancelledAt, reason,
-      released: { venueBookings: venues.rowCount ?? 0, equipmentRequests: equipment.rowCount ?? 0,
+      released: { venueBookings: venues.rowCount ?? 0, equipmentRequests: Number(equipmentCount.rows[0]?.count ?? 0),
         registrations: registrations.rowCount ?? 0 } };
   });
 }

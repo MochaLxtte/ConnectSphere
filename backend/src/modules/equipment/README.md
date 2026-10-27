@@ -59,3 +59,15 @@ The KAN-80 slice here is `EQUIPMENT_RESERVED`: the assigned coordinator and acti
 - `backend/test/equipment/reservation-*.test.ts`: reservation input/service/HTTP and transactional notification rules; `database/tests/equipment/reservations.integration.test.ts`: real stock races, atomic writes, history, idempotency, terminal release and notification visibility. `tests/e2e/equipment-reservations.spec.ts` covers the saved-reservation UI with explicitly mocked authenticated API responses and separate live unauthenticated refusal checks.
 
 Run the root check/coverage commands and dedicated-database integration/browser commands from [AGENTS.md](../../../../AGENTS.md). [Test evidence](../../../../docs/testing/test-evidence.md) records `AUTO-20261026-KAN9-01` and its actual boundaries. Mocked browser flows do not establish connected local acceptance; use the maintained manual specifications and append actual executions separately.
+
+## KAN-63 request workflow and KAN-62 event release — 27 October 2026
+
+KAN-63 request creation, coordinator revision, Technical Support review and full-line reservation
+are implemented in `equipment-service.ts` and `equipment-router.ts`. Manual cancellation and
+explicit replacement use migration 015's `released_*` metadata with cause
+`MANUAL_CANCELLATION`; no parallel `cancelled_*` equipment fields exist. KAN-62 updates the event
+status first in the same transaction. Migration 015's trigger releases RESERVED rows with cause
+`EVENT_CANCELLED`; the KAN-62 service then cancels only remaining REQUESTED/REJECTED lines,
+recording release audit data without updating those reserved rows twice. Migration 018 adds the
+KAN-63 request fields and KAN-62 outcome records. These routes and local unit tests pass; database
+integration and connected acceptance remain **Not executed**.
