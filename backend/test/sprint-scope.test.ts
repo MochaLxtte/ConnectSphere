@@ -14,10 +14,7 @@ const futureRoutes = [
   ['post', `/api/events/${eventId}/confirm`, 'EVENT_COORDINATOR'],
   ['post', `/api/events/${eventId}/cancel`, 'EVENT_ORGANISER'],
   ['post', `/api/events/${eventId}/complete`, 'EVENT_COORDINATOR'],
-  ['get', `/api/events/${eventId}/change-requests`, 'EVENT_COORDINATOR'],
-  ['post', `/api/events/${eventId}/change-requests`, 'EVENT_ORGANISER'],
-  ['post', `/api/events/${eventId}/change-requests/${recordId}/withdraw`, 'EVENT_ORGANISER'],
-  ['post', `/api/events/${eventId}/change-requests/${recordId}/decision`, 'EVENT_COORDINATOR'],
+  // KAN-15 change-request routes entered scope in Sprint 4 (27 October 2026).
   ['get', '/api/equipment', 'TECHNICAL_SUPPORT_STAFF'],
   ['get', '/api/equipment/availability', 'TECHNICAL_SUPPORT_STAFF'],
   ['get', `/api/equipment/${recordId}`, 'TECHNICAL_SUPPORT_STAFF'],
