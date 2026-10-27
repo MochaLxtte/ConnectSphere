@@ -1742,3 +1742,15 @@ This follow-up supersedes the earlier same-day pending repair-retest and deploye
 
 **Limitations.** Unit tests use fake database clients and browser tests substitute API responses; neither proves PostgreSQL locking, migration 014 or live authentication. Local integrated acceptance (§5.12), independent review and AC8 assessment with KAN-15 remain outstanding. No story acceptance, Done SP or Jira transition follows from these runs.
 
+## 27 October 2026 — KAN-66 regression re-run on the committed branch
+
+**Run:** `AUTO-20261027-KAN66-03`. **Executor:** Claude Code (AI agent) in Irfan's working session. **Build:** `feat/KAN-66-planning-edits` at `3ac15d5`, on top of `main` `c849ebf`. The commits were rewritten that day to remove AI co-author trailers; the file tree is byte-identical to the earlier tip `d92e58f`. **Environment:** local Windows 11 workstation, Node 22.20.0 (the project specifies Node 24; npm reported `EBADENGINE` only), fresh `npm ci`.
+
+| Run | Command | Result |
+| --- | --- | --- |
+| AUTO-20261027-KAN66-03 | `npm run check` | Pass — frontend 810 tests / 37 files, backend 1,414 / 48, typecheck and both builds. |
+| AUTO-20261027-KAN66-03 | `npm run test:coverage` | Pass — backend 91.17% statements / 92.80% branches; frontend 95.90% / 92.69% (same as AUTO-20261026-KAN66-01). |
+| PostgreSQL integration | `npm run test:integration` | **Not executed locally** — no Docker and no isolated database on this workstation. Runs in GitHub CI on the KAN-66 pull request; append the CI run here and to `test-executions.csv` (`EX-07-06`, `EX-07-07`) when it finishes. |
+| Browser (Playwright) | `npm run test:e2e` | **Not re-run**; the 26 October result (`AUTO-20261026-KAN66-02`) stands. CI runs it on the pull request. |
+
+This is a suite-level regression record. It adds no case-level Pass beyond `EX-07-0x-A01/A02`, and it does not establish integrated acceptance, independent review or Done.

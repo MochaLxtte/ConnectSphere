@@ -33,3 +33,9 @@ job once that schema is dropped. The suite is expected to run in GitHub CI (.git
 Limitations: unit tests use fake database clients; browser tests substitute API responses. Neither proves PostgreSQL
 locking, migration 014 or live authentication. Local integrated acceptance (AGENTS.md section 5.12) and independent
 review are outstanding. No story acceptance or Done SP is inferred.
+
+AUTO-20261027-KAN66-03 (27 October 2026)
+Build: feat/KAN-66-planning-edits at 3ac15d5 (file tree identical to d92e58f). Node 22.20.0 after fresh npm ci.
+npm run check: PASS — frontend 810/37 files, backend 1,414/48 files, typecheck and builds.
+npm run test:coverage: PASS — backend 91.17% statements / 92.80% branches; frontend 95.90% / 92.69%. Unchanged from -01.
+PostgreSQL integration and Playwright: not run locally; GitHub CI on the pull request.
