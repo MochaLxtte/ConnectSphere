@@ -9,6 +9,7 @@ import {
 } from './modules/events/submitted-requests-router.js';
 import { createAssignmentRouter } from './modules/events/assignment-router.js';
 import { createClarificationRouter } from './modules/events/clarification-router.js';
+import { createChangeRequestRouter } from './modules/events/change-request-router.js';
 import { createStatusHistoryRouter } from './modules/events/status-history-router.js';
 import { createVenueRouter } from './modules/venues/venue-router.js';
 import {
@@ -79,6 +80,8 @@ export function createApp({
     // Mounted before the shared detail route so /unassigned and /coordinators are not read as IDs.
     app.use('/api/events', createAssignmentRouter(workspace));
     app.use('/api/events', createClarificationRouter(workspace));
+    // KAN-15: reviewed change requests for approved or confirmed events.
+    app.use('/api/events', createChangeRequestRouter(workspace));
     app.use('/api/events', createStatusHistoryRouter(workspace));
     app.use('/api/events', createVenueSuitabilityRouter(workspace));
     // KAN-53: coordinator venue booking submission, nested under the event request.

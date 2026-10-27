@@ -91,8 +91,11 @@ const dateFields = new Set<keyof DraftUpdateInput>([
   'startsAt', 'endsAt', 'registrationOpensAt', 'registrationClosesAt',
 ]);
 
-/** Equal stored and requested values, comparing instants rather than their offset spelling. */
-function sameValue(field: keyof DraftUpdateInput, stored: unknown, requested: unknown): boolean {
+/**
+ * Equal stored and requested values, comparing instants rather than their offset spelling.
+ * KAN-15 reuses it to find changed fields and to detect values that moved since submission.
+ */
+export function sameValue(field: keyof DraftUpdateInput, stored: unknown, requested: unknown): boolean {
   if (dateFields.has(field) && typeof stored === 'string' && typeof requested === 'string') {
     return Date.parse(stored) === Date.parse(requested);
   }
