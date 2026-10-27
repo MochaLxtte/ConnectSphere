@@ -356,6 +356,7 @@ Implementation defaults: docs/scrum/sprint-03/planning.md and docs/requirements/
 | **KAN-61-AC102** | Equipment is explicitly Not Required or every active required equipment line is RESERVED and currently fulfilable; a rejected or unresolved required line blocks confirmation. | TC-06-03 |
 | **KAN-61-AC103** | No pending significant change is allowed; perform the complete readiness check and status/history/notification write atomically against current data. | TC-06-05 |
 | **KAN-61-AC104** | Confirmation preserves configured registration times; registration still checks its own window and capacity. The later CR-6 safety gate is a separately tracked requirement. | TC-06-07 |
+| **KAN-61-AC105** | An event with a venue booking still requiring outage recovery (KAN-81) cannot be confirmed. *(Moved from KAN-81-AC9, PO decision 28 October 2026.)* | TC-06-03 |
 
 **Implementation location:** Not recorded. **Automated test files:** Not recorded. Record real files when implemented; historical schema or removed code is not feature completion.
 
@@ -1064,6 +1065,7 @@ Update contracts/diagrams, test cases, traceability, actual run evidence and spr
 | **KAN-84-AC10** | Concurrent review decisions and arrangement changes are version checked within transactions. A stale review cannot approve newer arrangements; repeated or opposite decisions cannot overwrite a completed review round or create duplicate notifications. | TC-06-29 |
 | **KAN-84-AC11** | Submission notifies the Safety Officer queue and decisions notify the current assigned coordinator; Request Changes also informs the relevant Venue/Technical Support Staff. The owning organiser can view an appropriate safety/preparation outcome without acquiring officer decision rights or unrelated protected data. | TC-06-30 |
 | **KAN-84-AC12** | The workflow displays review rounds, current outcome, required remedial work and preparation eligibility, handles missing/stale data and network failure without claiming an unsaved decision, and refreshes after an uncertain write. The release does not invent a response deadline, escalation or automatic approval because the customer permits assuming the officer responds. | TC-06-31 |
+| **KAN-84-AC101** | An event with a venue booking still requiring outage recovery (KAN-81) cannot pass the safety review. *(Moved from KAN-81-AC9, PO decision 28 October 2026.)* | TC-06-23 |
 
 **Implementation location:** Not recorded. **Automated test files:** Not recorded. Record real files during implementation; these planned tests are not completion evidence.
 

@@ -1354,3 +1354,18 @@ These edge conditions are recorded as KAN-9-AC104–107 in Jira and the Sprint 4
 - Added KAN-26-AC105–108 in Jira and the Sprint 4 card to make these edge conditions traceable. Manual tests remain Not executed until actual results are supplied.
 
 **Setup report:** migration 014 application and creation of the test accounts were reported in chat before this work. No hosted schema inspection or KAN-9/KAN-26 manual acceptance was performed by this update. Migration 015 shared application remains Not executed.
+
+## 28 October 2026 — KAN-81-AC9 readiness split
+
+**Decision:** KAN-81-AC9 keeps only its planning half: "Calendar, search, suitability, new hold/request creation and approval use the saved operational block immediately." The readiness half moves to the stories that own the readiness checks:
+
+- **KAN-61-AC105:** "An event with a venue booking still requiring outage recovery (KAN-81) cannot be confirmed."
+- **KAN-84-AC101:** "An event with a venue booking still requiring outage recovery (KAN-81) cannot pass the safety review."
+
+Estimates unchanged (KAN-81 8 SP, KAN-61 3 SP, KAN-84 8 SP).
+
+**Who and how:** Irfan as Product Owner, 28 October 2026, replying in chat to Kai Jie's proposal (AI-assisted, Claude). Not a team vote. Kai Jie updates the three Jira cards and these records.
+
+**Why:** KAN-81 cannot finish while its AC9 depends on event confirmation (KAN-61) and the safety gate (KAN-84), neither of which exists yet. Each readiness rule belongs with the story that performs the check, so KAN-81 can be accepted on what it delivers: the recovery flags those stories will read.
+
+**Changes:** KAN-81-AC9 in the [Sprint 3 backlog](../scrum/sprint-03/sprint-backlog.md); KAN-61-AC105 and KAN-84-AC101 in the [Sprint 4 backlog](../scrum/sprint-04/sprint-backlog.md); TC-09-09, TC-06-03 and TC-06-23; KAN-61, KAN-81 and KAN-84 traceability rows; CR-2 note in the [change requests](change-requests.md). KAN-84-AC2 already refuses safety *submission* with unresolved recovery; AC101 also covers a booking flagged after submission. Both new criteria are Not executed.
