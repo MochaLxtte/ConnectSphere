@@ -939,3 +939,18 @@ Event cancellation revalidates actor role and ownership. It locks venue gates an
 An affected attendee's inbox may return EVENT_CANCELLED only for that recipient's cancelled registration and event. The response uses a generic cancellation message and null protected event/booking links, excluding internal reasons even if stored in a notice. Attendees still cannot fetch protected event/cancellation details.
 
 KAN-15 approval uses the same venue prelock check. A timing/equipment change resets `equipment_plan_status` to REQUIRED and cancels affected REQUESTED lines with released_by/at/reason/cause and incremented revision. Purpose-only changes and rejected requests preserve Not Required. The existing `expectedRevision` and confirmed-arrangement refusal remain in force.
+
+## KAN-82 independent venue arrangements — 28 October 2026
+
+`Cache-Control: no-store`, as on the other venue booking routes. No migration; see decisions [D1–D8](../requirements/assumptions-and-questions.md#28-october-2026--kan-82-independent-venue-arrangement-decisions).
+
+| Method and path | Roles | Body | Success |
+| --- | --- | --- | --- |
+| `POST /api/venue-bookings/:id/cancel` | Event's current assigned coordinator | `{ "reason": "Moving to a smaller room" }` (trimmed, nonempty, at most 2,000 characters; no other fields) | `200 { booking: VenueBooking }` with status `CANCELLED` and `cancelledBy/At/Reason` |
+| `POST /api/events/:id/venue-bookings` | Assigned coordinator (unchanged) | `replacesBookingId` may now also name an explicitly cancelled booking of the same event | `201 { booking }`, `PENDING` |
+
+Cancellation refusals: `401 AUTHENTICATION_REQUIRED`; `403 ACTION_FORBIDDEN` for other roles; `400 INVALID_VENUE_BOOKING_ID` or `INVALID_INPUT`; `404 VENUE_BOOKING_NOT_FOUND` for an unknown booking or a coordinator who is not currently assigned; `409 BOOKING_ALREADY_CANCELLED`; `409 HOLD_EXPIRED`; `409 ARRANGEMENT_NOT_CANCELLABLE` when the booking is not pending, live held or approved or the event is not `APPROVED`/`CONFIRMED`. Only that booking changes; open outage-recovery flags on it become `RESOLVED`.
+
+Replacement of a cancelled arrangement: `409 REPLACEMENT_IN_PROGRESS` while another replacement of it is pending, live held or approved; approval returns `409 REPLACEMENT_NOT_NEEDED` if another replacement already holds the venue. Approving it leaves the original `CANCELLED`. KAN-81 recovery replacements are unchanged.
+
+Every `VenueBooking` response now includes `replacedByBookingIds` (ids of bookings whose `replacesBookingId` is this booking, earliest first). New notification types: `VENUE_ARRANGEMENT_CANCELLED` and `VENUE_REPLACEMENT_REQUESTED`, to the current coordinator and every Venue Staff account, linked to the booking.

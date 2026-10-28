@@ -1,0 +1,35 @@
+ConnectSphere KAN-82 automated verification — 28 October 2026 (Asia/Singapore)
+Branch: feat/KAN-82-independent-venue-arrangements (from main ac5cd8b, after PRs #62-#66)
+Executor: Claude Code (AI agent) in Irfan's working session, local Windows 11 workstation, Node 22.20.0
+(the project specifies Node 24; npm reported EBADENGINE only).
+
+AUTO-20261028-KAN82-01
+npm run check: PASS — root/workspace typecheck, frontend 1,044 tests/48 files, backend 1,723 tests/61 files, both builds.
+Workspace coverage (vitest --coverage, unit/component only):
+Backend: statements 93.47%, branches 94.22%, lines 93.40% (all files).
+Frontend: statements 95.79%, branches 92.58%, lines 98.16% (all files).
+Changed KAN-82 files:
+  arrangement-notifications.ts 100% lines/branches/functions; booking-input.ts 100%.
+  booking-service.ts 180/190 lines, 139/152 branches: every uncovered line predates KAN-82 (list/get reads,
+    role guards of createVenueBooking and decideVenueBooking, an unreachable notification guard); they are
+    exercised by the PostgreSQL suite. All new KAN-82 lines are covered by unit tests.
+  venue-bookings-router.ts 19/20 lines: the uncovered line is the existing list handler, covered over HTTP elsewhere.
+  VenueBookingPanel.vue 94.61% statements / 92.13% branches / 98.21% lines. Uncovered KAN-82 parts are early
+    returns that guard a second click while a request is in flight or after the context changed; the buttons are
+    disabled in those states. Lines 155 and 351-354 predate KAN-82.
+  api/venue-bookings.ts 100% lines.
+
+npm run test:integration: PASS — 637 tests/34 files on a disposable local PostgreSQL 17.11 cluster
+(127.0.0.1:55482, database connectsphere_test, one schema per file), including 21 tests in
+database/tests/venues/venue-arrangements.integration.test.ts (also run three times in a row: 21/21 each time).
+The existing KAN-81 suite (venue-outage-recovery.integration.test.ts) caught a regression during development
+(a KAN-81-resolved original treated as a KAN-82 cancelled original); fixed before this run (decision D2).
+
+npx playwright test: 191 passed / 0 failed (Chromium; API responses substituted), including the two tests in
+tests/e2e/kan82-independent-arrangements.spec.ts. The API server used DATABASE_URL pointed at the disposable
+connectsphere_e2e database (migrations 001-018), not shared Supabase.
+
+Not executed: local integrated acceptance with real sign-in (AGENTS.md section 5.12); GitHub CI on the pull request.
+
+Limitations: unit tests use fake database clients; browser tests substitute API responses; the PostgreSQL suite uses
+synthetic verified identities rather than live Supabase sign-in. No story acceptance or Done SP is inferred.

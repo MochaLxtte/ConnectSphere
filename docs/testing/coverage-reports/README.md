@@ -25,3 +25,5 @@ Earlier PR suite counts for KAN-24/KAN-51 are linked from [test evidence](../tes
 **26 October 2026 — KAN-66:** [KAN-66 automated verification](2026-10-26-kan66.txt) records `AUTO-20261026-KAN66-01/02` on the uncommitted `feat/KAN-66-planning-edits` working tree (base `c849ebf`). Workspace unit/component coverage only; the PostgreSQL integration suite was not executed. This is not Sprint 4 close coverage.
 
 **27 October 2026 — KAN-15:** [KAN-15 automated verification](2026-10-27-kan15.txt) records `AUTO-20261027-KAN15-01` on the `feat/KAN-15-change-requests` working tree (stacked on KAN-66 `2aa63fc`): unit/component and coverage Pass, browser fixtures 164/164; PostgreSQL integration not run locally (CI).
+
+**28 October 2026 — KAN-82:** [KAN-82 automated verification](2026-10-28-kan82.txt) records `AUTO-20261028-KAN82-01` on the `feat/KAN-82-independent-venue-arrangements` working tree (base `ac5cd8b`): unit/component and coverage Pass, PostgreSQL integration 637/637 and browser fixtures 191/191 on a disposable local database.

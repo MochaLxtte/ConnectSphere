@@ -27,7 +27,7 @@ This rebalanced allocation replaces the earlier 97/29 split with **63/63**, with
 | [KAN-66](https://smu-g7-grp1.atlassian.net/browse/KAN-66) | Update Event Information During Planning | 3 | Irfan (assigned in Jira 26 October 2026) | To agree | Existing release backlog | S4-T11 |
 | [KAN-15](https://smu-g7-grp1.atlassian.net/browse/KAN-15) | Submit and Review Event Change Requests | 5 | Irfan (assigned in Jira 26 October 2026) | To agree | Existing release backlog | S4-T12 |
 | [KAN-80](https://smu-g7-grp1.atlassian.net/browse/KAN-80) | Receive Equipment, Lifecycle, Change and Registration Notifications | 3 | Unassigned — team member to choose | To agree after owner chosen | Explicit original notification split | S4-T13 |
-| [KAN-82](https://smu-g7-grp1.atlassian.net/browse/KAN-82) | Manage each venue arrangement independently for an event | 5 | Unassigned — team member to choose | To agree after owner chosen | Customer change CR-3 | S4-T14 |
+| [KAN-82](https://smu-g7-grp1.atlassian.net/browse/KAN-82) | Manage each venue arrangement independently for an event | 5 | Irfan (In Progress in Jira since 26 October 2026) | To agree | Customer change CR-3 | S4-T14 |
 | [KAN-84](https://smu-g7-grp1.atlassian.net/browse/KAN-84) | Review operational safety before event preparation | 8 | Unassigned — team member to choose | To agree after owner chosen | Customer change CR-6 | S4-T15 |
 | **Total** | **15 parents** | **63** | | | | |
 
@@ -61,7 +61,7 @@ Every row requires its complete active criterion set plus applicable Definition 
 | S4-T11 | KAN-66: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC101, AC102, AC103 | TC-07-01, TC-07-02, TC-07-03, TC-07-04, TC-07-05 | **In progress (27 October 2026):** automated unit/component and browser-fixture runs Pass (`AUTO-20261026-KAN66-01`, `-02`; unit re-run `AUTO-20261027-KAN66-03` on `3ac15d5`); PostgreSQL integration 533/533 and browser 161/161 Pass in CI on `27d5d84` (`CI-20261027-KAN66-02`); re-confirmed after merging main, 578/578 and 182/182 on `a5d1a3a` (`CI-20261027-KAN66-04`); local integrated acceptance **Not executed**; acceptance **Not assessed** |
 | S4-T12 | KAN-15: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC101, AC102, AC103, AC104, AC105 | TC-19-01, TC-19-02, TC-19-03, TC-19-04, TC-19-05, TC-19-06, TC-19-07, TC-19-08, TC-19-09 | **In progress (27 October 2026):** unit/component and browser-fixture runs Pass (`AUTO-20261027-KAN15-01`); PostgreSQL integration 544/544 and browser 164/164 Pass in CI on `6c5043c` (`CI-20261027-KAN15-02`); local integrated acceptance **Not executed**; acceptance **Not assessed** |
 | S4-T13 | KAN-80: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9 | TC-20-21, TC-20-22, TC-20-23, TC-20-24, TC-20-25, TC-20-26, TC-20-27, TC-20-28, TC-20-29 | **Not executed** / Not recorded |
-| S4-T14 | KAN-82: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12 | TC-12-01, TC-12-02, TC-12-03, TC-12-04, TC-12-05, TC-12-06, TC-12-07, TC-12-08, TC-12-09, TC-12-10, TC-12-11, TC-12-12 | **Not executed** / Not recorded |
+| S4-T14 | KAN-82: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12 | TC-12-01, TC-12-02, TC-12-03, TC-12-04, TC-12-05, TC-12-06, TC-12-07, TC-12-08, TC-12-09, TC-12-10, TC-12-11, TC-12-12 | **In progress (28 October 2026):** unit/component, isolated PostgreSQL integration and browser-fixture runs Pass (`AUTO-20261028-KAN82-01`, S4-E17); local integrated acceptance **Not executed**; acceptance **Not assessed** |
 | S4-T15 | KAN-84: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12 | TC-06-20, TC-06-21, TC-06-22, TC-06-23, TC-06-24, TC-06-25, TC-06-26, TC-06-27, TC-06-28, TC-06-29, TC-06-30, TC-06-31 | **Not executed** / Not recorded |
 | S4-T16 | Integrated complete release with equipment, registration, independent venue actions and safety | TC-06-32 | **Not executed** / Not recorded |
 
@@ -980,7 +980,7 @@ All original/new triggers require unit/integration/E2E and hosted verification; 
 
 ### KAN-82 — Manage each venue arrangement independently for an event
 
-**Owner:** Unassigned — team member to choose · **Independent reviewer:** To agree after owner chosen · **Estimate:** 5 SP · **Jira status:** To Do · **Acceptance:** Not assessed · **Test group:** S4-T14
+**Owner:** Irfan (In Progress in Jira since 26 October 2026) · **Independent reviewer:** To agree · **Estimate:** 5 SP (unchanged) · **Jira status:** In Progress; subtasks KAN-113 (backend), KAN-114 (UI), KAN-115 (verification) · **Acceptance:** Not assessed · **Test group:** S4-T14
 
 **User story:** As an Event Coordinator, I want to manage multiple venue arrangements independently for one event, so that changing or cancelling one arrangement does not silently alter the others.
 
@@ -1001,7 +1001,18 @@ All original/new triggers require unit/integration/E2E and hosted verification; 
 | **KAN-82-AC11** | A successful independent cancellation or replacement request produces a protected in-app notice for the current coordinator and relevant Venue Staff through the shared notification mechanism, only after its mutation commits and without duplicate retry notices. | TC-12-11 |
 | **KAN-82-AC12** | The UI identifies the selected event, venue and interval before acting, disables duplicate submissions, preserves other arrangements on success and offers a current-state refresh after uncertain network outcomes or stale conflicts. | TC-12-12 |
 
-**Implementation location:** Not recorded. **Automated test files:** Not recorded. Record real files during implementation; these planned tests are not completion evidence.
+**Implementation location (28 October 2026, branch `feat/KAN-82-independent-venue-arrangements` from `main` `ac5cd8b`):** `backend/src/modules/venues/booking-service.ts` (`cancelVenueArrangement`, widened `assertReplaceable`, replacement approval check, `replacedByBookingIds`, `venueArrangementReadiness`), `booking-input.ts` (`parseArrangementCancellation`), `venue-bookings-router.ts` (`POST /api/venue-bookings/:id/cancel`); `backend/src/modules/notifications/arrangement-notifications.ts`; `frontend/src/features/events/components/VenueBookingPanel.vue`; `frontend/src/features/venues/api/venue-bookings.ts`. No migration.
+
+**Automated test files:** `backend/test/venues/venue-arrangements.test.ts`; `database/tests/venues/venue-arrangements.integration.test.ts`; `tests/e2e/kan82-independent-arrangements.spec.ts`; KAN-82 cases added to `backend/test/venues/venue-bookings-router.test.ts` and `frontend/src/features/events/components/VenueBookingPanel.test.ts`. Updated: `backend/test/venues/booking-conflicts.test.ts` (fake-database matchers for the changed replacement queries) and booking fixtures in four frontend tests and three browser specs (`replacedByBookingIds`).
+
+**Implementation decisions (28 October 2026, approved by Irfan in the working session):** D1–D8 in the [decision log](../../requirements/assumptions-and-questions.md#28-october-2026--kan-82-independent-venue-arrangement-decisions). AC9: readiness is derived and delivered here; invalidating a stored safety approval belongs to KAN-84 (D4).
+
+| Test | 28 October 2026 status |
+| --- | --- |
+| Unit/component (`npm run check`, coverage) | Pass — `AUTO-20261028-KAN82-01` |
+| PostgreSQL integration (`venue-arrangements.integration.test.ts`; full suite 637/637) | Pass — `AUTO-20261028-KAN82-01`, disposable local PostgreSQL 17 |
+| Browser fixtures (`kan82-independent-arrangements.spec.ts`; full suite 191/191) | Pass — `AUTO-20261028-KAN82-01` (substituted API responses; not live integration) |
+| Local integrated acceptance (AGENTS.md §5.12) | **Not executed** — needs the merged build on localhost with real sign-in |
 
 **Dependencies:** Existing venue request and decision workflows; CR-2 recovery links and CR-4 hold states; KAN-78 buffered conflict rules; KAN-64 notification mechanism.
 

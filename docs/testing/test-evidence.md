@@ -1870,3 +1870,21 @@ Static review of `database/tests/events/cancellation-equipment.integration.test.
 **Case records and manual boundary.** TC-15-101–107 and TC-06-101–105 link meaningful regression scenarios to actual files; the execution register records the identified assertions and retained browser failures/retests. Earlier manual cases TC-15-01–07 and TC-06-08–13 remain **Not executed** for this change. Connected localhost acceptance must still verify current coordinator submission → Technical Support reserve/reject → explicit replacement, stale retry, cancellation releases/audit and affected-attendee privacy with real authentication and shared development data. Coordinate missing migrations through 018 first; record/restore fixture values under §5.12. This run does not change Jira status, sprint acceptance or Done points.
 
 **Documentation verification.** Current AC wording and ownership were read from Jira; archived sprint data was preserved. The workbook refresh changed only 18 cells, retaining seven sheets, 11 tables, seven frozen panes and 18 formulas; 14,104 other cells were checked unchanged. The affected architecture diagrams were regenerated and visually inspected. Source, case/file references, stable IDs and append-only execution history are checked in the accompanying document-validation artifact.
+
+## 28 October 2026 — KAN-82 independent venue arrangements automated runs
+
+**Run:** `AUTO-20261028-KAN82-01`. **Executor:** Claude Code (AI agent) in Irfan's working session. **Build:** working tree on `feat/KAN-82-independent-venue-arrangements` from `main` `ac5cd8b`, committed unchanged as `a2a31f4`, `2339f3c` and `0b50c37` (code and tests). **Environment:** local Windows 11 workstation, Node 22.20.0 (project specifies Node 24; `EBADENGINE` warning only); disposable local PostgreSQL 17.11 cluster on `127.0.0.1:55482` for the database and browser runs, never shared Supabase. Summary: [coverage report](coverage-reports/2026-10-28-kan82.txt).
+
+| Run | Command | Result |
+| --- | --- | --- |
+| AUTO-20261028-KAN82-01 | `npm run check`; `npm run test:coverage` | Pass — frontend 1,044 tests / 48 files, backend 1,723 / 61, typecheck and builds. New backend KAN-82 lines 100% covered; `VenueBookingPanel.vue` 98.21% lines (uncovered KAN-82 parts are in-flight click guards). |
+| AUTO-20261028-KAN82-01 | `TEST_DATABASE_URL=… npm run test:integration` | Pass — 637/637 across 34 files, including 21 in `venue-arrangements.integration.test.ts` (three consecutive runs of that file, 21/21 each). |
+| AUTO-20261028-KAN82-01 | `DATABASE_URL=… npx playwright test` | Pass — 191/191, including the two `kan82-independent-arrangements.spec.ts` tests (substituted API responses). |
+
+**Case-level results.** `test-executions.csv` rows `EX-12-01-A02` to `EX-12-12-A03` record Pass at the unit/component (`A01`), PostgreSQL (`A02`) and browser-fixture (`A03`) boundaries only. The `EX-12-0x-P01` placeholders stay until the integrated local run is appended. TC-12-09 covers the readiness half of KAN-82-AC9; the safety-approval half is not applicable until KAN-84 stores safety approvals (decision D4).
+
+**Regression found during development.** The first replacement change treated any `CANCELLED` original as a KAN-82 original. The existing KAN-81 suite failed two cases (a second replacement after recovery was resolved; two concurrent replacement approvals). The fix limits KAN-82 originals to explicitly cancelled rows (`cancelled_at` set) and adds an approval check under the original's lock (decision D2); the KAN-81 suite then passed in full.
+
+**Changes to existing tests.** `backend/test/venues/booking-conflicts.test.ts` matches the changed original-booking queries; `venue-bookings-router.test.ts` mocks the new service; booking fixtures in four frontend tests and three browser specs include `replacedByBookingIds`.
+
+**Limitations.** Unit tests use fake database clients, browser tests substitute API responses and the PostgreSQL suite uses synthetic verified identities; none uses live Supabase sign-in. GitHub CI, local integrated acceptance and independent review remain outstanding. No story acceptance, Done SP or Jira transition follows from these runs.
