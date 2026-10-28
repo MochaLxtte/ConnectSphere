@@ -241,6 +241,8 @@ The active sequence is now **001–015**. [015_equipment_reservations.sql](migra
 
 **Rollout:** not applied to shared Supabase. Apply after 016, after telling the team (AGENTS.md §7.3). Applying 017 before the KAN-15 code is deployed is safe: no current code reads or writes the table.
 
+**28 October 2026 rollout record:** the shared Supabase ledger shows 016, 017 and 018 applied together at 2026-10-28 01:35:56 UTC, after #64, #65 and #63 merged (read-only check; operator Not recorded). See `MAN-20261028-KAN66-KAN15-01` in test evidence.
+
 **Integration tests:** `database/tests/events/change-requests.integration.test.ts` uses an isolated schema like the other suites; never point it at shared Supabase.
 
 ## KAN-62 / KAN-63 event cancellation and equipment requests — migration 018

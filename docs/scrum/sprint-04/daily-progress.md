@@ -26,6 +26,8 @@ Daily Scrums follow Tuesday, Thursday and Saturday: planned dates 20, 22, 24, 27
 
 **27 October 2026 — KAN-66 integration update outside a Daily Scrum (Irfan).** After #62 (KAN-9/KAN-26) merged, `main` was merged into `feat/KAN-66-planning-edits`; shared-document conflicts kept both sides. KAN-66's migration was renumbered 014 to 016 (KAN-9's 014 is already reported applied on shared Supabase) and its evidence ID S4-E10 became S4-E14 because KAN-9 used S4-E10 to S4-E13. On the stacked KAN-15 branch, KAN-15's S4-E11 became S4-E15 for the same reason. Earlier dated run records keep their original wording.
 
+**28 October 2026 — KAN-66 / KAN-15 integrated acceptance outside a Daily Scrum (Irfan).** After #64/#65 merged, ran the local integrated check on `main` `ac5cd8b` with real sign-in against the shared development database (`MAN-20261028-KAN66-KAN15-01`): owner edits while submitted, stale-reviewer refusal, coordinator rename, significant-field refusal, change-request comparison/approval/cancellation of pending arrangements, blocking by a confirmed booking with rejection, and unrelated-user 404 all passed. Minor display defect O-1 (venue panel not refreshed after a change-request decision) recorded for follow-up. Migrations 016–018 were found applied on shared Supabase (28 October 01:35 UTC). Implementation subtasks KAN-107/108/110/111 Done; verification subtasks KAN-109/112 Done after this record. Parent stories stay In Progress until the 31 October review.
+
 ## Impediments
 
 | Raised | Impediment / dependency | Owner | Planned action | Status |
