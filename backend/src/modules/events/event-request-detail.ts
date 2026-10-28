@@ -2,10 +2,20 @@ import type { EventRecord } from './types.js';
 import type { DraftRegistrationFields } from './draft-update-input.js';
 import type { ReviewActor, ReviewPersistenceDependencies, SavedReview } from './review-decision.js';
 import type { SubmittedRequestQueryDependencies } from './submitted-requests.js';
+import { editPermissionFor, type EditableField, type EditMode } from './planning-edit-policy.js';
 
 export interface EventRequestDetail extends EventRecord, DraftRegistrationFields {
+  /** KAN-66: send as `expectedRevision` with edits and reviewer actions. */
+  revision: number;
   review: (SavedReview & { createdAt: string }) | null;
-  actions: { canEditDraft: boolean; canMakeInitialDecision: boolean };
+  actions: {
+    canEditDraft: boolean;
+    canMakeInitialDecision: boolean;
+    /** KAN-66: a non-draft direct edit is available; the server rechecks it when saving. */
+    canEditDetails: boolean;
+    editMode: EditMode | null;
+    editableFields: readonly EditableField[];
+  };
 }
 
 export interface EventRequestDetailDependencies extends ReviewPersistenceDependencies {
@@ -29,6 +39,7 @@ type DetailRow = Omit<EventRecord, 'startsAt' | 'endsAt' | 'createdAt' | 'update
   endsAt: Date | string | null;
   createdAt: Date | string;
   updatedAt: Date | string;
+  revision: number;
   review: EventRequestDetail['review'];
 };
 
@@ -57,7 +68,7 @@ export async function getEventRequestDetail(
         e.registration_capacity AS "registrationCapacity",
         e.registration_opens_at AS "registrationOpensAt",
         e.registration_closes_at AS "registrationClosesAt",
-        e.created_at AS "createdAt", e.updated_at AS "updatedAt",
+        e.revision, e.created_at AS "createdAt", e.updated_at AS "updatedAt",
         (SELECT json_build_object(
           'reviewId', r.id, 'eventRequestId', r.event_request_id, 'reviewedBy', r.reviewed_by,
           'decision', r.decision, 'reason', r.reason, 'createdAt', r.created_at
@@ -81,6 +92,13 @@ export async function getEventRequestDetail(
     const canMakeInitialDecision = actor.role === 'EVENT_COORDINATOR'
       && (row.status === 'SUBMITTED' || row.status === 'UNDER_REVIEW') && row.review === null
       && await canReviewRequest(actor, row, client);
+    const edit = editPermissionFor({
+      actorId: actor.id,
+      actorRole: actor.role,
+      ownerId: row.organiserId,
+      coordinatorId: row.coordinatorId,
+      status: row.status,
+    });
 
     return {
       ...row,
@@ -91,7 +109,13 @@ export async function getEventRequestDetail(
       createdAt: iso(row.createdAt),
       updatedAt: iso(row.updatedAt),
       review: row.review === null ? null : { ...row.review, createdAt: iso(row.review.createdAt) },
-      actions: { canEditDraft: ownsRequest && row.status === 'DRAFT', canMakeInitialDecision },
+      actions: {
+        canEditDraft: ownsRequest && row.status === 'DRAFT',
+        canMakeInitialDecision,
+        canEditDetails: edit !== null && edit.mode !== 'DRAFT',
+        editMode: edit?.mode ?? null,
+        editableFields: edit?.fields ?? [],
+      },
     };
   } finally {
     client.release();

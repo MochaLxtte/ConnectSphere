@@ -8,6 +8,7 @@ import {
   type ReviewActor,
   type SavedReview,
 } from '../../src/modules/events/review-decision.js';
+import { WorkflowError } from '../../src/modules/events/workflow-support.js';
 import { ReviewEligibilityError } from '../../src/modules/events/review-eligibility.js';
 import type { ReviewRouterDependencies } from '../../src/modules/events/review-router.js';
 
@@ -156,7 +157,7 @@ describe('KAN-36 review HTTP boundary', () => {
     expect(response.status).toBe(400);
     expect(response.body.error).toEqual({
       code: 'INVALID_REVIEW_INPUT',
-      message: 'Only decision and reason may be supplied.',
+      message: 'Only decision, reason and expectedRevision may be supplied.',
     });
   });
 
@@ -197,6 +198,26 @@ describe('KAN-36 review HTTP boundary', () => {
       expect(response.body).toEqual({ error: { code, message: 'Review state conflict.' } });
     },
   );
+
+  it('KAN-66-AC101 passes expectedRevision through and returns 409 for a stale reviewer', async () => {
+    const { app } = setup();
+    record.mockRejectedValue(new WorkflowError(
+      'CONFLICT', 'EVENT_REVISION_CONFLICT', 'This event request changed after you opened it.',
+    ));
+    const response = await request(app).post(endpoint).send({ decision: 'APPROVED', expectedRevision: 2 });
+    expect(response.status).toBe(409);
+    expect(response.body).toEqual({
+      error: { code: 'EVENT_REVISION_CONFLICT', message: 'This event request changed after you opened it.' },
+    });
+    expect(record.mock.calls[0]![1].input).toEqual({ decision: 'APPROVED', reason: null, expectedRevision: 2 });
+  });
+
+  it('KAN-66 does not treat other workflow errors as review conflicts', async () => {
+    const { app } = setup();
+    record.mockRejectedValue(new WorkflowError('CONFLICT', 'SOMETHING_ELSE', 'Hidden detail.'));
+    const response = await request(app).post(endpoint).send({ decision: 'APPROVED' });
+    expect(response.status).toBe(500);
+  });
 
   it.each(['authentication', 'persistence'] as const)(
     'conceals unexpected %s failures from responses and logs',

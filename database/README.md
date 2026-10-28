@@ -224,3 +224,13 @@ The active sequence is now **001–015**. [015_equipment_reservations.sql](migra
 **Shared 015 application: Not executed.** Migration 014 and test accounts are reported ready. Coordinate 015 with the team, confirm the intended development project, then run the unchanged `npm run db:migrate` runner. Verify both ledger entries, the four request release columns, the notification FK and the new history/release triggers before using the matching API. Do not edit already-applied migration 005 or rewrite historical cancellations. KAN-18 stock maintenance and KAN-63 request creation/editing remain pending; use only agreed saved test fixtures until those workflows exist.
 
 `database/tests/equipment/reservations.integration.test.ts` uses disposable PostgreSQL schemas to verify operational stock races, API/SQL guards, decision/notification rollback, idempotency, retained release history, terminal transitions and recipient access. These automated fixtures do not establish connected shared-data manual acceptance. Keep the Data API disabled and use a provisioned Technical Support test account for later local acceptance.
+
+## KAN-66 event revisions — 26 October 2026
+
+**27 October 2026:** renumbered from 014 to 016 after KAN-9/KAN-26 merged `014_equipment_operational_quantities.sql` and `015_equipment_reservations.sql`; the SQL is unchanged. Apply it after 015.
+
+[016_event_request_revisions.sql](migrations/016_event_request_revisions.sql) is additive: `event_requests.revision` (default 1) with a `BEFORE UPDATE` trigger that advances it on every update, and the `event_request_edits` audit table with row-level security and no Data API privileges. Existing rows start at revision 1; migrations 001–013 keep their checksums. See the [schema record](../docs/database-diagram.md#26-october-2026--migration-014-event-revisions-kan-66).
+
+**Rollout:** not applied to shared Supabase. Tell the team before applying it (AGENTS.md §7.3), then run `npm run db:migrate` once. The KAN-66 API and frontend need the column: deploying the code without 014 makes event reads and edits fail. Applying 014 first is safe for the current code, which ignores the new column.
+
+**Integration tests:** `planning-edits.integration.test.ts` runs in an isolated schema like the other suites. Do not point `TEST_DATABASE_URL` at shared Supabase: migration 013's scheduling block re-registers the named `connectsphere-expire-venue-holds` `pg_cron` job inside each temporary test schema where `pg_cron` is enabled, and dropping that schema would break the live job.

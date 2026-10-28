@@ -4,7 +4,7 @@ import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { createApp } from '../../../backend/src/app.js';
 import {
-  updateOwnedDraft,
+  updateEventRequest,
   DraftRequestNotFoundError,
   type DraftActor,
 } from '../../../backend/src/modules/events/update-draft.js';
@@ -97,7 +97,7 @@ describe('KAN-34 draft update persistence', () => {
   );
   it('saves a changed field and leaves other fields unchanged', async () => {
     const eventRequestId = await createEvent();
-    const updated = await updateOwnedDraft(dependencies, {
+    const updated = await updateEventRequest(dependencies, {
       eventRequestId, actor: organiser, input: { name: 'Updated name' },
     });
 
@@ -112,7 +112,7 @@ describe('KAN-34 draft update persistence', () => {
 
   it('clears a field when explicitly set to null without touching omitted fields', async () => {
     const eventRequestId = await createEvent();
-    const updated = await updateOwnedDraft(dependencies, {
+    const updated = await updateEventRequest(dependencies, {
       eventRequestId, actor: organiser, input: { purpose: null },
     });
 
@@ -122,7 +122,7 @@ describe('KAN-34 draft update persistence', () => {
 
   it('keeps the request in DRAFT status after saving changes', async () => {
     const eventRequestId = await createEvent();
-    await updateOwnedDraft(dependencies, {
+    await updateEventRequest(dependencies, {
       eventRequestId, actor: organiser, input: { name: 'Still a draft' },
     });
     const state = await readState(eventRequestId);
@@ -131,10 +131,10 @@ describe('KAN-34 draft update persistence', () => {
 
   it('reflects the latest saved values when read again afterwards', async () => {
     const eventRequestId = await createEvent();
-    await updateOwnedDraft(dependencies, {
+    await updateEventRequest(dependencies, {
       eventRequestId, actor: organiser, input: { name: 'First save' },
     });
-    await updateOwnedDraft(dependencies, {
+    await updateEventRequest(dependencies, {
       eventRequestId, actor: organiser, input: { description: 'Added later' },
     });
     const state = await readState(eventRequestId);
@@ -145,11 +145,12 @@ describe('KAN-34 draft update persistence', () => {
   it.each([
     { name: 'a different organiser', actor: otherOrganiser, status: 'DRAFT' as const, code: 'DRAFT_EDIT_FORBIDDEN' },
     { name: 'an unauthenticated actor', actor: null, status: 'DRAFT' as const, code: 'DRAFT_EDIT_FORBIDDEN' },
-    { name: 'a submitted request', actor: organiser, status: 'SUBMITTED' as const, code: 'DRAFT_NOT_EDITABLE' },
+    // KAN-66 now allows owner edits before approval; a closed request stays uneditable.
+    { name: 'a rejected request', actor: organiser, status: 'REJECTED' as const, code: 'EVENT_NOT_EDITABLE' },
   ])('leaves data unchanged for $name', async ({ actor, status, code }) => {
     const eventRequestId = await createEvent(status);
     const before = await readState(eventRequestId);
-    await expect(updateOwnedDraft(dependencies, {
+    await expect(updateEventRequest(dependencies, {
       eventRequestId, actor, input: { name: 'Attempted change' },
     })).rejects.toMatchObject({ code });
     expect(await readState(eventRequestId)).toEqual(before);
@@ -157,7 +158,7 @@ describe('KAN-34 draft update persistence', () => {
 
   it('reports a missing request without recording a change', async () => {
     const eventRequestId = randomUUID();
-    await expect(updateOwnedDraft(dependencies, {
+    await expect(updateEventRequest(dependencies, {
       eventRequestId, actor: organiser, input: { name: 'Attempted change' },
     })).rejects.toBeInstanceOf(DraftRequestNotFoundError);
   });

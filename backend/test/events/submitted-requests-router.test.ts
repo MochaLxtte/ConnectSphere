@@ -10,12 +10,13 @@ import {
   type QueueActor,
 } from '../../src/modules/events/submitted-requests.js';
 import type { SubmittedRequestsRouterDependencies } from '../../src/modules/events/submitted-requests-router.js';
-import { updateOwnedDraft, DraftRequestNotFoundError } from '../../src/modules/events/update-draft.js';
+import { updateEventRequest, DraftRequestNotFoundError } from '../../src/modules/events/update-draft.js';
 import { DraftEligibilityError } from '../../src/modules/events/draft-eligibility.js';
 import { DraftUpdateInputError } from '../../src/modules/events/draft-update-input.js';
 import { submitEventRequest, SubmitRequestNotFoundError, DraftAssignmentConflictError } from '../../src/modules/events/submit-request.js';
 import { SubmitEligibilityError } from '../../src/modules/events/submit-eligibility.js';
 import { SubmissionValidationError } from '../../src/modules/events/submit-input.js';
+import { WorkflowError } from '../../src/modules/events/workflow-support.js';
 
 vi.mock('../../src/modules/events/submitted-requests.js', async (importOriginal) => {
   const actual =
@@ -29,7 +30,7 @@ vi.mock('../../src/modules/events/submitted-requests.js', async (importOriginal)
 vi.mock('../../src/modules/events/update-draft.js', async (importOriginal) => {
   const actual =
     await importOriginal<typeof import('../../src/modules/events/update-draft.js')>();
-  return { ...actual, updateOwnedDraft: vi.fn() };
+  return { ...actual, updateEventRequest: vi.fn() };
 });
 
 vi.mock('../../src/modules/events/submit-request.js', async (importOriginal) => {
@@ -45,7 +46,7 @@ const list = vi.mocked(listReviewableRequests);
 const history = vi.mocked(listFollowUpRequests);
 const ownedDrafts = vi.mocked(listOwnedDrafts);
 const ownedRequests = vi.mocked(listOwnedRequests);
-const updateDraft = vi.mocked(updateOwnedDraft);
+const updateDraft = vi.mocked(updateEventRequest);
 const submitRequest = vi.mocked(submitEventRequest);
 
 function setup(actor: QueueActor | null = coordinator) {
@@ -309,7 +310,7 @@ describe('KAN-34 PATCH /api/events/:id (edit a draft)', () => {
       expectedAttendance: null, venueRequirements: null, accessibilityNeeds: null,
       equipmentRequirements: null, registrationRequired: null,
       registrationCapacity: null, registrationOpensAt: null, registrationClosesAt: null,
-      createdAt: '2026-09-07T00:00:00Z', updatedAt: '2026-09-08T00:00:00Z' };
+      revision: 2, createdAt: '2026-09-07T00:00:00Z', updatedAt: '2026-09-08T00:00:00Z' };
     updateDraft.mockResolvedValue(updated);
 
     const response = await request(app).patch(`/api/events/${requestId}`).send({ name: 'Updated name' });
@@ -330,7 +331,7 @@ describe('KAN-34 PATCH /api/events/:id (edit a draft)', () => {
     expect(updateDraft).not.toHaveBeenCalled();
   });
 
-  it.each(['EVENT_COORDINATOR', 'VENUE_STAFF', 'TECHNICAL_SUPPORT_STAFF', 'ATTENDEE'] as const)(
+  it.each(['VENUE_STAFF', 'TECHNICAL_SUPPORT_STAFF', 'ATTENDEE'] as const)(
     'rejects the verified %s role before touching the database',
     async (role) => {
       const { app } = setup({ ...organiser, role });
@@ -390,6 +391,74 @@ describe('KAN-34 PATCH /api/events/:id (edit a draft)', () => {
   });
 });
 
+describe('KAN-66 PATCH /api/events/:id (planning edits)', () => {
+  it('lets a verified coordinator reach the service, which applies the assignment rules', async () => {
+    const { app, submittedRequests } = setup(coordinator);
+    updateDraft.mockResolvedValue({ id: requestId } as never);
+    const response = await request(app).patch(`/api/events/${requestId}`)
+      .send({ name: 'Renamed', expectedRevision: 3 });
+    expect(response.status).toBe(200);
+    expect(updateDraft).toHaveBeenCalledExactlyOnceWith(submittedRequests, {
+      eventRequestId: requestId, actor: coordinator, input: { name: 'Renamed', expectedRevision: 3 },
+    });
+  });
+
+  it('KAN-66-AC8 returns 409 with the significant fields that need KAN-15 review', async () => {
+    const { app } = setup(coordinator);
+    updateDraft.mockRejectedValue(new DraftEligibilityError(
+      'SIGNIFICANT_CHANGE_REQUIRED', 'Needs a reviewed change request.', ['startsAt', 'expectedAttendance'],
+    ));
+    const response = await request(app).patch(`/api/events/${requestId}`).send({ startsAt: null });
+    expect(response.status).toBe(409);
+    expect(response.body).toEqual({
+      error: {
+        code: 'SIGNIFICANT_CHANGE_REQUIRED', message: 'Needs a reviewed change request.',
+        fields: ['startsAt', 'expectedAttendance'],
+      },
+    });
+  });
+
+  it('KAN-66-AC102 returns 403 when a related user may not edit at this stage', async () => {
+    const { app } = setup(coordinator);
+    updateDraft.mockRejectedValue(new DraftEligibilityError('EDIT_ROLE_NOT_PERMITTED', 'Organiser only.'));
+    const response = await request(app).patch(`/api/events/${requestId}`).send({ name: 'x' });
+    expect(response.status).toBe(403);
+    expect(response.body).toEqual({ error: { code: 'EDIT_ROLE_NOT_PERMITTED', message: 'Organiser only.' } });
+  });
+
+  it('returns 409 for a closed event', async () => {
+    const { app } = setup(organiser);
+    updateDraft.mockRejectedValue(new DraftEligibilityError('EVENT_NOT_EDITABLE', 'Closed.'));
+    const response = await request(app).patch(`/api/events/${requestId}`).send({ name: 'x' });
+    expect(response.status).toBe(409);
+    expect(response.body.error.code).toBe('EVENT_NOT_EDITABLE');
+  });
+
+  it('KAN-66-AC101 returns submission field errors for an invalid pre-approval edit', async () => {
+    const { app } = setup(organiser);
+    updateDraft.mockRejectedValue(new SubmissionValidationError(
+      ['name'], [{ field: 'endsAt', message: 'The end must be after the start.' }],
+    ));
+    const response = await request(app).patch(`/api/events/${requestId}`).send({ name: '' });
+    expect(response.status).toBe(400);
+    expect(response.body.error).toMatchObject({
+      code: 'SUBMISSION_INVALID', missingFields: ['name'],
+      fieldErrors: { endsAt: 'The end must be after the start.' },
+    });
+  });
+
+  it.each([
+    ['CONFLICT', 'EVENT_REVISION_CONFLICT', 409],
+    ['INVALID_INPUT', 'EXPECTED_REVISION_REQUIRED', 400],
+  ] as const)('KAN-66-AC103 maps %s %s to %i', async (kind, code, status) => {
+    const { app } = setup(organiser);
+    updateDraft.mockRejectedValue(new WorkflowError(kind, code, 'Revision problem.'));
+    const response = await request(app).patch(`/api/events/${requestId}`).send({ name: 'x' });
+    expect(response.status).toBe(status);
+    expect(response.body).toEqual({ error: { code, message: 'Revision problem.' } });
+  });
+});
+
 describe('KAN-6 POST /api/events/:id/submit', () => {
   it('submits a ready draft', async () => {
     const { app, submittedRequests } = setup(organiser);
@@ -419,7 +488,7 @@ describe('KAN-6 POST /api/events/:id/submit', () => {
     expect(submitRequest).not.toHaveBeenCalled();
   });
 
-  it.each(['EVENT_COORDINATOR', 'VENUE_STAFF', 'TECHNICAL_SUPPORT_STAFF', 'ATTENDEE'] as const)(
+  it.each(['VENUE_STAFF', 'TECHNICAL_SUPPORT_STAFF', 'ATTENDEE'] as const)(
     'rejects the verified %s role before touching the database',
     async (role) => {
       const { app } = setup({ ...organiser, role });

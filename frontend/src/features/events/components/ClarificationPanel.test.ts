@@ -52,6 +52,24 @@ describe('CF-04 clarification panel', () => {
     expect(await screen.findByRole('button', { name: 'Request clarification' })).toBeInTheDocument();
   });
 
+  it('KAN-66-AC101 sends the displayed revision with reviewer actions and shows a stale refusal', async () => {
+    const api = stubApi({
+      [`GET ${base}/clarifications`]: { body: { items: [] } },
+      [`POST ${base}/start-review`]: apiError(409, 'EVENT_REVISION_CONFLICT', 'This event request changed after you opened it.'),
+      [`POST ${base}/clarifications`]: { status: 201, body: { clarificationId: 'c1', eventRequestId, status: 'CLARIFICATION_REQUESTED' } },
+    });
+    render(ClarificationPanel, { props: { ...coordinatorProps, revision: 4 } });
+    await fireEvent.click(await screen.findByRole('button', { name: 'Mark as under review' }));
+    expect(await screen.findByText('This event request changed after you opened it.')).toBeInTheDocument();
+    await fireEvent.update(screen.getByRole('textbox', { name: 'Question for the organiser' }), 'Which hall?');
+    await fireEvent.click(screen.getByRole('button', { name: 'Request clarification' }));
+    expect(await screen.findByText('Your question was sent to the organiser.')).toBeInTheDocument();
+    expect(api.writes()).toEqual([
+      { key: `POST ${base}/start-review`, body: { expectedRevision: 4 } },
+      { key: `POST ${base}/clarifications`, body: { message: 'Which hall?', expectedRevision: 4 } },
+    ]);
+  });
+
   it('lets the owning organiser answer only the open question', async () => {
     const api = stubApi({
       [`GET ${base}/clarifications`]: { body: { items: [answered, open] } },

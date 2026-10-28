@@ -125,6 +125,34 @@ describe('KAN-33 review request detail page', () => {
 
 });
 
+describe('KAN-66 review page revisions and coordinator edits', () => {
+  it('KAN-66-AC101 sends the displayed revision and asks for a refresh after an organiser edit', async () => {
+    const conflict = { error: { code: 'EVENT_REVISION_CONFLICT', message: 'Changed.' } };
+    const fetch = vi.fn().mockResolvedValueOnce(jsonResponse({ ...detail, revision: 5 }))
+      .mockResolvedValueOnce(jsonResponse(conflict, 409));
+    vi.stubGlobal('fetch', fetch);
+    await renderDetail(); await chooseApproval();
+    expect(await screen.findByRole('alert')).toHaveTextContent('The organiser changed this request after you opened it.');
+    const post = fetch.mock.calls.find(([, init]) => init?.method === 'POST')!;
+    expect(JSON.parse(String(post[1].body))).toEqual({ decision: 'APPROVED', reason: null, expectedRevision: 5 });
+    expect(screen.getByRole('button', { name: 'Refresh request' })).toBeInTheDocument();
+  });
+
+  it('KAN-66-AC102 links the assigned coordinator to the name/description edit only when offered', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonResponse({
+      ...decidedDetail(), revision: 2,
+      actions: { canEditDraft: false, canMakeInitialDecision: false, canEditDetails: true, editMode: 'PLANNING', editableFields: ['name', 'description'] },
+    })));
+    const { unmount } = await renderDetail();
+    expect(await screen.findByRole('link', { name: 'Edit name or description' })).toHaveAttribute('href', '/events/a/details');
+    unmount();
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonResponse(detail)));
+    await renderDetail();
+    await screen.findByRole('heading', { name: 'Career fair' });
+    expect(screen.queryByRole('link', { name: 'Edit name or description' })).not.toBeInTheDocument();
+  });
+});
+
 describe('KAN-36 review page permissions and saved outcomes', () => {
   it('KAN-36/KAN-60 formats proposed times in Singapore across a date boundary', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonResponse(detail)));

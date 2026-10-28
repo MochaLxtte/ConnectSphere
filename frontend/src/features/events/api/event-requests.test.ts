@@ -1,6 +1,8 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { ApiError } from '../../../lib/api-client';
-import { submitRequest, SubmissionIncompleteError, SubmissionInvalidError } from './event-requests';
+import {
+  submitRequest, updateEventDetails, SubmissionIncompleteError, SubmissionInvalidError,
+} from './event-requests';
 
 const json = (body: unknown, status = 400) => new Response(JSON.stringify(body), { status });
 const failWith = (error: Record<string, unknown>) =>
@@ -64,5 +66,24 @@ describe('KAN-59 submit error parsing (S1-DEF-04, KAN-6-AC2)', () => {
     expect(error).not.toBeInstanceOf(SubmissionInvalidError);
     expect(error).not.toBeInstanceOf(SubmissionIncompleteError);
     expect(error).toMatchObject({ code: 'SUBMIT_FORBIDDEN', status: 400 });
+  });
+});
+
+describe('KAN-66 updateEventDetails', () => {
+  it('PATCHes only the given changes with the expected revision', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(json({ id: 'e 1', revision: 4 }, 200));
+    vi.stubGlobal('fetch', fetchMock);
+    await expect(updateEventDetails('e 1', { name: 'Renamed' }, 3)).resolves.toEqual({ id: 'e 1', revision: 4 });
+    const [path, init] = fetchMock.mock.calls[0]!;
+    expect(path).toBe('/api/events/e%201');
+    expect(init).toMatchObject({ method: 'PATCH' });
+    expect(JSON.parse(init.body)).toEqual({ name: 'Renamed', expectedRevision: 3 });
+  });
+
+  it('keeps the revision-conflict code for the page to explain', async () => {
+    failWith({ code: 'EVENT_REVISION_CONFLICT', message: 'Changed.' });
+    const error = await rejection(updateEventDetails('e1', { name: 'x' }, 1));
+    expect(error).toBeInstanceOf(ApiError);
+    expect(error).toMatchObject({ code: 'EVENT_REVISION_CONFLICT' });
   });
 });

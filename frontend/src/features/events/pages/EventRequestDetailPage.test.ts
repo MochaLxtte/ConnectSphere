@@ -317,6 +317,16 @@ describe('KAN-16 organiser event request details', () => {
       expect(screen.queryByRole('button', { name: 'Submit for review' })).not.toBeInTheDocument();
     });
 
+    it('KAN-66-AC101 offers the owner a details edit for a submitted request when allowed', async () => {
+      vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonResponse({
+        ...detail, status: 'UNDER_REVIEW', revision: 3,
+        actions: { canEditDraft: false, canMakeInitialDecision: false, canEditDetails: true, editMode: 'PRE_APPROVAL', editableFields: ['name'] },
+      })));
+      await renderDetail();
+      expect(await screen.findByRole('link', { name: 'Edit details' })).toHaveAttribute('href', '/events/a/details');
+      expect(screen.queryByRole('link', { name: 'Edit draft' })).not.toBeInTheDocument();
+    });
+
     it('submits the draft once and then shows the persisted status', async () => {
       const pending = deferredResponse();
       const fetchMock = vi.fn()

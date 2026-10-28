@@ -7,6 +7,7 @@ import {
 } from './review-decision.js';
 import { ReviewEligibilityError } from './review-eligibility.js';
 import { parseReviewInput, ReviewInputError } from './review-input.js';
+import { WorkflowError } from './workflow-support.js';
 
 export interface ReviewRouterDependencies extends ReviewPersistenceDependencies {
   /**
@@ -73,7 +74,8 @@ export function createReviewRouter(dependencies: ReviewRouterDependencies) {
         response.status(404).json(unavailableRequest);
         return;
       }
-      if (error instanceof ReviewEligibilityError) {
+      if (error instanceof ReviewEligibilityError ||
+          (error instanceof WorkflowError && error.code === 'EVENT_REVISION_CONFLICT')) {
         response.status(409).json({ error: { code: error.code, message: error.message } });
         return;
       }

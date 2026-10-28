@@ -1369,3 +1369,16 @@ Estimates unchanged (KAN-81 8 SP, KAN-61 3 SP, KAN-84 8 SP).
 **Why:** KAN-81 cannot finish while its AC9 depends on event confirmation (KAN-61) and the safety gate (KAN-84), neither of which exists yet. Each readiness rule belongs with the story that performs the check, so KAN-81 can be accepted on what it delivers: the recovery flags those stories will read.
 
 **Changes:** KAN-81-AC9 in the [Sprint 3 backlog](../scrum/sprint-03/sprint-backlog.md); KAN-61-AC105 and KAN-84-AC101 in the [Sprint 4 backlog](../scrum/sprint-04/sprint-backlog.md); TC-09-09, TC-06-03 and TC-06-23; KAN-61, KAN-81 and KAN-84 traceability rows; CR-2 note in the [change requests](change-requests.md). KAN-84-AC2 already refuses safety *submission* with unresolved recovery; AC101 also covers a booking flagged after submission. Both new criteria are Not executed.
+
+## 26 October 2026 — KAN-66 planning-edit implementation decisions
+
+Source: Irfan (KAN-66 owner) approved these choices in the AI-assisted working session on 26 October 2026, before implementation. They implement the existing S3-P05 policy; no customer clarification, team vote or estimate change is asserted. The field and lifecycle rules are unchanged from S3-P05.
+
+| ID | Decision | Reason |
+| --- | --- | --- |
+| D1 | Migration 016 (decided as 014; renumbered 27 October after KAN-9 merged its own 014) adds an integer `event_requests.revision`; a `BEFORE UPDATE` trigger advances it on every update and ignores client-written values. | `updated_at` cannot be compared reliably because JavaScript dates drop PostgreSQL microseconds. A trigger covers every writer (edits, reviews, assignment). |
+| D2 | Each post-submission edit is recorded in a new `event_request_edits` table: event, resulting revision, editor and role, event status, and `{ field: { from, to } }` changes. Draft (KAN-34) edits are not audited. | KAN-66-AC103 requires audit information; the status-history trigger records only status changes. |
+| D3 | `POST /api/events/:id/start-review`, `POST /api/events/:id/clarifications` and `POST /api/events/:id/reviews` accept an optional `expectedRevision`; a mismatch returns `409 EVENT_REVISION_CONFLICT`. The coordinator review page sends it. | KAN-66-AC101 requires stale reviewers to refresh after an organiser edit; optional so existing clients keep working. |
+| D4 | `PATCH /api/events/:id` is extended: drafts keep the KAN-34 contract (revision optional); post-submission edits require `expectedRevision`. The detail response adds `revision`, `actions.canEditDetails`, `actions.editMode` and `actions.editableFields`. | One edit route, with the server deciding permitted fields by role, relationship and status. |
+
+Consequences: an unchanged save creates no revision or audit row. Because an owner may now edit a SUBMITTED request, the KAN-34 integration regression that expected `DRAFT_NOT_EDITABLE` for a submitted request now uses a REJECTED request (`EVENT_NOT_EDITABLE`). Migration 016 must be announced to the team before it is applied to shared Supabase (AGENTS.md §7.3); it has **not** been applied. The isolated integration tests must not be pointed at shared Supabase: migration 013 re-schedules the named `pg_cron` hold-expiry job into each temporary test schema, which would break the live job once that schema is dropped.

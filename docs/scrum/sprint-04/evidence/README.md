@@ -60,3 +60,10 @@ The [document validation](kan9-20261026/document-validation.json) checks stable 
 | S4-E13 | [Desktop readiness](kan26-20261026/equipment-reservations-ready-desktop.png), [mobile cancellation](kan26-20261026/equipment-cancellation-confirmation-mobile-detail.png), [history](kan26-20261026/equipment-reservation-history.png), [mobile empty state](kan26-20261026/equipment-reservation-empty-mobile.png) | Playwright fixture captures visually inspected for readable controls and retained outcomes. | Synthetic authenticated API responses; not shared Supabase or manual acceptance. |
 
 KAN-26 is In Progress / Tristan (3 SP), with unestimated KAN-104–106 In Progress. KAN-9 local commits are included; migration 014 and account setup are reported ready. Migration 015 shared application, dependent KAN-18/63/62/10 UI acceptance, independent review and merge remain pending. Scope and Done points are unchanged.
+
+## KAN-66 automated verification — 26 October 2026
+
+| ID | Artifact | Source / result | Limits |
+| --- | --- | --- | --- |
+| S4-E14 | [KAN-66 coverage and run summary](../../../testing/coverage-reports/2026-10-26-kan66.txt) | `AUTO-20261026-KAN66-01` unit/component Pass with coverage; `AUTO-20261026-KAN66-02` browser fixtures, KAN-66 tests Pass, 156/161 overall with five environment/timing failures and a passing rerun of the timed-out spec | Uncommitted working tree on base `c849ebf`; PostgreSQL integration Not executed; no live authentication or acceptance |
+
