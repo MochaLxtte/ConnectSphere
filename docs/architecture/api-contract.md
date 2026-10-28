@@ -895,3 +895,47 @@ Significant fields are the KAN-66 list (`purpose`, `startsAt`, `endsAt`, `expect
 | `409 CHANGE_REQUEST_BUSY` | A concurrent writer deadlocked; nothing saved, retry |
 
 Approval applies the values, writes an `event_request_edits` row (editor role `EVENT_COORDINATOR`), cancels affected pending venue bookings (`cancelled_by/at/reason`) and `REQUESTED` equipment lines, records the decision and notifies the organiser, all in one transaction. Rejection and withdrawal change nothing on the event. Decisions: [D1–D8](../requirements/assumptions-and-questions.md#27-october-2026--kan-15-change-request-implementation-decisions). Database: [migration 017](../database-diagram.md#27-october-2026--migration-017-change-requests-kan-15).
+
+## KAN-62 / KAN-63 lifecycle and equipment request APIs — 27 October 2026
+
+The following routes are mounted in the current backend when its verified workflow session is
+available:
+
+| Route | Contract |
+| --- | --- |
+| `POST /api/events/:id/cancel` | `{ reason, confirmAffectedArrangements: true }` → `{ cancellation }`; owner/current coordinator and eligible status required. The trimmed reason is required (1–2,000 characters). |
+| `GET /api/events/:id/cancellation` | `{ cancellation }` for the owning organiser/current coordinator; returns null when no saved outcome is visible. |
+| `GET /api/events/:id/equipment-requests` | `{ plan }` for the assigned coordinator or Technical Support Staff. |
+| `GET /api/equipment-types` | Active equipment types for coordinators and Technical Support Staff. |
+| `POST /api/events/:id/equipment-requests` | `{ lines, notRequired? }` → `{ request }`; assigned coordinator of an APPROVED event only. |
+| `GET /api/equipment-requests` | Staff review queue or coordinator-scoped saved lines. |
+| `POST /api/equipment-requests/:id/review` | `{ decision: "RESERVED" | "REJECTED", reason?, revision? }`; Technical Support Staff only; full reservation is availability-checked by migration 015's database trigger. |
+| `POST /api/equipment-requests/:id/replace` | `{ revision, replacement }`; assigned coordinator explicitly cancels a reserved line and creates one REQUESTED replacement. |
+| `POST /api/equipment-requests/:id/cancel` | `{ reason }`; assigned coordinator can cancel a REQUESTED or REJECTED line. |
+
+Migration 018 adds cancellation/audit, registration-outcome and equipment-planning fields without
+adding equipment cancellation columns. A transition to event status `CANCELLED` activates
+migration 015's release trigger for RESERVED rows. The cancellation service records release audit
+metadata for remaining REQUESTED/REJECTED rows, then persists the event cancellation audit and
+notifications in the same transaction. Database integration and connected local acceptance are
+**Not executed** in the 27 October follow-up.
+
+## KAN-62 / KAN-63 review corrections — 28 October 2026
+
+This current contract supersedes the 27 October request shapes above. Every equipment mutation requires a 64-character lowercase hexadecimal **opaque `revision`**, copied from the latest `plan.revision` or queue line. Missing/malformed versions fail validation; stale versions return `409 STALE_EQUIPMENT_REQUEST` without writes. The version covers event revision/status/assignment/period/requirements and all line values/decision/release audit, including changes made through KAN-26. It is not the integer database column.
+
+| Action | Current body / response |
+| --- | --- |
+| Read event equipment | `{ plan: { eventRequestId, eventStatus, eventStartsAt, eventEndsAt, status, revision, items } }`; all line versions match the plan snapshot |
+| Save requested lines | `{ lines, notRequired?, revision }`; assigned coordinator, APPROVED only; each line has equipmentTypeId, positive integer quantity, exact event startsAt/endsAt and optional technicalRequirements |
+| Staff review | `{ decision: "RESERVED" or "REJECTED", reason?, revision }`; rejection requires a reason; reservation uses shared KAN-26 writer and rechecks full operational capacity transactionally |
+| Replace reservation | `{ replacement, revision }`; cancels the existing RESERVED line and creates a new REQUESTED line, retaining original decision/release audit; staff must review it again |
+| Cancel pending/rejected line | `{ reason, revision }`; assigned coordinator; RESERVED lines use explicit replacement or KAN-26's audited cancellation |
+
+Reads allow assigned coordinators and Technical Support for APPROVED/CONFIRMED events; writes require APPROVED. Not Required is explicit and needs no active lines. API dates preserve the event's microseconds; invalid/duplicate types, quantities, dates and off-event periods are rejected. Notes are mirrored for KAN-9/KAN-26 consumers. After conflict/uncertain failure the UI refreshes before a deliberate retry, never resubmits automatically.
+
+Event cancellation revalidates actor role and ownership. It locks venue gates and known bookings before the event, then sorted equipment pools/lines. A booking added after the prelock snapshot returns `409 EVENT_ARRANGEMENTS_CHANGED`; refresh and retry explicitly. The audit counts RESERVED lines released by migration 015 as well as pending/rejected lines. Resource release, audit/history and notices commit or roll back together; replay makes no duplicate release or notice.
+
+An affected attendee's inbox may return EVENT_CANCELLED only for that recipient's cancelled registration and event. The response uses a generic cancellation message and null protected event/booking links, excluding internal reasons even if stored in a notice. Attendees still cannot fetch protected event/cancellation details.
+
+KAN-15 approval uses the same venue prelock check. A timing/equipment change resets `equipment_plan_status` to REQUIRED and cancels affected REQUESTED lines with released_by/at/reason/cause and incremented revision. Purpose-only changes and rejected requests preserve Not Required. The existing `expectedRevision` and confirmed-arrangement refusal remain in force.

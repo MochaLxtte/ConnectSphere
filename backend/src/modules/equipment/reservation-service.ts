@@ -39,7 +39,7 @@ function requireId(id: string): void {
 }
 
 /** One statement supplies a consistent read, including private competing quantities only. */
-async function readSnapshot(reader: Reader, eventId: string): Promise<EquipmentReservationSnapshot> {
+export async function readEquipmentReservationSnapshot(reader: Reader, eventId: string): Promise<EquipmentReservationSnapshot> {
   const found = await reader.query<EquipmentReservationSnapshot>(`SELECT
     jsonb_build_object('id', e.id, 'name', e.name, 'status', e.status,
       'startsAt', ${iso('e.starts_at')}, 'endsAt', ${iso('e.ends_at')},
@@ -133,7 +133,7 @@ export async function getEquipmentReservationContext(
 ): Promise<EquipmentReservationContext> {
   requireTechnicalSupport(actor);
   requireId(eventId);
-  return equipmentReservationContext(await readSnapshot(pool, eventId));
+  return equipmentReservationContext(await readEquipmentReservationSnapshot(pool, eventId));
 }
 
 /** A retry may use the exact pre-action version; any intervening source change still conflicts. */
@@ -182,7 +182,7 @@ export async function changeEquipmentReservation(
         SELECT 1 FROM equipment_requests r WHERE r.event_request_id = $1 AND r.equipment_type_id = t.id)
         ORDER BY t.id FOR UPDATE`, [eventId]);
       await client.query('SELECT id FROM equipment_requests WHERE event_request_id = $1 ORDER BY id FOR UPDATE', [eventId]);
-      const snapshot = await readSnapshot(client, eventId);
+      const snapshot = await readEquipmentReservationSnapshot(client, eventId);
       const row = snapshot.requests.find(item => item.id === requestId);
       if (!row) throw new WorkflowError('NOT_FOUND', 'EQUIPMENT_REQUEST_NOT_FOUND', 'The saved equipment request was not found for this event.');
       const alreadyApplied = action === 'reserve' ? row.status === 'RESERVED'
@@ -192,25 +192,7 @@ export async function changeEquipmentReservation(
       }
       if (alreadyApplied) return { changed: false, context: equipmentReservationContext(snapshot) };
       if (action === 'reserve') {
-        if (row.status !== 'REQUESTED') throw conflict('EQUIPMENT_REQUEST_NOT_RESERVABLE', 'Only a pending saved request can be reserved.');
-        if (!matchingPeriod(snapshot.event, row)) throw conflict('EQUIPMENT_REQUEST_PERIOD_MISMATCH', 'Saved quantities and dates must match the current event.');
-        if (!snapshot.coordinatorId || !validCoordinator) {
-          throw conflict('EQUIPMENT_COORDINATOR_REQUIRED', 'Assign a current Event Coordinator before reserving equipment.');
-        }
-        const type = snapshot.equipmentTypes.find(item => item.id === row.equipmentTypeId);
-        if (!type || assessEquipmentItem(type, row.quantity, snapshot.reservations,
-          row.startsAt, row.endsAt, new Set()).shortfallQuantity > 0) {
-          throw conflict('EQUIPMENT_STOCK_CONFLICT', 'Current operational stock cannot fulfil this whole request. Refresh availability.');
-        }
-        const updated = await client.query(`WITH stamp AS MATERIALIZED (SELECT clock_timestamp() AS at)
-          UPDATE equipment_requests SET status = 'RESERVED', decided_by = $1,
-          decided_at = stamp.at, decision_reason = NULL, updated_at = stamp.at FROM stamp
-          WHERE id = $2 AND event_request_id = $3 AND status = 'REQUESTED'`, [actor.id, requestId, eventId]);
-        if (updated.rowCount !== 1) throw new Error('The equipment reservation was not saved.');
-        await recordNotifications(client, equipmentReservationNotifications({
-          eventId, eventName: snapshot.event.name, coordinatorId: snapshot.coordinatorId,
-          requestId, equipmentName: row.equipmentName, quantity: row.quantity, technicalSupportId: actor.id,
-        }));
+        await reserveEquipmentInTransaction(client, snapshot, row, actor, validCoordinator);
       } else {
         if (row.status !== 'RESERVED') throw conflict('EQUIPMENT_REQUEST_NOT_CANCELLABLE', 'Only an existing reservation can be cancelled.');
         const updated = await client.query(`WITH stamp AS MATERIALIZED (SELECT clock_timestamp() AS at)
@@ -220,7 +202,7 @@ export async function changeEquipmentReservation(
         [actor.id, parsed.reason, requestId, eventId]);
         if (updated.rowCount !== 1) throw new Error('The equipment cancellation was not saved.');
       }
-      return { changed: true, context: equipmentReservationContext(await readSnapshot(client, eventId)) };
+      return { changed: true, context: equipmentReservationContext(await readEquipmentReservationSnapshot(client, eventId)) };
     });
   } catch (error) {
     if (typeof error === 'object' && error !== null && 'constraint' in error
@@ -229,4 +211,30 @@ export async function changeEquipmentReservation(
     }
     throw error;
   }
+}
+
+/** KAN-26 reservation writer reused by KAN-63 after the same actor/event/pool/line locks. */
+export async function reserveEquipmentInTransaction(
+  client: Reader, snapshot: EquipmentReservationSnapshot, row: StoredEquipmentRequest,
+  actor: WorkflowActor, validCoordinator: boolean,
+): Promise<void> {
+  if (row.status !== 'REQUESTED') throw conflict('EQUIPMENT_REQUEST_NOT_RESERVABLE', 'Only a pending saved request can be reserved.');
+  if (!matchingPeriod(snapshot.event, row)) throw conflict('EQUIPMENT_REQUEST_PERIOD_MISMATCH', 'Saved quantities and dates must match the current event.');
+  if (!snapshot.coordinatorId || !validCoordinator) {
+    throw conflict('EQUIPMENT_COORDINATOR_REQUIRED', 'Assign a current Event Coordinator before reserving equipment.');
+  }
+  const type = snapshot.equipmentTypes.find(item => item.id === row.equipmentTypeId);
+  if (!type || assessEquipmentItem(type, row.quantity, snapshot.reservations,
+    row.startsAt, row.endsAt, new Set()).shortfallQuantity > 0) {
+    throw conflict('EQUIPMENT_STOCK_CONFLICT', 'Current operational stock cannot fulfil this whole request. Refresh availability.');
+  }
+  const updated = await client.query(`WITH stamp AS MATERIALIZED (SELECT clock_timestamp() AS at)
+    UPDATE equipment_requests SET status = 'RESERVED', decided_by = $1,
+    decided_at = stamp.at, decision_reason = NULL, updated_at = stamp.at FROM stamp
+    WHERE id = $2 AND event_request_id = $3 AND status = 'REQUESTED'`, [actor.id, row.id, snapshot.event.id]);
+  if (updated.rowCount !== 1) throw new Error('The equipment reservation was not saved.');
+  await recordNotifications(client, equipmentReservationNotifications({
+    eventId: snapshot.event.id, eventName: snapshot.event.name, coordinatorId: snapshot.coordinatorId,
+    requestId: row.id, equipmentName: row.equipmentName, quantity: row.quantity, technicalSupportId: actor.id,
+  }));
 }

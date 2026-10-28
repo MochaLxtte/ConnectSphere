@@ -1,0 +1,126 @@
+{
+  "run_id": "AUTO-20261028-PR63-01",
+  "date": "2026-10-28",
+  "build": "Uncommitted repair tree based on main 1217cf3adcedcbf9caa76d61eeaa4d1eefc0326d and PR #63 f1d47d9773d8719daa6916df20bc15866586a718; exact implementation hashes below. Subsequent commit/CI linked in PR #63.",
+  "environment": "Windows; Node 24.21.0; disposable PostgreSQL 17 on localhost; synthetic actors; browser Chromium with substituted API/session boundaries",
+  "results": {
+    "frontend": 1034,
+    "backend": 1691,
+    "database": 616,
+    "browser": 189
+  },
+  "commands": [
+    "npm run check",
+    "npm run test:coverage",
+    "npm run test:integration",
+    "npm run test:e2e -- --workers=2 --retries=0"
+  ],
+  "coverage": {
+    "src/modules/equipment/equipment-service.ts": {
+      "FNF": 51,
+      "FNH": 51,
+      "LF": 152,
+      "LH": 152,
+      "BRF": 145,
+      "BRH": 145
+    },
+    "src/modules/equipment/reservation-service.ts": {
+      "FNF": 26,
+      "FNH": 26,
+      "LF": 86,
+      "LH": 86,
+      "BRF": 83,
+      "BRH": 83
+    },
+    "src/modules/events/arrangement-locks.ts": {
+      "FNF": 6,
+      "FNH": 6,
+      "LF": 11,
+      "LH": 11,
+      "BRF": 4,
+      "BRH": 4
+    },
+    "src/modules/events/cancellation-router.ts": {
+      "FNF": 3,
+      "FNH": 3,
+      "LF": 11,
+      "LH": 11,
+      "BRF": 5,
+      "BRH": 5
+    },
+    "src/modules/events/cancellation.ts": {
+      "FNF": 6,
+      "FNH": 6,
+      "LF": 36,
+      "LH": 36,
+      "BRF": 40,
+      "BRH": 34
+    },
+    "src/modules/notifications/inbox.ts": {
+      "FNF": 7,
+      "FNH": 7,
+      "LF": 24,
+      "LH": 24,
+      "BRF": 42,
+      "BRH": 42
+    },
+    "EquipmentRequestPanel": [
+      "159/178",
+      "166/189",
+      "37/38",
+      "101/103"
+    ],
+    "EventCancellationPanel": [
+      "91/94",
+      "94/101",
+      "11/11",
+      "55/55"
+    ],
+    "EquipmentQueuePage": [
+      "76/85",
+      "80/96",
+      "11/11",
+      "46/47"
+    ]
+  },
+  "source_sha256": {
+    "backend/src/app.ts": "c23d6949e12fcba58d38b7091f2d89625efb1161a46bdc2dc6f96559a6920bbe",
+    "backend/src/modules/equipment/equipment-router.ts": "7c262fb80293ea63b15fd3c1198e3b25e751a42e553caa72e03caaaf8b7bc51c",
+    "backend/src/modules/equipment/equipment-service.ts": "ac8f1cdfd58341005253825a80771d297d7174ada304dcf87a3eacbbe525fbad",
+    "backend/src/modules/equipment/reservation-service.ts": "63f26f67150878b9d32a1debc1f6ea250cb6c2494117ed95aa1c38adc55cff70",
+    "backend/src/modules/events/arrangement-locks.ts": "b961d48c1164e681b36b432fe2bed01960938737385d819b81757f21ad7a94a2",
+    "backend/src/modules/events/cancellation-router.ts": "bed99a87648cf1b861d7598747eee4833fbca8406ab5326fd4406b10d53f3d54",
+    "backend/src/modules/events/cancellation.ts": "cdaf2070a22f84e540d7c1f00f0efa14f697c819dba05ffeb0c206b0dc7c112c",
+    "backend/src/modules/events/change-requests.ts": "4f043d3ec6e40845c53774779e57dedd881a373d4368301b74070eb7e8d04556",
+    "backend/src/modules/notifications/inbox.ts": "1d38152894aec697181e82bcb384d80e26f1d55a4273f440dade4ae94b2d1470",
+    "backend/test/equipment/request-service.test.ts": "3ea426fd4e7b8f0e9c154adcad383be0663dc59144422a8bcc56d3f0fd00bf43",
+    "backend/test/events/KAN-62-63-arrangements.test.ts": "802719531f48486942bc111933db91e7ac1f5dc38cee9b3111a4c532650666c0",
+    "backend/test/events/cancellation-safety.test.ts": "4ec4e549a568928a356fdc958f486dd63677080a99a5073bbec3043bb4ac5990",
+    "backend/test/events/change-requests.test.ts": "b411f443654ea8140e69654c8556c72a1ea857f4caa5040e92c5b57a84e3271e",
+    "backend/test/notifications/inbox.test.ts": "d69a6c4f0d8bcd8a242c84546cc86cf493e8c2c9bb0957f777a179feff617ab9",
+    "backend/test/sprint-scope.test.ts": "14e5f29c7a81bcaa83aab35f3eea855e51d63b9445cc8b8a96fd7756aff92981",
+    "database/migrations/018_event_cancellation_equipment_workflows.sql": "4ba7018586e871c053814dc26e30289733430a652c887bd81b0cd69b3601447a",
+    "database/tests/database.integration.test.ts": "bd4b59578f25a068171a487c109c1231384f627845f7dd78acb603770f4efae2",
+    "database/tests/equipment/request-workflow.integration.test.ts": "1af4d8652b9883ca7323ac700a9c1a429b8d1dd803e01feced6130bb30a87571",
+    "database/tests/events/cancellation-equipment.integration.test.ts": "be304b607081f14467b8ec282ad7d29f758c65037f053df3e8cfb4dc00c3150e",
+    "database/tests/events/cancellation-safety.integration.test.ts": "c4696fc2341f23db4b75d028230ef05cc3e29215a7f72f3576f2f694aa54dee3",
+    "database/tests/events/change-requests.integration.test.ts": "662f4d6352b14a5ecfe6ee8c06b0027347467d491f83280a64fe801737047899",
+    "frontend/src/app/router.ts": "6f6a3cd69209e6e501b478024fe99e04c2bd1f8aee773239d54c2c5d77a0982d",
+    "frontend/src/components/AppShell.vue": "f1faac6ce80bc5c803ed82fbf6c8936966534e234feab80ddf166ef6349f8d95",
+    "frontend/src/features/events/api/arrangements.ts": "6c466f1fcd6c095f9a28369bc6c7bc3bf50eb4392035091773fb73d93e797505",
+    "frontend/src/features/events/components/EquipmentRequestPanel.test.ts": "725536ba5fa2f4a64e2376406d0580d4519157163c24a132376925c25eac28ea",
+    "frontend/src/features/events/components/EquipmentRequestPanel.vue": "06d22cb0ee848e23b3da5c534ad4ebef87675e924dcc32fd381277f8287e8593",
+    "frontend/src/features/events/components/EventCancellationPanel.test.ts": "f9d3005baa24bc2490157c7b1e1d5c2b906bb72282136f598fc5f644a3980d9c",
+    "frontend/src/features/events/components/EventCancellationPanel.vue": "4dbdeb048094f5f50afabff29b443a5ca1dc74b85e9529a7fc8a6a2afbf75f1e",
+    "frontend/src/features/events/components/EventPlanningPanels.vue": "aa5c00cb0c4a86b4e7e10991c56746274da11afc500c866b0ea2c9873f303317",
+    "frontend/src/features/events/components/test-api.ts": "37291d84acd9dbc4b8261e360b1d7d37c001a46acf780efd4ee2bcf49f5d201e",
+    "frontend/src/features/events/pages/EquipmentQueuePage.test.ts": "9a67d9cbe9db082a0e2c8a6dda1f71eeea4592786c4ee9351d8f6d053cc7a015",
+    "frontend/src/features/events/pages/EquipmentQueuePage.vue": "b44001bd1e090db220c32117aace08371db4fc98bcf48cf1968812b3740f4402",
+    "tests/e2e/equipment-request-review.spec.ts": "2adf560c02e95a997bf5b8dbab7157eb8e8d9711d8dce8f5ec872c9a5ff52f4b",
+    "tests/e2e/review-access.spec.ts": "9eb9b3ff0d4de0e4a27c30a127ae5eff97f7592117eb2464d3793146d220fede",
+    "tests/e2e/review-decision.spec.ts": "9a54fd3a08c87033645325ceb305f4dcb7f72fad9596d5aaa0e2b2487f8edd67",
+    "tests/e2e/venue-booking-submission.spec.ts": "fc21459ad715e76d3af3c5c0d72047d6813b4fb900d59e49c1203d2659871cc5",
+    "tests/e2e/workspace-fixtures.ts": "45dbd74a6b7664d7f6a94fa3cd80d24bd900d2dde634210da95113f22090729b"
+  },
+  "limitations": "No shared Supabase migration, real sign-in or manual acceptance performed. Prior failed attempts and retests retained. No Done claim."
+}

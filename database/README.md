@@ -242,3 +242,28 @@ The active sequence is now **001–015**. [015_equipment_reservations.sql](migra
 **Rollout:** not applied to shared Supabase. Apply after 016, after telling the team (AGENTS.md §7.3). Applying 017 before the KAN-15 code is deployed is safe: no current code reads or writes the table.
 
 **Integration tests:** `database/tests/events/change-requests.integration.test.ts` uses an isolated schema like the other suites; never point it at shared Supabase.
+
+## KAN-62 / KAN-63 event cancellation and equipment requests — migration 018
+
+`018_event_cancellation_equipment_workflows.sql` adds the immutable `event_cancellations` outcome,
+event-status-history reason, attendee cancellation outcome timestamp, equipment plan state, and
+equipment-line technical requirements/revision. It does not add another equipment cancellation
+metadata model: migration 015's `released_at`, `released_by`, `release_reason` and `release_cause`
+remain authoritative. On an actual event transition to `CANCELLED`, the existing migration-015
+trigger releases RESERVED lines once with cause `EVENT_CANCELLED`; the KAN-62 transaction marks
+remaining REQUESTED/REJECTED lines with the same cause and its acting user. Equipment line
+cancellation/replacement uses `MANUAL_CANCELLATION`. The new cancellation-audit table has RLS
+enabled and direct Data API role privileges revoked; application access remains through the
+authorised backend routes.
+
+Migration 018 is allocated after the parallel migration-016/017 work. This checkout contains
+migrations through 015 plus the new 018 file; apply migrations in numeric order. Fresh-install and
+upgrade integration assertions were updated, but were **Not executed** in this follow-up. Do not
+apply to shared Supabase without the team's deployment coordination. See the event module README
+and `docs/testing/test-evidence.md` for route, automated-check and acceptance boundaries.
+
+## 28 October 2026 — PR #63 integrated migration verification
+
+The repair uses the existing sequential migrations **001–018**; no applied migration was rewritten. Disposable PostgreSQL 17 migration tests verify fresh install, ledger ordering and preservation of 015 reservation data alongside 016 event revisions, 017 change requests and 018 cancellation/equipment fields. The full integration run is registered as AUTO-20261028-PR63-01. Existing shared Supabase was not migrated or used for destructive tests in this run.
+
+Before connected KAN-62/KAN-63 acceptance, coordinate and apply any missing migrations through 018 using the documented migration runner, then verify the ledger. Do not manually renumber ledger rows. Equipment revisions sent by clients are opaque snapshots, not the integer schema column. Cancellation locks known venue bookings before the event; newly inserted arrangements cause a retry conflict. Migration 015's release trigger remains the single automatic release path for RESERVED equipment.

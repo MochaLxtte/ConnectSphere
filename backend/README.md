@@ -91,3 +91,7 @@ Run `npm run typecheck --workspace @connectsphere/backend`, `npm test --workspac
 ## 25 October 2026 closeout verification
 
 Draft date validation matches PostgreSQL year/offset bounds; venue writes serialize through a per-venue transaction gate; notification integration tests include real concurrent dedupe and post-insert rollback. Shared Supabase expiry scheduling was configured with team approval, separately from disposable database testing. See [test evidence](../docs/testing/test-evidence.md#25-october-2026--sprint-closeout-reconciliation) for exact commands, results and remaining acceptance checks.
+
+## KAN-62 / KAN-63 review integration — 28 October 2026
+
+Event cancellation and equipment request/review routes require migrations through 018. Equipment writes carry the opaque version from GET plan/queue, use the shared KAN-26 reservation writer and preserve audit on explicit replacement. Cancellation, KAN-15 approval and venue decisions share compatible lock ordering; attendee cancellation inbox projections exclude internal reasons and event links. See the [API contract](../docs/architecture/api-contract.md) and module READMEs. AUTO-20261028-PR63-01 records isolated database and automated API tests; shared real-login acceptance remains separate.

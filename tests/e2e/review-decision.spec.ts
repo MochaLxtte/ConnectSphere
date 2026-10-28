@@ -83,7 +83,7 @@ for (const scenario of scenarios) {
     await expect(page.getByRole('heading', { name: detail.name, exact: true })).toBeVisible();
     await expect(page.getByText(scenario.initialStatus, { exact: true })).toBeVisible();
     await page.getByRole('radio', { name: new RegExp(scenario.choice) }).check();
-    await page.getByRole('textbox', { name: /Reason/ }).fill(`  ${reason}  `);
+    await page.getByRole('textbox', { name: /^Reason \((optional|required)\)$/ }).fill(`  ${reason}  `);
     await page.getByRole('button', { name: scenario.button, exact: true }).click();
 
     await expect.poll(() => detailReads).toBe(2);

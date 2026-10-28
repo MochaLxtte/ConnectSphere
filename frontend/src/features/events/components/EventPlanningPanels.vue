@@ -5,6 +5,8 @@ import ChangeRequestPanel from './ChangeRequestPanel.vue';
 import ClarificationPanel from './ClarificationPanel.vue';
 import StatusHistoryPanel from './StatusHistoryPanel.vue';
 import VenueBookingPanel from './VenueBookingPanel.vue';
+import EquipmentRequestPanel from './EquipmentRequestPanel.vue';
+import EventCancellationPanel from './EventCancellationPanel.vue';
 
 /** Workflow panels shared by the organiser and coordinator pages for a submitted request. */
 const props = defineProps<{
@@ -31,7 +33,9 @@ const shared = computed(() => ({
     <!-- KAN-15: significant changes once approved; history stays visible after cancellation or completion. -->
     <ChangeRequestPanel v-if="['APPROVED', 'CONFIRMED', 'CANCELLED', 'COMPLETED'].includes(status)" v-bind="shared" :revision="revision" @changed="emit('changed')" />
     <VenueBookingPanel v-if="viewerRole === 'EVENT_COORDINATOR'" v-bind="shared" @changed="emit('changed')" />
+    <EquipmentRequestPanel v-if="viewerRole === 'EVENT_COORDINATOR'" v-bind="shared" :revision="revision" @changed="emit('changed')" />
     <StatusHistoryPanel :event-request-id="eventRequestId" :status="status" />
+    <EventCancellationPanel :event-request-id="eventRequestId" :status="status" :revision="revision" @changed="emit('changed')" />
   </div>
 </template>
 

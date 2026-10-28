@@ -75,6 +75,36 @@ describe('KAN-64-AC204/AC206 inbox listing', () => {
     expect(JSON.stringify(item)).not.toContain('Career fair');
   });
 
+  it('KAN-62 exposes only a generic attendee cancellation outcome without protected DTOs or internal reasons', async () => {
+    const { dependencies } = database({ rows: [row({
+      type: 'EVENT_CANCELLED', title: 'Confidential internal reason', message: 'Private organiser explanation',
+      canViewEvent: false, canViewAttendeeCancellation: true,
+    })] });
+    const [item] = await listNotifications(dependencies, { id: organiser.id, role: 'ATTENDEE' });
+    expect(item).toMatchObject({ title: 'Event cancelled',
+      message: 'Career fair has been cancelled. Your registration is no longer active.',
+      event: null, booking: null, link: null });
+    expect(JSON.stringify(item)).not.toMatch(/Confidential|Private organiser/);
+  });
+
+  it('KAN-62 uses a generic fallback for an unnamed cancelled event', async () => {
+    const { dependencies } = database({ rows: [row({ type: 'EVENT_CANCELLED',
+      canViewEvent: false, canViewAttendeeCancellation: true, eventName: null })] });
+    const [item] = await listNotifications(dependencies, { id: organiser.id, role: 'ATTENDEE' });
+    expect(item?.message).toBe('The event has been cancelled. Your registration is no longer active.');
+  });
+
+  it('keeps equipment notices visible after cancellation but removes the planning link', async () => {
+    const { dependencies } = database({ rows: [
+      row({ canViewEvent: false, canViewEquipment: true, equipmentOpen: true }),
+      row({ canViewEvent: false, canViewEquipment: true, equipmentOpen: false }),
+    ] });
+    const [open, closed] = await listNotifications(dependencies, { id: organiser.id, role: 'TECHNICAL_SUPPORT_STAFF' });
+    expect(open?.link).toBe(`/equipment/availability/${eventId}`);
+    expect(closed).toMatchObject({ link: null, event: null,
+      message: 'Approved. This event is no longer open for equipment planning.' });
+  });
+
   it('propagates a database failure', async () => {
     const query = vi.fn().mockRejectedValue(new Error('connection lost'));
     await expect(listNotifications({ pool: { query, connect: vi.fn() } } as never, organiser)).rejects.toThrow('connection lost');

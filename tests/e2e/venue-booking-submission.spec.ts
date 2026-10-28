@@ -80,7 +80,7 @@ async function fixtures(page: Page, options: {
       Object.assign(booking, { status: input.decision, decisionReason: input.reason, decidedBy: staffId,
         decidedAt: '2026-10-05T01:00:00.000Z', updatedAt: '2026-10-05T01:00:00.000Z' });
       await route.fulfill({ json: { booking } });
-    } else if (!(await fulfilWorkspaceRead(route, request))) {
+    } else if (!(await fulfilWorkspaceRead(route, request, role === 'EVENT_COORDINATOR' ? { coordinatorBookingEventId: eventId } : {}))) {
       unexpected.push(`${method} ${path}${url.search}`);
       await route.fulfill({ status: 501, json: error('UNEXPECTED_TEST_REQUEST', 'No fixture configured.') });
     }

@@ -1,0 +1,39 @@
+
+> connectsphere@0.1.0 test:e2e
+> playwright test tests/e2e/equipment-request-review.spec.ts tests/e2e/review-access.spec.ts tests/e2e/review-decision.spec.ts --workers=2 --retries=0
+
+[WebServer] (node:39908) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:33952) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:31332) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 20 tests using 2 workers
+
+(node:27176) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:39168) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  2 [chromium] › tests\e2e\equipment-request-review.spec.ts:124:1 › KAN-63 stale queue decisions require refresh and a deliberate retry with the new revision (968ms)
+  ok  1 [chromium] › tests\e2e\equipment-request-review.spec.ts:92:1 › KAN-63/KAN-26 coordinator request, Technical Support review and explicit reservation replacement (2.3s)
+  ok  3 [chromium] › tests\e2e\equipment-request-review.spec.ts:140:1 › KAN-62 a lost cancellation response is reconciled without cancelling twice (1.4s)
+  ok  4 [chromium] › tests\e2e\equipment-request-review.spec.ts:158:1 › KAN-63 attendee direct navigation cannot see or review the equipment queue (898ms)
+  ok  5 [chromium] › tests\e2e\review-access.spec.ts:82:3 › KAN-25 dashboard review navigation matches organiser access (1.0s)
+  ok  6 [chromium] › tests\e2e\review-access.spec.ts:82:3 › KAN-25 dashboard review navigation matches signed-out visitor access (1.4s)
+  ok  7 [chromium] › tests\e2e\review-access.spec.ts:82:3 › KAN-25 dashboard review navigation matches coordinator access (1.4s)
+  ok  8 [chromium] › tests\e2e\review-access.spec.ts:101:3 › KAN-25/KAN-33 organiser cannot open /reviews or load review data (1.4s)
+  ok  9 [chromium] › tests\e2e\review-access.spec.ts:118:3 › KAN-25/KAN-33 signed-out visitor cannot open /reviews or load review data (1.7s)
+  ok 10 [chromium] › tests\e2e\review-access.spec.ts:133:3 › KAN-25/KAN-33 coordinator sees /reviews and signing out clears its data (2.5s)
+  ok 11 [chromium] › tests\e2e\review-access.spec.ts:101:3 › KAN-25/KAN-33 organiser cannot open /reviews/10000000-0000-4000-8000-000000000033 or load review data (2.3s)
+  ok 12 [chromium] › tests\e2e\review-access.spec.ts:118:3 › KAN-25/KAN-33 signed-out visitor cannot open /reviews/10000000-0000-4000-8000-000000000033 or load review data (1.7s)
+  ok 13 [chromium] › tests\e2e\review-access.spec.ts:133:3 › KAN-25/KAN-33 coordinator sees /reviews/10000000-0000-4000-8000-000000000033 and signing out clears its data (2.0s)
+  ok 14 [chromium] › tests\e2e\review-access.spec.ts:166:1 › KAN-25/KAN-33 review queue waits for a verified coordinator session (2.4s)
+  ok 16 [chromium] › tests\e2e\review-decision.spec.ts:39:3 › KAN-36 SUBMITTED to rejected outcome and reason survive a browser reload (5.7s)
+  ok 15 [chromium] › tests\e2e\review-decision.spec.ts:39:3 › KAN-36 SUBMITTED to approved outcome and reason survive a browser reload (9.2s)
+  ok 17 [chromium] › tests\e2e\review-decision.spec.ts:39:3 › KAN-36 UNDER_REVIEW to approved outcome and reason survive a browser reload (7.9s)
+  ok 18 [chromium] › tests\e2e\review-decision.spec.ts:39:3 › KAN-36 UNDER_REVIEW to rejected outcome and reason survive a browser reload (8.8s)
+  ok 19 [chromium] › tests\e2e\review-decision.spec.ts:114:1 › KAN-36 a submitted request without the decision action has no decision controls (4.6s)
+  ok 20 [chromium] › tests\e2e\review-decision.spec.ts:143:1 › KAN-60 a blank rejection reason is blocked in the browser; the corrected reason survives a reload (10.2s)
+
+  20 passed (52.9s)

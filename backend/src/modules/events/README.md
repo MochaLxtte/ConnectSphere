@@ -1,12 +1,57 @@
 # Event proposal workstream
 
+## KAN-62 event cancellation
+
+`POST /api/events/:id/cancel` accepts `{ "reason": "...", "confirmAffectedArrangements": true }`.
+Only the owning organiser or currently assigned coordinator may cancel an event in
+SUBMITTED, UNDER_REVIEW, CLARIFICATION_REQUESTED, APPROVED or CONFIRMED. The transaction
+rechecks the acting profile, locks venue gates and booking rows before the event, then locks
+equipment pools and lines in UUID order. It cancels active venue bookings and equipment lines, closes active
+registrations, stores immutable cancellation details, records the status transition, and
+writes organiser/coordinator/attendee inbox notifications through KAN-64. Attendee messages
+contain the outcome and omit the internal reason; attendee inbox reads require the matching
+cancelled registration and return no event DTO or planning link. `GET /api/events/:id/cancellation` returns
+the saved organiser/coordinator outcome. Repeated, draft, rejected and completed actions
+write nothing.
+If a new booking appears between the initial booking snapshot and the event lock,
+`409 EVENT_ARRANGEMENTS_CHANGED` rolls back the action; reload before retrying. The stored
+equipment-release count includes RESERVED rows released by migration 015's trigger and the
+REQUESTED/REJECTED rows cancelled by the service. Original allocation and decision history stays intact.
+The organiser/coordinator detail page includes the cancellation form and displays the saved
+reason/time after reload; attendee inbox notices state the outcome without exposing the reason.
+
+## KAN-63 equipment request workflow
+
+`POST /api/events/:id/equipment-requests` lets the assigned coordinator of an APPROVED event
+save REQUESTED lines with equipment type, positive quantity, period and technical requirements.
+The request body includes the required opaque `revision` from
+`GET /api/events/:id/equipment-requests`. It hashes the current event and all saved line/audit
+values, including changes made through KAN-26; it is not the integer equipment-line revision.
+Set `notRequired: true` with an empty `lines` list only when no non-cancelled required line
+exists. `GET /api/equipment-requests` is available to Technical Support Staff and assigned
+coordinators; `eventId` narrows the list. Technical Support Staff review a line at
+`POST /api/equipment-requests/:id/review` with `RESERVED` or `REJECTED` and a required rejection
+reason and the current opaque revision. Reservation reuses KAN-26's full-line writer, checks
+current operational stock after locking, and records the same coordinator/Technical Support
+notifications in the transaction. The database trigger remains the final capacity guard.
+A reserved line is immutable; the assigned coordinator must use
+`POST /api/equipment-requests/:id/replace` with the current plan revision and a replacement line.
+The old reservation is cancelled atomically and the replacement returns to REQUESTED for staff
+review. The routes use verified-session identity and request-specific access checks.
+Coordinators use the event planning panel; Technical Support Staff use the request queue. Both
+views reload persisted request lines and review outcomes from the API.
+`POST /api/equipment-requests/:id/cancel` requires `{ reason, revision }` and permits only
+REQUESTED/REJECTED lines; reserved lines use explicit replacement or KAN-26 cancellation.
+All writes require an APPROVED event, exact current event periods and current assignment/role.
+Stale plans return `409 STALE_EQUIPMENT_REQUEST` without saving. CONFIRMED plans are read-only.
+
 Ernest owns event creation and draft saving; Kai Jie owns draft editing and submission. Irfan owns coordinator review and clarification; Tristan owns approval/rejection, organiser-facing status and the KAN-29 automatic-assignment implementation. These workstreams share this directory, with Arvin supporting database setup and cross-feature integration. Coordinate the field names in `types.ts` with the frontend event forms and database migrations before changing a contract.
 
 The normal server exposes organiser lists, shared request details, owned-draft updates and submission, the assigned coordinator's review queue, and approval/rejection. For organisers, `GET /api/events` preserves the own-draft list; `GET /api/events?scope=all` includes all of their request statuses, newest update first, and supplies the organiser page at `/events`. The shared detail GET returns `review` and caller-specific `actions` alongside the event fields. The coordinator interface consumes these fields, and KAN-16's request titles link to a read-only organiser view at `/events/:id` using the same GET. It displays status and any recorded outcome, reason and time without exposing write controls. No additional handler or schema change is needed for this view. Hosted organiser checks cover outcome display/refresh, signed-out detail access, Draft/Submitted detail states and another organiser's denied detail access and empty list (MAN-20260917-01 through MAN-20260917-04). Opening `/events` directly after signing out showed a sign-in prompt without request names or statuses (MAN-20260917-05). The request list showed matching Draft, Submitted, Rejected and Approved labels, and Draft/Submitted detail statuses and review messages remained correct after refresh (MAN-20260917-06). The remaining submission-to-status check is in [test evidence](../../../../docs/testing/test-evidence.md).
 
 `submitted-requests-router.ts` owns the shared GET, draft PATCH and submit routes; `review-router.ts` owns decision writes. Services validate runtime input, enforce ownership/assignment and lock rows during state changes. Review creation and the matching status update commit together. TypeScript interfaces do not validate untrusted HTTP input. Preserve parameterized queries, server-derived identity and transaction boundaries when adding features; preserve `false` and `0` as values when handling nullable fields.
 
-The schema supports `DRAFT`, `SUBMITTED`, `UNDER_REVIEW`, `CLARIFICATION_REQUESTED`, `APPROVED`, `REJECTED`, `CONFIRMED`, `CANCELLED` and `COMPLETED`. Draft creation/editing/submission, review start, clarification and initial decisions are implemented; confirmation, cancellation and completion are deferred and their API routes are absent; their preconditions are in the API contract. An existing decision prevents another initial decision. Decided requests leave the pending queue but remain readable to the owning organiser and currently assigned coordinator.
+The schema supports `DRAFT`, `SUBMITTED`, `UNDER_REVIEW`, `CLARIFICATION_REQUESTED`, `APPROVED`, `REJECTED`, `CONFIRMED`, `CANCELLED` and `COMPLETED`. Draft creation/editing/submission, review start, clarification and initial decisions are implemented. KAN-62 adds cancellation for eligible states through the endpoint above; migration 015 releases RESERVED equipment automatically when the event becomes terminal, and migration 018 records cancellation and equipment planning data. An existing decision prevents another initial decision. Decided requests leave the pending queue but remain readable to the owning organiser and currently assigned coordinator.
 
 All editable fields allow `null` for incomplete drafts. Submission currently requires `name`, `purpose`, `startsAt`, `endsAt`, `expectedAttendance` and `venueRequirements` under the team's provisional rule; customer clarification remains open. Initial decisions currently permit an optional reason; the API contract separately records the required correction for rejection reasons. Access to assigned work compares `coordinator_id` with the verified coordinator's application ID.
 
@@ -71,3 +116,26 @@ The shared create/update parser additionally refuses year `0000` and offsets bey
 ## KAN-15 change requests — 27 October 2026
 
 `change-requests.ts` holds the workflow (`submitChangeRequest`, `listChangeRequests`, `decideChangeRequest`, `withdrawChangeRequest`); `change-request-impact.ts` is the pure field-to-arrangement rule set (`assessChangeImpact`) used for the coordinator's preview and rechecked under lock at decision time; `change-request-router.ts` mounts the routes under `/api/events/:id/change-requests`. Approval reuses KAN-66's `sameValue`, column map and `event_request_edits` audit. Notices live in `../notifications/change-request-notifications.ts`, outside the KAN-64 matrix.
+
+## 28 October 2026 — cancellation, equipment and change-request integration
+
+`arrangement-locks.ts` supplies the shared venue gate → booking → event locking protocol for
+KAN-62 cancellation and KAN-15 approval, including a post-event-lock check for newly created
+bookings. KAN-15 marks affected REQUESTED equipment lines cancelled with release actor/time,
+reason, `MANUAL_CANCELLATION` cause and a new line revision. An approved change affecting
+equipment or timing resets `equipment_plan_status` to `REQUIRED`, so an earlier Not Required
+declaration does not survive changed requirements. Confirmed arrangements still require the
+existing cancel-and-resubmit path. These repairs use migrations 015–018; no extra migration is added.
+
+The KAN-66 migration mentioned as 014 in its historical 26 October entry is now
+`016_event_request_revisions.sql`; KAN-15 is implemented in migration 017 and its routes above.
+The current cancellation/request rules supersede the initial 27 October contract in the
+[API history](../../../../docs/architecture/api-contract.md#28-october-2026--kan-62kan-63-repaired-contract).
+
+Cancellation unit/HTTP cases are in `backend/test/events/KAN-62-63-arrangements.test.ts` and
+`backend/test/events/cancellation-safety.test.ts`; real PostgreSQL coverage is in
+`database/tests/events/cancellation-equipment.integration.test.ts` and
+`database/tests/events/cancellation-safety.integration.test.ts`. They cover venue-decision and
+equipment-reservation races, new-booking conflicts, rollback, release counts, replay and attendee
+privacy. Equipment and change-request tests are recorded in their module/contract sections;
+the run outcomes and manual acceptance boundaries remain in [test evidence](../../../../docs/testing/test-evidence.md).

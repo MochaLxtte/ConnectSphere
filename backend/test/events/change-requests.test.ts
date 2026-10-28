@@ -255,7 +255,9 @@ describe('KAN-15 decideChangeRequest', () => {
       arrangements: [{ kind: 'EQUIPMENT_REQUEST', id: 'e1', label: 'Mic', status: 'REQUESTED', quantity: 1 }],
     });
     await decide(fake, { decision: 'APPROVED', expectedRevision: 4 });
-    expect(callWith(fake.query, 'UPDATE equipment_requests')![1]).toEqual([['e1']]);
+    expect(callWith(fake.query, 'UPDATE equipment_requests')![1]).toEqual([['e1'], coordinator.id,
+      'Cancelled by an approved change request. Request it again for the new event details.']);
+    expect(callWith(fake.query, 'UPDATE event_requests')![0]).toContain("equipment_plan_status = 'REQUIRED'");
     expect(callWith(fake.query, 'UPDATE venue_bookings')).toBeUndefined();
   });
 
@@ -287,7 +289,7 @@ describe('KAN-15 decideChangeRequest', () => {
   });
 
   it('turns a deadlock into a retryable conflict, and passes other failures through', async () => {
-    await expectWorkflowError(decide(setup({ failOn: 'pg_advisory_xact_lock' }), { decision: 'APPROVED', expectedRevision: 4 }),
+    await expectWorkflowError(decide(setup({ failOn: 'SELECT id, venue_id' }), { decision: 'APPROVED', expectedRevision: 4 }),
       'CONFLICT', 'CHANGE_REQUEST_BUSY');
     const fake = setup();
     fake.query.mockImplementationOnce(async () => { throw new Error('connection lost'); });

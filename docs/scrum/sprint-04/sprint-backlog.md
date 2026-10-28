@@ -16,10 +16,10 @@ This rebalanced allocation replaces the earlier 97/29 split with **63/63**, with
 | --- | --- | ---: | --- | --- | --- | --- |
 | [KAN-18](https://smu-g7-grp1.atlassian.net/browse/KAN-18) | Update Equipment Availability Status | 3 | Unassigned — team member to choose | To agree after owner chosen | Existing release backlog | S4-T01 |
 | [KAN-9](https://smu-g7-grp1.atlassian.net/browse/KAN-9) | Check Equipment Availability for an Event | 8 | Tristan | To agree | Existing release backlog | S4-T02 |
-| [KAN-63](https://smu-g7-grp1.atlassian.net/browse/KAN-63) | Submit and Review Event Equipment Requests | 5 | Unassigned — team member to choose | To agree after owner chosen | Existing release backlog | S4-T03 |
+| [KAN-63](https://smu-g7-grp1.atlassian.net/browse/KAN-63) | Submit and Review Event Equipment Requests | 5 | Ryan | PR #63 review | Existing release backlog | S4-T03 |
 | [KAN-26](https://smu-g7-grp1.atlassian.net/browse/KAN-26) | Reserve Equipment | 3 | Tristan | To agree | Existing release backlog | S4-T04 |
 | [KAN-61](https://smu-g7-grp1.atlassian.net/browse/KAN-61) | Confirm Event After Planning Arrangements | 3 | Unassigned — team member to choose | To agree after owner chosen | Existing release backlog | S4-T05 |
-| [KAN-62](https://smu-g7-grp1.atlassian.net/browse/KAN-62) | Cancel Event and Release Its Arrangements | 5 | Unassigned — team member to choose | To agree after owner chosen | Existing release backlog | S4-T06 |
+| [KAN-62](https://smu-g7-grp1.atlassian.net/browse/KAN-62) | Cancel Event and Release Its Arrangements | 5 | Ryan | PR #63 review | Existing release backlog | S4-T06 |
 | [KAN-10](https://smu-g7-grp1.atlassian.net/browse/KAN-10) | Mark Event as Completed | 3 | Unassigned — team member to choose | To agree after owner chosen | Existing release backlog | S4-T07 |
 | [KAN-14](https://smu-g7-grp1.atlassian.net/browse/KAN-14) | Register for an Event | 5 | Unassigned — team member to choose | To agree after owner chosen | Existing release backlog | S4-T08 |
 | [KAN-17](https://smu-g7-grp1.atlassian.net/browse/KAN-17) | Withdraw Attendee Registration | 2 | Unassigned — team member to choose | To agree after owner chosen | Existing release backlog | S4-T09 |
@@ -50,10 +50,10 @@ Every row requires its complete active criterion set plus applicable Definition 
 | --- | --- | --- | --- |
 | S4-T01 | KAN-18: AC1, AC2, AC3, AC4, AC5, AC6, AC101, AC102, AC103 | TC-16-01, TC-16-02, TC-16-03, TC-16-04, TC-16-05 | **Not executed** / Not recorded |
 | S4-T02 | KAN-9: AC1–AC5, AC101–AC107 | TC-16-06–TC-16-18 | Automated evidence: AUTO-20261026-KAN9-01. Integrated manual **Not executed**; acceptance **Not assessed**. TC-16-09 combined reservation path is now implemented locally with KAN-26; its integrated manual run remains Not executed. |
-| S4-T03 | KAN-63: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC101, AC102, AC103, AC104 | TC-15-01, TC-15-02, TC-15-03, TC-15-04, TC-15-05, TC-15-06, TC-15-07 | **Not executed** / Not recorded |
+| S4-T03 | KAN-63: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC101, AC102, AC103, AC104 | TC-15-01, TC-15-02, TC-15-03, TC-15-04, TC-15-05, TC-15-06, TC-15-07 | AUTO-20261028-PR63-01 / S4-E16: automated checks recorded; integrated manual **Not executed**, acceptance **Not assessed**. |
 | S4-T04 | KAN-26: AC1–AC7, AC101–AC108 | TC-17-01–08; automated TC-17-101–110 | AUTO-20261026-KAN26-01 records automated results. Integrated manual **Not executed**; acceptance **Not assessed**. Shared migration 015 and KAN-18/63/62/10 UI integration remain pending. |
 | S4-T05 | KAN-61: AC1, AC2, AC3, AC4, AC5, AC6, AC101, AC102, AC103, AC104 | TC-06-01, TC-06-02, TC-06-03, TC-06-04, TC-06-05, TC-06-06, TC-06-07 | **Not executed** / Not recorded |
-| S4-T06 | KAN-62: AC1, AC2, AC3, AC4, AC5, AC6, AC101, AC102, AC103, AC104 | TC-06-08, TC-06-09, TC-06-10, TC-06-11, TC-06-12, TC-06-13 | **Not executed** / Not recorded |
+| S4-T06 | KAN-62: AC1, AC2, AC3, AC4, AC5, AC6, AC101, AC102, AC103, AC104 | TC-06-08, TC-06-09, TC-06-10, TC-06-11, TC-06-12, TC-06-13 | AUTO-20261028-PR63-01 / S4-E16: automated checks recorded; integrated manual **Not executed**, acceptance **Not assessed**. |
 | S4-T07 | KAN-10: AC1, AC2, AC3, AC4, AC5, AC101, AC102, AC103 | TC-06-14, TC-06-15, TC-06-16, TC-06-17, TC-06-18 | **Not executed** / Not recorded |
 | S4-T08 | KAN-14: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC101, AC102, AC103, AC104 | TC-18-01, TC-18-02, TC-18-03, TC-18-04, TC-18-05, TC-18-06 | **Not executed** / Not recorded |
 | S4-T09 | KAN-17: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC101, AC102, AC103 | TC-18-07, TC-18-08, TC-18-09, TC-18-10, TC-18-11 | **Not executed** / Not recorded |
@@ -180,7 +180,7 @@ Implementation defaults: docs/scrum/sprint-03/planning.md and docs/requirements/
 
 ### KAN-63 — Submit and Review Event Equipment Requests
 
-**Owner:** Unassigned — team member to choose · **Independent reviewer:** To agree after owner chosen · **Estimate:** 5 SP · **Jira status:** To Do · **Acceptance:** Not assessed · **Test group:** S4-T03
+**Owner:** Ryan · **Independent reviewer:** PR #63 review · **Estimate:** 5 SP · **Jira status:** To Do · **Acceptance:** Not assessed · **Test group:** S4-T03
 
 **User story:** As an Event Coordinator, I want to record an event’s equipment request and have Technical Support Staff review and update its arrangements so that suitable equipment can be provided.
 
@@ -203,7 +203,7 @@ Implementation defaults: docs/scrum/sprint-03/planning.md and docs/requirements/
 | **KAN-63-AC103** | Each accepted line connects atomically to a single RESERVED record through KAN-26; no partial fulfilment or substitutions are silently applied. | TC-15-03 |
 | **KAN-63-AC104** | Changing a reserved line requires explicit cancellation/replacement with renewed availability checks and cannot mutate a reservation behind another viewer's stale form. | TC-15-07 |
 
-**Implementation location:** Not recorded. **Automated test files:** Not recorded. Record real files when implemented; historical schema or removed code is not feature completion.
+**Implementation and automated verification:** PR #63; AUTO-20261028-PR63-01. Current backend, UI and isolated PostgreSQL regressions are linked from `docs/requirements/traceability.csv`. Opaque equipment revisions, atomic release, attendee privacy and KAN-15 integration are covered. Integrated manual acceptance remains **Not executed / Not assessed**.
 
 <details>
 <summary>Preserved Jira description before self-selection (historical ownership)</summary>
@@ -408,7 +408,7 @@ Implementation defaults: docs/scrum/sprint-03/planning.md and docs/requirements/
 
 ### KAN-62 — Cancel Event and Release Its Arrangements
 
-**Owner:** Unassigned — team member to choose · **Independent reviewer:** To agree after owner chosen · **Estimate:** 5 SP · **Jira status:** To Do · **Acceptance:** Not assessed · **Test group:** S4-T06
+**Owner:** Ryan · **Independent reviewer:** PR #63 review · **Estimate:** 5 SP · **Jira status:** To Do · **Acceptance:** Not assessed · **Test group:** S4-T06
 
 **User story:** As an authorised event manager, I want to cancel an eligible event and release its arrangements so that obsolete bookings and resources do not remain committed.
 
@@ -427,7 +427,7 @@ Implementation defaults: docs/scrum/sprint-03/planning.md and docs/requirements/
 | **KAN-62-AC103** | Affected users receive transactional KAN-80 (using KAN-64 infrastructure) notifications. Attendees see a cancellation outcome without internal-only reasons. | TC-06-11 |
 | **KAN-62-AC104** | A repeated cancellation does not repeat resource release or notifications; completion/rejection/draft/unauthorised cancellation leaves data unchanged. | TC-06-12 |
 
-**Implementation location:** Not recorded. **Automated test files:** Not recorded. Record real files when implemented; historical schema or removed code is not feature completion.
+**Implementation and automated verification:** PR #63; AUTO-20261028-PR63-01. Current backend, UI and isolated PostgreSQL regressions are linked from `docs/requirements/traceability.csv`. Opaque equipment revisions, atomic release, attendee privacy and KAN-15 integration are covered. Integrated manual acceptance remains **Not executed / Not assessed**.
 
 <details>
 <summary>Preserved Jira description before self-selection (historical ownership)</summary>

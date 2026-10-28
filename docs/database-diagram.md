@@ -1,5 +1,17 @@
 # ConnectSphere Database Diagram
 
+**KAN-62 / KAN-63 schema update — 27 October 2026.** Migration 018 adds `event_cancellations`
+(one immutable row per cancelled event, with actor, timestamp, internal reason and
+affected-arrangement counts). `event_status_history.reason` retains the cancellation
+explanation alongside the trigger-recorded status change. `event_registrations` retains rows
+with `status = CANCELLED` and `cancellation_outcome_at`; `equipment_requests` retains cancelled
+request/reservation rows using migration 015's `released_*` fields and release causes, plus
+technical requirements and a revision counter. Event-wide cancellation releases RESERVED lines
+through migration 015's terminal-event trigger; migration 018 records `event_cancellations` and
+marks remaining REQUESTED/REJECTED lines with `EVENT_CANCELLED`. `event_requests` stores equipment
+planning state (`REQUIRED` or `NOT_REQUIRED`).
+Existing rows are not deleted and unrelated event arrangements remain unchanged.
+
 **KAN-78 schema reconciliation — 25 October 2026.** For current source `96a0d10`, venue duration columns come from migration **009**, while approval snapshots, internal interval/hours helpers and `venue_booking_warnings` come from **012_venue_occupied_intervals.sql**. Migration **013** rebuilds the interval view with hold/cancellation fields and extends the occupancy guard. `venue_booking_intervals` is a view, not an extra stored table. The dated 21 October schema and private migration-008 descriptions below are historical. The [25 October shared-development run](testing/test-evidence.md#25-october-2026--kan-60-and-kan-83-manual-hosted-runs) reports migrations 001–013 present in `schema_migrations`; this is a reported setup check, not a newly executed complete schema audit or KAN-78/KAN-34 hosted acceptance. Existing rows, ownership and approval history are preserved.
 
 **25 October 2026 verification note.** [Original-story manual results](testing/test-evidence.md#25-october-2026--reported-manual-results-for-original-stories) are reported against the original sprint versions. KAN-29 automatic assignment remains historical; KAN-79/KAN-65 use the current Lead workflow. Original KAN-52 evidence does not complete the later revised story. No schema or relationship changes are made by recording these results.
@@ -43,6 +55,8 @@ erDiagram
     app_users ||..o{ event_reviews : "reviewed_by"
     app_users |o..o{ event_status_history : "changed_by"
     event_requests ||..o{ event_status_history : "event_request_id"
+    event_requests ||--o| event_cancellations : "event_request_id"
+    app_users ||..o{ event_cancellations : "cancelled_by"
     event_requests |o..o{ notifications : "event_request_id"
     app_users ||..o{ notifications : "recipient_id"
     venue_bookings |o..o{ notifications : "venue_booking_id"
@@ -85,6 +99,7 @@ erDiagram
         text venue_requirements "nullable"
         text accessibility_needs "nullable"
         text equipment_requirements "nullable"
+        text equipment_plan_status "REQUIRED or NOT_REQUIRED, migration 018"
         boolean registration_required "nullable"
         timestamptz created_at
         timestamptz updated_at
@@ -141,7 +156,18 @@ erDiagram
         text from_status "nullable"
         text to_status
         uuid changed_by FK "nullable"
+        text reason "nullable, migration 018"
         timestamptz created_at
+    }
+
+    event_cancellations {
+        uuid event_request_id PK, FK
+        uuid cancelled_by FK
+        timestamptz cancelled_at
+        text reason
+        integer affected_venue_bookings
+        integer affected_equipment_requests
+        integer affected_registrations
     }
 
     venues {
@@ -237,6 +263,8 @@ erDiagram
         timestamptz starts_at
         timestamptz ends_at
         text notes "nullable"
+        text technical_requirements "nullable, migration 018"
+        integer revision "default 1, migration 018"
         uuid decided_by FK "nullable"
         timestamptz decided_at "nullable"
         text decision_reason "nullable"
@@ -255,6 +283,7 @@ erDiagram
         text status
         timestamptz registered_at
         timestamptz withdrawn_at "nullable"
+        timestamptz cancellation_outcome_at "nullable, migration 018"
     }
 
     event_change_requests {
@@ -370,3 +399,7 @@ Migration 016 has **not** been applied to shared Supabase; announce it to the te
 [017_event_change_requests.sql](../database/migrations/017_event_change_requests.sql) completes the provisional `event_change_requests` table from migration 004 instead of creating a new one. It adds `previous` (values replaced), `base_revision` (the KAN-66 revision the organiser saw), `applied_revision` and `cancelled_arrangements` (set on approval); makes the organiser `reason` optional; replaces 004's decision check so `PENDING` is exactly the undecided state (withdrawals record who and when); requires a reason for rejection; and adds `event_change_requests_one_pending_idx`, a partial unique index allowing one `PENDING` request per event. The two status-coupled checks are `NOT VALID` so an unexpected legacy row cannot block the migration; new and updated rows are still checked. RLS and Data API revokes were already applied by 004. It follows KAN-9/KAN-26 (014, 015) and KAN-66 (016).
 
 Migration 017 has **not** been applied to shared Supabase; announce it first (AGENTS.md §7.3). The PNG exports do not include it yet.
+
+## 28 October 2026 — PR #63 model reconciliation
+
+The current diagram includes migrations 016–018. Architecture exports now include event revision/edit history, change-request revision/impact fields, cancellation audit and equipment/registration state. Earlier pending-export notes are superseded by this refresh. The equipment API uses a derived opaque version over event and line data rather than exposing the stored integer as its concurrency token. Cancellation counts are captured before migration 015 releases RESERVED equipment; all release records remain immutable. No migration was rewritten and no shared Supabase schema change was performed during this repair. AUTO-20261028-PR63-01 records fresh-install/upgrade and workflow tests on disposable PostgreSQL 17.

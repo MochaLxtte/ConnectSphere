@@ -1,6 +1,7 @@
 import { vi } from 'vitest';
 
-type Reply = { status?: number; body: unknown } | (() => { status?: number; body: unknown });
+type ResponseData = { status?: number; body: unknown };
+type Reply = ResponseData | (() => ResponseData | Promise<ResponseData>);
 
 /** Test helper: stub fetch with replies keyed by "METHOD /path" and record the calls made. */
 export function stubApi(routes: Record<string, Reply>) {
@@ -10,7 +11,7 @@ export function stubApi(routes: Record<string, Reply>) {
     calls.push({ key, body: typeof init?.body === 'string' ? JSON.parse(init.body) : undefined });
     const route = routes[key];
     if (!route) return new Response(JSON.stringify({ error: { code: 'NOT_FOUND', message: `No stub for ${key}` } }), { status: 404 });
-    const reply = typeof route === 'function' ? route() : route;
+    const reply = typeof route === 'function' ? await route() : route;
     return new Response(JSON.stringify(reply.body), { status: reply.status ?? 200 });
   });
   vi.stubGlobal('fetch', fetchMock);

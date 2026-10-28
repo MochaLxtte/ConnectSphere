@@ -205,7 +205,42 @@ describe('KAN-15 submit and review', () => {
     expect((await decide(id, change.id, { decision: 'APPROVED' })).status).toBe(200);
     expect(await statusOf('venue_bookings', pendingVenue)).toBe('CANCELLED');
     expect(await statusOf('equipment_requests', pendingEquipment)).toBe('CANCELLED');
+    const released = (await fixture.pool.query(`SELECT released_by, released_at, release_reason,
+      release_cause, revision, decided_at FROM equipment_requests WHERE id = $1`, [pendingEquipment])).rows[0];
+    expect(released).toMatchObject({ released_by: coordinator.id, release_cause: 'MANUAL_CANCELLATION',
+      revision: 2, decided_at: null });
+    expect(released.released_at).toBeInstanceOf(Date);
+    expect(released.release_reason).toContain('approved change request');
     expect((await stored(id)).startsAt).toEqual(new Date('2026-12-01T03:00:00Z'));
+  });
+
+  it.each([
+    { equipmentRequirements: '10 microphones' },
+    { startsAt: '2026-12-01T03:00:00Z' },
+  ])('KAN-15/KAN-63 approval invalidates Not Required after equipment-impacting changes: %j', async (changes) => {
+    const id = await createEvent();
+    await fixture.pool.query("UPDATE event_requests SET equipment_plan_status = 'NOT_REQUIRED' WHERE id = $1", [id]);
+    const change = (await submit(id, changes)).body;
+    expect(change.impact.affectedKinds).toContain('EQUIPMENT');
+    const approved = await decide(id, change.id, { decision: 'APPROVED' });
+    expect(approved.status).toBe(200);
+    const plan = (await fixture.pool.query('SELECT equipment_plan_status, revision FROM event_requests WHERE id = $1', [id])).rows[0];
+    expect(plan.equipment_plan_status).toBe('REQUIRED');
+    expect(plan.revision).toBe(approved.body.appliedRevision);
+    const refreshed = await request(appFor(coordinator)).get(`/api/events/${id}/equipment-requests`);
+    expect(refreshed.status).toBe(200);
+    expect(refreshed.body.plan.status).toBe('REQUIRED');
+  });
+
+  it('KAN-15/KAN-63 rejection or unrelated approval preserves a no-equipment declaration', async () => {
+    const id = await createEvent();
+    await fixture.pool.query("UPDATE event_requests SET equipment_plan_status = 'NOT_REQUIRED' WHERE id = $1", [id]);
+    const change = (await submit(id, { equipmentRequirements: '10 microphones' })).body;
+    expect((await decide(id, change.id, { decision: 'REJECTED', reason: 'No equipment change needed.' })).status).toBe(200);
+    const purpose = (await submit(id, { purpose: 'New event purpose' })).body;
+    expect((await decide(id, purpose.id, { decision: 'APPROVED' })).status).toBe(200);
+    expect((await fixture.pool.query('SELECT equipment_plan_status FROM event_requests WHERE id = $1', [id])).rows[0])
+      .toEqual({ equipment_plan_status: 'NOT_REQUIRED' });
   });
 
   it('KAN-15-AC8/AC103 refuses approval over a confirmed booking or active registrations, changing nothing', async () => {
