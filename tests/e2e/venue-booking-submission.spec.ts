@@ -67,7 +67,7 @@ async function fixtures(page: Page, options: {
         createdAt: '2026-10-05T00:00:00.000Z', updatedAt: '2026-10-05T00:00:00.000Z',
         eventStartsAt: event.startsAt, eventEndsAt: event.endsAt, purpose: event.purpose, description: event.description,
         expectedAttendance: event.expectedAttendance, venueRequirements: event.venueRequirements, accessibilityNeeds: event.accessibilityNeeds,
-        recovery: [], replacesBookingId: null,
+        recovery: [], replacesBookingId: null, replacedByBookingIds: [],
         holdExpiresAt: null, heldBy: null, heldAt: null, expiredAt: null,
         cancelledBy: null, cancelledAt: null, cancellationReason: null,
       };

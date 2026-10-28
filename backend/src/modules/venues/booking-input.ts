@@ -114,6 +114,12 @@ export function parseHoldPlacement(input: unknown): HoldPlacementInput {
   }
 }
 
+/** KAN-82-AC4: cancelling one venue arrangement needs a trimmed, nonempty reason. */
+export function parseArrangementCancellation(input: unknown): HoldCancellationInput {
+  const body = parseObjectBody(input, ['reason']);
+  return { reason: requiredText(body, 'reason') };
+}
+
 /** KAN-83-AC10: cancelling a hold needs a trimmed, nonempty reason. */
 export function parseHoldCancellation(input: unknown): HoldCancellationInput {
   const body = parseObjectBody(input, ['reason']);

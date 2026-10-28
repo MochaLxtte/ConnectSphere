@@ -5,15 +5,19 @@ import {
   type WorkflowActor, type WorkflowDependencies,
 } from '../events/workflow-support.js';
 import {
-  parseBookingDecision, parseBookingSubmission, parseHoldCancellation, parseHoldPlacement,
+  parseArrangementCancellation, parseBookingDecision, parseBookingSubmission, parseHoldCancellation,
+  parseHoldPlacement,
 } from './booking-input.js';
 import { recordNotifications } from '../notifications/notify.js';
 import { bookingDecisionNotifications } from '../notifications/trigger-matrix.js';
 import {
+  arrangementCancelledNotifications, replacementRequestedNotifications, type ArrangementRef,
+} from '../notifications/arrangement-notifications.js';
+import {
   BOOKING_RECOVERY_SQL, hasOpenRecovery, resolveReplacedBooking, serializeRecovery, type BookingRecovery,
 } from './outage-impact.js';
 import { isOpenForRange } from './venue-search.js';
-import { effectiveBookingStatusSql } from './occupancy.js';
+import { effectiveBookingStatusSql, occupyingBookingSql } from './occupancy.js';
 import { intervalWithinVenueHours } from './suitability-rules.js';
 import type { BookingSubmissionInput } from './booking-input.js';
 
@@ -49,8 +53,10 @@ export interface VenueBooking {
   accessibilityNeeds: string | null;
   /** KAN-81: outages recorded against this booking and their recovery state, earliest first. */
   recovery: BookingRecovery[];
-  /** KAN-81-AC7: the outage-affected booking this request replaces, if any. */
+  /** KAN-81-AC7 / KAN-82-AC5: the outage-affected or cancelled booking this request replaces, if any. */
   replacesBookingId: string | null;
+  /** KAN-82-AC8: requests that name this booking as the one they replace, earliest first. */
+  replacedByBookingIds: string[];
   /** KAN-83: hold deadline and audit. Kept after approval, expiry, rejection or cancellation. */
   holdExpiresAt: string | null;
   heldBy: string | null;
@@ -79,6 +85,8 @@ const bookingSelect = `SELECT b.occupied_starts_at AS "occupiedStartsAt",
   e.expected_attendance AS "expectedAttendance", e.venue_requirements AS "venueRequirements",
   e.accessibility_needs AS "accessibilityNeeds", ${BOOKING_RECOVERY_SQL} AS recovery,
   b.replaces_booking_id AS "replacesBookingId",
+  ARRAY(SELECT r.id FROM venue_bookings r WHERE r.replaces_booking_id = b.id
+    ORDER BY r.created_at, r.id) AS "replacedByBookingIds",
   b.hold_expires_at AS "holdExpiresAt", b.held_by AS "heldBy", b.held_at AS "heldAt",
   b.expired_at AS "expiredAt", b.cancelled_by AS "cancelledBy", b.cancelled_at AS "cancelledAt",
   b.cancellation_reason AS "cancellationReason"
@@ -102,6 +110,7 @@ function serialize(row: BookingRow): VenueBooking {
     decidedAt: isoOrNull(row.decidedAt), createdAt: iso(row.createdAt), updatedAt: iso(row.updatedAt),
     eventStartsAt: isoOrNull(row.eventStartsAt), eventEndsAt: isoOrNull(row.eventEndsAt),
     recovery: serializeRecovery(row.recovery),
+    replacedByBookingIds: row.replacedByBookingIds ?? [],
     holdExpiresAt: isoOrNull(row.holdExpiresAt), heldAt: isoOrNull(row.heldAt),
     expiredAt: isoOrNull(row.expiredAt), cancelledAt: isoOrNull(row.cancelledAt),
   };
@@ -185,20 +194,48 @@ const REPLACEMENT_EVENT_STATUSES: readonly EventStatus[] = ['APPROVED', 'CONFIRM
 const replacementNotNeeded = () => conflict('REPLACEMENT_NOT_NEEDED',
   'The booking being replaced no longer needs recovery. Refresh to see its current state.');
 
+/** Statuses that still reserve, or may come to reserve, a venue period. A lapsed hold counts as expired. */
+const LIVE_ARRANGEMENT_STATUSES: readonly VenueBookingStatus[] = ['PENDING', 'HELD', 'APPROVED'];
+
+/** KAN-81 replaces an outage-affected booking; KAN-82 replaces one the coordinator cancelled. */
+type ReplacementKind = 'RECOVERY' | 'CANCELLED';
+
 /**
- * KAN-81-AC7: the original must be a booking of the same event that still needs recovery. It is only
- * read here, not locked; approval locks it and checks again.
+ * Cancelled by someone, with who, when and why (KAN-82, KAN-83, KAN-15, KAN-62). An original that
+ * KAN-81 resolved after its replacement was approved is CANCELLED without cancelled_at, and stays a
+ * recovery original, so it is never replaced twice.
+ */
+const explicitlyCancelledSql = "(status = 'CANCELLED' AND cancelled_at IS NOT NULL)";
+
+/**
+ * KAN-81-AC7: the original must be a booking of the same event that still needs recovery.
+ * KAN-82-AC5/AC6 (design D2): or a cancelled booking of the same event with no live replacement yet,
+ * so a rejected or expired replacement can be retried. CANCELLED is terminal, so reading it unlocked
+ * is safe; the caller already holds the event row lock, which serialises competing replacements.
+ * A recovery original is only read here; approval locks it and checks again.
  */
 async function assertReplaceable(
   client: Pick<PoolClient, 'query'>, eventRequestId: string, eventStatus: EventStatus, originalBookingId: string,
-): Promise<void> {
+): Promise<ReplacementKind> {
   if (!REPLACEMENT_EVENT_STATUSES.includes(eventStatus)) {
     conflict('EVENT_NOT_ELIGIBLE_FOR_REPLACEMENT', 'A replacement venue can only be requested for an approved or confirmed event.');
   }
-  const original = await client.query<{ eventRequestId: string }>(
-    'SELECT event_request_id AS "eventRequestId" FROM venue_bookings WHERE id = $1', [originalBookingId]);
+  const original = await client.query<{ eventRequestId: string; explicitlyCancelled: boolean }>(
+    `SELECT event_request_id AS "eventRequestId", ${explicitlyCancelledSql} AS "explicitlyCancelled"
+     FROM venue_bookings WHERE id = $1`, [originalBookingId]);
   if (original.rows[0]?.eventRequestId !== eventRequestId) throw bookingNotFound();
+  if (original.rows[0].explicitlyCancelled) {
+    const live = await client.query<{ id: string }>(`SELECT b.id FROM venue_bookings b
+      WHERE b.replaces_booking_id = $1 AND ${effectiveBookingStatusSql('b')} = ANY($2::text[]) LIMIT 1`,
+    [originalBookingId, LIVE_ARRANGEMENT_STATUSES]);
+    if (live.rows[0]) {
+      conflict('REPLACEMENT_IN_PROGRESS',
+        'A replacement for this cancelled arrangement is already pending or approved. Refresh to see it.');
+    }
+    return 'CANCELLED';
+  }
   if (!(await hasOpenRecovery(client, originalBookingId))) replacementNotNeeded();
+  return 'RECOVERY';
 }
 
 /**
@@ -246,9 +283,8 @@ export async function createVenueBooking(
       conflict('EVENT_NOT_ELIGIBLE',
         'A venue booking cannot be requested for a rejected, cancelled or completed event.');
     }
-    if (submission.replacesBookingId !== null) {
-      await assertReplaceable(client, eventRequestId, event.status, submission.replacesBookingId);
-    }
+    const replacement = submission.replacesBookingId === null ? null
+      : await assertReplaceable(client, eventRequestId, event.status, submission.replacesBookingId);
     const venue = await client.query<{ isActive: boolean }>(
       'SELECT is_active AS "isActive" FROM venues WHERE id = $1 FOR UPDATE', [submission.venueId]);
     if (!venue.rows[0]) throw new WorkflowError('NOT_FOUND', 'VENUE_NOT_FOUND', 'The venue was not found.');
@@ -269,8 +305,33 @@ export async function createVenueBooking(
       [eventRequestId, submission.venueId, actor.id, submission.startsAt, submission.endsAt,
         submission.layout, submission.notes, submission.replacesBookingId],
     );
-    return readBooking(client, inserted.rows[0]!.id, actor);
+    const bookingId = inserted.rows[0]!.id;
+    // KAN-82-AC11: a replacement for a cancelled arrangement tells the coordinator and Venue Staff.
+    // KAN-81 recovery replacements keep their existing behaviour.
+    if (replacement === 'CANCELLED') {
+      const ref = await arrangementRef(client, bookingId, actor.id);
+      await recordNotifications(client, replacementRequestedNotifications(ref, await venueStaffIds(client)));
+    }
+    return readBooking(client, bookingId, actor);
   });
+}
+
+/** KAN-82-AC11: every Venue Staff account; the schema has no per-venue staff allocation. */
+async function venueStaffIds(client: Pick<PoolClient, 'query'>): Promise<string[]> {
+  const found = await client.query<{ id: string }>(
+    "SELECT id FROM app_users WHERE role = 'VENUE_STAFF' ORDER BY id");
+  return found.rows.map((row) => row.id);
+}
+
+async function arrangementRef(
+  client: Pick<PoolClient, 'query'>, bookingId: string, coordinatorId: string,
+): Promise<ArrangementRef> {
+  const found = await client.query<Omit<ArrangementRef, 'coordinatorId'>>(
+    `SELECT e.id AS "eventId", e.name AS "eventName", b.id AS "bookingId", v.name AS "venueName",
+       b.starts_at AS "startsAt", b.ends_at AS "endsAt"
+     FROM venue_bookings b JOIN event_requests e ON e.id = b.event_request_id
+     JOIN venues v ON v.id = b.venue_id WHERE b.id = $1`, [bookingId]);
+  return { ...found.rows[0]!, coordinatorId };
 }
 
 interface LockedBooking {
@@ -359,6 +420,7 @@ export async function decideVenueBooking(
       if (booking.status !== 'PENDING' && booking.status !== 'HELD') {
         conflict('BOOKING_ALREADY_DECIDED', 'This booking is no longer pending a decision.');
       }
+      let replacesCancelled = false;
 
       if (decision.decision === 'APPROVED') {
         // Lock order: booking -> event -> venue. The event and venue must remain eligible
@@ -386,16 +448,25 @@ export async function decideVenueBooking(
 
         // KAN-81-AC8: lock the original last (after booking -> event -> venue) and approve only while it
         // still needs recovery, so a second replacement or a removed outage cannot double-book the event.
+        // KAN-82-AC5: a replacement for a cancelled arrangement needs no recovery; the original stays
+        // cancelled as history and is not touched again.
+        // Under the original's lock, so two replacements of one cancelled original cannot both be approved.
         if (booking.replacesBookingId !== null) {
-          await client.query('SELECT id FROM venue_bookings WHERE id = $1 FOR UPDATE', [booking.replacesBookingId]);
-          if (!(await hasOpenRecovery(client, booking.replacesBookingId))) replacementNotNeeded();
+          const original = await client.query<{ explicitlyCancelled: boolean; approvedReplacement: boolean }>(
+            `SELECT ${explicitlyCancelledSql} AS "explicitlyCancelled",
+               EXISTS(SELECT 1 FROM venue_bookings r WHERE r.replaces_booking_id = o.id AND r.id <> $2
+                 AND ${occupyingBookingSql('r', 'clock_timestamp()')}) AS "approvedReplacement"
+             FROM venue_bookings o WHERE o.id = $1 FOR UPDATE`, [booking.replacesBookingId, bookingId]);
+          replacesCancelled = original.rows[0]?.explicitlyCancelled === true;
+          if (replacesCancelled ? original.rows[0]!.approvedReplacement
+            : !(await hasOpenRecovery(client, booking.replacesBookingId))) replacementNotNeeded();
         }
       }
 
       await client.query(`UPDATE venue_bookings SET status = $1, decided_by = $2,
         decided_at = now(), decision_reason = $3, updated_at = now() WHERE id = $4`,
       [decision.decision, actor.id, decision.reason, bookingId]);
-      if (decision.decision === 'APPROVED' && booking.replacesBookingId !== null) {
+      if (decision.decision === 'APPROVED' && booking.replacesBookingId !== null && !replacesCancelled) {
         await resolveReplacedBooking(client, booking.replacesBookingId);
       }
 
@@ -531,6 +602,86 @@ export async function cancelVenueHold(
     await releaseHold(client, bookingId, actor.id, reason);
     return readBooking(client, bookingId, actor);
   });
+}
+
+/** KAN-82-AC4: single-arrangement cancellation applies once venue planning has been approved. */
+const ARRANGEMENT_EVENT_STATUSES: readonly EventStatus[] = ['APPROVED', 'CONFIRMED'];
+
+/**
+ * KAN-82-AC4/AC7/AC10/AC11 (design D1): the event's current coordinator cancels one pending, live
+ * held or approved arrangement with a reason. Only that row changes, to CANCELLED with who, when
+ * and why; its decision and hold history and its id stay. Other arrangements, equipment and every
+ * event field are untouched. Lock order is the decision path's: venue gate -> booking -> event, so
+ * a competing approval or hold expiry resolves against the locked current state. A repeat is
+ * refused before anything is written, so availability is never released twice and no second notice
+ * is sent. Someone who is not the current coordinator sees 404, as on the read routes.
+ */
+export async function cancelVenueArrangement(
+  { pool }: WorkflowDependencies,
+  { bookingId, actor, input }: { bookingId: string; actor: WorkflowActor; input: unknown },
+): Promise<VenueBooking> {
+  if (actor.role !== 'EVENT_COORDINATOR') {
+    throw new WorkflowError('FORBIDDEN', 'ACTION_FORBIDDEN',
+      'Only the assigned Event Coordinator can cancel a venue arrangement.');
+  }
+  const { reason } = parseArrangementCancellation(input);
+  return inActorTransaction(pool, actor.id, async (client) => {
+    const booking = await lockBooking(client, bookingId);
+    const event = await client.query<{ status: EventStatus; coordinatorId: string | null }>(
+      'SELECT status, coordinator_id AS "coordinatorId" FROM event_requests WHERE id = $1 FOR UPDATE',
+      [booking.eventRequestId]);
+    const current = event.rows[0];
+    if (!current || current.coordinatorId !== actor.id || current.status === 'DRAFT') throw bookingNotFound();
+    if (booking.status === 'CANCELLED') {
+      conflict('BOOKING_ALREADY_CANCELLED', 'This arrangement is already cancelled. Refresh to see its current state.');
+    }
+    if (booking.status === 'HELD' && !booking.holdLive) holdExpired();
+    if (!LIVE_ARRANGEMENT_STATUSES.includes(booking.status)) {
+      conflict('ARRANGEMENT_NOT_CANCELLABLE', 'Only a pending, held or approved arrangement can be cancelled.');
+    }
+    if (!ARRANGEMENT_EVENT_STATUSES.includes(current.status)) {
+      conflict('ARRANGEMENT_NOT_CANCELLABLE',
+        'A single venue arrangement can only be cancelled for an approved or confirmed event.');
+    }
+
+    await client.query(`UPDATE venue_bookings SET status = 'CANCELLED', cancelled_by = $2,
+      cancelled_at = now(), cancellation_reason = $3, updated_at = now()
+      WHERE id = $1 AND status IN ('PENDING', 'HELD', 'APPROVED')`, [bookingId, actor.id, reason]);
+    // A cancelled booking no longer occupies the venue, so an outage against it needs no recovery.
+    await client.query(`UPDATE venue_outage_impacts SET status = 'RESOLVED', updated_at = now()
+      WHERE venue_booking_id = $1 AND status = 'RECOVERY_REQUIRED'`, [bookingId]);
+    await recordNotifications(client, arrangementCancelledNotifications(
+      await arrangementRef(client, bookingId, actor.id), reason, await venueStaffIds(client)));
+    return readBooking(client, bookingId, actor);
+  });
+}
+
+export interface ArrangementReadiness {
+  /** Every live arrangement is approved, none needs outage recovery, and there is at least one. */
+  ready: boolean;
+  /** Pending, live held or approved arrangements. */
+  live: number;
+  /** Live arrangements that are not yet approved, or that need recovery. */
+  outstanding: number;
+}
+
+/**
+ * KAN-82-AC9 (design D4): venue readiness derived from the current rows, never stored, so cancelling
+ * or replacing an arrangement changes it immediately. KAN-61 confirmation and KAN-84 safety review
+ * read it; invalidating a stored safety approval belongs to KAN-84, which owns that record.
+ */
+export async function venueArrangementReadiness(
+  database: Pick<Pool, 'query'> | Pick<PoolClient, 'query'>, eventRequestId: string,
+): Promise<ArrangementReadiness> {
+  const found = await database.query<{ live: number; outstanding: number }>(
+    `SELECT count(*)::int AS live,
+       count(*) FILTER (WHERE status <> 'APPROVED' OR EXISTS(SELECT 1 FROM venue_outage_impacts i
+         WHERE i.venue_booking_id = s.id AND i.status = 'RECOVERY_REQUIRED'))::int AS outstanding
+     FROM (SELECT b.id, ${effectiveBookingStatusSql('b')} AS status FROM venue_bookings b
+       WHERE b.event_request_id = $1) s
+     WHERE s.status = ANY($2::text[])`, [eventRequestId, LIVE_ARRANGEMENT_STATUSES]);
+  const { live, outstanding } = found.rows[0]!;
+  return { ready: live > 0 && outstanding === 0, live, outstanding };
 }
 
 /** Shared held-state release: the caller holds the booking lock and has checked it is HELD. */
