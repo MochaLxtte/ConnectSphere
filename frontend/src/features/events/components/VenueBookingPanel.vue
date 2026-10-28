@@ -3,7 +3,8 @@ import { computed, onBeforeUnmount, ref, useId, watch } from 'vue';
 import { ApiError } from '../../../lib/api-client';
 import { authSession, clearLocalSession } from '../../auth/session.js';
 import {
-  fetchVenueBookings, needsRecovery, submitVenueBooking, venueBookingStatusLabel, type VenueBooking,
+  cancelVenueArrangement, fetchVenueBookings, LIVE_ARRANGEMENT_STATUSES, needsRecovery, submitVenueBooking,
+  venueBookingStatusLabel, type VenueBooking,
 } from '../../venues/api/venue-bookings';
 import { emptyFilters, searchVenues, type VenueResult } from '../../venues/api/venues';
 import { formatEventTime, fromSingaporeInputValue } from '../presentation';
@@ -37,21 +38,43 @@ const isCoordinator = computed(() => !authSession.loading && authSession.user?.r
 // Mirrors booking-service.ts's TERMINAL_EVENT_STATUSES; eligible event states beyond this are still open (S2-T11/T12).
 const canRequest = computed(() => isCoordinator.value && !accessDenied.value
   && !['REJECTED', 'CANCELLED', 'COMPLETED'].includes(props.status));
+// KAN-82-AC4: single arrangements are managed once the event's venue planning is approved.
+const canManage = computed(() => isCoordinator.value && !accessDenied.value
+  && ['APPROVED', 'CONFIRMED'].includes(props.status));
+/** KAN-82: the arrangement whose cancellation is being confirmed, and the reason typed for it. */
+const cancelTarget = ref<VenueBooking | null>(null);
+const cancelReason = ref('');
+/** Set when the list may be out of date (a stale conflict or an unconfirmed result), until it reloads. */
+const needsRefresh = ref(false);
 let contextVersion = 0;
 let listController: AbortController | undefined;
 let venuesController: AbortController | undefined;
 let submitController: AbortController | undefined;
+let cancelController: AbortController | undefined;
 
 function resetForm() {
   venueId.value = ''; startsAt.value = ''; endsAt.value = ''; layout.value = ''; notes.value = '';
   replacesBookingId.value = '';
 }
 
-/** KAN-81-AC7: approved bookings of this event that still need a replacement venue. */
-const replaceable = computed(() => bookings.value.filter((item) => item.status === 'APPROVED' && needsRecovery(item)));
+const isLive = (item: VenueBooking) => LIVE_ARRANGEMENT_STATUSES.includes(item.status);
+const byId = (bookingId: string | null) => bookings.value.find((item) => item.id === bookingId);
+/** KAN-82-AC8: the replacements of a booking that are listed for this event. */
+const replacements = (item: VenueBooking) =>
+  (item.replacedByBookingIds ?? []).map((replacementId) => byId(replacementId)).filter((found) => !!found);
+/** KAN-82-AC6: a coordinator-cancelled arrangement without a live replacement can be replaced again. */
+const awaitsReplacement = (item: VenueBooking) => item.status === 'CANCELLED' && item.cancelledBy !== null
+  && !replacements(item).some(isLive);
+
+/** KAN-81-AC7 recovery bookings, and KAN-82-AC5 cancelled arrangements awaiting a replacement. */
+const replaceable = computed(() => bookings.value.filter((item) =>
+  (item.status === 'APPROVED' && needsRecovery(item)) || (canManage.value && awaitsReplacement(item))));
+
+const arrangementLabel = (item: VenueBooking) =>
+  `${item.venueName}, ${formatEventTime(item.startsAt)} to ${formatEventTime(item.endsAt)}`;
 
 function abortPending() {
-  listController?.abort(); venuesController?.abort(); submitController?.abort();
+  listController?.abort(); venuesController?.abort(); submitController?.abort(); cancelController?.abort();
 }
 
 function loseAccess(error: unknown): boolean {
@@ -61,6 +84,7 @@ function loseAccess(error: unknown): boolean {
   abortPending();
   accessDenied.value = true;
   bookings.value = []; venues.value = []; resetForm();
+  cancelTarget.value = null; cancelReason.value = '';
   loading.value = false; busy.value = false; venuesLoading.value = false;
   savedMessage.value = null; actionError.value = null;
   loadError.value = 'This event request is unavailable or you no longer have access to its venue bookings.';
@@ -77,6 +101,11 @@ async function load() {
     const items = await fetchVenueBookings(props.eventRequestId, current.signal);
     if (current.signal.aborted) return;
     bookings.value = items;
+    needsRefresh.value = false;
+    // A confirmation must name the arrangement as it is now; drop it if it is gone or no longer live.
+    const target = cancelTarget.value && items.find((item) => item.id === cancelTarget.value!.id);
+    cancelTarget.value = target && isLive(target) ? target : null;
+    if (replacesBookingId.value && !items.some((item) => item.id === replacesBookingId.value)) replacesBookingId.value = '';
     if (uncertainSave.value) {
       uncertainSave.value = false; actionError.value = null; resetForm();
     }
@@ -158,9 +187,58 @@ async function submit() {
   }
 }
 
+function startCancel(item: VenueBooking) {
+  if (busy.value || needsRefresh.value) return;
+  cancelTarget.value = item; cancelReason.value = ''; actionError.value = null; savedMessage.value = null;
+}
+
+function stopCancel() {
+  if (busy.value) return;
+  cancelTarget.value = null; cancelReason.value = '';
+}
+
+/** KAN-82-AC5: start a replacement request linked to a cancelled arrangement. */
+function startReplacement(item: VenueBooking) {
+  if (busy.value) return;
+  replacesBookingId.value = item.id;
+  savedMessage.value = `Request a replacement for ${arrangementLabel(item)} below. It starts pending until Venue Staff decide.`;
+}
+
+/**
+ * KAN-82-AC4/AC10/AC12: cancel exactly the confirmed arrangement. Only that row is updated from the
+ * response; a stale conflict or an unconfirmed result asks for a refresh instead of guessing.
+ */
+async function confirmCancel() {
+  const target = cancelTarget.value;
+  const reason = cancelReason.value.trim();
+  if (!target || !reason || busy.value || !canManage.value) return;
+  const current = new AbortController();
+  cancelController = current;
+  const version = contextVersion;
+  busy.value = true; actionError.value = null; savedMessage.value = null;
+  try {
+    const cancelled = await cancelVenueArrangement(target.id, reason, current.signal);
+    if (current.signal.aborted || version !== contextVersion) return;
+    bookings.value = bookings.value.map((item) => (item.id === cancelled.id ? cancelled : item));
+    cancelTarget.value = null; cancelReason.value = '';
+    savedMessage.value = `${arrangementLabel(cancelled)} was cancelled and its venue period released. `
+      + 'Other arrangements are unchanged. To change it, request a replacement; a replacement is not guaranteed.';
+    emit('changed');
+  } catch (error) {
+    if (current.signal.aborted || version !== contextVersion || loseAccess(error)) return;
+    needsRefresh.value = true;
+    actionError.value = !(error instanceof ApiError) || error.status === 0 || error.status >= 500 || error.code === 'INVALID_RESPONSE'
+      ? 'We could not confirm whether the arrangement was cancelled. Refresh booking requests to see its current state before trying again.'
+      : `${error.message} Refresh booking requests to see the current state.`;
+  } finally {
+    if (!current.signal.aborted && version === contextVersion) busy.value = false;
+  }
+}
+
 watch(() => [props.eventRequestId, props.status, props.viewerRole, authSession.loading,
   authSession.user?.id, authSession.user?.role], () => {
   contextVersion++; abortPending(); resetForm();
+  cancelTarget.value = null; cancelReason.value = ''; needsRefresh.value = false;
   bookings.value = []; venues.value = []; loading.value = false; busy.value = false; venuesLoading.value = false;
   accessDenied.value = false; uncertainSave.value = false;
   loadError.value = null; venuesError.value = null; actionError.value = null; savedMessage.value = null;
@@ -206,11 +284,39 @@ onBeforeUnmount(() => { contextVersion++; abortPending(); });
           <p v-if="item.occupiedStartsAt && item.occupiedEndsAt">Occupied (including setup/turnaround): {{ formatEventTime(item.occupiedStartsAt) }} to {{ formatEventTime(item.occupiedEndsAt) }}</p>
           <p v-if="item.warnings?.length" role="status">Warning: {{ item.warnings.join(', ') }}</p>
           <p v-if="item.decisionReason">Decision note: {{ item.decisionReason }}</p>
-          <p v-if="item.replacesBookingId" class="panel-meta">Replacement for an outage-affected booking.</p>
+          <!-- KAN-82-AC8: cancellation and replacement links are shown both ways, per arrangement. -->
+          <p v-if="item.replacesBookingId && byId(item.replacesBookingId)?.status === 'CANCELLED' && !needsRecovery(byId(item.replacesBookingId)!)"
+            class="panel-meta">Replaces the cancelled arrangement {{ arrangementLabel(byId(item.replacesBookingId)!) }}.</p>
+          <p v-else-if="item.replacesBookingId" class="panel-meta">Replacement for an outage-affected booking.</p>
+          <p v-for="replacement in replacements(item)" :key="replacement.id" class="panel-meta">Replaced by {{ arrangementLabel(replacement) }} ({{ venueBookingStatusLabel(replacement.status) }}).</p>
           <!-- KAN-83-AC11: the hold deadline, its expiry and any cancellation are visible to the coordinator. -->
           <p v-if="item.status === 'HELD'" class="hold-note">Held until {{ formatEventTime(item.holdExpiresAt) }} (Singapore time). Venue staff must approve it before then, or it is released. The deadline is confirmed by the server, not this page.</p>
           <p v-else-if="item.status === 'EXPIRED'" class="hold-note">The hold expired at {{ formatEventTime(item.holdExpiresAt) }} and the venue period was released. Submit a new request to try again.</p>
           <p v-if="item.cancellationReason">Cancellation reason: {{ item.cancellationReason }}</p>
+          <p v-if="awaitsReplacement(item) && canManage" class="panel-meta">Cancelled; not replaced. This arrangement no longer reserves the venue.</p>
+
+          <div v-if="canManage && cancelTarget?.id !== item.id" class="panel-actions">
+            <button v-if="isLive(item)" type="button" class="button button-secondary"
+              :disabled="busy || loading || needsRefresh" @click="startCancel(item)">Cancel arrangement</button>
+            <button v-if="awaitsReplacement(item)" type="button" class="button button-secondary"
+              :disabled="busy || loading || replacesBookingId === item.id" @click="startReplacement(item)">Request replacement</button>
+          </div>
+
+          <!-- KAN-82-AC4/AC12: confirm the exact event, venue and period before cancelling. -->
+          <form v-if="canManage && cancelTarget?.id === item.id" class="cancel-confirm" :aria-busy="busy"
+            :aria-label="`Cancel ${item.venueName}`" @submit.prevent="confirmCancel">
+            <p><strong>Cancel {{ venueBookingStatusLabel(item.status).toLowerCase() }} arrangement:</strong>
+              {{ item.eventName ?? 'Untitled event' }} at {{ arrangementLabel(item) }}.</p>
+            <p class="panel-hint">Cancelling releases this venue period straight away. Other arrangements stay as they are. To change it, request a replacement afterwards; it needs a new Venue Staff decision and is not guaranteed.</p>
+            <label :for="`${id}-cancel-reason`">Reason for cancelling</label>
+            <textarea :id="`${id}-cancel-reason`" v-model="cancelReason" rows="2" maxlength="2000" :disabled="busy" />
+            <div class="panel-actions">
+              <button type="submit" class="button button-primary" :disabled="busy || !cancelReason.trim()">
+                {{ busy ? 'Cancelling…' : 'Confirm cancellation' }}
+              </button>
+              <button type="button" class="button button-secondary" :disabled="busy" @click="stopCancel">Keep arrangement</button>
+            </div>
+          </form>
         </li>
       </ul>
 
@@ -252,10 +358,11 @@ onBeforeUnmount(() => { contextVersion++; abortPending(); });
           <select :id="`${id}-replaces`" v-model="replacesBookingId" :disabled="busy">
             <option value="">Not a replacement</option>
             <option v-for="item in replaceable" :key="item.id" :value="item.id">
-              {{ item.venueName }}, {{ formatEventTime(item.startsAt) }} to {{ formatEventTime(item.endsAt) }}
+              {{ item.venueName }}, {{ formatEventTime(item.startsAt) }} to {{ formatEventTime(item.endsAt) }}{{ item.status === 'CANCELLED' ? ' (cancelled)' : '' }}
             </option>
           </select>
-          <p class="panel-hint">A replacement must fit the expected attendance and the venue's opening hours. Once Venue Staff approve it, the affected booking is cancelled and its recovery is resolved.</p>
+          <p v-if="byId(replacesBookingId)?.status === 'CANCELLED'" class="panel-hint">The cancelled arrangement stays cancelled. This new request must fit the expected attendance and the venue's opening hours, and starts pending until Venue Staff decide.</p>
+          <p v-else class="panel-hint">A replacement must fit the expected attendance and the venue's opening hours. Once Venue Staff approve it, the affected booking is cancelled and its recovery is resolved.</p>
         </template>
 
         <div class="panel-actions">
@@ -273,4 +380,5 @@ onBeforeUnmount(() => { contextVersion++; abortPending(); });
 <style scoped>
 .tag-recovery { background: #fbeee6; color: #853e37; }
 .hold-note { color: #7a5212; }
+.cancel-confirm { border-left: 3px solid #853e37; padding-left: 0.75rem; margin-top: 0.5rem; }
 </style>
