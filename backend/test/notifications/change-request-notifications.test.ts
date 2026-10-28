@@ -15,14 +15,14 @@ describe('KAN-15-AC10 change-request notifications', () => {
   it('notifies the coordinator and acknowledges the organiser on submission, once per request', () => {
     expect(changeRequestSubmittedNotifications(event, 'change-1')).toEqual([
       {
-        recipientId: 'organiser-1', eventRequestId: 'event-1', type: 'CHANGE_REQUEST_SUBMITTED',
+        recipientId: 'organiser-1', eventRequestId: 'event-1', changeRequestId: 'change-1', type: 'CHANGE_REQUEST_SUBMITTED',
         title: 'Change request submitted',
         message: 'Your change request for “Career Fair” was sent to the coordinator for review. ' +
           'The event keeps its current details until the change is approved.',
         dedupeKey: 'CHANGE_REQUEST_SUBMITTED:change-1:organiser',
       },
       {
-        recipientId: 'coordinator-1', eventRequestId: 'event-1', type: 'CHANGE_REQUEST_SUBMITTED',
+        recipientId: 'coordinator-1', eventRequestId: 'event-1', changeRequestId: 'change-1', type: 'CHANGE_REQUEST_SUBMITTED',
         title: 'Change request to review',
         message: 'The organiser of “Career Fair” requested a change. Open the event to review it.',
         dedupeKey: 'CHANGE_REQUEST_SUBMITTED:change-1:coordinator',
@@ -39,12 +39,13 @@ describe('KAN-15-AC10 change-request notifications', () => {
   it('tells the organiser the outcome, the reason and how many pending arrangements were cancelled', () => {
     expect(changeRequestDecisionNotifications(event, { id: 'change-1', outcome: 'APPROVED', reason: null, cancelledCount: 2 }))
       .toEqual([{
-        recipientId: 'organiser-1', eventRequestId: 'event-1', type: 'CHANGE_REQUEST_APPROVED',
+        recipientId: 'organiser-1', eventRequestId: 'event-1', changeRequestId: 'change-1', type: 'CHANGE_REQUEST_APPROVED',
         title: 'Change request approved',
         message: 'Your change request for “Career Fair” was approved and applied. ' +
           '2 pending arrangements were cancelled and must be requested again for the new details.',
         dedupeKey: 'CHANGE_REQUEST_APPROVED:change-1',
-      }]);
+      }, expect.objectContaining({ recipientId: 'coordinator-1', changeRequestId: 'change-1',
+        type: 'CHANGE_REQUEST_APPROVED', message: 'You approved the change request for “Career Fair”.' })]);
     expect(changeRequestDecisionNotifications(event, { id: 'change-1', outcome: 'APPROVED', reason: 'Fine', cancelledCount: 1 })[0]!
       .message).toBe('Your change request for “Career Fair” was approved and applied. Reason: Fine. ' +
       '1 pending arrangement was cancelled and must be requested again for the new details.');
@@ -53,12 +54,13 @@ describe('KAN-15-AC10 change-request notifications', () => {
         type: 'CHANGE_REQUEST_REJECTED', title: 'Change request rejected',
         message: 'Your change request for “Career Fair” was rejected. Reason: Hall is full!',
         dedupeKey: 'CHANGE_REQUEST_REJECTED:change-2',
-      })]);
+      }), expect.objectContaining({ recipientId: 'coordinator-1', changeRequestId: 'change-2',
+        type: 'CHANGE_REQUEST_REJECTED', message: 'You rejected the change request for “Career Fair”.' })]);
   });
 
   it('tells the coordinator about a withdrawal, and nobody when no coordinator is assigned', () => {
     expect(changeRequestWithdrawnNotifications(event, 'change-1')).toEqual([{
-      recipientId: 'coordinator-1', eventRequestId: 'event-1', type: 'CHANGE_REQUEST_WITHDRAWN',
+      recipientId: 'coordinator-1', eventRequestId: 'event-1', changeRequestId: 'change-1', type: 'CHANGE_REQUEST_WITHDRAWN',
       title: 'Change request withdrawn', message: 'The organiser of “Career Fair” withdrew their change request.',
       dedupeKey: 'CHANGE_REQUEST_WITHDRAWN:change-1',
     }]);

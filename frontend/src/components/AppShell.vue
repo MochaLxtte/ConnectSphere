@@ -40,6 +40,7 @@ async function handleSignOut(): Promise<void> {
       </div>
 
       <nav aria-label="Main navigation" class="main-nav">
+        <RouterLink v-if="!authSession.loading && role === 'ATTENDEE'" to="/registrations" class="nav-link"><AppIcon name="calendar" />My registrations</RouterLink>
         <p class="nav-label">Workspace</p>
         <RouterLink to="/" exact-active-class="is-active" class="nav-link"
           ><AppIcon name="grid" />Overview</RouterLink

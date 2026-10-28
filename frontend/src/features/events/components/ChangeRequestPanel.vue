@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, useId } from 'vue';
+import { useRoute } from 'vue-router';
 import {
   decideChangeRequest, fetchChangeRequests, withdrawChangeRequest, type ChangeRequestRecord,
 } from '../api/change-requests';
@@ -12,6 +13,8 @@ const props = defineProps<WorkflowPanelProps>();
 const emit = defineEmits<{ changed: [] }>();
 
 const id = useId();
+const route = useRoute();
+const highlightedRequest = computed(() => typeof route?.query.change === 'string' ? route.query.change : null);
 const { items: requests, loading, loadError, load } = usePanelList(() => props.eventRequestId, fetchChangeRequests);
 const { busy, actionError, savedMessage, run } = usePanelAction(async () => {
   emit('changed');
@@ -81,7 +84,8 @@ function withdraw(item: ChangeRequestRecord) {
       <button type="button" class="button button-secondary" @click="load">Try again</button>
     </div>
     <template v-else>
-      <div v-if="pending" class="change-pending" data-testid="pending-change-request">
+      <div v-if="pending" class="change-pending" :class="{ 'targeted-change': highlightedRequest === pending.id }" data-testid="pending-change-request">
+        <p v-if="highlightedRequest === pending.id" role="status">This is the change request from your notification.</p>
         <div class="item-heading">
           <span class="item-label">Requested by {{ pending.requestedByName }}</span>
           <span class="tag tag-waiting">Awaiting review</span>
@@ -153,7 +157,8 @@ function withdraw(item: ChangeRequestRecord) {
       <h3 v-if="history.length > 0">Earlier change requests</h3>
       <p v-else-if="!pending" class="panel-notice">No change has been requested.</p>
       <ul v-if="history.length > 0" class="panel-list">
-        <li v-for="item in history" :key="item.id">
+        <li v-for="item in history" :key="item.id" :class="{ 'targeted-change': highlightedRequest === item.id }">
+          <p v-if="highlightedRequest === item.id" role="status">This is the change request from your notification.</p>
           <div class="item-heading">
             <span class="item-label">{{ changedFields(item.proposed).map((field) => changeFieldConfig[field].label).join(', ') }}</span>
             <span class="tag" :class="statusTag[item.status]">{{ statusLabel[item.status] }}</span>
@@ -175,6 +180,7 @@ function withdraw(item: ChangeRequestRecord) {
 <style src="./workflow-panel.css"></style>
 <style scoped>
 .change-pending { margin-top: 20px; border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+.targeted-change { outline: 2px solid var(--green); outline-offset: 4px; }
 .change-table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 14px; }
 .change-table th, .change-table td { text-align: left; padding: 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
 .change-table thead th { font-size: 13px; color: #59685e; }

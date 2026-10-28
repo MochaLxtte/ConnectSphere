@@ -23,6 +23,30 @@ const database = (...replies: { rows?: unknown[]; rowCount?: number | undefined 
 };
 
 describe('KAN-64-AC204/AC206 inbox listing', () => {
+  it.each([
+    ['REGISTRATION_CONFIRMED', 'your registration is confirmed.'],
+    ['REGISTRATION_WITHDRAWN', 'your registration is withdrawn.'],
+    ['EVENT_CONFIRMED', 'the event is confirmed.'],
+    ['ATTENDEE_EVENT_CHANGED', 'attendee-relevant event details changed.'],
+  ])('KAN-80 shows the intended attendee a safe %s outcome and own registration link', async (type, message) => {
+    const attendee: WorkflowActor = { id: 'a1', role: 'ATTENDEE' };
+    const { dependencies, query } = database({ rows: [row({ type, canViewRegistration: true,
+      canViewEvent: false, eventName: 'Career fair', message: 'Internal text must not leak' })] });
+    const [item] = await listNotifications(dependencies, attendee);
+    expect(item).toMatchObject({ event: null, booking: null, link: '/registrations' });
+    expect(item!.message).toContain(message); expect(item!.message).not.toContain('Internal');
+    expect(query.mock.calls[0]![0]).toContain('own.attendee_id = $1');
+  });
+  it('KAN-80 links a manager registration outcome to the current event roster', async () => {
+    const { dependencies } = database({ rows: [row({ type: 'REGISTRATION_WITHDRAWN' })] });
+    expect((await listNotifications(dependencies, organiser))[0]!.link).toBe(`/events/${eventId}/registrations`);
+  });
+  it('KAN-80 links an authorised manager to the specific change request', async () => {
+    const { dependencies } = database({ rows: [row({ type: 'CHANGE_REQUEST_APPROVED', changeRequestId: 'change-1' })] });
+    expect((await listNotifications(dependencies, organiser))[0]!.link).toBe(`/events/${eventId}?change=change-1`);
+    const { dependencies: coordinatorDb } = database({ rows: [row({ type: 'CHANGE_REQUEST_SUBMITTED', changeRequestId: 'change-1' })] });
+    expect((await listNotifications(coordinatorDb, coordinator))[0]!.link).toBe(`/reviews/${eventId}?change=change-1`);
+  });
   it('scopes the query to the verified caller and rechecks their current access', async () => {
     const { dependencies, query } = database({ rows: [] });
     expect(await listNotifications(dependencies, coordinator)).toEqual([]);
