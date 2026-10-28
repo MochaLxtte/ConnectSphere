@@ -1,0 +1,38 @@
+
+> connectsphere@0.1.0 test:integration
+> vitest run --config vitest.integration.config.ts database/tests/database.integration.test.ts database/tests/events/change-requests.integration.test.ts
+
+
+ RUN  v4.1.11 C:/Users/trist/Documents/School Stuff/Y3S1/IS212/ConnectSphere
+
+ ❯ database/tests/events/change-requests.integration.test.ts (14 tests | 2 failed) 1364ms
+     × KAN-15/KAN-63 approval invalidates Not Required after equipment-impacting changes: {"equipmentRequirements":"10 microphones"} 69ms
+     × KAN-15/KAN-63 approval invalidates Not Required after equipment-impacting changes: {"startsAt":"2026-12-01T03:00:00Z"} 58ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  database/tests/events/change-requests.integration.test.ts > KAN-15 submit and review > KAN-15/KAN-63 approval invalidates Not Required after equipment-impacting changes: {"equipmentRequirements":"10 microphones"}
+ FAIL  database/tests/events/change-requests.integration.test.ts > KAN-15 submit and review > KAN-15/KAN-63 approval invalidates Not Required after equipment-impacting changes: {"startsAt":"2026-12-01T03:00:00Z"}
+AssertionError: expected undefined to be 'REQUIRED' // Object.is equality
+
+- Expected:
+"REQUIRED"
+
++ Received:
+undefined
+
+ ❯ database/tests/events/change-requests.integration.test.ts:230:106
+    228|     expect(plan.equipment_plan_status).toBe('REQUIRED');
+    229|     expect(plan.revision).toBe(approved.body.appliedRevision);
+    230|     expect((await request(appFor(coordinator)).get(`/api/events/${id}/…
+       |                                                                                                          ^
+    231|   });
+    232|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  2 failed | 28 passed (30)
+   Start at  08:46:10
+   Duration  16.33s (transform 1.88s, setup 0ms, import 10.02s, tests 5.43s, environment 0ms)

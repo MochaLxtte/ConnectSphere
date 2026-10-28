@@ -13,6 +13,7 @@ import {
   type LockedEventRequest, type WorkflowActor, type WorkflowDependencies,
 } from './workflow-support.js';
 import { recordNotifications } from '../notifications/notify.js';
+import { assertVenueBookingsLocked, lockVenueBookingsBeforeEvent } from './arrangement-locks.js';
 import {
   changeRequestDecisionNotifications, changeRequestSubmittedNotifications, changeRequestWithdrawnNotifications,
 } from '../notifications/change-request-notifications.js';
@@ -250,19 +251,6 @@ function parseDecision(input: unknown) {
   return { decision: body.decision, reason, expectedRevision: parseExpectedRevision(body.expectedRevision, true)! };
 }
 
-/**
- * Lock the event's live venue bookings in the order Venue Staff use (venue gate, booking, then
- * event), so an approval cannot deadlock with a concurrent booking decision.
- */
-async function lockVenueBookingsBeforeEvent(client: Pick<PoolClient, 'query'>, eventRequestId: string) {
-  await client.query(`SELECT pg_advisory_xact_lock(hashtextextended('connectsphere:venue:' || venue_id::text, 0))
-    FROM (SELECT DISTINCT venue_id FROM venue_bookings
-          WHERE event_request_id = $1 AND status IN ('PENDING', 'HELD', 'APPROVED') ORDER BY venue_id) venues`,
-  [eventRequestId]);
-  await client.query(`SELECT id FROM venue_bookings
-    WHERE event_request_id = $1 AND status IN ('PENDING', 'HELD', 'APPROVED') ORDER BY id FOR UPDATE`, [eventRequestId]);
-}
-
 /** KAN-15-AC4-AC8, AC103-AC105: one atomic, revision-checked decision by the assigned coordinator. */
 export async function decideChangeRequest(
   { pool }: WorkflowDependencies,
@@ -271,9 +259,11 @@ export async function decideChangeRequest(
   const { decision, reason, expectedRevision } = parseDecision(input);
   try {
     return await inActorTransaction(pool, actor.id, async (client) => {
-      if (decision === 'APPROVED') await lockVenueBookingsBeforeEvent(client, eventRequestId);
+      const lockedBookings = decision === 'APPROVED'
+        ? await lockVenueBookingsBeforeEvent(client, eventRequestId) : null;
       const event = await lockEventRequest(client, eventRequestId);
       requireRelation(actor, event, ['ASSIGNED_COORDINATOR'], 'Only the assigned coordinator can decide a change request.');
+      if (lockedBookings) await assertVenueBookingsLocked(client, event.id, lockedBookings);
       const found = await client.query<{ status: ChangeRequestStatus; proposed: ChangeValues; previous: ChangeValues }>(
         `SELECT status, proposed_changes AS proposed, previous FROM event_change_requests
          WHERE id = $1 AND event_request_id = $2 FOR UPDATE`, [changeRequestId, event.id]);
@@ -309,6 +299,9 @@ export async function decideChangeRequest(
       assertValidAfterChange(current, request.proposed, 'CHANGE_REQUEST_INVALID', 'CONFLICT');
 
       const setClauses = fields.map((field, index) => `${draftColumnByField[field]} = $${index + 2}`);
+      // A previous no-equipment declaration describes the old requirements. Equipment or
+      // timing changes require the coordinator to assess the plan again (KAN-63-AC10/102).
+      if (impact.affectedKinds.includes('EQUIPMENT')) setClauses.push("equipment_plan_status = 'REQUIRED'");
       const updated = await client.query<DraftRow>(`
         UPDATE event_requests SET ${setClauses.join(', ')}, updated_at = now()
         WHERE id = $1 RETURNING ${draftSelectColumns}`, [event.id, ...fields.map((field) => request.proposed[field])]);
@@ -328,9 +321,10 @@ export async function decideChangeRequest(
         [venueIds, actor.id, cancelReason]);
       }
       if (equipmentIds.length > 0) {
-        // D8: main has no equipment cancellation metadata yet; adapt once KAN-26/KAN-62 settle theirs.
-        await client.query(`UPDATE equipment_requests SET status = 'CANCELLED', updated_at = now()
-          WHERE id = ANY($1::uuid[]) AND status = 'REQUESTED'`, [equipmentIds]);
+        await client.query(`UPDATE equipment_requests SET status = 'CANCELLED', released_by = $2,
+          released_at = now(), release_reason = $3, release_cause = 'MANUAL_CANCELLATION',
+          revision = revision + 1, updated_at = now()
+          WHERE id = ANY($1::uuid[]) AND status = 'REQUESTED'`, [equipmentIds, actor.id, cancelReason]);
       }
       await client.query(`UPDATE event_change_requests SET status = 'APPROVED', decided_by = $2, decided_at = now(),
         decision_reason = $3, applied_revision = $4, cancelled_arrangements = $5, updated_at = now() WHERE id = $1`,

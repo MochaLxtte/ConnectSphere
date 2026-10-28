@@ -29,6 +29,24 @@ export async function fulfilWorkspaceRead(
     await route.fulfill({ json: { items: [] } });
     return true;
   }
+  // Historical CANCELLED fixtures may predate the KAN-62 cancellation audit table.
+  if (/^\/api\/events\/[^/]+\/cancellation$/.test(path)) {
+    await route.fulfill({ json: { cancellation: null } });
+    return true;
+  }
+  // The coordinator equipment panel shares the approved event detail workspace.
+  // These unrelated stories have no saved equipment requirement fixture.
+  if (options.coordinatorBookingEventId && path === `/api/events/${options.coordinatorBookingEventId}/equipment-requests`) {
+    await route.fulfill({ json: { plan: {
+      eventRequestId: options.coordinatorBookingEventId, eventStatus: 'APPROVED', status: 'REQUIRED', items: [],
+      revision: 'a'.repeat(64), eventStartsAt: null, eventEndsAt: null,
+    } } });
+    return true;
+  }
+  if (options.coordinatorBookingEventId && path === '/api/equipment-types') {
+    await route.fulfill({ json: { items: [] } });
+    return true;
+  }
   // Only coordinator detail fixtures opt into the new KAN-53 panel's reads.
   // Organiser fixtures still fail if the panel tries to request private booking data.
   if (options.coordinatorBookingEventId && (

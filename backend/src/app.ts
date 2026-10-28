@@ -11,6 +11,7 @@ import { createAssignmentRouter } from './modules/events/assignment-router.js';
 import { createClarificationRouter } from './modules/events/clarification-router.js';
 import { createChangeRequestRouter } from './modules/events/change-request-router.js';
 import { createStatusHistoryRouter } from './modules/events/status-history-router.js';
+import { createCancellationRouter } from './modules/events/cancellation-router.js';
 import { createVenueRouter } from './modules/venues/venue-router.js';
 import {
   createVenueBookingsRouter, createVenueBookingSubmissionRouter,
@@ -23,6 +24,7 @@ import { createVenueCatalogueRouter } from './modules/venues/venue-catalogue-rou
 import { createVenueSuitabilityRouter } from './modules/venues/suitability-router.js';
 import { createEquipmentAvailabilityRouter } from './modules/equipment/availability-router.js';
 import { createEquipmentReservationRouter } from './modules/equipment/reservation-router.js';
+import { createEquipmentRouter } from './modules/equipment/equipment-router.js';
 
 export interface AppDependencies {
   database: HealthDatabase;
@@ -77,6 +79,7 @@ export function createApp({
     // KAN-9: equipment context and advisory checks stay separate from general event access.
     app.use('/api/equipment/availability', createEquipmentAvailabilityRouter(workspace));
     app.use('/api/equipment/reservations', createEquipmentReservationRouter(workspace));
+    app.use('/api', createEquipmentRouter(workspace));
     // KAN-64: the signed-in user's own in-app inbox.
     app.use('/api/notifications', createNotificationRouter(workspace));
     app.use('/api/venue-bookings', createVenueBookingsRouter(workspace));
@@ -88,6 +91,7 @@ export function createApp({
     // KAN-15: reviewed change requests for approved or confirmed events.
     app.use('/api/events', createChangeRequestRouter(workspace));
     app.use('/api/events', createStatusHistoryRouter(workspace));
+    app.use('/api/events', createCancellationRouter(workspace));
     app.use('/api/events', createVenueSuitabilityRouter(workspace));
     // KAN-53: coordinator venue booking submission, nested under the event request.
     app.use('/api/events', createVenueBookingSubmissionRouter(workspace));

@@ -175,3 +175,7 @@ Arvin’s Sprint 1–3 contribution readback now includes owned KAN-24, KAN-51, 
 ## 25 October 2026 — Closeout refresh
 
 The master workbook now includes the latest targeted Sprint 3 Jira status/ownership read and all-team historical manual reports, retaining original requirement versions, earlier results and evidence limits. `jira-sprint3-targeted-20261025.csv` is a targeted 13-parent read (status, owner, title and AC wording), not a replacement full-project export. Earlier dated Jira CSV files remain unchanged. Today's code/configuration verification is separate from the reported September/October review dates; formal acceptance and velocity are not inferred. Team burndown charts are still to be supplied.
+
+## 28 October 2026 — Targeted PR #63 backlog refresh
+
+The workbook's current KAN-62/KAN-63 rows now identify Ryan and describe the implemented cancellation/equipment workflows and AUTO-20261028-PR63-01 evidence. Jira remains To Do; manual acceptance is Not executed / Not assessed. Story wording and estimates are unchanged. Historical delivery notes, previous sprint rows, formulas, tables and other stories are retained. This targeted refresh is not a fresh full-project Jira export.

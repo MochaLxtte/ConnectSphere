@@ -1,0 +1,15 @@
+{
+  "date": "2026-10-28",
+  "reusable_specifications_added": 12,
+  "new_execution_rows": 14,
+  "historical_execution_rows_preserved": 859,
+  "new_test_paths_exist": true,
+  "new_cases_traced": true,
+  "criteria_in_active_backlog": true,
+  "source_hashes_verified": 37,
+  "unresolved_conflicts": 0,
+  "diagram_exports_rendered_and_visually_inspected": 5,
+  "workbook_validation": "workbook-validation.json",
+  "manual_acceptance": "Not executed",
+  "shared_database_changed": false
+}

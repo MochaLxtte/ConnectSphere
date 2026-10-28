@@ -145,7 +145,9 @@ for (const path of ['/reviews', `/reviews/${requestId}`]) {
     if (path === `/reviews/${requestId}`) {
       await expect(page.getByRole('radio')).toHaveCount(2);
       await expect(page.getByRole('combobox', { name: 'Hand over to' })).toHaveCount(0);
-      await expect(page.getByRole('button', { name: /^(Confirm event|Cancel event|Mark completed)$/i })).toHaveCount(0);
+      await expect(page.getByRole('button', { name: /^(Confirm event|Mark completed)$/i })).toHaveCount(0);
+      // KAN-62 now permits cancellation of a submitted assigned request, with explicit confirmation.
+      await expect(page.getByRole('button', { name: 'Cancel event', exact: true })).toBeDisabled();
     }
 
     await page.getByRole('button', { name: 'Sign out', exact: true }).click();
@@ -153,6 +155,7 @@ for (const path of ['/reviews', `/reviews/${requestId}`]) {
     await expect(page.getByText(detail.name, { exact: true })).toHaveCount(0);
     await expect(page.getByText(detail.description, { exact: true })).toHaveCount(0);
     await expect(page.getByRole('radio')).toHaveCount(0);
+    await expect(page.getByRole('region', { name: 'Event cancellation', exact: true })).toHaveCount(0);
     await expect(page.getByRole('navigation', { name: 'Main navigation' })
       .getByRole('link', { name: 'Review queue', exact: true })).toHaveCount(0);
     expect([...fixture.eventCalls].sort()).toEqual(expectedReads.sort());

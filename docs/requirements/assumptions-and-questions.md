@@ -1399,3 +1399,15 @@ Source: Irfan (KAN-15 owner) approved design D1–D8 in the AI-assisted working 
 | D8 | Pending equipment lines are cancelled with `status = 'CANCELLED'` only, because `main` has no equipment cancellation metadata yet. Adapt once the KAN-26 (#62) / KAN-62 (#63) cancellation model is merged. Venue bookings use the existing `cancelled_by/at/reason` columns. | Avoids depending on unmerged work. |
 
 Consequences: the `sprint-scope.test.ts` guard no longer lists the four change-request routes (KAN-15 entered scope). The approval locks venue bookings before the event, in the same order as Venue Staff decisions, and maps a database deadlock to `409 CHANGE_REQUEST_BUSY`. Migration 017 must be announced before it is applied to shared Supabase (AGENTS.md §7.3); it has **not** been applied. KAN-66-AC8 is now deliverable together with this story.
+
+## 27 October 2026 — KAN-62 / KAN-63 merged-model reconciliation
+
+**Decision source:** Tristan's PR #63 feedback was provided by Ryan; Ryan asked that it be incorporated. This records the accepted implementation contract, not a team meeting or estimation decision.
+
+- Use migration 015's existing released_at, released_by, release_reason and release_cause equipment fields. Event cancellation transitions the event first so the existing database trigger releases RESERVED lines once with EVENT_CANCELLED; the KAN-62 transaction then marks only remaining REQUESTED/REJECTED lines using the same release model.
+- Do not add parallel cancelled_* equipment columns or a second constraint for cancelled equipment rows. Keep event_cancellations as the event-level actor/time/reason audit.
+- Allocate the KAN-62/KAN-63 additive migration as 018, after the parallel 016/017 work. Integration migration expectations and route-mount regressions are updated. Database integration was not executed in this follow-up.
+
+## 28 October 2026 — PR #63 correction within existing criteria
+
+The review repair was authorized in this working session. Existing KAN-63 AC6/7/101/103/104 require full availability-safe reservation and stale-form protection: the implementation now shares KAN-26's writer and uses an opaque plan revision across both APIs. Existing KAN-62 AC3/4/102/103/104 require atomic one-time release, accurate history and attendee-safe notifications: shared venue-before-event locks and recipient-scoped cancellation projections enforce those requirements. KAN-15 AC7 invalidates a previous Not Required declaration when approved timing/equipment changes affect planning. These are corrections/integration of existing criteria, not new customer scope, a team estimate decision or completed manual acceptance. Jira wording and the two 5 SP estimates remain unchanged.
