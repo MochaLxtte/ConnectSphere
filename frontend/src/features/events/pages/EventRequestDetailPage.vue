@@ -211,6 +211,7 @@ onBeforeUnmount(() => controller?.abort());
     :status="state.request.status"
     :viewer-role="authSession.user?.role ?? 'EVENT_ORGANISER'"
     :is-owner="true"
+    :revision="state.request.revision"
     @changed="refreshQuietly"
   />
 </template>

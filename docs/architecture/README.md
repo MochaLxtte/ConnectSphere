@@ -755,3 +755,6 @@ Export generated from the source above on 25 October. State/notices commit atomi
 
 The events component gains `planning-edit-policy.ts` (edit rules by status, role and relationship) used by the detail read and the PATCH write. `event_requests.revision` (migration 016, originally numbered 014) gives every writer an optimistic-concurrency token; edits and reviewer actions compare it under the existing row lock, so no new lock ordering is introduced. The class diagram, ERD and C3 exports do not yet show these additions; the combined re-export remains **pending**. See the [API contract](api-contract.md#kan-66-planning-edits-and-revisions--26-october-2026).
 
+## 27 October 2026 — KAN-15 change requests
+
+The events component gains `change-requests.ts` and `change-request-impact.ts`: owners propose significant-field changes, assigned coordinators approve (values applied, affected pending venue/equipment arrangements cancelled, KAN-66 edit audit written) or reject, all in one transaction checked against the KAN-66 revision. Approval is refused when confirmed arrangements, a confirmed event or registrations are affected (cancel and resubmit). The approval locks venue bookings before the event, matching Venue Staff decisions. Notifications reuse the KAN-64 inbox. The C4 diagram exports are not yet regenerated for this change.

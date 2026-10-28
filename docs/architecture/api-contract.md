@@ -442,6 +442,7 @@ Client navigation is not access control; every page relies on the API responses 
 | `/events`, `/events/new` | Organiser request list; new event request form | Signed out or EO |
 | `/events/:id`, `/events/:id/edit` | Organiser detail with the planning panels; draft editing | Linked from the list |
 | `/events/:id/details` | KAN-66 post-submission edits: owner before approval, assigned coordinator name/description after approval | Linked from the detail and review pages; fields decided by the API |
+| `/events/:id/change-request` | KAN-15 owner change request for an approved or confirmed event | Linked from the Change requests panel on `/events/:id` |
 | `/reviews` | Assigned coordinator review queue | EC after session resolution |
 | `/reviews/unassigned` | Legacy route redirects to `/lead` | Destination requires ECL; ordinary coordinators see no queue data |
 | `/lead`, `/lead/oversight` | Submitted/unassigned allocation queue; active-event oversight | ECL after session resolution |
@@ -860,3 +861,37 @@ Significant fields (KAN-15-AC102): `purpose`, `startsAt`, `endsAt`, `expectedAtt
 
 Database: [migration 016](../database-diagram.md#26-october-2026--migration-016-event-revisions-kan-66) (numbered 014 until 27 October). Decisions: [D1–D4](../requirements/assumptions-and-questions.md#26-october-2026--kan-66-planning-edit-implementation-decisions).
 
+## KAN-15 change requests — 27 October 2026
+
+Nested under the event request; all responses `Cache-Control: no-store`. Roles outside the listed ones receive `403 ACTION_FORBIDDEN` before any read; unrelated organisers and coordinators receive `404 EVENT_REQUEST_NOT_FOUND`.
+
+| Method and path | Roles | Body | Success |
+| --- | --- | --- | --- |
+| `GET /api/events/:id/change-requests` | Owner, assigned coordinator | — | `200 { items }`, newest first |
+| `POST /api/events/:id/change-requests` | Owner | `{ changes: { <significantField>: value }, expectedRevision }` | `201` change request |
+| `POST /api/events/:id/change-requests/:changeRequestId/decision` | Assigned coordinator | `{ decision: "APPROVED" or "REJECTED", reason?, expectedRevision }` | `200` change request |
+| `POST /api/events/:id/change-requests/:changeRequestId/withdraw` | Owner | `{}` or no body | `200` change request |
+
+A change request has `id`, `eventRequestId`, `status` (`PENDING`, `APPROVED`, `REJECTED`, `WITHDRAWN`), `requestedById/Name`, `proposed` and `previous` (field to value, dates as UTC ISO strings), `baseRevision`, `decidedById/Name`, `decidedAt`, `decisionReason`, `appliedRevision`, `cancelledArrangements` (`{ venueBookings, equipmentRequests }` ids) and `createdAt`. A `PENDING` item also has `current` (the event's present values for the proposed fields), `outdated` and `impact`: `affectedKinds`, `confirmed` and `pending` arrangements (`kind`, `id`, `label`, `status`, `quantity`), `activeRegistrations`, `eventConfirmed`, `canApprove`, `blockedReason`.
+
+Significant fields are the KAN-66 list (`purpose`, `startsAt`, `endsAt`, `expectedAttendance`, `venueRequirements`, `accessibilityNeeds`, `equipmentRequirements`, `registrationRequired`, `registrationCapacity`, `registrationOpensAt`, `registrationClosesAt`). Only fields that differ from the event are stored.
+
+| Error | When |
+| --- | --- |
+| `400 INVALID_INPUT` / `EXPECTED_REVISION_REQUIRED` | Malformed body or value, unknown key, missing `expectedRevision` |
+| `400 CHANGE_REQUEST_FIELD_NOT_ALLOWED` | `name` or `description` (use KAN-66) or any non-significant field |
+| `400 CHANGE_REQUEST_EMPTY` | Every value equals the current event |
+| `400 CHANGE_REQUEST_INVALID` | The event would fail submission validation after the change |
+| `400 REJECTION_REASON_REQUIRED` | Rejection without a non-blank reason |
+| `403 ACTION_FORBIDDEN` | Coordinator submitting or withdrawing; owner deciding |
+| `404 CHANGE_REQUEST_NOT_FOUND` | Unknown change request for this event |
+| `409 CHANGE_REQUEST_NOT_ALLOWED` | Submission for an event that is not `APPROVED` or `CONFIRMED` |
+| `409 CHANGE_REQUEST_ALREADY_PENDING` | The event already has a pending request |
+| `409 EVENT_REVISION_CONFLICT` | `expectedRevision` is not the event's current revision |
+| `409 CHANGE_REQUEST_NOT_PENDING` | Deciding or withdrawing a decided or withdrawn request |
+| `409 CHANGE_REQUEST_OUTDATED` | A proposed field changed after submission; reject and ask for a new request |
+| `409 CANCEL_AND_RESUBMIT_REQUIRED` | Approval would affect a confirmed arrangement, a confirmed event or active registrations |
+| `409 CHANGE_REQUEST_EVENT_NOT_PLANNING` | Approving after the event left `APPROVED`/`CONFIRMED` |
+| `409 CHANGE_REQUEST_BUSY` | A concurrent writer deadlocked; nothing saved, retry |
+
+Approval applies the values, writes an `event_request_edits` row (editor role `EVENT_COORDINATOR`), cancels affected pending venue bookings (`cancelled_by/at/reason`) and `REQUESTED` equipment lines, records the decision and notifies the organiser, all in one transaction. Rejection and withdrawal change nothing on the event. Decisions: [D1–D8](../requirements/assumptions-and-questions.md#27-october-2026--kan-15-change-request-implementation-decisions). Database: [migration 017](../database-diagram.md#27-october-2026--migration-017-change-requests-kan-15).

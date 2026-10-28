@@ -1,0 +1,30 @@
+ConnectSphere KAN-15 automated verification — 27 October 2026 (Asia/Singapore)
+Branch: feat/KAN-15-change-requests (stacked on feat/KAN-66-planning-edits at 2aa63fc; main c849ebf)
+Executor: Claude Code (AI agent) in Irfan's working session, local Windows 11 workstation, Node 22.20.0
+(the project specifies Node 24; npm reported EBADENGINE only).
+
+AUTO-20261027-KAN15-01
+npm run check: PASS — root/workspace typecheck, frontend 832 tests/39 files, backend 1,459 tests/51 files, both builds.
+Workspace coverage (vitest --coverage, unit/component only):
+Backend: statements 91.76%, branches 93.02%, lines 91.92% (all files).
+Frontend: statements 96.00%, branches 92.52%, lines 98.08% (all files).
+New KAN-15 files:
+  change-requests.ts 98.70% statements / 93.50% branches / 98.55% lines (lines 95 and 106 are defensive rethrows
+    of unexpected parser and validator errors).
+  change-request-impact.ts and change-request-notifications.ts 100%.
+  change-request-router.ts 66.66% statements: route handlers are exercised over HTTP by the PostgreSQL suite,
+    like clarification-router.ts.
+  ChangeRequestPanel.vue 98.38% statements / 94.39% branches / 100% lines.
+  EventChangeRequestPage.vue 98.13% statements / 91.30% branches / 100% lines.
+  api/change-requests.ts 100%; change-request-fields.ts 100% lines, 63.63% branches.
+
+npx playwright test --workers=2: 164 passed / 0 failed (Chromium; API responses substituted), including the three
+tests in tests/e2e/kan15-change-requests.spec.ts. KAN-15 and KAN-66 specs also passed alone with one worker (6/6).
+
+Not executed: npm run test:integration, including database/tests/events/change-requests.integration.test.ts and the
+migration lists updated for 017. No isolated PostgreSQL is available on this workstation and the shared Supabase
+database must not be used for cleanup-based tests (AGENTS.md section 7.3). The suite runs in GitHub CI on the pull request.
+
+Limitations: unit tests use fake database clients; browser tests substitute API responses. Neither proves migration 017,
+PostgreSQL locking, the one-pending index or live authentication. Local integrated acceptance and independent review are
+outstanding. No story acceptance or Done SP is inferred.

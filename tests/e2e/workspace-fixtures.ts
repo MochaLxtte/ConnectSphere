@@ -8,7 +8,8 @@ export async function fulfilNotificationBell(route: Route, request: Request): Pr
 }
 
 /**
- * Empty responses for the in-scope assignment, clarification and status-history panels and the
+ * Empty responses for the in-scope assignment, clarification, change-request (KAN-15) and
+ * status-history panels and the
  * top-bar notification bell (KAN-64), so page fixtures fail on unexpected API requests, including
  * future-sprint features. Returns true when the request was answered here.
  */
@@ -22,7 +23,7 @@ export async function fulfilWorkspaceRead(
   if (await fulfilNotificationBell(route, request)) return true;
 
   const emptyList =
-    /^\/api\/events\/[^/]+\/(assignments|clarifications|history)$/.test(path) ||
+    /^\/api\/events\/[^/]+\/(assignments|clarifications|change-requests|history)$/.test(path) ||
     path === '/api/events/coordinators';
   if (emptyList) {
     await route.fulfill({ json: { items: [] } });

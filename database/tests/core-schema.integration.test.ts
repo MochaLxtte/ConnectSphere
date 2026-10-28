@@ -197,14 +197,15 @@ test('CORE-DB-06 one active coordinator assignment and non-empty change requests
   await pool.query('UPDATE coordinator_assignments SET unassigned_at = now() WHERE event_request_id = $1', [eventA]);
   await assign();
 
+  // Migration 017 (KAN-15) also requires the replaced values and the base revision.
   await expect(pool.query(
-    `INSERT INTO event_change_requests (event_request_id, requested_by, proposed_changes, reason)
-     VALUES ($1, $2, '{}', 'Empty change')`,
+    `INSERT INTO event_change_requests (event_request_id, requested_by, proposed_changes, previous, base_revision, reason)
+     VALUES ($1, $2, '{}', '{}', 1, 'Empty change')`,
     [eventA, organiser],
   )).rejects.toMatchObject({ code: '23514' });
   await pool.query(
-    `INSERT INTO event_change_requests (event_request_id, requested_by, proposed_changes, reason)
-     VALUES ($1, $2, '{"expectedAttendance": 120}', 'More sign-ups than planned')`,
+    `INSERT INTO event_change_requests (event_request_id, requested_by, proposed_changes, previous, base_revision, reason)
+     VALUES ($1, $2, '{"expectedAttendance": 120}', '{"expectedAttendance": 100}', 1, 'More sign-ups than planned')`,
     [eventA, organiser],
   );
 });

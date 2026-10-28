@@ -234,3 +234,11 @@ The active sequence is now **001–015**. [015_equipment_reservations.sql](migra
 **Rollout:** not applied to shared Supabase. Tell the team before applying it (AGENTS.md §7.3), then run `npm run db:migrate` once. The KAN-66 API and frontend need the column: deploying the code without 014 makes event reads and edits fail. Applying 014 first is safe for the current code, which ignores the new column.
 
 **Integration tests:** `planning-edits.integration.test.ts` runs in an isolated schema like the other suites. Do not point `TEST_DATABASE_URL` at shared Supabase: migration 013's scheduling block re-registers the named `connectsphere-expire-venue-holds` `pg_cron` job inside each temporary test schema where `pg_cron` is enabled, and dropping that schema would break the live job.
+
+## KAN-15 change requests — 27 October 2026
+
+[017_event_change_requests.sql](migrations/017_event_change_requests.sql) completes the unused 004 `event_change_requests` table (see the [diagram note](../docs/database-diagram.md#27-october-2026--migration-017-change-requests-kan-15)). It depends on 016 (`event_requests.revision`, `event_request_edits`) because approval writes an edit-audit row.
+
+**Rollout:** not applied to shared Supabase. Apply after 016, after telling the team (AGENTS.md §7.3). Applying 017 before the KAN-15 code is deployed is safe: no current code reads or writes the table.
+
+**Integration tests:** `database/tests/events/change-requests.integration.test.ts` uses an isolated schema like the other suites; never point it at shared Supabase.
