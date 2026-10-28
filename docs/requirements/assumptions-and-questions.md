@@ -1427,4 +1427,4 @@ Source: Irfan (KAN-82 owner and Product Owner) approved design D1–D8 in the AI
 | D7 | No migration. Existing `cancelled_*`, `replaces_booking_id` and free-text notification types are enough. | Preserves applied migrations. |
 | D8 | Estimate stays 5 SP. | Persistence and validation already existed; the work is one endpoint, a widened replacement rule, a derived field, two notice types, panel UI and tests. |
 
-Consequences: the replacement and approval paths in `booking-service.ts` now distinguish explicitly cancelled originals from KAN-81-resolved ones. The readiness half of KAN-82-AC9 is delivered; the safety-approval invalidation half depends on KAN-84 and should be recorded on both cards when the team next reviews them. No shared database change is needed for this story.
+Consequences: the replacement and approval paths in `booking-service.ts` now distinguish explicitly cancelled originals from KAN-81-resolved ones. The readiness half of KAN-82-AC9 is delivered; the safety-approval invalidation half depends on KAN-84 (KAN-84-AC9); recorded on both sprint-04 cards and as Jira comments on 28 October 2026. No shared database change is needed for this story.

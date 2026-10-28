@@ -61,7 +61,7 @@ Every row requires its complete active criterion set plus applicable Definition 
 | S4-T11 | KAN-66: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC101, AC102, AC103 | TC-07-01, TC-07-02, TC-07-03, TC-07-04, TC-07-05 | **In progress (27 October 2026):** automated unit/component and browser-fixture runs Pass (`AUTO-20261026-KAN66-01`, `-02`; unit re-run `AUTO-20261027-KAN66-03` on `3ac15d5`); PostgreSQL integration 533/533 and browser 161/161 Pass in CI on `27d5d84` (`CI-20261027-KAN66-02`); re-confirmed after merging main, 578/578 and 182/182 on `a5d1a3a` (`CI-20261027-KAN66-04`); local integrated acceptance **Not executed**; acceptance **Not assessed** |
 | S4-T12 | KAN-15: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC101, AC102, AC103, AC104, AC105 | TC-19-01, TC-19-02, TC-19-03, TC-19-04, TC-19-05, TC-19-06, TC-19-07, TC-19-08, TC-19-09 | **In progress (27 October 2026):** unit/component and browser-fixture runs Pass (`AUTO-20261027-KAN15-01`); PostgreSQL integration 544/544 and browser 164/164 Pass in CI on `6c5043c` (`CI-20261027-KAN15-02`); local integrated acceptance **Not executed**; acceptance **Not assessed** |
 | S4-T13 | KAN-80: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9 | TC-20-21, TC-20-22, TC-20-23, TC-20-24, TC-20-25, TC-20-26, TC-20-27, TC-20-28, TC-20-29 | **Not executed** / Not recorded |
-| S4-T14 | KAN-82: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12 | TC-12-01, TC-12-02, TC-12-03, TC-12-04, TC-12-05, TC-12-06, TC-12-07, TC-12-08, TC-12-09, TC-12-10, TC-12-11, TC-12-12 | **In progress (28 October 2026):** unit/component, isolated PostgreSQL integration and browser-fixture runs Pass (`AUTO-20261028-KAN82-01`, S4-E17); local integrated acceptance **Not executed**; acceptance **Not assessed** |
+| S4-T14 | KAN-82: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12 | TC-12-01, TC-12-02, TC-12-03, TC-12-04, TC-12-05, TC-12-06, TC-12-07, TC-12-08, TC-12-09, TC-12-10, TC-12-11, TC-12-12 | **In progress (28 October 2026):** unit/component, isolated PostgreSQL integration and browser-fixture runs Pass (`AUTO-20261028-KAN82-01`, S4-E17); GitHub CI Pass on `4414fde` (`CI-20261028-KAN82-02`, run 40684714674: integration 637/637, browser 191/191); local integrated acceptance **Not executed**; acceptance **Not assessed** |
 | S4-T15 | KAN-84: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12 | TC-06-20, TC-06-21, TC-06-22, TC-06-23, TC-06-24, TC-06-25, TC-06-26, TC-06-27, TC-06-28, TC-06-29, TC-06-30, TC-06-31 | **Not executed** / Not recorded |
 | S4-T16 | Integrated complete release with equipment, registration, independent venue actions and safety | TC-06-32 | **Not executed** / Not recorded |
 
@@ -1012,7 +1012,10 @@ All original/new triggers require unit/integration/E2E and hosted verification; 
 | Unit/component (`npm run check`, coverage) | Pass — `AUTO-20261028-KAN82-01` |
 | PostgreSQL integration (`venue-arrangements.integration.test.ts`; full suite 637/637) | Pass — `AUTO-20261028-KAN82-01`, disposable local PostgreSQL 17 |
 | Browser fixtures (`kan82-independent-arrangements.spec.ts`; full suite 191/191) | Pass — `AUTO-20261028-KAN82-01` (substituted API responses; not live integration) |
+| GitHub CI on PR #67 (`verify` job) | Pass — `CI-20261028-KAN82-02`, run 40684714674 on `4414fde` |
 | Local integrated acceptance (AGENTS.md §5.12) | **Not executed** — needs the merged build on localhost with real sign-in |
+
+**Cross-story dependency (28 October 2026, decision D4):** KAN-82-AC9 is split. KAN-82 delivers the readiness recheck (`venueArrangementReadiness`, derived from the current booking rows). Invalidating a stored safety approval when an arrangement is cancelled or replaced is delivered by KAN-84 under KAN-84-AC9, which reads that readiness; there is no safety record to invalidate until KAN-84 exists. Recorded on both cards and as Jira comments; no criterion wording or estimate changed.
 
 **Dependencies:** Existing venue request and decision workflows; CR-2 recovery links and CR-4 hold states; KAN-78 buffered conflict rules; KAN-64 notification mechanism.
 
@@ -1105,6 +1108,8 @@ Update contracts/diagrams, test cases, traceability, actual run evidence and spr
 **Implementation location:** Not recorded. **Automated test files:** Not recorded. Record real files during implementation; these planned tests are not completion evidence.
 
 **Dependencies:** KAN-61 event and arrangement readiness; KAN-63/KAN-26 technical arrangement reservation; KAN-15/KAN-66 revision-aware changes; CR-3 independent venue actions and CR-2 recovery state; KAN-64 persisted notification delivery.
+
+**Cross-story dependency (28 October 2026, KAN-82 decision D4):** KAN-82 (PR #67) provides `venueArrangementReadiness(eventId)` in `backend/src/modules/venues/booking-service.ts`, returning `{ ready, live, outstanding }` from the current venue bookings. The safety-approval half of KAN-82-AC9 (invalidating an approval tied to a cancelled or replaced arrangement) is delivered here under KAN-84-AC9. No criterion wording or estimate changed.
 
 **Design impact:** Planned additive role, safety review/round/revision and preparation-phase fields, queue/decision/submit/start-preparation APIs, live readiness/invalidation integration, structured review notes, notification events and frontend workflow; update C3, state/class/sequence diagrams, API and data model during implementation.
 
