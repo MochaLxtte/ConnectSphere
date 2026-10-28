@@ -29,7 +29,7 @@ const pending: VenueBooking = {
   eventStartsAt: null, eventEndsAt: null, purpose: null, description: null, expectedAttendance: null,
   venueRequirements: null, accessibilityNeeds: null,
   recovery: [],
-  replacesBookingId: null,
+  replacesBookingId: null, replacedByBookingIds: [],
   holdExpiresAt: null, heldBy: null, heldAt: null, expiredAt: null,
   cancelledBy: null, cancelledAt: null, cancellationReason: null,
 };
@@ -371,6 +371,146 @@ describe('KAN-83 hold details for the coordinator', () => {
     expect(screen.getByText(/^The hold expired at 20 Nov 2026, 6:00 pm and the venue period was released\./)).toBeInTheDocument();
     expect(screen.getByText('Cancellation reason: Venue unavailable: Burst pipe')).toBeInTheDocument();
     expect(screen.getByText('Hold expired')).toHaveClass('tag-negative');
+  });
+});
+
+describe('KAN-82 managing one arrangement at a time', () => {
+  const list = `GET /api/venue-bookings?eventRequestId=${eventRequestId}`;
+  const approved = { ...pending, id: 'a1', status: 'APPROVED' as const, venueName: 'Main Hall' };
+  const other = { ...pending, id: 'a2', status: 'APPROVED' as const, venueName: 'Studio' };
+  const cancelled = { ...approved, status: 'CANCELLED' as const, cancelledBy: 'coordinator-a',
+    cancelledAt: '2026-10-28T00:00:00.000Z', cancellationReason: 'Too small' };
+
+  it('KAN-82-AC4/AC12 confirms the exact arrangement, needs a reason and updates only that row', async () => {
+    const api = stubApi({
+      [list]: { body: { items: [approved, other] } },
+      'GET /api/venues/search-venues': venues,
+      'POST /api/venue-bookings/a1/cancel': { body: { booking: cancelled } },
+    });
+    const { emitted } = render(VenueBookingPanel, { props: coordinatorProps });
+    const buttons = await screen.findAllByRole('button', { name: 'Cancel arrangement' });
+    expect(buttons).toHaveLength(2);
+    await fireEvent.click(buttons[0]!);
+    const form = screen.getByRole('form', { name: 'Cancel Main Hall' });
+    expect(form).toHaveTextContent('Cancel approved arrangement: Open day at Main Hall, 1 Dec 2026');
+    expect(form).toHaveTextContent('releases this venue period straight away');
+    const confirm = screen.getByRole('button', { name: 'Confirm cancellation' });
+    expect(confirm).toBeDisabled();
+    await fireEvent.update(screen.getByLabelText('Reason for cancelling'), '   ');
+    expect(confirm).toBeDisabled();
+    await fireEvent.update(screen.getByLabelText('Reason for cancelling'), '  Too small ');
+    await fireEvent.click(confirm);
+    expect(await screen.findByText(/was cancelled and its venue period released\. Other arrangements are unchanged/)).toBeInTheDocument();
+    expect(api.writes()).toEqual([{ key: 'POST /api/venue-bookings/a1/cancel', body: { reason: 'Too small' } }]);
+    expect(screen.getByText('Cancellation reason: Too small')).toBeInTheDocument();
+    // The other arrangement keeps its action; no reload was needed.
+    expect(screen.getAllByRole('button', { name: 'Cancel arrangement' })).toHaveLength(1);
+    expect(api.calls.filter((call) => call.key === list)).toHaveLength(1);
+    expect(emitted().changed).toHaveLength(1);
+  });
+
+  it('KAN-82-AC12 can back out of a cancellation without writing anything', async () => {
+    const api = stubApi({ [list]: { body: { items: [approved] } }, 'GET /api/venues/search-venues': venues });
+    render(VenueBookingPanel, { props: coordinatorProps });
+    await fireEvent.click(await screen.findByRole('button', { name: 'Cancel arrangement' }));
+    await fireEvent.click(screen.getByRole('button', { name: 'Keep arrangement' }));
+    expect(screen.queryByRole('form', { name: 'Cancel Main Hall' })).not.toBeInTheDocument();
+    expect(api.writes()).toEqual([]);
+  });
+
+  it.each([
+    ['a stale conflict', apiError(409, 'BOOKING_ALREADY_CANCELLED', 'This arrangement is already cancelled.'),
+      /already cancelled\. Refresh booking requests to see the current state\./],
+    ['an unconfirmed result', apiError(500, 'INTERNAL', 'Boom'), /could not confirm whether the arrangement was cancelled/],
+  ])('KAN-82-AC12 after %s asks for a refresh and blocks further cancels until it reloads', async (_label, reply, message) => {
+    const api = stubApi({
+      [list]: { body: { items: [approved, other] } },
+      'GET /api/venues/search-venues': venues,
+      'POST /api/venue-bookings/a1/cancel': reply,
+    });
+    render(VenueBookingPanel, { props: coordinatorProps });
+    await fireEvent.click((await screen.findAllByRole('button', { name: 'Cancel arrangement' }))[0]!);
+    await fireEvent.update(screen.getByLabelText('Reason for cancelling'), 'Too small');
+    await fireEvent.click(screen.getByRole('button', { name: 'Confirm cancellation' }));
+    expect(await screen.findByText(message)).toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: 'Cancel arrangement' })
+      .every((button) => (button as HTMLButtonElement).disabled)).toBe(true);
+    api.set(list, { body: { items: [cancelled, other] } });
+    await fireEvent.click(screen.getByRole('button', { name: 'Refresh booking requests' }));
+    await screen.findByText('Cancellation reason: Too small');
+    expect(screen.queryByRole('form', { name: 'Cancel Main Hall' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Cancel arrangement' })).toBeEnabled();
+  });
+
+  it('KAN-82-AC5/AC6 offers a linked replacement for a cancelled arrangement and explains it stays cancelled', async () => {
+    const api = stubApi({
+      [list]: { body: { items: [cancelled, other] } },
+      'GET /api/venues/search-venues': venues,
+      [`POST ${base}/venue-bookings`]: { status: 201, body: { booking: { ...pending, id: 'r1', replacesBookingId: 'a1' } } },
+    });
+    render(VenueBookingPanel, { props: coordinatorProps });
+    expect(await screen.findByText('Cancelled; not replaced. This arrangement no longer reserves the venue.')).toBeInTheDocument();
+    await fireEvent.click(screen.getByRole('button', { name: 'Request replacement' }));
+    const select = screen.getByLabelText(/This request replaces/) as HTMLSelectElement;
+    expect(select.value).toBe('a1');
+    expect(select.selectedOptions[0]!.textContent).toContain('(cancelled)');
+    expect(screen.getByText(/The cancelled arrangement stays cancelled\./)).toBeInTheDocument();
+    await fillAndSubmit();
+    await screen.findByText('A venue booking request for Main Hall was submitted for review.');
+    expect(api.writes()[0]!.body).toMatchObject({ replacesBookingId: 'a1' });
+  });
+
+  it('KAN-82-AC8 shows replacement links both ways and stops offering a replacement while one is live', async () => {
+    stubApi({
+      [list]: { body: { items: [
+        { ...cancelled, replacedByBookingIds: ['r1'] },
+        { ...pending, id: 'r1', venueName: 'Studio', replacesBookingId: 'a1' },
+      ] } },
+      'GET /api/venues/search-venues': venues,
+    });
+    render(VenueBookingPanel, { props: coordinatorProps });
+    expect(await screen.findByText(/^Replaced by Studio, 1 Dec 2026.*\(Pending\)\.$/)).toBeInTheDocument();
+    expect(screen.getByText(/^Replaces the cancelled arrangement Main Hall, 1 Dec 2026/)).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Request replacement' })).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/This request replaces/)).not.toBeInTheDocument();
+  });
+
+  it('KAN-82-AC12 a refresh drops a confirmation and a replacement choice that no longer match the current list', async () => {
+    const api = stubApi({ [list]: { body: { items: [approved, cancelled, other] } }, 'GET /api/venues/search-venues': venues });
+    const twoCancelled = [approved, { ...cancelled, id: 'c1' }, other];
+    api.set(list, { body: { items: twoCancelled } });
+    render(VenueBookingPanel, { props: coordinatorProps });
+    await fireEvent.click(await screen.findByRole('button', { name: 'Request replacement' }));
+    expect((screen.getByLabelText(/This request replaces/) as HTMLSelectElement).value).toBe('c1');
+    await fireEvent.click(screen.getAllByRole('button', { name: 'Cancel arrangement' })[0]!);
+    expect(screen.getByRole('form', { name: 'Cancel Main Hall' })).toBeInTheDocument();
+    // Someone else cancelled a1 meanwhile, and c1 is no longer listed.
+    api.set(list, { body: { items: [{ ...cancelled, id: 'a1' }, other] } });
+    await fireEvent.click(screen.getByRole('button', { name: 'Refresh booking requests' }));
+    expect((await screen.findByLabelText(/This request replaces/) as HTMLSelectElement).value).toBe('');
+    expect(screen.queryByRole('form', { name: 'Cancel Main Hall' })).not.toBeInTheDocument();
+  });
+
+  it('KAN-82-AC10 a cancel refused because access was lost hides the panel content', async () => {
+    stubApi({
+      [list]: { body: { items: [approved] } },
+      'GET /api/venues/search-venues': venues,
+      'POST /api/venue-bookings/a1/cancel': apiError(404, 'VENUE_BOOKING_NOT_FOUND', 'The venue booking request was not found.'),
+    });
+    render(VenueBookingPanel, { props: coordinatorProps });
+    await fireEvent.click(await screen.findByRole('button', { name: 'Cancel arrangement' }));
+    await fireEvent.update(screen.getByLabelText('Reason for cancelling'), 'Too small');
+    await fireEvent.click(screen.getByRole('button', { name: 'Confirm cancellation' }));
+    expect(await screen.findByText(/no longer have access to its venue bookings/)).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Cancel arrangement' })).not.toBeInTheDocument();
+  });
+
+  it.each(['SUBMITTED', 'CANCELLED'])('KAN-82-AC4 offers no per-arrangement actions for a %s event', async (status) => {
+    stubApi({ [list]: { body: { items: [approved, cancelled] } }, 'GET /api/venues/search-venues': venues });
+    render(VenueBookingPanel, { props: { ...coordinatorProps, status } });
+    await screen.findAllByText('Main Hall');
+    expect(screen.queryByRole('button', { name: 'Cancel arrangement' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Request replacement' })).not.toBeInTheDocument();
   });
 });
 
