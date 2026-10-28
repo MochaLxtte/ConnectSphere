@@ -1,5 +1,9 @@
 # Event proposal workstream
 
+## 29 October 2026 — KAN-80 notification integration
+
+Allowed KAN-15 attendee-relevant approved changes create active-attendee notifications within the decision transaction, without bypassing its cancel-and-resubmit checks. Change submissions, decisions and withdrawals retain their change-request ID on notifications; decision acknowledgements include the current coordinator. Migration 019 also handles eligible final confirmation/cancellation outcomes in the event status transaction. The KAN-61 confirmation workflow remains a separate dependency and is not supplied by this hook. See [API contract](../../../../docs/architecture/api-contract.md#29-october-2026--kan-17-kan-67-and-kan-80-registration-outcomes).
+
 ## KAN-62 event cancellation
 
 `POST /api/events/:id/cancel` accepts `{ "reason": "...", "confirmAffectedArrangements": true }`.

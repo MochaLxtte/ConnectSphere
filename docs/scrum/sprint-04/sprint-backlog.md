@@ -56,11 +56,11 @@ Every row requires its complete active criterion set plus applicable Definition 
 | S4-T06 | KAN-62: AC1, AC2, AC3, AC4, AC5, AC6, AC101, AC102, AC103, AC104 | TC-06-08, TC-06-09, TC-06-10, TC-06-11, TC-06-12, TC-06-13 | AUTO-20261028-PR63-01 / S4-E16: automated checks recorded; integrated manual **Not executed**, acceptance **Not assessed**. |
 | S4-T07 | KAN-10: AC1, AC2, AC3, AC4, AC5, AC101, AC102, AC103 | TC-06-14, TC-06-15, TC-06-16, TC-06-17, TC-06-18 | **Not executed** / Not recorded |
 | S4-T08 | KAN-14: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC101, AC102, AC103, AC104 | TC-18-01, TC-18-02, TC-18-03, TC-18-04, TC-18-05, TC-18-06 | **Not executed** / Not recorded |
-| S4-T09 | KAN-17: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC101, AC102, AC103 | TC-18-07, TC-18-08, TC-18-09, TC-18-10, TC-18-11 | **Not executed** / Not recorded |
-| S4-T10 | KAN-67: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC101, AC102, AC103 | TC-18-12, TC-18-13, TC-18-14, TC-18-15, TC-18-16, TC-18-17 | **Not executed** / Not recorded |
+| S4-T09 | KAN-17: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC101, AC102, AC103 | TC-18-07, TC-18-08, TC-18-09, TC-18-10, TC-18-11, TC-18-401, TC-18-402, TC-18-403, TC-18-404, TC-18-405, TC-18-406, TC-18-407, TC-18-408, TC-18-409, TC-18-410, TC-18-411, TC-18-412, TC-18-413, TC-18-414, TC-18-415, TC-18-416, TC-18-417 | Partial automated coverage; integrated acceptance **Not executed** / acceptance **Not assessed** |
+| S4-T10 | KAN-67: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC101, AC102, AC103 | TC-18-12, TC-18-13, TC-18-14, TC-18-15, TC-18-16, TC-18-17, TC-18-418, TC-18-419, TC-18-420, TC-18-421, TC-18-422, TC-18-423, TC-18-424, TC-18-425, TC-18-426, TC-18-427, TC-18-428, TC-18-429, TC-18-430, TC-18-431 | Partial automated coverage; integrated acceptance **Not executed** / acceptance **Not assessed** |
 | S4-T11 | KAN-66: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC101, AC102, AC103 | TC-07-01, TC-07-02, TC-07-03, TC-07-04, TC-07-05 | **In progress (27 October 2026):** automated unit/component and browser-fixture runs Pass (`AUTO-20261026-KAN66-01`, `-02`; unit re-run `AUTO-20261027-KAN66-03` on `3ac15d5`); PostgreSQL integration 533/533 and browser 161/161 Pass in CI on `27d5d84` (`CI-20261027-KAN66-02`); re-confirmed after merging main, 578/578 and 182/182 on `a5d1a3a` (`CI-20261027-KAN66-04`); local integrated acceptance **Not executed**; acceptance **Not assessed** |
 | S4-T12 | KAN-15: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC101, AC102, AC103, AC104, AC105 | TC-19-01, TC-19-02, TC-19-03, TC-19-04, TC-19-05, TC-19-06, TC-19-07, TC-19-08, TC-19-09 | **In progress (27 October 2026):** unit/component and browser-fixture runs Pass (`AUTO-20261027-KAN15-01`); PostgreSQL integration 544/544 and browser 164/164 Pass in CI on `6c5043c` (`CI-20261027-KAN15-02`); local integrated acceptance **Not executed**; acceptance **Not assessed** |
-| S4-T13 | KAN-80: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9 | TC-20-21, TC-20-22, TC-20-23, TC-20-24, TC-20-25, TC-20-26, TC-20-27, TC-20-28, TC-20-29 | **Not executed** / Not recorded |
+| S4-T13 | KAN-80: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9 | TC-20-21, TC-20-22, TC-20-23, TC-20-24, TC-20-25, TC-20-26, TC-20-27, TC-20-28, TC-20-29, TC-20-401, TC-20-402, TC-20-403, TC-20-404, TC-20-405, TC-20-406, TC-20-407, TC-20-408, TC-20-409, TC-20-410, TC-20-411, TC-20-412, TC-20-413, TC-20-414, TC-20-415, TC-20-416, TC-20-417, TC-20-418, TC-20-419, TC-20-420, TC-20-421, TC-20-422, TC-20-423, TC-20-424, TC-20-425, TC-20-426, TC-20-427, TC-20-428, TC-20-429, TC-20-430 | Partial automated coverage; integrated acceptance **Not executed** / acceptance **Not assessed** |
 | S4-T14 | KAN-82: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12 | TC-12-01, TC-12-02, TC-12-03, TC-12-04, TC-12-05, TC-12-06, TC-12-07, TC-12-08, TC-12-09, TC-12-10, TC-12-11, TC-12-12 | **Not executed** / Not recorded |
 | S4-T15 | KAN-84: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12 | TC-06-20, TC-06-21, TC-06-22, TC-06-23, TC-06-24, TC-06-25, TC-06-26, TC-06-27, TC-06-28, TC-06-29, TC-06-30, TC-06-31 | **Not executed** / Not recorded |
 | S4-T16 | Integrated complete release with equipment, registration, independent venue actions and safety | TC-06-32 | **Not executed** / Not recorded |
@@ -623,16 +623,16 @@ Implementation defaults: docs/scrum/sprint-03/planning.md and docs/requirements/
 
 | Stable criterion | Requirement | Functional case |
 | --- | --- | --- |
-| **KAN-17-AC1** | An attendee can select an eligible registration belonging to them and request withdrawal. | TC-18-07 |
-| **KAN-17-AC2** | Before saving, the attendee is asked to confirm withdrawal and is informed of the applicable re-registration restrictions. | TC-18-08 |
-| **KAN-17-AC3** | Confirmed withdrawal is saved against the correct attendee and event; the registration is no longer treated as active. | TC-18-09 |
-| **KAN-17-AC4** | The attendee can view the withdrawn status after reopening or refreshing the page. | TC-18-09 |
-| **KAN-17-AC5** | Withdrawal releases the active registration’s capacity contribution once. Repeated attempts cannot release extra capacity or alter unrelated registrations. | TC-18-10 |
-| **KAN-17-AC6** | An attendee cannot withdraw another attendee’s registration through the interface or API. | TC-18-11 |
-| **KAN-17-AC7** | A failed or ineligible withdrawal leaves the registration and capacity unchanged and gives clear feedback. | TC-18-11 |
-| **KAN-17-AC101** | An attendee may withdraw their own active registration before event start, including after registration has closed; at or after start withdrawal is refused. | TC-18-07 |
-| **KAN-17-AC102** | The confirmation explains that re-registration is allowed only if the event is still open and has capacity; it must not promise a saved place. | TC-18-08 |
-| **KAN-17-AC103** | Withdrawal changes the existing record once, releases its capacity contribution once and uses KAN-80 (using KAN-64 infrastructure) for attendee/manager notifications; repeated requests cannot release another place. | TC-18-10 |
+| **KAN-17-AC1** | An attendee can select an eligible registration belonging to them and request withdrawal. | TC-18-07, TC-18-401, TC-18-405 |
+| **KAN-17-AC2** | Before saving, the attendee is asked to confirm withdrawal and is informed of the applicable re-registration restrictions. | TC-18-08, TC-18-402, TC-18-403 |
+| **KAN-17-AC3** | Confirmed withdrawal is saved against the correct attendee and event; the registration is no longer treated as active. | TC-18-09, TC-18-401 |
+| **KAN-17-AC4** | The attendee can view the withdrawn status after reopening or refreshing the page. | TC-18-09, TC-18-404 |
+| **KAN-17-AC5** | Withdrawal releases the active registration’s capacity contribution once. Repeated attempts cannot release extra capacity or alter unrelated registrations. | TC-18-10, TC-18-408, TC-18-417 |
+| **KAN-17-AC6** | An attendee cannot withdraw another attendee’s registration through the interface or API. | TC-18-11, TC-18-409, TC-18-410 |
+| **KAN-17-AC7** | A failed or ineligible withdrawal leaves the registration and capacity unchanged and gives clear feedback. | TC-18-11, TC-18-403, TC-18-406, TC-18-407, TC-18-409, TC-18-410, TC-18-411, TC-18-412, TC-18-413 |
+| **KAN-17-AC101** | An attendee may withdraw their own active registration before event start, including after registration has closed; at or after start withdrawal is refused. | TC-18-07, TC-18-405, TC-18-406, TC-18-407, TC-18-413, TC-18-415 |
+| **KAN-17-AC102** | The confirmation explains that re-registration is allowed only if the event is still open and has capacity; it must not promise a saved place. | TC-18-08, TC-18-402, TC-18-414, TC-18-415 |
+| **KAN-17-AC103** | Withdrawal changes the existing record once, releases its capacity contribution once and uses KAN-80 (using KAN-64 infrastructure) for attendee/manager notifications; repeated requests cannot release another place. | TC-18-10, TC-18-408, TC-18-412, TC-18-416, TC-18-417 |
 
 **Implementation location:** Not recorded. **Automated test files:** Not recorded. Record real files when implemented; historical schema or removed code is not feature completion.
 
@@ -694,16 +694,16 @@ Implementation defaults: docs/scrum/sprint-03/planning.md and docs/requirements/
 
 | Stable criterion | Requirement | Functional case |
 | --- | --- | --- |
-| **KAN-67-AC1** | An authorised organiser or current coordinator can open registration information for an event they own or manage. | TC-18-12 |
-| **KAN-67-AC2** | The displayed registrations and counts correspond to the correct event. | TC-18-13 |
-| **KAN-67-AC3** | Active and withdrawn registrations can be distinguished where applicable. | TC-18-13 |
-| **KAN-67-AC4** | Registration information and counts reflect successful attendee registration or withdrawal when refreshed. | TC-18-14 |
-| **KAN-67-AC5** | An event with no registrations shows a clear empty result rather than unrelated or stale registrations. | TC-18-15 |
-| **KAN-67-AC6** | Users cannot view protected registration information for unrelated events, including through direct API calls. | TC-18-12 |
-| **KAN-67-AC7** | The information exposed is limited to the fields needed by that authorised role under the agreed disclosure rules. | TC-18-16 |
-| **KAN-67-AC101** | The owning organiser and currently assigned coordinator may see attendee display name, email, status and registration/withdrawal timestamps; do not expose authentication IDs or unrelated account data. | TC-18-16 |
-| **KAN-67-AC102** | Distinguish active, withdrawn and event-cancelled registrations and count only active records toward capacity. | TC-18-13 |
-| **KAN-67-AC103** | After reassignment, the former coordinator loses roster access immediately; current-data refresh must not retain another event's roster after route/account changes. | TC-18-17 |
+| **KAN-67-AC1** | An authorised organiser or current coordinator can open registration information for an event they own or manage. | TC-18-12, TC-18-418, TC-18-419, TC-18-428 |
+| **KAN-67-AC2** | The displayed registrations and counts correspond to the correct event. | TC-18-13, TC-18-420 |
+| **KAN-67-AC3** | Active and withdrawn registrations can be distinguished where applicable. | TC-18-13, TC-18-420 |
+| **KAN-67-AC4** | Registration information and counts reflect successful attendee registration or withdrawal when refreshed. | TC-18-14, TC-18-421, TC-18-422, TC-18-423 |
+| **KAN-67-AC5** | An event with no registrations shows a clear empty result rather than unrelated or stale registrations. | TC-18-15, TC-18-424, TC-18-425, TC-18-430 |
+| **KAN-67-AC6** | Users cannot view protected registration information for unrelated events, including through direct API calls. | TC-18-12, TC-18-426, TC-18-428, TC-18-429 |
+| **KAN-67-AC7** | The information exposed is limited to the fields needed by that authorised role under the agreed disclosure rules. | TC-18-16, TC-18-427 |
+| **KAN-67-AC101** | The owning organiser and currently assigned coordinator may see attendee display name, email, status and registration/withdrawal timestamps; do not expose authentication IDs or unrelated account data. | TC-18-16, TC-18-427 |
+| **KAN-67-AC102** | Distinguish active, withdrawn and event-cancelled registrations and count only active records toward capacity. | TC-18-13, TC-18-420, TC-18-431 |
+| **KAN-67-AC103** | After reassignment, the former coordinator loses roster access immediately; current-data refresh must not retain another event's roster after route/account changes. | TC-18-17, TC-18-425, TC-18-428, TC-18-429, TC-18-430 |
 
 **Implementation location:** Not recorded. **Automated test files:** Not recorded. Record real files when implemented; historical schema or removed code is not feature completion.
 
@@ -935,15 +935,15 @@ Implementation defaults: docs/scrum/sprint-03/planning.md and docs/requirements/
 
 | Stable criterion | Requirement | Functional case |
 | --- | --- | --- |
-| **KAN-80-AC1** | Equipment confirmation and unavailability notify the current assigned coordinator and relevant technical staff without exposing unrelated events. | TC-20-21 |
-| **KAN-80-AC2** | Significant-change submission, requests for action and decisions notify the organiser and reviewing coordinator; changes that affect registered attendees notify those active attendees. | TC-20-22 |
-| **KAN-80-AC3** | Final event confirmation and cancellation notify the organiser, current coordinator and affected registered attendees or arrangement staff as applicable. | TC-20-23 |
-| **KAN-80-AC4** | Registration and withdrawal acknowledge the attendee and notify the organiser/current coordinator; a failed or repeated unchanged action creates no new business-outcome notification. | TC-20-24 |
-| **KAN-80-AC5** | Each notification identifies the correct event and equipment request, change request or registration where applicable, with enough information for the recipient to understand the outcome and required action. | TC-20-25 |
-| **KAN-80-AC6** | Only the intended recipient can list/read or change read state; following a protected link rechecks current role and event permissions, including after reassignment. | TC-20-26 |
-| **KAN-80-AC7** | All added trigger notifications persist atomically with the recorded business outcome using the KAN-64 outcome/recipient uniqueness mechanism; rollback creates none and retry creates no duplicate. | TC-20-27 |
-| **KAN-80-AC8** | Every added trigger uses the delivered KAN-64 authenticated inbox and read/unread behaviour and the recorded recipient matrix, including acknowledgements where the actor is also a recipient. No email delivery is required. | TC-20-28 |
-| **KAN-80-AC9** | CR-2 outage, CR-4 hold and CR-6 safety notifications remain acceptance responsibilities of those separate customer-change stories; this story does not count their implementation twice. | TC-20-29 |
+| **KAN-80-AC1** | Equipment confirmation and unavailability notify the current assigned coordinator and relevant technical staff without exposing unrelated events. | TC-20-21, TC-20-401, TC-20-402, TC-20-403 |
+| **KAN-80-AC2** | Significant-change submission, requests for action and decisions notify the organiser and reviewing coordinator; changes that affect registered attendees notify those active attendees. | TC-20-22, TC-20-404, TC-20-405, TC-20-406, TC-20-407, TC-20-408 |
+| **KAN-80-AC3** | Final event confirmation and cancellation notify the organiser, current coordinator and affected registered attendees or arrangement staff as applicable. | TC-20-23, TC-20-409, TC-20-410, TC-20-411 |
+| **KAN-80-AC4** | Registration and withdrawal acknowledge the attendee and notify the organiser/current coordinator; a failed or repeated unchanged action creates no new business-outcome notification. | TC-20-24, TC-20-412, TC-20-413, TC-20-414, TC-20-415, TC-20-416 |
+| **KAN-80-AC5** | Each notification identifies the correct event and equipment request, change request or registration where applicable, with enough information for the recipient to understand the outcome and required action. | TC-20-25, TC-20-401, TC-20-406, TC-20-407, TC-20-417, TC-20-418 |
+| **KAN-80-AC6** | Only the intended recipient can list/read or change read state; following a protected link rechecks current role and event permissions, including after reassignment. | TC-20-26, TC-20-418, TC-20-419, TC-20-420, TC-20-421 |
+| **KAN-80-AC7** | All added trigger notifications persist atomically with the recorded business outcome using the KAN-64 outcome/recipient uniqueness mechanism; rollback creates none and retry creates no duplicate. | TC-20-27, TC-20-403, TC-20-414, TC-20-415, TC-20-416, TC-20-422, TC-20-423, TC-20-424, TC-20-425, TC-20-426, TC-20-429 |
+| **KAN-80-AC8** | Every added trigger uses the delivered KAN-64 authenticated inbox and read/unread behaviour and the recorded recipient matrix, including acknowledgements where the actor is also a recipient. No email delivery is required. | TC-20-28, TC-20-427, TC-20-428, TC-20-429 |
+| **KAN-80-AC9** | CR-2 outage, CR-4 hold and CR-6 safety notifications remain acceptance responsibilities of those separate customer-change stories; this story does not count their implementation twice. | TC-20-29, TC-20-430 |
 
 **Implementation location:** Not recorded. **Automated test files:** Not recorded. Record real files during implementation; these planned tests are not completion evidence.
 
@@ -1210,3 +1210,49 @@ S3-T25/T26 are new customer-change groups; S3-T27 is the current integrated Spri
 KAN-64 is a completed usable inbox and early-trigger scope prerequisite; KAN-80 completes its separately estimated later triggers alongside equipment, lifecycle, change and registration stories. Keep KAN-26 reservation with KAN-62/10 automatic release and KAN-61 readiness; keep KAN-66 ordinary edits with KAN-15 reviewed changes. KAN-82 independent arrangement actions and KAN-84 safety revision/gate checks integrate with those same workflows. No item is Done merely because a dependency or schema exists.
 
 Sprint 4 is the final development sprint. Capture actual planning/review/retrospective/standup recordings as required in [final-sprint-recordings](../final-sprint-recordings.md); planned test specifications are not replacements for those records.
+
+## 29 October 2026 — KAN-17, KAN-67 and KAN-80 test specification planning
+
+Current Jira readback on 28 October: all three stories are assigned to Arvin, To Do, Sprint 4 (Future), with unchanged estimates 2/2/3 SP. Earlier unassigned/owner snapshots are retained as dated history. Independent reviewer: **To agree**. This is approved test preparation with Codex, not implementation, a sprint start, acceptance or a team estimate decision.
+
+The active criterion wording above matches the live cards. Added 61 detailed cases and 29 individual-AC traceability rows; original cases and execution history remain. [Preparation scope and source limitations](../../testing/test-evidence.md#29-october-2026--kan-17-kan-67-and-kan-80-test-specification-expansion) distinguish inspected existing equipment/change notification tests from unimplemented or unmapped slices. Current statuses for these new cases are **Not executed**, with story acceptance **Not assessed**. Integration uses localhost with real API/authentication and the agreed development database under the current Definition of Done; public application deployment is not required. No new AC, estimate or migration is introduced.
+
+| Individual acceptance criterion | New detailed specifications | Execution / acceptance |
+| --- | --- | --- |
+| KAN-17-AC1 | TC-18-401, TC-18-405 | **Not executed** / **Not assessed** |
+| KAN-17-AC2 | TC-18-402, TC-18-403 | **Not executed** / **Not assessed** |
+| KAN-17-AC3 | TC-18-401 | **Not executed** / **Not assessed** |
+| KAN-17-AC4 | TC-18-404 | **Not executed** / **Not assessed** |
+| KAN-17-AC5 | TC-18-408, TC-18-417 | **Not executed** / **Not assessed** |
+| KAN-17-AC6 | TC-18-409, TC-18-410 | **Not executed** / **Not assessed** |
+| KAN-17-AC7 | TC-18-403, TC-18-406, TC-18-407, TC-18-409, TC-18-410, TC-18-411, TC-18-412, TC-18-413 | **Not executed** / **Not assessed** |
+| KAN-17-AC101 | TC-18-405, TC-18-406, TC-18-407, TC-18-413, TC-18-415 | **Not executed** / **Not assessed** |
+| KAN-17-AC102 | TC-18-402, TC-18-414, TC-18-415 | **Not executed** / **Not assessed** |
+| KAN-17-AC103 | TC-18-408, TC-18-412, TC-18-416, TC-18-417 | **Not executed** / **Not assessed** |
+| KAN-67-AC1 | TC-18-418, TC-18-419, TC-18-428 | **Not executed** / **Not assessed** |
+| KAN-67-AC2 | TC-18-420 | **Not executed** / **Not assessed** |
+| KAN-67-AC3 | TC-18-420 | **Not executed** / **Not assessed** |
+| KAN-67-AC4 | TC-18-421, TC-18-422, TC-18-423 | **Not executed** / **Not assessed** |
+| KAN-67-AC5 | TC-18-424, TC-18-425, TC-18-430 | **Not executed** / **Not assessed** |
+| KAN-67-AC6 | TC-18-426, TC-18-428, TC-18-429 | **Not executed** / **Not assessed** |
+| KAN-67-AC7 | TC-18-427 | **Not executed** / **Not assessed** |
+| KAN-67-AC101 | TC-18-427 | **Not executed** / **Not assessed** |
+| KAN-67-AC102 | TC-18-420, TC-18-431 | **Not executed** / **Not assessed** |
+| KAN-67-AC103 | TC-18-425, TC-18-428, TC-18-429, TC-18-430 | **Not executed** / **Not assessed** |
+| KAN-80-AC1 | TC-20-401, TC-20-402, TC-20-403 | **Not executed** / **Not assessed** |
+| KAN-80-AC2 | TC-20-404, TC-20-405, TC-20-406, TC-20-407, TC-20-408 | **Not executed** / **Not assessed** |
+| KAN-80-AC3 | TC-20-409, TC-20-410, TC-20-411 | **Not executed** / **Not assessed** |
+| KAN-80-AC4 | TC-20-412, TC-20-413, TC-20-414, TC-20-415, TC-20-416 | **Not executed** / **Not assessed** |
+| KAN-80-AC5 | TC-20-401, TC-20-406, TC-20-407, TC-20-417, TC-20-418 | **Not executed** / **Not assessed** |
+| KAN-80-AC6 | TC-20-418, TC-20-419, TC-20-420, TC-20-421 | **Not executed** / **Not assessed** |
+| KAN-80-AC7 | TC-20-403, TC-20-414, TC-20-415, TC-20-416, TC-20-422, TC-20-423, TC-20-424, TC-20-425, TC-20-426, TC-20-429 | **Not executed** / **Not assessed** |
+| KAN-80-AC8 | TC-20-427, TC-20-428, TC-20-429 | **Not executed** / **Not assessed** |
+| KAN-80-AC9 | TC-20-430 | Static review **Pass** / story acceptance **Not assessed** |
+
+Use [test-cases.csv](../../testing/test-cases.csv) for executable specifications and [traceability.csv](../../requirements/traceability.csv) for each AC's code/test mapping. Append real executions separately when implementation and environment are available; never infer a whole story's acceptance from these planning links.
+
+## 29 October 2026 — KAN-17 / KAN-67 / KAN-80 acceptance planning
+
+Jira readback: all three assigned to Arvin and moved to **In Progress**; KAN-116–118, KAN-119–121 and KAN-122–124 are their implementation, verification and documentation subtasks respectively. Estimates remain 2 / 2 / 3 SP. This is development during administratively Future Sprint 4, not a sprint-start ceremony or acceptance decision.
+
+The planned S4-T09/T10/T13 groups have partial automated coverage; TC-18-408 has a specific automated Pass and TC-20-430 a static scope-review Pass. Remaining newly specified cases retain their individual execution state. Full integrated acceptance is **Not executed** and story acceptance is **Not assessed**. KAN-14, KAN-61 and KAN-18 source workflows remain dependencies under their existing owners. Shared migration 019, independent review and complete end-to-end acceptance remain pending. See [test evidence](../../testing/test-evidence.md#29-october-2026--kan-17-kan-67-and-kan-80-implementation-verification) and the active sprint's [development update](../sprint-03/daily-progress.md#development-updates).

@@ -1,5 +1,15 @@
 # Sprint 3 evidence register
 
+## S3-E29 — KAN-17, KAN-67 and KAN-80 development verification, 29 October 2026
+
+| Artifact | Evidence | Limits |
+| --- | --- | --- |
+| [Check](kan1780-20261029/check.txt), [coverage](kan1780-20261029/coverage.txt), [PostgreSQL final](kan1780-20261029/integration-final.txt), [browser full](kan1780-20261029/browser-full.txt), [browser focused](kan1780-20261029/browser-focused.txt) | `AUTO-20261029-KAN1780-01`; commands, suite totals and source boundaries are in the [run narrative](../../../testing/test-evidence.md#29-october-2026--kan-17-kan-67-and-kan-80-implementation-verification). | Isolated PostgreSQL and synthetic users; browser APIs substituted. Focused browser retest includes the final mobile layout. Shared migration, real login and integrated acceptance Not executed. |
+| [First PostgreSQL run](kan1780-20261029/integration-initial.txt), [second PostgreSQL run](kan1780-20261029/integration-retest.txt), [first coverage attempt](kan1780-20261029/coverage-initial.txt) | Retained failed test and fixture attempts and subsequent retests. | Migration expectation and test-fixture issues; see the run narrative for actual failure scope. |
+| [Scope review](kan1780-20261029/scope-review.txt) | `MAN-20261029-01` passed TC-20-430 by reading the live Jira cards and repository mapping. | Static responsibility/traceability review only; no product workflow was run. |
+| [Attendee desktop](kan1780-20261029/attendee-desktop.png), [manager mobile](kan1780-20261029/roster-mobile.png) | Automated Chromium captures with synthetic API fixtures, visually inspected at desktop and narrow widths. | Screenshots establish layout only, not integrated acceptance. |
+| [Component diagram](../../../architecture/exports/c3-components.png), [class diagram](../../../architecture/exports/class.png), [withdrawal sequence](../../../architecture/exports/seq-registration-withdrawal.png), [planning ERD](../../../architecture/exports/erd-planning.png), [detailed ERD](../../../architecture/exports/erd-database.png) | Rendered from the current Mermaid sources with Mermaid CLI after the registration/notification changes. | Architecture design evidence; not a test execution or acceptance result. |
+
 **Current selected scope is 13 parents / 63 SP; Sprint 4 has 15 parents / 63 SP.** S3-E05/E07 below retain the earlier 97-point snapshot and its actual validation. The later allocation is separately registered as S3-E08; a scope move is not product delivery.
 
 The original `jira-sprint-state-2026-10-16.json` snapshot is preserved. The shared CSV/workbook links are refreshed working exports and now show the later allocation; use the separate snapshots to compare earlier and later states, rather than treating a refreshed workbook as an immutable historical capture.

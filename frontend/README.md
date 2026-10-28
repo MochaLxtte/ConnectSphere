@@ -1,5 +1,7 @@
 # ConnectSphere frontend
 
+**29 October 2026 registration update:** `/registrations` lets an authenticated attendee view their own saved registrations and confirm a withdrawal. `/events/:id/registrations` provides the current organiser/coordinator roster. The views clear data on identity or route changes and defer all authorization and eligibility decisions to the API. KAN-14 still owns event discovery and registration creation.
+
 Vue 3, TypeScript, Vue Router, and Vite. Run commands from the repository root after following the root README setup.
 
 ```sh

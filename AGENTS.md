@@ -447,6 +447,7 @@ the team and records their name (§2).
 | `README.md` | Project overview, setup, run and check commands | Setup or commands change |
 | `backend/README.md`, `frontend/README.md`, `database/README.md` | Workspace setup, structure, database configuration | Setup, structure or schema changes (§4 step 14) |
 | `backend/src/modules/*/README.md` | Module responsibilities and files (owner names there are historical) | The module changes (§4 step 14) |
+| `backend/src/modules/registrations/README.md` | KAN-17/67 registration APIs, transaction rules and verification | Registration module changes (§4 step 14) |
 | `backend/src/modules/venues/venue-search.md`, `backend/test/venues/venue-search-test-cases.md` | KAN-12 design notes and module-level case list | KAN-12 changes; cases must also be in `test-cases.csv` |
 
 ### 8.2 Requirements and backlog (submission folder 1)
