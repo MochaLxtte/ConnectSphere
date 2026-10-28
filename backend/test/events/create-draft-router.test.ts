@@ -21,7 +21,7 @@ const created = {
   startsAt: null, endsAt: null, expectedAttendance: null, venueRequirements: null,
   accessibilityNeeds: null, equipmentRequirements: null, registrationRequired: null,
   registrationCapacity: null, registrationOpensAt: null, registrationClosesAt: null,
-  createdAt: '2026-09-19T00:00:00.000Z', updatedAt: '2026-09-19T00:00:00.000Z',
+  revision: 1, createdAt: '2026-09-19T00:00:00.000Z', updatedAt: '2026-09-19T00:00:00.000Z',
 };
 
 function setup(actor: QueueActor | null = organiser) {

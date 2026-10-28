@@ -98,6 +98,15 @@ describe('KAN-34 draft editing', () => {
     expect(screen.queryByLabelText(/^Event name/)).not.toBeInTheDocument();
   });
 
+  it('KAN-66 points a submitted request to the details editor when the server allows it', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonResponse({
+      ...draft, status: 'SUBMITTED', revision: 2,
+      actions: { canEditDraft: false, canMakeInitialDecision: false, canEditDetails: true, editMode: 'PRE_APPROVAL', editableFields: [] },
+    })));
+    await renderEditPage();
+    expect(await screen.findByRole('link', { name: 'Edit submitted details' })).toHaveAttribute('href', '/events/a/details');
+  });
+
   it('saves changes and submits through the shared form, then navigates to the read-only detail page', async () => {
     const fetchMock = vi.fn()
       .mockResolvedValueOnce(jsonResponse(draft))

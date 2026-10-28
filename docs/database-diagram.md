@@ -23,6 +23,8 @@ erDiagram
     app_users |o..o{ coordinator_assignments : "assigned_by"
     app_users ||..o{ coordinator_assignments : "coordinator_id"
     event_requests ||..o{ coordinator_assignments : "event_request_id"
+    event_requests ||..o{ event_request_edits : "event_request_id"
+    app_users ||..o{ event_request_edits : "edited_by"
     app_users |o..o{ equipment_requests : "decided_by"
     app_users |o..o{ equipment_requests : "released_by"
     equipment_types ||..o{ equipment_requests : "equipment_type_id"
@@ -89,6 +91,18 @@ erDiagram
         integer registration_capacity "nullable"
         timestamptz registration_opens_at "nullable"
         timestamptz registration_closes_at "nullable"
+        integer revision "migration 016"
+    }
+
+    event_request_edits {
+        uuid id PK
+        uuid event_request_id FK
+        integer revision "resulting revision"
+        uuid edited_by FK
+        text editor_role
+        text event_status
+        jsonb changes "field from/to"
+        timestamptz created_at
     }
 
     coordinator_assignments {
@@ -338,3 +352,12 @@ The same request row changes from `REQUESTED` to `RESERVED`, then optionally `CA
 Migration 015 replaces the historical total-capacity reservation check described above. New reservations lock event/pool rows, require the current approved event period and compare peak overlapping reserved demand against operational capacity after damage/maintenance losses. Later stock loss retains existing reservations and is exposed as a readiness shortfall. An actual event-status transition to `CANCELLED`/`COMPLETED` releases only live reservations once, preserving their original decision and recording release cause/time/reason and transaction actor when available. KAN-62/KAN-10 lifecycle APIs are still pending; the database trigger does not create those user workflows.
 
 The notification FK links the KAN-80 `EQUIPMENT_RESERVED` slice to the exact saved request. Reservation and coordinator/acting-staff notices commit or roll back together. Current C3, class, equipment-reservation sequence and planning ERD exports are in [architecture exports](architecture/README.md#diagram-exports). Shared migration 015 application and connected manual acceptance are **Not executed**.
+
+## 26 October 2026 — Migration 016 event revisions (KAN-66)
+
+**27 October 2026:** written as migration 014 and renumbered 016 after KAN-9/KAN-26 merged their own 014 and 015; the SQL is unchanged.
+
+[016_event_request_revisions.sql](../database/migrations/016_event_request_revisions.sql) is additive. It adds `event_requests.revision` (integer, not null, default 1, at least 1); the `event_requests_advance_revision` `BEFORE UPDATE` trigger sets it to the previous value plus one on every update and ignores any written value. Writers compare a client's `expectedRevision` with the locked row. The new `event_request_edits` table records each post-submission edit: `revision` (the resulting revision, unique per event, at least 2), `edited_by` (`app_users`), `editor_role` (organiser or coordinator), `event_status` at the time of the edit and a non-empty `changes` object of `{ "<apiField>": { "from", "to" } }`. Rows cascade with their event. Row-level security is enabled and Data API roles have no privileges, matching the other application tables. Draft edits and status changes are not recorded here; status changes remain in `event_status_history`.
+
+Migration 016 has **not** been applied to shared Supabase; announce it to the team first (AGENTS.md §7.3). The PNG export `erd-planning.png` does not yet include it; the combined diagram re-export remains **pending** as recorded in the [architecture README](architecture/README.md).
+

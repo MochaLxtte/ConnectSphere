@@ -18,12 +18,19 @@ Daily Scrums follow Tuesday, Thursday and Saturday: planned dates 20, 22, 24, 27
 
 **16 October 2026 — self-selection follow-up outside a Daily Scrum.** Stories are unassigned for team members to choose; the earlier named allocation is superseded. Target roughly 10–11 SP each per 63-SP sprint and 21 SP across the 126-SP release remainder, without splitting or changing story estimates merely to equalise loads. Select independent reviewers after ownership and agree an integration lead. Scope, criteria, test outcomes and historical assignments are unchanged. This is a planning update, not a standup or meeting record.
 
+**26 October 2026 — KAN-66 development update outside a Daily Scrum (Irfan).** Irfan assigned KAN-66, KAN-15 and KAN-82 (13 SP) to himself in Jira and moved them to In Progress; KAN-66 subtasks KAN-107/108/109 created. KAN-66 implemented on `feat/KAN-66-planning-edits`: migration 014 (event revision and edit audit), status/role/field edit rules on `PATCH /api/events/:id`, revision checks for reviewer actions, and the `/events/:id/details` page. Evidence: `AUTO-20261026-KAN66-01` (unit/component, Pass) and `AUTO-20261026-KAN66-02` (browser fixtures; KAN-66 tests Pass, 5 unrelated environment/timing failures recorded). Remaining: PostgreSQL integration suite (CI), migration 014 announcement and shared rollout, local integrated acceptance, independent review, and AC8 assessment with KAN-15. Estimate unchanged at 3 SP. The 13 SP selection is above the 10–11 SP guidance; KAN-82 is the first to drop if time runs short. This is a development note, not a standup row.
+
+**27 October 2026 — KAN-66 development update outside a Daily Scrum (Irfan).** Re-ran `npm run check` and coverage on the committed branch (`AUTO-20261027-KAN66-03`, Pass) and opened the KAN-66 pull request so CI runs the PostgreSQL integration and browser suites. Commit messages were rewritten to remove AI co-author trailers (content unchanged). Heads-up: the KAN-9/KAN-26 and KAN-62/KAN-63 branches also add a `014_*` migration; whichever merges after KAN-66 should renumber. Remaining: CI result, independent review (Tristan; reviewer changed from Kai Jie the same day), migration 014 team notice and shared rollout after merge, local integrated acceptance, AC8 with KAN-15.
+
+**27 October 2026 — KAN-66 integration update outside a Daily Scrum (Irfan).** After #62 (KAN-9/KAN-26) merged, `main` was merged into `feat/KAN-66-planning-edits`; shared-document conflicts kept both sides. KAN-66's migration was renumbered 014 to 016 (KAN-9's 014 is already reported applied on shared Supabase) and its evidence ID S4-E10 became S4-E14 because KAN-9 used S4-E10 to S4-E13. Earlier dated run records keep their original wording.
+
 ## Impediments
 
 | Raised | Impediment / dependency | Owner | Planned action | Status |
 | --- | --- | --- | --- | --- |
 | 16 October 2026 | Sprint 3 venue, notification and assignment contracts are prerequisites | Integration lead To agree; selected story owners | Review actual integrated Sprint 3 build at planning and reforecast any unfinished dependencies explicitly | Not assessed |
 | 16 October 2026 | Historical acceptance/DoD provenance and individual capacity details remain incomplete | Collection owner To agree; team supplies actual sources | Keep missing evidence marked; record future meetings and checks as they occur | Not recorded |
+| 26 October 2026 | No isolated PostgreSQL available on Irfan's workstation (Docker Desktop could not start in reasonable time); shared Supabase unsuitable for cleanup-based tests (AGENTS.md §7.3; migration 013 re-schedules the named pg_cron job per test schema) | Irfan | Run the PostgreSQL integration suite in GitHub CI on the KAN-66 pull request | Open |
 
 ## Scope change log
 

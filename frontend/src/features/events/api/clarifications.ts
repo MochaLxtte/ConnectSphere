@@ -24,8 +24,15 @@ export async function fetchClarifications(eventRequestId: string, signal?: Abort
   return (await getJson<{ items: ClarificationRecord[] }>(`${event(eventRequestId)}/clarifications`, signal)).items;
 }
 
-export function requestClarification(eventRequestId: string, message: string, signal?: AbortSignal) {
-  return postJson<ClarificationResult>(`${event(eventRequestId)}/clarifications`, { message }, signal);
+/** KAN-66: include the displayed revision when known, so a stale reviewer must refresh. */
+const revisionField = (expectedRevision?: number) => expectedRevision === undefined ? {} : { expectedRevision };
+
+export function requestClarification(
+  eventRequestId: string, message: string, signal?: AbortSignal, expectedRevision?: number,
+) {
+  return postJson<ClarificationResult>(
+    `${event(eventRequestId)}/clarifications`, { message, ...revisionField(expectedRevision) }, signal,
+  );
 }
 
 export function respondToClarification(
@@ -36,6 +43,8 @@ export function respondToClarification(
   );
 }
 
-export function startReview(eventRequestId: string, signal?: AbortSignal) {
-  return postJson<{ eventRequestId: string; status: string }>(`${event(eventRequestId)}/start-review`, {}, signal);
+export function startReview(eventRequestId: string, signal?: AbortSignal, expectedRevision?: number) {
+  return postJson<{ eventRequestId: string; status: string }>(
+    `${event(eventRequestId)}/start-review`, revisionField(expectedRevision), signal,
+  );
 }

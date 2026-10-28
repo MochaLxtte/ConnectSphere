@@ -63,7 +63,10 @@ async function handleSubmit(submission: ReviewSubmission) {
   const currentView = viewVersion;
   feedback.value = { eventRequestId: submission.eventRequestId, state: 'saving' };
   try {
-    const saved = await submitReview(submission);
+    // KAN-66-AC101: decide only on the revision shown; a later organiser edit returns 409.
+    const { revision } = state.value.detail;
+    const saved = await submitReview(revision === undefined ? submission
+      : { ...submission, input: { ...submission.input, expectedRevision: revision } });
     // A completed write must not replace the request opened after navigation.
     if (currentView !== viewVersion) return;
     feedback.value = { eventRequestId: submission.eventRequestId, state: 'saved', decision: saved.decision };
@@ -133,6 +136,11 @@ onBeforeUnmount(() => {
             : state.detail.registrationRequired ? 'Yes' : 'No' }}</dd>
         </div>
       </dl>
+      <!-- KAN-66-AC102: the assigned coordinator's ordinary name/description edit. -->
+      <p v-if="state.detail.actions?.canEditDetails"><RouterLink
+        class="availability-link"
+        :to="`/events/${state.detail.id}/details`"
+      >Edit name or description</RouterLink></p>
       <p><RouterLink
         class="availability-link"
         :to="`/reviews/${state.detail.id}/venue-suitability`"
@@ -162,6 +170,7 @@ onBeforeUnmount(() => {
       :event-request-id="state.detail.id"
       :current-coordinator-id="state.detail.coordinatorId"
       :status="state.detail.status"
+      :revision="state.detail.revision"
       viewer-role="EVENT_COORDINATOR"
       :is-owner="false"
       @changed="refreshQuietly"

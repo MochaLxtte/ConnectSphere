@@ -221,7 +221,10 @@ describe('KAN-16 / KAN-25 / KAN-33 / KAN-36 authenticated event workflow', () =>
     expect(queue.body.items.map((item: { id: string }) => item.id)).toEqual([assigned]);
     const detail = await session.get(`/api/events/${assigned}`);
     expect(detail.status).toBe(200);
-    expect(detail.body.actions).toEqual({ canEditDraft: false, canMakeInitialDecision: true });
+    expect(detail.body.actions).toEqual({
+      canEditDraft: false, canMakeInitialDecision: true,
+      canEditDetails: false, editMode: null, editableFields: [],
+    });
   });
 
   it.each(['APPROVED', 'REJECTED'] as const)(

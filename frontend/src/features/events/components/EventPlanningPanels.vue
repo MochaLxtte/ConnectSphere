@@ -12,6 +12,8 @@ const props = defineProps<{
   status: string;
   viewerRole: string;
   isOwner?: boolean;
+  /** KAN-66: the displayed revision, so reviewer actions on stale details are refused. */
+  revision?: number;
 }>();
 const emit = defineEmits<{ changed: [] }>();
 
@@ -24,7 +26,7 @@ const shared = computed(() => ({
 <template>
   <div class="planning-panels">
     <AssignmentPanel v-bind="shared" :current-coordinator-id="currentCoordinatorId" @changed="emit('changed')" />
-    <ClarificationPanel v-bind="shared" @changed="emit('changed')" />
+    <ClarificationPanel v-bind="shared" :revision="revision" @changed="emit('changed')" />
     <VenueBookingPanel v-if="viewerRole === 'EVENT_COORDINATOR'" v-bind="shared" @changed="emit('changed')" />
     <StatusHistoryPanel :event-request-id="eventRequestId" :status="status" />
   </div>

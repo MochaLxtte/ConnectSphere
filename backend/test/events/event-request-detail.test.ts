@@ -15,9 +15,25 @@ const baseRow = {
   startsAt: null, endsAt: null, expectedAttendance: 0, venueRequirements: null,
   accessibilityNeeds: null, equipmentRequirements: null, registrationRequired: false,
   registrationCapacity: null, registrationOpensAt: null, registrationClosesAt: null,
+  revision: 3,
   createdAt: new Date('2026-09-06T02:00:00Z'), updatedAt: new Date('2026-09-06T03:00:00Z'),
   review: null as EventRequestDetail['review'],
 };
+const allFields = [
+  'name', 'description', 'purpose', 'startsAt', 'endsAt', 'expectedAttendance', 'venueRequirements',
+  'accessibilityNeeds', 'equipmentRequirements', 'registrationRequired', 'registrationCapacity',
+  'registrationOpensAt', 'registrationClosesAt',
+];
+const preApproval = ['SUBMITTED', 'UNDER_REVIEW', 'CLARIFICATION_REQUESTED'];
+
+/** KAN-66: the owner edits everything before approval; nothing directly afterwards. */
+function organiserEditActions(status: EventStatus) {
+  if (status === 'DRAFT') return { canEditDetails: false, editMode: 'DRAFT', editableFields: allFields };
+  if (preApproval.includes(status)) {
+    return { canEditDetails: true, editMode: 'PRE_APPROVAL', editableFields: allFields };
+  }
+  return { canEditDetails: false, editMode: null, editableFields: [] };
+}
 const recordedReview = {
   reviewId: '30000000-0000-4000-8000-000000000001', eventRequestId: requestId,
   reviewedBy: coordinator.id, decision: 'APPROVED' as const, reason: null,
@@ -48,7 +64,7 @@ describe('KAN-34/KAN-33/KAN-16 shared GET /api/events/:id', () => {
       expect(response.status).toBe(200);
       expect(response.body).toEqual({
         ...row, createdAt: row.createdAt.toISOString(), updatedAt: row.updatedAt.toISOString(),
-        actions: { canEditDraft: status === 'DRAFT', canMakeInitialDecision: false },
+        actions: { canEditDraft: status === 'DRAFT', canMakeInitialDecision: false, ...organiserEditActions(status) },
       });
       expect(response.headers['cache-control']).toBe('no-store');
       expect(dependencies.authenticate).toHaveBeenCalledTimes(1);
@@ -68,7 +84,13 @@ describe('KAN-34/KAN-33/KAN-16 shared GET /api/events/:id', () => {
       expect(response.body.review).toEqual(review);
       // A decision may follow directly or after the request was marked as under review.
       const decidable = status === 'SUBMITTED' || status === 'UNDER_REVIEW';
-      expect(response.body.actions).toEqual({ canEditDraft: false, canMakeInitialDecision: decidable });
+      // KAN-66-AC102: only an approved event offers the coordinator a name/description edit.
+      const planning = status === 'APPROVED';
+      expect(response.body.actions).toEqual({
+        canEditDraft: false, canMakeInitialDecision: decidable, canEditDetails: planning,
+        editMode: planning ? 'PLANNING' : null, editableFields: planning ? ['name', 'description'] : [],
+      });
+      expect(response.body.revision).toBe(3);
       expect(dependencies.canViewRequest).toHaveBeenCalledExactlyOnceWith(coordinator, row);
       if (decidable) {
         expect(dependencies.canReviewRequest).toHaveBeenCalledExactlyOnceWith(coordinator, row, client);

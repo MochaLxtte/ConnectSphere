@@ -21,3 +21,6 @@ Sprint 1 and Sprint 2 close-specific summary files are **Not recorded**. Histori
 This is a dated evidence backfill prepared with Codex on 25 October, not a new ceremony, Jira transition, test execution or acceptance decision. Historical entries, other members’ ownership and agreed estimates are preserved.
 
 Earlier PR suite counts for KAN-24/KAN-51 are linked from [test evidence](../test-evidence.md); they are not source-level coverage reports. No historical percentage, 100% claim or new execution is inferred. The retained 25 October KAN-34/KAN-78 CI coverage remains scoped to source `96a0d10`, preceding the later documentation-only main update.
+
+**26 October 2026 — KAN-66:** [KAN-66 automated verification](2026-10-26-kan66.txt) records `AUTO-20261026-KAN66-01/02` on the uncommitted `feat/KAN-66-planning-edits` working tree (base `c849ebf`). Workspace unit/component coverage only; the PostgreSQL integration suite was not executed. This is not Sprint 4 close coverage.
+

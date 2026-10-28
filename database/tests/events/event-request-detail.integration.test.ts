@@ -9,6 +9,7 @@ import type {
   ReviewRequest,
 } from '../../../backend/src/modules/events/review-decision.js';
 import type { EventStatus } from '../../../backend/src/modules/events/types.js';
+import { ALL_EDITABLE_FIELDS, ORDINARY_FIELDS } from '../../../backend/src/modules/events/planning-edit-policy.js';
 import { migrate } from '../../migrate.js';
 
 const testUrl = process.env.TEST_DATABASE_URL;
@@ -99,9 +100,13 @@ describe('KAN-34 / KAN-33 / KAN-16 shared request detail with PostgreSQL', () =>
       expectedAttendance: 0, venueRequirements: null, accessibilityNeeds: null,
       equipmentRequirements: null, registrationRequired: false,
       registrationCapacity: null, registrationOpensAt: null, registrationClosesAt: null,
-      createdAt, updatedAt,
+      // KAN-66: the insert starts at revision 1 and the fixture UPDATE above advances it once.
+      revision: 2, createdAt, updatedAt,
       review: null,
-      actions: { canEditDraft: true, canMakeInitialDecision: false },
+      actions: {
+        canEditDraft: true, canMakeInitialDecision: false,
+        canEditDetails: false, editMode: 'DRAFT', editableFields: [...ALL_EDITABLE_FIELDS],
+      },
     });
   });
 
@@ -117,9 +122,14 @@ describe('KAN-34 / KAN-33 / KAN-16 shared request detail with PostgreSQL', () =>
       id, status: 'SUBMITTED', review: null,
       actions: { canEditDraft: false, canMakeInitialDecision: true },
     });
+    // KAN-66-AC101: before approval only the owner may edit, with full submission validation.
+    expect(coordinatorDetail.body.actions).toMatchObject({ canEditDetails: false, editMode: null, editableFields: [] });
     expect(organiserDetail.body).toEqual({
       ...coordinatorDetail.body,
-      actions: { canEditDraft: false, canMakeInitialDecision: false },
+      actions: {
+        canEditDraft: false, canMakeInitialDecision: false,
+        canEditDetails: true, editMode: 'PRE_APPROVAL', editableFields: [...ALL_EDITABLE_FIELDS],
+      },
     });
     const queue = await request(coordinatorApp).get('/api/events');
     expect(queue.status).toBe(200);
@@ -149,7 +159,10 @@ describe('KAN-34 / KAN-33 / KAN-16 shared request detail with PostgreSQL', () =>
     const detail = await request(app).get(`/api/events/${id}`);
 
     expect(detail.status).toBe(200);
-    expect(detail.body.actions).toEqual({ canEditDraft: false, canMakeInitialDecision: false });
+    expect(detail.body.actions).toEqual({
+      canEditDraft: false, canMakeInitialDecision: false,
+      canEditDetails: false, editMode: null, editableFields: [],
+    });
     const denied = await request(app).post(`/api/events/${id}/reviews`).send({ decision: 'APPROVED' });
     expect(denied.status).toBe(404);
     expect(denied.body.error.code).toBe('EVENT_REQUEST_NOT_FOUND');
@@ -201,7 +214,16 @@ describe('KAN-34 / KAN-33 / KAN-16 shared request detail with PostgreSQL', () =>
           actions: { canEditDraft: false, canMakeInitialDecision: false },
         });
       }
-      expect(organiserDetail.body).toEqual(coordinatorDetail.body);
+      // KAN-66-AC102: only the assigned coordinator may edit an approved event's name/description.
+      const planning = decision === 'APPROVED';
+      expect(coordinatorDetail.body.actions).toMatchObject({
+        canEditDetails: planning, editMode: planning ? 'PLANNING' : null,
+        editableFields: planning ? [...ORDINARY_FIELDS] : [],
+      });
+      expect(organiserDetail.body.actions).toMatchObject({ canEditDetails: false, editMode: null, editableFields: [] });
+      const { actions: _coordinatorActions, ...coordinatorRecord } = coordinatorDetail.body;
+      const { actions: _organiserActions, ...organiserRecord } = organiserDetail.body;
+      expect(organiserRecord).toEqual(coordinatorRecord);
 
       const queue = await request(coordinatorApp).get('/api/events');
       expect(queue.status).toBe(200);

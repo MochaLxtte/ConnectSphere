@@ -63,6 +63,21 @@ export function parseDraftUpdateInput(input: unknown): DraftUpdateInput {
   return parseDraftFields(input as Record<string, unknown>);
 }
 
+/**
+ * KAN-66: a PATCH body may also carry `expectedRevision`, the revision the editor displayed.
+ * It is separated here and validated by the service, which knows whether it is required.
+ */
+export function parseEventUpdateInput(input: unknown): {
+  changes: DraftUpdateInput;
+  expectedRevision: unknown;
+} {
+  if (typeof input !== 'object' || input === null || Array.isArray(input)) {
+    throw new DraftUpdateInputError('The draft update must be a JSON object.');
+  }
+  const { expectedRevision, ...fields } = input as Record<string, unknown>;
+  return { changes: parseDraftUpdateInput(fields), expectedRevision };
+}
+
 /** Validate a POST body: a new draft may start empty, otherwise the PATCH rules apply. */
 export function parseDraftCreateInput(input: unknown): DraftUpdateInput {
   if (input === undefined) return {};

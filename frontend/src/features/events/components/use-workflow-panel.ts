@@ -7,6 +7,8 @@ export interface WorkflowPanelProps {
   status: string;
   viewerRole: string;
   isOwner?: boolean;
+  /** KAN-66: displayed revision for reviewer actions that must not act on stale details. */
+  revision?: number;
 }
 
 function messageFor(error: unknown, fallback: string): string {

@@ -48,6 +48,7 @@ const errorMessage = computed(() => {
     case 'REVIEW_ALREADY_DECIDED': return 'This request already has a decision. Refresh it to view the latest outcome.';
     case 'REQUEST_NOT_REVIEWABLE': return 'This request is no longer awaiting an initial decision. Refresh it to view the latest status.';
     case 'INVALID_REVIEW_INPUT': return 'Check your decision and reason, then try again.';
+    case 'EVENT_REVISION_CONFLICT': return 'The organiser changed this request after you opened it. Refresh it and review the latest details before deciding.';
     default: return 'We could not confirm whether your decision was recorded. Refresh the request before trying again.';
   }
 });
