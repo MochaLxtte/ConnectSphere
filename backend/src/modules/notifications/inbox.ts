@@ -50,11 +50,14 @@ const CAN_VIEW_ATTENDEE_CANCELLATION = `($2 = 'ATTENDEE' AND n.type = 'EVENT_CAN
     WHERE registration.event_request_id = e.id AND registration.attendee_id = $1
       AND registration.status = 'CANCELLED' AND registration.cancellation_outcome_at IS NOT NULL))`;
 
+// KAN-14: an attendee's own registration confirmation is theirs to read; it names only the event they joined.
+const CAN_VIEW_ATTENDEE_REGISTRATION = `($2 = 'ATTENDEE' AND n.type = 'REGISTRATION_CONFIRMED' AND e.id IS NOT NULL)`;
+
 const VISIBLE = `n.recipient_id = $1 AND (
   (n.event_request_id IS NULL AND n.venue_booking_id IS NULL AND n.equipment_request_id IS NULL)
   OR n.type = 'COORDINATOR_REASSIGNED_AWAY'
   OR ${CAN_VIEW_EVENT} OR ${CAN_VIEW_BOOKING} OR ${CAN_VIEW_EQUIPMENT}
-  OR ${CAN_VIEW_ATTENDEE_CANCELLATION})`;
+  OR ${CAN_VIEW_ATTENDEE_CANCELLATION} OR ${CAN_VIEW_ATTENDEE_REGISTRATION})`;
 
 interface Row {
   id: string;
@@ -70,6 +73,7 @@ interface Row {
   canViewBooking: boolean;
   canViewEquipment: boolean;
   canViewAttendeeCancellation: boolean;
+  canViewAttendeeRegistration: boolean;
   equipmentOpen: boolean;
 }
 
@@ -77,12 +81,14 @@ const SELECT = `SELECT n.id, n.type, n.title, n.message, n.read_at AS "readAt", 
   e.id AS "eventId", e.name AS "eventName", b.id AS "bookingId",
   ${CAN_VIEW_EVENT} AS "canViewEvent", ${CAN_VIEW_BOOKING} AS "canViewBooking",
   ${CAN_VIEW_EQUIPMENT} AS "canViewEquipment", e.status IN ('APPROVED', 'CONFIRMED') AS "equipmentOpen",
-  ${CAN_VIEW_ATTENDEE_CANCELLATION} AS "canViewAttendeeCancellation"`;
+  ${CAN_VIEW_ATTENDEE_CANCELLATION} AS "canViewAttendeeCancellation",
+  ${CAN_VIEW_ATTENDEE_REGISTRATION} AS "canViewAttendeeRegistration"`;
 
 function toItem(row: Row, role: WorkflowActor['role']): InboxItem {
   const link = row.canViewBooking && row.bookingId ? `/venue-bookings/${row.bookingId}`
     : row.canViewEvent && row.eventId ? (role === 'EVENT_ORGANISER' ? `/events/${row.eventId}` : `/reviews/${row.eventId}`)
-      : row.canViewEquipment && row.equipmentOpen ? `/equipment/availability/${row.eventId}` : null;
+      : row.canViewEquipment && row.equipmentOpen ? `/equipment/availability/${row.eventId}`
+        : row.canViewAttendeeRegistration && row.eventId ? `/attend/${row.eventId}` : null;
   return {
     id: row.id, type: row.type, title: row.canViewAttendeeCancellation ? 'Event cancelled' : row.title,
     message: row.canViewAttendeeCancellation

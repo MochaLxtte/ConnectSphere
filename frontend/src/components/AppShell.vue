@@ -10,6 +10,7 @@ const role = computed(() => authSession.user?.role ?? null);
 const showOrganiser = computed(() => role.value === null || role.value === 'EVENT_ORGANISER');
 const showCoordinator = computed(() => !authSession.loading && role.value === 'EVENT_COORDINATOR');
 const showLead = computed(() => !authSession.loading && role.value === 'EVENT_COORDINATOR_LEAD');
+const showAttendee = computed(() => !authSession.loading && role.value === 'ATTENDEE');
 const showEquipment = computed(() => !authSession.loading && role.value === 'TECHNICAL_SUPPORT_STAFF');
 const showVenuePlanning = computed(() => !authSession.loading && canViewVenueAvailability(role.value));
 const showVenueBookings = computed(() => !authSession.loading &&
@@ -73,6 +74,11 @@ async function handleSignOut(): Promise<void> {
             ><AppIcon name="user" />Assignment queue</RouterLink>
           <RouterLink to="/lead/oversight" exact-active-class="is-active" class="nav-link"
             ><AppIcon name="review" />Event oversight</RouterLink>
+        </template>
+        <template v-if="showAttendee">
+          <p class="nav-label">For attendees</p>
+          <RouterLink to="/attend" active-class="is-active" class="nav-link"
+            ><AppIcon name="calendar" />Events</RouterLink>
         </template>
         <template v-if="showEquipment">
           <p class="nav-label">For technical support</p>
