@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router';
 import { ApiError } from '../../../lib/api-client';
 import { authSession, clearLocalSession } from '../../auth/session.js';
 import { formatEventTime } from '../../events/presentation';
+import { venueBookingStatusLabel } from '../api/venue-bookings';
 import {
   assessVenueSuitability, fetchVenueSuitabilityContext,
   type VenueSuitabilityAssessment, type VenueSuitabilityCheck, type VenueSuitabilityContext,
@@ -17,6 +18,8 @@ const route = useRoute();
 // A route can change before this page unmounts, including to another page with an id.
 const eventId = computed(() => route.matched.some((record) => record.path === '/reviews/:id/venue-suitability')
   && typeof route.params.id === 'string' ? route.params.id : '');
+const arrangementMode = computed(() => route.query.bookingId !== undefined);
+const bookingId = computed(() => typeof route.query.bookingId === 'string' ? route.query.bookingId.toLowerCase() : '');
 const allowed = computed(() => authSession.user?.role === 'EVENT_COORDINATOR');
 const state = ref<State>({ status: 'idle' });
 const venueId = ref('');
@@ -51,7 +54,7 @@ function listError(value: string, label: string): string {
 }
 const validationError = computed(() => listError(facilities.value, 'facilities')
   || listError(accessibility.value, 'accessibility features')
-  || (layout.value.trim().length > 100 ? 'The required layout must be at most 100 characters.' : '')
+  || (!arrangementMode.value && layout.value.trim().length > 100 ? 'The required layout must be at most 100 characters.' : '')
   || (unresolvedRequirements.value.trim().length > 2000 ? 'Use at most 2,000 characters for unresolved requirements.' : ''));
 const canAssess = computed(() => state.value.status === 'ready' && allowed.value && !!eventId.value
   && !!selectedVenue.value && requirementsConfirmed.value && !validationError.value && !assessing.value);
@@ -88,7 +91,9 @@ function showReadError(error: unknown) {
   const denied = error instanceof ApiError && [403, 404].includes(error.status);
   state.value = {
     status: 'error', retryable: !denied,
-    message: denied ? 'This event request is unavailable or you do not have permission to assess its venues.'
+    message: denied ? arrangementMode.value
+      ? 'This saved arrangement is unavailable or you do not have permission to assess it.'
+      : 'This event request is unavailable or you do not have permission to assess its venues.'
       : error instanceof Error ? error.message : 'The event and venue information could not be loaded. Please try again.',
   };
 }
@@ -99,12 +104,25 @@ async function loadContext(message: string | null = null) {
   notice.value = message;
   state.value = { status: 'idle' };
   if (authSession.loading || !allowed.value || !eventId.value) return;
+  if (arrangementMode.value && !bookingId.value) {
+    state.value = { status: 'error', retryable: false, message: 'Choose a saved arrangement from the event request to check its suitability.' };
+    return;
+  }
   const current = new AbortController();
   readController = current;
   state.value = { status: 'loading' };
   try {
-    const context = await fetchVenueSuitabilityContext(eventId.value, current.signal);
-    if (!current.signal.aborted) state.value = { status: 'ready', context };
+    const context = await fetchVenueSuitabilityContext(eventId.value, current.signal, bookingId.value || undefined);
+    if (current.signal.aborted) return;
+    if (arrangementMode.value && (!context.arrangement || context.arrangement.id !== bookingId.value
+      || !context.venues.some((venue) => venue.id === context.arrangement!.venueId))) {
+      throw new Error('The saved arrangement could not be loaded. Refresh to check its current details.');
+    }
+    state.value = { status: 'ready', context };
+    if (context.arrangement) {
+      venueId.value = context.arrangement.venueId;
+      layout.value = context.arrangement.layout ?? '';
+    }
   } catch (error) {
     if (current.signal.aborted) return;
     if (error instanceof ApiError && error.status === 401) { clearLocalSession(); return; }
@@ -121,6 +139,7 @@ async function assess() {
   assessing.value = true;
   try {
     const result = await assessVenueSuitability(eventId.value, {
+      ...(bookingId.value ? { bookingId: bookingId.value } : {}),
       venueId: venueId.value, requirementsVersion: state.value.context.requirementsVersion,
       facilities: listValues(facilities.value), accessibility: listValues(accessibility.value),
       layout: layout.value.trim() || null, wheelchairRequired: wheelchairRequired.value,
@@ -132,7 +151,9 @@ async function assess() {
     if (current.signal.aborted) return;
     if (error instanceof ApiError && error.status === 401) { clearLocalSession(); return; }
     if (error instanceof ApiError && error.status === 409 && error.code === 'SUITABILITY_CONTEXT_CHANGED') {
-      await loadContext('The event requirements have changed. Review the refreshed information, enter your interpretation again and confirm it before checking.');
+      await loadContext(arrangementMode.value
+        ? 'The saved arrangement or event requirements have changed. Review the refreshed information, enter your interpretation again and confirm it before checking.'
+        : 'The event requirements have changed. Review the refreshed information, enter your interpretation again and confirm it before checking.');
     } else if (error instanceof ApiError && [403, 404].includes(error.status)) {
       resetInterpretation();
       showReadError(error);
@@ -151,7 +172,7 @@ watch(() => [venueId.value, facilities.value, accessibility.value, layout.value,
   discardAssessment();
 }, { flush: 'sync' });
 watch(requirementsConfirmed, discardAssessment, { flush: 'sync' });
-watch(() => [authSession.loading, authSession.user?.id, authSession.user?.role, eventId.value],
+watch(() => [authSession.loading, authSession.user?.id, authSession.user?.role, eventId.value, route.query.bookingId],
   () => { void loadContext(); }, { immediate: true, flush: 'sync' });
 onBeforeUnmount(() => { readController?.abort(); assessmentController?.abort(); });
 </script>
@@ -160,7 +181,7 @@ onBeforeUnmount(() => { readController?.abort(); assessmentController?.abort(); 
   <section class="page-heading">
     <p class="eyebrow">Venue planning</p>
     <h1>Check venue suitability</h1>
-    <p class="page-description">Compare a venue with your event's requirements before deciding where to request a booking.</p>
+    <p class="page-description">{{ arrangementMode ? 'Check a saved arrangement against the event requirements using its own venue, period and layout.' : "Compare a venue with your event's requirements before deciding where to request a booking." }}</p>
   </section>
 
   <p v-if="authSession.loading" class="panel suitability-panel" role="status">Checking your session…</p>
@@ -183,10 +204,22 @@ onBeforeUnmount(() => { readController?.abort(); assessmentController?.abort(); 
     </div>
 
     <template v-else-if="state.status === 'ready'">
+      <section v-if="state.context.arrangement" class="panel suitability-panel saved-arrangement" aria-labelledby="suitability-arrangement-title">
+        <h2 id="suitability-arrangement-title">Saved arrangement</h2>
+        <p class="suitability-hint">This check uses the saved venue, period and layout below. Review the notes alongside the parent event requirements when interpreting facilities and accessibility. All times are Singapore time.</p>
+        <dl>
+          <div><dt>Venue</dt><dd>{{ selectedVenue?.name }}</dd></div>
+          <div><dt>Arrangement starts</dt><dd>{{ formatEventTime(state.context.arrangement.startsAt) }}</dd></div>
+          <div><dt>Arrangement ends</dt><dd>{{ formatEventTime(state.context.arrangement.endsAt) }}</dd></div>
+          <div><dt>Saved layout</dt><dd>{{ state.context.arrangement.layout ?? 'No particular layout saved' }}</dd></div>
+          <div><dt>Saved notes</dt><dd>{{ state.context.arrangement.notes ?? 'No notes saved' }}</dd></div>
+          <div><dt>Status</dt><dd>{{ venueBookingStatusLabel(state.context.arrangement.status) }}</dd></div>
+        </dl>
+      </section>
       <div class="source-grid">
         <section class="panel suitability-panel" aria-labelledby="suitability-event-title">
           <h2 id="suitability-event-title">{{ state.context.event.name?.trim() || 'Untitled event request' }}</h2>
-          <p class="suitability-hint">Current event information · Singapore time</p>
+          <p class="suitability-hint">{{ arrangementMode ? 'Parent event requirements and reference dates · Singapore time. Availability is checked for the saved arrangement period above.' : 'Current event information · Singapore time' }}</p>
           <dl>
             <div><dt>Starts</dt><dd>{{ formatEventTime(state.context.event.startsAt) }}</dd></div>
             <div><dt>Ends</dt><dd>{{ formatEventTime(state.context.event.endsAt) }}</dd></div>
@@ -197,12 +230,12 @@ onBeforeUnmount(() => { readController?.abort(); assessmentController?.abort(); 
         </section>
 
         <section class="panel suitability-panel" aria-labelledby="suitability-venue-title">
-          <h2 id="suitability-venue-title">Choose a venue</h2>
+          <h2 id="suitability-venue-title">{{ arrangementMode ? 'Saved venue capabilities' : 'Choose a venue' }}</h2>
           <p class="suitability-hint">Catalogue details from the last refresh. Each assessment checks the latest venue information; use Refresh event and venues to update the details shown here.</p>
           <p v-if="state.context.venues.length === 0" class="suitability-hint" role="status">No active venues are available to assess. Refresh after the venue catalogue is updated.</p>
           <template v-else>
             <label class="field-label" for="suitability-venue">Venue to assess</label>
-            <select id="suitability-venue" v-model="venueId">
+            <select id="suitability-venue" v-model="venueId" :disabled="arrangementMode">
               <option value="" disabled>Select a venue</option>
               <option v-for="venue in state.context.venues" :key="venue.id" :value="venue.id">{{ venue.name }}</option>
             </select>
@@ -220,7 +253,7 @@ onBeforeUnmount(() => { readController?.abort(); assessmentController?.abort(); 
 
       <form v-if="selectedVenue" class="panel suitability-panel interpretation-form" aria-label="Interpret event requirements" @submit.prevent="assess">
         <h2>Interpret the event requirements</h2>
-        <p class="suitability-hint">Use the event information above to describe what is required. Enter one facility or accessibility feature per line, including anything the selected venue does not offer.</p>
+        <p class="suitability-hint">Use the event information{{ arrangementMode ? ' and saved arrangement notes' : '' }} above to describe what is required. Enter one facility or accessibility feature per line, including anything the selected venue does not offer.</p>
         <div class="interpretation-grid">
           <div>
             <label class="field-label" for="suitability-facilities">Required facilities</label>
@@ -232,16 +265,16 @@ onBeforeUnmount(() => { readController?.abort(); assessmentController?.abort(); 
           </div>
         </div>
         <p id="suitability-list-help" class="suitability-hint">Up to 30 different entries in each list, at most 100 characters each. Blank means none required once you confirm below.</p>
-        <label class="field-label" for="suitability-layout">Required room layout</label>
-        <input id="suitability-layout" v-model="layout" list="suitability-layouts" maxlength="100" placeholder="Leave blank if no particular layout is required" />
-        <datalist id="suitability-layouts"><option v-for="value in selectedVenue.layouts" :key="value" :value="value" /></datalist>
+        <label class="field-label" for="suitability-layout">{{ arrangementMode ? 'Saved room layout' : 'Required room layout' }}</label>
+        <input id="suitability-layout" v-model="layout" :readonly="arrangementMode" :list="arrangementMode ? undefined : 'suitability-layouts'" :maxlength="arrangementMode ? undefined : 100" :placeholder="arrangementMode ? 'No particular layout saved' : 'Leave blank if no particular layout is required'" />
+        <datalist v-if="!arrangementMode" id="suitability-layouts"><option v-for="value in selectedVenue.layouts" :key="value" :value="value" /></datalist>
         <label class="checkbox-label"><input v-model="wheelchairRequired" type="checkbox" /> Wheelchair access is required</label>
         <label class="field-label" for="suitability-unresolved">Requirements that still need clarification</label>
         <textarea id="suitability-unresolved" v-model="unresolvedRequirements" rows="3" maxlength="2000" aria-describedby="suitability-unresolved-help" />
         <p id="suitability-unresolved-help" class="suitability-hint">Record anything that cannot yet be assessed. An unresolved requirement prevents a Suitable result. Up to 2,000 characters.</p>
         <label class="checkbox-label confirmation-label">
           <input v-model="requirementsConfirmed" type="checkbox" />
-          I have reviewed the event requirements. These entries cover the requirements I can assess; blank fields and an unchecked wheelchair requirement mean none is required, and anything unresolved is recorded above.
+          I have reviewed the event requirements{{ arrangementMode ? ' and saved arrangement notes' : '' }}. These entries cover the requirements I can assess; blank fields and an unchecked wheelchair requirement mean none is required, and anything unresolved is recorded above.
         </label>
         <p v-if="validationError" class="suitability-error" role="alert">{{ validationError }}</p>
         <p v-if="assessmentError" class="suitability-error" role="alert">{{ assessmentError }}</p>
@@ -272,6 +305,7 @@ onBeforeUnmount(() => { readController?.abort(); assessmentController?.abort(); 
 .suitability-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 24px; }
 .suitability-toolbar a { color: var(--green); text-underline-offset: 3px; }
 .source-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.saved-arrangement { margin-bottom: 24px; }
 .suitability-panel { padding: 24px; min-width: 0; }
 .suitability-panel h2 { font-size: 20px; overflow-wrap: anywhere; }
 .suitability-hint { color: #59685e; font-size: 13px; line-height: 1.6; margin-top: 10px; }

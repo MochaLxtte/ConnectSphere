@@ -14,7 +14,7 @@ retains each booking with cancellation actor/time/reason. No unrelated event boo
 - `venue-catalogue-input.ts` / `venue-catalogue-service.ts` / `venue-catalogue-router.ts`:
   KAN-50 Venue Staff catalogue maintenance, described below.
 - `suitability-input.ts` / `suitability-rules.ts` / `suitability-service.ts` /
-  `suitability-router.ts`: KAN-52 read-only event-specific assessment, described below.
+  `suitability-router.ts`: KAN-52 event-based and KAN-82 saved-arrangement read-only assessment, described below.
 
 ## Venue catalogue maintenance — KAN-50
 
@@ -263,8 +263,9 @@ accessibility labels, one layout, wheelchair requirement, confirmation and unres
 requirements. Labels match by case-insensitive trimmed equality, including unlisted
 requirements. Each applicable check reports PASS/FAIL/UNKNOWN; the overall result is
 UNSUITABLE for a definite failure, otherwise NEEDS_REVIEW for any unknown, otherwise
-SUITABLE. Capacity, full-interval Singapore opening hours, active state, all approved
-reservations and operational blocks are read fresh. Adjacent intervals do not overlap.
+SUITABLE. Capacity, full-interval Singapore opening hours, active state, approved
+reservations, live holds and operational blocks are read fresh. Current setup/turnaround
+buffers define the occupied interval; exact buffered adjacency does not overlap.
 
 Expected attendance `0` is a known value, as submission accepts it (KAN-52-AC101): the capacity
 check passes it against capacity like any count. A missing attendance, or an unusable value such as a
@@ -276,6 +277,42 @@ The source version hashes relevant event values, so direct dashboard changes are
 even without an updated timestamp. A mismatch gives `409 SUITABILITY_CONTEXT_CHANGED`;
 the UI reloads and resets interpretation. A valid result remains an observation at check
 time, not a venue hold, event approval or permission to create a booking.
+
+**30 October 2026 — KAN-82 saved arrangement assessment.** GET accepts optional
+`?bookingId=<UUID>`; POST accepts optional `bookingId` alongside all existing explicit
+requirement fields. Omitting it preserves event-based assessment. The query/body identifier
+is a single UUID string, normalized to lowercase; invalid, null or repeated values return
+`400 INVALID_SUITABILITY_INPUT`.
+
+GET returns the parent `event` unchanged and adds `arrangement` with `id`, `venueId`,
+nullable ISO `startsAt`/`endsAt`, nullable `layout`/`notes`, and effective `status`. A hold
+past its database deadline is already reported as `EXPIRED`; a fresh advisory assessment
+of that expired arrangement is permitted. The active catalogue also includes the selected
+saved venue when inactive, allowing an explained `venueActive` failure. POST returns
+`assessment.bookingId` and uses the saved arrangement's interval and layout, with current
+venue buffers, hours, capabilities and availability. Only that booking ID is excluded from
+occupancy checks; another booking or live hold of the same event still conflicts.
+
+The coordinator confirms facilities and accessibility against both the saved arrangement
+notes and parent requirements. There is no automatic prose interpretation; the parent
+attendance remains the capacity input. Venue and layout are fixed to the saved arrangement
+in the UI. The POST venue must match it and its layout must match ignoring case/outer
+whitespace, otherwise `409 SUITABILITY_CONTEXT_CHANGED`; actual saved values drive the
+assessment. The layout limit is 2,000 characters for saved arrangements, matching booking
+creation, and remains 100 for event interpretation. Other input limits are unchanged;
+caller-supplied timing, notes, status or attendance overrides are rejected.
+
+The service rechecks coordinator role, current event assignment and exact booking/event
+association on every read. Missing/cross-event bookings return `404 VENUE_BOOKING_NOT_FOUND`
+after event authorization; a missing/draft/unassigned event returns
+`404 EVENT_REQUEST_NOT_FOUND`. Arrangement freshness hashes actual parent requirements,
+saved arrangement values/effective status, parent status and hold deadline, so edits and
+approval/expiry transitions invalidate confirmation even without an `updated_at` change.
+`CANCELLED`/`REJECTED` arrangements and `CANCELLED`/`REJECTED`/`COMPLETED` parent events are
+refused with `409 SUITABILITY_CONTEXT_CHANGED` in arrangement mode. The UI refreshes after
+a stale assessment and requires new interpretation/confirmation. Current venue changes
+are evaluated afresh. Both modes use one SQL read snapshot, take no row locks and write
+nothing; this addition creates no booking capacity/suitability gate and requires no migration.
 
 See the [full contract](../../../../docs/architecture/api-contract.md#venue-suitability-kan-52-cf-11)
 for request/response fields and limits, [decision record](../../../../docs/requirements/assumptions-and-questions.md#4-october-2026--kan-52-venue-suitability)

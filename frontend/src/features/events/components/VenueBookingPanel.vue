@@ -299,6 +299,11 @@ onBeforeUnmount(() => { contextVersion++; abortPending(); });
           <p v-if="item.cancellationReason">Cancellation reason: {{ item.cancellationReason }}</p>
           <p v-if="awaitsReplacement(item) && canManage" class="panel-meta">Cancelled; not replaced. This arrangement no longer reserves the venue.</p>
 
+          <div v-if="canRequest && !['CANCELLED', 'REJECTED'].includes(item.status)" class="panel-actions">
+            <RouterLink :to="{ path: `/reviews/${eventRequestId}/venue-suitability`, query: { bookingId: item.id } }"
+              class="button button-secondary">Check suitability</RouterLink>
+          </div>
+
           <div v-if="canManage && cancelTarget?.id !== item.id" class="panel-actions">
             <button v-if="isLive(item)" type="button" class="button button-secondary"
               :disabled="busy || loading || needsRefresh" @click="startCancel(item)">Cancel arrangement</button>

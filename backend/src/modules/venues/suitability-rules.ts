@@ -32,6 +32,7 @@ export interface SuitabilityCheck {
 }
 
 export interface SuitabilityAssessment {
+  bookingId?: string;
   eventId: string;
   eventName: string | null;
   venueId: string;

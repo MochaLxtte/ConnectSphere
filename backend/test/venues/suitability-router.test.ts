@@ -70,3 +70,31 @@ describe('KAN-52 suitability HTTP boundary', () => {
     expect(response.body.error.code).toBe('SUITABILITY_CONTEXT_CHANGED');
   });
 });
+
+describe('KAN-82 arrangement suitability HTTP boundary', () => {
+  const bookingId = '82000000-0000-4000-8000-000000000001';
+  it('forwards the selected booking query with the verified actor', async () => {
+    vi.mocked(getVenueSuitabilityContext).mockResolvedValue({ arrangement: { id: bookingId } } as never);
+    const response = await request(app).get(path).query({ bookingId });
+    expect(response.status).toBe(200);
+    expect(response.body.arrangement.id).toBe(bookingId);
+    expect(getVenueSuitabilityContext).toHaveBeenCalledWith(dependencies, { actor, eventId, bookingId });
+  });
+  it.each(['?bookingId=invalid', '?bookingId=', '?bookingId=one&bookingId=two'])(
+    'rejects an invalid query before the service: %s', async suffix => {
+      const response = await request(app).get(path + suffix);
+      expect(response.status).toBe(400);
+      expect(response.body.error.code).toBe('INVALID_SUITABILITY_INPUT');
+      expect(getVenueSuitabilityContext).not.toHaveBeenCalled();
+    },
+  );
+  it('keeps authentication ahead of query validation and forwards the selected POST identity', async () => {
+    authenticate.mockResolvedValue(null);
+    expect((await request(app).get(path + '?bookingId=invalid')).status).toBe(401);
+    authenticate.mockResolvedValue(actor);
+    vi.mocked(checkVenueSuitability).mockResolvedValue({ bookingId } as never);
+    const input = { bookingId, requirementsConfirmed: true };
+    expect((await request(app).post(path).send(input)).body).toEqual({ assessment: { bookingId } });
+    expect(checkVenueSuitability).toHaveBeenCalledWith(dependencies, { actor, eventId, input });
+  });
+});

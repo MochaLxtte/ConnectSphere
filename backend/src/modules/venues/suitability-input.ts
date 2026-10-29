@@ -1,6 +1,7 @@
 import { UUID_PATTERN, WorkflowError } from '../events/workflow-support.js';
 
 export interface VenueSuitabilityInput {
+  bookingId?: string;
   venueId: string;
   requirementsVersion: string;
   facilities: string[];
@@ -16,6 +17,13 @@ const keys = ['venueId', 'requirementsVersion', 'facilities', 'accessibility', '
 
 function invalid(message: string): never {
   throw new WorkflowError('INVALID_INPUT', 'INVALID_SUITABILITY_INPUT', message);
+}
+
+/** Optional for the original event-based check; a supplied value must identify one arrangement. */
+export function parseSuitabilityBookingId(value: unknown): string | undefined {
+  if (value === undefined) return undefined;
+  if (typeof value !== 'string' || !UUID_PATTERN.test(value)) invalid('bookingId must be a UUID.');
+  return value.toLowerCase();
 }
 
 /** Use exact names ignoring only casing and surrounding whitespace, never substring matching. */
@@ -48,7 +56,7 @@ export function parseVenueSuitabilityInput(input: unknown): VenueSuitabilityInpu
     invalid('The request body must be a JSON object.');
   }
   const body = input as Record<string, unknown>;
-  if (Object.keys(body).some(key => !keys.includes(key as typeof keys[number]))) {
+  if (Object.keys(body).some(key => key !== 'bookingId' && !keys.includes(key as typeof keys[number]))) {
     invalid('The request body contains an unsupported field.');
   }
   for (const key of keys) {
@@ -60,10 +68,12 @@ export function parseVenueSuitabilityInput(input: unknown): VenueSuitabilityInpu
   }
   if (typeof body.wheelchairRequired !== 'boolean') invalid('wheelchairRequired must be a boolean.');
   if (typeof body.requirementsConfirmed !== 'boolean') invalid('requirementsConfirmed must be a boolean.');
+  const bookingId = parseSuitabilityBookingId(body.bookingId);
   return {
+    ...(bookingId ? { bookingId } : {}),
     venueId: body.venueId.toLowerCase(), requirementsVersion: body.requirementsVersion.toLowerCase(),
     facilities: list(body.facilities, 'facilities'), accessibility: list(body.accessibility, 'accessibility'),
-    layout: text(body.layout, 'layout', 100), wheelchairRequired: body.wheelchairRequired,
+    layout: text(body.layout, 'layout', bookingId ? 2000 : 100), wheelchairRequired: body.wheelchairRequired,
     requirementsConfirmed: body.requirementsConfirmed,
     unresolvedRequirements: text(body.unresolvedRequirements, 'unresolvedRequirements', 2000),
   };
