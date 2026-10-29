@@ -34,6 +34,13 @@ export async function fulfilWorkspaceRead(
     await route.fulfill({ json: { cancellation: null } });
     return true;
   }
+  // KAN-61: unrelated approved/confirmed fixtures show the confirmation panel with no checklist.
+  const confirmation = /^\/api\/events\/([^/]+)\/confirmation$/.exec(path);
+  if (confirmation) {
+    await route.fulfill({ json: { eventRequestId: confirmation[1], status: 'APPROVED', started: false,
+      canConfirm: false, readiness: null, confirmation: null } });
+    return true;
+  }
   // The coordinator equipment panel shares the approved event detail workspace.
   // These unrelated stories have no saved equipment requirement fixture.
   if (options.coordinatorBookingEventId && path === `/api/events/${options.coordinatorBookingEventId}/equipment-requests`) {
