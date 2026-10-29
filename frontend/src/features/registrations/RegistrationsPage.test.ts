@@ -29,6 +29,14 @@ async function open(path='/registrations'){
   await router.push(path);await router.isReady();render(RouterView,{global:{plugins:[router]}});return router;
 }
 describe('KAN-17 attendee withdrawal interface',()=>{
+  it('TC-20-417 highlights the correct registration for duplicate names and displays its current purpose',async()=>{
+    vi.mocked(listMine).mockResolvedValue({items:[{...registration,purpose:'Original purpose'},
+      {...registration,id:'r2',eventId:'e2',purpose:'Updated attendee programme'}]});
+    await open('/registrations?registration=r2');
+    const linked=await screen.findByText('Linked registration');
+    expect(linked.closest('li')).toHaveTextContent('Updated attendee programme');
+    expect(linked.closest('li')).not.toHaveTextContent('Original purpose');
+  });
   it('AC1/2/102 shows confirmation and accurate re-entry warning before any write; Cancel keeps place',async()=>{
     await open();await fireEvent.click(await screen.findByRole('button',{name:'Withdraw registration'}));
     expect(screen.getByText(/Your place will be released/)).toHaveTextContent('A place will not be saved for you.');

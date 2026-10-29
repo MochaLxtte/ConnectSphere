@@ -110,7 +110,7 @@ describe('KAN-17 / KAN-67 / KAN-80 connected registration PostgreSQL workflows',
   it('TC-20-412/413/419/420/427: attendee sees safe own notices and can mark only their own',async()=>{
     const e=await event();const r=await register(e);await withdraw(r);
     const notices=(await listNotifications(f.dependencies,a1)).filter(x=>x.type.startsWith('REGISTRATION_'));
-    expect(notices).toEqual(expect.arrayContaining([expect.objectContaining({type:'REGISTRATION_WITHDRAWN',event:null,booking:null,link:'/registrations'})]));
+    expect(notices).toEqual(expect.arrayContaining([expect.objectContaining({type:'REGISTRATION_WITHDRAWN',event:null,booking:null,link:`/registrations?registration=${r}`})]));
     const n=notices.find(x=>x.type==='REGISTRATION_WITHDRAWN' && x.message.includes('Open day'))!;
     await expect(markNotificationRead(f.dependencies,{actor:a2,notificationId:n.id})).rejects.toMatchObject({code:'NOTIFICATION_NOT_FOUND'});
     expect(await markNotificationRead(f.dependencies,{actor:a1,notificationId:n.id})).toMatchObject({read:true});

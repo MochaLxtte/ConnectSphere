@@ -1983,3 +1983,15 @@ The initial full PostgreSQL run failed 12 migration-history expectations because
 ### MAN-20261029-01 — TC-20-430 static responsibility review
 
 On 29 October Codex read the live Jira KAN-64/80/81/83/84 cards and repository split mapping and case register, using Arvin's authenticated Jira session. The [recorded observations](../scrum/sprint-03/evidence/kan1780-20261029/scope-review.txt) identify CR-2/4/6 notification criteria and their test cases, the original-scope split and the native 5 + 3 SP fields. **Pass** for the static mapping review only. No shared values or data were modified and no product workflow was executed; full KAN-80 integrated acceptance remains **Not executed**.
+
+## 29 October 2026 - PR #70 review corrections
+
+**Run:** `AUTO-20261029-KAN1780-02`, Codex on Windows / Node 24.22.1, merge commit `eca4cd1` plus the uncommitted review corrections. Isolated PostgreSQL 17 on localhost and synthetic accounts; browser API responses substituted. No shared Supabase or real login.
+
+`npm run check` passed: 1,051 frontend and 1,727 backend tests, typechecks and builds. `npm run test:coverage` passed: frontend 95.95% statements / 92.86% branches / 97.83% functions / 98.28% lines; backend 93.39% / 93.99% / 92.01% / 93.34%. `npm run test:integration` passed 639 tests in 35 files. `npm run test:e2e` passed 192 tests, including the duplicate-name registration target, with substituted browser APIs. The targeted PostgreSQL cancellation and outcome suites passed 19 tests. Cancellation and inbox reached 100% line coverage; branch and SQL coverage remain incomplete.
+
+The first full database attempt failed an older cancellation test expecting no attendee link. A subsequent check failed because the first test edit declared its fixture ID in the wrong test. Both test expectations were corrected; the targeted and final full retests passed. Two overlapping integration attempts were stopped after stalling; the final full run was restarted alone. These are test/fixture and execution issues, not recorded product-case failures. Logs are registered in S3-E29.
+
+The real PostgreSQL scenarios assert that only current arrangement staff receive confirmation or cancellation, and that cancellation's single writer preserves the existing manager message. Purpose-change and browser/component scenarios check a recipient-scoped registration link, current purpose and duplicate event names. Notification labels cover venue requirements and accessibility needs without exposing their internal values. These are partial scenario results: TC-20-417 and other whole-case placeholders remain Not executed; no suite total is represented as connected or case-level acceptance. Real authentication, shared migration 019, KAN-14/18/61 dependencies, integrated acceptance and renewed review remain outstanding.
+
+**Artifact readability:** the earlier S3-E29 PowerShell output files were converted from UTF-16 to UTF-8 with line-end whitespace normalized; the contents and reported outcomes were retained.

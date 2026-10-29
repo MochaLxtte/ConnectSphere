@@ -15,16 +15,16 @@ async function trusted(client: Pick<Pool, 'query'>, actor: WorkflowActor) {
 
 const columns = `r.id, r.status, r.registered_at AS "registeredAt", r.withdrawn_at AS "withdrawnAt",
   r.cancellation_outcome_at AS "cancelledAt", e.id AS "eventId", e.name AS "eventName",
-  e.starts_at AS "startsAt", e.status AS "eventStatus"`;
+  e.starts_at AS "startsAt", e.ends_at AS "endsAt", e.purpose, e.status AS "eventStatus"`;
 interface Registration {
   id: string; status: string; registeredAt: Date; withdrawnAt: Date | null; cancelledAt: Date | null;
-  eventId: string; eventName: string | null; startsAt: Date | null; eventStatus: string;
+  eventId: string; eventName: string | null; startsAt: Date | null; endsAt: Date | null; purpose: string | null; eventStatus: string;
 }
 const beforeStart = (row: Registration, now: Date) => row.startsAt !== null && now < row.startsAt
   && row.eventStatus !== 'CANCELLED' && row.eventStatus !== 'COMPLETED';
 const ownItem = (row: Registration, now: Date) => ({ ...row,
   registeredAt: iso(row.registeredAt), withdrawnAt: isoOrNull(row.withdrawnAt), cancelledAt: isoOrNull(row.cancelledAt),
-  startsAt: isoOrNull(row.startsAt),
+  startsAt: isoOrNull(row.startsAt), endsAt: isoOrNull(row.endsAt),
   canWithdraw: row.status === 'REGISTERED' && beforeStart(row, now),
 });
 

@@ -49,3 +49,15 @@ test('KAN-67 AC1–3/7/101 roster is readable on desktop and narrow screens',asy
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);
   await page.screenshot({path:testInfo.outputPath('roster-mobile.png'),fullPage:true});
 });
+
+test('KAN-80 TC-20-417 notification target distinguishes same-name registrations',async({page})=>{
+  await fixture(page);
+  await page.route('**/api/registrations/mine',route=>route.fulfill({json:{items:[
+    {...registration,purpose:'Original programme'},
+    {...registration,id:'30000000-0000-4000-8000-000000000018',eventId:'20000000-0000-4000-8000-000000000018',purpose:'Updated programme'},
+  ]}}));
+  await page.goto('/registrations?registration=30000000-0000-4000-8000-000000000018');
+  const selected=page.getByText('Linked registration').locator('..');
+  await expect(selected).toContainText('Updated programme');
+  await expect(selected).not.toContainText('Original programme');
+});

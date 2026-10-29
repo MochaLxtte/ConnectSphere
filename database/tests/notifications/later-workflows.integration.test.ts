@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto';
 import { createWorkflowFixture, type WorkflowFixture } from '../events/workflow-fixture.js';
 import { inActorTransaction, type WorkflowActor } from '../../../backend/src/modules/events/workflow-support.js';
 import { listNotifications } from '../../../backend/src/modules/notifications/inbox.js';
+import { listOwnRegistrations } from '../../../backend/src/modules/registrations/service.js';
 import { cancelEvent } from '../../../backend/src/modules/events/cancellation.js';
 import { submitChangeRequest, decideChangeRequest } from '../../../backend/src/modules/events/change-requests.js';
 let f:WorkflowFixture;
@@ -26,19 +27,19 @@ async function setup(arrangements=true){
   return {id,type,equipment};
 }
 async function registration(id:string,actor=a1,status='REGISTERED'){
-  await f.pool.query(`INSERT INTO event_registrations(event_request_id,attendee_id,status,withdrawn_at)
-    VALUES($1,$2,$3,CASE WHEN $3='WITHDRAWN' THEN now() END)`,[id,actor.id,status]);
+  return (await f.pool.query<{id:string}>(`INSERT INTO event_registrations(event_request_id,attendee_id,status,withdrawn_at)
+    VALUES($1,$2,$3,CASE WHEN $3='WITHDRAWN' THEN now() END) RETURNING id`,[id,actor.id,status])).rows[0]!.id;
 }
 const transition=(id:string,status:string)=>inActorTransaction(f.pool,coordinator.id,c=>c.query('UPDATE event_requests SET status=$2 WHERE id=$1',[id,status]));
 
 describe('KAN-80 added trigger integrations on real PostgreSQL',()=>{
   it('TC-20-409: confirmation notifies current managers, active attendees and arrangement staff once',async()=>{
-    const {id}=await setup();await registration(id);await registration(id,a2,'WITHDRAWN');
+    const {id}=await setup();const ownId=await registration(id);await registration(id,a2,'WITHDRAWN');
     await transition(id,'CONFIRMED');await transition(id,'CONFIRMED');
     const notices=(await f.notifications(id)).filter(x=>x.type==='EVENT_CONFIRMED');
     expect(notices.map(x=>x.recipient_id).sort()).toEqual([owner.id,coordinator.id,technical.id,venue.id,a1.id].sort());
     const attendeeNotices=await listNotifications(f.dependencies,a1);
-    expect(attendeeNotices).toEqual(expect.arrayContaining([expect.objectContaining({type:'EVENT_CONFIRMED',event:null,link:'/registrations'})]));
+    expect(attendeeNotices).toEqual(expect.arrayContaining([expect.objectContaining({type:'EVENT_CONFIRMED',event:null,link:`/registrations?registration=${ownId}`})]));
     expect((await listNotifications(f.dependencies,a2)).some(n=>n.type==='EVENT_CONFIRMED'&&n.message.includes('Open day'))).toBe(false);
   });
   it('TC-20-410: real cancellation includes affected staff and keeps attendee outcome safe',async()=>{
@@ -46,9 +47,26 @@ describe('KAN-80 added trigger integrations on real PostgreSQL',()=>{
     await cancelEvent(f.pool,{eventRequestId:id,actor:owner,input:{reason:'Internal incident details',confirmAffectedArrangements:true}});
     const notices=(await f.notifications(id)).filter(x=>x.type==='EVENT_CANCELLED');
     expect(notices.map(x=>x.recipient_id).sort()).toEqual([owner.id,coordinator.id,technical.id,venue.id,a1.id].sort());
+    expect(notices.find(x=>x.recipient_id===owner.id)?.message).toBe('Open day was cancelled.');
     const own=(await listNotifications(f.dependencies,a1)).filter(x=>x.type==='EVENT_CANCELLED');
     expect(own.every(x=>!x.message.includes('Internal incident'))).toBe(true);
     expect(own.every(x=>x.event===null && x.booking===null)).toBe(true);
+  });
+  it.each(['CONFIRMED','CANCELLED'])('KAN-80 excludes staff of historical cancelled arrangements on %s',async outcome=>{
+    const {id}=await setup();
+    const oldVenue=await f.createUser('VENUE_STAFF');const oldTech=await f.createUser('TECHNICAL_SUPPORT_STAFF');
+    const hall=randomUUID();await f.pool.query('INSERT INTO venues(id,name,capacity) VALUES($1,$2,100)',[hall,'Old hall '+hall]);
+    await f.pool.query(`INSERT INTO venue_bookings(event_request_id,venue_id,requested_by,status,starts_at,ends_at,decided_by,decided_at)
+      VALUES($1,$2,$3,'CANCELLED','2035-01-01T02:00:00Z','2035-01-01T05:00:00Z',$4,now())`,[id,hall,coordinator.id,oldVenue.id]);
+    const type=randomUUID();await f.pool.query('INSERT INTO equipment_types(id,name,total_quantity) VALUES($1,$2,3)',[type,'Old projector '+type]);
+    await f.pool.query(`INSERT INTO equipment_requests(event_request_id,equipment_type_id,requested_by,quantity,starts_at,ends_at,status,decided_by,decided_at)
+      VALUES($1,$2,$3,1,'2035-01-01T02:00:00Z','2035-01-01T05:00:00Z','CANCELLED',$4,now())`,[id,type,coordinator.id,oldTech.id]);
+    if(outcome==='CONFIRMED') await transition(id,outcome);
+    else await cancelEvent(f.pool,{eventRequestId:id,actor:owner,input:{reason:'Test',confirmAffectedArrangements:true}});
+    const notices=(await f.notifications(id)).filter(n=>n.type===`EVENT_${outcome}`);
+    expect(notices.map(n=>n.recipient_id)).toEqual(expect.arrayContaining([venue.id,technical.id]));
+    expect(notices.map(n=>n.recipient_id)).not.toContain(oldVenue.id);
+    expect(notices.map(n=>n.recipient_id)).not.toContain(oldTech.id);
   });
   it('TC-20-411: empty attendee/staff groups still notify both managers',async()=>{
     const {id}=await setup(false);await transition(id,'CONFIRMED');
@@ -90,12 +108,15 @@ describe('KAN-80 added trigger integrations on real PostgreSQL',()=>{
     expect((await f.pool.query('SELECT damaged_quantity FROM equipment_types WHERE id=$1',[type])).rows[0].damaged_quantity).toBe(0);
   });
   it('TC-20-408: legal accepted purpose change informs active attendees without bypassing KAN-15 policy',async()=>{
-    const {id}=await setup(false);await registration(id);await registration(id,a2,'WITHDRAWN');
+    const {id}=await setup(false);const ownId=await registration(id);await registration(id,a2,'WITHDRAWN');
     const revision=async()=>(await f.pool.query('SELECT revision FROM event_requests WHERE id=$1',[id])).rows[0].revision;
     const change=await submitChangeRequest(f.dependencies,{eventRequestId:id,actor:owner,input:{changes:{purpose:'Updated attendee programme'},expectedRevision:await revision()}});
     await decideChangeRequest(f.dependencies,{eventRequestId:id,changeRequestId:change.id,actor:coordinator,
       input:{decision:'APPROVED',expectedRevision:await revision()}});
     const notices=(await f.notifications(id)).filter(x=>x.type==='ATTENDEE_EVENT_CHANGED');expect(notices.map(x=>x.recipient_id)).toEqual([a1.id]);
-    const own=await listNotifications(f.dependencies,a1);expect(own).toEqual(expect.arrayContaining([expect.objectContaining({type:'ATTENDEE_EVENT_CHANGED',link:'/registrations',event:null})]));
+    const details=(await listOwnRegistrations(f.pool,a1)).items.find(r=>r.id===ownId);
+    expect(details).toMatchObject({purpose:'Updated attendee programme',eventName:'Open day',endsAt:'2035-01-01T05:00:00.000Z'});
+    const own=await listNotifications(f.dependencies,a1);expect(own).toEqual(expect.arrayContaining([expect.objectContaining({type:'ATTENDEE_EVENT_CHANGED',link:`/registrations?registration=${ownId}`,event:null})]));
+    expect(own.find(n=>n.type==='ATTENDEE_EVENT_CHANGED' && n.link===`/registrations?registration=${ownId}`)?.message).toContain('changed: purpose');
   });
 });

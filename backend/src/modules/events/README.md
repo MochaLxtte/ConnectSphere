@@ -2,7 +2,7 @@
 
 ## 29 October 2026 — KAN-80 notification integration
 
-Allowed KAN-15 attendee-relevant approved changes create active-attendee notifications within the decision transaction, without bypassing its cancel-and-resubmit checks. Change submissions, decisions and withdrawals retain their change-request ID on notifications; decision acknowledgements include the current coordinator. Migration 019 also handles eligible final confirmation/cancellation outcomes in the event status transaction. The KAN-61 confirmation workflow remains a separate dependency and is not supplied by this hook. See [API contract](../../../../docs/architecture/api-contract.md#29-october-2026--kan-17-kan-67-and-kan-80-registration-outcomes).
+Allowed KAN-15 attendee-relevant approved changes create active-attendee notifications within the decision transaction, without bypassing its cancel-and-resubmit checks. Change submissions, decisions and withdrawals retain their change-request ID on notifications; decision acknowledgements include the current coordinator. Migration 019 handles final confirmation outcomes in the event status transaction. KAN-62 is the single cancellation-outcome writer and notifies staff for arrangements released by that cancellation. The KAN-61 confirmation workflow remains a separate dependency and is not supplied by this hook. See [API contract](../../../../docs/architecture/api-contract.md#29-october-2026--kan-17-kan-67-and-kan-80-registration-outcomes).
 
 ## KAN-62 event cancellation
 
@@ -14,7 +14,7 @@ equipment pools and lines in UUID order. It cancels active venue bookings and eq
 registrations, stores immutable cancellation details, records the status transition, and
 writes organiser/coordinator/attendee inbox notifications through KAN-64. Attendee messages
 contain the outcome and omit the internal reason; attendee inbox reads require the matching
-cancelled registration and return no event DTO or planning link. `GET /api/events/:id/cancellation` returns
+cancelled registration, return no event DTO or planning link, and link only to the recipient's own registration. `GET /api/events/:id/cancellation` returns
 the saved organiser/coordinator outcome. Repeated, draft, rejected and completed actions
 write nothing.
 If a new booking appears between the initial booking snapshot and the event lock,

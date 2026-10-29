@@ -41,7 +41,7 @@ CREATE FUNCTION notify_final_event_outcome() RETURNS trigger LANGUAGE plpgsql AS
 DECLARE kind text; target record;
 BEGIN
   IF nullif(current_setting('app.actor_id', true), '') IS NULL OR NEW.status IS NOT DISTINCT FROM OLD.status
-    OR NEW.status NOT IN ('CONFIRMED','CANCELLED') THEN RETURN NEW; END IF;
+    OR NEW.status <> 'CONFIRMED' THEN RETURN NEW; END IF;
   kind := CASE WHEN NEW.status = 'CONFIRMED' THEN 'EVENT_CONFIRMED' ELSE 'EVENT_CANCELLED' END;
   FOR target IN
     SELECT NEW.organiser_id AS recipient, NULL::uuid AS booking, NULL::uuid AS equipment
@@ -49,9 +49,9 @@ BEGIN
     UNION SELECT r.attendee_id,NULL::uuid,NULL::uuid FROM event_registrations r
       WHERE r.event_request_id=NEW.id AND r.status='REGISTERED'
     UNION SELECT b.decided_by,b.id,NULL::uuid FROM venue_bookings b
-      WHERE b.event_request_id=NEW.id AND b.status IN ('APPROVED','CANCELLED') AND b.decided_by IS NOT NULL
+      WHERE b.event_request_id=NEW.id AND b.status = 'APPROVED' AND b.decided_by IS NOT NULL
     UNION SELECT r.decided_by,NULL::uuid,r.id FROM equipment_requests r
-      WHERE r.event_request_id=NEW.id AND r.status IN ('RESERVED','CANCELLED') AND r.decided_by IS NOT NULL
+      WHERE r.event_request_id=NEW.id AND r.status = 'RESERVED' AND r.decided_by IS NOT NULL
   LOOP
     IF target.recipient IS NULL THEN CONTINUE; END IF;
     INSERT INTO notifications(recipient_id,event_request_id,venue_booking_id,equipment_request_id,type,title,message,dedupe_key)

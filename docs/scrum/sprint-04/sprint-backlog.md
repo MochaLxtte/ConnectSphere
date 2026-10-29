@@ -22,11 +22,11 @@ This rebalanced allocation replaces the earlier 97/29 split with **63/63**, with
 | [KAN-62](https://smu-g7-grp1.atlassian.net/browse/KAN-62) | Cancel Event and Release Its Arrangements | 5 | Ryan | PR #63 review | Existing release backlog | S4-T06 |
 | [KAN-10](https://smu-g7-grp1.atlassian.net/browse/KAN-10) | Mark Event as Completed | 3 | Unassigned — team member to choose | To agree after owner chosen | Existing release backlog | S4-T07 |
 | [KAN-14](https://smu-g7-grp1.atlassian.net/browse/KAN-14) | Register for an Event | 5 | Unassigned — team member to choose | To agree after owner chosen | Existing release backlog | S4-T08 |
-| [KAN-17](https://smu-g7-grp1.atlassian.net/browse/KAN-17) | Withdraw Attendee Registration | 2 | Unassigned — team member to choose | To agree after owner chosen | Existing release backlog | S4-T09 |
-| [KAN-67](https://smu-g7-grp1.atlassian.net/browse/KAN-67) | View Event Registrations | 2 | Unassigned — team member to choose | To agree after owner chosen | Existing release backlog | S4-T10 |
+| [KAN-17](https://smu-g7-grp1.atlassian.net/browse/KAN-17) | Withdraw Attendee Registration | 2 | Arvin (Jira read 29 October) | PR #70: changes requested | Existing release backlog | S4-T09 |
+| [KAN-67](https://smu-g7-grp1.atlassian.net/browse/KAN-67) | View Event Registrations | 2 | Arvin (Jira read 29 October) | PR #70: changes requested | Existing release backlog | S4-T10 |
 | [KAN-66](https://smu-g7-grp1.atlassian.net/browse/KAN-66) | Update Event Information During Planning | 3 | Irfan (assigned in Jira 26 October 2026) | To agree | Existing release backlog | S4-T11 |
 | [KAN-15](https://smu-g7-grp1.atlassian.net/browse/KAN-15) | Submit and Review Event Change Requests | 5 | Irfan (assigned in Jira 26 October 2026) | To agree | Existing release backlog | S4-T12 |
-| [KAN-80](https://smu-g7-grp1.atlassian.net/browse/KAN-80) | Receive Equipment, Lifecycle, Change and Registration Notifications | 3 | Unassigned — team member to choose | To agree after owner chosen | Explicit original notification split | S4-T13 |
+| [KAN-80](https://smu-g7-grp1.atlassian.net/browse/KAN-80) | Receive Equipment, Lifecycle, Change and Registration Notifications | 3 | Arvin (Jira read 29 October) | PR #70: changes requested | Explicit original notification split | S4-T13 |
 | [KAN-82](https://smu-g7-grp1.atlassian.net/browse/KAN-82) | Manage each venue arrangement independently for an event | 5 | Unassigned — team member to choose | To agree after owner chosen | Customer change CR-3 | S4-T14 |
 | [KAN-84](https://smu-g7-grp1.atlassian.net/browse/KAN-84) | Review operational safety before event preparation | 8 | Unassigned — team member to choose | To agree after owner chosen | Customer change CR-6 | S4-T15 |
 | **Total** | **15 parents** | **63** | | | | |

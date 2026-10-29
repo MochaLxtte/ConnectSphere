@@ -32,7 +32,9 @@ const FROM = `
   LEFT JOIN event_requests e ON e.id = n.event_request_id
   LEFT JOIN venue_bookings b ON b.id = n.venue_booking_id
   LEFT JOIN equipment_requests r ON r.id = n.equipment_request_id AND r.event_request_id = e.id
-  LEFT JOIN event_change_requests c ON c.id = n.change_request_id AND c.event_request_id = e.id`;
+  LEFT JOIN event_change_requests c ON c.id = n.change_request_id AND c.event_request_id = e.id
+  LEFT JOIN event_registrations attendee_registration ON attendee_registration.event_request_id = e.id
+    AND attendee_registration.attendee_id = $1`;
 
 const CAN_VIEW_EVENT = `(e.id IS NOT NULL AND (
   ($2 = 'EVENT_ORGANISER' AND e.organiser_id = $1)
@@ -73,6 +75,8 @@ interface Row {
   eventName: string | null;
   bookingId: string | null;
   changeRequestId: string | null;
+  attendeeRegistrationId: string | null;
+  proposedChanges: Record<string, unknown> | null;
   canViewEvent: boolean;
   canViewBooking: boolean;
   canViewEquipment: boolean;
@@ -83,13 +87,18 @@ interface Row {
 
 const SELECT = `SELECT n.id, n.type, n.title, n.message, n.read_at AS "readAt", n.created_at AS "createdAt",
   e.id AS "eventId", e.name AS "eventName", b.id AS "bookingId", c.id AS "changeRequestId",
+  attendee_registration.id AS "attendeeRegistrationId", c.proposed_changes AS "proposedChanges",
   ${CAN_VIEW_EVENT} AS "canViewEvent", ${CAN_VIEW_BOOKING} AS "canViewBooking",
   ${CAN_VIEW_EQUIPMENT} AS "canViewEquipment", e.status IN ('APPROVED', 'CONFIRMED') AS "equipmentOpen",
   ${CAN_VIEW_ATTENDEE_CANCELLATION} AS "canViewAttendeeCancellation",
   ${CAN_VIEW_REGISTRATION} AS "canViewRegistration"`;
 
 function toItem(row: Row, role: WorkflowActor['role']): InboxItem {
-  const link = row.canViewRegistration ? '/registrations'
+  const fields = Object.entries({ purpose: 'purpose', startsAt: 'start time', endsAt: 'end time',
+    venueRequirements: 'venue requirements', accessibilityNeeds: 'accessibility needs' })
+    .filter(([key]) => Object.hasOwn(row.proposedChanges ?? {}, key)).map(([, label]) => label);
+  const link = (row.canViewRegistration || row.canViewAttendeeCancellation) && row.attendeeRegistrationId
+    ? `/registrations?registration=${encodeURIComponent(row.attendeeRegistrationId)}`
     : row.canViewEvent && row.eventId && row.changeRequestId
       ? `${role === 'EVENT_ORGANISER' ? '/events/' : '/reviews/'}${row.eventId}?change=${encodeURIComponent(row.changeRequestId)}`
     : row.canViewEvent && row.eventId && ['REGISTRATION_CONFIRMED', 'REGISTRATION_WITHDRAWN'].includes(row.type)
@@ -104,7 +113,9 @@ function toItem(row: Row, role: WorkflowActor['role']): InboxItem {
       : row.canViewRegistration
       ? `${row.eventName ?? 'The event'}: ${row.type === 'REGISTRATION_WITHDRAWN' ? 'your registration is withdrawn.'
         : row.type === 'REGISTRATION_CONFIRMED' ? 'your registration is confirmed.'
-        : row.type === 'EVENT_CONFIRMED' ? 'the event is confirmed.' : 'attendee-relevant event details changed. Review your registration.'}`
+        : row.type === 'EVENT_CONFIRMED' ? 'the event is confirmed.' : fields.length
+          ? `changed: ${fields.join(', ')}. Review your registration for current details.`
+          : 'attendee-relevant event details changed. Review your registration.'}`
       : row.canViewEquipment && !row.equipmentOpen
       ? `${row.message} This event is no longer open for equipment planning.` : row.message,
     read: row.readAt !== null, readAt: row.readAt === null ? null : iso(row.readAt), createdAt: iso(row.createdAt),

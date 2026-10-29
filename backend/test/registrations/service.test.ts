@@ -5,7 +5,7 @@ import type { WorkflowActor } from '../../src/modules/events/workflow-support.js
 const attendee: WorkflowActor = { id: 'a1', role: 'ATTENDEE' };
 const owner: WorkflowActor = { id: 'o1', role: 'EVENT_ORGANISER' };
 const row = { id: 'r1', status: 'REGISTERED', registeredAt: new Date('2027-01-01Z'), withdrawnAt: null,
-  cancelledAt: null, eventId: 'e1', eventName: 'Open day', startsAt: new Date('2027-01-10T02:00:00Z'), eventStatus: 'CONFIRMED' };
+  cancelledAt: null, eventId: 'e1', eventName: 'Open day', endsAt: null, purpose: 'Meet attendees', startsAt: new Date('2027-01-10T02:00:00Z'), eventStatus: 'CONFIRMED' };
 function database(options: { registration?: Partial<typeof row>; now?: string; role?: string; missing?: boolean; missingLocked?: boolean; fail?: string;
   event?: Record<string, unknown>; roster?: Record<string, unknown>[] } = {}) {
   const query = vi.fn(async (sql: string) => {

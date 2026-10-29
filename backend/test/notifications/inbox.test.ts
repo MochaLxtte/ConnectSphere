@@ -14,7 +14,7 @@ const notificationId = '60000000-0000-4000-8000-000000000001';
 const row = (overrides: Record<string, unknown> = {}) => ({
   id: notificationId, type: 'REVIEW_APPROVED', title: 'Event request approved', message: 'Approved.',
   readAt: null, createdAt: new Date('2026-10-05T02:00:00Z'),
-  eventId, eventName: 'Career fair', bookingId: null, canViewEvent: true, canViewBooking: false, ...overrides,
+  eventId, eventName: 'Career fair', attendeeRegistrationId: 'reg-1', bookingId: null, canViewEvent: true, canViewBooking: false, ...overrides,
 });
 const database = (...replies: { rows?: unknown[]; rowCount?: number | undefined }[]) => {
   const query = vi.fn();
@@ -33,9 +33,17 @@ describe('KAN-64-AC204/AC206 inbox listing', () => {
     const { dependencies, query } = database({ rows: [row({ type, canViewRegistration: true,
       canViewEvent: false, eventName: 'Career fair', message: 'Internal text must not leak' })] });
     const [item] = await listNotifications(dependencies, attendee);
-    expect(item).toMatchObject({ event: null, booking: null, link: '/registrations' });
+    expect(item).toMatchObject({ event: null, booking: null, link: '/registrations?registration=reg-1' });
     expect(item!.message).toContain(message); expect(item!.message).not.toContain('Internal');
     expect(query.mock.calls[0]![0]).toContain('own.attendee_id = $1');
+  });
+  it('KAN-80 labels venue and accessibility changes without disclosing their internal values', async () => {
+    const { dependencies } = database({ rows: [row({ type: 'ATTENDEE_EVENT_CHANGED', canViewRegistration: true,
+      canViewEvent: false, proposedChanges: { venueRequirements: 'internal logistics', accessibilityNeeds: 'private detail' } })] });
+    const [item] = await listNotifications(dependencies, { id: 'a1', role: 'ATTENDEE' });
+    expect(item!.message).toContain('venue requirements, accessibility needs');
+    expect(item!.message).not.toMatch(/internal logistics|private detail/);
+    expect(item!.link).toBe('/registrations?registration=reg-1');
   });
   it('KAN-80 links a manager registration outcome to the current event roster', async () => {
     const { dependencies } = database({ rows: [row({ type: 'REGISTRATION_WITHDRAWN' })] });
@@ -107,7 +115,7 @@ describe('KAN-64-AC204/AC206 inbox listing', () => {
     const [item] = await listNotifications(dependencies, { id: organiser.id, role: 'ATTENDEE' });
     expect(item).toMatchObject({ title: 'Event cancelled',
       message: 'Career fair has been cancelled. Your registration is no longer active.',
-      event: null, booking: null, link: null });
+      event: null, booking: null, link: '/registrations?registration=reg-1' });
     expect(JSON.stringify(item)).not.toMatch(/Confidential|Private organiser/);
   });
 

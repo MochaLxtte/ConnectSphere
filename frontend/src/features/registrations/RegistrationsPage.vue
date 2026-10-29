@@ -8,6 +8,7 @@ import { listMine, getRoster, withdraw, type OwnRegistration, type Roster } from
 const route = useRoute();
 const eventId = computed(() => typeof route.params.id === 'string' ? route.params.id : '');
 const manager = computed(() => !!eventId.value);
+const selected = computed(() => typeof route.query.registration === 'string' ? route.query.registration : '');
 const permitted = computed(() => !authSession.loading && !!authSession.user && (manager.value
   ? ['EVENT_ORGANISER', 'EVENT_COORDINATOR'].includes(authSession.user.role) : authSession.user.role === 'ATTENDEE'));
 const own = ref<OwnRegistration[]>([]);
@@ -88,7 +89,7 @@ onBeforeUnmount(() => { ++generation; controller?.abort(); });
         <div v-else class="roster-scroll" role="region" aria-label="Attendee registrations" tabindex="0">
           <table><caption>Attendee status and timestamps · Singapore time</caption>
             <thead><tr><th scope="col">Attendee</th><th scope="col">Status</th><th scope="col">Registered</th><th scope="col">Withdrawn / cancelled</th></tr></thead>
-            <tbody><tr v-for="(row, index) in roster.items" :key="index">
+            <tbody><tr v-for="row in roster.items" :key="row.email">
               <td data-label="Attendee"><span><strong>{{ row.displayName }}</strong><br>{{ row.email }}</span></td><td data-label="Status">{{ status(row.status) }}</td>
               <td data-label="Registered">{{ time(row.registeredAt) }}</td><td data-label="Withdrawn / cancelled">{{ time(row.withdrawnAt || row.cancelledAt) }}</td>
             </tr></tbody>
@@ -97,8 +98,11 @@ onBeforeUnmount(() => { ++generation; controller?.abort(); });
       </template>
       <template v-else-if="!manager && !error">
         <p v-if="!own.length" role="status">You have no registrations yet.</p>
-        <ul v-else class="registration-list"><li v-for="row in own" :key="row.id">
-          <div><h2>{{ row.eventName || 'Untitled event' }}</h2><p>{{ time(row.startsAt) }} · Singapore time</p>
+        <p v-if="selected && !own.some(row => row.id === selected)" role="status">The linked registration is unavailable for this account.</p>
+        <ul v-if="own.length" class="registration-list"><li v-for="row in own" :key="row.id" :class="{ selected: row.id === selected }">
+          <div><p v-if="row.id === selected" class="registration-status">Linked registration</p><h2>{{ row.eventName || 'Untitled event' }}</h2><p>{{ time(row.startsAt) }} · Singapore time</p>
+            <p v-if="row.endsAt">Ends {{ time(row.endsAt) }} (Singapore time)</p>
+            <p v-if="row.purpose">Purpose: {{ row.purpose }}</p>
             <p class="registration-status">{{ status(row.status) }}</p>
             <p v-if="row.withdrawnAt">Withdrawn {{ time(row.withdrawnAt) }}</p>
             <p v-if="row.cancelledAt">Event cancelled {{ time(row.cancelledAt) }}</p></div>
@@ -125,6 +129,7 @@ h1 { margin: 0; font-size: 26px; } h2 { font-size: 18px; margin: 0 0 8px; }
 p { line-height: 1.6; } .registration-count { margin: 12px 0 24px; }
 .registration-list { display: grid; gap: 16px; list-style: none; padding: 0; }
 .registration-list li { border-top: 1px solid var(--border); padding-top: 20px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.registration-list li.selected { border: 2px solid var(--green); border-radius: 8px; padding: 16px; }
 .registration-status { font-weight: 600; } .roster-scroll { overflow-x: auto; }
 table { border-collapse: collapse; width: 100%; text-align: left; } caption { text-align: left; padding: 12px 0; font-size: 13px; }
 th, td { border-bottom: 1px solid var(--border); padding: 14px 12px; vertical-align: top; overflow-wrap: anywhere; }

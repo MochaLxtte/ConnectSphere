@@ -1,6 +1,6 @@
 import { getJson, postJson } from '../../lib/api-client.js';
 export interface OwnRegistration {
-  id: string; eventId: string; eventName: string | null; status: string; startsAt: string | null;
+  id: string; eventId: string; eventName: string | null; status: string; startsAt: string | null; endsAt?: string | null; purpose?: string | null;
   registeredAt: string; withdrawnAt: string | null; cancelledAt: string | null; canWithdraw: boolean;
 }
 export interface RosterItem {
