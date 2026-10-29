@@ -145,6 +145,7 @@ onBeforeUnmount(() => {
         class="availability-link"
         :to="`/reviews/${state.detail.id}/venue-suitability`"
       >Check venue suitability</RouterLink></p>
+      <p><RouterLink :to="`/events/${state.detail.id}/registrations`">View registrations</RouterLink></p>
       <!-- KAN-51: open the venue calendar at the week of the proposed start. -->
       <RouterLink
         v-if="state.detail.startsAt"
@@ -171,6 +172,7 @@ onBeforeUnmount(() => {
       :current-coordinator-id="state.detail.coordinatorId"
       :status="state.detail.status"
       :revision="state.detail.revision"
+      :ends-at="state.detail.endsAt"
       viewer-role="EVENT_COORDINATOR"
       :is-owner="false"
       @changed="refreshQuietly"

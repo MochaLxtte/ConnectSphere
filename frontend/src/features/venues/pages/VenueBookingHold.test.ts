@@ -24,7 +24,7 @@ const pending: VenueBooking = {
   purpose: null, description: null, expectedAttendance: 50, venueRequirements: null, accessibilityNeeds: null,
   holdExpiresAt: null, heldBy: null, heldAt: null, expiredAt: null,
   cancelledBy: null, cancelledAt: null, cancellationReason: null,
-  recovery: [], replacesBookingId: null,
+  recovery: [], replacesBookingId: null, replacedByBookingIds: [],
 };
 const held: VenueBooking = {
   ...pending, status: 'HELD', holdExpiresAt: '2026-11-28T10:00:00.000Z', heldBy: 'VENUE_STAFF-1',

@@ -27,6 +27,10 @@ interface Scenario {
   replaces?: string | null;
   originalEventId?: string | null;
   openRecovery?: boolean;
+  /** KAN-82: the original's status; CANCELLED makes it a cancelled-arrangement replacement. */
+  originalStatus?: string;
+  /** KAN-82: a live replacement already names the cancelled original. */
+  liveReplacement?: boolean;
   fit?: { capacity: number; opensAt: string | null; closesAt: string | null; attendance: number | null };
 }
 
@@ -69,8 +73,21 @@ function fakePool(scenario: Scenario = {}) {
         return { rows: [{ withinHours: scenario.withinHours ?? true, booked: scenario.booked ?? false,
           held: scenario.held ?? false, blocked: scenario.blocked ?? false }] };
       }
-      if (/^SELECT event_request_id AS "eventRequestId" FROM venue_bookings/.test(sql)) {
-        return { rows: scenario.originalEventId === null ? [] : [{ eventRequestId: scenario.originalEventId ?? eventId }] };
+      if (/^SELECT event_request_id AS "eventRequestId", .* AS "explicitlyCancelled"/s.test(sql)) {
+        return { rows: scenario.originalEventId === null ? []
+          : [{ eventRequestId: scenario.originalEventId ?? eventId, explicitlyCancelled: scenario.originalStatus === 'CANCELLED' }] };
+      }
+      if (/WHERE b\.replaces_booking_id = \$1/.test(sql)) {
+        return { rows: scenario.liveReplacement ? [{ id: 'live-replacement' }] : [] };
+      }
+      if (/AS "approvedReplacement"/.test(sql)) {
+        return { rows: [{ explicitlyCancelled: scenario.originalStatus === 'CANCELLED',
+          approvedReplacement: scenario.liveReplacement ?? false }] };
+      }
+      if (/FROM app_users WHERE role = 'VENUE_STAFF'/.test(sql)) return { rows: [{ id: staff.id }] };
+      if (/AS "bookingId", v\.name AS "venueName"/.test(sql)) {
+        return { rows: [{ eventId, eventName: 'Fair', bookingId, venueName: 'Hall',
+          startsAt: new Date(startsAt), endsAt: new Date(endsAt) }] };
       }
       if (/AS open/.test(sql)) return { rows: [{ open: scenario.openRecovery ?? true }] };
       if (/v\.capacity/.test(sql)) {
@@ -304,11 +321,14 @@ describe('KAN-81 phase 3: replacement requests and approvals (AC7, AC8)', () => 
     expect(wrote(/v\.capacity/)).toBe(false);
   });
 
-  it('approves a replacement by resolving and cancelling the original after the other locks (AC8)', async () => {
+  it('approves a replacement by resolving and cancelling the original, locking it before the event (AC8)', async () => {
     const { pool, calls, index } = fakePool({ replaces: originalId });
     await decide(pool);
+    // KAN-82 review: booking rows before the event, as in arrangement cancellation, so the two cannot deadlock.
     const lockOriginal = calls.findIndex((call) => /FROM venue_bookings WHERE id = \$1 FOR UPDATE/.test(call.sql) && call.params[0] === originalId);
-    expect(lockOriginal).toBeGreaterThan(index(/FROM venues WHERE id = \$1 FOR UPDATE/));
+    const lockReplacement = calls.findIndex((call) => /FROM venue_bookings WHERE id = \$1 FOR UPDATE/.test(call.sql) && call.params[0] !== originalId);
+    expect(lockOriginal).toBeGreaterThan(lockReplacement);
+    expect(lockOriginal).toBeLessThan(index(/FROM event_requests WHERE id = \$1 FOR UPDATE/));
     const resolve = index(/UPDATE venue_outage_impacts SET status = 'RESOLVED'/);
     const cancel = calls.findIndex((call) => /SET status = 'CANCELLED'/.test(call.sql));
     expect(resolve).toBeGreaterThan(index(/SET status = \$1, decided_by/));

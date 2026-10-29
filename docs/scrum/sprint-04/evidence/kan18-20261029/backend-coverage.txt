@@ -1,5 +1,6 @@
- Test Files  65 passed (65)
-      Tests  1761 passed (1761)
-   Duration  2.98s (transform 3.10s, setup 0ms, import 9.49s, tests 3.14s, environment 7ms)
-All files          |   93.67 |    94.35 |   92.44 |   93.57 |                   
-  stock-service.ts |     100 |       98 |     100 |     100 | 87                
+ Test Files  70 passed (70)
+      Tests  1852 passed (1852)
+All files          |   93.94 |    94.32 |   92.81 |   93.88 |
+  modules/equipment |  98.8   |   98.71 |   95.75 |   98.5  |
+  stock-service.ts |     100 |    95.83 |     100 |     100 | 85,251
+Columns: statements / branches / functions / lines.

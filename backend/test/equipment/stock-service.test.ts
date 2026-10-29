@@ -1,12 +1,7 @@
 import type { Pool } from 'pg';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { WorkflowActor } from '../../src/modules/events/workflow-support.js';
-import { recordNotifications } from '../../src/modules/notifications/notify.js';
 import { getEquipmentStock, listEquipmentStock, updateEquipmentStock } from '../../src/modules/equipment/stock-service.js';
-
-vi.mock('../../src/modules/notifications/notify.js', () => ({
-  recordNotifications: vi.fn(async (_client: unknown, items: unknown[]) => items.length),
-}));
 
 const actor: WorkflowActor = { id: '18000000-0000-4000-8000-000000000001', role: 'TECHNICAL_SUPPORT_STAFF' };
 const typeId = '18000000-0000-4000-8000-000000000002';
@@ -23,13 +18,17 @@ const line = (id: string, eventId: string, quantity: number, from: number, to: n
   id, equipmentTypeId: typeKey, quantity, startsAt: at(from), endsAt: at(to), eventId, eventName: `Event ${eventId}`, coordinatorId });
 
 let row: Row; let types: Row[]; let lines: ReturnType<typeof line>[]; let history: Record<string, unknown>[];
-let role: string | null; let validCoordinators: string[]; let updateReturnsRow: boolean; let insertReturnsRow: boolean;
+let role: string | null; let told: number; let updateReturnsRow: boolean; let reservedReads: string[][];
 const statements: string[] = [];
 const release = vi.fn();
 const query = vi.fn(async (sql: string, values: unknown[] = []) => {
   statements.push(sql.replace(/\s+/g, ' ').trim());
   if (sql.includes('FROM app_users WHERE id = $1 FOR SHARE')) return { rows: role ? [{ role }] : [] };
-  if (sql.includes('FROM app_users WHERE id = ANY')) return { rows: validCoordinators.map(id => ({ id })) };
+  if (sql.includes('SELECT DISTINCT r.event_request_id AS id')) {
+    const next = reservedReads.length > 1 ? reservedReads.shift()! : reservedReads[0]!;
+    return { rows: next.map(id => ({ id })) };
+  }
+  if (sql.includes("type = 'EQUIPMENT_UNAVAILABLE'")) return { rows: [{ n: told }] };
   if (sql.includes('FROM equipment_types t WHERE t.id = $1 FOR UPDATE')) return { rows: row ? [{ ...row }] : [] };
   if (sql.includes('FROM equipment_types t WHERE t.id = $1')) return { rows: row ? [{ ...row }] : [] };
   if (sql.includes('FROM equipment_types t ORDER BY')) return { rows: types.map(item => ({ ...item })) };
@@ -43,7 +42,6 @@ const query = vi.fn(async (sql: string, values: unknown[] = []) => {
     Object.assign(row, { totalQuantity: values[1], damagedQuantity: values[2], maintenanceQuantity: values[3], revision: row.revision + 1 });
     return { rows: [{ revision: row.revision }] };
   }
-  if (sql.startsWith('INSERT INTO equipment_stock_changes')) return { rows: insertReturnsRow ? [{ id: 'change-1' }] : [] };
   return { rows: [] };
 });
 const dependencies = { pool: { query, connect: vi.fn(async () => ({ query, release })) } as unknown as Pick<Pool, 'query' | 'connect'> };
@@ -53,7 +51,7 @@ const body = { expectedRevision: 0, damagedQuantity: 5, reason: 'Fault found.' }
 beforeEach(() => {
   vi.clearAllMocks(); statements.length = 0;
   row = type(); types = [row, type({ id: otherType, name: 'Speaker', revision: 2 })]; lines = []; history = []; role = 'TECHNICAL_SUPPORT_STAFF';
-  validCoordinators = [coordinatorA, coordinatorB]; updateReturnsRow = true; insertReturnsRow = true;
+  told = 0; updateReturnsRow = true; reservedReads = [[]];
 });
 
 describe('KAN-18 stock service access and reads', () => {
@@ -111,39 +109,66 @@ describe('KAN-18 stock service update', () => {
     expect(statements.some(sql => sql.startsWith('INSERT INTO equipment_stock_changes'))).toBe(true);
     expect(query.mock.calls.find(call => String(call[0]).startsWith('INSERT INTO equipment_stock_changes'))![1])
       .toEqual([typeId, 1, actor.id, 'Fault found.', 10, 0, 0, 10, 5, 0]);
-    expect(recordNotifications).not.toHaveBeenCalled();
+    expect(statements.some(sql => /notifications/i.test(sql) && /^INSERT/i.test(sql))).toBe(false);
   });
-  it('KAN-18-AC102 notifies each affected coordinator once and keeps the reservations', async () => {
+  it('KAN-18-AC102 reports the shortfall, keeps the reservations and leaves every notice to migration 019', async () => {
     lines = [line('l1', 'e1', 7, 2, 6, coordinatorA), line('l2', 'e2', 4, 4, 8, coordinatorB)];
+    told = 2;
     const result = await update({ ...body, damagedQuantity: 4 });
     expect(result.notifiedEvents).toBe(2);
     expect(result.shortfalls.map(gap => [gap.eventId, gap.shortfallQuantity])).toEqual([['e1', 5], ['e2', 5]]);
-    const sent = vi.mocked(recordNotifications).mock.calls[0]![1];
-    expect(sent.map(item => [item.recipientId, item.type, item.dedupeKey])).toEqual([
-      [coordinatorA, 'EQUIPMENT_STOCK_SHORTFALL', 'EQUIPMENT_STOCK_SHORTFALL:change-1:e1'],
-      [coordinatorB, 'EQUIPMENT_STOCK_SHORTFALL', 'EQUIPMENT_STOCK_SHORTFALL:change-1:e2'],
-    ]);
     expect(statements.some(sql => sql.startsWith('UPDATE equipment_requests'))).toBe(false);
+    expect(statements.some(sql => /^INSERT INTO notifications/i.test(sql))).toBe(false);
   });
-  it('skips an event with no coordinator or a coordinator who is no longer one', async () => {
-    lines = [line('l1', 'e1', 7, 2, 6, null), line('l2', 'e2', 4, 4, 8, coordinatorB)];
-    validCoordinators = [coordinatorA];
+  it('locks the affected events, in id order, before the equipment pool', async () => {
+    reservedReads = [['e2', 'e1']];
+    await update(body);
+    const eventLock = statements.findIndex(sql => sql.startsWith('SELECT id FROM event_requests WHERE id = ANY($1::uuid[]) ORDER BY id FOR UPDATE'));
+    const poolLock = statements.findIndex(sql => sql.includes('FROM equipment_types t WHERE t.id = $1 FOR UPDATE'));
+    expect(eventLock).toBeGreaterThan(-1);
+    expect(poolLock).toBeGreaterThan(eventLock);
+    expect(query.mock.calls.find(call => String(call[0]).includes('ORDER BY id FOR UPDATE'))![1]).toEqual([['e1', 'e2']]);
+  });
+  it('takes no event lock when nothing is reserved', async () => {
+    await update(body);
+    expect(statements.some(sql => sql.includes('FROM event_requests WHERE id = ANY'))).toBe(false);
+  });
+  it('restarts with the larger event set when a reservation commits before the pool is locked, then succeeds', async () => {
+    reservedReads = [['e1'], ['e1', 'e2'], ['e1', 'e2']];
     const result = await update(body);
-    expect(result.shortfalls.map(gap => gap.eventId)).toEqual(['e1', 'e2']);
-    expect(result.notifiedEvents).toBe(0);
-    expect(vi.mocked(recordNotifications).mock.calls[0]![1]).toEqual([]);
+    expect(result.changed).toBe(true);
+    expect(statements.filter(sql => sql === 'ROLLBACK')).toHaveLength(1);
+    const locks = query.mock.calls.filter(call => String(call[0]).includes('ORDER BY id FOR UPDATE')).map(call => call[1]);
+    expect(locks).toEqual([[['e1']], [['e1', 'e2']]]);
   });
-  it('does not notify when the change is not a loss, even if a shortfall remains', async () => {
+  it('gives a plain conflict, not a 500, when reservations keep changing', async () => {
+    let n = 0;
+    const normal = query.getMockImplementation()!;
+    query.mockImplementation(async (sql: string) => {
+      statements.push(sql.replace(/\s+/g, ' ').trim());
+      if (sql.includes('FROM app_users WHERE id = $1 FOR SHARE')) return { rows: [{ role: 'TECHNICAL_SUPPORT_STAFF' }] };
+      if (sql.includes('SELECT DISTINCT r.event_request_id AS id')) return { rows: [{ id: `e${n++}` }] };
+      if (sql.includes('FROM equipment_types t WHERE t.id = $1 FOR UPDATE')) return { rows: [{ ...row }] };
+      return { rows: [] };
+    });
+    try {
+      await expect(update(body)).rejects.toMatchObject({ kind: 'CONFLICT', code: 'EQUIPMENT_STOCK_BUSY' });
+      expect(statements.filter(sql => sql === 'ROLLBACK')).toHaveLength(5);
+    } finally {
+      query.mockImplementation(normal);
+    }
+  });
+  it('reports a shortfall that remains after a repair without claiming any notice', async () => {
     row = type({ damagedQuantity: 6, revision: 3 }); lines = [line('l1', 'e1', 7, 2, 6)];
     const result = await update({ expectedRevision: 3, damagedQuantity: 5, reason: 'One repaired.' });
     expect(result.shortfalls).toHaveLength(1);
     expect(result.notifiedEvents).toBe(0);
-    expect(recordNotifications).not.toHaveBeenCalled();
   });
-  it('does not notify when the loss leaves every reservation covered', async () => {
+  it('reports no shortfall when the loss leaves every reservation covered', async () => {
     lines = [line('l1', 'e1', 3, 2, 6)];
-    expect((await update(body)).notifiedEvents).toBe(0);
-    expect(recordNotifications).not.toHaveBeenCalled();
+    const result = await update(body);
+    expect(result.shortfalls).toEqual([]);
+    expect(result.notifiedEvents).toBe(0);
   });
   it('KAN-18-AC103 refuses a stale revision with a message that asks for a reload', async () => {
     row = type({ revision: 3 });
@@ -196,12 +221,10 @@ describe('KAN-18 stock service update', () => {
     row = undefined as never;
     await expect(update(body)).rejects.toMatchObject({ kind: 'NOT_FOUND', code: 'EQUIPMENT_TYPE_NOT_FOUND' });
   });
-  it('rolls back and surfaces an error when the row or its history cannot be written', async () => {
+  it('rolls back and surfaces an error when the row cannot be written', async () => {
     updateReturnsRow = false;
     await expect(update(body)).rejects.toThrow('The equipment stock change was not saved.');
     expect(statements).toContain('ROLLBACK');
-    updateReturnsRow = true; insertReturnsRow = false; row = type();
-    await expect(update(body)).rejects.toThrow('The equipment stock history was not saved.');
   });
   it('an inactive type has no operational units, so every reservation is a shortfall', async () => {
     row = type({ isActive: false }); lines = [line('l1', 'e1', 2, 2, 6)];

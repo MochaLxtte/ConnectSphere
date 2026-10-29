@@ -135,7 +135,7 @@ async function save() {
     }
     feedback.value = { kind: 'success', message: !result.changed
       ? 'No change was needed: the stock already matches these quantities.'
-      : `Stock saved.${result.notifiedEvents ? ` ${result.notifiedEvents} ${result.notifiedEvents === 1 ? 'coordinator was' : 'coordinators were'} notified of a shortfall.` : ''}` };
+      : `Stock saved.${result.notifiedEvents ? ` Shortfall notices were sent for ${result.notifiedEvents} affected ${result.notifiedEvents === 1 ? 'event' : 'events'}.` : ''}` };
   } catch (error) {
     if (controller.signal.aborted || selectedId.value !== id) return;
     if (error instanceof ApiError && error.status === 401) { clearLocalSession(); return; }

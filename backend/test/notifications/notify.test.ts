@@ -7,6 +7,16 @@ const base: NotificationInput = {
 };
 
 describe('KAN-64-AC207 notification writer', () => {
+  it('KAN-80 writes mixed equipment and change targets with parameterized nulls', async () => {
+    const client = { query: vi.fn().mockResolvedValue({ rowCount: 2 }) };
+    const equipment = { ...base, equipmentRequestId: 'equipment-1' };
+    const change = { ...base, changeRequestId: 'change-1' };
+    expect(await recordNotifications(client, [equipment, change])).toBe(2);
+    const [sql, values] = client.query.mock.calls[0]!;
+    expect(sql).toContain('equipment_request_id, change_request_id');
+    expect(values).toHaveLength(18); expect(values[7]).toBe('equipment-1'); expect(values[8]).toBeNull();
+    expect(values[16]).toBeNull(); expect(values[17]).toBe('change-1');
+  });
   it('does nothing for an empty list', async () => {
     const client = { query: vi.fn() };
     expect(await recordNotifications(client, [])).toBe(0);

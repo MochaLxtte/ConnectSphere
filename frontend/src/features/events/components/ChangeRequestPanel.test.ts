@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, within } from '@testing-library/vue';
 import { describe, expect, it } from 'vitest';
+import { createMemoryHistory, createRouter } from 'vue-router';
 import ChangeRequestPanel from './ChangeRequestPanel.vue';
 import { apiError, stubApi } from './test-api';
 
@@ -34,6 +35,15 @@ const coordinatorProps = { eventRequestId, status: 'APPROVED', viewerRole: 'EVEN
 const ownerProps = { eventRequestId, status: 'APPROVED', viewerRole: 'EVENT_ORGANISER', isOwner: true, revision: 5 };
 
 describe('KAN-15 change request panel', () => {
+  it('KAN-80-AC5 highlights only the request identified by the notification link', async () => {
+    const router = createRouter({ history: createMemoryHistory(), routes: [{ path: '/events/:id', component: ChangeRequestPanel }] });
+    await router.push(`/events/${eventRequestId}?change=cr0`); await router.isReady();
+    stubApi({ [`GET ${base}`]: { body: { items: [pending, rejected] } } });
+    render(ChangeRequestPanel, { props: ownerProps, global: { ...global, plugins: [router] } });
+    const target = await screen.findByText('This is the change request from your notification.');
+    expect(target.closest('li')).toHaveTextContent('Rejected');
+    expect(screen.getAllByText('This is the change request from your notification.')).toHaveLength(1);
+  });
   it('KAN-15-AC1 offers the owner a change request when nothing is pending', async () => {
     stubApi({ [`GET ${base}`]: { body: { items: [] } } });
     render(ChangeRequestPanel, { props: ownerProps, global });

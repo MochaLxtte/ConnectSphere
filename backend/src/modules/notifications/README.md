@@ -1,5 +1,9 @@
 # Notifications (KAN-64, CF-20)
 
+## 29 October 2026 — KAN-80 later outcomes
+
+Migration 019 adds optional registration/change targets and emits registration, final-event and affected-equipment-shortfall notices within actor transactions, reusing the recipient/outcome unique index. Registration outcome versions distinguish re-entry from a replay. KAN-15 writes allowed attendee-relevant change notices and current-coordinator decision acknowledgements through `recordNotifications`. Attendee inboxes expose only their own safe registration/outcome messages and `/registrations`; organiser/coordinator registration notices lead to the protected roster. Change notices link to the identified change on a currently authorized event. Source services must still recheck role/ownership and use `inActorTransaction`; the hooks do not implement KAN-14, KAN-18 or KAN-61. CR-2/4/6 remain separate. Local automated evidence is in [test evidence](../../../../docs/testing/test-evidence.md#29-october-2026--kan-17-kan-67-and-kan-80-implementation-verification); shared migration and integrated acceptance remain Not executed.
+
 In-app inbox for request, assignment, venue and equipment-reservation outcomes. Email, push and external delivery are out of scope.
 
 | File | Role |
@@ -15,7 +19,7 @@ In-app inbox for request, assignment, venue and equipment-reservation outcomes. 
 - Every notification has a `dedupeKey` of the form `TYPE:outcomeId` (review, clarification, assignment-history, booking or equipment-request id), so a retry cannot create a second one.
 - Recipients follow each person's relationship to the outcome, not "everyone except the actor"; an actor who is also a recipient gets an acknowledgement.
 - Reads re-check the caller's current access (organiser owns the event; coordinator is the current assignee and the event is not a draft; Venue Staff for bookings). Technical Support can read its own linked equipment notice without broader event-detail access. A `COORDINATOR_REASSIGNED_AWAY` notice remains visible after event access is lost and must name nothing. KAN-62 grants an affected attendee only its own generic cancellation outcome, as described below.
-- `EQUIPMENT_STOCK_SHORTFALL` (KAN-18, a KAN-80 slice) tells an affected event's assigned coordinator that stock no longer covers a reservation; one notice per stock change and event, and none when stock is restored or raised.
+- `EVENT_COMPLETED` (KAN-10, a KAN-80 slice) tells the organiser, and acknowledges the coordinator, that an event was marked completed; one notice per person and event.
 - To add a trigger (KAN-80 and the change stories), add a builder to `trigger-matrix.ts`, call `recordNotifications` from the service, extend the visibility rule if the new notification points to a new kind of target, and update the decision log and tests.
 
 Migration `008_notification_inbox.sql` adds `venue_booking_id` and `dedupe_key`. Tests: `backend/test/notifications/`, `database/tests/notifications/notification-inbox.integration.test.ts`.

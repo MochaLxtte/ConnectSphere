@@ -1,9 +1,12 @@
 import { randomUUID } from 'node:crypto';
+import type { PoolClient } from 'pg';
 import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { createApp } from '../../../backend/src/app.js';
+import { cancelEvent } from '../../../backend/src/modules/events/cancellation.js';
 import type { WorkflowActor } from '../../../backend/src/modules/events/workflow-support.js';
 import type { UserRole } from '../../../backend/src/modules/auth/types.js';
+import { updateEquipmentStock } from '../../../backend/src/modules/equipment/stock-service.js';
 import type { EquipmentStockDetail, EquipmentStockItem } from '../../../backend/src/modules/equipment/stock-types.js';
 import { createWorkflowFixture, type WorkflowFixture } from '../events/workflow-fixture.js';
 
@@ -65,9 +68,13 @@ const change = (typeId: string, body: Record<string, unknown>, actor: WorkflowAc
 const row = async (typeId: string) => (await fixture.pool.query('SELECT * FROM equipment_types WHERE id=$1', [typeId])).rows[0];
 const history = async (typeId: string) => (await fixture.pool.query(
   'SELECT * FROM equipment_stock_changes WHERE equipment_type_id=$1 ORDER BY revision', [typeId])).rows;
+// Migration 019's notify_equipment_shortfall trigger is the only writer of stock-loss notices.
 const notices = async (recipient: string, eventId?: string) => (await fixture.pool.query(
-  `SELECT * FROM notifications WHERE type='EQUIPMENT_STOCK_SHORTFALL' AND recipient_id=$1 AND ($2::uuid IS NULL OR event_request_id=$2) ORDER BY created_at`,
+  `SELECT * FROM notifications WHERE type='EQUIPMENT_UNAVAILABLE' AND recipient_id=$1 AND ($2::uuid IS NULL OR event_request_id=$2) ORDER BY created_at`,
   [recipient, eventId ?? null])).rows;
+const noticesFor = async (eventId: string) => (await fixture.pool.query(
+  `SELECT recipient_id, type, dedupe_key FROM notifications WHERE event_request_id=$1 AND type IN ('EQUIPMENT_UNAVAILABLE','EQUIPMENT_STOCK_SHORTFALL')
+   ORDER BY recipient_id, type`, [eventId])).rows;
 
 describe('KAN-18 equipment stock and operational status against real PostgreSQL', () => {
   it('KAN-18-AC1 shows every type with its operational quantity, status and revision to Technical Support Staff', async () => {
@@ -214,14 +221,15 @@ describe('KAN-18 equipment stock and operational status against real PostgreSQL'
     expect((await fixture.eventRow(affected)).status).toBe('APPROVED');
     const told = await notices(coordinator.id, affected);
     expect(told).toHaveLength(1);
-    expect(told[0].message).toContain('is 2 short');
+    expect(told[0].message).toContain('operational shortfall');
     expect(await notices(otherCoordinator.id)).toEqual([]);
-    expect(await notices(technician.id)).toEqual([]);
     expect(await notices(organiser.id)).toEqual([]);
-    // it appears in the coordinator's inbox with a link they may use
+    // The technician who made the reservation and is changing the stock is told once, not twice.
+    expect(await notices(technician.id, affected)).toHaveLength(1);
+    expect(await notices(technician.id, unaffected)).toEqual([]);
     const inbox = await request(app(coordinator)).get('/api/notifications').expect(200);
-    expect(inbox.body.items.find((item: { type: string }) => item.type === 'EQUIPMENT_STOCK_SHORTFALL'))
-      .toMatchObject({ event: { id: affected }, link: `/reviews/${affected}` });
+    expect(inbox.body.items.filter((item: { type: string }) => item.type === 'EQUIPMENT_UNAVAILABLE'))
+      .toEqual([expect.objectContaining({ event: expect.objectContaining({ id: affected }) })]);
   });
 
   it('KAN-18-AC102 prevents more over-allocation until the shortfall is resolved', async () => {
@@ -334,7 +342,7 @@ describe('KAN-18 equipment stock and operational status against real PostgreSQL'
     const holder = await event();
     await reservedLine(holder, id, 7);
     await fixture.pool.query(`CREATE FUNCTION stock_notice_fails() RETURNS trigger LANGUAGE plpgsql AS $$
-      BEGIN IF NEW.type = 'EQUIPMENT_STOCK_SHORTFALL' THEN RAISE EXCEPTION 'notice failed'; END IF; RETURN NEW; END $$`);
+      BEGIN IF NEW.type = 'EQUIPMENT_UNAVAILABLE' THEN RAISE EXCEPTION 'notice failed'; END IF; RETURN NEW; END $$`);
     await fixture.pool.query('CREATE TRIGGER stock_notice_fails BEFORE INSERT ON notifications FOR EACH ROW EXECUTE FUNCTION stock_notice_fails()');
     try {
       const failed = await change(id, { expectedRevision: 0, damagedQuantity: 5, reason: 'Fault found.' });
@@ -431,7 +439,7 @@ describe('KAN-18 specified case scenarios (TC-16-01 to TC-16-05) with their stat
     expect(await history(a)).toHaveLength(1);
   });
 
-  it('TC-16-05 flags a 1-unit shortfall for E-A (7 reserved) when 4 of 10 units are damaged, with a coordinator notice, and not E-B (2 reserved, disjoint)', async () => {
+  it('TC-16-05 flags a 1-unit shortfall for E-A (7 reserved) when 4 of 10 units are damaged, with one coordinator notice, and not E-B (2 reserved, disjoint)', async () => {
     const a = await type(10, 0, 0);
     const eventA = await event(coordinator, day(2), day(6));
     const eventB = await event(otherCoordinator, day(10), day(12));
@@ -444,5 +452,152 @@ describe('KAN-18 specified case scenarios (TC-16-01 to TC-16-05) with their stat
     expect((await fixture.pool.query('SELECT id,status,quantity FROM equipment_requests WHERE id = ANY($1) ORDER BY quantity DESC', [[lineA, lineB]])).rows)
       .toEqual([{ id: lineA, status: 'RESERVED', quantity: 7 }, { id: lineB, status: 'RESERVED', quantity: 2 }]);
     expect((await fixture.history(eventA)).map((entry: { to_status: string }) => entry.to_status)).toEqual(['APPROVED']);
+  });
+});
+
+describe('KAN-18 single notice writer and lock order against the complete schema', () => {
+  const deferred = () => {
+    let resolve!: () => void;
+    const promise = new Promise<void>(done => { resolve = done; });
+    return { promise, resolve };
+  };
+  // Pause a real PostgreSQL transaction at a known statement; all SQL and locks stay real.
+  function intercept(after: (sql: string) => Promise<void>) {
+    return { query: fixture.pool.query.bind(fixture.pool), connect: async () => {
+      const client = await fixture.pool.connect();
+      return { query: async (sql: string, values?: unknown[]) => {
+        const result = await client.query(sql, values);
+        await after(sql);
+        return result;
+      }, release: client.release.bind(client) } as unknown as PoolClient;
+    } };
+  }
+  async function waitUntilBlockedOnAnEventLock() {
+    const applicationName = new URL(fixture.pool.options.connectionString!).searchParams.get('application_name');
+    for (let attempt = 0; attempt < 300; attempt++) {
+      const waiting = await fixture.pool.query(`SELECT 1 FROM pg_stat_activity WHERE application_name=$1 AND wait_event_type='Lock'
+        AND strpos(query,'event_requests')>0 AND strpos(query,'FOR UPDATE')>0 AND pid <> pg_backend_pid()`, [applicationName]);
+      if (waiting.rows.length) return;
+      await new Promise(resolve => setTimeout(resolve, 10));
+    }
+    throw new Error('The stock change never waited for the event lock.');
+  }
+
+  it('KAN-18-AC102 tells each affected event\'s people exactly once, from the database trigger alone, and agrees with the reported shortfall', async () => {
+    const id = await type(10, 0, 0);
+    const first = await event(coordinator, day(2), day(6));
+    const second = await event(otherCoordinator, day(4), day(8));
+    const covered = await event(otherCoordinator, day(20), day(22));
+    await reservedLine(first, id, 6, day(2), day(6));
+    await reservedLine(second, id, 4, day(4), day(8));
+    await reservedLine(covered, id, 1, day(20), day(22));
+    const response = await change(id, { expectedRevision: 0, maintenanceQuantity: 2, reason: 'Scheduled service.' }).expect(200);
+    const reported = response.body.shortfalls.map((gap: { eventId: string }) => gap.eventId).sort();
+    expect(reported).toEqual([first, second].sort());
+    expect(response.body.notifiedEvents).toBe(2);
+    for (const [eventId, owner] of [[first, coordinator], [second, otherCoordinator]] as const) {
+      // The coordinator and the technician who made the reservation and changed the stock, each once, as one outcome.
+      const told = await noticesFor(eventId);
+      expect(told.map(item => [item.recipient_id, item.type]).sort())
+        .toEqual([[owner.id, 'EQUIPMENT_UNAVAILABLE'], [technician.id, 'EQUIPMENT_UNAVAILABLE']].sort());
+      expect(new Set(told.map(item => String(item.dedupe_key).split(':').slice(0, 2).join(':'))).size).toBe(1);
+    }
+    expect(await noticesFor(covered)).toEqual([]);
+    const legacy = await fixture.pool.query(`SELECT count(*)::int AS n FROM notifications WHERE type='EQUIPMENT_STOCK_SHORTFALL'`);
+    expect(legacy.rows[0].n).toBe(0);
+    // A repeat of the same request and an unrelated restore add nothing.
+    await change(id, { expectedRevision: 0, maintenanceQuantity: 2, reason: 'Scheduled service.' }).expect(200);
+    await change(id, { expectedRevision: 1, maintenanceQuantity: 1, reason: 'One back.' }).expect(200);
+    expect(await noticesFor(first)).toHaveLength(2);
+  });
+
+  it('KAN-18 locks the affected event before the pool, so a cancellation holding the event cannot deadlock with a stock loss', async () => {
+    const id = await type(10, 0, 0);
+    const holder = await event(coordinator, day(2), day(6));
+    const line = await reservedLine(holder, id, 7);
+    const eventLocked = deferred();
+    const resume = deferred();
+    const cancellationDb = intercept(async sql => {
+      if (sql.includes('FROM event_requests WHERE id = $1 FOR UPDATE')) { eventLocked.resolve(); await resume.promise; }
+    });
+    const cancelling = cancelEvent(cancellationDb, { eventRequestId: holder, actor: organiser,
+      input: { reason: 'Venue closed.', confirmAffectedArrangements: true } });
+    await eventLocked.promise;
+    // The cancellation now holds the event and will take the pool next. Taking the pool first here would deadlock.
+    const changing = updateEquipmentStock(fixture.dependencies, { actor: technician, typeId: id,
+      input: { expectedRevision: 0, damagedQuantity: 5, reason: 'Fault found.' } });
+    try {
+      await waitUntilBlockedOnAnEventLock();
+    } finally {
+      resume.resolve();
+    }
+    await expect(cancelling).resolves.toMatchObject({ status: 'CANCELLED' });
+    await expect(changing).resolves.toMatchObject({ changed: true, notifiedEvents: 0, shortfalls: [] });
+    expect((await fixture.pool.query('SELECT status FROM equipment_requests WHERE id=$1', [line])).rows[0].status).toBe('CANCELLED');
+    expect(await row(id)).toMatchObject({ damaged_quantity: 5, stock_revision: 1 });
+    expect(await history(id)).toHaveLength(1);
+    // Nothing remained reserved when the loss was recorded, so no shortfall notice was written for the cancelled event.
+    expect(await noticesFor(holder)).toEqual([]);
+  });
+
+  it('KAN-18 never returns a server error when a stock loss races a cancellation of an affected event', async () => {
+    for (let attempt = 0; attempt < 8; attempt++) {
+      const id = await type(10, 0, 0);
+      const holder = await event(coordinator, day(2), day(6));
+      const other = await event(otherCoordinator, day(3), day(5));
+      await reservedLine(holder, id, 7);
+      await reservedLine(other, id, 2, day(3), day(5));
+      const [stockResult, cancelResult] = await Promise.all([
+        change(id, { expectedRevision: 0, damagedQuantity: 5, reason: 'Fault found.' }),
+        request(app(organiser)).post(`/api/events/${holder}/cancel`).send({ reason: 'Venue closed.', confirmAffectedArrangements: true }),
+      ]);
+      expect([stockResult.status, cancelResult.status]).toEqual([200, 200]);
+      expect((await fixture.eventRow(holder)).status).toBe('CANCELLED');
+      expect(await row(id)).toMatchObject({ damaged_quantity: 5, stock_revision: 1 });
+      expect(await history(id)).toHaveLength(1);
+      // The other event's reservation is untouched and, if it is short after the loss, it was told once.
+      expect((await fixture.pool.query(`SELECT status FROM equipment_requests WHERE event_request_id=$1`, [other])).rows[0].status).toBe('RESERVED');
+      expect((await noticesFor(other)).length).toBeLessThanOrEqual(2);
+    }
+  });
+
+  it('KAN-18 never returns a server error when a stock loss races the completion of an affected event', async () => {
+    const [started, ended] = [5, 3].map(hours => new Date(Date.now() - hours * 3_600_000).toISOString());
+    for (let attempt = 0; attempt < 8; attempt++) {
+      const id = await type(10, 0, 0);
+      const holder = await event(coordinator, started, ended);
+      await reservedLine(holder, id, 7, started, ended);
+      await fixture.pool.query(`UPDATE event_requests SET status='CONFIRMED' WHERE id=$1`, [holder]);
+      const [stockResult, completeResult] = await Promise.all([
+        change(id, { expectedRevision: 0, damagedQuantity: 5, reason: 'Fault found.' }),
+        request(app(coordinator)).post(`/api/events/${holder}/complete`).send(),
+      ]);
+      expect([stockResult.status, completeResult.status]).toEqual([200, 200]);
+      expect((await fixture.eventRow(holder)).status).toBe('COMPLETED');
+      expect(await row(id)).toMatchObject({ damaged_quantity: 5, stock_revision: 1 });
+      expect(await history(id)).toHaveLength(1);
+    }
+  });
+
+  it('KAN-18 restarts and succeeds when a reservation commits between choosing the events and locking the pool', async () => {
+    const id = await type(10, 0, 0);
+    const first = await event(coordinator, day(2), day(6));
+    await reservedLine(first, id, 6);
+    const chosen = deferred();
+    const resume = deferred();
+    let pausedOnce = false;
+    const db = intercept(async sql => {
+      if (!pausedOnce && sql.includes('SELECT DISTINCT r.event_request_id AS id')) { pausedOnce = true; chosen.resolve(); await resume.promise; }
+    });
+    const changing = updateEquipmentStock({ pool: db as never }, { actor: technician, typeId: id,
+      input: { expectedRevision: 0, damagedQuantity: 5, reason: 'Fault found.' } });
+    await chosen.promise;
+    const late = await event(otherCoordinator, day(3), day(5));
+    await reservedLine(late, id, 2, day(3), day(5));
+    resume.resolve();
+    const result = await changing;
+    expect(result).toMatchObject({ changed: true });
+    expect(result.shortfalls.map(gap => gap.eventId).sort()).toEqual([first, late].sort());
+    expect((await noticesFor(late)).length).toBeGreaterThan(0);
   });
 });

@@ -165,7 +165,7 @@ describe('KAN-18-AC2, AC6 and AC101 the update form', () => {
     await type('Damaged', '5'); await type('Reason for the change', '  Fault found in batch  ');
     await fireEvent.click(save());
     const status = await screen.findByText(/Stock saved\./);
-    expect(status).toHaveTextContent('1 coordinator was notified of a shortfall.');
+    expect(status).toHaveTextContent('Shortfall notices were sent for 1 affected event.');
     const patch = fetch.mock.calls.find(call => call[1]?.method === 'PATCH')!;
     expect(patch[0]).toBe('/api/equipment/stock/p');
     expect(JSON.parse(patch[1]!.body as string)).toEqual({ expectedRevision: 4, totalQuantity: 10, damagedQuantity: 5,
@@ -177,10 +177,10 @@ describe('KAN-18-AC2, AC6 and AC101 the update form', () => {
     const row = screen.getAllByRole('listitem').find(entry => within(entry).queryByRole('heading', { name: 'Projector' }))!;
     expect(row).toHaveTextContent(/Damaged\s*5/);
   });
-  it('words the notice for several coordinators and for no change', async () => {
+  it('words the notice for several events and for no change', async () => {
     stub({ patch: () => json({ ...detail(), changed: true, notifiedEvents: 3 }) }); await open(); await edit();
     await type('Damaged', '5'); await type('Reason for the change', 'Loss'); await fireEvent.click(save());
-    expect(await screen.findByText(/3 coordinators were notified/)).toBeInTheDocument();
+    expect(await screen.findByText(/Shortfall notices were sent for 3 affected events\./)).toBeInTheDocument();
     cleanup(); stub({ patch: () => json({ ...detail(), changed: false, notifiedEvents: 0 }) }); await open(); await edit();
     await type('Damaged', '3'); await type('Reason for the change', 'Same'); await fireEvent.click(save());
     expect(await screen.findByText('No change was needed: the stock already matches these quantities.')).toBeInTheDocument();

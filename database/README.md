@@ -1,5 +1,9 @@
 # Database
 
+## 29 October 2026 — migration 019 registration outcomes
+
+`019_registration_notification_outcomes.sql` adds a registration outcome version, nullable notification links to registrations and change requests, and actor-transaction notifications for registration, final event and equipment-shortfall outcomes. Use the ordinary migration runner on an isolated local/CI database; do not edit the earlier migrations. The migration has been tested on isolated PostgreSQL, including upgrades from historical migration ledgers. Applying it to the shared development database remains **Not executed** and requires the team notification in AGENTS.md §7.3. KAN-14/KAN-18/KAN-61 implementations must use the existing actor transaction so their source outcomes and hooks commit together.
+
 **Current shared configuration — 25 October 2026.** The shared development project has the existing migration-013 expiry function and a matching ledger checksum. With team approval, `pg_cron` 1.6.4 was enabled and the single named job `connectsphere-expire-venue-holds` scheduled every minute with `SELECT public.expire_venue_holds()`. Actual runs succeeded from **21:58 Singapore time**; sanitized [evidence](../docs/scrum/sprint-03/evidence/supabase-hold-expiry-20261025.json) retains version/job/run metadata. No business test data or cleanup suite was run against shared Supabase. Earlier dated “pg_cron disabled” / unapplied-migration notes describe their earlier checkpoints. Do not rerun or edit applied migrations to enable this job. The API scheduler remains an idempotent fallback; a cron return message of `1 row` is a SQL result-row count, not a count of expired holds.
 
 Supabase hosts the team's PostgreSQL development database. Vue calls Express, and Express uses `pg` to run SQL. Docker is optional; the local Compose service and CI use PostgreSQL 17 for isolated testing.
@@ -241,11 +245,13 @@ The active sequence is now **001–015**. [015_equipment_reservations.sql](migra
 
 **Rollout:** not applied to shared Supabase. Apply after 016, after telling the team (AGENTS.md §7.3). Applying 017 before the KAN-15 code is deployed is safe: no current code reads or writes the table.
 
+**28 October 2026 rollout record:** the shared Supabase ledger shows 016, 017 and 018 applied together at 2026-10-28 01:35:56 UTC, after #64, #65 and #63 merged (read-only check; operator Not recorded). See `MAN-20261028-KAN66-KAN15-01` in test evidence.
+
 **Integration tests:** `database/tests/events/change-requests.integration.test.ts` uses an isolated schema like the other suites; never point it at shared Supabase.
 
 ## KAN-62 / KAN-63 event cancellation and equipment requests — migration 018
 
-`019_equipment_stock_changes.sql` (29 October 2026, KAN-18) adds `equipment_types.stock_revision` (default 0) and the append-only `equipment_stock_changes` history with row-level security and no Data API access. It is additive and **not applied** to shared Supabase until the team agrees. `018_event_cancellation_equipment_workflows.sql` adds the immutable `event_cancellations` outcome,
+`020_equipment_stock_changes.sql` (29 October 2026, KAN-18; numbered after main's 019 on review) adds `equipment_types.stock_revision` (default 0) and the append-only `equipment_stock_changes` history with row-level security and no Data API access. It is additive and **not applied** to shared Supabase until the team agrees. `018_event_cancellation_equipment_workflows.sql` adds the immutable `event_cancellations` outcome,
 event-status-history reason, attendee cancellation outcome timestamp, equipment plan state, and
 equipment-line technical requirements/revision. It does not add another equipment cancellation
 metadata model: migration 015's `released_at`, `released_by`, `release_reason` and `release_cause`

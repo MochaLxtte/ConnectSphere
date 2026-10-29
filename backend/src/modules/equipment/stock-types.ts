@@ -54,7 +54,7 @@ export interface EquipmentStockDetail {
 export interface EquipmentStockUpdateResult extends EquipmentStockDetail {
   /** False when the submitted quantities already matched; nothing was written. */
   changed: boolean;
-  /** Coordinators notified of a shortfall by this change. */
+  /** Affected events the database trigger told about a shortfall in this change. */
   notifiedEvents: number;
 }
 

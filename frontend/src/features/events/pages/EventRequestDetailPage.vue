@@ -148,6 +148,7 @@ onBeforeUnmount(() => controller?.abort());
 
   <div class="detail-toolbar">
     <RouterLink to="/events" class="back-link">Back to event requests</RouterLink>
+    <RouterLink v-if="state.status === 'ready'" :to="`/events/${state.request.id}/registrations`" class="back-link">View registrations</RouterLink>
     <button type="button" class="button button-secondary" :disabled="state.status === 'loading'" @click="load">Refresh</button>
   </div>
 
@@ -212,6 +213,7 @@ onBeforeUnmount(() => controller?.abort());
     :viewer-role="authSession.user?.role ?? 'EVENT_ORGANISER'"
     :is-owner="true"
     :revision="state.request.revision"
+    :ends-at="state.request.endsAt"
     @changed="refreshQuietly"
   />
 </template>

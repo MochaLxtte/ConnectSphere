@@ -83,7 +83,7 @@ test('KAN-18 technical support marks equipment unavailable, sees the shortfall i
   await expect(page.getByRole('button', { name: 'Save stock change', exact: true })).toBeDisabled();
   await page.getByLabel('Reason for the change', { exact: true }).fill('Fault found in the batch.');
   await page.getByRole('button', { name: 'Save stock change', exact: true }).click();
-  await expect(page.getByText(/Stock saved\. 1 coordinator was notified of a shortfall\./)).toBeVisible();
+  await expect(page.getByText(/Stock saved\. Shortfall notices were sent for 1 affected event\./)).toBeVisible();
   const gaps = page.getByRole('list', { name: 'Reservations not fully covered' });
   await expect(gaps).toContainText('Career fair');
   await expect(gaps).toContainText('3 short');

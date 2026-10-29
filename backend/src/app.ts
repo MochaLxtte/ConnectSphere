@@ -11,6 +11,7 @@ import { createAssignmentRouter } from './modules/events/assignment-router.js';
 import { createClarificationRouter } from './modules/events/clarification-router.js';
 import { createChangeRequestRouter } from './modules/events/change-request-router.js';
 import { createStatusHistoryRouter } from './modules/events/status-history-router.js';
+import { createCompletionRouter } from './modules/events/completion-router.js';
 import { createCancellationRouter } from './modules/events/cancellation-router.js';
 import { createVenueRouter } from './modules/venues/venue-router.js';
 import {
@@ -26,6 +27,7 @@ import { createEquipmentAvailabilityRouter } from './modules/equipment/availabil
 import { createEquipmentReservationRouter } from './modules/equipment/reservation-router.js';
 import { createEquipmentRouter } from './modules/equipment/equipment-router.js';
 import { createEquipmentStockRouter } from './modules/equipment/stock-router.js';
+import { createRegistrationRouter } from './modules/registrations/router.js';
 
 export interface AppDependencies {
   database: HealthDatabase;
@@ -77,6 +79,7 @@ export function createApp({
   if (auth) app.use('/api/auth', createAuthRouter(auth));
 
   if (workspace) {
+    app.use('/api', createRegistrationRouter(workspace));
     // KAN-9: equipment context and advisory checks stay separate from general event access.
     app.use('/api/equipment/availability', createEquipmentAvailabilityRouter(workspace));
     app.use('/api/equipment/reservations', createEquipmentReservationRouter(workspace));
@@ -95,6 +98,8 @@ export function createApp({
     app.use('/api/events', createChangeRequestRouter(workspace));
     app.use('/api/events', createStatusHistoryRouter(workspace));
     app.use('/api/events', createCancellationRouter(workspace));
+    // KAN-10: the assigned coordinator marks a confirmed, ended event completed.
+    app.use('/api/events', createCompletionRouter(workspace));
     app.use('/api/events', createVenueSuitabilityRouter(workspace));
     // KAN-53: coordinator venue booking submission, nested under the event request.
     app.use('/api/events', createVenueBookingSubmissionRouter(workspace));

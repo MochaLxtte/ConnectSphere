@@ -2,8 +2,6 @@ import type { PoolClient } from 'pg';
 import {
   inActorTransaction, iso, UUID_PATTERN, WorkflowError, type WorkflowActor, type WorkflowDependencies,
 } from '../events/workflow-support.js';
-import { recordNotifications } from '../notifications/notify.js';
-import { equipmentStockShortfallNotifications } from '../notifications/trigger-matrix.js';
 import { invalidStock, parseEquipmentStockInput } from './stock-input.js';
 import { findStockShortfalls, operationalQuantity, stockStatus, type ReservedLine } from './stock-rules.js';
 import type {
@@ -149,10 +147,29 @@ function merge(current: Quantities, input: EquipmentStockUpdateInput): Quantitie
 const sameQuantities = (a: Quantities, b: Quantities) => a.totalQuantity === b.totalQuantity
   && a.damagedQuantity === b.damagedQuantity && a.maintenanceQuantity === b.maintenanceQuantity;
 
+/** Thrown inside the transaction when a reservation committed after the events were chosen; the caller retries with them. */
+class EventLockSetChanged extends Error {
+  constructor(readonly eventIds: string[]) { super('The reserved events changed while the stock was being locked.'); }
+}
+const MAX_LOCK_ATTEMPTS = 5;
+
+/** Events that hold a live reservation of this type: the ones a stock loss may leave uncovered and tell. */
+async function reservedEventIds(reader: Reader, typeId: string): Promise<string[]> {
+  const found = await reader.query<{ id: string }>(
+    `SELECT DISTINCT r.event_request_id AS id FROM equipment_requests r WHERE r.equipment_type_id = $1 AND r.status = 'RESERVED'`, [typeId]);
+  return found.rows.map(row => row.id);
+}
+
 /**
  * KAN-18-AC2/AC3/AC6/AC101-AC103: change pooled total, damaged or maintenance quantities. The change
- * and its history row commit together; existing reservations are never altered, but any event whose
- * reservation the new stock no longer covers is reported and its coordinator notified once.
+ * and its history row commit together. Existing reservations are never altered. When the change loses
+ * usable units, migration 019's `notify_equipment_shortfall` trigger, the only notice writer, tells each
+ * affected event's people in this same transaction; the response reports the shortfall itself.
+ *
+ * Lock order matches cancellation, completion and reservation (event, then equipment pool). The trigger's
+ * notices reference the affected events, so those events are locked first, before the pool; taking the
+ * pool first deadlocked with a concurrent cancellation of an affected event. A reservation that commits
+ * between choosing the events and locking the pool restarts the attempt with the larger set.
  */
 export async function updateEquipmentStock(
   { pool }: WorkflowDependencies,
@@ -161,73 +178,75 @@ export async function updateEquipmentStock(
   requireTechnicalSupport(actor);
   requireTypeId(typeId);
   const parsed = parseEquipmentStockInput(input);
-  return inActorTransaction(pool, actor.id, async client => {
-    // Keep the trusted profile stable until commit; a role revoked before this lock cannot write.
-    const profile = await client.query<{ role: string }>('SELECT role FROM app_users WHERE id = $1 FOR SHARE', [actor.id]);
-    if (profile.rows[0]?.role !== 'TECHNICAL_SUPPORT_STAFF') {
-      throw new WorkflowError('FORBIDDEN', 'ACTION_FORBIDDEN', 'Technical Support access is no longer available.');
+  let known: string[] = [];
+  for (let attempt = 0; attempt < MAX_LOCK_ATTEMPTS; attempt++) {
+    try {
+      return await inActorTransaction(pool, actor.id, client => applyStockChange(client, actor, typeId, parsed, known));
+    } catch (error) {
+      if (!(error instanceof EventLockSetChanged)) throw error;
+      known = error.eventIds;
     }
-    // The pool lock is the one every reservation and release takes, so the reserved set below is stable.
-    const locked = await client.query<TypeRow>(`SELECT ${TYPE_COLUMNS} FROM equipment_types t WHERE t.id = $1 FOR UPDATE`, [typeId]);
-    const row = locked.rows[0];
-    if (!row) throw notFound();
-    const before: Quantities = { totalQuantity: row.totalQuantity, damagedQuantity: row.damagedQuantity, maintenanceQuantity: row.maintenanceQuantity };
-    const after = merge(before, parsed);
+  }
+  throw new WorkflowError('CONFLICT', 'EQUIPMENT_STOCK_BUSY', 'Reservations for this equipment kept changing. Try saving again.');
+}
 
-    if (row.revision !== parsed.expectedRevision) {
-      // A retry of a change that already committed is answered with the saved state, not an error.
-      const last = row.revision === parsed.expectedRevision + 1 ? (await readHistory(client, typeId))[0] : undefined;
-      if (last && last.revision === row.revision && last.changedById === actor.id && last.reason === parsed.reason
-        && sameQuantities(last.next, merge(last.previous, parsed))) {
-        return { ...(await readDetail(client, typeId)), changed: false, notifiedEvents: 0 };
-      }
-      throw new WorkflowError('CONFLICT', 'EQUIPMENT_STOCK_REVISION_CONFLICT',
-        'This stock was changed after you opened it. Reload to see the current quantities, then make your change again.');
-    }
-    if (after.damagedQuantity + after.maintenanceQuantity > after.totalQuantity) {
-      throw invalidStock('Damaged plus maintenance quantities cannot be more than the total quantity.');
-    }
-    if (sameQuantities(before, after)) {
+async function applyStockChange(
+  client: PoolClient, actor: WorkflowActor, typeId: string, parsed: EquipmentStockUpdateInput,
+  known: readonly string[],
+): Promise<EquipmentStockUpdateResult> {
+  // Keep the trusted profile stable until commit; a role revoked before this lock cannot write.
+  const profile = await client.query<{ role: string }>('SELECT role FROM app_users WHERE id = $1 FOR SHARE', [actor.id]);
+  if (profile.rows[0]?.role !== 'TECHNICAL_SUPPORT_STAFF') {
+    throw new WorkflowError('FORBIDDEN', 'ACTION_FORBIDDEN', 'Technical Support access is no longer available.');
+  }
+  const eventIds = [...new Set([...known, ...await reservedEventIds(client, typeId)])].sort();
+  if (eventIds.length > 0) await client.query('SELECT id FROM event_requests WHERE id = ANY($1::uuid[]) ORDER BY id FOR UPDATE', [eventIds]);
+  // The pool lock is the one every reservation and release takes, so the reserved set below is stable.
+  const locked = await client.query<TypeRow>(`SELECT ${TYPE_COLUMNS} FROM equipment_types t WHERE t.id = $1 FOR UPDATE`, [typeId]);
+  const row = locked.rows[0];
+  if (!row) throw notFound();
+  const held = new Set(eventIds);
+  const current = await reservedEventIds(client, typeId);
+  if (current.some(id => !held.has(id))) throw new EventLockSetChanged([...new Set([...eventIds, ...current])].sort());
+
+  const before: Quantities = { totalQuantity: row.totalQuantity, damagedQuantity: row.damagedQuantity, maintenanceQuantity: row.maintenanceQuantity };
+  const after = merge(before, parsed);
+
+  if (row.revision !== parsed.expectedRevision) {
+    // A retry of a change that already committed is answered with the saved state, not an error.
+    const last = row.revision === parsed.expectedRevision + 1 ? (await readHistory(client, typeId))[0] : undefined;
+    if (last && last.revision === row.revision && last.changedById === actor.id && last.reason === parsed.reason
+      && sameQuantities(last.next, merge(last.previous, parsed))) {
       return { ...(await readDetail(client, typeId)), changed: false, notifiedEvents: 0 };
     }
+    throw new WorkflowError('CONFLICT', 'EQUIPMENT_STOCK_REVISION_CONFLICT',
+      'This stock was changed after you opened it. Reload to see the current quantities, then make your change again.');
+  }
+  if (after.damagedQuantity + after.maintenanceQuantity > after.totalQuantity) {
+    throw invalidStock('Damaged plus maintenance quantities cannot be more than the total quantity.');
+  }
+  if (sameQuantities(before, after)) {
+    return { ...(await readDetail(client, typeId)), changed: false, notifiedEvents: 0 };
+  }
 
-    const updated = await client.query<{ revision: number }>(
-      `UPDATE equipment_types SET total_quantity = $2, damaged_quantity = $3, maintenance_quantity = $4,
-         stock_revision = stock_revision + 1, updated_at = clock_timestamp()
-       WHERE id = $1 RETURNING stock_revision AS revision`,
-      [typeId, after.totalQuantity, after.damagedQuantity, after.maintenanceQuantity]);
-    const revision = updated.rows[0]?.revision;
-    if (revision === undefined) throw new Error('The equipment stock change was not saved.');
-    const change = await client.query<{ id: string }>(
-      `INSERT INTO equipment_stock_changes (equipment_type_id, revision, changed_by, reason,
-         previous_total_quantity, previous_damaged_quantity, previous_maintenance_quantity,
-         new_total_quantity, new_damaged_quantity, new_maintenance_quantity)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id`,
-      [typeId, revision, actor.id, parsed.reason, before.totalQuantity, before.damagedQuantity, before.maintenanceQuantity,
-        after.totalQuantity, after.damagedQuantity, after.maintenanceQuantity]);
-    const changeId = change.rows[0]?.id;
-    if (!changeId) throw new Error('The equipment stock history was not saved.');
+  const updated = await client.query<{ revision: number }>(
+    `UPDATE equipment_types SET total_quantity = $2, damaged_quantity = $3, maintenance_quantity = $4,
+       stock_revision = stock_revision + 1, updated_at = clock_timestamp()
+     WHERE id = $1 RETURNING stock_revision AS revision`,
+    [typeId, after.totalQuantity, after.damagedQuantity, after.maintenanceQuantity]);
+  const revision = updated.rows[0]?.revision;
+  if (revision === undefined) throw new Error('The equipment stock change was not saved.');
+  await client.query(
+    `INSERT INTO equipment_stock_changes (equipment_type_id, revision, changed_by, reason,
+       previous_total_quantity, previous_damaged_quantity, previous_maintenance_quantity,
+       new_total_quantity, new_damaged_quantity, new_maintenance_quantity)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+    [typeId, revision, actor.id, parsed.reason, before.totalQuantity, before.damagedQuantity, before.maintenanceQuantity,
+      after.totalQuantity, after.damagedQuantity, after.maintenanceQuantity]);
 
-    // Reservations are kept. A loss that leaves some of them uncovered is reported to their coordinators.
-    const operationalBefore = operationalQuantity({ ...row, ...before });
-    const operationalAfter = operationalQuantity({ ...row, ...after });
-    const lines = await reservedLines(client, typeId);
-    const shortfalls = toShortfalls(operationalAfter, lines);
-    let notifiedEvents = 0;
-    if (operationalAfter < operationalBefore && shortfalls.length > 0) {
-      const coordinatorIds = [...new Set(lines.filter(line => line.coordinatorId).map(line => line.coordinatorId!))];
-      const valid = new Set((await client.query<{ id: string }>(
-        `SELECT id FROM app_users WHERE id = ANY($1::uuid[]) AND role = 'EVENT_COORDINATOR'`, [coordinatorIds])).rows.map(user => user.id));
-      const coordinatorOf = new Map(lines.map(line => [line.eventId, line.coordinatorId] as const));
-      const recipients = shortfalls.flatMap(gap => {
-        const coordinatorId = coordinatorOf.get(gap.eventId);
-        return coordinatorId && valid.has(coordinatorId)
-          ? [{ eventId: gap.eventId, eventName: gap.eventName, coordinatorId, shortfallQuantity: gap.shortfallQuantity }] : [];
-      });
-      notifiedEvents = await recordNotifications(client, equipmentStockShortfallNotifications({
-        changeId, equipmentName: row.name, operationalQuantity: operationalAfter, events: recipients,
-      }));
-    }
-    return { ...(await readDetail(client, typeId)), changed: true, notifiedEvents };
-  });
+  // The UPDATE above fired the trigger; count the events it told, from the rows this transaction wrote.
+  const told = await client.query<{ n: number }>(
+    `SELECT count(DISTINCT event_request_id)::integer AS n FROM notifications
+     WHERE type = 'EQUIPMENT_UNAVAILABLE' AND xmin = pg_current_xact_id()::xid`);
+  return { ...(await readDetail(client, typeId)), changed: true, notifiedEvents: told.rows[0]?.n ?? 0 };
 }

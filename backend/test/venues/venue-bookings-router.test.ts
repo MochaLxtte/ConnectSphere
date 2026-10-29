@@ -5,12 +5,12 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createVenueBookingsRouter } from '../../src/modules/venues/venue-bookings-router.js';
 import { WorkflowError, type WorkflowActor } from '../../src/modules/events/workflow-support.js';
 import {
-  cancelVenueHold, decideVenueBooking, getVenueBooking, listVenueBookings, placeVenueHold,
+  cancelVenueArrangement, cancelVenueHold, decideVenueBooking, getVenueBooking, listVenueBookings, placeVenueHold,
 } from '../../src/modules/venues/booking-service.js';
 
 vi.mock('../../src/modules/venues/booking-service.js', () => ({
   decideVenueBooking: vi.fn(), getVenueBooking: vi.fn(), listVenueBookings: vi.fn(),
-  placeVenueHold: vi.fn(), cancelVenueHold: vi.fn(),
+  placeVenueHold: vi.fn(), cancelVenueHold: vi.fn(), cancelVenueArrangement: vi.fn(),
 }));
 const id = '12345678-1234-1234-1234-123456789abc';
 const actor: WorkflowActor = { id, role: 'VENUE_STAFF' };
@@ -120,6 +120,44 @@ describe('KAN-83 venue hold HTTP boundary', () => {
   ] as const)('KAN-83-AC12 maps a %s/%s refusal to HTTP %i', async (kind, code, status) => {
     vi.mocked(placeVenueHold).mockRejectedValue(new WorkflowError(kind, code, 'Refused.'));
     const response = await request(app).post(`/api/venue-bookings/${id}/hold`).send({ expiresAt: 'x' });
+    expect(response.status).toBe(status);
+    expect(response.body.error).toEqual({ code, message: 'Refused.' });
+  });
+});
+
+describe('KAN-82 arrangement cancellation HTTP boundary', () => {
+  const coordinatorActor: WorkflowActor = { id, role: 'EVENT_COORDINATOR' };
+
+  it('KAN-82-AC10 requires sign-in and the coordinator role before calling the service', async () => {
+    authenticate.mockResolvedValue(null);
+    expect((await request(app).post(`/api/venue-bookings/${id}/cancel`).send({ reason: 'x' })).status).toBe(401);
+    for (const role of ['VENUE_STAFF', 'EVENT_ORGANISER', 'TECHNICAL_SUPPORT_STAFF', 'ATTENDEE'] as const) {
+      authenticate.mockResolvedValue({ id, role });
+      expect((await request(app).post(`/api/venue-bookings/${id}/cancel`).send({ reason: 'x' })).status).toBe(403);
+    }
+    authenticate.mockResolvedValue(coordinatorActor);
+    expect((await request(app).post('/api/venue-bookings/bad/cancel').send({ reason: 'x' })).status).toBe(400);
+    expect(cancelVenueArrangement).not.toHaveBeenCalled();
+  });
+
+  it('KAN-82-AC4 passes the verified coordinator, booking id and body to the service', async () => {
+    authenticate.mockResolvedValue(coordinatorActor);
+    vi.mocked(cancelVenueArrangement).mockResolvedValue({ id } as never);
+    const response = await request(app).post(`/api/venue-bookings/${id}/cancel`).send({ reason: 'Moved' });
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ booking: { id } });
+    expect(cancelVenueArrangement).toHaveBeenCalledWith({ pool, authenticate },
+      { actor: coordinatorActor, bookingId: id, input: { reason: 'Moved' } });
+  });
+
+  it.each([
+    ['CONFLICT', 'BOOKING_ALREADY_CANCELLED', 409],
+    ['CONFLICT', 'ARRANGEMENT_NOT_CANCELLABLE', 409],
+    ['NOT_FOUND', 'VENUE_BOOKING_NOT_FOUND', 404],
+  ] as const)('KAN-82-AC12 maps a %s/%s refusal to HTTP %i', async (kind, code, status) => {
+    authenticate.mockResolvedValue(coordinatorActor);
+    vi.mocked(cancelVenueArrangement).mockRejectedValue(new WorkflowError(kind, code, 'Refused.'));
+    const response = await request(app).post(`/api/venue-bookings/${id}/cancel`).send({ reason: 'x' });
     expect(response.status).toBe(status);
     expect(response.body.error).toEqual({ code, message: 'Refused.' });
   });

@@ -35,7 +35,7 @@ export const NOTIFICATION_TYPES = [
   'VENUE_BOOKING_REJECTED',
   'VENUE_OUTAGE_RECOVERY_REQUIRED',
   'EQUIPMENT_RESERVED',
-  'EQUIPMENT_STOCK_SHORTFALL',
+  'EVENT_COMPLETED',
 ] as const;
 export type NotificationType = (typeof NOTIFICATION_TYPES)[number];
 
@@ -53,23 +53,18 @@ export function equipmentReservationNotifications(input: {
 }
 
 /**
- * KAN-18-AC102, a KAN-80 trigger slice: a newly recorded operational loss tells each affected event's
- * assigned coordinator that their reservation is no longer fully covered. The reservation is kept; only
- * the coordinator is told, once per event and stock change.
+ * KAN-10-AC103, a KAN-80 trigger slice: completing a confirmed event tells its organiser, and acknowledges the
+ * completing coordinator. Registered attendees are not notified. One notice per person and event, so a repeat is ignored.
  */
-export function equipmentStockShortfallNotifications(input: {
-  changeId: string; equipmentName: string; operationalQuantity: number;
-  events: { eventId: string; eventName: string | null; coordinatorId: string; shortfallQuantity: number }[];
+export function eventCompletedNotifications(input: {
+  eventId: string; eventName: string | null; organiserId: string; coordinatorId: string;
 }): NotificationInput[] {
-  return input.events.map(event => ({
-    recipientId: event.coordinatorId, eventRequestId: event.eventId,
-    type: 'EQUIPMENT_STOCK_SHORTFALL', title: 'Equipment shortfall',
-    message: sentences(
-      `${input.equipmentName} stock now has ${input.operationalQuantity} usable ${input.operationalQuantity === 1 ? 'unit' : 'units'}, `
-        + `so the reservation for ${label({ name: event.eventName })} is ${event.shortfallQuantity} short`,
-      'Your reservation is kept. Review the equipment plan',
-    ),
-    dedupeKey: `EQUIPMENT_STOCK_SHORTFALL:${input.changeId}:${event.eventId}`,
+  return [...new Set([input.organiserId, input.coordinatorId])].map(recipientId => ({
+    recipientId, eventRequestId: input.eventId, type: 'EVENT_COMPLETED', title: 'Event completed',
+    message: recipientId === input.organiserId
+      ? `${input.eventName?.trim() ? `Your event request “${input.eventName.trim()}”` : 'Your untitled event request'} was marked completed. Registration is now closed.`
+      : `You marked ${label({ name: input.eventName })} as completed. Its equipment reservations were released and registration is closed.`,
+    dedupeKey: `EVENT_COMPLETED:${input.eventId}`,
   }));
 }
 
