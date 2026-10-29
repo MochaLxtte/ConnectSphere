@@ -1885,3 +1885,29 @@ Static review of `database/tests/events/cancellation-equipment.integration.test.
 | `npx playwright test` | Pass — 189/189 (disposable local database) |
 
 **Not executed:** a manual re-check on localhost; planned with the KAN-82 hands-on run. TC-19-08's earlier Pass stands; this changes only when the panel reloads.
+
+## 29 October 2026 — KAN-10 mark event as completed
+
+**Run ID: AUTO-20261029-KAN10-01.** Branch `feat/KAN-10-complete-event`, base `main` at `409c43f` (merge of PR #69). The tested working tree is committed without further code changes as `65462578a0192bac44085be70eef7c8252472876`. Execution: 29 October 2026 Singapore time (exact start and end times Not recorded). Environment: macOS arm64, Node.js 24.21.0 (via nvm), Vitest, Playwright 1.63.0 Chromium on spare ports 3100/5273 and PostgreSQL 17.11 from `npm run db:up` with an isolated schema per integration file. Synthetic data only; no shared Supabase or real login. No migration was needed. Registered as [S4-E18](../scrum/sprint-04/evidence/README.md).
+
+| Command / check | Actual result |
+| --- | --- |
+| `npm run check` | Pass: type checks and both production builds; 1,054 frontend tests (50 files) and 1,716 backend tests (63 files) |
+| `npm run test:coverage` | Pass: same totals. Frontend 95.94% statements / 92.96% branches / 97.7% functions / 98.26% lines; backend 93.44% / 94.19% / 91.99% / 93.35%. `completion.ts` 100% lines and functions (97.29% branches, line 78); `completion-router.ts` and the changed `trigger-matrix.ts` 100% lines and functions. `EventCompletionPanel.vue` 96% statements / 91.35% branches / 100% functions / 100% lines |
+| `npm run test:integration` with `TEST_DATABASE_URL` | Pass: 639 tests in 34 files, including the 23 in `completion.integration.test.ts` |
+| Browser suite on spare ports | Pass: 195 tests, including the 6 new `event-completion.spec.ts` tests |
+
+**Behaviour verified (KAN-10-AC1 to AC5, AC101 to AC103).**
+- Only the currently assigned Event Coordinator can complete an event (AC1, AC101). Another coordinator, an unassigned event and a coordinator reassigned away or demoted before the write all get the same 404 as a missing event; organiser, Lead, Venue Staff, Technical Support, Attendee and signed-out callers are refused (403 or 401). Nothing changes in any refused case.
+- An ended CONFIRMED event becomes COMPLETED, recorded against that event with the actor and time in the status history, and no other event changes (AC2). The decision uses the database clock at the moment of the call: an event ending seconds ahead is refused with `EVENT_NOT_ENDED`, then accepted once the instant passes (AC101).
+- The status survives a refresh for the organiser and the coordinator (`GET /api/events/:id` and `GET /api/events/:id/completion`); an unrelated organiser or coordinator gets 404 or null (AC3).
+- Reserved equipment of this event only is released once, as `EVENT_COMPLETED` with the coordinator as releaser; requested and rejected lines and other events' reservations are untouched, the stock is available to others again, and a repeat call cannot release again (AC4, AC102). Approved venue bookings stay approved and readable, and registrations stay REGISTERED and readable.
+- Approved, submitted, cancelled, rejected and draft events and an already-completed event are refused with nothing changed (AC5, AC103). Two simultaneous completions: exactly one wins; one history row, one release and one notice per person.
+- The organiser and the coordinator each get one `EVENT_COMPLETED` notice, in the same transaction; a failing notice rolls back the status, the release and the history. Attendees and other users get none.
+- Mutation check: ignoring the assignment check, the end-time check and the status check in turn made 2, 2 and 4 integration tests fail; the code was restored.
+
+**Case-level results.** TC-06-18 passes and TC-06-15 passes with a stated scope (no controlled server clock, so the exact 1 ms before, at and after instants are not asserted), both in [test-executions.csv](test-executions.csv). TC-06-14, TC-06-16 and TC-06-17 are planned as manual runs; automated equivalents exist, but the manual cases stay **Not executed**.
+
+**Failures and environment problems (none changed a test's meaning).** The existing sprint-scope test that listed `POST /api/events/:id/complete` as absent failed, as it should, and was updated. A notification-type registration I first wrote did not apply (the list on this branch differs from the KAN-18 branch), which the vocabulary test caught. A fake-database helper in my unit test did not match multi-line SQL and was corrected. Docker Desktop stopped during the work, a background run was lost when the session restarted and `/tmp` was cleared, and the verification was rerun; the credited results are from a single clean full run.
+
+**Limitations:** not a hosted run. KAN-61 (confirmation) is not built, so the application cannot yet produce a CONFIRMED event; fixtures set the status directly, and an end-to-end hosted run is blocked until KAN-61 exists. Closing registration and withdrawal depends on KAN-14 and KAN-17 requiring a CONFIRMED event, so TC-06-17's "try registration" step cannot be shown on this branch alone. The rules, the notice recipients and the confirmation wording are team assumptions marked **To agree**. Peer review, CI on the pushed branch and merge are **Not assessed**; Jira status and assignee **Not recorded**. Unit coverage does not merge browser or integration execution; no 100% whole-project claim is made. The browser spec uses substituted API responses.

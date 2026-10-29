@@ -1411,3 +1411,14 @@ Consequences: the `sprint-scope.test.ts` guard no longer lists the four change-r
 ## 28 October 2026 — PR #63 correction within existing criteria
 
 The review repair was authorized in this working session. Existing KAN-63 AC6/7/101/103/104 require full availability-safe reservation and stale-form protection: the implementation now shares KAN-26's writer and uses an opaque plan revision across both APIs. Existing KAN-62 AC3/4/102/103/104 require atomic one-time release, accurate history and attendee-safe notifications: shared venue-before-event locks and recipient-scoped cancellation projections enforce those requirements. KAN-15 AC7 invalidates a previous Not Required declaration when approved timing/equipment changes affect planning. These are corrections/integration of existing criteria, not new customer scope, a team estimate decision or completed manual acceptance. Jira wording and the two 5 SP estimates remain unchanged.
+
+## 29 October 2026 — KAN-10 completing an event: rules and notices
+
+Source: Jira KAN-10 AC1 to AC5 and AC101 to AC103, and Ernest's instruction of 29 October to implement them. This record is a **proposal to agree**: no team vote, Product Owner decision or independent review is recorded. The 3-SP estimate and the criteria are unchanged.
+
+- **Who and when.** Only the currently assigned Event Coordinator, on a CONFIRMED event, at or after its end instant by the database clock (`clock_timestamp()` inside the locked transaction). The page's clock and any client-supplied time are never used. The page shows the end time as a hint only.
+- **What it does.** Sets the status to COMPLETED so the status history records actor and time, and relies on migration 015's trigger to release the event's reserved equipment once (released_by is the coordinator, cause `EVENT_COMPLETED`). Requested and rejected equipment lines are not touched. Venue bookings and registrations are left as they are and stay readable. No migration.
+- **Registration closes** because registration (KAN-14) and withdrawal (KAN-17) require a CONFIRMED event.
+- **Notices (AC103, a KAN-80 slice).** One `EVENT_COMPLETED` notice to the organiser and one acknowledgement to the coordinator, per event. Registered attendees, Technical Support and Venue Staff are not notified. Whether attendees or Technical Support should be told is **To agree**.
+- **Errors.** Wrong role 403; not the assigned coordinator, a missing event or a draft 404 (same as missing); not CONFIRMED `EVENT_NOT_COMPLETABLE` 409; already completed `EVENT_ALREADY_COMPLETED` 409; before the end `EVENT_NOT_ENDED` 409.
+- **Dependency.** KAN-61 (confirmation) is not built, so a CONFIRMED event cannot be produced in the application yet; tests set the status directly.

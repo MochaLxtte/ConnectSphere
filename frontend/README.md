@@ -15,6 +15,7 @@ The dev server runs at `http://127.0.0.1:5173` and fails clearly if that port is
 
 - Responsive application shell, navigation, page titles, and unknown-route handling.
 - KAN-9 Technical Support-only equipment event picker at `/equipment/availability` and saved/unsaved what-if checks at `/equipment/availability/:id`, with per-item stock and shortfall results.
+- KAN-10 event completion panel (`EventCompletionPanel.vue`, in the planning panels of the review and organiser pages): the assigned coordinator marks an ended CONFIRMED event completed behind a confirmation, and the organiser and coordinator see the saved outcome. The server decides whether the event has ended.
 - KAN-26 saved equipment reservations on the same event page: full-line confirmation, reasoned cancellation, live readiness and retained history; confirmed events are read-only.
 - Live API liveness and database readiness checks on the overview, with separate loading, error, success, and retry states.
 - A shared JSON API client that preserves structured backend error codes.

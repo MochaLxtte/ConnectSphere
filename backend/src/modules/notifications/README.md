@@ -15,6 +15,7 @@ In-app inbox for request, assignment, venue and equipment-reservation outcomes. 
 - Every notification has a `dedupeKey` of the form `TYPE:outcomeId` (review, clarification, assignment-history, booking or equipment-request id), so a retry cannot create a second one.
 - Recipients follow each person's relationship to the outcome, not "everyone except the actor"; an actor who is also a recipient gets an acknowledgement.
 - Reads re-check the caller's current access (organiser owns the event; coordinator is the current assignee and the event is not a draft; Venue Staff for bookings). Technical Support can read its own linked equipment notice without broader event-detail access. A `COORDINATOR_REASSIGNED_AWAY` notice remains visible after event access is lost and must name nothing. KAN-62 grants an affected attendee only its own generic cancellation outcome, as described below.
+- `EVENT_COMPLETED` (KAN-10, a KAN-80 slice) tells the organiser, and acknowledges the coordinator, that an event was marked completed; one notice per person and event.
 - To add a trigger (KAN-80 and the change stories), add a builder to `trigger-matrix.ts`, call `recordNotifications` from the service, extend the visibility rule if the new notification points to a new kind of target, and update the decision log and tests.
 
 Migration `008_notification_inbox.sql` adds `venue_booking_id` and `dedupe_key`. Tests: `backend/test/notifications/`, `database/tests/notifications/notification-inbox.integration.test.ts`.
