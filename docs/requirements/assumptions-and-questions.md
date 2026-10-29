@@ -1500,3 +1500,11 @@ Source: Jira KAN-18 AC1 to AC6 and the repository's AC101 to AC103, and Ernest's
 | D6 | "Required" equipment with no active lines is not ready; the coordinator must explicitly record Not Required. | KAN-61-AC3/AC102 require an explicit choice. |
 
 Consequences: `POST /api/events/:id/confirm` and `GET /api/events/:id/confirmation` are added (API contract updated). The equipment module exports its existing readiness function unchanged.
+
+## 29 October 2026 — KAN-61 review fix: current venue conflicts block confirmation
+
+**Source:** PR #77 review by MochaLxtte (Tristan), 29 October 2026, changes requested (P1), reproduced on an isolated database: after two adjacent bookings were approved, raising the venue turnaround buffer to 15 minutes made `venue_booking_warnings` report `APPROVED_BOOKING_OVERLAP` for both, yet confirmation succeeded. Fix approved by the KAN-61 owner Kai Jie in the AI-assisted session.
+
+**Decision D7:** readiness now also requires every APPROVED venue booking of the event to have no current `APPROVED_BOOKING_OVERLAP` or `OUTSIDE_OPERATING_HOURS` warning, evaluated with the venue's current buffers and hours. `OPERATIONAL_BLOCK_OVERLAP` stays with the KAN-81 recovery check, as in `booking-service.ts`. Confirmation share-locks the event's venue rows after the existing KAN-62 lock order, so a catalogue edit (which locks the venue row) either commits before the check or waits for the confirmation.
+
+**Why:** KAN-61-AC101 requires approved venue arrangements to be conflict-free against current data, and catalogue edits deliberately do not re-judge or cancel existing approvals. Consequence: the same readiness check is reused by KAN-84 (PR #78), so safety submission, approval and preparation inherit the rule. No migration, API shape or AC wording changes; the confirmation panel shows the new reasons.
