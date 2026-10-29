@@ -148,6 +148,7 @@ onBeforeUnmount(() => controller?.abort());
 
   <div class="detail-toolbar">
     <RouterLink to="/events" class="back-link">Back to event requests</RouterLink>
+    <RouterLink v-if="state.status === 'ready'" :to="`/events/${state.request.id}/registrations`" class="back-link">View registrations</RouterLink>
     <button type="button" class="button button-secondary" :disabled="state.status === 'loading'" @click="load">Refresh</button>
   </div>
 

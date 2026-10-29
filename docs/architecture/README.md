@@ -93,6 +93,8 @@ flowchart LR
   reservations["Reservation service<br/>Approved saved lines; source version; live readiness"]
   equipmentGuards["Equipment database guards<br/>Operational peak; immutable history; terminal release"]
   cancellation["Event cancellation service<br/>Owner/current coordinator; atomic arrangement release"]
+  registrations["Registration service<br/>Owned withdrawal and current-manager roster"]
+  outcomeHooks["Outcome triggers<br/>Registration, event and equipment outcomes"]
   inbox["Inbox router and service<br/>Current recipient and target access"]
   notify["Notification writer<br/>Trigger matrix and outcome deduplication"]
   transactions["Business transactions<br/>Workflow row locks and shared client"]
@@ -108,6 +110,9 @@ flowchart LR
   browser --> inbox
   browser --> equipment
   browser --> cancellation
+  browser --> registrations
+  registrations -->|Verified attendee or current manager| auth
+  registrations -->|Event then registration lock| transactions
   equipment -->|Verified Technical Support| auth
   cancellation -->|Verified organiser or assigned coordinator| auth
   equipment --> equipmentRules
@@ -132,6 +137,8 @@ flowchart LR
   venues --> transactions
   transactions -->|Same transaction client| notify
   notify --> db
+  transactions -->|Actor transaction| outcomeHooks
+  outcomeHooks -->|Deduplicated outcome notices| db
   inbox -->|Read and mark caller-visible notices| db
   transactions --> db
 ```
@@ -271,9 +278,20 @@ classDiagram
     UUID eventRequestId
     UUID venueBookingId
     UUID equipmentRequestId
+    UUID registrationId
+    UUID changeRequestId
     String type
     String dedupeKey
     Date readAt
+  }
+  class EventRegistration {
+    UUID id
+    UUID eventRequestId
+    UUID attendeeId
+    String status
+    Date registeredAt
+    Date withdrawnAt
+    integer outcomeVersion
   }
   AppUser "1" --> "0..*" EventRequest : organiser
   AppUser "0..1" --> "0..*" EventRequest : current coordinator
@@ -301,6 +319,36 @@ classDiagram
   EventRequest "0..1" --> "0..*" Notification : outcome
   VenueBooking "0..1" --> "0..*" Notification : booking outcome
   EquipmentRequest "0..1" --> "0..*" Notification : reserved outcome
+  EventRequest "1" --> "0..*" EventRegistration : registrations
+  AppUser "1" --> "0..*" EventRegistration : attendee
+  EventRegistration "0..1" --> "0..*" Notification : registration outcome
+```
+
+## Registration withdrawal sequence (KAN-17 / KAN-80)
+
+```mermaid
+sequenceDiagram
+  actor Attendee
+  participant UI as Registration page
+  participant API as Registration API
+  participant DB as PostgreSQL
+  participant Inbox as Notification inbox
+  Attendee->>UI: Select own registration
+  UI-->>Attendee: Confirm release and re-registration conditions
+  Attendee->>UI: Confirm withdrawal
+  UI->>API: POST withdrawal with confirmation
+  API->>DB: Begin actor transaction and lock event then registration
+  DB-->>API: Current owner, status and event start
+  alt active, non-terminal event and before start
+    API->>DB: Mark withdrawn and record outcome version
+    DB->>DB: Insert attendee and manager notices once
+    DB-->>API: Commit registration and notices
+    API-->>UI: Saved withdrawal
+    UI->>API: Refresh own registrations
+    Attendee->>Inbox: Open own outcome
+  else ineligible, unrelated, failed or already withdrawn
+    API-->>UI: Refusal or unchanged replay without another release
+  end
 ```
 
 ## Event cancellation and equipment request sequence (KAN-62 / KAN-63)
@@ -513,6 +561,8 @@ The request row is both the requirement and, while `RESERVED`, its reservation. 
 
 ## Diagram exports
 
+On 29 October 2026 the C3, class and planning ERD exports were refreshed for registration and notification outcomes. The new `seq-registration-withdrawal.png` and `erd-database.png` exports depict the current withdrawal sequence and detailed database diagram. These exports are design evidence, not execution or acceptance results.
+
 GitHub's Mermaid rendering is not part of the submission. PNG exports live in `docs/architecture/exports/`: `c1-context.png`, `c2-containers.png`, `c3-components.png`, `class.png`, `seq-lead-assignment.png`, `seq-venue-write-locking.png`, `seq-equipment-availability.png`, `seq-equipment-reservation.png`, `erd-events.png` and `erd-planning.png`. On 26 October 2026 the affected C3, class and planning-ERD images were re-exported from the current source for KAN-9 and KAN-26, with separate availability and reservation sequences, using Mermaid CLI. These depict implementation boundaries, not manual acceptance. Re-export affected diagrams after subsequent design changes.
 
 ## ERD
@@ -627,6 +677,8 @@ erDiagram
   VENUE_BOOKINGS |o--o{ VENUE_BOOKINGS : "replaced by"
   EQUIPMENT_TYPES ||--o{ EQUIPMENT_REQUESTS : "drawn from"
   EQUIPMENT_REQUESTS o|--o{ NOTIFICATIONS : "reservation outcome"
+  EVENT_REGISTRATIONS o|--o{ NOTIFICATIONS : "registration outcome"
+  EVENT_CHANGE_REQUESTS o|--o{ NOTIFICATIONS : "change outcome"
   APP_USERS |o--o{ EQUIPMENT_REQUESTS : "release actor"
   APP_USERS ||--o{ EVENT_REGISTRATIONS : attends
   APP_USERS ||--o{ NOTIFICATIONS : receives
@@ -707,6 +759,7 @@ erDiagram
     uuid event_request_id FK
     uuid attendee_id FK
     text status "REGISTERED WITHDRAWN CANCELLED"
+    integer outcome_version "incremented on status transition"
     timestamptz cancellation_outcome_at "required exactly when cancelled"
     timestamptz withdrawn_at "nullable"
   }
@@ -729,6 +782,8 @@ erDiagram
     uuid event_request_id FK "nullable"
     uuid venue_booking_id FK "nullable"
     uuid equipment_request_id FK "nullable, migration 015"
+    uuid registration_id FK "nullable, migration 019"
+    uuid change_request_id FK "nullable, migration 019"
     text dedupe_key "nullable, unique per recipient"
     text type
     text title

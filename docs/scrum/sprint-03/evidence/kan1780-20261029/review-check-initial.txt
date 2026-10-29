@@ -1,0 +1,10 @@
+
+> connectsphere@0.1.0 check
+> npm run typecheck && npm test && npm run build
+
+
+> connectsphere@0.1.0 typecheck
+> tsc -p tsconfig.tools.json && npm run typecheck --workspaces
+
+database/tests/events/cancellation-safety.integration.test.ts(225,72): error TS2304: Cannot find name 'registrationId'.
+database/tests/events/cancellation-safety.integration.test.ts(234,96): error TS2304: Cannot find name 'registrationId'.

@@ -213,7 +213,7 @@ describe('KAN-62 attendee cancellation inbox with real PostgreSQL authorization'
     const attendee = await fixture.createUser('ATTENDEE');
     const other = await fixture.createUser('ATTENDEE');
     const eventRequestId = await event();
-    await fixture.pool.query('INSERT INTO event_registrations(event_request_id,attendee_id) VALUES($1,$2)', [eventRequestId, attendee.id]);
+    const registrationId = (await fixture.pool.query<{ id: string }>('INSERT INTO event_registrations(event_request_id,attendee_id) VALUES($1,$2) RETURNING id', [eventRequestId, attendee.id])).rows[0]!.id;
     await cancelEvent(fixture.pool, { eventRequestId, actor: organiser, input });
     // Stored content must not be trusted as an attendee-safe DTO.
     await fixture.pool.query(`UPDATE notifications SET title='Internal title', message=$3
@@ -222,7 +222,7 @@ describe('KAN-62 attendee cancellation inbox with real PostgreSQL authorization'
     expect(own).toHaveLength(1);
     expect(own[0]).toMatchObject({ type: 'EVENT_CANCELLED', title: 'Event cancelled',
       message: 'Open day has been cancelled. Your registration is no longer active.',
-      event: null, booking: null, link: null, read: false });
+      event: null, booking: null, link: `/registrations?registration=${registrationId}`, read: false });
     expect(JSON.stringify(own)).not.toContain(input.reason);
     expect(await countUnreadNotifications(fixture.dependencies, attendee)).toBe(1);
     expect(await listNotifications(fixture.dependencies, other)).toEqual([]);
@@ -231,7 +231,7 @@ describe('KAN-62 attendee cancellation inbox with real PostgreSQL authorization'
       .rejects.toMatchObject({ code: 'NOTIFICATION_NOT_FOUND' });
     expect(await markAllNotificationsRead(fixture.dependencies, other)).toBe(0);
     const read = await markNotificationRead(fixture.dependencies, { actor: attendee, notificationId: own[0]!.id });
-    expect(read).toMatchObject({ read: true, event: null, link: null });
+    expect(read).toMatchObject({ read: true, event: null, link: `/registrations?registration=${registrationId}` });
     expect(await countUnreadNotifications(fixture.dependencies, attendee)).toBe(0);
     expect((await markNotificationRead(fixture.dependencies, { actor: attendee, notificationId: own[0]!.id })).readAt).toBe(read.readAt);
 

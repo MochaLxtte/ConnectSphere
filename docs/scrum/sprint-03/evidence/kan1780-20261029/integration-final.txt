@@ -1,0 +1,12 @@
+
+> connectsphere@0.1.0 test:integration
+> vitest run --config vitest.integration.config.ts
+
+
+ RUN  v4.1.11 C:/Users/arvin/Downloads/GitHub/ConnectSphere-ac-test-specs
+
+
+ Test Files  35 passed (35)
+      Tests  637 passed (637)
+   Start at  03:30:24
+   Duration  148.67s (transform 2.37s, setup 0ms, import 21.74s, tests 114.63s, environment 7ms)

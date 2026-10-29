@@ -1436,3 +1436,13 @@ Source: PR #67 review by MochaLxtte (28 October 2026, changes requested); the fi
 Decision: approving a replacement venue booking locks its original booking immediately after the replacement's own row and before the event row (booking → original → event → venue). This matches decision D1's venue gate → booking → event order for arrangement cancellation and the shared order in `backend/src/modules/events/arrangement-locks.ts` (KAN-62, KAN-15). The checks on the original are unchanged and still run under its lock.
 
 Reason: the previous order (booking → event → venue → original) deadlocked with a concurrent cancel of the same original, reproduced as PostgreSQL `40P01` for both a KAN-81 recovery original and a KAN-82 cancelled original (TC-12-13, `EX-12-13-A01`). Consequences: no AC, migration, API contract or estimate change; KAN-81 approval behaviour is preserved.
+
+## 29 October 2026 — KAN-80 change-action and recipient interpretation
+
+**Source:** Jira KAN-80-AC2/8; KAN-15-AC10 and the 27 October D6 implementation record above. KAN-80 describes change submission, requests for action and decisions, while the current KAN-15 workflow implements submission, approve/reject and withdrawal without a separate change-specific request-for-action transition. Submission currently directs the coordinator to review; decision notifications include an acknowledgement for the reviewing coordinator as well as the organiser, following KAN-80's actor-recipient wording. The existing D6 owner outcome remains.
+
+**Question:** Is the submission notice the intended request for action, or is a distinct change-specific action and notification required? Who exactly should receive any such additional action? **To agree.** Do not infer a new workflow, acceptance criterion, team decision or completed KAN-80 acceptance from the current implementation. The source and KAN-15 owner's response are **Not recorded**. The 3 SP estimate remains unchanged; its fit after dependency integration is **To agree**.
+
+## 29 October 2026 - PR #70 attendee-change notification scope
+
+**Source:** PR #70 review and Arvin's answer in the development conversation. Arvin confirmed that changes to venue requirements and accessibility needs should trigger attendee notifications alongside purpose and event-time changes. The notice identifies the changed categories without exposing their internal values; current purpose and event time are shown on the recipient's own registration. This records Arvin's answer, not a reported team decision. The separate KAN-80 request-for-action interpretation remains To agree.
