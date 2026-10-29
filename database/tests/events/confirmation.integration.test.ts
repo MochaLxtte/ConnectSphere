@@ -3,6 +3,8 @@ import { randomUUID } from 'node:crypto';
 import { createWorkflowFixture, type WorkflowFixture } from './workflow-fixture.js';
 import { confirmEvent, getEventConfirmation } from '../../../backend/src/modules/events/confirmation.js';
 import { WorkflowError, type WorkflowActor } from '../../../backend/src/modules/events/workflow-support.js';
+import { createVenueBlock } from '../../../backend/src/modules/venues/block-service.js';
+import { updateCatalogueVenue } from '../../../backend/src/modules/venues/venue-catalogue-service.js';
 
 let f: WorkflowFixture;
 let owner: WorkflowActor, coordinator: WorkflowActor, other: WorkflowActor, technical: WorkflowActor, venueStaff: WorkflowActor;
@@ -222,6 +224,30 @@ describe('KAN-61-AC101 confirmation rechecks current venue buffers and hours', (
     const error = await refusal(confirm(id));
     expect(error.message).toMatch(/outside the venue's operating hours/);
     expect(await confirmations(id)).toEqual([]);
+  });
+
+  it('TC-06-03 / KAN-61-AC101: a buffer extended into an existing operational block prevents confirmation without an outage flag', async () => {
+    const { id, venue, booking } = await readyEvent();
+    const block = await createVenueBlock(f.dependencies, { actor: venueStaff, venueId: venue,
+      input: { startsAt: end, endsAt: '2035-01-01T07:00:00Z', reason: 'Scheduled maintenance' } });
+    expect(block.affected).toEqual([]);
+    expect((await getEventConfirmation(f.pool, { eventRequestId: id, actor: coordinator })).canConfirm).toBe(true);
+    await updateCatalogueVenue(f.dependencies, { actor: venueStaff, venueId: venue,
+      input: { turnaroundMinutes: 15, expectedTurnaroundMinutes: 0 } });
+    expect((await f.pool.query('SELECT venue_booking_warnings($1) AS warnings', [booking])).rows[0].warnings)
+      .toContain('OPERATIONAL_BLOCK_OVERLAP');
+    expect((await f.pool.query('SELECT count(*)::int AS count FROM venue_outage_impacts WHERE venue_booking_id = $1', [booking])).rows[0].count)
+      .toBe(0);
+    expect((await getEventConfirmation(f.pool, { eventRequestId: id, actor: coordinator })).canConfirm).toBe(false);
+    const error = await refusal(confirm(id));
+    expect(error.code).toBe('EVENT_NOT_READY');
+    expect(error.message).toMatch(/overlapping operational unavailability/);
+    expect((await f.eventRow(id)).status).toBe('APPROVED');
+    expect(await confirmations(id)).toEqual([]);
+    expect((await f.notifications(id)).filter(row => row.type === 'EVENT_CONFIRMED')).toEqual([]);
+    await updateCatalogueVenue(f.dependencies, { actor: venueStaff, venueId: venue,
+      input: { turnaroundMinutes: 0, expectedTurnaroundMinutes: 15 } });
+    expect(await confirm(id)).toMatchObject({ changed: true });
   });
 
   it('TC-06-05: a buffer edit committed while confirmation waits is seen and blocks it', async () => {

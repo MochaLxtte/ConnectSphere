@@ -40,19 +40,22 @@ async function venueCheck(client: Reader, eventRequestId: string): Promise<Readi
     FROM venue_outage_impacts i JOIN venue_bookings b ON b.id = i.venue_booking_id
     WHERE b.event_request_id = $1 AND i.status = 'RECOVERY_REQUIRED'`, [eventRequestId]);
   // KAN-61-AC101: approved bookings must still be conflict-free under the venue's current buffers
-  // and hours, which catalogue edits can change after approval. Outage overlap is the recovery flag above.
-  const conflicts = await client.query<{ overlap: number; hours: number }>(`SELECT
+  // and hours, which catalogue edits can change after approval. A buffer edit can also create an
+  // operational-block overlap without a saved KAN-81 impact, so check that live warning separately.
+  const conflicts = await client.query<{ overlap: number; hours: number; blocked: number }>(`SELECT
       count(*) FILTER (WHERE 'APPROVED_BOOKING_OVERLAP' = ANY(warnings))::int AS overlap,
-      count(*) FILTER (WHERE 'OUTSIDE_OPERATING_HOURS' = ANY(warnings))::int AS hours
+      count(*) FILTER (WHERE 'OUTSIDE_OPERATING_HOURS' = ANY(warnings))::int AS hours,
+      count(*) FILTER (WHERE 'OPERATIONAL_BLOCK_OVERLAP' = ANY(warnings))::int AS blocked
     FROM (SELECT venue_booking_warnings(b.id) AS warnings FROM venue_bookings b
       WHERE b.event_request_id = $1 AND b.status = 'APPROVED') current`, [eventRequestId]);
   const recovering = recovery.rows[0]?.count ?? 0;
-  const { overlap = 0, hours = 0 } = conflicts.rows[0] ?? {};
+  const { overlap = 0, hours = 0, blocked = 0 } = conflicts.rows[0] ?? {};
   const parts = [
     venue.outstanding - recovering > 0 ? `${plural(venue.outstanding - recovering, 'venue arrangement')} awaiting approval` : null,
     recovering > 0 ? `${plural(recovering, 'venue booking')} still requiring outage recovery` : null,
     overlap > 0 ? `${plural(overlap, 'venue booking')} now overlapping another approved booking` : null,
     hours > 0 ? `${plural(hours, 'venue booking')} outside the venue's operating hours` : null,
+    blocked > 0 ? `${plural(blocked, 'venue booking')} overlapping operational unavailability` : null,
   ].filter((part): part is string => part !== null);
   if (parts.length === 0) return { key: 'VENUE', ready: true, message: 'Every live venue arrangement is approved.' };
   return { key: 'VENUE', ready: false, message: `Resolve ${parts.join(' and ')} before confirming.` };
