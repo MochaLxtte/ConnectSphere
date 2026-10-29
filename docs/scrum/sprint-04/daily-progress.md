@@ -28,6 +28,8 @@ Daily Scrums follow Tuesday, Thursday and Saturday: planned dates 20, 22, 24, 27
 
 **28 October 2026 — KAN-66 / KAN-15 integrated acceptance outside a Daily Scrum (Irfan).** After #64/#65 merged, ran the local integrated check on `main` `ac5cd8b` with real sign-in against the shared development database (`MAN-20261028-KAN66-KAN15-01`): owner edits while submitted, stale-reviewer refusal, coordinator rename, significant-field refusal, change-request comparison/approval/cancellation of pending arrangements, blocking by a confirmed booking with rejection, and unrelated-user 404 all passed. Minor display defect O-1 (venue panel not refreshed after a change-request decision) recorded for follow-up. Migrations 016–018 were found applied on shared Supabase (28 October 01:35 UTC). Implementation subtasks KAN-107/108/110/111 Done; verification subtasks KAN-109/112 Done after this record. Parent stories stay In Progress until the 31 October review.
 
+**28 October 2026 — KAN-15 observation O-1 fix outside a Daily Scrum (Irfan).** The coordinator venue booking panel now reloads when the event revision advances, so bookings cancelled by an approved change request show as Cancelled without a manual refresh (`fix/KAN-15-venue-panel-refresh`, `AUTO-20261028-KAN15-O1-01`). A manual re-check is planned with the KAN-82 hands-on run.
+
 ## Impediments
 
 | Raised | Impediment / dependency | Owner | Planned action | Status |

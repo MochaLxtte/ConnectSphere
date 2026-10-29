@@ -32,7 +32,9 @@ const shared = computed(() => ({
     <ClarificationPanel v-bind="shared" :revision="revision" @changed="emit('changed')" />
     <!-- KAN-15: significant changes once approved; history stays visible after cancellation or completion. -->
     <ChangeRequestPanel v-if="['APPROVED', 'CONFIRMED', 'CANCELLED', 'COMPLETED'].includes(status)" v-bind="shared" :revision="revision" @changed="emit('changed')" />
-    <VenueBookingPanel v-if="viewerRole === 'EVENT_COORDINATOR'" v-bind="shared" @changed="emit('changed')" />
+    <!-- O-1 (28 October): an approved change request cancels pending bookings and advances the revision, so
+         reload the booking list when the revision moves, as the equipment panel does. -->
+    <VenueBookingPanel v-if="viewerRole === 'EVENT_COORDINATOR'" :key="`venue-${revision ?? 0}`" v-bind="shared" @changed="emit('changed')" />
     <EquipmentRequestPanel v-if="viewerRole === 'EVENT_COORDINATOR'" v-bind="shared" :revision="revision" @changed="emit('changed')" />
     <StatusHistoryPanel :event-request-id="eventRequestId" :status="status" />
     <EventCancellationPanel :event-request-id="eventRequestId" :status="status" :revision="revision" @changed="emit('changed')" />

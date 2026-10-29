@@ -1900,3 +1900,18 @@ Static review of `database/tests/events/cancellation-equipment.integration.test.
 **Not covered here:** notification contents for change requests (TC-19-06), the full significant-field matrix (TC-19-07), concurrent decisions (TC-19-09) and arrangement preservation during an ordinary edit (TC-07-02) were not exercised manually; their automated PostgreSQL evidence stands. Acceptance of KAN-66 and KAN-15 remains for the 31 October sprint review.
 
 **Shared database rollout record (016–018):** read-only check on 28 October 2026 found `016_event_request_revisions.sql`, `017_event_change_requests.sql` and `018_event_cancellation_equipment_workflows.sql` in the shared ledger with `applied_at` 2026-10-28 01:35:56 UTC, after #64, #65 and #63 merged. Who ran `npm run db:migrate` is Not recorded.
+
+## 28 October 2026 — KAN-15 observation O-1 fix
+
+**Run:** `AUTO-20261028-KAN15-O1-01`. **Executor:** Claude Code (AI agent) in Irfan's working session. **Build:** `fix/KAN-15-venue-panel-refresh` working tree from `main` `ac5cd8b`. **Environment:** local Windows 11, Node 22.20; browser suite against a disposable local PostgreSQL 17 database, not shared Supabase.
+
+**Defect.** Observation O-1 from `MAN-20261028-KAN66-KAN15-01`: after **Approve and apply** on a change request, the coordinator's Venue booking requests panel kept showing a booking cancelled by that approval as Pending until it was refreshed by hand. The approval advances the event revision; the equipment panel reloads on revision changes, but the venue panel only watched the event id, status and signed-in user.
+
+**Fix.** `EventPlanningPanels.vue` keys the venue panel on the event revision, so it remounts and reloads its list when the revision advances. A new `EventPlanningPanels.test.ts` case checks that the list is fetched again when the revision changes and not when the parent refreshes with the same revision; it fails without the fix (one fetch instead of two).
+
+| Command | Result |
+| --- | --- |
+| `npm run check` | Pass — frontend 1,035 tests / 49 files, backend 1,691 / 60, typecheck and builds |
+| `npx playwright test` | Pass — 189/189 (disposable local database) |
+
+**Not executed:** a manual re-check on localhost; planned with the KAN-82 hands-on run. TC-19-08's earlier Pass stands; this changes only when the panel reloads.
