@@ -6,7 +6,7 @@ export const USER_ROLES = [
   'VENUE_STAFF',
   'TECHNICAL_SUPPORT_STAFF',
   'ATTENDEE',
-  // KAN-84 / CR-6: provisioned only through trusted database setup (migration 020).
+  // KAN-84 / CR-6: provisioned only through trusted database setup (migration 021).
   'SAFETY_OFFICER',
 ] as const;
 

@@ -993,7 +993,7 @@ Readiness: at least one live venue arrangement, all live arrangements APPROVED, 
 
 ## 29 October 2026 — KAN-84 safety review and preparation
 
-All routes require the verified session and set `Cache-Control: no-store`. Migration 020 must be applied first (local test database only so far).
+All routes require the verified session and set `Cache-Control: no-store`. Migration 021 must be applied first (local test database only so far).
 
 | Method / route | Actor | Result |
 | --- | --- | --- |

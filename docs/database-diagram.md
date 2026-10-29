@@ -415,7 +415,7 @@ Migration 017 has **not** been applied to shared Supabase; announce it first (AG
 
 The current diagram includes migrations 016–018. Architecture exports now include event revision/edit history, change-request revision/impact fields, cancellation audit and equipment/registration state. Earlier pending-export notes are superseded by this refresh. The equipment API uses a derived opaque version over event and line data rather than exposing the stored integer as its concurrency token. Cancellation counts are captured before migration 015 releases RESERVED equipment; all release records remain immutable. No migration was rewritten and no shared Supabase schema change was performed during this repair. AUTO-20261028-PR63-01 records fresh-install/upgrade and workflow tests on disposable PostgreSQL 17.
 
-## 29 October 2026 — Migration 020 safety reviews (KAN-84)
+## 29 October 2026 — Migration 021 safety reviews (KAN-84)
 
 ```mermaid
 erDiagram
