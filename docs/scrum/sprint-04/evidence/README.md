@@ -94,3 +94,9 @@ KAN-26 is In Progress / Tristan (3 SP), with unestimated KAN-104–106 In Progre
 | ID | Artifact | Source / result | Limits |
 | --- | --- | --- | --- |
 | S4-E18 | [KAN-61 run logs](kan61-20261029/) (`check.txt`, `coverage.txt`, `integration.txt`, `e2e.txt`, `e2e-initial.txt`; PR #77 review retest `*-review-fix.txt`, run `AUTO-20261029-KAN61-02`) | `AUTO-20261029-KAN61-01`: check and coverage Pass; PostgreSQL integration 673/673 including 11 KAN-61 tests; browser fixtures 197/197 including 3 KAN-61 tests; `e2e-initial.txt` keeps the earlier flaky failure that led to the panel fix | Local Windows run, Node 24.11.1, disposable PostgreSQL 17; synthetic accounts; browser APIs substituted; no live authentication, CI or acceptance |
+
+## KAN-61 PR #77 operational-block review follow-up — 29 October 2026
+
+| ID | Artifact | Source / result | Limits |
+| --- | --- | --- | --- |
+| S4-E21 | [AUTO-20261029-PR77-REVIEW](../../../testing/test-evidence.md#auto-20261029-pr77-review--operational-block-readiness-regression), execution `EX-06-431-AUTO-20261029-PR77-01` | TC-06-431 failed before the fix and passed afterwards; 15/15 confirmation PostgreSQL tests; check and coverage Pass with 1,154 frontend and 1,933 backend tests. Tested code committed unchanged as `a31d2ef`. | Captured console results recorded in the run narrative; no separate raw log file retained. Disposable local PostgreSQL with synthetic identities, no shared Supabase or manual E2E acceptance; full database/browser suites not rerun for this follow-up. |
