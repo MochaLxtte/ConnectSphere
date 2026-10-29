@@ -18,7 +18,7 @@ This rebalanced allocation replaces the earlier 97/29 split with **63/63**, with
 | [KAN-9](https://smu-g7-grp1.atlassian.net/browse/KAN-9) | Check Equipment Availability for an Event | 8 | Tristan | To agree | Existing release backlog | S4-T02 |
 | [KAN-63](https://smu-g7-grp1.atlassian.net/browse/KAN-63) | Submit and Review Event Equipment Requests | 5 | Ryan | PR #63 review | Existing release backlog | S4-T03 |
 | [KAN-26](https://smu-g7-grp1.atlassian.net/browse/KAN-26) | Reserve Equipment | 3 | Tristan | To agree | Existing release backlog | S4-T04 |
-| [KAN-61](https://smu-g7-grp1.atlassian.net/browse/KAN-61) | Confirm Event After Planning Arrangements | 3 | Unassigned — team member to choose | To agree after owner chosen | Existing release backlog | S4-T05 |
+| [KAN-61](https://smu-g7-grp1.atlassian.net/browse/KAN-61) | Confirm Event After Planning Arrangements | 3 | Kai Jie (29 October 2026) | Tristan | Existing release backlog | S4-T05 |
 | [KAN-62](https://smu-g7-grp1.atlassian.net/browse/KAN-62) | Cancel Event and Release Its Arrangements | 5 | Ryan | PR #63 review | Existing release backlog | S4-T06 |
 | [KAN-10](https://smu-g7-grp1.atlassian.net/browse/KAN-10) | Mark Event as Completed | 3 | Unassigned — team member to choose | To agree after owner chosen | Existing release backlog | S4-T07 |
 | [KAN-14](https://smu-g7-grp1.atlassian.net/browse/KAN-14) | Register for an Event | 5 | Unassigned — team member to choose | To agree after owner chosen | Existing release backlog | S4-T08 |
@@ -52,7 +52,7 @@ Every row requires its complete active criterion set plus applicable Definition 
 | S4-T02 | KAN-9: AC1–AC5, AC101–AC107 | TC-16-06–TC-16-18 | Automated evidence: AUTO-20261026-KAN9-01. Integrated manual **Not executed**; acceptance **Not assessed**. TC-16-09 combined reservation path is now implemented locally with KAN-26; its integrated manual run remains Not executed. |
 | S4-T03 | KAN-63: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC101, AC102, AC103, AC104 | TC-15-01, TC-15-02, TC-15-03, TC-15-04, TC-15-05, TC-15-06, TC-15-07 | AUTO-20261028-PR63-01 / S4-E16: automated checks recorded; integrated manual **Not executed**, acceptance **Not assessed**. |
 | S4-T04 | KAN-26: AC1–AC7, AC101–AC108 | TC-17-01–08; automated TC-17-101–110 | AUTO-20261026-KAN26-01 records automated results. Integrated manual **Not executed**; acceptance **Not assessed**. Shared migration 015 and KAN-18/63/62/10 UI integration remain pending. |
-| S4-T05 | KAN-61: AC1, AC2, AC3, AC4, AC5, AC6, AC101, AC102, AC103, AC104 | TC-06-01, TC-06-02, TC-06-03, TC-06-04, TC-06-05, TC-06-06, TC-06-07 | **Not executed** / Not recorded |
+| S4-T05 | KAN-61: AC1, AC2, AC3, AC4, AC5, AC6, AC101, AC102, AC103, AC104, AC105, AC106 | TC-06-01, TC-06-02, TC-06-03, TC-06-04, TC-06-05, TC-06-06, TC-06-07, TC-06-08 | Partial automated coverage (AUTO-20261029-KAN61-01); integrated acceptance **Not executed** / acceptance **Not assessed** |
 | S4-T06 | KAN-62: AC1, AC2, AC3, AC4, AC5, AC6, AC101, AC102, AC103, AC104 | TC-06-08, TC-06-09, TC-06-10, TC-06-11, TC-06-12, TC-06-13 | AUTO-20261028-PR63-01 / S4-E16: automated checks recorded; integrated manual **Not executed**, acceptance **Not assessed**. |
 | S4-T07 | KAN-10: AC1, AC2, AC3, AC4, AC5, AC101, AC102, AC103 | TC-06-14, TC-06-15, TC-06-16, TC-06-17, TC-06-18 | **Not executed** / Not recorded |
 | S4-T08 | KAN-14: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC101, AC102, AC103, AC104 | TC-18-01, TC-18-02, TC-18-03, TC-18-04, TC-18-05, TC-18-06 | **Not executed** / Not recorded |
@@ -338,7 +338,7 @@ Implementation defaults: docs/scrum/sprint-03/planning.md and docs/requirements/
 
 ### KAN-61 — Confirm Event After Planning Arrangements
 
-**Owner:** Unassigned — team member to choose · **Independent reviewer:** To agree after owner chosen · **Estimate:** 3 SP · **Jira status:** To Do · **Acceptance:** Not assessed · **Test group:** S4-T05
+**Owner:** Kai Jie (29 October 2026) · **Independent reviewer:** Tristan · **Estimate:** 3 SP · **Jira status:** To Do at last repository readback; the owner moves it to In Progress · **Acceptance:** Not assessed · **Test group:** S4-T05
 
 **User story:** As an Event Coordinator, I want to confirm an event once its required arrangements are ready so that the organiser knows the event can proceed.
 
@@ -357,8 +357,11 @@ Implementation defaults: docs/scrum/sprint-03/planning.md and docs/requirements/
 | **KAN-61-AC103** | No pending significant change is allowed; perform the complete readiness check and status/history/notification write atomically against current data. | TC-06-05 |
 | **KAN-61-AC104** | Confirmation preserves configured registration times; registration still checks its own window and capacity. The later CR-6 safety gate is a separately tracked requirement. | TC-06-07 |
 | **KAN-61-AC105** | An event with a venue booking still requiring outage recovery (KAN-81) cannot be confirmed. *(Moved from KAN-81-AC9, PO decision 28 October 2026.)* | TC-06-03 |
+| **KAN-61-AC106** | Confirmation is refused at or after the event's start time, judged by the database clock; the coordinator is told why. *(Added 29 October 2026, see the decision log.)* | TC-06-08 |
 
-**Implementation location:** Not recorded. **Automated test files:** Not recorded. Record real files when implemented; historical schema or removed code is not feature completion.
+**Implementation location (29 October 2026):** `backend/src/modules/events/confirmation.ts` (shared `eventReadiness`, `getEventConfirmation`, `confirmEvent`), `backend/src/modules/events/confirmation-router.ts`, `frontend/src/features/events/components/EventConfirmationPanel.vue`, `frontend/src/features/events/api/arrangements.ts`. No migration: the existing status-history trigger records actor and time, and migration 019 writes the KAN-80 confirmation notices. **Automated test files:** `backend/test/events/confirmation.test.ts`, `backend/test/events/confirmation-router.test.ts`, `database/tests/events/confirmation.integration.test.ts`, `frontend/src/features/events/components/EventConfirmationPanel.test.ts`, `tests/e2e/event-confirmation.spec.ts`.
+
+**Verification (29 October 2026):** `AUTO-20261029-KAN61-01` / S4-E18 records check, coverage, isolated PostgreSQL and browser-fixture results. Named PostgreSQL scenarios support TC-06-01 to TC-06-05 and TC-06-08 at scenario level; TC-06-06 and TC-06-07 remain Not executed. Hosted acceptance with real sign-in, independent review and merge remain outstanding; no Done points are claimed.
 
 <details>
 <summary>Preserved Jira description before self-selection (historical ownership)</summary>

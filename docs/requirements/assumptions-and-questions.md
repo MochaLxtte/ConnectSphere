@@ -1450,3 +1450,18 @@ Reason: the previous order (booking → event → venue → original) deadlocked
 ## 29 October 2026 - PR #70 attendee-change notification scope
 
 **Source:** PR #70 review and Arvin's answer in the development conversation. Arvin confirmed that changes to venue requirements and accessibility needs should trigger attendee notifications alongside purpose and event-time changes. The notice identifies the changed categories without exposing their internal values; current purpose and event time are shown on the recipient's own registration. This records Arvin's answer, not a reported team decision. The separate KAN-80 request-for-action interpretation remains To agree.
+
+## 29 October 2026 — KAN-61 confirmation implementation decisions
+
+**Source:** KAN-61 owner Kai Jie in the AI-assisted working session on 29 October 2026, choosing between proposed options. No customer clarification or team vote; the independent reviewer (Tristan) can raise disagreement on the PR.
+
+| # | Decision | Reason |
+| --- | --- | --- |
+| D1 | A repeated confirmation of an already CONFIRMED event returns `200` with `changed: false` and the saved actor/time. It writes no status, history or notification. | KAN-61-AC5 (repeated transitions do not corrupt records); matches the KAN-17 withdrawal replay. |
+| D2 | Confirmation is refused at or after the event's start time, judged by the database clock (`EVENT_ALREADY_STARTED`). Recorded as new criterion **KAN-61-AC106** with case TC-06-08. | Confirming an event that has begun has no planning value; the server clock avoids client time drift. **Jira KAN-61 still needs AC106 added by the owner.** |
+| D3 | One shared, derived readiness check (`eventReadiness` in `backend/src/modules/events/confirmation.ts`) combines KAN-82 venue readiness (which counts KAN-81 outage recovery as outstanding), KAN-26 equipment readiness, explicit Not Required equipment and pending change requests. KAN-84-AC2 reuses it. | One definition of "ready" for confirmation and safety-review submission. |
+| D4 | No migration. The status-history trigger records actor and time (AC4); migration 019 writes the KAN-80 confirmation notices on the status change. | Avoids a second writer for the same outcome. |
+| D5 | Lock order: venue gate → bookings → event → equipment types → equipment requests, as in KAN-62 cancellation, before reading readiness and writing the status. | KAN-61-AC103: concurrent arrangement, outage or change-request writers wait, then the check sees their committed result. |
+| D6 | "Required" equipment with no active lines is not ready; the coordinator must explicitly record Not Required. | KAN-61-AC3/AC102 require an explicit choice. |
+
+Consequences: `POST /api/events/:id/confirm` and `GET /api/events/:id/confirmation` are added (API contract updated). The equipment module exports its existing readiness function unchanged.

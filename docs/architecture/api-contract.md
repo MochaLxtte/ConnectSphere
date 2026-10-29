@@ -968,3 +968,16 @@ Cancellation refusals: `401 AUTHENTICATION_REQUIRED`; `403 ACTION_FORBIDDEN` for
 Replacement of a cancelled arrangement: `409 REPLACEMENT_IN_PROGRESS` while another replacement of it is pending, live held or approved; approval returns `409 REPLACEMENT_NOT_NEEDED` if another replacement already holds the venue. Approving it leaves the original `CANCELLED`. KAN-81 recovery replacements are unchanged.
 
 Every `VenueBooking` response now includes `replacedByBookingIds` (ids of bookings whose `replacesBookingId` is this booking, earliest first). New notification types: `VENUE_ARRANGEMENT_CANCELLED` and `VENUE_REPLACEMENT_REQUESTED`, to the current coordinator and every Venue Staff account, linked to the booking.
+
+## 29 October 2026 — KAN-61 event confirmation
+
+Both endpoints require the verified application session and set `Cache-Control: no-store`. No migration is needed.
+
+| Method / route | Actor | Result |
+| --- | --- | --- |
+| `GET /api/events/:id/confirmation` | Owning organiser or currently assigned coordinator | `{ eventRequestId, status, started, canConfirm, readiness, confirmation }`. `readiness` is `{ ready, checks: [{ key: "VENUE" \| "EQUIPMENT" \| "CHANGE_REQUEST", ready, message }] }` for an APPROVED event and `null` otherwise. `confirmation` is `{ confirmedBy, confirmedByName, confirmedAt }` from the latest CONFIRMED status-history row, or `null`. `canConfirm` is true only for the assigned coordinator of a ready, not-yet-started APPROVED event. |
+| `POST /api/events/:id/confirm` | Currently assigned coordinator | Body `{}` (or none). Returns `{ confirmation: { eventRequestId, status: "CONFIRMED", changed, confirmation } }`. `changed: false` means the event was already confirmed; nothing is written again. |
+
+Errors: 401 unauthenticated; 403 wrong role (including organisers posting to `/confirm`) or a stored role that no longer matches the session; 404 unknown or unrelated event (and drafts for coordinators); 400 invalid ID or unexpected body fields; 409 `EVENT_NOT_CONFIRMABLE` (not APPROVED), `EVENT_ALREADY_STARTED` (start time reached on the database clock), `EVENT_NOT_READY` (message lists every unmet readiness check) or `EVENT_ARRANGEMENTS_CHANGED` (a venue booking appeared while locking). A refused confirmation writes nothing.
+
+Readiness: at least one live venue arrangement, all live arrangements APPROVED, none with `RECOVERY_REQUIRED` outage impacts (KAN-61-AC105); equipment explicitly `NOT_REQUIRED` with no active lines, or every active line `RESERVED` and currently fulfilable (KAN-26 readiness); no `PENDING` change request. The status update fires the existing status-history trigger (actor and time) and migration 019's `EVENT_CONFIRMED` notices to the organiser, current coordinator, active attendees and current arrangement staff, in the same transaction.
