@@ -32,7 +32,6 @@ const plural = (count: number, word: string) => `${count} ${word}${count === 1 ?
 
 async function venueCheck(client: Reader, eventRequestId: string): Promise<ReadinessCheck> {
   const venue = await venueArrangementReadiness(client, eventRequestId);
-  if (venue.ready) return { key: 'VENUE', ready: true, message: 'Every live venue arrangement is approved.' };
   if (venue.live === 0) {
     return { key: 'VENUE', ready: false, message: 'Approve at least one venue arrangement before confirming.' };
   }
@@ -40,11 +39,22 @@ async function venueCheck(client: Reader, eventRequestId: string): Promise<Readi
   const recovery = await client.query<{ count: number }>(`SELECT count(DISTINCT i.venue_booking_id)::int AS count
     FROM venue_outage_impacts i JOIN venue_bookings b ON b.id = i.venue_booking_id
     WHERE b.event_request_id = $1 AND i.status = 'RECOVERY_REQUIRED'`, [eventRequestId]);
+  // KAN-61-AC101: approved bookings must still be conflict-free under the venue's current buffers
+  // and hours, which catalogue edits can change after approval. Outage overlap is the recovery flag above.
+  const conflicts = await client.query<{ overlap: number; hours: number }>(`SELECT
+      count(*) FILTER (WHERE 'APPROVED_BOOKING_OVERLAP' = ANY(warnings))::int AS overlap,
+      count(*) FILTER (WHERE 'OUTSIDE_OPERATING_HOURS' = ANY(warnings))::int AS hours
+    FROM (SELECT venue_booking_warnings(b.id) AS warnings FROM venue_bookings b
+      WHERE b.event_request_id = $1 AND b.status = 'APPROVED') current`, [eventRequestId]);
   const recovering = recovery.rows[0]?.count ?? 0;
+  const { overlap = 0, hours = 0 } = conflicts.rows[0] ?? {};
   const parts = [
     venue.outstanding - recovering > 0 ? `${plural(venue.outstanding - recovering, 'venue arrangement')} awaiting approval` : null,
     recovering > 0 ? `${plural(recovering, 'venue booking')} still requiring outage recovery` : null,
+    overlap > 0 ? `${plural(overlap, 'venue booking')} now overlapping another approved booking` : null,
+    hours > 0 ? `${plural(hours, 'venue booking')} outside the venue's operating hours` : null,
   ].filter((part): part is string => part !== null);
+  if (parts.length === 0) return { key: 'VENUE', ready: true, message: 'Every live venue arrangement is approved.' };
   return { key: 'VENUE', ready: false, message: `Resolve ${parts.join(' and ')} before confirming.` };
 }
 
@@ -167,6 +177,10 @@ export async function confirmEvent(
       SELECT 1 FROM equipment_requests r WHERE r.event_request_id = $1 AND r.equipment_type_id = t.id)
       ORDER BY t.id FOR UPDATE`, [eventRequestId]);
     await client.query('SELECT id FROM equipment_requests WHERE event_request_id = $1 ORDER BY id FOR UPDATE', [eventRequestId]);
+    // Venue catalogue edits (buffers, hours) lock the venue row; share-lock it so a concurrent edit
+    // either commits before the readiness check reads it or waits for this transaction.
+    await client.query(`SELECT v.id FROM venues v WHERE v.id IN (SELECT venue_id FROM venue_bookings
+      WHERE event_request_id = $1 AND status IN ('PENDING', 'HELD', 'APPROVED')) ORDER BY v.id FOR SHARE`, [eventRequestId]);
     const readiness = await eventReadiness(client, eventRequestId);
     if (!readiness.ready) {
       throw new WorkflowError('CONFLICT', 'EVENT_NOT_READY',

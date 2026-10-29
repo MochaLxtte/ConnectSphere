@@ -18,6 +18,7 @@ interface State {
   started?: boolean;
   venue?: { live: number; outstanding: number };
   recovering?: number;
+  conflicts?: { overlap: number; hours: number };
   planStatus?: 'REQUIRED' | 'NOT_REQUIRED';
   equipment?: 'NONE' | 'READY' | 'REQUESTED' | 'SHORTFALL';
   pendingChange?: boolean;
@@ -53,6 +54,7 @@ function fixture(state: State = {}) {
     if (sql.includes('AS started')) return rows([{ started: s.started }]);
     if (sql.includes('AS live')) return rows([s.venue]);
     if (sql.includes('venue_outage_impacts i')) return rows([{ count: s.recovering }]);
+    if (sql.includes('AS overlap')) return rows([s.conflicts ?? { overlap: 0, hours: 0 }]);
     if (sql.includes('AS "planStatus"')) return rows([{ planStatus: s.planStatus }]);
     if (sql.includes('AS "equipmentTypes"')) return rows([equipmentSnapshot(s.equipment)]);
     if (sql.includes('FROM event_change_requests')) return rows(s.pendingChange ? [{ '?column?': 1 }] : []);
@@ -127,6 +129,10 @@ describe('KAN-61 event confirmation', () => {
   });
 
   it.each<[string, State, RegExp]>([
+    ['KAN-61-AC101 a booking now overlapping under current buffers', { conflicts: { overlap: 1, hours: 0 } },
+      /1 venue booking now overlapping another approved booking/],
+    ['KAN-61-AC101 a booking outside current operating hours', { conflicts: { overlap: 0, hours: 2 } },
+      /2 venue bookings outside the venue's operating hours/],
     ['no venue arrangement', { venue: { live: 0, outstanding: 0 } }, /Approve at least one venue arrangement/],
     ['a pending venue arrangement', { venue: { live: 2, outstanding: 1 } }, /1 venue arrangement awaiting approval/],
     ['KAN-61-AC105 outage recovery', { venue: { live: 1, outstanding: 1 }, recovering: 1 }, /1 venue booking still requiring outage recovery/],
