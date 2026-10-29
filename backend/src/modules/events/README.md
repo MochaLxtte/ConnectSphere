@@ -147,3 +147,7 @@ Cancellation unit/HTTP cases are in `backend/test/events/KAN-62-63-arrangements.
 equipment-reservation races, new-booking conflicts, rollback, release counts, replay and attendee
 privacy. Equipment and change-request tests are recorded in their module/contract sections;
 the run outcomes and manual acceptance boundaries remain in [test evidence](../../../../docs/testing/test-evidence.md).
+
+## KAN-10 event completion — 29 October 2026
+
+`completion.ts` and `completion-router.ts` let the currently assigned Event Coordinator mark a CONFIRMED event completed once its end instant has passed by the database clock (`POST /api/events/:id/complete`; `GET /api/events/:id/completion` reads the outcome for the organiser and the coordinator). One transaction takes the same locks as cancellation (venue bookings, event, equipment pools, equipment lines), sets the status so the history records actor and time, lets migration 015's trigger release the still-reserved equipment once, and writes one `EVENT_COMPLETED` notice to the organiser and the coordinator. Registrations and venue bookings are untouched. Early, repeated, stale, wrong-status and unauthorised calls change nothing. No migration. Rules are **To agree** (decision log, 29 October 2026); a CONFIRMED event cannot yet be produced in the application because KAN-61 is not built.

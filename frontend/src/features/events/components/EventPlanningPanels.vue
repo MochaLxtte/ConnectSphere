@@ -8,6 +8,7 @@ import VenueBookingPanel from './VenueBookingPanel.vue';
 import EquipmentRequestPanel from './EquipmentRequestPanel.vue';
 import EventCancellationPanel from './EventCancellationPanel.vue';
 import EventConfirmationPanel from './EventConfirmationPanel.vue';
+import EventCompletionPanel from './EventCompletionPanel.vue';
 
 /** Workflow panels shared by the organiser and coordinator pages for a submitted request. */
 const props = defineProps<{
@@ -18,6 +19,8 @@ const props = defineProps<{
   isOwner?: boolean;
   /** KAN-66: the displayed revision, so reviewer actions on stale details are refused. */
   revision?: number;
+  /** KAN-10: shown as a hint only; the server decides whether the event has ended. */
+  endsAt?: string | null;
 }>();
 const emit = defineEmits<{ changed: [] }>();
 
@@ -40,6 +43,7 @@ const shared = computed(() => ({
     <!-- KAN-61: readiness checklist for the coordinator; the organiser sees the confirmation outcome. -->
     <EventConfirmationPanel :event-request-id="eventRequestId" :status="status" :revision="revision" @changed="emit('changed')" />
     <StatusHistoryPanel :event-request-id="eventRequestId" :status="status" />
+    <EventCompletionPanel :event-request-id="eventRequestId" :status="status" :ends-at="endsAt ?? null" :revision="revision" @changed="emit('changed')" />
     <EventCancellationPanel :event-request-id="eventRequestId" :status="status" :revision="revision" @changed="emit('changed')" />
   </div>
 </template>

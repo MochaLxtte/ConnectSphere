@@ -41,6 +41,11 @@ export async function fulfilWorkspaceRead(
       canConfirm: false, readiness: null, confirmation: null } });
     return true;
   }
+  // KAN-10: a COMPLETED event's panel reads its saved outcome; other fixtures have none.
+  if (/^\/api\/events\/[^/]+\/completion$/.test(path)) {
+    await route.fulfill({ json: { completion: null } });
+    return true;
+  }
   // The coordinator equipment panel shares the approved event detail workspace.
   // These unrelated stories have no saved equipment requirement fixture.
   if (options.coordinatorBookingEventId && path === `/api/events/${options.coordinatorBookingEventId}/equipment-requests`) {

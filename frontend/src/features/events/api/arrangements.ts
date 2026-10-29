@@ -65,3 +65,15 @@ export async function fetchCancellation(eventId: string, signal?: AbortSignal) {
   return getJson<{ cancellation: { status: string; cancelledAt: string; reason: string } | null }>(
     `/api/events/${encodeURIComponent(eventId)}/cancellation`, signal);
 }
+
+export interface EventCompletion {
+  eventRequestId: string; status: 'COMPLETED'; completedById: string; completedByName: string | null;
+  completedAt: string; releasedEquipmentRequests: number;
+}
+/** KAN-10: the server decides whether the event has ended, by its own clock. */
+export function completeEvent(eventId: string, signal?: AbortSignal) {
+  return postJson<{ completion: EventCompletion }>(`/api/events/${encodeURIComponent(eventId)}/complete`, {}, signal);
+}
+export function fetchCompletion(eventId: string, signal?: AbortSignal) {
+  return getJson<{ completion: EventCompletion | null }>(`/api/events/${encodeURIComponent(eventId)}/completion`, signal);
+}

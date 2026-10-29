@@ -11,7 +11,8 @@ const recordId = '20000000-0000-4000-8000-000000000001';
 // These paths were previously exposed by the removed workflow routers. Keep them
 // absent from the mounted application until their stories enter the sprint scope.
 const futureRoutes = [
-  ['post', `/api/events/${eventId}/complete`, 'EVENT_COORDINATOR'],
+  // KAN-61 confirmation (POST /api/events/:id/confirm) entered scope in Sprint 4 (29 October 2026).
+  // KAN-10 completion (POST /api/events/:id/complete) entered scope in Sprint 4 (29 October 2026).
   // KAN-15 change-request routes entered scope in Sprint 4 (27 October 2026).
   ['get', '/api/equipment', 'TECHNICAL_SUPPORT_STAFF'],
   ['get', '/api/equipment/availability', 'TECHNICAL_SUPPORT_STAFF'],
