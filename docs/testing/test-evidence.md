@@ -1871,6 +1871,40 @@ Static review of `database/tests/events/cancellation-equipment.integration.test.
 
 **Documentation verification.** Current AC wording and ownership were read from Jira; archived sprint data was preserved. The workbook refresh changed only 18 cells, retaining seven sheets, 11 tables, seven frozen panes and 18 formulas; 14,104 other cells were checked unchanged. The affected architecture diagrams were regenerated and visually inspected. Source, case/file references, stable IDs and append-only execution history are checked in the accompanying document-validation artifact.
 
+## 28 October 2026 — KAN-66 and KAN-15 integrated local acceptance
+
+**Run:** `MAN-20261028-KAN66-KAN15-01`. **Executor:** Claude Code (AI agent) driving Irfan's Chrome (Claude in Chrome); Irfan signed in to every account himself and no credentials were typed or recorded. **Build:** `main` at `ac5cd8b` (PRs #64 and #65 merged), frontend and API from `npm run dev` on `http://127.0.0.1:5173` / `:3000`. **Database:** the shared Supabase development database, whose ledger shows migrations 016, 017 and 018 applied together at 2026-10-28 01:35 UTC (read-only check of `schema_migrations`; not applied by this session). **Accounts:** event_organiser2 (owner O1), event_organiser (unrelated organiser O2), coordinator_lead (Lead), event_coordinator (assigned coordinator C1), venue_staff (V1).
+
+**Data created (retained in the shared database; removal needs team agreement):** event request `a5c973fa-cc55-47d9-aff1-295cd621bb96` "TEST – Irfan hands-on KAN-66/KAN-15 (28 Oct) – renamed by coordinator" (10 Feb 2031 10:00–14:00 SGT, APPROVED, attendance 80), its assignment, edit-audit and status-history rows, venue bookings `b0f83e4f` (Orchid Seminar Room, CANCELLED by the approved change request) and `1a7e59a9` (Harbour Hall, APPROVED), two change requests (one APPROVED, one REJECTED) and the related notifications. No existing team data was changed.
+
+| Step | Actor | Action | Observed result |
+| --- | --- | --- | --- |
+| 1 | O1 | Created and submitted the event, then edited attendance 50 → 60 on `/events/:id/details` | Saved; status stayed SUBMITTED; revision 3; `event_request_edits` row (organiser, SUBMITTED). Pass |
+| 2 | Lead | Assigned C1 from the event allocation page | "Event Coordinator is now the coordinator for this request." (revision 4). No automatic assignment occurred. |
+| 3 | C1, then O1 | C1 opened `/reviews/:id` at revision 5 and left it open; O1 edited the purpose (revision 6) | Owner edit saved while SUBMITTED. Pass |
+| 4 | C1 | Recorded an approval from the open tab | Refused: "The organiser changed this request after you opened it. Refresh it and review the latest details before deciding."; status unchanged. Pass |
+| 5 | C1 | Refreshed, saw the new purpose, approved | APPROVED, revision 7. Pass |
+| 6 | C1 | Edited the approved event | Page offered only name and description with a change-request explanation; rename saved (revision 8). Pass |
+| 7 | C1 | Sent a start/end change for the approved event to `PATCH /api/events/:id` | `409 SIGNIFICANT_CHANGE_REQUIRED` naming `startsAt`, `endsAt`; dates unchanged. Pass |
+| 8 | C1 | Requested Orchid Seminar Room for the event period | PENDING booking `b0f83e4f`. Setup |
+| 9 | O1 | Request a change: attendance 60 → 80; then a second request | First saved PENDING with previous 60 and proposed 80, event still 60, page shows Awaiting review; second `409 CHANGE_REQUEST_ALREADY_PENDING`. Pass |
+| 10 | C1 | Opened the Change requests panel and approved | Panel showed current 60 / requested 80 and listed the pending Orchid booking as cancelled on approval; approval set attendance 80 (revision 9), `cancelledArrangements` = Orchid, booking CANCELLED with the change-request reason. Pass, with observation O-1 |
+| 11 | C1, V1 | Requested Harbour Hall for the same period; V1 approved it | Harbour Hall APPROVED. Setup |
+| 12 | O1 | Requested a date change to 11 Feb 2031 | PENDING. Pass |
+| 13 | C1 | Reviewed it | Panel: "This change cannot be approved because it affects confirmed venue or equipment arrangements…" naming Harbour Hall (approved); Approve and apply disabled; API approval `409 CANCEL_AND_RESUBMIT_REQUIRED`. Pass |
+| 14 | C1 | Rejected with reason "Harbour Hall is already confirmed for 10 Feb. Cancel and resubmit if the date must move." | REJECTED with the reason; event dates and revision 9 unchanged; Harbour Hall still APPROVED. Pass |
+| 15 | O2 | Opened `/events/:id`; read and submitted change requests; edited the event | Page: "This event request is unavailable or you do not have permission to view it."; GET event, GET/POST change requests and PATCH all 404. Pass |
+
+**Observation O-1 (minor KAN-15 UI defect, follow-up):** immediately after **Approve and apply**, the Venue booking requests panel on the same coordinator page still showed the Orchid booking as Pending; **Refresh booking requests** then showed Cancelled with the reason. Persisted state and the Change requests panel were correct. The panel is not reloaded after a change-request decision. Not fixed in this run.
+
+**Case mapping.** Steps 1–2 → TC-07-01; steps 3–5 (stale approval refused, then accepted after refresh) → TC-07-06; step 6 → TC-07-03; step 7 → TC-07-04; steps 9–15 → TC-19-01 to TC-19-05; step 10 → TC-19-08, for the attendance-change cancellation only. Harbour Hall (step 11) was requested after that approval, so this run does not show that a pre-existing unaffected arrangement is preserved, and no equipment line existed.
+
+**Not covered here:** concurrent edits from the same revision (TC-07-05), notification contents for change requests (TC-19-06), the full significant-field matrix (TC-19-07), concurrent decisions (TC-19-09), arrangement preservation during an ordinary edit (TC-07-02), and the preservation and equipment parts of TC-19-08 were not exercised manually; their automated PostgreSQL evidence stands.
+
+**Corrections, 29 October 2026 (PR #68 review by MochaLxtte).** The stale-approval observation was first recorded under TC-07-05 and is now `EX-07-06-M01`; `EX-07-05-M01` is Not executed. `EX-19-08-M01` is narrowed to the attendance-change cancellation. Not executed rows keep run, result, executor, date, build and environment as Not recorded (AGENTS.md §6.1), with the context in remarks. No observation was added or removed. Acceptance of KAN-66 and KAN-15 remains for the 31 October sprint review.
+
+**Shared database rollout record (016–018):** read-only check on 28 October 2026 found `016_event_request_revisions.sql`, `017_event_change_requests.sql` and `018_event_cancellation_equipment_workflows.sql` in the shared ledger with `applied_at` 2026-10-28 01:35:56 UTC, after #64, #65 and #63 merged. Who ran `npm run db:migrate` is Not recorded.
+
 ## 28 October 2026 — KAN-82 independent venue arrangements automated runs
 
 **Run:** `AUTO-20261028-KAN82-01`. **Executor:** Claude Code (AI agent) in Irfan's working session. **Build:** working tree on `feat/KAN-82-independent-venue-arrangements` from `main` `ac5cd8b`, committed unchanged as `a2a31f4`, `2339f3c` and `0b50c37` (code and tests). **Environment:** local Windows 11 workstation, Node 22.20.0 (project specifies Node 24; `EBADENGINE` warning only); disposable local PostgreSQL 17.11 cluster on `127.0.0.1:55482` for the database and browser runs, never shared Supabase. Summary: [coverage report](coverage-reports/2026-10-28-kan82.txt).

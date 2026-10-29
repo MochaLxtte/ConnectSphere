@@ -1412,6 +1412,10 @@ Consequences: the `sprint-scope.test.ts` guard no longer lists the four change-r
 
 The review repair was authorized in this working session. Existing KAN-63 AC6/7/101/103/104 require full availability-safe reservation and stale-form protection: the implementation now shares KAN-26's writer and uses an opaque plan revision across both APIs. Existing KAN-62 AC3/4/102/103/104 require atomic one-time release, accurate history and attendee-safe notifications: shared venue-before-event locks and recipient-scoped cancellation projections enforce those requirements. KAN-15 AC7 invalidates a previous Not Required declaration when approved timing/equipment changes affect planning. These are corrections/integration of existing criteria, not new customer scope, a team estimate decision or completed manual acceptance. Jira wording and the two 5 SP estimates remain unchanged.
 
+## 28 October 2026 — KAN-15 decision D8 follow-up
+
+D8 (27 October) cancelled pending equipment lines with `status = 'CANCELLED'` only, to be adapted once the KAN-26/KAN-62 cancellation model merged. PR #63's review repair (`b9e5ca0`, merged 28 October) now records `released_by`, `released_at`, `release_reason` and `release_cause = 'MANUAL_CANCELLATION'` when an approved change request cancels a pending equipment line, satisfying migration 015's release constraints. No further KAN-15 change is needed for D8. Run MAN-20261028-KAN66-KAN15-01 did not exercise equipment lines.
+
 ## 28 October 2026 — KAN-82 independent venue arrangement decisions
 
 Source: Irfan (KAN-82 owner and Product Owner) approved design D1–D8 in the AI-assisted working session on 28 October 2026, before implementation. No customer clarification, team vote or estimate change is asserted; the estimate stays 5 SP. These refine the CR-3 / KAN-82 delegated defaults above.
