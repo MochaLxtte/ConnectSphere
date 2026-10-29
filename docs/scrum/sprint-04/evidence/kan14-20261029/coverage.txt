@@ -1,0 +1,9 @@
+ Test Files  54 passed (54)
+      Tests  1112 passed (1112)
+All files          |    95.9 |     92.9 |   97.87 |   98.36 |
+ Test Files  69 passed (69)
+      Tests  1836 passed (1836)
+All files          |   93.83 |    94.26 |   92.61 |   93.78 |
+Frontend src/features/registrations (attendee pages plus main's RegistrationsPage): 95.28 / 88.37 / 100 / 100 (statements / branches / functions / lines).
+Backend src/modules/registrations (registration-* and main's router/service): 100 / 98.76 / 100 / 100.
+Columns: statements / branches / functions / lines. Per-file figures were not kept for this rerun.

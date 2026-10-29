@@ -1,0 +1,4 @@
+ Test Files  54 passed (54)
+      Tests  1114 passed (1114)
+All files          |   95.78 |    92.81 |   97.78 |   98.36 |
+  ...StockPage.vue |   92.45 |    92.26 |   96.77 |    99.1 | 223
