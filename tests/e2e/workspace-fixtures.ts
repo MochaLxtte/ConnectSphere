@@ -41,6 +41,13 @@ export async function fulfilWorkspaceRead(
       canConfirm: false, readiness: null, confirmation: null } });
     return true;
   }
+  // KAN-84: unrelated approved/confirmed fixtures show an unsubmitted safety panel with no actions.
+  const safety = /^\/api\/events\/([^/]+)\/safety$/.exec(path);
+  if (safety) {
+    await route.fulfill({ json: { eventRequestId: safety[1], eventStatus: 'APPROVED', outcome: 'NONE', readiness: null,
+      pendingStale: false, rounds: [], preparation: null, canSubmit: false, canStartPreparation: false } });
+    return true;
+  }
   // KAN-10: a COMPLETED event's panel reads its saved outcome; other fixtures have none.
   if (/^\/api\/events\/[^/]+\/completion$/.test(path)) {
     await route.fulfill({ json: { completion: null } });
