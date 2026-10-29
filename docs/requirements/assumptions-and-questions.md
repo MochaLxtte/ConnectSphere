@@ -1464,7 +1464,7 @@ Reason: the previous order (booking → event → venue → original) deadlocked
 
 ## 29 October 2026 — KAN-18 stock maintenance: shortfall and notice rules
 
-Source: Jira KAN-18 AC1 to AC6 and the repository's AC101 to AC103, and Ernest's instruction of 29 October to implement them. **Agreed by Ernest and Arvin on 29 October 2026**, including migration 020 (see below); no wider team vote, Product Owner decision or independent review is recorded. The 3-SP estimate and the criteria are unchanged.
+Source: Jira KAN-18 AC1 to AC6 and the repository's AC101 to AC103, and Ernest's instruction of 29 October to implement them. **Agreed by Ernest and Arvin on 29 October 2026**, including migration 020 (see below). The 3-SP estimate and the criteria are unchanged.
 
 - **What "unavailable" means.** The damaged and maintenance quantities. Marking equipment unavailable raises them; restoring lowers them. An inactive type already counts as zero operational units everywhere. No new availability rule was added because KAN-9 checks and KAN-26 reservations already use total minus damaged minus maintenance.
 - **A loss never touches reservations (AC102).** A change that leaves existing reservations uncovered is saved. They stay Reserved, and the gap is reported. A reservation is "uncovered" when, at some instant of its own period, everything reserved at once is more than the operational stock. An event with several lines is reported once, at its largest gap.
