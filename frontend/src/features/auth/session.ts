@@ -8,7 +8,8 @@ export type UserRole =
   | 'EVENT_COORDINATOR_LEAD'
   | 'VENUE_STAFF'
   | 'TECHNICAL_SUPPORT_STAFF'
-  | 'ATTENDEE';
+  | 'ATTENDEE'
+  | 'SAFETY_OFFICER';
 
 export interface SignedInUser {
   id: string;
@@ -33,6 +34,7 @@ export function roleLabel(role: UserRole): string {
     VENUE_STAFF: 'Venue staff',
     TECHNICAL_SUPPORT_STAFF: 'Technical support staff',
     ATTENDEE: 'Attendee',
+    SAFETY_OFFICER: 'Safety Officer',
   }[role];
 }
 

@@ -17,6 +17,7 @@ const showVenueBookings = computed(() => !authSession.loading &&
 const showVenueBlocks = computed(() => !authSession.loading && role.value === 'VENUE_STAFF');
 const showVenueCatalogue = computed(() => !authSession.loading && role.value === 'VENUE_STAFF');
 const showEquipmentRequests = computed(() => !authSession.loading && role.value === 'TECHNICAL_SUPPORT_STAFF');
+const showSafety = computed(() => !authSession.loading && role.value === 'SAFETY_OFFICER');
 
 onMounted(() => { void restoreSession().catch(() => undefined); });
 
@@ -67,6 +68,11 @@ async function handleSignOut(): Promise<void> {
           <p class="nav-label">Technical Support</p>
           <RouterLink to="/equipment-requests" exact-active-class="is-active" class="nav-link"
             ><AppIcon name="review" />Equipment requests</RouterLink>
+        </template>
+        <template v-if="showSafety">
+          <p class="nav-label">Safety</p>
+          <RouterLink to="/safety-reviews" active-class="is-active" class="nav-link"
+            ><AppIcon name="review" />Safety reviews</RouterLink>
         </template>
         <template v-if="showLead">
           <p class="nav-label">For coordinator Leads</p>
