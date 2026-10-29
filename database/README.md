@@ -251,7 +251,7 @@ The active sequence is now **001–015**. [015_equipment_reservations.sql](migra
 
 ## KAN-62 / KAN-63 event cancellation and equipment requests — migration 018
 
-`020_equipment_stock_changes.sql` (29 October 2026, KAN-18; numbered after main's 019 on review) adds `equipment_types.stock_revision` (default 0) and the append-only `equipment_stock_changes` history with row-level security and no Data API access. It is additive and **not applied** to shared Supabase until the team agrees. `018_event_cancellation_equipment_workflows.sql` adds the immutable `event_cancellations` outcome,
+`020_equipment_stock_changes.sql` (29 October 2026, KAN-18; numbered after main's 019 on review) adds `equipment_types.stock_revision` (default 0) and the append-only `equipment_stock_changes` history with row-level security and no Data API access. It is additive. Ernest and Arvin agreed to apply it, and on 29 October 2026 `npm run db:migrate` applied it to the shared Supabase database together with main's `019_registration_notification_outcomes.sql` (the database was at 018 before). `018_event_cancellation_equipment_workflows.sql` adds the immutable `event_cancellations` outcome,
 event-status-history reason, attendee cancellation outcome timestamp, equipment plan state, and
 equipment-line technical requirements/revision. It does not add another equipment cancellation
 metadata model: migration 015's `released_at`, `released_by`, `release_reason` and `release_cause`
