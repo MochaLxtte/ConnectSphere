@@ -34,6 +34,13 @@ export async function fulfilWorkspaceRead(
     await route.fulfill({ json: { cancellation: null } });
     return true;
   }
+  // KAN-61: unrelated approved/confirmed fixtures show the confirmation panel with no checklist.
+  const confirmation = /^\/api\/events\/([^/]+)\/confirmation$/.exec(path);
+  if (confirmation) {
+    await route.fulfill({ json: { eventRequestId: confirmation[1], status: 'APPROVED', started: false,
+      canConfirm: false, readiness: null, confirmation: null } });
+    return true;
+  }
   // KAN-10: a COMPLETED event's panel reads its saved outcome; other fixtures have none.
   if (/^\/api\/events\/[^/]+\/completion$/.test(path)) {
     await route.fulfill({ json: { completion: null } });

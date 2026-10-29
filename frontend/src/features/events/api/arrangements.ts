@@ -45,6 +45,22 @@ export async function cancelEvent(eventId: string, reason: string, signal?: Abor
   return postJson<{ cancellation: { status: string; cancelledAt: string; reason: string } }>(
     `/api/events/${encodeURIComponent(eventId)}/cancel`, { reason, confirmAffectedArrangements: true }, signal);
 }
+/** KAN-61: readiness checklist and the saved confirmation (actor and time). */
+export interface ReadinessCheck { key: 'VENUE' | 'EQUIPMENT' | 'CHANGE_REQUEST'; ready: boolean; message: string }
+export interface ConfirmationRecord { confirmedBy: string | null; confirmedByName: string | null; confirmedAt: string }
+export interface EventConfirmation {
+  eventRequestId: string; status: string; started: boolean; canConfirm: boolean;
+  readiness: { ready: boolean; checks: ReadinessCheck[] } | null;
+  confirmation: ConfirmationRecord | null;
+}
+export async function fetchConfirmation(eventId: string, signal?: AbortSignal) {
+  return getJson<EventConfirmation>(`/api/events/${encodeURIComponent(eventId)}/confirmation`, signal);
+}
+export async function confirmEvent(eventId: string, signal?: AbortSignal) {
+  return postJson<{ confirmation: { status: string; changed: boolean; confirmation: ConfirmationRecord | null } }>(
+    `/api/events/${encodeURIComponent(eventId)}/confirm`, {}, signal);
+}
+
 export async function fetchCancellation(eventId: string, signal?: AbortSignal) {
   return getJson<{ cancellation: { status: string; cancelledAt: string; reason: string } | null }>(
     `/api/events/${encodeURIComponent(eventId)}/cancellation`, signal);

@@ -1,5 +1,11 @@
 # Event proposal workstream
 
+## 29 October 2026 — KAN-61 event confirmation
+
+`confirmation.ts` holds the shared `eventReadiness` check (venue, equipment and pending-change items, each with a reason) used by KAN-61 and, later, KAN-84 safety-review submission. `confirmEvent` moves APPROVED → CONFIRMED for the currently assigned coordinator only, before the event starts, after locking venue gates and bookings, the event, then equipment types and requests (KAN-62 order). A repeat on a confirmed event returns `changed: false`. The existing status-history trigger records actor and time; migration 019 sends the KAN-80 notices. `confirmation-router.ts` mounts `GET /:id/confirmation` and `POST /:id/confirm` under `/api/events`. See the [API contract](../../../../docs/architecture/api-contract.md#29-october-2026--kan-61-event-confirmation).
+
+**29 October 2026 PR #77 follow-up:** Venue readiness reads current `APPROVED_BOOKING_OVERLAP`, `OUTSIDE_OPERATING_HOURS` and `OPERATIONAL_BLOCK_OVERLAP` warnings for approved bookings, in addition to saved outage-recovery flags. A later buffer edit can overlap an existing operational block without creating an impact row, so that live warning independently blocks confirmation with an operational-unavailability reason. Confirmation share-locks the venue rows within its existing transaction, serializing catalogue edits with the readiness check. The real-PostgreSQL regression TC-06-431 is in `database/tests/events/confirmation.integration.test.ts`; evidence: `AUTO-20261029-PR77-REVIEW`.
+
 ## 29 October 2026 — KAN-80 notification integration
 
 Allowed KAN-15 attendee-relevant approved changes create active-attendee notifications within the decision transaction, without bypassing its cancel-and-resubmit checks. Change submissions, decisions and withdrawals retain their change-request ID on notifications; decision acknowledgements include the current coordinator. Migration 019 handles final confirmation outcomes in the event status transaction. KAN-62 is the single cancellation-outcome writer and notifies staff for arrangements released by that cancellation. The KAN-61 confirmation workflow remains a separate dependency and is not supplied by this hook. See [API contract](../../../../docs/architecture/api-contract.md#29-october-2026--kan-17-kan-67-and-kan-80-registration-outcomes).

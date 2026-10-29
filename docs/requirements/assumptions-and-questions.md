@@ -1485,3 +1485,32 @@ Source: Jira KAN-18 AC1 to AC6 and the repository's AC101 to AC103, and Ernest's
 - **Concurrency (AC103).** Each type has a revision that rises with every accepted change; a form must quote the revision it was based on. The pool is locked with the lock that reservations and releases use, after the affected events (the order cancellation and completion use). A reservation that commits between choosing the events and taking the pool restarts the attempt with the larger set, at most five times, then answers `409 EQUIPMENT_STOCK_BUSY`. A retry of the change that just committed is answered with the saved state instead of an error.
 - **Not done.** Activating or deactivating a type, adding or renaming types and a Lead notification are not part of KAN-18. Whether the Lead should also be told remains open.
 - **Migration 020.** Numbered after main's 019 (registration outcomes). Ernest and Arvin agreed to apply it, and it was applied to the shared Supabase database on 29 October 2026 with main's 019. The revision column is a design choice (the existing `updated_at` could have been the version token); it was accepted with the migration.
+
+## 29 October 2026 — KAN-61 confirmation implementation decisions
+
+**Source:** KAN-61 owner Kai Jie in the AI-assisted working session on 29 October 2026, choosing between proposed options. No customer clarification or team vote; the independent reviewer (Tristan) can raise disagreement on the PR.
+
+| # | Decision | Reason |
+| --- | --- | --- |
+| D1 | A repeated confirmation of an already CONFIRMED event returns `200` with `changed: false` and the saved actor/time. It writes no status, history or notification. | KAN-61-AC5 (repeated transitions do not corrupt records); matches the KAN-17 withdrawal replay. |
+| D2 | Confirmation is refused at or after the event's start time, judged by the database clock (`EVENT_ALREADY_STARTED`). Recorded as new criterion **KAN-61-AC106** with case TC-06-432 (ID corrected on 29 October 2026 from TC-06-08, which already belongs to KAN-62 cancellation). | Confirming an event that has begun has no planning value; the server clock avoids client time drift. **Jira KAN-61 still needs AC106 added by the owner.** |
+| D3 | One shared, derived readiness check (`eventReadiness` in `backend/src/modules/events/confirmation.ts`) combines KAN-82 venue readiness (which counts KAN-81 outage recovery as outstanding), KAN-26 equipment readiness, explicit Not Required equipment and pending change requests. KAN-84-AC2 reuses it. | One definition of "ready" for confirmation and safety-review submission. |
+| D4 | No migration. The status-history trigger records actor and time (AC4); migration 019 writes the KAN-80 confirmation notices on the status change. | Avoids a second writer for the same outcome. |
+| D5 | Lock order: venue gate → bookings → event → equipment types → equipment requests, as in KAN-62 cancellation, before reading readiness and writing the status. | KAN-61-AC103: concurrent arrangement, outage or change-request writers wait, then the check sees their committed result. |
+| D6 | "Required" equipment with no active lines is not ready; the coordinator must explicitly record Not Required. | KAN-61-AC3/AC102 require an explicit choice. |
+
+Consequences: `POST /api/events/:id/confirm` and `GET /api/events/:id/confirmation` are added (API contract updated). The equipment module exports its existing readiness function unchanged.
+
+## 29 October 2026 — KAN-61 review fix: current venue conflicts block confirmation
+
+**Source:** PR #77 review by MochaLxtte (Tristan), 29 October 2026, changes requested (P1), reproduced on an isolated database: after two adjacent bookings were approved, raising the venue turnaround buffer to 15 minutes made `venue_booking_warnings` report `APPROVED_BOOKING_OVERLAP` for both, yet confirmation succeeded. Fix approved by the KAN-61 owner Kai Jie in the AI-assisted session.
+
+**Decision D7:** readiness now also requires every APPROVED venue booking of the event to have no current `APPROVED_BOOKING_OVERLAP` or `OUTSIDE_OPERATING_HOURS` warning, evaluated with the venue's current buffers and hours. `OPERATIONAL_BLOCK_OVERLAP` stays with the KAN-81 recovery check, as in `booking-service.ts`. Confirmation share-locks the event's venue rows after the existing KAN-62 lock order, so a catalogue edit (which locks the venue row) either commits before the check or waits for the confirmation.
+
+**Why:** KAN-61-AC101 requires approved venue arrangements to be conflict-free against current data, and catalogue edits deliberately do not re-judge or cancel existing approvals. Consequence: the same readiness check is reused by KAN-84 (PR #78), so safety submission, approval and preparation inherit the rule. No migration, API shape or AC wording changes; the confirmation panel shows the new reasons.
+
+## 29 October 2026 — KAN-61 D7 correction: current operational blocks
+
+**Source:** Follow-up review of PR #77 against live Jira KAN-61-AC101 and a reproduced isolated-PostgreSQL failure. The user authorized fixing unresolved PR review issues; this is an implementation correction within the existing criterion, not a new team decision or scope change.
+
+The earlier D7 statement that `OPERATIONAL_BLOCK_OVERLAP` can be left solely to saved KAN-81 recovery flags is incorrect. A block created adjacent to an approved booking has no impact row; a subsequent buffer increase can make it overlap without adding one. Current operational-block warnings therefore independently block confirmation, alongside approved-booking overlap, operating-hours violations and saved recovery flags. The same existing venue share locks protect the check from concurrent catalogue edits. TC-06-431 failed before this correction and passed after it (`AUTO-20261029-PR77-REVIEW`, S4-E21). The earlier D7 record is retained above for provenance. No migration, estimate, API shape or AC wording change is required.

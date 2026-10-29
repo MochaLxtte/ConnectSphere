@@ -351,6 +351,39 @@ sequenceDiagram
   end
 ```
 
+## Event confirmation sequence (KAN-61)
+
+The assigned coordinator confirms an APPROVED event only when the shared readiness check passes. The check and the status write happen in one transaction after the arrangement locks, so a concurrent outage, booking change, equipment change or change request is either already visible or waits.
+
+```mermaid
+sequenceDiagram
+  actor C as Assigned coordinator
+  participant UI as EventConfirmationPanel
+  participant API as confirmation-router
+  participant S as confirmation.ts
+  participant DB as PostgreSQL
+  UI->>API: GET /api/events/:id/confirmation
+  API->>S: getEventConfirmation
+  S->>DB: event FOR SHARE, eventReadiness (venue, equipment, change requests)
+  S-->>UI: checklist, canConfirm, saved confirmation
+  C->>UI: tick acknowledgement, Confirm event
+  UI->>API: POST /api/events/:id/confirm
+  API->>S: confirmEvent
+  S->>DB: recheck role, then lock venue gates and bookings, event, equipment types and requests
+  alt not assigned, not APPROVED, started or not ready
+    S-->>UI: 403/404/409 with reason, nothing written
+  else already CONFIRMED
+    S-->>UI: 200 changed=false, saved actor and time
+  else ready
+    S->>DB: UPDATE status = CONFIRMED
+    DB->>DB: status-history trigger (actor, time), migration 019 EVENT_CONFIRMED notices
+    S-->>UI: 200 changed=true
+  end
+  UI->>API: re-read checklist and confirmation
+```
+
+![Event confirmation sequence](exports/seq-event-confirmation.png)
+
 ## Event cancellation and equipment request sequence (KAN-62 / KAN-63)
 
 ```mermaid

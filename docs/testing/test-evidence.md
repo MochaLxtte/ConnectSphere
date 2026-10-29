@@ -2207,3 +2207,46 @@ Both API mounts and separate frontend routes were retained. The seven documentat
 | Conflict-marker, whitespace and execution-ID checks | Pass |
 
 **Limits:** Browser scenarios mainly substitute API responses; the unauthenticated API checks use the local running server. Database integration uses real isolated PostgreSQL with test identities. These results do not establish connected manual acceptance. No manual result or historical execution was changed. Coverage was not rerun locally for this merge; the fresh PR CI run remains the coverage/full-suite gate before merging. The existing large-frontend-chunk build warning remains non-blocking.
+
+## 29 October 2026 — KAN-61 event confirmation verification
+
+**Run:** `AUTO-20261029-KAN61-01`, executed by Claude Code (AI-assisted) for Kai Jie on Windows 11 with Node 24.11.1. Database: a disposable local PostgreSQL 17 container (the CI image) with synthetic accounts; migrations 001–019 applied there only. Build: branch `feat/KAN-61-confirm-event` based on main `2e0f895`, uncommitted at run time and committed without code changes afterwards. No shared Supabase change, no real sign-in.
+
+| Check | Result and boundary |
+| --- | --- |
+| `npm run check` | Pass: 1,071 frontend and 1,785 backend tests, typechecks and builds. |
+| `npm run test:coverage` | Pass: frontend 95.86% statements / 92.78% branches / 97.81% functions / 98.30% lines; backend 93.74% / 94.04% / 92.61% / 93.75%. `confirmation.ts`: 100% lines, 89.79% branches. `EventConfirmationPanel.vue`: 100% lines, 88.37% branches. Whole-file figures, not proof of every AC; uncovered branches are defensive fallbacks (missing rows, null counts). |
+| `npm run test:integration` | Pass: 673 tests in 37 files, including 11 KAN-61 scenarios in `database/tests/events/confirmation.integration.test.ts`. |
+| `npm run test:e2e` | Pass: 197 Chromium tests, including 3 in `tests/e2e/event-confirmation.spec.ts`. The KAN-61 browser tests substitute API responses; they verify the panel, acknowledgement, reload persistence, organiser view and narrow layout, not a live integrated workflow. |
+
+**Failures and retests.** The first `npm run check` failed a backend typecheck in the new unit-test fixture (a literal widened to `string`); the fixture type was corrected. The first full browser run passed 197/197; a second full run failed the new coordinator confirmation test once. Cause: after a successful confirmation the host page refreshes the event status, and the panel's reset could clear the success message before it was read. The panel now keeps the outcome when only the status or revision changes for the same viewer and event; a component test covers it, and the spec then passed 15/15 with `--repeat-each=5` before the final runs above. Initial integration attempts failed on test setup only (change-request inserts missing `previous`/`base_revision`, an attempt to rewrite an immutable reserved equipment line, an unreleased aborted test connection); these were fixture corrections. Logs: S4-E18.
+
+**Supported case-level execution:** TC-06-01, TC-06-02, TC-06-03, TC-06-04, TC-06-05 and TC-06-432 are each backed by named real-PostgreSQL scenarios (rows `EX-06-0x-AUTO-20261029-01`). The cutoff case was corrected from duplicate TC-06-08 to TC-06-432 on 29 October 2026; its original execution ID `EX-06-08-AUTO-20261029-01` and result are retained. These are scenario-level results with fixture-inserted arrangements and synthetic authentication. TC-06-06 (no staffing prerequisite) and TC-06-07 (registration schedule preserved) remain **Not executed**; the code reads no staffing data and does not modify registration fields, but no case-level run was recorded. Hosted acceptance with real sign-in remains **Not executed**; acceptance **Not assessed**.
+
+## 29 October 2026 — KAN-61 PR #77 review fix verification
+
+**Run:** `AUTO-20261029-KAN61-02`, Claude Code (AI-assisted) for Kai Jie, Windows 11 / Node 24.11.1, disposable local PostgreSQL 17 with synthetic accounts; build feat/KAN-61-confirm-event merge 4f23055 plus the uncommitted review fix (latest main including KAN-18 merged in). No shared Supabase change.
+
+The review finding (P1, MochaLxtte) was that confirmation ignored current venue conflicts created by later catalogue edits. Three new real-PostgreSQL regressions — raised turnaround buffer, moved closing hours, and a buffer edit committed while confirmation waits — **failed without the fix and passed with it** (both runs recorded in this session). Full suites after the fix: `npm run check` Pass (1,154 frontend and 1,932 backend tests, typechecks, builds); `npm run test:coverage` Pass (`confirmation.ts` 100% lines / 91.22% branches); `npm run test:integration` Pass, 775 tests in 40 files (14 KAN-61 scenarios); `npm run test:e2e` Pass, 224 Chromium tests. Case retests: TC-06-03 and TC-06-05 (`EX-06-03/05-AUTO-20261029-02`). Logs: S4-E18 (`*-review-fix.txt`). Hosted acceptance remains **Not executed**.
+
+## AUTO-20261029-PR77-REVIEW — operational-block readiness regression
+
+**Date and executor:** 29 October 2026, Codex (AI-assisted PR review). **Build:** PR #77 head `d93ce6d6081669fa3b426c1bb4675696f6d61c49` plus the review changes, tested before commit and committed without code changes as `a31d2ef3cee6efdeacfc93b409e9eb5eb80cd3ab`. **Environment:** Windows, Node 24, Vitest 4.1.11, disposable PostgreSQL 17 container `connectsphere-pr77-78-review` at `127.0.0.1:55439/connectsphere_test`, with an isolated schema per test file and synthetic accounts. The fixture applied the migrations and removed its schema afterwards. No shared Supabase connection or migration was used.
+
+**Finding and correction (KAN-61-AC101):** An operational block initially adjacent to an approved booking creates no outage impact. A later turnaround-buffer increase can make that booking overlap the block without adding a `RECOVERY_REQUIRED` row. Readiness therefore checks current `OPERATIONAL_BLOCK_OVERLAP` warnings as well as stored recovery flags, current approved-booking overlaps and operating-hours warnings. Confirmation retains the existing lock order and venue-row share locks. No migration or acceptance-criterion change was required.
+
+**Failed reproduction retained:** At 21:10:38 Singapore time, the new named regression was run against the original PR head plus only the new test, using `npx vitest run --config vitest.integration.config.ts database/tests/events/confirmation.integration.test.ts -t 'buffer extended'`. It failed (1 failed, 14 skipped): `expected true to be false` at the `canConfirm` assertion. At 21:11:02, after the fix, the complete confirmation database file passed 15/15. These are observations from the captured command output; original console output was not saved as a separate log file. Earlier PR runs remain intact above.
+
+| Command / check | Observed result |
+| --- | --- |
+| `npm run test -w @connectsphere/backend -- test/events/confirmation.test.ts test/events/confirmation-router.test.ts` | Pass: 30 tests, 2 files |
+| `npm run test -w @connectsphere/frontend -- src/features/events/components/EventConfirmationPanel.test.ts` | Pass: 9 tests, 1 file |
+| `npx vitest run --config vitest.integration.config.ts database/tests/events/confirmation.integration.test.ts` with the isolated `TEST_DATABASE_URL` | Pass: 15 tests, 1 file, including the new operational-block regression and existing catalogue-edit concurrency checks |
+| `npm run check` | Pass: all type checks, 1,154 frontend tests in 57 files, 1,933 backend tests in 75 files, both production builds. The existing large frontend chunk warning is non-blocking. |
+| `npm run test:coverage` | Pass: the same 1,154 frontend and 1,933 backend tests. Frontend: 95.71% statements / 92.81% branches / 97.77% functions / 98.36% lines. Backend: 94.30% / 94.38% / 93.41% / 94.28%. |
+| Changed `confirmation.ts` coverage | 98.61% statements / 91.66% branches / 100% functions / 100% lines. Defensive missing-row/count fallbacks and some existing role/state branches remain uncovered; SQL behaviour is checked separately by the real PostgreSQL suite. |
+| `git diff --check` | Pass |
+
+**Case-level result:** TC-06-431 passed in the named scenario “a buffer extended into an existing operational block prevents confirmation without an outage flag” in `database/tests/events/confirmation.integration.test.ts`. The test creates the block and edits the catalogue through the real services. It verifies `canConfirm=false`, `EVENT_NOT_READY` with the operational-unavailability reason, unchanged APPROVED status and no CONFIRMED history or EVENT_CONFIRMED notices. Restoring the zero buffer permits confirmation. Execution row: `EX-06-431-AUTO-20261029-PR77-01`; evidence registration: S4-E21.
+
+**Limits:** The backend and component checks use their existing test doubles; the targeted database file uses real PostgreSQL and synthetic identities. The full database and browser suites were not rerun in this follow-up. No new browser/full-system E2E or manual acceptance result is claimed. Shared Supabase and real-sign-in manual acceptance remain **Not executed**; story acceptance remains **Not assessed**. Existing manual placeholders, historical outcomes and Done points are unchanged.

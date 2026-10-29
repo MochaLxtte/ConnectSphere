@@ -13,6 +13,7 @@ import { createChangeRequestRouter } from './modules/events/change-request-route
 import { createStatusHistoryRouter } from './modules/events/status-history-router.js';
 import { createCompletionRouter } from './modules/events/completion-router.js';
 import { createCancellationRouter } from './modules/events/cancellation-router.js';
+import { createConfirmationRouter } from './modules/events/confirmation-router.js';
 import { createVenueRouter } from './modules/venues/venue-router.js';
 import {
   createVenueBookingsRouter, createVenueBookingSubmissionRouter,
@@ -101,6 +102,8 @@ export function createApp({
     app.use('/api/events', createChangeRequestRouter(workspace));
     app.use('/api/events', createStatusHistoryRouter(workspace));
     app.use('/api/events', createCancellationRouter(workspace));
+    // KAN-61: final confirmation after the planning arrangements are ready.
+    app.use('/api/events', createConfirmationRouter(workspace));
     // KAN-10: the assigned coordinator marks a confirmed, ended event completed.
     app.use('/api/events', createCompletionRouter(workspace));
     app.use('/api/events', createVenueSuitabilityRouter(workspace));

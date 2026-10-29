@@ -1,0 +1,68 @@
+
+> connectsphere@0.1.0 check
+> npm run typecheck && npm test && npm run build
+
+
+> connectsphere@0.1.0 typecheck
+> tsc -p tsconfig.tools.json && npm run typecheck --workspaces
+
+
+> @connectsphere/frontend@0.1.0 typecheck
+> vue-tsc --noEmit
+
+
+> @connectsphere/backend@0.1.0 typecheck
+> tsc --noEmit
+
+
+> connectsphere@0.1.0 test
+> npm run test --workspaces
+
+
+> @connectsphere/frontend@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.11 C:/Users/iamle/ConnectSphere/frontend
+
+
+ Test Files  52 passed (52)
+      Tests  1071 passed (1071)
+   Start at  18:46:33
+   Duration  48.74s (transform 35.52s, setup 149.07s, import 58.89s, tests 122.59s, environment 228.73s)
+
+
+> @connectsphere/backend@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.11 C:/Users/iamle/ConnectSphere/backend
+
+
+ Test Files  65 passed (65)
+      Tests  1785 passed (1785)
+   Start at  18:47:22
+   Duration  10.59s (transform 12.24s, setup 0ms, import 49.76s, tests 14.37s, environment 30ms)
+
+
+> connectsphere@0.1.0 build
+> npm run build --workspaces
+
+
+> @connectsphere/frontend@0.1.0 build
+> vue-tsc --noEmit && vite build
+
+vite v8.2.2 building client environment for production...
+transforming...
+✓ 240 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.69 kB │ gzip:   0.40 kB
+dist/assets/index-hgsPiCU1.css   75.54 kB │ gzip:  13.28 kB
+dist/assets/index-BFqo-p1u.js   598.98 kB │ gzip: 160.57 kB
+
+✓ built in 812ms
+
+> @connectsphere/backend@0.1.0 build
+> tsc -p tsconfig.build.json
+

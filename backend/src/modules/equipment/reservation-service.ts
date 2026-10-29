@@ -89,7 +89,8 @@ function matchingPeriod(event: EquipmentReservationContext['event'], row: Stored
   }
 }
 
-function readiness(snapshot: EquipmentReservationSnapshot): EquipmentReadiness {
+/** KAN-26 equipment readiness; KAN-61 confirmation reuses it. */
+export function equipmentReadiness(snapshot: EquipmentReservationSnapshot): EquipmentReadiness {
   const active = snapshot.requests.filter(row => row.status !== 'CANCELLED');
   const base = { activeCount: active.length, reservedCount: active.filter(row => row.status === 'RESERVED').length };
   if (active.length === 0) return { ...base, status: 'NO_REQUIREMENTS',
@@ -124,7 +125,7 @@ export function equipmentReservationContext(snapshot: EquipmentReservationSnapsh
         && snapshot.coordinatorId !== null && matchingPeriod(snapshot.event, row),
       canCancel: snapshot.event.status === 'APPROVED' && row.status === 'RESERVED',
     })),
-    readiness: readiness(snapshot),
+    readiness: equipmentReadiness(snapshot),
   };
 }
 
