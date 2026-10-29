@@ -92,3 +92,9 @@ KAN-26 is In Progress / Tristan (3 SP), with unestimated KAN-104–106 In Progre
 | ID | Artifact | Source / result | Limits |
 | --- | --- | --- | --- |
 | S4-E18 | [KAN-61 run logs](kan61-20261029/) (`check.txt`, `coverage.txt`, `integration.txt`, `e2e.txt`, `e2e-initial.txt`) | `AUTO-20261029-KAN61-01`: check and coverage Pass; PostgreSQL integration 673/673 including 11 KAN-61 tests; browser fixtures 197/197 including 3 KAN-61 tests; `e2e-initial.txt` keeps the earlier flaky failure that led to the panel fix | Local Windows run, Node 24.11.1, disposable PostgreSQL 17; synthetic accounts; browser APIs substituted; no live authentication, CI or acceptance |
+
+## KAN-84 automated verification — 29 October 2026
+
+| ID | Artifact | Source / result | Limits |
+| --- | --- | --- | --- |
+| S4-E19 | [KAN-84 run logs](kan84-20261029/) (`check.txt`, `coverage.txt`, `integration.txt`, `e2e.txt`, `e2e-repeat.txt`) | `AUTO-20261029-KAN84-01`: check and coverage Pass; PostgreSQL integration 705/705 including 9 KAN-84 tests; browser fixtures 206/206 including 3 KAN-84 tests; KAN-84 spec repeated 15/15 | Local Windows run, Node 24.11.1, disposable PostgreSQL 17; synthetic accounts; browser APIs substituted; backend coverage excludes the integration-tested safety service; no live authentication, CI or acceptance |

@@ -28,7 +28,7 @@ This rebalanced allocation replaces the earlier 97/29 split with **63/63**, with
 | [KAN-15](https://smu-g7-grp1.atlassian.net/browse/KAN-15) | Submit and Review Event Change Requests | 5 | Irfan (assigned in Jira 26 October 2026) | To agree | Existing release backlog | S4-T12 |
 | [KAN-80](https://smu-g7-grp1.atlassian.net/browse/KAN-80) | Receive Equipment, Lifecycle, Change and Registration Notifications | 3 | Arvin (Jira read 29 October) | PR #70: changes requested | Explicit original notification split | S4-T13 |
 | [KAN-82](https://smu-g7-grp1.atlassian.net/browse/KAN-82) | Manage each venue arrangement independently for an event | 5 | Irfan (In Progress in Jira since 26 October 2026) | To agree | Customer change CR-3 | S4-T14 |
-| [KAN-84](https://smu-g7-grp1.atlassian.net/browse/KAN-84) | Review operational safety before event preparation | 8 | Unassigned — team member to choose | To agree after owner chosen | Customer change CR-6 | S4-T15 |
+| [KAN-84](https://smu-g7-grp1.atlassian.net/browse/KAN-84) | Review operational safety before event preparation | 8 | Kai Jie (29 October 2026) | Tristan | Customer change CR-6 | S4-T15 |
 | **Total** | **15 parents** | **63** | | | | |
 
 ## Shared test data and execution rules
@@ -62,7 +62,7 @@ Every row requires its complete active criterion set plus applicable Definition 
 | S4-T12 | KAN-15: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC101, AC102, AC103, AC104, AC105 | TC-19-01, TC-19-02, TC-19-03, TC-19-04, TC-19-05, TC-19-06, TC-19-07, TC-19-08, TC-19-09 | **In progress (27 October 2026):** unit/component and browser-fixture runs Pass (`AUTO-20261027-KAN15-01`); PostgreSQL integration 544/544 and browser 164/164 Pass in CI on `6c5043c` (`CI-20261027-KAN15-02`); local integrated acceptance Pass for TC-19-01 to 05, and for TC-19-08's attendance-change cancellation only, on `main` `ac5cd8b` with real sign-in (`MAN-20261028-KAN66-KAN15-01`; minor display defect O-1, fixed in PR #69; TC-19-06/07/09 and the preservation and equipment parts of TC-19-08 Not executed); acceptance **Not assessed** (sprint review) |
 | S4-T13 | KAN-80: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9 | TC-20-21, TC-20-22, TC-20-23, TC-20-24, TC-20-25, TC-20-26, TC-20-27, TC-20-28, TC-20-29, TC-20-401, TC-20-402, TC-20-403, TC-20-404, TC-20-405, TC-20-406, TC-20-407, TC-20-408, TC-20-409, TC-20-410, TC-20-411, TC-20-412, TC-20-413, TC-20-414, TC-20-415, TC-20-416, TC-20-417, TC-20-418, TC-20-419, TC-20-420, TC-20-421, TC-20-422, TC-20-423, TC-20-424, TC-20-425, TC-20-426, TC-20-427, TC-20-428, TC-20-429, TC-20-430 | Partial automated coverage; integrated acceptance **Not executed** / acceptance **Not assessed** |
 | S4-T14 | KAN-82: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12 | TC-12-01, TC-12-02, TC-12-03, TC-12-04, TC-12-05, TC-12-06, TC-12-07, TC-12-08, TC-12-09, TC-12-10, TC-12-11, TC-12-12, TC-12-13, TC-12-14 | **In progress (29 October 2026):** PR #67 review fixes verified (`AUTO-20261029-KAN82-03`): TC-12-13 and TC-12-14 failed on the code under review and pass after the fixes; integration 639/639, KAN-82 and venue browser specs 76/76; local integrated acceptance **Not executed**; acceptance **Not assessed**. **28 October 2026:** unit/component, isolated PostgreSQL integration and browser-fixture runs Pass (`AUTO-20261028-KAN82-01`, S4-E17); GitHub CI Pass on `4414fde` (`CI-20261028-KAN82-02`, run 40684714674: integration 637/637, browser 191/191); local integrated acceptance **Not executed**; acceptance **Not assessed** |
-| S4-T15 | KAN-84: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12 | TC-06-20, TC-06-21, TC-06-22, TC-06-23, TC-06-24, TC-06-25, TC-06-26, TC-06-27, TC-06-28, TC-06-29, TC-06-30, TC-06-31 | **Not executed** / Not recorded |
+| S4-T15 | KAN-84: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12, AC101 | TC-06-20, TC-06-21, TC-06-22, TC-06-23, TC-06-24, TC-06-25, TC-06-26, TC-06-27, TC-06-28, TC-06-29, TC-06-30, TC-06-31 | Partial automated coverage (AUTO-20261029-KAN84-01); integrated acceptance **Not executed** / acceptance **Not assessed** |
 | S4-T16 | Integrated complete release with equipment, registration, independent venue actions and safety | TC-06-32 | **Not executed** / Not recorded |
 
 ## Selected story cards
@@ -1097,7 +1097,7 @@ Update contracts/diagrams, test cases, traceability, actual run evidence and spr
 
 ### KAN-84 — Review operational safety before event preparation
 
-**Owner:** Unassigned — team member to choose · **Independent reviewer:** To agree after owner chosen · **Estimate:** 8 SP · **Jira status:** To Do · **Acceptance:** Not assessed · **Test group:** S4-T15
+**Owner:** Kai Jie (29 October 2026) · **Independent reviewer:** Tristan · **Estimate:** 8 SP · **Jira status:** To Do · **Acceptance:** Not assessed · **Test group:** S4-T15
 
 **User story:** As a Safety Officer, I want to review confirmed venue and technical arrangements and approve, reject or request changes, so that preparation starts only when the current operational arrangements have safety approval.
 
@@ -1119,7 +1119,9 @@ Update contracts/diagrams, test cases, traceability, actual run evidence and spr
 | **KAN-84-AC12** | The workflow displays review rounds, current outcome, required remedial work and preparation eligibility, handles missing/stale data and network failure without claiming an unsaved decision, and refreshes after an uncertain write. The release does not invent a response deadline, escalation or automatic approval because the customer permits assuming the officer responds. | TC-06-31 |
 | **KAN-84-AC101** | An event with a venue booking still requiring outage recovery (KAN-81) cannot pass the safety review. *(Moved from KAN-81-AC9, PO decision 28 October 2026.)* | TC-06-23 |
 
-**Implementation location:** Not recorded. **Automated test files:** Not recorded. Record real files during implementation; these planned tests are not completion evidence.
+**Implementation location (29 October 2026):** `database/migrations/020_safety_reviews.sql` (SAFETY_OFFICER role, `safety_reviews` rounds with immutable decided history, preparation columns, `safety_arrangement_fingerprint`), `backend/src/modules/safety/service.ts`, `backend/src/modules/safety/router.ts`, KAN-61 `eventReadiness`/`lockEventArrangements` reuse, inbox visibility in `backend/src/modules/notifications/inbox.ts`, `frontend/src/features/events/components/SafetyReviewPanel.vue`, `frontend/src/features/safety/` (queue and review pages). **Automated test files:** `backend/test/safety/safety.test.ts`, `database/tests/safety/safety-reviews.integration.test.ts`, `frontend/src/features/events/components/SafetyReviewPanel.test.ts`, `frontend/src/features/safety/SafetyPages.test.ts`, `tests/e2e/safety-review.spec.ts`.
+
+**Verification (29 October 2026):** `AUTO-20261029-KAN84-01` / S4-E19 records check, coverage, isolated PostgreSQL and browser-fixture results. Named PostgreSQL scenarios support TC-06-20, TC-06-21 and TC-06-23 to TC-06-30 at scenario level; TC-06-22 and TC-06-31 are covered by component/browser tests only. Migration 020 is not applied to shared Supabase and no Safety Officer account is provisioned there. Hosted acceptance, independent review and merge remain outstanding; no Done points are claimed.
 
 **Dependencies:** KAN-61 event and arrangement readiness; KAN-63/KAN-26 technical arrangement reservation; KAN-15/KAN-66 revision-aware changes; CR-3 independent venue actions and CR-2 recovery state; KAN-64 persisted notification delivery.
 

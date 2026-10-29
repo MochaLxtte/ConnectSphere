@@ -384,6 +384,46 @@ sequenceDiagram
 
 ![Event confirmation sequence](exports/seq-event-confirmation.png)
 
+## Safety review and preparation sequence (KAN-84)
+
+A round records the arrangement fingerprint it was submitted against. Approval counts only while the live fingerprint matches, so a change from any story makes it stale and blocks preparation until a new round is approved.
+
+```mermaid
+sequenceDiagram
+  actor C as Assigned coordinator
+  actor O as Safety Officer
+  participant API as safety router
+  participant S as safety/service.ts
+  participant DB as PostgreSQL
+  C->>API: POST /events/:id/safety-reviews (safety notes)
+  API->>S: submitSafetyReview
+  S->>DB: lock arrangements (KAN-61 order), eventReadiness, fingerprint
+  alt not ready, pending round or already approved
+    S-->>C: 409 with reason, nothing written
+  else ready
+    S->>DB: INSERT round N with fingerprint, notify every Safety Officer
+    S-->>C: 201 round N
+  end
+  O->>API: GET /safety-reviews/:id
+  API->>S: getSafetyReview
+  S-->>O: event, venues, equipment, notes (missing shown), stale flag, fingerprint
+  O->>API: POST /safety-reviews/:id/decision (decision, fingerprint)
+  API->>S: decideSafetyReview
+  S->>DB: lock arrangements, lock round
+  alt round decided, fingerprint differs or stale approve
+    S-->>O: 409, nothing written
+  else decision allowed
+    S->>DB: record decision (immutable), notify coordinator and area staff
+    S-->>O: 200
+  end
+  C->>API: POST /events/:id/preparation/start
+  API->>S: startPreparation
+  S->>DB: CONFIRMED? latest round APPROVED and fingerprint current? ready?
+  S-->>C: 200 started or 409 with reason
+```
+
+![Safety review sequence](exports/seq-safety-review.png)
+
 ## Event cancellation and equipment request sequence (KAN-62 / KAN-63)
 
 ```mermaid

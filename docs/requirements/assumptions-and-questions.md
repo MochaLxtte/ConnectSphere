@@ -1476,3 +1476,20 @@ Reason: the previous order (booking → event → venue → original) deadlocked
 | D6 | "Required" equipment with no active lines is not ready; the coordinator must explicitly record Not Required. | KAN-61-AC3/AC102 require an explicit choice. |
 
 Consequences: `POST /api/events/:id/confirm` and `GET /api/events/:id/confirmation` are added (API contract updated). The equipment module exports its existing readiness function unchanged.
+
+## 29 October 2026 — KAN-84 safety review implementation decisions
+
+**Source:** KAN-84 owner Kai Jie in the AI-assisted working session on 29 October 2026, choosing the proposed options ("go with your recommendation"). Builds on the CR-6 delegated defaults above. No customer clarification or team vote; reviewer Tristan can raise disagreement on the PR.
+
+| # | Decision | Reason |
+| --- | --- | --- |
+| D1 | The assigned coordinator records three optional safety notes (emergency access, equipment placement, crowd movement) when submitting a round. Blank notes are stored as missing and shown to the officer as "Missing — not provided"; the officer can request them through Request Changes. | KAN-84-AC3 and the CR-6 default: represent these as reviewable fields, never infer them from free text. |
+| D2 | Preparation is recorded as fields on the event (`preparation_started_at/_by`, `preparation_safety_review_id`), not a new event status. | A new status would ripple into KAN-10 completion, KAN-62 cancellation, KAN-15 change policy and the migration 019 triggers. CONFIRMED and current safety approval stay separate conditions (CR-6 default). |
+| D3 | Invalidation is derived: each round stores a fingerprint (`safety_arrangement_fingerprint`) of the safety-relevant event fields, live venue bookings and venues (capacity, layouts, accessibility, active, outage recovery) and active equipment lines with their operational stock. An approval counts only while the live fingerprint matches. Name, description, purpose and the event revision are excluded. | KAN-84-AC9 for changes from any story without triggers on every table; ordinary edits do not invalidate. |
+| D4 | A pending round whose arrangements changed cannot be approved (`SAFETY_REVIEW_STALE`) but can be rejected or sent back with Request Changes; the coordinator then submits a new round. | KAN-84-AC10: a stale review cannot approve newer arrangements, and the event is never stuck behind an unapprovable round. |
+| D5 | Decided rounds are immutable (database trigger). A repeated identical decision returns `changed: false`; a different decision on a decided round is refused (`SAFETY_REVIEW_DECIDED`). One pending round per event (partial unique index). | KAN-84-AC7/AC10. |
+| D6 | Submission and approval both require the KAN-61 `eventReadiness` check (which includes KAN-81 outage recovery) under the KAN-61 lock order. | KAN-84-AC2/AC101; one definition of readiness. |
+| D7 | Notices: submission → every SAFETY_OFFICER (visible only to that role, linked to `/safety-reviews/:id`); decision → current assigned coordinator; Request Changes → deciding Venue Staff of live held/approved bookings (VENUE) and deciding Technical Support of reserved lines (TECHNICAL). The organiser sees the outcome in the event panel. | KAN-84-AC11 through the KAN-64 writer, with a new `notifications.safety_review_id`. |
+| D8 | Migration number 020. PR #74 (KAN-18) also needs a new number after migration 019; whichever merges second renumbers. | Avoid a duplicate migration number. |
+
+Consequences: migration 020 must be applied to the shared database and a Safety Officer test account provisioned through trusted database setup before hosted acceptance (team to agree, AGENTS §7.3).

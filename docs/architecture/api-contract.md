@@ -990,3 +990,18 @@ Both endpoints require the verified application session and set `Cache-Control: 
 Errors: 401 unauthenticated; 403 wrong role (including organisers posting to `/confirm`) or a stored role that no longer matches the session; 404 unknown or unrelated event (and drafts for coordinators); 400 invalid ID or unexpected body fields; 409 `EVENT_NOT_CONFIRMABLE` (not APPROVED), `EVENT_ALREADY_STARTED` (start time reached on the database clock), `EVENT_NOT_READY` (message lists every unmet readiness check) or `EVENT_ARRANGEMENTS_CHANGED` (a venue booking appeared while locking). A refused confirmation writes nothing.
 
 Readiness: at least one live venue arrangement, all live arrangements APPROVED, none with `RECOVERY_REQUIRED` outage impacts (KAN-61-AC105); equipment explicitly `NOT_REQUIRED` with no active lines, or every active line `RESERVED` and currently fulfilable (KAN-26 readiness); no `PENDING` change request. The status update fires the existing status-history trigger (actor and time) and migration 019's `EVENT_CONFIRMED` notices to the organiser, current coordinator, active attendees and current arrangement staff, in the same transaction.
+
+## 29 October 2026 — KAN-84 safety review and preparation
+
+All routes require the verified session and set `Cache-Control: no-store`. Migration 020 must be applied first (local test database only so far).
+
+| Method / route | Actor | Result |
+| --- | --- | --- |
+| `GET /api/events/:id/safety` | Owning organiser or assigned coordinator | `{ eventRequestId, eventStatus, outcome, readiness, pendingStale, rounds, preparation, canSubmit, canStartPreparation }`. `outcome` is `NONE`, `PENDING`, `APPROVED`, `REJECTED`, `CHANGES_REQUESTED` or `STALE` (approved but arrangements changed). Each round has its number, status, notes, `missingNotes`, submitter, decider, decision notes and `requestedAreas`. `preparation` is `{ startedAt, startedByName, blocked }` or `null`. |
+| `POST /api/events/:id/safety-reviews` | Assigned coordinator | Body `{ emergencyAccess?, equipmentPlacement?, crowdMovement? }` (trimmed, ≤ 2000, blank = missing). `201 { eventRequestId, review }`. |
+| `POST /api/events/:id/preparation/start` | Assigned coordinator | Body `{}`. `{ eventRequestId, changed }`; `changed: false` when preparation already relies on the current approved round. |
+| `GET /api/safety-reviews` | Safety Officer | `{ items: [{ id, round, eventId, eventName, startsAt, submittedAt, stale }] }` for PENDING rounds. |
+| `GET /api/safety-reviews/:id` | Safety Officer | `{ review (with fingerprint), stale, canDecide, event, venues, equipment, readiness, rounds }`. |
+| `POST /api/safety-reviews/:id/decision` | Safety Officer | Body `{ decision: "APPROVED" \| "REJECTED" \| "CHANGES_REQUESTED", notes?, areas?, fingerprint }`. Notes required except for APPROVED; `areas` (`VENUE`, `TECHNICAL`) required only for CHANGES_REQUESTED. `{ changed, review }`; a repeated identical decision returns `changed: false`. |
+
+Errors: 401; 403 for wrong roles or a stored role that changed; 404 for unrelated/unknown events or reviews; 400 for invalid IDs and input; 409 `SAFETY_NOT_SUBMITTABLE`, `SAFETY_REVIEW_PENDING`, `SAFETY_ALREADY_APPROVED`, `EVENT_NOT_READY` (lists readiness problems, including outage recovery), `SAFETY_REVIEW_DECIDED`, `SAFETY_REVIEW_STALE`, `SAFETY_EVENT_CLOSED`, `EVENT_NOT_CONFIRMED`, `SAFETY_APPROVAL_REQUIRED`, `SAFETY_APPROVAL_STALE`. Refusals write nothing. Notifications: `SAFETY_REVIEW_SUBMITTED` (every Safety Officer), `SAFETY_REVIEW_APPROVED/REJECTED/CHANGES_REQUESTED` (assigned coordinator), `SAFETY_CHANGES_REQUESTED` (deciding Venue Staff / Technical Support per requested area), written in the same transaction.

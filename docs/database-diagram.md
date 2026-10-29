@@ -414,3 +414,31 @@ Migration 017 has **not** been applied to shared Supabase; announce it first (AG
 ## 28 October 2026 — PR #63 model reconciliation
 
 The current diagram includes migrations 016–018. Architecture exports now include event revision/edit history, change-request revision/impact fields, cancellation audit and equipment/registration state. Earlier pending-export notes are superseded by this refresh. The equipment API uses a derived opaque version over event and line data rather than exposing the stored integer as its concurrency token. Cancellation counts are captured before migration 015 releases RESERVED equipment; all release records remain immutable. No migration was rewritten and no shared Supabase schema change was performed during this repair. AUTO-20261028-PR63-01 records fresh-install/upgrade and workflow tests on disposable PostgreSQL 17.
+
+## 29 October 2026 — Migration 020 safety reviews (KAN-84)
+
+```mermaid
+erDiagram
+  event_requests ||--o{ safety_reviews : "review rounds"
+  app_users ||--o{ safety_reviews : "submitted_by / decided_by"
+  safety_reviews ||--o{ notifications : "safety_review_id"
+  safety_reviews |o--o| event_requests : "preparation_safety_review_id"
+  safety_reviews {
+    uuid id PK
+    uuid event_request_id FK
+    int round "unique per event"
+    text status "PENDING, APPROVED, REJECTED, CHANGES_REQUESTED"
+    text arrangement_fingerprint "md5 of safety-relevant arrangements"
+    text emergency_access "nullable = missing"
+    text equipment_placement "nullable = missing"
+    text crowd_movement "nullable = missing"
+    uuid submitted_by FK
+    timestamptz submitted_at
+    uuid decided_by FK
+    timestamptz decided_at
+    text decision_notes "required for REJECTED / CHANGES_REQUESTED"
+    text_array requested_areas "VENUE, TECHNICAL; only for CHANGES_REQUESTED"
+  }
+```
+
+`app_users.role` gains `SAFETY_OFFICER` (trusted provisioning only). `event_requests` gains `preparation_started_at`, `preparation_started_by` and `preparation_safety_review_id` (all set or all null). `notifications` gains `safety_review_id`. A partial unique index allows one PENDING round per event; a trigger makes decided rounds immutable. `safety_arrangement_fingerprint(event_id)` derives the digest an approval depends on; nothing about invalidation is stored.
