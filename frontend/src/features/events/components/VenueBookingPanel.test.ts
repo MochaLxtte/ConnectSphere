@@ -435,6 +435,10 @@ describe('KAN-82 managing one arrangement at a time', () => {
     expect(await screen.findByText(message)).toBeInTheDocument();
     expect(screen.getAllByRole('button', { name: 'Cancel arrangement' })
       .every((button) => (button as HTMLButtonElement).disabled)).toBe(true);
+    // The open confirmation cannot retry either, by button or by submitting the form.
+    expect(screen.getByRole('button', { name: 'Confirm cancellation' })).toBeDisabled();
+    await fireEvent.submit(screen.getByRole('form', { name: 'Cancel Main Hall' }));
+    expect(api.writes()).toHaveLength(1);
     api.set(list, { body: { items: [cancelled, other] } });
     await fireEvent.click(screen.getByRole('button', { name: 'Refresh booking requests' }));
     await screen.findByText('Cancellation reason: Too small');
@@ -489,6 +493,28 @@ describe('KAN-82 managing one arrangement at a time', () => {
     await fireEvent.click(screen.getByRole('button', { name: 'Refresh booking requests' }));
     expect((await screen.findByLabelText(/This request replaces/) as HTMLSelectElement).value).toBe('');
     expect(screen.queryByRole('form', { name: 'Cancel Main Hall' })).not.toBeInTheDocument();
+  });
+
+  it('KAN-82-AC12 a refresh clears a replacement source that is still listed but no longer replaceable', async () => {
+    const api = stubApi({
+      [list]: { body: { items: [cancelled, other] } },
+      'GET /api/venues/search-venues': venues,
+      [`POST ${base}/venue-bookings`]: { status: 201, body: { booking: { ...pending, id: 'r2' } } },
+    });
+    render(VenueBookingPanel, { props: coordinatorProps });
+    await fireEvent.click(await screen.findByRole('button', { name: 'Request replacement' }));
+    expect((screen.getByLabelText(/This request replaces/) as HTMLSelectElement).value).toBe('a1');
+    // Another session submitted a live replacement for a1 meanwhile.
+    api.set(list, { body: { items: [
+      { ...cancelled, replacedByBookingIds: ['r1'] }, other,
+      { ...pending, id: 'r1', venueName: 'Studio', replacesBookingId: 'a1' },
+    ] } });
+    await fireEvent.click(screen.getByRole('button', { name: 'Refresh booking requests' }));
+    await screen.findByText(/^Replaced by Studio/);
+    expect(screen.queryByLabelText(/This request replaces/)).not.toBeInTheDocument();
+    await fillAndSubmit();
+    await screen.findByText('A venue booking request for Main Hall was submitted for review.');
+    expect(api.writes()[0]!.body).not.toHaveProperty('replacesBookingId');
   });
 
   it('KAN-82-AC10 a cancel refused because access was lost hides the panel content', async () => {

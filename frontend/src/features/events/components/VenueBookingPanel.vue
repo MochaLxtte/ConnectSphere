@@ -105,7 +105,10 @@ async function load() {
     // A confirmation must name the arrangement as it is now; drop it if it is gone or no longer live.
     const target = cancelTarget.value && items.find((item) => item.id === cancelTarget.value!.id);
     cancelTarget.value = target && isLive(target) ? target : null;
-    if (replacesBookingId.value && !items.some((item) => item.id === replacesBookingId.value)) replacesBookingId.value = '';
+    // Likewise a replacement source that is gone or no longer replaceable, so no stale link is sent.
+    if (replacesBookingId.value && !replaceable.value.some((item) => item.id === replacesBookingId.value)) {
+      replacesBookingId.value = '';
+    }
     if (uncertainSave.value) {
       uncertainSave.value = false; actionError.value = null; resetForm();
     }
@@ -211,7 +214,8 @@ function startReplacement(item: VenueBooking) {
 async function confirmCancel() {
   const target = cancelTarget.value;
   const reason = cancelReason.value.trim();
-  if (!target || !reason || busy.value || !canManage.value) return;
+  // After a conflict or an unconfirmed result, only a refresh may re-enable cancellation.
+  if (!target || !reason || busy.value || needsRefresh.value || !canManage.value) return;
   const current = new AbortController();
   cancelController = current;
   const version = contextVersion;
@@ -311,7 +315,7 @@ onBeforeUnmount(() => { contextVersion++; abortPending(); });
             <label :for="`${id}-cancel-reason`">Reason for cancelling</label>
             <textarea :id="`${id}-cancel-reason`" v-model="cancelReason" rows="2" maxlength="2000" :disabled="busy" />
             <div class="panel-actions">
-              <button type="submit" class="button button-primary" :disabled="busy || !cancelReason.trim()">
+              <button type="submit" class="button button-primary" :disabled="busy || needsRefresh || !cancelReason.trim()">
                 {{ busy ? 'Cancelling…' : 'Confirm cancellation' }}
               </button>
               <button type="button" class="button button-secondary" :disabled="busy" @click="stopCancel">Keep arrangement</button>
