@@ -27,6 +27,7 @@ import VenueSuitabilityPage from '../features/venues/pages/VenueSuitabilityPage.
 import EquipmentAccessPage from '../features/equipment/pages/EquipmentAccessPage.vue';
 import EquipmentAvailabilityPage from '../features/equipment/pages/EquipmentAvailabilityPage.vue';
 import EventEquipmentAvailabilityPage from '../features/equipment/pages/EventEquipmentAvailabilityPage.vue';
+import EquipmentStockPage from '../features/equipment/pages/EquipmentStockPage.vue';
 import EquipmentQueuePage from '../features/events/pages/EquipmentQueuePage.vue';
 
 export const router = createRouter({
@@ -50,6 +51,10 @@ export const router = createRouter({
         { path: '', component: EquipmentAvailabilityPage, meta: { title: 'Equipment availability' } },
         { path: ':id', component: EventEquipmentAvailabilityPage, meta: { title: 'Check equipment availability' } },
       ],
+    },
+    {
+      path: '/equipment/stock', component: EquipmentAccessPage,
+      children: [{ path: '', component: EquipmentStockPage, meta: { title: 'Equipment stock' } }],
     },
     {
       path: '/reviews', component: ReviewAccessPage,

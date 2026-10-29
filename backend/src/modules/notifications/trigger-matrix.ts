@@ -35,6 +35,7 @@ export const NOTIFICATION_TYPES = [
   'VENUE_BOOKING_REJECTED',
   'VENUE_OUTAGE_RECOVERY_REQUIRED',
   'EQUIPMENT_RESERVED',
+  'EQUIPMENT_STOCK_SHORTFALL',
 ] as const;
 export type NotificationType = (typeof NOTIFICATION_TYPES)[number];
 
@@ -48,6 +49,27 @@ export function equipmentReservationNotifications(input: {
     type: 'EQUIPMENT_RESERVED', title: 'Equipment reserved',
     message: `${input.quantity} × ${input.equipmentName} reserved for ${label({ name: input.eventName })}.`,
     dedupeKey: `EQUIPMENT_RESERVED:${input.requestId}`,
+  }));
+}
+
+/**
+ * KAN-18-AC102, a KAN-80 trigger slice: a newly recorded operational loss tells each affected event's
+ * assigned coordinator that their reservation is no longer fully covered. The reservation is kept; only
+ * the coordinator is told, once per event and stock change.
+ */
+export function equipmentStockShortfallNotifications(input: {
+  changeId: string; equipmentName: string; operationalQuantity: number;
+  events: { eventId: string; eventName: string | null; coordinatorId: string; shortfallQuantity: number }[];
+}): NotificationInput[] {
+  return input.events.map(event => ({
+    recipientId: event.coordinatorId, eventRequestId: event.eventId,
+    type: 'EQUIPMENT_STOCK_SHORTFALL', title: 'Equipment shortfall',
+    message: sentences(
+      `${input.equipmentName} stock now has ${input.operationalQuantity} usable ${input.operationalQuantity === 1 ? 'unit' : 'units'}, `
+        + `so the reservation for ${label({ name: event.eventName })} is ${event.shortfallQuantity} short`,
+      'Your reservation is kept. Review the equipment plan',
+    ),
+    dedupeKey: `EQUIPMENT_STOCK_SHORTFALL:${input.changeId}:${event.eventId}`,
   }));
 }
 

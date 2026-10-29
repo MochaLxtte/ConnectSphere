@@ -78,6 +78,8 @@ async function handleSignOut(): Promise<void> {
           <p class="nav-label">For technical support</p>
           <RouterLink to="/equipment/availability" active-class="is-active" class="nav-link"
             ><AppIcon name="grid" />Equipment availability</RouterLink>
+          <RouterLink to="/equipment/stock" exact-active-class="is-active" class="nav-link"
+            ><AppIcon name="grid" />Equipment stock</RouterLink>
         </template>
         <template v-if="showVenuePlanning">
           <p class="nav-label">Venue planning</p>
