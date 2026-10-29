@@ -78,3 +78,9 @@ KAN-26 is In Progress / Tristan (3 SP), with unestimated KAN-104–106 In Progre
 | ID | Artifact | Source / result | Limits |
 | --- | --- | --- | --- |
 | S4-E16 | [Summary/source hashes](pr63-20261028/summary.json), [check](pr63-20261028/check.txt), [coverage](pr63-20261028/coverage.txt), [database](pr63-20261028/integration.txt), [browser](pr63-20261028/browser.txt), [initial browser](pr63-20261028/browser-initial.txt), [workbook validation](pr63-20261028/workbook-validation.json), [document validation](pr63-20261028/document-validation.json) | AUTO-20261028-PR63-01: 1,034 frontend / 1,691 backend; 616 isolated PostgreSQL; 189 browser tests Pass. Earlier failed attempts and focused retests retained in the same folder. | Synthetic sessions and browser API substitutes; no shared migration or manual acceptance. Review repair for KAN-62/KAN-63 with KAN-15/KAN-26 regression protection. |
+
+## KAN-82 automated verification — 28 October 2026
+
+| ID | Artifact | Source / result | Limits |
+| --- | --- | --- | --- |
+| S4-E17 | [KAN-82 coverage and run summary](../../../testing/coverage-reports/2026-10-28-kan82.txt) | `AUTO-20261028-KAN82-01`: unit/component Pass with coverage; PostgreSQL integration 637/637 including 21 KAN-82 tests; browser fixtures 191/191 including 2 KAN-82 tests | Local Windows run on Node 22 with a disposable PostgreSQL 17 database; no live authentication, CI or acceptance |

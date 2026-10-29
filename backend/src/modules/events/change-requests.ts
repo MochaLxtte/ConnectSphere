@@ -292,6 +292,8 @@ export async function decideChangeRequest(
           'Some of these details changed after the organiser asked for this change. Reject it and ask for a new request.');
       }
       const fields = Object.keys(request.proposed) as SignificantField[];
+      // KAN-80-AC2: purpose-only changes are a legal attendee-relevant accepted change even
+      // when registrations exist; keep the KAN-15 arrangement/cancellation policy intact.
       await client.query(`SELECT id FROM equipment_requests WHERE event_request_id = $1
         AND status IN ('REQUESTED', 'RESERVED') ORDER BY id FOR UPDATE`, [event.id]);
       const impact = await impactFor(client, event, fields);
@@ -306,6 +308,16 @@ export async function decideChangeRequest(
         UPDATE event_requests SET ${setClauses.join(', ')}, updated_at = now()
         WHERE id = $1 RETURNING ${draftSelectColumns}`, [event.id, ...fields.map((field) => request.proposed[field])]);
       const applied = toDraftEventRecord(updated.rows[0]!);
+      if (fields.some(field => ['purpose', 'startsAt', 'endsAt', 'venueRequirements', 'accessibilityNeeds'].includes(field))) {
+        const attendees = await client.query<{ attendeeId: string }>(
+          `SELECT attendee_id AS "attendeeId" FROM event_registrations WHERE event_request_id = $1 AND status = 'REGISTERED'`, [event.id]);
+        await recordNotifications(client, attendees.rows.map(({ attendeeId }) => ({
+          recipientId: attendeeId, eventRequestId: event.id, changeRequestId,
+          type: 'ATTENDEE_EVENT_CHANGED', title: 'Event details changed',
+          message: `Attendee-relevant details changed for ${event.name ?? 'your event'}. Review your registration.`,
+          dedupeKey: `ATTENDEE_EVENT_CHANGED:${changeRequestId}`,
+        })));
+      }
       // The KAN-66 edit audit records the applied values against the revision they produced.
       const audit = Object.fromEntries(fields.map((field) => [field, { from: current[field], to: applied[field] }]));
       await client.query(`INSERT INTO event_request_edits

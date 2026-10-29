@@ -22,12 +22,12 @@ This rebalanced allocation replaces the earlier 97/29 split with **63/63**, with
 | [KAN-62](https://smu-g7-grp1.atlassian.net/browse/KAN-62) | Cancel Event and Release Its Arrangements | 5 | Ryan | PR #63 review | Existing release backlog | S4-T06 |
 | [KAN-10](https://smu-g7-grp1.atlassian.net/browse/KAN-10) | Mark Event as Completed | 3 | Unassigned — team member to choose | To agree after owner chosen | Existing release backlog | S4-T07 |
 | [KAN-14](https://smu-g7-grp1.atlassian.net/browse/KAN-14) | Register for an Event | 5 | Unassigned — team member to choose | To agree after owner chosen | Existing release backlog | S4-T08 |
-| [KAN-17](https://smu-g7-grp1.atlassian.net/browse/KAN-17) | Withdraw Attendee Registration | 2 | Unassigned — team member to choose | To agree after owner chosen | Existing release backlog | S4-T09 |
-| [KAN-67](https://smu-g7-grp1.atlassian.net/browse/KAN-67) | View Event Registrations | 2 | Unassigned — team member to choose | To agree after owner chosen | Existing release backlog | S4-T10 |
+| [KAN-17](https://smu-g7-grp1.atlassian.net/browse/KAN-17) | Withdraw Attendee Registration | 2 | Arvin (Jira read 29 October) | PR #70: changes requested | Existing release backlog | S4-T09 |
+| [KAN-67](https://smu-g7-grp1.atlassian.net/browse/KAN-67) | View Event Registrations | 2 | Arvin (Jira read 29 October) | PR #70: changes requested | Existing release backlog | S4-T10 |
 | [KAN-66](https://smu-g7-grp1.atlassian.net/browse/KAN-66) | Update Event Information During Planning | 3 | Irfan (assigned in Jira 26 October 2026) | To agree | Existing release backlog | S4-T11 |
 | [KAN-15](https://smu-g7-grp1.atlassian.net/browse/KAN-15) | Submit and Review Event Change Requests | 5 | Irfan (assigned in Jira 26 October 2026) | To agree | Existing release backlog | S4-T12 |
-| [KAN-80](https://smu-g7-grp1.atlassian.net/browse/KAN-80) | Receive Equipment, Lifecycle, Change and Registration Notifications | 3 | Unassigned — team member to choose | To agree after owner chosen | Explicit original notification split | S4-T13 |
-| [KAN-82](https://smu-g7-grp1.atlassian.net/browse/KAN-82) | Manage each venue arrangement independently for an event | 5 | Unassigned — team member to choose | To agree after owner chosen | Customer change CR-3 | S4-T14 |
+| [KAN-80](https://smu-g7-grp1.atlassian.net/browse/KAN-80) | Receive Equipment, Lifecycle, Change and Registration Notifications | 3 | Arvin (Jira read 29 October) | PR #70: changes requested | Explicit original notification split | S4-T13 |
+| [KAN-82](https://smu-g7-grp1.atlassian.net/browse/KAN-82) | Manage each venue arrangement independently for an event | 5 | Irfan (In Progress in Jira since 26 October 2026) | To agree | Customer change CR-3 | S4-T14 |
 | [KAN-84](https://smu-g7-grp1.atlassian.net/browse/KAN-84) | Review operational safety before event preparation | 8 | Unassigned — team member to choose | To agree after owner chosen | Customer change CR-6 | S4-T15 |
 | **Total** | **15 parents** | **63** | | | | |
 
@@ -56,12 +56,12 @@ Every row requires its complete active criterion set plus applicable Definition 
 | S4-T06 | KAN-62: AC1, AC2, AC3, AC4, AC5, AC6, AC101, AC102, AC103, AC104 | TC-06-08, TC-06-09, TC-06-10, TC-06-11, TC-06-12, TC-06-13 | AUTO-20261028-PR63-01 / S4-E16: automated checks recorded; integrated manual **Not executed**, acceptance **Not assessed**. |
 | S4-T07 | KAN-10: AC1, AC2, AC3, AC4, AC5, AC101, AC102, AC103 | TC-06-14, TC-06-15, TC-06-16, TC-06-17, TC-06-18 | **Not executed** / Not recorded |
 | S4-T08 | KAN-14: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC101, AC102, AC103, AC104 | TC-18-01, TC-18-02, TC-18-03, TC-18-04, TC-18-05, TC-18-06 | **Not executed** / Not recorded |
-| S4-T09 | KAN-17: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC101, AC102, AC103 | TC-18-07, TC-18-08, TC-18-09, TC-18-10, TC-18-11 | **Not executed** / Not recorded |
-| S4-T10 | KAN-67: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC101, AC102, AC103 | TC-18-12, TC-18-13, TC-18-14, TC-18-15, TC-18-16, TC-18-17 | **Not executed** / Not recorded |
+| S4-T09 | KAN-17: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC101, AC102, AC103 | TC-18-07, TC-18-08, TC-18-09, TC-18-10, TC-18-11, TC-18-401, TC-18-402, TC-18-403, TC-18-404, TC-18-405, TC-18-406, TC-18-407, TC-18-408, TC-18-409, TC-18-410, TC-18-411, TC-18-412, TC-18-413, TC-18-414, TC-18-415, TC-18-416, TC-18-417 | Partial automated coverage; integrated acceptance **Not executed** / acceptance **Not assessed** |
+| S4-T10 | KAN-67: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC101, AC102, AC103 | TC-18-12, TC-18-13, TC-18-14, TC-18-15, TC-18-16, TC-18-17, TC-18-418, TC-18-419, TC-18-420, TC-18-421, TC-18-422, TC-18-423, TC-18-424, TC-18-425, TC-18-426, TC-18-427, TC-18-428, TC-18-429, TC-18-430, TC-18-431 | Partial automated coverage; integrated acceptance **Not executed** / acceptance **Not assessed** |
 | S4-T11 | KAN-66: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC101, AC102, AC103 | TC-07-01, TC-07-02, TC-07-03, TC-07-04, TC-07-05, TC-07-06 | **In progress (27 October 2026):** automated unit/component and browser-fixture runs Pass (`AUTO-20261026-KAN66-01`, `-02`; unit re-run `AUTO-20261027-KAN66-03` on `3ac15d5`); PostgreSQL integration 533/533 and browser 161/161 Pass in CI on `27d5d84` (`CI-20261027-KAN66-02`); re-confirmed after merging main, 578/578 and 182/182 on `a5d1a3a` (`CI-20261027-KAN66-04`); local integrated acceptance Pass for TC-07-01/03/04/06 on `main` `ac5cd8b` with real sign-in (`MAN-20261028-KAN66-KAN15-01`; TC-07-02 and TC-07-05 Not executed); acceptance **Not assessed** (sprint review) |
 | S4-T12 | KAN-15: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC101, AC102, AC103, AC104, AC105 | TC-19-01, TC-19-02, TC-19-03, TC-19-04, TC-19-05, TC-19-06, TC-19-07, TC-19-08, TC-19-09 | **In progress (27 October 2026):** unit/component and browser-fixture runs Pass (`AUTO-20261027-KAN15-01`); PostgreSQL integration 544/544 and browser 164/164 Pass in CI on `6c5043c` (`CI-20261027-KAN15-02`); local integrated acceptance Pass for TC-19-01 to 05, and for TC-19-08's attendance-change cancellation only, on `main` `ac5cd8b` with real sign-in (`MAN-20261028-KAN66-KAN15-01`; minor display defect O-1, fixed in PR #69; TC-19-06/07/09 and the preservation and equipment parts of TC-19-08 Not executed); acceptance **Not assessed** (sprint review) |
-| S4-T13 | KAN-80: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9 | TC-20-21, TC-20-22, TC-20-23, TC-20-24, TC-20-25, TC-20-26, TC-20-27, TC-20-28, TC-20-29 | **Not executed** / Not recorded |
-| S4-T14 | KAN-82: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12 | TC-12-01, TC-12-02, TC-12-03, TC-12-04, TC-12-05, TC-12-06, TC-12-07, TC-12-08, TC-12-09, TC-12-10, TC-12-11, TC-12-12 | **Not executed** / Not recorded |
+| S4-T13 | KAN-80: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9 | TC-20-21, TC-20-22, TC-20-23, TC-20-24, TC-20-25, TC-20-26, TC-20-27, TC-20-28, TC-20-29, TC-20-401, TC-20-402, TC-20-403, TC-20-404, TC-20-405, TC-20-406, TC-20-407, TC-20-408, TC-20-409, TC-20-410, TC-20-411, TC-20-412, TC-20-413, TC-20-414, TC-20-415, TC-20-416, TC-20-417, TC-20-418, TC-20-419, TC-20-420, TC-20-421, TC-20-422, TC-20-423, TC-20-424, TC-20-425, TC-20-426, TC-20-427, TC-20-428, TC-20-429, TC-20-430 | Partial automated coverage; integrated acceptance **Not executed** / acceptance **Not assessed** |
+| S4-T14 | KAN-82: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12 | TC-12-01, TC-12-02, TC-12-03, TC-12-04, TC-12-05, TC-12-06, TC-12-07, TC-12-08, TC-12-09, TC-12-10, TC-12-11, TC-12-12, TC-12-13, TC-12-14 | **In progress (29 October 2026):** PR #67 review fixes verified (`AUTO-20261029-KAN82-03`): TC-12-13 and TC-12-14 failed on the code under review and pass after the fixes; integration 639/639, KAN-82 and venue browser specs 76/76; local integrated acceptance **Not executed**; acceptance **Not assessed**. **28 October 2026:** unit/component, isolated PostgreSQL integration and browser-fixture runs Pass (`AUTO-20261028-KAN82-01`, S4-E17); GitHub CI Pass on `4414fde` (`CI-20261028-KAN82-02`, run 40684714674: integration 637/637, browser 191/191); local integrated acceptance **Not executed**; acceptance **Not assessed** |
 | S4-T15 | KAN-84: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12 | TC-06-20, TC-06-21, TC-06-22, TC-06-23, TC-06-24, TC-06-25, TC-06-26, TC-06-27, TC-06-28, TC-06-29, TC-06-30, TC-06-31 | **Not executed** / Not recorded |
 | S4-T16 | Integrated complete release with equipment, registration, independent venue actions and safety | TC-06-32 | **Not executed** / Not recorded |
 
@@ -623,16 +623,16 @@ Implementation defaults: docs/scrum/sprint-03/planning.md and docs/requirements/
 
 | Stable criterion | Requirement | Functional case |
 | --- | --- | --- |
-| **KAN-17-AC1** | An attendee can select an eligible registration belonging to them and request withdrawal. | TC-18-07 |
-| **KAN-17-AC2** | Before saving, the attendee is asked to confirm withdrawal and is informed of the applicable re-registration restrictions. | TC-18-08 |
-| **KAN-17-AC3** | Confirmed withdrawal is saved against the correct attendee and event; the registration is no longer treated as active. | TC-18-09 |
-| **KAN-17-AC4** | The attendee can view the withdrawn status after reopening or refreshing the page. | TC-18-09 |
-| **KAN-17-AC5** | Withdrawal releases the active registration’s capacity contribution once. Repeated attempts cannot release extra capacity or alter unrelated registrations. | TC-18-10 |
-| **KAN-17-AC6** | An attendee cannot withdraw another attendee’s registration through the interface or API. | TC-18-11 |
-| **KAN-17-AC7** | A failed or ineligible withdrawal leaves the registration and capacity unchanged and gives clear feedback. | TC-18-11 |
-| **KAN-17-AC101** | An attendee may withdraw their own active registration before event start, including after registration has closed; at or after start withdrawal is refused. | TC-18-07 |
-| **KAN-17-AC102** | The confirmation explains that re-registration is allowed only if the event is still open and has capacity; it must not promise a saved place. | TC-18-08 |
-| **KAN-17-AC103** | Withdrawal changes the existing record once, releases its capacity contribution once and uses KAN-80 (using KAN-64 infrastructure) for attendee/manager notifications; repeated requests cannot release another place. | TC-18-10 |
+| **KAN-17-AC1** | An attendee can select an eligible registration belonging to them and request withdrawal. | TC-18-07, TC-18-401, TC-18-405 |
+| **KAN-17-AC2** | Before saving, the attendee is asked to confirm withdrawal and is informed of the applicable re-registration restrictions. | TC-18-08, TC-18-402, TC-18-403 |
+| **KAN-17-AC3** | Confirmed withdrawal is saved against the correct attendee and event; the registration is no longer treated as active. | TC-18-09, TC-18-401 |
+| **KAN-17-AC4** | The attendee can view the withdrawn status after reopening or refreshing the page. | TC-18-09, TC-18-404 |
+| **KAN-17-AC5** | Withdrawal releases the active registration’s capacity contribution once. Repeated attempts cannot release extra capacity or alter unrelated registrations. | TC-18-10, TC-18-408, TC-18-417 |
+| **KAN-17-AC6** | An attendee cannot withdraw another attendee’s registration through the interface or API. | TC-18-11, TC-18-409, TC-18-410 |
+| **KAN-17-AC7** | A failed or ineligible withdrawal leaves the registration and capacity unchanged and gives clear feedback. | TC-18-11, TC-18-403, TC-18-406, TC-18-407, TC-18-409, TC-18-410, TC-18-411, TC-18-412, TC-18-413 |
+| **KAN-17-AC101** | An attendee may withdraw their own active registration before event start, including after registration has closed; at or after start withdrawal is refused. | TC-18-07, TC-18-405, TC-18-406, TC-18-407, TC-18-413, TC-18-415 |
+| **KAN-17-AC102** | The confirmation explains that re-registration is allowed only if the event is still open and has capacity; it must not promise a saved place. | TC-18-08, TC-18-402, TC-18-414, TC-18-415 |
+| **KAN-17-AC103** | Withdrawal changes the existing record once, releases its capacity contribution once and uses KAN-80 (using KAN-64 infrastructure) for attendee/manager notifications; repeated requests cannot release another place. | TC-18-10, TC-18-408, TC-18-412, TC-18-416, TC-18-417 |
 
 **Implementation location:** Not recorded. **Automated test files:** Not recorded. Record real files when implemented; historical schema or removed code is not feature completion.
 
@@ -694,16 +694,16 @@ Implementation defaults: docs/scrum/sprint-03/planning.md and docs/requirements/
 
 | Stable criterion | Requirement | Functional case |
 | --- | --- | --- |
-| **KAN-67-AC1** | An authorised organiser or current coordinator can open registration information for an event they own or manage. | TC-18-12 |
-| **KAN-67-AC2** | The displayed registrations and counts correspond to the correct event. | TC-18-13 |
-| **KAN-67-AC3** | Active and withdrawn registrations can be distinguished where applicable. | TC-18-13 |
-| **KAN-67-AC4** | Registration information and counts reflect successful attendee registration or withdrawal when refreshed. | TC-18-14 |
-| **KAN-67-AC5** | An event with no registrations shows a clear empty result rather than unrelated or stale registrations. | TC-18-15 |
-| **KAN-67-AC6** | Users cannot view protected registration information for unrelated events, including through direct API calls. | TC-18-12 |
-| **KAN-67-AC7** | The information exposed is limited to the fields needed by that authorised role under the agreed disclosure rules. | TC-18-16 |
-| **KAN-67-AC101** | The owning organiser and currently assigned coordinator may see attendee display name, email, status and registration/withdrawal timestamps; do not expose authentication IDs or unrelated account data. | TC-18-16 |
-| **KAN-67-AC102** | Distinguish active, withdrawn and event-cancelled registrations and count only active records toward capacity. | TC-18-13 |
-| **KAN-67-AC103** | After reassignment, the former coordinator loses roster access immediately; current-data refresh must not retain another event's roster after route/account changes. | TC-18-17 |
+| **KAN-67-AC1** | An authorised organiser or current coordinator can open registration information for an event they own or manage. | TC-18-12, TC-18-418, TC-18-419, TC-18-428 |
+| **KAN-67-AC2** | The displayed registrations and counts correspond to the correct event. | TC-18-13, TC-18-420 |
+| **KAN-67-AC3** | Active and withdrawn registrations can be distinguished where applicable. | TC-18-13, TC-18-420 |
+| **KAN-67-AC4** | Registration information and counts reflect successful attendee registration or withdrawal when refreshed. | TC-18-14, TC-18-421, TC-18-422, TC-18-423 |
+| **KAN-67-AC5** | An event with no registrations shows a clear empty result rather than unrelated or stale registrations. | TC-18-15, TC-18-424, TC-18-425, TC-18-430 |
+| **KAN-67-AC6** | Users cannot view protected registration information for unrelated events, including through direct API calls. | TC-18-12, TC-18-426, TC-18-428, TC-18-429 |
+| **KAN-67-AC7** | The information exposed is limited to the fields needed by that authorised role under the agreed disclosure rules. | TC-18-16, TC-18-427 |
+| **KAN-67-AC101** | The owning organiser and currently assigned coordinator may see attendee display name, email, status and registration/withdrawal timestamps; do not expose authentication IDs or unrelated account data. | TC-18-16, TC-18-427 |
+| **KAN-67-AC102** | Distinguish active, withdrawn and event-cancelled registrations and count only active records toward capacity. | TC-18-13, TC-18-420, TC-18-431 |
+| **KAN-67-AC103** | After reassignment, the former coordinator loses roster access immediately; current-data refresh must not retain another event's roster after route/account changes. | TC-18-17, TC-18-425, TC-18-428, TC-18-429, TC-18-430 |
 
 **Implementation location:** Not recorded. **Automated test files:** Not recorded. Record real files when implemented; historical schema or removed code is not feature completion.
 
@@ -935,15 +935,15 @@ Implementation defaults: docs/scrum/sprint-03/planning.md and docs/requirements/
 
 | Stable criterion | Requirement | Functional case |
 | --- | --- | --- |
-| **KAN-80-AC1** | Equipment confirmation and unavailability notify the current assigned coordinator and relevant technical staff without exposing unrelated events. | TC-20-21 |
-| **KAN-80-AC2** | Significant-change submission, requests for action and decisions notify the organiser and reviewing coordinator; changes that affect registered attendees notify those active attendees. | TC-20-22 |
-| **KAN-80-AC3** | Final event confirmation and cancellation notify the organiser, current coordinator and affected registered attendees or arrangement staff as applicable. | TC-20-23 |
-| **KAN-80-AC4** | Registration and withdrawal acknowledge the attendee and notify the organiser/current coordinator; a failed or repeated unchanged action creates no new business-outcome notification. | TC-20-24 |
-| **KAN-80-AC5** | Each notification identifies the correct event and equipment request, change request or registration where applicable, with enough information for the recipient to understand the outcome and required action. | TC-20-25 |
-| **KAN-80-AC6** | Only the intended recipient can list/read or change read state; following a protected link rechecks current role and event permissions, including after reassignment. | TC-20-26 |
-| **KAN-80-AC7** | All added trigger notifications persist atomically with the recorded business outcome using the KAN-64 outcome/recipient uniqueness mechanism; rollback creates none and retry creates no duplicate. | TC-20-27 |
-| **KAN-80-AC8** | Every added trigger uses the delivered KAN-64 authenticated inbox and read/unread behaviour and the recorded recipient matrix, including acknowledgements where the actor is also a recipient. No email delivery is required. | TC-20-28 |
-| **KAN-80-AC9** | CR-2 outage, CR-4 hold and CR-6 safety notifications remain acceptance responsibilities of those separate customer-change stories; this story does not count their implementation twice. | TC-20-29 |
+| **KAN-80-AC1** | Equipment confirmation and unavailability notify the current assigned coordinator and relevant technical staff without exposing unrelated events. | TC-20-21, TC-20-401, TC-20-402, TC-20-403 |
+| **KAN-80-AC2** | Significant-change submission, requests for action and decisions notify the organiser and reviewing coordinator; changes that affect registered attendees notify those active attendees. | TC-20-22, TC-20-404, TC-20-405, TC-20-406, TC-20-407, TC-20-408 |
+| **KAN-80-AC3** | Final event confirmation and cancellation notify the organiser, current coordinator and affected registered attendees or arrangement staff as applicable. | TC-20-23, TC-20-409, TC-20-410, TC-20-411 |
+| **KAN-80-AC4** | Registration and withdrawal acknowledge the attendee and notify the organiser/current coordinator; a failed or repeated unchanged action creates no new business-outcome notification. | TC-20-24, TC-20-412, TC-20-413, TC-20-414, TC-20-415, TC-20-416 |
+| **KAN-80-AC5** | Each notification identifies the correct event and equipment request, change request or registration where applicable, with enough information for the recipient to understand the outcome and required action. | TC-20-25, TC-20-401, TC-20-406, TC-20-407, TC-20-417, TC-20-418 |
+| **KAN-80-AC6** | Only the intended recipient can list/read or change read state; following a protected link rechecks current role and event permissions, including after reassignment. | TC-20-26, TC-20-418, TC-20-419, TC-20-420, TC-20-421 |
+| **KAN-80-AC7** | All added trigger notifications persist atomically with the recorded business outcome using the KAN-64 outcome/recipient uniqueness mechanism; rollback creates none and retry creates no duplicate. | TC-20-27, TC-20-403, TC-20-414, TC-20-415, TC-20-416, TC-20-422, TC-20-423, TC-20-424, TC-20-425, TC-20-426, TC-20-429 |
+| **KAN-80-AC8** | Every added trigger uses the delivered KAN-64 authenticated inbox and read/unread behaviour and the recorded recipient matrix, including acknowledgements where the actor is also a recipient. No email delivery is required. | TC-20-28, TC-20-427, TC-20-428, TC-20-429 |
+| **KAN-80-AC9** | CR-2 outage, CR-4 hold and CR-6 safety notifications remain acceptance responsibilities of those separate customer-change stories; this story does not count their implementation twice. | TC-20-29, TC-20-430 |
 
 **Implementation location:** Not recorded. **Automated test files:** Not recorded. Record real files during implementation; these planned tests are not completion evidence.
 
@@ -980,7 +980,7 @@ All original/new triggers require unit/integration/E2E and hosted verification; 
 
 ### KAN-82 — Manage each venue arrangement independently for an event
 
-**Owner:** Unassigned — team member to choose · **Independent reviewer:** To agree after owner chosen · **Estimate:** 5 SP · **Jira status:** To Do · **Acceptance:** Not assessed · **Test group:** S4-T14
+**Owner:** Irfan (In Progress in Jira since 26 October 2026) · **Independent reviewer:** To agree · **Estimate:** 5 SP (unchanged) · **Jira status:** In Progress; subtasks KAN-113 (backend), KAN-114 (UI), KAN-115 (verification) · **Acceptance:** Not assessed · **Test group:** S4-T14
 
 **User story:** As an Event Coordinator, I want to manage multiple venue arrangements independently for one event, so that changing or cancelling one arrangement does not silently alter the others.
 
@@ -997,11 +997,36 @@ All original/new triggers require unit/integration/E2E and hosted verification; 
 | **KAN-82-AC7** | Independent arrangement actions preserve the parent event's name, dates, attendance and other event-level fields. Event-wide significant changes continue through KAN-15 and cancellation of the entire event continues through KAN-62; those actions are not disguised as a single-venue edit. | TC-12-07 |
 | **KAN-82-AC8** | Venue decisions, hold deadlines, recovery flags and cancellation/replacement links are shown per arrangement on the authorised event view; an aggregate label never hides an outstanding pending, affected or invalid arrangement. | TC-12-08 |
 | **KAN-82-AC9** | Cancelling or replacing an arrangement rechecks event readiness and invalidates any safety approval tied to the changed arrangement revision. It does not automatically cancel the event or release unrelated venue/equipment allocations. | TC-12-09 |
-| **KAN-82-AC10** | Authorization is rechecked on the server using the current assignment. Stale or competing cancel/approve/hold-expiry actions resolve against locked current state; repeated cancellation cannot release availability twice, overwrite a newer decision or duplicate notification/history rows. | TC-12-10 |
+| **KAN-82-AC10** | Authorization is rechecked on the server using the current assignment. Stale or competing cancel/approve/hold-expiry actions resolve against locked current state; repeated cancellation cannot release availability twice, overwrite a newer decision or duplicate notification/history rows. | TC-12-10, TC-12-13 |
 | **KAN-82-AC11** | A successful independent cancellation or replacement request produces a protected in-app notice for the current coordinator and relevant Venue Staff through the shared notification mechanism, only after its mutation commits and without duplicate retry notices. | TC-12-11 |
-| **KAN-82-AC12** | The UI identifies the selected event, venue and interval before acting, disables duplicate submissions, preserves other arrangements on success and offers a current-state refresh after uncertain network outcomes or stale conflicts. | TC-12-12 |
+| **KAN-82-AC12** | The UI identifies the selected event, venue and interval before acting, disables duplicate submissions, preserves other arrangements on success and offers a current-state refresh after uncertain network outcomes or stale conflicts. | TC-12-12, TC-12-14 |
 
-**Implementation location:** Not recorded. **Automated test files:** Not recorded. Record real files during implementation; these planned tests are not completion evidence.
+**Implementation location (28 October 2026, branch `feat/KAN-82-independent-venue-arrangements` from `main` `ac5cd8b`):** `backend/src/modules/venues/booking-service.ts` (`cancelVenueArrangement`, widened `assertReplaceable`, replacement approval check, `replacedByBookingIds`, `venueArrangementReadiness`), `booking-input.ts` (`parseArrangementCancellation`), `venue-bookings-router.ts` (`POST /api/venue-bookings/:id/cancel`); `backend/src/modules/notifications/arrangement-notifications.ts`; `frontend/src/features/events/components/VenueBookingPanel.vue`; `frontend/src/features/venues/api/venue-bookings.ts`. No migration.
+
+**Automated test files:** `backend/test/venues/venue-arrangements.test.ts`; `database/tests/venues/venue-arrangements.integration.test.ts`; `tests/e2e/kan82-independent-arrangements.spec.ts`; KAN-82 cases added to `backend/test/venues/venue-bookings-router.test.ts` and `frontend/src/features/events/components/VenueBookingPanel.test.ts`. Updated: `backend/test/venues/booking-conflicts.test.ts` (fake-database matchers for the changed replacement queries) and booking fixtures in four frontend tests and three browser specs (`replacedByBookingIds`).
+
+**Implementation decisions (28 October 2026, approved by Irfan in the working session):** D1–D8 in the [decision log](../../requirements/assumptions-and-questions.md#28-october-2026--kan-82-independent-venue-arrangement-decisions). AC9: readiness is derived and delivered here; invalidating a stored safety approval belongs to KAN-84 (D4).
+
+| Test | 28 October 2026 status |
+| --- | --- |
+| Unit/component (`npm run check`, coverage) | Pass — `AUTO-20261028-KAN82-01` |
+| PostgreSQL integration (`venue-arrangements.integration.test.ts`; full suite 637/637) | Pass — `AUTO-20261028-KAN82-01`, disposable local PostgreSQL 17 |
+| Browser fixtures (`kan82-independent-arrangements.spec.ts`; full suite 191/191) | Pass — `AUTO-20261028-KAN82-01` (substituted API responses; not live integration) |
+| GitHub CI on PR #67 (`verify` job) | Pass — `CI-20261028-KAN82-02`, run 40684714674 on `4414fde` |
+| Local integrated acceptance (AGENTS.md §5.12) | **Not executed** — needs the merged build on localhost with real sign-in |
+
+**PR #67 review fixes (29 October 2026).** Review by MochaLxtte requested three changes: a consistent lock order for replacement approval versus arrangement cancellation, clearing a stale replacement source after refresh, and a `needsRefresh` guard on cancel confirmation. All three are fixed on the branch after merging `main` `409c43f`; new specifications TC-12-13 (KAN-82-AC10) and TC-12-14 (KAN-82-AC12). ACs and the 5 SP estimate are unchanged.
+
+| Test | 29 October 2026 status |
+| --- | --- |
+| TC-12-13 PostgreSQL race, before the fix | Fail as expected — PostgreSQL `40P01` deadlock in both scenarios (`EX-12-13-A01`) |
+| TC-12-13 after the fix; TC-12-10 regression | Pass — `AUTO-20261029-KAN82-03`; integration 639/639 |
+| TC-12-14 component, before and after the fix | Fail as expected (3 assertions), then Pass 45/45 |
+| `npm run check`, coverage | Pass — `AUTO-20261029-KAN82-03` |
+| Browser fixtures (KAN-82 and venue specs, one worker) | Pass — 76/76; full browser suite left to CI |
+| Local integrated acceptance (AGENTS.md §5.12) | **Not executed** |
+
+**Cross-story dependency (28 October 2026, decision D4):** KAN-82-AC9 is split. KAN-82 delivers the readiness recheck (`venueArrangementReadiness`, derived from the current booking rows). Invalidating a stored safety approval when an arrangement is cancelled or replaced is delivered by KAN-84 under KAN-84-AC9, which reads that readiness; there is no safety record to invalidate until KAN-84 exists. Recorded on both cards and as Jira comments; no criterion wording or estimate changed.
 
 **Dependencies:** Existing venue request and decision workflows; CR-2 recovery links and CR-4 hold states; KAN-78 buffered conflict rules; KAN-64 notification mechanism.
 
@@ -1094,6 +1119,8 @@ Update contracts/diagrams, test cases, traceability, actual run evidence and spr
 **Implementation location:** Not recorded. **Automated test files:** Not recorded. Record real files during implementation; these planned tests are not completion evidence.
 
 **Dependencies:** KAN-61 event and arrangement readiness; KAN-63/KAN-26 technical arrangement reservation; KAN-15/KAN-66 revision-aware changes; CR-3 independent venue actions and CR-2 recovery state; KAN-64 persisted notification delivery.
+
+**Cross-story dependency (28 October 2026, KAN-82 decision D4):** KAN-82 (PR #67) provides `venueArrangementReadiness(eventId)` in `backend/src/modules/venues/booking-service.ts`, returning `{ ready, live, outstanding }` from the current venue bookings. The safety-approval half of KAN-82-AC9 (invalidating an approval tied to a cancelled or replaced arrangement) is delivered here under KAN-84-AC9. No criterion wording or estimate changed.
 
 **Design impact:** Planned additive role, safety review/round/revision and preparation-phase fields, queue/decision/submit/start-preparation APIs, live readiness/invalidation integration, structured review notes, notification events and frontend workflow; update C3, state/class/sequence diagrams, API and data model during implementation.
 
@@ -1210,3 +1237,49 @@ S3-T25/T26 are new customer-change groups; S3-T27 is the current integrated Spri
 KAN-64 is a completed usable inbox and early-trigger scope prerequisite; KAN-80 completes its separately estimated later triggers alongside equipment, lifecycle, change and registration stories. Keep KAN-26 reservation with KAN-62/10 automatic release and KAN-61 readiness; keep KAN-66 ordinary edits with KAN-15 reviewed changes. KAN-82 independent arrangement actions and KAN-84 safety revision/gate checks integrate with those same workflows. No item is Done merely because a dependency or schema exists.
 
 Sprint 4 is the final development sprint. Capture actual planning/review/retrospective/standup recordings as required in [final-sprint-recordings](../final-sprint-recordings.md); planned test specifications are not replacements for those records.
+
+## 29 October 2026 — KAN-17, KAN-67 and KAN-80 test specification planning
+
+Current Jira readback on 28 October: all three stories are assigned to Arvin, To Do, Sprint 4 (Future), with unchanged estimates 2/2/3 SP. Earlier unassigned/owner snapshots are retained as dated history. Independent reviewer: **To agree**. This is approved test preparation with Codex, not implementation, a sprint start, acceptance or a team estimate decision.
+
+The active criterion wording above matches the live cards. Added 61 detailed cases and 29 individual-AC traceability rows; original cases and execution history remain. [Preparation scope and source limitations](../../testing/test-evidence.md#29-october-2026--kan-17-kan-67-and-kan-80-test-specification-expansion) distinguish inspected existing equipment/change notification tests from unimplemented or unmapped slices. Current statuses for these new cases are **Not executed**, with story acceptance **Not assessed**. Integration uses localhost with real API/authentication and the agreed development database under the current Definition of Done; public application deployment is not required. No new AC, estimate or migration is introduced.
+
+| Individual acceptance criterion | New detailed specifications | Execution / acceptance |
+| --- | --- | --- |
+| KAN-17-AC1 | TC-18-401, TC-18-405 | **Not executed** / **Not assessed** |
+| KAN-17-AC2 | TC-18-402, TC-18-403 | **Not executed** / **Not assessed** |
+| KAN-17-AC3 | TC-18-401 | **Not executed** / **Not assessed** |
+| KAN-17-AC4 | TC-18-404 | **Not executed** / **Not assessed** |
+| KAN-17-AC5 | TC-18-408, TC-18-417 | **Not executed** / **Not assessed** |
+| KAN-17-AC6 | TC-18-409, TC-18-410 | **Not executed** / **Not assessed** |
+| KAN-17-AC7 | TC-18-403, TC-18-406, TC-18-407, TC-18-409, TC-18-410, TC-18-411, TC-18-412, TC-18-413 | **Not executed** / **Not assessed** |
+| KAN-17-AC101 | TC-18-405, TC-18-406, TC-18-407, TC-18-413, TC-18-415 | **Not executed** / **Not assessed** |
+| KAN-17-AC102 | TC-18-402, TC-18-414, TC-18-415 | **Not executed** / **Not assessed** |
+| KAN-17-AC103 | TC-18-408, TC-18-412, TC-18-416, TC-18-417 | **Not executed** / **Not assessed** |
+| KAN-67-AC1 | TC-18-418, TC-18-419, TC-18-428 | **Not executed** / **Not assessed** |
+| KAN-67-AC2 | TC-18-420 | **Not executed** / **Not assessed** |
+| KAN-67-AC3 | TC-18-420 | **Not executed** / **Not assessed** |
+| KAN-67-AC4 | TC-18-421, TC-18-422, TC-18-423 | **Not executed** / **Not assessed** |
+| KAN-67-AC5 | TC-18-424, TC-18-425, TC-18-430 | **Not executed** / **Not assessed** |
+| KAN-67-AC6 | TC-18-426, TC-18-428, TC-18-429 | **Not executed** / **Not assessed** |
+| KAN-67-AC7 | TC-18-427 | **Not executed** / **Not assessed** |
+| KAN-67-AC101 | TC-18-427 | **Not executed** / **Not assessed** |
+| KAN-67-AC102 | TC-18-420, TC-18-431 | **Not executed** / **Not assessed** |
+| KAN-67-AC103 | TC-18-425, TC-18-428, TC-18-429, TC-18-430 | **Not executed** / **Not assessed** |
+| KAN-80-AC1 | TC-20-401, TC-20-402, TC-20-403 | **Not executed** / **Not assessed** |
+| KAN-80-AC2 | TC-20-404, TC-20-405, TC-20-406, TC-20-407, TC-20-408 | **Not executed** / **Not assessed** |
+| KAN-80-AC3 | TC-20-409, TC-20-410, TC-20-411 | **Not executed** / **Not assessed** |
+| KAN-80-AC4 | TC-20-412, TC-20-413, TC-20-414, TC-20-415, TC-20-416 | **Not executed** / **Not assessed** |
+| KAN-80-AC5 | TC-20-401, TC-20-406, TC-20-407, TC-20-417, TC-20-418 | **Not executed** / **Not assessed** |
+| KAN-80-AC6 | TC-20-418, TC-20-419, TC-20-420, TC-20-421 | **Not executed** / **Not assessed** |
+| KAN-80-AC7 | TC-20-403, TC-20-414, TC-20-415, TC-20-416, TC-20-422, TC-20-423, TC-20-424, TC-20-425, TC-20-426, TC-20-429 | **Not executed** / **Not assessed** |
+| KAN-80-AC8 | TC-20-427, TC-20-428, TC-20-429 | **Not executed** / **Not assessed** |
+| KAN-80-AC9 | TC-20-430 | Static review **Pass** / story acceptance **Not assessed** |
+
+Use [test-cases.csv](../../testing/test-cases.csv) for executable specifications and [traceability.csv](../../requirements/traceability.csv) for each AC's code/test mapping. Append real executions separately when implementation and environment are available; never infer a whole story's acceptance from these planning links.
+
+## 29 October 2026 — KAN-17 / KAN-67 / KAN-80 acceptance planning
+
+Jira readback: all three assigned to Arvin and moved to **In Progress**; KAN-116–118, KAN-119–121 and KAN-122–124 are their implementation, verification and documentation subtasks respectively. Estimates remain 2 / 2 / 3 SP. This is development during administratively Future Sprint 4, not a sprint-start ceremony or acceptance decision.
+
+The planned S4-T09/T10/T13 groups have partial automated coverage; TC-18-408 has a specific automated Pass and TC-20-430 a static scope-review Pass. Remaining newly specified cases retain their individual execution state. Full integrated acceptance is **Not executed** and story acceptance is **Not assessed**. KAN-14, KAN-61 and KAN-18 source workflows remain dependencies under their existing owners. Shared migration 019, independent review and complete end-to-end acceptance remain pending. See [test evidence](../../testing/test-evidence.md#29-october-2026--kan-17-kan-67-and-kan-80-implementation-verification) and the active sprint's [development update](../sprint-03/daily-progress.md#development-updates).

@@ -1,5 +1,9 @@
 # Database
 
+## 29 October 2026 — migration 019 registration outcomes
+
+`019_registration_notification_outcomes.sql` adds a registration outcome version, nullable notification links to registrations and change requests, and actor-transaction notifications for registration, final event and equipment-shortfall outcomes. Use the ordinary migration runner on an isolated local/CI database; do not edit the earlier migrations. The migration has been tested on isolated PostgreSQL, including upgrades from historical migration ledgers. Applying it to the shared development database remains **Not executed** and requires the team notification in AGENTS.md §7.3. KAN-14/KAN-18/KAN-61 implementations must use the existing actor transaction so their source outcomes and hooks commit together.
+
 **Current shared configuration — 25 October 2026.** The shared development project has the existing migration-013 expiry function and a matching ledger checksum. With team approval, `pg_cron` 1.6.4 was enabled and the single named job `connectsphere-expire-venue-holds` scheduled every minute with `SELECT public.expire_venue_holds()`. Actual runs succeeded from **21:58 Singapore time**; sanitized [evidence](../docs/scrum/sprint-03/evidence/supabase-hold-expiry-20261025.json) retains version/job/run metadata. No business test data or cleanup suite was run against shared Supabase. Earlier dated “pg_cron disabled” / unapplied-migration notes describe their earlier checkpoints. Do not rerun or edit applied migrations to enable this job. The API scheduler remains an idempotent fallback; a cron return message of `1 row` is a SQL result-row count, not a count of expired holds.
 
 Supabase hosts the team's PostgreSQL development database. Vue calls Express, and Express uses `pg` to run SQL. Docker is optional; the local Compose service and CI use PostgreSQL 17 for isolated testing.

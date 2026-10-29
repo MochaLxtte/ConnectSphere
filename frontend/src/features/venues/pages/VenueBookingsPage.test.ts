@@ -26,7 +26,7 @@ const booking: VenueBooking = {
   purpose: 'Hiring', description: 'Annual fair', expectedAttendance: 200,
   venueRequirements: 'Large hall', accessibilityNeeds: 'Wheelchair access',
   recovery: [],
-  replacesBookingId: null,
+  replacesBookingId: null, replacedByBookingIds: [],
   holdExpiresAt: null, heldBy: null, heldAt: null, expiredAt: null,
   cancelledBy: null, cancelledAt: null, cancellationReason: null,
 };

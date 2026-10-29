@@ -193,8 +193,9 @@ describe('KAN-15 submit and review', () => {
     const audit = await fixture.pool.query(
       'SELECT editor_role, changes FROM event_request_edits WHERE event_request_id = $1', [id]);
     expect(audit.rows).toEqual([{ editor_role: 'EVENT_COORDINATOR', changes: { expectedAttendance: { from: 50, to: 90 } } }]);
-    expect((await fixture.notifications(id)).find((row) => row.type === 'CHANGE_REQUEST_APPROVED')!.message)
+    expect((await fixture.notifications(id)).find((row) => row.type === 'CHANGE_REQUEST_APPROVED' && row.recipient_id === organiser.id)!.message)
       .toContain('1 pending arrangement was cancelled');
+    expect((await fixture.notifications(id)).some((row) => row.type === 'CHANGE_REQUEST_APPROVED' && row.recipient_id === coordinator.id)).toBe(true);
   });
 
   it('KAN-15-AC7 a date change cancels pending venue and equipment arrangements together', async () => {

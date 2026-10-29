@@ -1,0 +1,113 @@
+
+> connectsphere@0.1.0 test:coverage
+> npm run test:coverage --workspaces
+
+
+> @connectsphere/frontend@0.1.0 test:coverage
+> vitest run --coverage
+
+
+ RUN  v4.1.11 C:/Users/arvin/Downloads/GitHub/ConnectSphere-ac-test-specs/frontend
+      Coverage enabled with v8
+
+ ❯ src/features/registrations/api.test.ts (2 tests | 1 failed) 36ms
+     × reads the own list and a safely encoded event roster using the same-origin API 24ms
+node.exe :
+At C:\nvm4w\nodejs\npm.ps1:29 char:3
++   & $NODE_EXE $NPM_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/registrations/api.test.ts > KAN-17/67 registration API requests > reads the own list and a safely
+encoded event roster using the same-origin API
+ApiError: The API returned an unreadable response. Check the backend and try again.
+ ❯ getJson src/lib/api-client.ts:43:11
+     41|     data = await response.json();
+     42|   } catch {
+     43|     throw new ApiError(
+       |           ^
+     44|       'The API returned an unreadable response. Check the backend and …
+     45|       response.status,
+ ❯ src/features/registrations/api.test.ts:9:23
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 49 passed (50)
+      Tests  1 failed | 1048 passed (1049)
+   Start at  03:16:14
+   Duration  43.65s (transform 32.60s, setup 124.80s, import 70.87s, tests 178.27s, environment 148.14s)
+
+npm error Lifecycle script `test:coverage` failed with error:
+npm error code 1
+npm error path C:\Users\arvin\Downloads\GitHub\ConnectSphere-ac-test-specs\frontend
+npm error workspace @connectsphere/frontend@0.1.0
+npm error location C:\Users\arvin\Downloads\GitHub\ConnectSphere-ac-test-specs\frontend
+npm error command failed
+npm error command C:\WINDOWS\system32\cmd.exe /d /s /c vitest run --coverage
+
+
+> @connectsphere/backend@0.1.0 test:coverage
+> vitest run --coverage
+
+
+ RUN  v4.1.11 C:/Users/arvin/Downloads/GitHub/ConnectSphere-ac-test-specs/backend
+      Coverage enabled with v8
+
+
+ Test Files  62 passed (62)
+      Tests  1724 passed (1724)
+   Start at  03:16:59
+   Duration  14.31s (transform 20.69s, setup 0ms, import 86.12s, tests 20.03s, environment 32ms)
+
+ % Coverage report from v8
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s
+-------------------|---------|----------|---------|---------|-------------------
+All files          |    93.4 |    94.05 |   91.97 |   93.33 |
+ src               |    91.8 |    88.46 |      75 |   91.22 |
+  app.ts           |   96.55 |    95.83 |     100 |   96.29 | 120-121
+  runtime-app.ts   |       0 |        0 |       0 |       0 | 19-26
+ src/config        |   83.33 |      100 |      50 |   83.33 |
+  env.ts           |   83.33 |      100 |      50 |   83.33 | 14-18
+ src/db            |   78.94 |      100 |   33.33 |   78.94 |
+  pool.ts          |       0 |      100 |       0 |       0 | 15-29
+ src/modules/auth  |   82.35 |    76.92 |   81.25 |   80.76 |
+  router.ts        |   95.31 |      100 |    90.9 |   94.82 | 19-20,39
+  supabase.ts      |      20 |    29.41 |   33.33 |      20 | 29-49
+ ...ules/equipment |   98.48 |    98.93 |   94.35 |   98.08 |
+  ...ent-router.ts |   52.94 |        0 |    12.5 |   52.94 | ...24-25,30,35,40
+ ...modules/events |   90.93 |    91.85 |    90.4 |   90.98 |
+  cancellation.ts  |     100 |       85 |     100 |     100 | 74-75,91-92
+  ...est-router.ts |   66.66 |      100 |      20 |   66.66 | 16,23,30,38
+  ...e-requests.ts |   96.89 |    90.58 |   97.22 |   97.16 | 96,107,312-314
+  ...ion-router.ts |   63.63 |      100 |      20 |   63.63 | 17,24,31,42
+  ...ifications.ts |      12 |        0 |      30 |   10.41 | 37-129
+  create-draft.ts  |   92.85 |     62.5 |     100 |   95.65 | 62
+  ...est-detail.ts |     100 |    89.18 |     100 |     100 | 105-108
+  ...w-decision.ts |    9.37 |        0 |      50 |   10.34 | 52-122
+  ...sts-router.ts |   98.42 |    97.64 |     100 |   98.42 | 244,291
+  workflow-http.ts |      96 |    94.44 |     100 |     100 | 71
+  ...ow-support.ts |   90.69 |    93.84 |   88.88 |    92.1 | 66-72,161-165
+ .../notifications |     100 |    98.75 |     100 |     100 |
+  ...ifications.ts |     100 |    96.66 |     100 |     100 | 74
+  inbox.ts         |     100 |    98.48 |     100 |     100 | 105
+ ...modules/venues |   93.67 |    93.65 |   92.68 |   94.48 |
+  availability.ts  |     100 |     91.3 |     100 |     100 | 169-170
+  ...ng-service.ts |   92.35 |    89.34 |   88.88 |   93.28 | ...44,236,246,351
+  ...lity-rules.ts |   98.36 |     97.7 |     100 |     100 | 57,136,138
+  ...ty-service.ts |    6.89 |        0 |       0 |       8 | 33-105
+  ...ngs-router.ts |   94.44 |       50 |    87.5 |   94.44 | 22
+  venue-router.ts  |      75 |      100 |   33.33 |      75 | 20,25
+  venue-search.ts  |   94.04 |    93.42 |     100 |   98.55 | 150
+-------------------|---------|----------|---------|---------|-------------------
+
+=============================== Coverage summary ===============================
+Statements   : 93.4% ( 2578/2760 )
+Branches     : 94.05% ( 1882/2001 )
+Functions    : 91.97% ( 527/573 )
+Lines        : 93.33% ( 2253/2414 )
+================================================================================

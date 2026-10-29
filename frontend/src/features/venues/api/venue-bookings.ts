@@ -34,8 +34,10 @@ export interface VenueBooking {
   accessibilityNeeds: string | null;
   /** KAN-81: operational outages recorded against this booking, earliest first. */
   recovery: BookingRecovery[];
-  /** KAN-81-AC7: the outage-affected booking this request replaces, if any. */
+  /** KAN-81-AC7 / KAN-82-AC5: the outage-affected or cancelled booking this request replaces, if any. */
   replacesBookingId: string | null;
+  /** KAN-82-AC8: requests that replace this booking, earliest first. */
+  replacedByBookingIds: string[];
   /** KAN-83 hold deadline and audit; kept after approval, expiry, rejection or cancellation. */
   holdExpiresAt: string | null;
   heldBy: string | null;
@@ -112,6 +114,15 @@ export async function decideVenueBooking(
 export async function placeVenueHold(id: string, expiresAt: string, signal?: AbortSignal): Promise<VenueBooking> {
   return (await postJson<{ booking: VenueBooking }>(`/api/venue-bookings/${encodeURIComponent(id)}/hold`,
     { expiresAt }, signal)).booking;
+}
+
+/** KAN-82-AC4: statuses the assigned coordinator may cancel one at a time. */
+export const LIVE_ARRANGEMENT_STATUSES: readonly VenueBookingStatus[] = ['PENDING', 'HELD', 'APPROVED'];
+
+/** KAN-82-AC4: the assigned coordinator cancels one arrangement with a reason; the others are untouched. */
+export async function cancelVenueArrangement(id: string, reason: string, signal?: AbortSignal): Promise<VenueBooking> {
+  return (await postJson<{ booking: VenueBooking }>(`/api/venue-bookings/${encodeURIComponent(id)}/cancel`,
+    { reason: reason.trim() }, signal)).booking;
 }
 
 /** KAN-83-AC10: Venue Staff release a live hold with a reason. */

@@ -1,5 +1,7 @@
 # ConnectSphere frontend
 
+**29 October 2026 registration update:** `/registrations` lets an authenticated attendee view their own saved registrations and confirm a withdrawal. `/events/:id/registrations` provides the current organiser/coordinator roster. The views clear data on identity or route changes and defer all authorization and eligibility decisions to the API. KAN-14 still owns event discovery and registration creation.
+
 Vue 3, TypeScript, Vue Router, and Vite. Run commands from the repository root after following the root README setup.
 
 ```sh
@@ -186,3 +188,5 @@ Venue Staff can decide a linked replacement for a confirmed event; ordinary conf
 Assigned coordinators use equipment arrangements on `/reviews/:id`; Technical Support uses `/equipment-requests` to reserve a complete line or reject with a reason. Reserved lines have an explicit replacement confirmation and the replacement requires another review. Forms carry opaque source revisions, use the exact event period, refresh after KAN-15 event revisions and preserve legacy notes. Conflicts and uncertain responses require refresh before another deliberate action. Account/route changes abort pending work and clear protected information.
 
 Owning organisers/current coordinators can cancel eligible events with a reason and explicit arrangement confirmation. A lost response is reconciled with the saved cancellation outcome before another submission. The notification inbox exposes a private generic outcome to affected attendees. Component and browser fixture checks are linked in AUTO-20261028-PR63-01; those tests substitute authentication/API responses and do not replace connected manual acceptance.
+
+**KAN-82 — 28 October 2026.** `VenueBookingPanel.vue` adds **Cancel arrangement** on each live row of an approved or confirmed event (a confirmation naming the event, venue and period, with a required reason) and **Request replacement** on a cancelled row with no live replacement, which prefills `replacesBookingId`. Rows show Replaces / Replaced by links; after a conflict or unconfirmed result the panel asks for a refresh before another cancel.
