@@ -1,0 +1,294 @@
+
+> connectsphere@0.1.0 test:integration
+> vitest run --config vitest.integration.config.ts
+
+
+ RUN  v4.1.11 C:/Users/arvin/Downloads/GitHub/ConnectSphere-ac-test-specs
+
+ ❯ database/tests/database.integration.test.ts (16 tests | 12 failed) 7717ms
+   × SCF-DB-01 migrations persist schema, seeds preserve edits, and HTTP readiness reaches PostgreSQL 285ms
+   × SCF-DB-02 upgrading the original schema preserves data and removes existing Data API grants 374ms
+   × SCF-DB-03 upgrading a legacy database preserves '003_add_firebase_identities.sql' and existing records 615ms
+   × SCF-DB-03 upgrading a legacy database preserves '003_add_supabase_auth.sql' and existing records 493ms
+   × SCF-DB-05 databases with old 007 keep their complete history without rerunning or adding renamed entries 562ms
+   × SCF-DB-06 a dashboard-era Supabase history name is preserved but is not treated as a renamed migration 485ms
+   × SCF-DB-08 matching current and prior ledger names are both retained without duplicate execution 530ms
+   × KAN-79 migration adds trusted Lead profiles while preserving existing automatic assignments and history 499ms
+   × KAN-77 migration gives existing venues zero buffers and preserves bookings and history 494ms
+   × KAN-77 integration preserves the original branch migration name without reapplying its columns 465ms
+   × KAN-9 migration 014 preserves existing equipment and reservations and enforces operational stock bounds 486ms
+   × KAN-26 migration 015 preserves legacy decisions and unknown release metadata while adding protected operational guards 622ms
+node.exe :
+At C:\nvm4w\nodejs\npm.ps1:29 char:3
++   & $NODE_EXE $NPM_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 12 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  database/tests/database.integration.test.ts > SCF-DB-01 migrations persist schema, seeds preserve edits, and
+HTTP readiness reaches PostgreSQL
+AssertionError: expected [ '001_initial_scaffold.sql', …(18) ] to deeply equal [ '001_initial_scaffold.sql', …(17) ]
+
+- Expected
++ Received
+
+@@ -15,6 +15,7 @@
+    "014_equipment_operational_quantities.sql",
+    "015_equipment_reservations.sql",
+    "016_event_request_revisions.sql",
+    "017_event_change_requests.sql",
+    "018_event_cancellation_equipment_workflows.sql",
++   "019_registration_notification_outcomes.sql",
+  ]
+
+ ❯ database/tests/database.integration.test.ts:86:47
+     84|
+     85| test('SCF-DB-01 migrations persist schema, seeds preserve edits, and H…
+     86|   expect(await migrate(scopedUrl.toString())).toEqual([
+       |                                               ^
+     87|     '001_initial_scaffold.sql', '002_restrict_data_api_access.sql',
+     88|     '003_add_supabase_user_id.sql', '004_core_feature_schema.sql',
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/12]⎯
+
+ FAIL  database/tests/database.integration.test.ts > SCF-DB-02 upgrading the original schema preserves data and
+removes existing Data API grants
+AssertionError: expected [ …(18) ] to deeply equal [ …(17) ]
+
+- Expected
++ Received
+
+@@ -14,6 +14,7 @@
+    "014_equipment_operational_quantities.sql",
+    "015_equipment_reservations.sql",
+    "016_event_request_revisions.sql",
+    "017_event_change_requests.sql",
+    "018_event_cancellation_equipment_workflows.sql",
++   "019_registration_notification_outcomes.sql",
+  ]
+
+ ❯ database/tests/database.integration.test.ts:167:47
+    165|   }
+    166|
+    167|   expect(await migrate(legacyUrl.toString())).toEqual([
+       |                                               ^
+    168|     '002_restrict_data_api_access.sql',
+    169|     '003_add_supabase_user_id.sql', '004_core_feature_schema.sql',
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/12]⎯
+
+ FAIL  database/tests/database.integration.test.ts > SCF-DB-03 upgrading a legacy database preserves
+'003_add_firebase_identities.sql' and existing records
+ FAIL  database/tests/database.integration.test.ts > SCF-DB-03 upgrading a legacy database preserves
+'003_add_supabase_auth.sql' and existing records
+AssertionError: expected [ …(14) ] to deeply equal [ …(13) ]
+
+- Expected
++ Received
+
+@@ -10,6 +10,7 @@
+    "014_equipment_operational_quantities.sql",
+    "015_equipment_reservations.sql",
+    "016_event_request_revisions.sql",
+    "017_event_change_requests.sql",
+    "018_event_cancellation_equipment_workflows.sql",
++   "019_registration_notification_outcomes.sql",
+  ]
+
+ ❯ database/tests/database.integration.test.ts:284:45
+
+ ❯ withPreAutomaticDatabase database/tests/database.integration.test.ts:265:5
+ ❯ database/tests/database.integration.test.ts:276:3
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/12]⎯
+
+ FAIL  database/tests/database.integration.test.ts > SCF-DB-05 databases with old 007 keep their complete history
+without rerunning or adding renamed entries
+AssertionError: expected [ …(13) ] to deeply equal [ …(12) ]
+
+- Expected
++ Received
+
+@@ -9,6 +9,7 @@
+    "014_equipment_operational_quantities.sql",
+    "015_equipment_reservations.sql",
+    "016_event_request_revisions.sql",
+    "017_event_change_requests.sql",
+    "018_event_cancellation_equipment_workflows.sql",
++   "019_registration_notification_outcomes.sql",
+  ]
+
+ ❯ database/tests/database.integration.test.ts:337:45
+
+ ❯ withPreAutomaticDatabase database/tests/database.integration.test.ts:265:5
+ ❯ database/tests/database.integration.test.ts:328:3
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/12]⎯
+
+ FAIL  database/tests/database.integration.test.ts > SCF-DB-06 a dashboard-era Supabase history name is preserved but
+is not treated as a renamed migration
+AssertionError: expected [ …(15) ] to deeply equal [ …(14) ]
+
+- Expected
++ Received
+
+@@ -11,6 +11,7 @@
+    "014_equipment_operational_quantities.sql",
+    "015_equipment_reservations.sql",
+    "016_event_request_revisions.sql",
+    "017_event_change_requests.sql",
+    "018_event_cancellation_equipment_workflows.sql",
++   "019_registration_notification_outcomes.sql",
+  ]
+
+ ❯ database/tests/database.integration.test.ts:355:45
+
+ ❯ withPreAutomaticDatabase database/tests/database.integration.test.ts:265:5
+ ❯ database/tests/database.integration.test.ts:347:3
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/12]⎯
+
+ FAIL  database/tests/database.integration.test.ts > SCF-DB-08 matching current and prior ledger names are both
+retained without duplicate execution
+AssertionError: expected [ …(14) ] to deeply equal [ …(13) ]
+
+- Expected
++ Received
+
+@@ -10,6 +10,7 @@
+    "014_equipment_operational_quantities.sql",
+    "015_equipment_reservations.sql",
+    "016_event_request_revisions.sql",
+    "017_event_change_requests.sql",
+    "018_event_cancellation_equipment_workflows.sql",
++   "019_registration_notification_outcomes.sql",
+  ]
+
+ ❯ database/tests/database.integration.test.ts:402:45
+
+ ❯ withPreAutomaticDatabase database/tests/database.integration.test.ts:265:5
+ ❯ database/tests/database.integration.test.ts:397:3
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/12]⎯
+
+ FAIL  database/tests/database.integration.test.ts > KAN-79 migration adds trusted Lead profiles while preserving
+existing automatic assignments and history
+AssertionError: expected [ …(13) ] to deeply equal [ …(12) ]
+
+- Expected
++ Received
+
+
+ Test Files  1 failed | 34 passed (35)
+@@ -9,6 +9,7 @@
+    "014_equipment_operational_quantities.sql",
+    "015_equipment_reservations.sql",
+    "016_event_request_revisions.sql",
+    "017_event_change_requests.sql",
+    "018_event_cancellation_equipment_workflows.sql",
++   "019_registration_notification_outcomes.sql",
+  ]
+
+ ❯ database/tests/database.integration.test.ts:420:45
+
+ ❯ withPreAutomaticDatabase database/tests/database.integration.test.ts:265:5
+ ❯ database/tests/database.integration.test.ts:411:3
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/12]⎯
+
+ FAIL  database/tests/database.integration.test.ts > KAN-77 migration gives existing venues zero buffers and preserves
+bookings and history
+AssertionError: expected [ …(11) ] to deeply equal [ …(10) ]
+
+- Expected
++ Received
+
+@@ -7,6 +7,7 @@
+    "014_equipment_operational_quantities.sql",
+    "015_equipment_reservations.sql",
+    "016_event_request_revisions.sql",
+    "017_event_change_requests.sql",
+    "018_event_cancellation_equipment_workflows.sql",
++   "019_registration_notification_outcomes.sql",
+  ]
+
+ ❯ database/tests/database.integration.test.ts:455:45
+
+ ❯ withPreAutomaticDatabase database/tests/database.integration.test.ts:265:5
+ ❯ database/tests/database.integration.test.ts:435:3
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/12]⎯
+
+ FAIL  database/tests/database.integration.test.ts > KAN-77 integration preserves the original branch migration name
+without reapplying its columns
+AssertionError: expected [ '008_notification_inbox.sql', …(10) ] to deeply equal [ '008_notification_inbox.sql', …(9) ]
+
+- Expected
++ Received
+
+@@ -7,6 +7,7 @@
+    "014_equipment_operational_quantities.sql",
+    "015_equipment_reservations.sql",
+    "016_event_request_revisions.sql",
+    "017_event_change_requests.sql",
+    "018_event_cancellation_equipment_workflows.sql",
+      Tests  12 failed | 623 passed (635)
+   Start at  02:51:00
+   Duration  80.55s (transform 2.43s, setup 0ms, import 15.23s, tests 57.17s, environment 4ms)
+
++   "019_registration_notification_outcomes.sql",
+  ]
+
+ ❯ database/tests/database.integration.test.ts:489:45
+
+ ❯ withPreAutomaticDatabase database/tests/database.integration.test.ts:265:5
+ ❯ database/tests/database.integration.test.ts:484:3
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/12]⎯
+
+ FAIL  database/tests/database.integration.test.ts > KAN-9 migration 014 preserves existing equipment and reservations
+and enforces operational stock bounds
+AssertionError: expected [ …(6) ] to deeply equal [ …(5) ]
+
+- Expected
++ Received
+
+@@ -2,6 +2,7 @@
+    "014_equipment_operational_quantities.sql",
+    "015_equipment_reservations.sql",
+    "016_event_request_revisions.sql",
+    "017_event_change_requests.sql",
+    "018_event_cancellation_equipment_workflows.sql",
++   "019_registration_notification_outcomes.sql",
+  ]
+
+ ❯ database/tests/database.integration.test.ts:523:45
+
+ ❯ withPreAutomaticDatabase database/tests/database.integration.test.ts:265:5
+ ❯ database/tests/database.integration.test.ts:502:3
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/12]⎯
+
+ FAIL  database/tests/database.integration.test.ts > KAN-26 migration 015 preserves legacy decisions and unknown
+release metadata while adding protected operational guards
+AssertionError: expected [ …(5) ] to deeply equal [ …(4) ]
+
+- Expected
++ Received
+
+  [
+    "015_equipment_reservations.sql",
+    "016_event_request_revisions.sql",
+    "017_event_change_requests.sql",
+    "018_event_cancellation_equipment_workflows.sql",
++   "019_registration_notification_outcomes.sql",
+  ]
+
+ ❯ database/tests/database.integration.test.ts:577:45
+
+ ❯ withPreAutomaticDatabase database/tests/database.integration.test.ts:265:5
+ ❯ database/tests/database.integration.test.ts:552:3
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/12]⎯

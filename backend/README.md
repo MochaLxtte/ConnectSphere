@@ -1,5 +1,7 @@
 # ConnectSphere API
 
+**29 October 2026 registration update:** KAN-17/67 add owned attendee withdrawal and current-manager roster endpoints; KAN-80 adds transactional outcome hooks in migration 019. See the [registration module](src/modules/registrations/README.md) and [API contract](../docs/architecture/api-contract.md#29-october-2026--kan-17-kan-67-and-kan-80-registration-outcomes). KAN-14, KAN-18 and KAN-61 source workflows, shared migration and integrated acceptance remain pending.
+
 Express 5, TypeScript, and Supabase PostgreSQL on Node.js 24. Run dependency installation and database setup from the repository root using the root README, then run `npm run dev --workspace @connectsphere/backend`. `npm run build --workspace @connectsphere/backend` produces `dist/`; `npm run start --workspace @connectsphere/backend` starts that build.
 
 `src/config/env.ts` loads the repository root `.env` in both source and compiled execution, regardless of the shell's working directory. Existing environment variables take precedence. `DATABASE_URL` is required at server startup; `API_PORT` defaults to `3000`, `API_HOST` to `127.0.0.1`, and `NODE_ENV` to `development`. Bind to `0.0.0.0` explicitly when a container or another machine must reach the API.

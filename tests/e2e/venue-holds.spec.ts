@@ -16,7 +16,7 @@ const base: VenueBooking = {
   venueRequirements: null, accessibilityNeeds: null, decidedBy: null, decidedAt: null, decisionReason: null,
   holdExpiresAt: null, heldBy: null, heldAt: null, expiredAt: null,
   cancelledBy: null, cancelledAt: null, cancellationReason: null,
-  recovery: [], replacesBookingId: null,
+  recovery: [], replacesBookingId: null, replacedByBookingIds: [],
   createdAt: '2026-10-01T01:00:00.000Z', updatedAt: '2026-10-01T01:00:00.000Z',
 };
 

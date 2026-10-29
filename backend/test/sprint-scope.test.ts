@@ -24,7 +24,6 @@ const futureRoutes = [
   ['patch', `/api/equipment-requests/${recordId}`, 'EVENT_COORDINATOR'],
   ['post', `/api/equipment-requests/${recordId}/decision`, 'TECHNICAL_SUPPORT_STAFF'],
   ['get', '/api/registrations/events', 'ATTENDEE'],
-  ['get', '/api/registrations/mine', 'ATTENDEE'],
   ['get', `/api/registrations/events/${eventId}`, 'ATTENDEE'],
   ['post', `/api/registrations/events/${eventId}/register`, 'ATTENDEE'],
   ['post', `/api/registrations/events/${eventId}/withdraw`, 'ATTENDEE'],

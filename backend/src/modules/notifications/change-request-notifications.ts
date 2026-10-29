@@ -9,7 +9,7 @@ import type { NotificationInput } from './notify.js';
  * | ---------------------------------- | ------------------------------------------------------- |
  * | Change request submitted (owner)   | the assigned coordinator, and the owner as an           |
  * |                                    | acknowledgement                                         |
- * | Approved or rejected (coordinator) | the owner                                               |
+ * | Approved or rejected (coordinator) | the owner and the deciding coordinator                  |
  * | Withdrawn (owner)                  | the assigned coordinator                                |
  */
 export const CHANGE_REQUEST_NOTIFICATION_TYPES = [
@@ -33,7 +33,7 @@ export function changeRequestSubmittedNotifications(
   event: EventRef, changeRequestId: string,
 ): NotificationInput[] {
   const notices: NotificationInput[] = [{
-    recipientId: event.organiserId, eventRequestId: event.id, type: 'CHANGE_REQUEST_SUBMITTED',
+    recipientId: event.organiserId, eventRequestId: event.id, changeRequestId, type: 'CHANGE_REQUEST_SUBMITTED',
     title: 'Change request submitted',
     message: `Your change request for ${label(event)} was sent to the coordinator for review. ` +
       'The event keeps its current details until the change is approved.',
@@ -41,7 +41,7 @@ export function changeRequestSubmittedNotifications(
   }];
   if (event.coordinatorId) {
     notices.push({
-      recipientId: event.coordinatorId, eventRequestId: event.id, type: 'CHANGE_REQUEST_SUBMITTED',
+      recipientId: event.coordinatorId, eventRequestId: event.id, changeRequestId, type: 'CHANGE_REQUEST_SUBMITTED',
       title: 'Change request to review',
       message: `The organiser of ${label(event)} requested a change. Open the event to review it.`,
       dedupeKey: `CHANGE_REQUEST_SUBMITTED:${changeRequestId}:coordinator`,
@@ -65,12 +65,21 @@ export function changeRequestDecisionNotifications(
       : null,
   ].filter((part): part is string => part !== null)
     .map((part) => (/[.!?]$/.test(part) ? part : `${part}.`));
-  return [{
-    recipientId: event.organiserId, eventRequestId: event.id, type,
+  const notices: NotificationInput[] = [{
+    recipientId: event.organiserId, eventRequestId: event.id, changeRequestId: decision.id, type,
     title: approved ? 'Change request approved' : 'Change request rejected',
     message: parts.join(' '),
     dedupeKey: `${type}:${decision.id}`,
   }];
+  if (event.coordinatorId && event.coordinatorId !== event.organiserId) {
+    notices.push({
+      recipientId: event.coordinatorId, eventRequestId: event.id, changeRequestId: decision.id, type,
+      title: approved ? 'Change request approved' : 'Change request rejected',
+      message: `You ${approved ? 'approved' : 'rejected'} the change request for ${label(event)}.`,
+      dedupeKey: `${type}:${decision.id}`,
+    });
+  }
+  return notices;
 }
 
 export function changeRequestWithdrawnNotifications(
@@ -78,7 +87,7 @@ export function changeRequestWithdrawnNotifications(
 ): NotificationInput[] {
   if (!event.coordinatorId) return [];
   return [{
-    recipientId: event.coordinatorId, eventRequestId: event.id, type: 'CHANGE_REQUEST_WITHDRAWN',
+    recipientId: event.coordinatorId, eventRequestId: event.id, changeRequestId, type: 'CHANGE_REQUEST_WITHDRAWN',
     title: 'Change request withdrawn',
     message: `The organiser of ${label(event)} withdrew their change request.`,
     dedupeKey: `CHANGE_REQUEST_WITHDRAWN:${changeRequestId}`,
