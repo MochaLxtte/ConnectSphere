@@ -30,6 +30,8 @@ Daily Scrums follow Tuesday, Thursday and Saturday: planned dates 20, 22, 24, 27
 
 **28 October 2026 — KAN-15 observation O-1 fix outside a Daily Scrum (Irfan).** The coordinator venue booking panel now reloads when the event revision advances, so bookings cancelled by an approved change request show as Cancelled without a manual refresh (`fix/KAN-15-venue-panel-refresh`, `AUTO-20261028-KAN15-O1-01`). A manual re-check is planned with the KAN-82 hands-on run.
 
+**29 October 2026 — KAN-82 review fixes outside a Daily Scrum (Irfan).** PR #67 review (MochaLxtte, changes requested) addressed on `feat/KAN-82-independent-venue-arrangements` after merging `main` `409c43f` (shared-document conflicts kept both sides). Replacement approval now locks the original booking before the event, removing a reproduced deadlock with arrangement cancellation; the event page clears a stale replacement source after refresh and blocks cancel retries until a refresh. New cases TC-12-13 and TC-12-14; `AUTO-20261029-KAN82-03` Pass after confirmed pre-fix failures (integration 639/639, KAN-82 and venue browser specs 76/76). Remaining: commit and push, re-review, local integrated acceptance (**Not executed**). Estimate unchanged at 5 SP.
+
 ## Impediments
 
 | Raised | Impediment / dependency | Owner | Planned action | Status |

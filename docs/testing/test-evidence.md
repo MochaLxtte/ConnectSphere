@@ -1905,3 +1905,27 @@ Static review of `database/tests/events/cancellation-equipment.integration.test.
 | `npx playwright test` | Pass — 189/189 (disposable local database) |
 
 **Not executed:** a manual re-check on localhost; planned with the KAN-82 hands-on run. TC-19-08's earlier Pass stands; this changes only when the panel reloads.
+
+## 29 October 2026 — KAN-82 PR #67 review fixes
+
+**Run:** `AUTO-20261029-KAN82-03`. **Executor:** Claude Code (AI agent) in Irfan's working session. **Build:** `feat/KAN-82-independent-venue-arrangements` at `dc75ce5` (after merging `main` `409c43f`) plus the uncommitted review fixes. The pre-fix attempts ran on the same commit with only the new tests added. **Environment:** local Windows 11 workstation, Node 22.20.0, Docker Compose PostgreSQL 17.11 on 127.0.0.1:5432 (`connectsphere_test` for integration, `connectsphere` migrated to 018 for the browser API server); not the shared Supabase database.
+
+**Review findings (MochaLxtte, 28 October, changes requested).** (1) Cancelling an arrangement locked the original booking and then the event, while approving a replacement locked the event and then the original, so the two could deadlock across venues. (2) A refresh did not clear a replacement source that was still listed but no longer replaceable, so a hidden stale ID could be submitted. (3) `confirmCancel` and its button were not guarded by `needsRefresh`, so a cancel could be retried after a 409 or 500 before the required refresh.
+
+**Fixes.** `decideVenueBooking` now locks a replacement's original booking right after the replacement's own row and before the event, matching the venue gate → booking → event order of arrangement cancellation and of `arrangement-locks.ts` (KAN-62, KAN-15). The original's checks are unchanged and still run under its lock. `VenueBookingPanel.vue` clears the selected replacement source on reload unless it is still in the replaceable list, and blocks both `confirmCancel` and the **Confirm cancellation** button while a refresh is required.
+
+| Run | Command | Result |
+| --- | --- | --- |
+| Pre-fix, TC-12-13 | `npx vitest run --config vitest.integration.config.ts …venue-arrangements… -t "never deadlocks"` | **Fail** (expected): both scenarios rejected the cancel with PostgreSQL `40P01 deadlock detected` |
+| Pre-fix, TC-12-14 | `npx vitest run …VenueBookingPanel.test.ts` (component without the fixes) | **Fail** (expected): 3 of 45 |
+| After fixes | Venue integration suites, three consecutive runs | Pass — 285/285 each run |
+| After fixes | `npm run check` | Pass — frontend 1,046 / 49 files, backend 1,723 / 61, typecheck and builds. The first attempt timed out in two unrelated tests (KAN-34 `EventDraftEditPage`, KAN-51 `VenueAvailabilityPage`) while Docker Desktop was starting; both passed alone (31/31) and in the full re-run. |
+| After fixes | `npm run test:integration` | Pass — 639/639 across 34 files |
+| After fixes | `npm run test:coverage` | Pass — frontend 98.26% lines, backend 93.4% lines (venues module 94.84%) |
+| After fixes | `npx playwright test tests/e2e/kan82-independent-arrangements.spec.ts tests/e2e/venue- --workers=1` | Pass — 76/76 in 2.5 minutes (substituted API responses) |
+
+**Case-level results.** `test-executions.csv` rows `EX-12-13-A01` (Fail) to `-A03`, `EX-12-14-A01` (Fail) and `-A02`, plus regressions `EX-12-10-A05` and `EX-12-12-A05`. New specifications TC-12-13 and TC-12-14 were added rather than changing TC-12-10 and TC-12-12, so their earlier runs stay comparable.
+
+**Test design.** TC-12-13 holds the event row in a third session, lets the approval queue first, then the cancel, and waits on `pg_stat_activity` lock waits rather than timers. With the old order the approval obtains the event and then waits for the original that the cancel holds; with the new order the cancel waits for the original and is refused once the approval commits. The unit assertion in `booking-conflicts.test.ts` now expects the original's lock between the replacement's row and the event row.
+
+**Limitations.** The browser run covered only the KAN-82 and venue specs, with one worker; the first full-suite attempt overloaded the workstation and was stopped by the user. The full browser suite runs in CI on push. Synthetic identities and substituted API responses only; no live Supabase sign-in. Local integrated acceptance (AGENTS.md §5.12) remains **Not executed**; acceptance **Not assessed**. No new coverage report file was saved.

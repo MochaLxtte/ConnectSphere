@@ -1428,3 +1428,11 @@ Source: Irfan (KAN-82 owner and Product Owner) approved design D1–D8 in the AI
 | D8 | Estimate stays 5 SP. | Persistence and validation already existed; the work is one endpoint, a widened replacement rule, a derived field, two notice types, panel UI and tests. |
 
 Consequences: the replacement and approval paths in `booking-service.ts` now distinguish explicitly cancelled originals from KAN-81-resolved ones. The readiness half of KAN-82-AC9 is delivered; the safety-approval invalidation half depends on KAN-84 (KAN-84-AC9); recorded on both sprint-04 cards and as Jira comments on 28 October 2026. No shared database change is needed for this story.
+
+## 29 October 2026 — KAN-82 replacement approval lock order (review follow-up)
+
+Source: PR #67 review by MochaLxtte (28 October 2026, changes requested); the fix was approved by Irfan (KAN-82 owner) in the AI-assisted working session on 29 October 2026. No customer clarification or team vote was needed.
+
+Decision: approving a replacement venue booking locks its original booking immediately after the replacement's own row and before the event row (booking → original → event → venue). This matches decision D1's venue gate → booking → event order for arrangement cancellation and the shared order in `backend/src/modules/events/arrangement-locks.ts` (KAN-62, KAN-15). The checks on the original are unchanged and still run under its lock.
+
+Reason: the previous order (booking → event → venue → original) deadlocked with a concurrent cancel of the same original, reproduced as PostgreSQL `40P01` for both a KAN-81 recovery original and a KAN-82 cancelled original (TC-12-13, `EX-12-13-A01`). Consequences: no AC, migration, API contract or estimate change; KAN-81 approval behaviour is preserved.
