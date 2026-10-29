@@ -386,7 +386,7 @@ sequenceDiagram
 
 ## Safety review and preparation sequence (KAN-84)
 
-A round records the arrangement fingerprint it was submitted against. Approval counts only while the live fingerprint matches, so a change from any story makes it stale and blocks preparation until a new round is approved.
+A round records the arrangement fingerprint it was submitted against. Approval counts only while the live fingerprint matches and the arrangements remain ready; changed safety-relevant data makes approval stale and blocks preparation until a new round is approved. Migration 022 preserves original 021 and adds immutable, per-area remediation baselines. A change-request decision captures current venue and technical digests; every requested area must change before resubmission. Safety notes and unrelated-area edits do not satisfy this check. A changed digest still requires current readiness and a fresh officer decision.
 
 ```mermaid
 sequenceDiagram
@@ -397,8 +397,11 @@ sequenceDiagram
   participant DB as PostgreSQL
   C->>API: POST /events/:id/safety-reviews (safety notes)
   API->>S: submitSafetyReview
-  S->>DB: lock arrangements (KAN-61 order), eventReadiness, fingerprint
-  alt not ready, pending round or already approved
+  S->>DB: lock arrangements (KAN-61 order), read latest round and readiness
+  opt latest decision requests changes
+    S->>DB: compare requested area digests with immutable baseline
+  end
+  alt not ready, unresolved area, pending round or current approval
     S-->>C: 409 with reason, nothing written
   else ready
     S->>DB: INSERT round N with fingerprint, notify every Safety Officer
@@ -406,23 +409,36 @@ sequenceDiagram
   end
   O->>API: GET /safety-reviews/:id
   API->>S: getSafetyReview
-  S-->>O: event, venues, equipment, notes (missing shown), stale flag, fingerprint
+  S-->>O: arrangements, notes, stale flag, fingerprint and readiness blockers
   O->>API: POST /safety-reviews/:id/decision (decision, fingerprint)
   API->>S: decideSafetyReview
   S->>DB: lock arrangements, lock round
-  alt round decided, fingerprint differs or stale approve
+  alt conflicting prior decision, fingerprint differs or approval not ready/current
     S-->>O: 409, nothing written
+  else identical prior decision
+    S-->>O: 200 changed=false, preserve saved decision
   else decision allowed
-    S->>DB: record decision (immutable), notify coordinator and area staff
+    S->>DB: record immutable decision
+    opt CHANGES_REQUESTED
+      S->>DB: INSERT immutable venue and technical baseline digests
+    end
+    S->>DB: notify coordinator and requested-area staff in same transaction
     S-->>O: 200
+  end
+  opt latest decision requests changes
+    C->>API: update requested planning areas through existing workflows
+    Note over C,DB: Confirmed equipment remediation requires latest TECHNICAL request
+    C->>API: resubmit after every requested area changes and readiness passes
   end
   C->>API: POST /events/:id/preparation/start
   API->>S: startPreparation
-  S->>DB: CONFIRMED? latest round APPROVED and fingerprint current? ready?
+  S->>DB: lock arrangements, require CONFIRMED, current approval and readiness
   S-->>C: 200 started or 409 with reason
 ```
 
 ![Safety review sequence](exports/seq-safety-review.png)
+
+The 021 → 022 upgrade retains decided rounds and any existing preparation record. Existing change-request decisions receive conservative baselines from upgrade-time current arrangements; this cannot prove that earlier remediation was performed. Original approvals may become stale when the stronger full fingerprint includes venue hours and buffers. See the [migration procedure](../../database/README.md#kan-84-forward-upgrade--migration-022-29-october-2026) and [baseline relationship](../database-diagram.md#29-october-2026--migration-022-safety-remediation-baselines-kan-84). Shared 022 rollout and connected manual acceptance remain **Not executed** in this review run.
 
 ## Event cancellation and equipment request sequence (KAN-62 / KAN-63)
 

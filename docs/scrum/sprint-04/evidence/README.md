@@ -107,3 +107,9 @@ KAN-26 is In Progress / Tristan (3 SP), with unestimated KAN-104–106 In Progre
 | ID | Artifact | Source / result | Limits |
 | --- | --- | --- | --- |
 | S4-E21 | [AUTO-20261029-PR77-REVIEW](../../../testing/test-evidence.md#auto-20261029-pr77-review--operational-block-readiness-regression), execution `EX-06-431-AUTO-20261029-PR77-01` | TC-06-431 failed before the fix and passed afterwards; 15/15 confirmation PostgreSQL tests; check and coverage Pass with 1,154 frontend and 1,933 backend tests. Tested code committed unchanged as `a31d2ef`. | Captured console results recorded in the run narrative; no separate raw log file retained. Disposable local PostgreSQL with synthetic identities, no shared Supabase or manual E2E acceptance; full database/browser suites not rerun for this follow-up. |
+
+## KAN-84 PR #78 follow-up — 29 October 2026
+
+| ID | Artifact | Source / result | Limits |
+| --- | --- | --- | --- |
+| S4-E22 | [Review follow-up logs](kan84-20261029/) (review-followup-check.txt, review-followup-coverage.txt, review-followup-integration.txt, review-followup-browser.txt, review-followup-browser-isolation.txt and initial-attempt logs) | AUTO-20261029-PR78-REVIEW: check/coverage 1,170 frontend + 1,947 backend; PostgreSQL 795/795 including five upgrade tests; browser 227/227 and final targeted repeat 18/18. Case-level mappings/results in the testing registers. | Windows/Node 24.21.0, disposable PostgreSQL17, synthetic identities; browser APIs substituted. Retains initial check/coverage/startup/browser failures. No shared 022 rollout or manual acceptance. Backend safety service unit-report coverage remains limited; separate database coverage is not merged into that percentage. |

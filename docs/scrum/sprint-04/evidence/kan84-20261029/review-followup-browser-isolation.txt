@@ -1,0 +1,57 @@
+
+> connectsphere@0.1.0 test:e2e
+> playwright test tests/e2e/kan66-planning-edits.spec.ts tests/e2e/safety-review.spec.ts --workers=4 --repeat-each=3 --output=C:\Users\trist\.codex\tmp\pr78-followup-browser-isolation-results
+
+[WebServer] (node:47012) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:17528) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:27408) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 18 tests using 4 workers
+
+(node:26312) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:57288) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:52780) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:42216) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  3 [chromium] › tests\e2e\kan66-planning-edits.spec.ts:72:1 › KAN-66-AC103 a stale save is refused and the latest details can be reloaded (1.5s)
+  ok  1 [chromium] › tests\e2e\kan66-planning-edits.spec.ts:95:1 › KAN-66-AC102 coordinator sees only name and description for an approved event (1.8s)
+  ok  4 [chromium] › tests\e2e\safety-review.spec.ts:43:1 › KAN-84-AC2/AC3 coordinator submits safety notes and sees the round awaiting the officer after reload (2.5s)
+  ok  2 [chromium] › tests\e2e\kan66-planning-edits.spec.ts:41:1 › KAN-66-AC101/AC3 organiser edits a submitted request and sees it after refresh (2.5s)
+  ok  5 [chromium] › tests\e2e\safety-review.spec.ts:68:1 › KAN-84-AC1/AC4/AC6 Safety Officer opens the queue, sees missing information and requests technical changes (1.6s)
+(node:11740) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:54052) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  6 [chromium] › tests\e2e\safety-review.spec.ts:107:1 › KAN-84-AC8/AC9 preparation starts on current approval and the organiser sees it blocked after a change (1.7s)
+(node:47320) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:12988) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  7 [chromium] › tests\e2e\kan66-planning-edits.spec.ts:72:1 › KAN-66-AC103 a stale save is refused and the latest details can be reloaded (1.3s)
+  ok  9 [chromium] › tests\e2e\kan66-planning-edits.spec.ts:95:1 › KAN-66-AC102 coordinator sees only name and description for an approved event (1.5s)
+  ok  8 [chromium] › tests\e2e\kan66-planning-edits.spec.ts:41:1 › KAN-66-AC101/AC3 organiser edits a submitted request and sees it after refresh (2.3s)
+  ok 11 [chromium] › tests\e2e\safety-review.spec.ts:68:1 › KAN-84-AC1/AC4/AC6 Safety Officer opens the queue, sees missing information and requests technical changes (1.8s)
+  ok 10 [chromium] › tests\e2e\safety-review.spec.ts:43:1 › KAN-84-AC2/AC3 coordinator submits safety notes and sees the round awaiting the officer after reload (2.2s)
+  ok 12 [chromium] › tests\e2e\safety-review.spec.ts:107:1 › KAN-84-AC8/AC9 preparation starts on current approval and the organiser sees it blocked after a change (1.7s)
+(node:34592) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:59140) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:51176) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:53144) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 14 [chromium] › tests\e2e\kan66-planning-edits.spec.ts:72:1 › KAN-66-AC103 a stale save is refused and the latest details can be reloaded (1.3s)
+  ok 15 [chromium] › tests\e2e\kan66-planning-edits.spec.ts:95:1 › KAN-66-AC102 coordinator sees only name and description for an approved event (1.5s)
+  ok 13 [chromium] › tests\e2e\kan66-planning-edits.spec.ts:41:1 › KAN-66-AC101/AC3 organiser edits a submitted request and sees it after refresh (2.1s)
+  ok 16 [chromium] › tests\e2e\safety-review.spec.ts:43:1 › KAN-84-AC2/AC3 coordinator submits safety notes and sees the round awaiting the officer after reload (2.0s)
+  ok 17 [chromium] › tests\e2e\safety-review.spec.ts:68:1 › KAN-84-AC1/AC4/AC6 Safety Officer opens the queue, sees missing information and requests technical changes (1.4s)
+  ok 18 [chromium] › tests\e2e\safety-review.spec.ts:107:1 › KAN-84-AC8/AC9 preparation starts on current approval and the organiser sees it blocked after a change (1.5s)
+
+  18 passed (16.3s)

@@ -462,3 +462,22 @@ erDiagram
 ```
 
 `app_users.role` gains `SAFETY_OFFICER` (trusted provisioning only). `event_requests` gains `preparation_started_at`, `preparation_started_by` and `preparation_safety_review_id` (all set or all null). `notifications` gains `safety_review_id`. A partial unique index allows one PENDING round per event; a trigger makes decided rounds immutable. `safety_arrangement_fingerprint(event_id)` derives the digest an approval depends on; nothing about invalidation is stored.
+
+## 29 October 2026 — Migration 022 safety remediation baselines (KAN-84)
+
+```mermaid
+erDiagram
+  safety_reviews ||--o| safety_review_change_baselines : "change-request decision baseline"
+  safety_review_change_baselines {
+    uuid review_id PK, FK
+    text venue_fingerprint "32-character lowercase md5"
+    text technical_fingerprint "32-character lowercase md5"
+    timestamptz captured_at "actual baseline capture time"
+  }
+```
+
+[Migration 022](../database/migrations/022_safety_review_remediation.sql) adds this table without rewriting migration 021 or any review, preparation, notification or role record. `review_id` references exactly one review; the primary key permits at most one baseline per round. The application inserts a baseline only when recording `CHANGES_REQUESTED`; other outcomes do not need one. Both digest columns and `captured_at` are required, the digests must contain 32 lowercase hexadecimal characters, and a trigger rejects all updates/deletes. RLS is enabled and direct Data API privileges are revoked.
+
+`safety_planning_area_fingerprint(event_id, area)` computes the current `VENUE` or `TECHNICAL` digest. The API requires a change in every requested area plus valid current readiness before resubmission; notes and unrelated-area edits do not satisfy this condition. A missing baseline fails closed. The migration backfills existing `CHANGES_REQUESTED` rounds using **upgrade-time current data**, not an invented historical snapshot. The baseline's capture time records that distinction; the decided round and its original arrangement digest remain immutable.
+
+Migration 022 also strengthens the full arrangement digest with venue operating hours and buffers, and permits equipment reservation on confirmed events only during the latest `TECHNICAL` change-request decision. Original approvals may become stale under the stronger digest; no approval is rewritten to appear current. Helpers have pinned search paths and restricted execution privileges. See the [forward-upgrade procedure](../database/README.md#kan-84-forward-upgrade--migration-022-29-october-2026). Shared application of 022 is **Not executed** in the PR review run.
