@@ -1897,7 +1897,11 @@ Static review of `database/tests/events/cancellation-equipment.integration.test.
 
 **Observation O-1 (minor KAN-15 UI defect, follow-up):** immediately after **Approve and apply**, the Venue booking requests panel on the same coordinator page still showed the Orchid booking as Pending; **Refresh booking requests** then showed Cancelled with the reason. Persisted state and the Change requests panel were correct. The panel is not reloaded after a change-request decision. Not fixed in this run.
 
-**Not covered here:** notification contents for change requests (TC-19-06), the full significant-field matrix (TC-19-07), concurrent decisions (TC-19-09) and arrangement preservation during an ordinary edit (TC-07-02) were not exercised manually; their automated PostgreSQL evidence stands. Acceptance of KAN-66 and KAN-15 remains for the 31 October sprint review.
+**Case mapping.** Steps 1–2 → TC-07-01; steps 3–5 (stale approval refused, then accepted after refresh) → TC-07-06; step 6 → TC-07-03; step 7 → TC-07-04; steps 9–15 → TC-19-01 to TC-19-05; step 10 → TC-19-08, for the attendance-change cancellation only. Harbour Hall (step 11) was requested after that approval, so this run does not show that a pre-existing unaffected arrangement is preserved, and no equipment line existed.
+
+**Not covered here:** concurrent edits from the same revision (TC-07-05), notification contents for change requests (TC-19-06), the full significant-field matrix (TC-19-07), concurrent decisions (TC-19-09), arrangement preservation during an ordinary edit (TC-07-02), and the preservation and equipment parts of TC-19-08 were not exercised manually; their automated PostgreSQL evidence stands.
+
+**Corrections, 29 October 2026 (PR #68 review by MochaLxtte).** The stale-approval observation was first recorded under TC-07-05 and is now `EX-07-06-M01`; `EX-07-05-M01` is Not executed. `EX-19-08-M01` is narrowed to the attendance-change cancellation. Not executed rows keep run, result, executor, date, build and environment as Not recorded (AGENTS.md §6.1), with the context in remarks. No observation was added or removed. Acceptance of KAN-66 and KAN-15 remains for the 31 October sprint review.
 
 **Shared database rollout record (016–018):** read-only check on 28 October 2026 found `016_event_request_revisions.sql`, `017_event_change_requests.sql` and `018_event_cancellation_equipment_workflows.sql` in the shared ledger with `applied_at` 2026-10-28 01:35:56 UTC, after #64, #65 and #63 merged. Who ran `npm run db:migrate` is Not recorded.
 
