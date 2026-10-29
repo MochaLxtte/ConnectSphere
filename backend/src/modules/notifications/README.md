@@ -1,5 +1,11 @@
 # Notifications (KAN-64, CF-20)
 
+## 30 October 2026 — KAN-80 significant-change notification clarification
+
+Submitting a significant-change request acknowledges the organiser and asks the currently assigned coordinator to review it. Approval or rejection notifies the organiser and reviewing coordinator. Approved changes affecting registered attendees notify those active attendees.
+
+The submission notice is the request for action under KAN-80-AC2; the existing KAN-15 submission and decision workflow supplies these outcomes. Tristan confirmed this interpretation in chat on 29 October and authorized the documentation update on 30 October. This is a recorded clarification, with no additional workflow transition, scope, estimate or migration change; it is not a customer response or team vote. The [dated decision](../../../../docs/requirements/assumptions-and-questions.md#30-october-2026--sprint-4-acceptance-clarification-and-corrections) resolves the earlier open question while preserving its history. `TC-20-405` specifies the clarified submission request for action; `TC-20-431` is the separate integrated manual journey, **Not executed**. Automated evidence is recorded in `AUTO-20261030-S4-AC-FIXES` / S4-E23; story acceptance remains **Not assessed**.
+
 ## 29 October 2026 — KAN-80 later outcomes
 
 Migration 019 adds optional registration/change targets and emits registration, final-event and affected-equipment-shortfall notices within actor transactions, reusing the recipient/outcome unique index. Registration outcome versions distinguish re-entry from a replay. KAN-15 writes allowed attendee-relevant change notices and current-coordinator decision acknowledgements through `recordNotifications`. Attendee inboxes expose only their own safe registration/outcome messages and `/registrations`; organiser/coordinator registration notices lead to the protected roster. Change notices link to the identified change on a currently authorized event. Source services must still recheck role/ownership and use `inActorTransaction`; the hooks do not implement KAN-14, KAN-18 or KAN-61. CR-2/4/6 remain separate. Local automated evidence is in [test evidence](../../../../docs/testing/test-evidence.md#29-october-2026--kan-17-kan-67-and-kan-80-implementation-verification); shared migration and integrated acceptance remain Not executed.
