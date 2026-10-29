@@ -321,11 +321,14 @@ describe('KAN-81 phase 3: replacement requests and approvals (AC7, AC8)', () => 
     expect(wrote(/v\.capacity/)).toBe(false);
   });
 
-  it('approves a replacement by resolving and cancelling the original after the other locks (AC8)', async () => {
+  it('approves a replacement by resolving and cancelling the original, locking it before the event (AC8)', async () => {
     const { pool, calls, index } = fakePool({ replaces: originalId });
     await decide(pool);
-    const lockOriginal = calls.findIndex((call) => /FROM venue_bookings (o )?WHERE (o\.)?id = \$1 FOR UPDATE/.test(call.sql) && call.params[0] === originalId);
-    expect(lockOriginal).toBeGreaterThan(index(/FROM venues WHERE id = \$1 FOR UPDATE/));
+    // KAN-82 review: booking rows before the event, as in arrangement cancellation, so the two cannot deadlock.
+    const lockOriginal = calls.findIndex((call) => /FROM venue_bookings WHERE id = \$1 FOR UPDATE/.test(call.sql) && call.params[0] === originalId);
+    const lockReplacement = calls.findIndex((call) => /FROM venue_bookings WHERE id = \$1 FOR UPDATE/.test(call.sql) && call.params[0] !== originalId);
+    expect(lockOriginal).toBeGreaterThan(lockReplacement);
+    expect(lockOriginal).toBeLessThan(index(/FROM event_requests WHERE id = \$1 FOR UPDATE/));
     const resolve = index(/UPDATE venue_outage_impacts SET status = 'RESOLVED'/);
     const cancel = calls.findIndex((call) => /SET status = 'CANCELLED'/.test(call.sql));
     expect(resolve).toBeGreaterThan(index(/SET status = \$1, decided_by/));

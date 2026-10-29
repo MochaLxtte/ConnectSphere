@@ -66,6 +66,18 @@ const row = async (id: string) =>
 const typed = async (eventRequestId: string, type: string) =>
   (await fixture.notifications(eventRequestId)).filter((item) => item.type === type);
 
+/** Wait until `count` sessions of this test schema are waiting on a lock. */
+async function waitForLockWaiters(count: number) {
+  const applicationName = new URL(fixture.pool.options.connectionString!).searchParams.get('application_name');
+  for (let attempt = 0; attempt < 300; attempt++) {
+    const waiting = await fixture.pool.query<{ n: number }>(`SELECT count(*)::int AS n FROM pg_stat_activity
+      WHERE application_name = $1 AND wait_event_type = 'Lock'`, [applicationName]);
+    if (waiting.rows[0]!.n >= count) return;
+    await new Promise((resolve) => setTimeout(resolve, 10));
+  }
+  throw new Error(`Expected ${count} sessions to wait on a lock`);
+}
+
 describe('KAN-82 several independent arrangements on one event (AC1, AC2, AC3)', () => {
   it('KAN-82-AC1/AC2 keeps two arrangements with their own identity, venue, period and layout', async () => {
     const eventId = await event();
@@ -218,6 +230,46 @@ describe('KAN-82 cancelling one arrangement (AC4, AC7, AC9, AC10, AC11)', () => 
       expect(cancellation.status).toBe('rejected');
     }
     expect((await typed(eventId, 'VENUE_ARRANGEMENT_CANCELLED')).length).toBeLessThanOrEqual(3);
+  });
+
+  it.each([
+    ['its KAN-81 recovery replacement', 'RECOVERY'],
+    ['its KAN-82 replacement after cancellation', 'CANCELLED'],
+  ] as const)('KAN-82-AC10 cancelling an original while %s is approved at another venue never deadlocks', async (_label, kind) => {
+    const eventId = await event();
+    const [roomA, roomB] = [await venue(), await venue()];
+    const original = await request_(eventId, roomA, 85);
+    await approve(original.id);
+    if (kind === 'RECOVERY') {
+      await createVenueBlock(fixture.dependencies, { actor: staff, venueId: roomA, input: { ...period(85), reason: 'Leak' } });
+    } else {
+      await cancel(original.id);
+    }
+    const replacement = await request_(eventId, roomB, 85, { replacesBookingId: original.id });
+
+    // Hold the event row so the approval queues on it first, then the cancel joins behind it.
+    const blocker = await fixture.pool.connect();
+    let work: Promise<PromiseSettledResult<unknown>[]> | undefined;
+    try {
+      await blocker.query('BEGIN');
+      await blocker.query('SELECT id FROM event_requests WHERE id = $1 FOR UPDATE', [eventId]);
+      const approval = approve(replacement.id);
+      await waitForLockWaiters(1);
+      const cancellation = cancel(original.id, 'Changed plans');
+      await waitForLockWaiters(2);
+      work = Promise.allSettled([approval, cancellation]);
+      await blocker.query('COMMIT');
+      const [approved, cancelled] = await work;
+      // Shared order: booking rows before the event. The approval wins; the cancel sees the result.
+      expect(approved).toMatchObject({ status: 'fulfilled', value: { status: 'APPROVED' } });
+      expect(cancelled).toMatchObject({ status: 'rejected', reason: { code: 'BOOKING_ALREADY_CANCELLED' } });
+    } finally {
+      if (!work) await blocker.query('ROLLBACK').catch(() => undefined);
+      blocker.release();
+      await work;
+    }
+    expect((await row(original.id)).status).toBe('CANCELLED');
+    expect((await row(replacement.id)).status).toBe('APPROVED');
   });
 
   it('KAN-82-AC11 notifies the current coordinator and every Venue Staff member once, after commit', async () => {

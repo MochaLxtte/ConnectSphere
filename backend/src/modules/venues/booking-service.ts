@@ -423,8 +423,14 @@ export async function decideVenueBooking(
       let replacesCancelled = false;
 
       if (decision.decision === 'APPROVED') {
-        // Lock order: booking -> event -> venue. The event and venue must remain eligible
-        // until commit. Rejection still works if either has become unsuitable meanwhile.
+        // Lock order: booking -> original booking -> event -> venue, matching the shared
+        // gate -> booking -> event order of cancellation and KAN-62/KAN-15 (arrangement-locks.ts).
+        // Locking the original after the event deadlocked with a cancel of that original.
+        // The event and venue must remain eligible until commit. Rejection still works if
+        // either has become unsuitable meanwhile.
+        if (booking.replacesBookingId !== null) {
+          await client.query('SELECT id FROM venue_bookings WHERE id = $1 FOR UPDATE', [booking.replacesBookingId]);
+        }
         const event = await client.query<{ status: EventStatus }>(
           'SELECT status FROM event_requests WHERE id = $1 FOR UPDATE', [booking.eventRequestId]);
         // KAN-81-AC7: a replacement may also be approved for a confirmed event.
@@ -446,17 +452,17 @@ export async function decideVenueBooking(
         // while we waited. Half-open occupied intervals allow exact adjacency.
         await assertOccupiedIntervalAvailable(client, booking.venueId, booking.startsAt, booking.endsAt, bookingId);
 
-        // KAN-81-AC8: lock the original last (after booking -> event -> venue) and approve only while it
-        // still needs recovery, so a second replacement or a removed outage cannot double-book the event.
+        // KAN-81-AC8: approve only while the original still needs recovery, so a second replacement
+        // or a removed outage cannot double-book the event.
         // KAN-82-AC5: a replacement for a cancelled arrangement needs no recovery; the original stays
         // cancelled as history and is not touched again.
-        // Under the original's lock, so two replacements of one cancelled original cannot both be approved.
+        // Under the original's lock (taken above), so two replacements of one original cannot both be approved.
         if (booking.replacesBookingId !== null) {
           const original = await client.query<{ explicitlyCancelled: boolean; approvedReplacement: boolean }>(
             `SELECT ${explicitlyCancelledSql} AS "explicitlyCancelled",
                EXISTS(SELECT 1 FROM venue_bookings r WHERE r.replaces_booking_id = o.id AND r.id <> $2
                  AND ${occupyingBookingSql('r', 'clock_timestamp()')}) AS "approvedReplacement"
-             FROM venue_bookings o WHERE o.id = $1 FOR UPDATE`, [booking.replacesBookingId, bookingId]);
+             FROM venue_bookings o WHERE o.id = $1`, [booking.replacesBookingId, bookingId]);
           replacesCancelled = original.rows[0]?.explicitlyCancelled === true;
           if (replacesCancelled ? original.rows[0]!.approvedReplacement
             : !(await hasOpenRecovery(client, booking.replacesBookingId))) replacementNotNeeded();

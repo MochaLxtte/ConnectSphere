@@ -139,7 +139,9 @@ saves the outage and, inside the same venue-locked transaction, records each aff
   booking response carries its `recovery` list.
 - Phase 3: a request with `replacesBookingId` must target a same-event booking that still needs
   recovery, for an approved or confirmed event, and pass capacity and opening-hours checks. Approving
-  it locks the original after booking -> event -> venue, refuses if recovery is no longer needed, then
+  it locks the original right after the replacement's own row and before the event (booking ->
+  original -> event -> venue, since the KAN-82 review on 29 October 2026, so it cannot deadlock with
+  a cancel of that original), refuses if recovery is no longer needed, then
   resolves the original's flags and cancels it (migration 011).
 
 ### Verification
