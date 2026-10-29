@@ -31,12 +31,15 @@ import EquipmentAccessPage from '../features/equipment/pages/EquipmentAccessPage
 import EquipmentAvailabilityPage from '../features/equipment/pages/EquipmentAvailabilityPage.vue';
 import EventEquipmentAvailabilityPage from '../features/equipment/pages/EventEquipmentAvailabilityPage.vue';
 import EquipmentQueuePage from '../features/events/pages/EquipmentQueuePage.vue';
+import RegistrationsPage from '../features/registrations/RegistrationsPage.vue';
 
 export const router = createRouter({
   history: createWebHistory(),
   routes: [
     { path: '/', component: DashboardPage, meta: { title: 'Overview' } },
     { path: '/login', component: LoginPage, meta: { title: 'Sign in' } },
+    { path: '/registrations', component: RegistrationsPage, meta: { title: 'My registrations' } },
+    { path: '/events/:id/registrations', component: RegistrationsPage, meta: { title: 'Event registrations' } },
     { path: '/events', component: EventRequestsPage, meta: { title: 'Event requests' } },
     { path: '/events/new', component: NewEventPage, meta: { title: 'New event request' } },
     { path: '/events/:id/edit', component: EventDraftEditPage, meta: { title: 'Edit draft' } },

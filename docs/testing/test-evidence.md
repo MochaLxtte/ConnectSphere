@@ -1871,6 +1871,60 @@ Static review of `database/tests/events/cancellation-equipment.integration.test.
 
 **Documentation verification.** Current AC wording and ownership were read from Jira; archived sprint data was preserved. The workbook refresh changed only 18 cells, retaining seven sheets, 11 tables, seven frozen panes and 18 formulas; 14,104 other cells were checked unchanged. The affected architecture diagrams were regenerated and visually inspected. Source, case/file references, stable IDs and append-only execution history are checked in the accompanying document-validation artifact.
 
+## 28 October 2026 — KAN-66 and KAN-15 integrated local acceptance
+
+**Run:** `MAN-20261028-KAN66-KAN15-01`. **Executor:** Claude Code (AI agent) driving Irfan's Chrome (Claude in Chrome); Irfan signed in to every account himself and no credentials were typed or recorded. **Build:** `main` at `ac5cd8b` (PRs #64 and #65 merged), frontend and API from `npm run dev` on `http://127.0.0.1:5173` / `:3000`. **Database:** the shared Supabase development database, whose ledger shows migrations 016, 017 and 018 applied together at 2026-10-28 01:35 UTC (read-only check of `schema_migrations`; not applied by this session). **Accounts:** event_organiser2 (owner O1), event_organiser (unrelated organiser O2), coordinator_lead (Lead), event_coordinator (assigned coordinator C1), venue_staff (V1).
+
+**Data created (retained in the shared database; removal needs team agreement):** event request `a5c973fa-cc55-47d9-aff1-295cd621bb96` "TEST – Irfan hands-on KAN-66/KAN-15 (28 Oct) – renamed by coordinator" (10 Feb 2031 10:00–14:00 SGT, APPROVED, attendance 80), its assignment, edit-audit and status-history rows, venue bookings `b0f83e4f` (Orchid Seminar Room, CANCELLED by the approved change request) and `1a7e59a9` (Harbour Hall, APPROVED), two change requests (one APPROVED, one REJECTED) and the related notifications. No existing team data was changed.
+
+| Step | Actor | Action | Observed result |
+| --- | --- | --- | --- |
+| 1 | O1 | Created and submitted the event, then edited attendance 50 → 60 on `/events/:id/details` | Saved; status stayed SUBMITTED; revision 3; `event_request_edits` row (organiser, SUBMITTED). Pass |
+| 2 | Lead | Assigned C1 from the event allocation page | "Event Coordinator is now the coordinator for this request." (revision 4). No automatic assignment occurred. |
+| 3 | C1, then O1 | C1 opened `/reviews/:id` at revision 5 and left it open; O1 edited the purpose (revision 6) | Owner edit saved while SUBMITTED. Pass |
+| 4 | C1 | Recorded an approval from the open tab | Refused: "The organiser changed this request after you opened it. Refresh it and review the latest details before deciding."; status unchanged. Pass |
+| 5 | C1 | Refreshed, saw the new purpose, approved | APPROVED, revision 7. Pass |
+| 6 | C1 | Edited the approved event | Page offered only name and description with a change-request explanation; rename saved (revision 8). Pass |
+| 7 | C1 | Sent a start/end change for the approved event to `PATCH /api/events/:id` | `409 SIGNIFICANT_CHANGE_REQUIRED` naming `startsAt`, `endsAt`; dates unchanged. Pass |
+| 8 | C1 | Requested Orchid Seminar Room for the event period | PENDING booking `b0f83e4f`. Setup |
+| 9 | O1 | Request a change: attendance 60 → 80; then a second request | First saved PENDING with previous 60 and proposed 80, event still 60, page shows Awaiting review; second `409 CHANGE_REQUEST_ALREADY_PENDING`. Pass |
+| 10 | C1 | Opened the Change requests panel and approved | Panel showed current 60 / requested 80 and listed the pending Orchid booking as cancelled on approval; approval set attendance 80 (revision 9), `cancelledArrangements` = Orchid, booking CANCELLED with the change-request reason. Pass, with observation O-1 |
+| 11 | C1, V1 | Requested Harbour Hall for the same period; V1 approved it | Harbour Hall APPROVED. Setup |
+| 12 | O1 | Requested a date change to 11 Feb 2031 | PENDING. Pass |
+| 13 | C1 | Reviewed it | Panel: "This change cannot be approved because it affects confirmed venue or equipment arrangements…" naming Harbour Hall (approved); Approve and apply disabled; API approval `409 CANCEL_AND_RESUBMIT_REQUIRED`. Pass |
+| 14 | C1 | Rejected with reason "Harbour Hall is already confirmed for 10 Feb. Cancel and resubmit if the date must move." | REJECTED with the reason; event dates and revision 9 unchanged; Harbour Hall still APPROVED. Pass |
+| 15 | O2 | Opened `/events/:id`; read and submitted change requests; edited the event | Page: "This event request is unavailable or you do not have permission to view it."; GET event, GET/POST change requests and PATCH all 404. Pass |
+
+**Observation O-1 (minor KAN-15 UI defect, follow-up):** immediately after **Approve and apply**, the Venue booking requests panel on the same coordinator page still showed the Orchid booking as Pending; **Refresh booking requests** then showed Cancelled with the reason. Persisted state and the Change requests panel were correct. The panel is not reloaded after a change-request decision. Not fixed in this run.
+
+**Case mapping.** Steps 1–2 → TC-07-01; steps 3–5 (stale approval refused, then accepted after refresh) → TC-07-06; step 6 → TC-07-03; step 7 → TC-07-04; steps 9–15 → TC-19-01 to TC-19-05; step 10 → TC-19-08, for the attendance-change cancellation only. Harbour Hall (step 11) was requested after that approval, so this run does not show that a pre-existing unaffected arrangement is preserved, and no equipment line existed.
+
+**Not covered here:** concurrent edits from the same revision (TC-07-05), notification contents for change requests (TC-19-06), the full significant-field matrix (TC-19-07), concurrent decisions (TC-19-09), arrangement preservation during an ordinary edit (TC-07-02), and the preservation and equipment parts of TC-19-08 were not exercised manually; their automated PostgreSQL evidence stands.
+
+**Corrections, 29 October 2026 (PR #68 review by MochaLxtte).** The stale-approval observation was first recorded under TC-07-05 and is now `EX-07-06-M01`; `EX-07-05-M01` is Not executed. `EX-19-08-M01` is narrowed to the attendance-change cancellation. Not executed rows keep run, result, executor, date, build and environment as Not recorded (AGENTS.md §6.1), with the context in remarks. No observation was added or removed. Acceptance of KAN-66 and KAN-15 remains for the 31 October sprint review.
+
+**Shared database rollout record (016–018):** read-only check on 28 October 2026 found `016_event_request_revisions.sql`, `017_event_change_requests.sql` and `018_event_cancellation_equipment_workflows.sql` in the shared ledger with `applied_at` 2026-10-28 01:35:56 UTC, after #64, #65 and #63 merged. Who ran `npm run db:migrate` is Not recorded.
+
+## 28 October 2026 — KAN-82 independent venue arrangements automated runs
+
+**Run:** `AUTO-20261028-KAN82-01`. **Executor:** Claude Code (AI agent) in Irfan's working session. **Build:** working tree on `feat/KAN-82-independent-venue-arrangements` from `main` `ac5cd8b`, committed unchanged as `a2a31f4`, `2339f3c` and `0b50c37` (code and tests). **Environment:** local Windows 11 workstation, Node 22.20.0 (project specifies Node 24; `EBADENGINE` warning only); disposable local PostgreSQL 17.11 cluster on `127.0.0.1:55482` for the database and browser runs, never shared Supabase. Summary: [coverage report](coverage-reports/2026-10-28-kan82.txt).
+
+| Run | Command | Result |
+| --- | --- | --- |
+| AUTO-20261028-KAN82-01 | `npm run check`; `npm run test:coverage` | Pass — frontend 1,044 tests / 48 files, backend 1,723 / 61, typecheck and builds. New backend KAN-82 lines 100% covered; `VenueBookingPanel.vue` 98.21% lines (uncovered KAN-82 parts are in-flight click guards). |
+| AUTO-20261028-KAN82-01 | `TEST_DATABASE_URL=… npm run test:integration` | Pass — 637/637 across 34 files, including 21 in `venue-arrangements.integration.test.ts` (three consecutive runs of that file, 21/21 each). |
+| AUTO-20261028-KAN82-01 | `DATABASE_URL=… npx playwright test` | Pass — 191/191, including the two `kan82-independent-arrangements.spec.ts` tests (substituted API responses). |
+
+**Case-level results.** `test-executions.csv` rows `EX-12-01-A02` to `EX-12-12-A03` record Pass at the unit/component (`A01`), PostgreSQL (`A02`) and browser-fixture (`A03`) boundaries only. The `EX-12-0x-P01` placeholders stay until the integrated local run is appended. TC-12-09 covers the readiness half of KAN-82-AC9; the safety-approval half is not applicable until KAN-84 stores safety approvals (decision D4).
+
+**Regression found during development.** The first replacement change treated any `CANCELLED` original as a KAN-82 original. The existing KAN-81 suite failed two cases (a second replacement after recovery was resolved; two concurrent replacement approvals). The fix limits KAN-82 originals to explicitly cancelled rows (`cancelled_at` set) and adds an approval check under the original's lock (decision D2); the KAN-81 suite then passed in full.
+
+**Changes to existing tests.** `backend/test/venues/booking-conflicts.test.ts` matches the changed original-booking queries; `venue-bookings-router.test.ts` mocks the new service; booking fixtures in four frontend tests and three browser specs include `replacedByBookingIds`.
+
+**Limitations.** Unit tests use fake database clients, browser tests substitute API responses and the PostgreSQL suite uses synthetic verified identities; none uses live Supabase sign-in. GitHub CI, local integrated acceptance and independent review remain outstanding. No story acceptance, Done SP or Jira transition follows from these runs.
+
+**GitHub CI — 28 October 2026 (`CI-20261028-KAN82-02`, GitHub Actions run 40684714674, PR #67, build `4414fde`): Pass.** The `verify` job ran on ubuntu-latest with Node from `.nvmrc` and a PostgreSQL 17 service holding an isolated test database: `npm run check` and coverage (frontend 1,044 / 48 files, backend 1,723 / 61), `npm run test:integration` 637/637 across 34 files including `venue-arrangements.integration.test.ts`, and `npx playwright test` 191/191 including `kan82-independent-arrangements.spec.ts`. Same counts as `AUTO-20261028-KAN82-01`. Rows `EX-12-01-A04` to `EX-12-12-A04` record the CI boundary per case. Local integrated acceptance with real sign-in remains **Not executed**; no acceptance is inferred.
+
 ## 28 October 2026 — KAN-15 observation O-1 fix
 
 **Run:** `AUTO-20261028-KAN15-O1-01`. **Executor:** Claude Code (AI agent) in Irfan's working session. **Build:** `fix/KAN-15-venue-panel-refresh` working tree from `main` `ac5cd8b`. **Environment:** local Windows 11, Node 22.20; browser suite against a disposable local PostgreSQL 17 database, not shared Supabase.
@@ -1885,6 +1939,166 @@ Static review of `database/tests/events/cancellation-equipment.integration.test.
 | `npx playwright test` | Pass — 189/189 (disposable local database) |
 
 **Not executed:** a manual re-check on localhost; planned with the KAN-82 hands-on run. TC-19-08's earlier Pass stands; this changes only when the panel reloads.
+
+## 29 October 2026 — KAN-10 mark event as completed
+
+**Run ID: AUTO-20261029-KAN10-01.** Branch `feat/KAN-10-complete-event`, base `main` at `409c43f` (merge of PR #69). The tested working tree is committed without further code changes as `65462578a0192bac44085be70eef7c8252472876`. Execution: 29 October 2026 Singapore time (exact start and end times Not recorded). Environment: macOS arm64, Node.js 24.21.0 (via nvm), Vitest, Playwright 1.63.0 Chromium on spare ports 3100/5273 and PostgreSQL 17.11 from `npm run db:up` with an isolated schema per integration file. Synthetic data only; no shared Supabase or real login. No migration was needed. Registered as [S4-E18](../scrum/sprint-04/evidence/README.md).
+
+| Command / check | Actual result |
+| --- | --- |
+| `npm run check` | Pass: type checks and both production builds; 1,054 frontend tests (50 files) and 1,716 backend tests (63 files) |
+| `npm run test:coverage` | Pass: same totals. Frontend 95.94% statements / 92.96% branches / 97.7% functions / 98.26% lines; backend 93.44% / 94.19% / 91.99% / 93.35%. `completion.ts` 100% lines and functions (97.29% branches, line 78); `completion-router.ts` and the changed `trigger-matrix.ts` 100% lines and functions. `EventCompletionPanel.vue` 96% statements / 91.35% branches / 100% functions / 100% lines |
+| `npm run test:integration` with `TEST_DATABASE_URL` | Pass: 639 tests in 34 files, including the 23 in `completion.integration.test.ts` |
+| Browser suite on spare ports | Pass: 195 tests, including the 6 new `event-completion.spec.ts` tests |
+
+**Behaviour verified (KAN-10-AC1 to AC5, AC101 to AC103).**
+- Only the currently assigned Event Coordinator can complete an event (AC1, AC101). Another coordinator, an unassigned event and a coordinator reassigned away or demoted before the write all get the same 404 as a missing event; organiser, Lead, Venue Staff, Technical Support, Attendee and signed-out callers are refused (403 or 401). Nothing changes in any refused case.
+- An ended CONFIRMED event becomes COMPLETED, recorded against that event with the actor and time in the status history, and no other event changes (AC2). The decision uses the database clock at the moment of the call: an event ending seconds ahead is refused with `EVENT_NOT_ENDED`, then accepted once the instant passes (AC101).
+- The status survives a refresh for the organiser and the coordinator (`GET /api/events/:id` and `GET /api/events/:id/completion`); an unrelated organiser or coordinator gets 404 or null (AC3).
+- Reserved equipment of this event only is released once, as `EVENT_COMPLETED` with the coordinator as releaser; requested and rejected lines and other events' reservations are untouched, the stock is available to others again, and a repeat call cannot release again (AC4, AC102). Approved venue bookings stay approved and readable, and registrations stay REGISTERED and readable.
+- Approved, submitted, cancelled, rejected and draft events and an already-completed event are refused with nothing changed (AC5, AC103). Two simultaneous completions: exactly one wins; one history row, one release and one notice per person.
+- The organiser and the coordinator each get one `EVENT_COMPLETED` notice, in the same transaction; a failing notice rolls back the status, the release and the history. Attendees and other users get none.
+- Mutation check: ignoring the assignment check, the end-time check and the status check in turn made 2, 2 and 4 integration tests fail; the code was restored.
+
+**Case-level results.** TC-06-18 passes and TC-06-15 passes with a stated scope (no controlled server clock, so the exact 1 ms before, at and after instants are not asserted), both in [test-executions.csv](test-executions.csv). TC-06-14, TC-06-16 and TC-06-17 are planned as manual runs; automated equivalents exist, but the manual cases stay **Not executed**.
+
+**Failures and environment problems (none changed a test's meaning).** The existing sprint-scope test that listed `POST /api/events/:id/complete` as absent failed, as it should, and was updated. A notification-type registration I first wrote did not apply (the list on this branch differs from the KAN-18 branch), which the vocabulary test caught. A fake-database helper in my unit test did not match multi-line SQL and was corrected. Docker Desktop stopped during the work, a background run was lost when the session restarted and `/tmp` was cleared, and the verification was rerun; the credited results are from a single clean full run.
+
+**Limitations:** not a hosted run. KAN-61 (confirmation) is not built, so the application cannot yet produce a CONFIRMED event; fixtures set the status directly, and an end-to-end hosted run is blocked until KAN-61 exists. Closing registration and withdrawal depends on KAN-14 and KAN-17 requiring a CONFIRMED event, so TC-06-17's "try registration" step cannot be shown on this branch alone. The rules, the notice recipients and the confirmation wording are team assumptions marked **To agree**. Peer review, CI on the pushed branch and merge are **Not assessed**; Jira status and assignee **Not recorded**. Unit coverage does not merge browser or integration execution; no 100% whole-project claim is made. The browser spec uses substituted API responses.
+
+## 29 October 2026 — KAN-82 PR #67 review fixes
+
+**Run:** `AUTO-20261029-KAN82-03`. **Executor:** Claude Code (AI agent) in Irfan's working session. **Build:** `feat/KAN-82-independent-venue-arrangements` at `dc75ce5` (after merging `main` `409c43f`) plus the uncommitted review fixes. The pre-fix attempts ran on the same commit with only the new tests added. **Environment:** local Windows 11 workstation, Node 22.20.0, Docker Compose PostgreSQL 17.11 on 127.0.0.1:5432 (`connectsphere_test` for integration, `connectsphere` migrated to 018 for the browser API server); not the shared Supabase database.
+
+**Review findings (MochaLxtte, 28 October, changes requested).** (1) Cancelling an arrangement locked the original booking and then the event, while approving a replacement locked the event and then the original, so the two could deadlock across venues. (2) A refresh did not clear a replacement source that was still listed but no longer replaceable, so a hidden stale ID could be submitted. (3) `confirmCancel` and its button were not guarded by `needsRefresh`, so a cancel could be retried after a 409 or 500 before the required refresh.
+
+**Fixes.** `decideVenueBooking` now locks a replacement's original booking right after the replacement's own row and before the event, matching the venue gate → booking → event order of arrangement cancellation and of `arrangement-locks.ts` (KAN-62, KAN-15). The original's checks are unchanged and still run under its lock. `VenueBookingPanel.vue` clears the selected replacement source on reload unless it is still in the replaceable list, and blocks both `confirmCancel` and the **Confirm cancellation** button while a refresh is required.
+
+| Run | Command | Result |
+| --- | --- | --- |
+| Pre-fix, TC-12-13 | `npx vitest run --config vitest.integration.config.ts …venue-arrangements… -t "never deadlocks"` | **Fail** (expected): both scenarios rejected the cancel with PostgreSQL `40P01 deadlock detected` |
+| Pre-fix, TC-12-14 | `npx vitest run …VenueBookingPanel.test.ts` (component without the fixes) | **Fail** (expected): 3 of 45 |
+| After fixes | Venue integration suites, three consecutive runs | Pass — 285/285 each run |
+| After fixes | `npm run check` | Pass — frontend 1,046 / 49 files, backend 1,723 / 61, typecheck and builds. The first attempt timed out in two unrelated tests (KAN-34 `EventDraftEditPage`, KAN-51 `VenueAvailabilityPage`) while Docker Desktop was starting; both passed alone (31/31) and in the full re-run. |
+| After fixes | `npm run test:integration` | Pass — 639/639 across 34 files |
+| After fixes | `npm run test:coverage` | Pass — frontend 98.26% lines, backend 93.4% lines (venues module 94.84%) |
+| After fixes | `npx playwright test tests/e2e/kan82-independent-arrangements.spec.ts tests/e2e/venue- --workers=1` | Pass — 76/76 in 2.5 minutes (substituted API responses) |
+
+**Case-level results.** `test-executions.csv` rows `EX-12-13-A01` (Fail) to `-A03`, `EX-12-14-A01` (Fail) and `-A02`, plus regressions `EX-12-10-A05` and `EX-12-12-A05`. New specifications TC-12-13 and TC-12-14 were added rather than changing TC-12-10 and TC-12-12, so their earlier runs stay comparable.
+
+**Test design.** TC-12-13 holds the event row in a third session, lets the approval queue first, then the cancel, and waits on `pg_stat_activity` lock waits rather than timers. With the old order the approval obtains the event and then waits for the original that the cancel holds; with the new order the cancel waits for the original and is refused once the approval commits. The unit assertion in `booking-conflicts.test.ts` now expects the original's lock between the replacement's row and the event row.
+
+**Limitations.** The browser run covered only the KAN-82 and venue specs, with one worker; the first full-suite attempt overloaded the workstation and was stopped by the user. The full browser suite runs in CI on push. Synthetic identities and substituted API responses only; no live Supabase sign-in. Local integrated acceptance (AGENTS.md §5.12) remains **Not executed**; acceptance **Not assessed**. No new coverage report file was saved.
+
+## 29 October 2026 — KAN-17, KAN-67 and KAN-80 test specification expansion
+
+This is test preparation under AGENTS.md §4 steps 9–12, approved by Arvin in chat and prepared with Codex. It is not an AUTO/MAN run, implementation delivery, meeting, review or acceptance decision. Sources: live [KAN-17](https://smu-g7-grp1.atlassian.net/browse/KAN-17), [KAN-67](https://smu-g7-grp1.atlassian.net/browse/KAN-67) and [KAN-80](https://smu-g7-grp1.atlassian.net/browse/KAN-80), read through authenticated Jira MCP on 28 October 2026. All three were To Do / Arvin / Sprint 4 (Future), with unchanged 2/2/3 SP. KAN-14 supplies registration/re-entry prerequisites; KAN-64 is Done in Jira and supplies inbox infrastructure. A dependent card's status does not execute these cases. The current master guide at `ac5cd8bb442e45a5e1c5e32986132ce22ca25f12` uses integrated local acceptance; older hosted-only notes remain historical.
+
+Added **61** reusable specifications: **17 KAN-17**, **14 KAN-67**, **30 KAN-80**. Every one of the **29 live ACs** has a separate traceability row linking relevant detailed cases. Existing grouped cases, IDs, source notes and execution results are preserved. New cases carry explicit proposed synthetic data, prerequisites, steps, observable results and normal/boundary/conflict/failure purpose. Execution rows are preparation placeholders: result Not executed; run ID, actual result, executor, execution date, build, environment and evidence Not recorded. No earlier case result transfers automatically to a new specification.
+
+| Group | New cases | Main coverage |
+| --- | --- | --- |
+| S4-T09 / KAN-17 / CF-18 | TC-18-401–417 | Own withdrawal; cancel/confirm; persisted status; just before/exactly at/after start; close vs start; stale dialog; finite/unlimited capacity; concurrent/repeated requests; wrong owner/role; missing/inactive records; update/notice/commit failure; re-entry conditions; intended notices |
+| S4-T10 / KAN-67 / CF-18 | TC-18-418–431 | Owner/current coordinator; event/status/count accuracy; committed and failed mutations; empty/inactive-only rosters; UI/API denial; field allowlist; immediate reassignment revocation; delayed route/account responses; load errors |
+| S4-T13 / KAN-80 / CF-20 | TC-20-401–430 | Equipment confirmation/unavailability; significant change submission/action/decisions/affected attendees; confirmation/cancellation; registration/withdrawal; entities/links; recipient/read-state security; commit/rollback/replay/recipient overlap; actor acknowledgement; inbox reuse; separate CR responsibilities |
+
+**Existing source mapping, inspected but not rerun:** TC-20-401 links `backend/test/equipment/reservation-notifications.test.ts` and `database/tests/equipment/reservations.integration.test.ts` to the equipment-confirmation slice (AC1/5). TC-20-404/406/407 link `backend/test/notifications/change-request-notifications.test.ts` and `database/tests/events/change-requests.integration.test.ts` to change submission and organiser outcome slices (AC2/5). TC-20-429 links the equipment notification test to its overlapping-recipient builder/writer slice (AC7/8); the mock writer assertion does not prove concurrent PostgreSQL uniqueness. The referenced implementation lives in `backend/src/modules/notifications/trigger-matrix.ts`, `change-request-notifications.ts`, `notify.ts`, equipment reservation service and event change-request service. Traceability lists these paths only on the relevant AC rows. Remaining cases have no confirmed permanent automated path; none is invented. Existing notification source tests do not prove full recipient matrices, every business trigger, protected target navigation or integrated acceptance.
+
+**Execution boundaries and unresolved details:** notification requests for action use the recorded matrix; an unspecified exact recipient decision remains To agree. An attendee-relevant accepted change must be a legal KAN-15 transition; do not bypass major-change cancellation/new-request rules just to force a fixture. Any incompatible source condition is a dependency/policy gap, not a passing result. Read-state cases reuse supported KAN-64 behaviour and do not assume a new mark-unread endpoint. TC-20-422–425 are parameterised transaction specifications: record each trigger variation and fault separately; full-case Pass requires all specified variations. Static responsibility review TC-20-430 is not a functional test or a new story-point decision.
+
+**Environment and cleanup:** concurrency, clock boundaries and fault injection require isolated PostgreSQL. UI response-order fixtures cover UI isolation only. Integrated manual acceptance uses localhost frontend/API, real authentication and the agreed development database with the person signing in; record originals and coordinate restoration. No shared database was mutated for this preparation. New test fixtures are proposed, not claimed to exist or have been run. No migrations, new requirements, estimate changes or Jira transitions are part of this scope.
+
+**Verification of these documents — 29 October 2026:** structural validation passed for 61 new cases, 29 individual live AC rows, 61 Not executed placeholders and nine existing code/test paths. No missing AC links, orphan new cases or duplicate case/execution IDs were found. Every active criterion's wording was compared with a fresh authenticated Jira MCP read on 29 October and is unchanged. Historical CSV rows/narratives were compared against base `ac5cd8bb442e45a5e1c5e32986132ce22ca25f12` and preserved (ignoring Git line-ending conversion); backlog changes are limited to the approved case links and dated planning supplement. `git diff --check` passed. No application tests or coverage run is claimed. New application code coverage is not applicable because this change adds specifications only. Integrated acceptance and the newly specified cases remain Not executed; story acceptance remains Not assessed.
+
+The following repeatable PowerShell/Python check validates the delivered register links, required fields, real paths, placeholder metadata, unchanged historical CSV rows and active backlog wording against that base. The separate live Jira comparison above requires authenticated Jira access; this command does not claim to query Jira or execute application cases.
+
+```powershell
+@'
+import csv, io, re, subprocess
+from pathlib import Path
+root = Path.cwd()
+base = 'ac5cd8bb442e45a5e1c5e32986132ce22ca25f12'
+def rows(path, old=False):
+    text = (subprocess.check_output(['git', 'show', base + ':' + path]).decode('utf-8-sig')
+            if old else (root / path).read_text(encoding='utf-8-sig'))
+    return list(csv.DictReader(io.StringIO(text)))
+paths = ['docs/testing/test-cases.csv', 'docs/requirements/traceability.csv',
+         'docs/testing/test-executions.csv']
+for path in paths:
+    before, after = rows(path, True), rows(path)
+    assert after[:len(before)] == before, path
+cases, traces, executions = map(rows, paths)
+new = cases[len(rows(paths[0], True)):]
+ids = {r['test_case_id'] for r in new}
+assert len(new) == len(ids) == 61
+assert all(None not in r and all(v and v.strip() for v in r.values()) for r in new)
+assert len({r['test_case_id'] for r in cases}) == len(cases)
+assert len({r['execution_id'] for r in executions}) == len(executions)
+expected = {f'KAN-{story}-AC{ac}' for story in [17, 67, 80]
+            for ac in (list(range(1, 10)) if story == 80 else list(range(1, 8)) + [101, 102, 103])}
+selected = [r for r in traces if r['status'].startswith('29 October 2026 individual-AC specification;')]
+assert len(selected) == 29 and {r['acceptance_criterion_ids'] for r in selected} == expected
+by_id = {r['test_case_id']: r for r in new}
+linked = set()
+backlog = (root / 'docs/scrum/sprint-04/sprint-backlog.md').read_text(encoding='utf-8')
+old_backlog = subprocess.check_output(['git', 'show', base + ':docs/scrum/sprint-04/sprint-backlog.md']).decode('utf-8')
+for row in selected:
+    ac = row['acceptance_criterion_ids']
+    matches = re.findall(r'^\| \*\*' + re.escape(ac) + r'\*\* \| (.*?) \| (.*?) \|$', backlog, re.M)
+    old = re.findall(r'^\| \*\*' + re.escape(ac) + r'\*\* \| (.*?) \| (.*?) \|$', old_backlog, re.M)
+    assert len(matches) == len(old) == 1 and matches[0][0] == old[0][0]
+    for ident in row['test_case_ids'].split('; '):
+        assert ident in ids and ac in by_id[ident]['acceptance_criterion_ids'].split('; ')
+        assert ident in matches[0][1].split(', ')
+        linked.add(ident)
+    for field in ['implementation_path', 'automated_test_path']:
+        assert all(p == 'Not recorded' or (root / p).is_file() for p in row[field].split('; '))
+assert linked == ids
+planned = [r for r in executions if r['test_case_id'] in ids and r['result'] == 'Not executed']
+assert len(planned) == 61 and {r['test_case_id'] for r in planned} == ids
+for row in planned:
+    assert row['result'] == 'Not executed'
+    assert all(row[k] == 'Not recorded' for k in ['run_id', 'actual_result', 'executed_by',
+               'date_of_execution', 'build', 'environment', 'evidence'])
+subprocess.run(['git', 'diff', '--check'], check=True)
+print('PASS: 61 specifications, 29 AC mappings, 61 unperformed placeholders; history preserved')
+'@ | python -
+```
+
+## 29 October 2026 — KAN-17, KAN-67 and KAN-80 implementation verification
+
+**Run:** `AUTO-20261029-KAN1780-01`, executed by Codex on Windows with Node 24.22.1, isolated local PostgreSQL 17 and synthetic accounts. Build: the implementation worktree based on `ac5cd8bb442e45a5e1c5e32986132ce22ca25f12`, subsequently committed without code changes as `1855ab588bfce3d44d0fceb57be03622cf5e053b`; documentation remained uncommitted during the run. The local database was created for this run and migration 019 was applied there only. No shared Supabase changes or user sign-in occurred.
+
+| Check | Result and boundary |
+| --- | --- |
+| `npm run check` | Pass: 1,049 frontend and 1,726 backend tests, typechecks and builds. |
+| `npm run test:coverage` | Pass: frontend 95.80% statements / 92.49% branches / 97.72% functions / 98.18% lines; backend 93.41% / 94.06% / 91.98% / 93.33%. Frontend registrations: 95.14% statements / 88.79% branches / 100% functions / 100% lines. Backend registration service: 100% lines; branch coverage is below 100%. These are whole-file figures, not proof of every AC. The final small-screen CSS adjustment was verified in a subsequent focused browser run. |
+| `npm run test:integration` | Pass: 637 tests across 35 files against isolated PostgreSQL. Migration upgrade checks, authorization, concurrent withdrawal, rollback, notification persistence and reassignment are included. |
+| `npm run test:e2e` | Pass: 191 Chromium tests. The registration browser tests substitute API responses; they verify UI, confirmation, refresh and responsive layout, not a live integrated product workflow. A later focused run of the two registration cases passed after the mobile layout adjustment. |
+
+The initial full PostgreSQL run failed 12 migration-history expectations because migration 019 was not yet listed in the existing expected migrations. After updating those expectations, a second full run failed one KAN-15 assertion that selected an arbitrary decision recipient after a coordinator acknowledgement was added. The assertion was corrected to identify the organiser and separately verify the coordinator; its focused retest and the final full suite passed. The first focused browser attempt lacked `DATABASE_URL`; the next exposed an overbroad browser route fixture intercepting a frontend module. Both were corrected for the retest. A later first coverage attempt exposed a test fixture reusing a consumed `Response`; a fresh response per request fixed it. These were test/environment failures and are not recorded as failed product cases. Logs are registered as S3-E29.
+
+**Supported case-level execution:** `TC-18-408`, Pass, is backed by the named real-PostgreSQL concurrent-withdrawal scenario in `database/tests/events/registrations.integration.test.ts`: one request changed the row, one replay did not, a replacement registration remained active, the original time was retained and exactly three withdrawal notices persisted. `TC-20-430`, Pass, is the separate static responsibility review `MAN-20261029-01` below. Other new specifications remain **Not executed** at the whole-case level unless a separate result is added. Unit, database and browser suites exercise additional subsets of KAN-17/67/80, but their aggregate Pass does not establish every detailed specification or a complete story acceptance.
+
+**Coverage and dependency limits:** the API and service test suites do not cover every defensive branch. The browser layer uses substituted APIs; direct PostgreSQL/HTTP tests use synthetic authentication. Full registration creation and re-entry belong to KAN-14, final event confirmation to KAN-61, and stock editing to KAN-18; tests exercise their transaction hooks with isolated fixtures, not those unfinished user workflows. The KAN-15 attendee-change notice is tested for an allowed purpose change; other affected changes remain subject to KAN-15's cancel-and-resubmit policy. Whether KAN-80-AC2's request for action requires a distinct workflow, and its recipient details, remain **To agree** in the [decision log](../requirements/assumptions-and-questions.md#29-october-2026--kan-80-change-action-and-recipient-interpretation). Full connected local acceptance using real authentication and the agreed shared development database is **Not executed**; story acceptance is **Not assessed**. No review, merge, Done point or customer approval is claimed.
+
+**Cutoff and recipient follow-up:** the source was corrected so an already-active registration on a non-terminal event can be withdrawn before start without requiring the event to be Confirmed, and an unchanged replay at or after start is refused. Focused unit (24 tests), isolated PostgreSQL registration (12 tests) and notification (9 tests) retests passed, followed by the 637-test integration run above. A different Technical Support actor who records an equipment shortfall also receives an acknowledgement in addition to the relevant original deciding staff member. This is interpretation of the existing KAN-17-AC101 and KAN-80-AC1/8, not a new acceptance criterion or team decision.
+
+### MAN-20261029-01 — TC-20-430 static responsibility review
+
+On 29 October Codex read the live Jira KAN-64/80/81/83/84 cards and repository split mapping and case register, using Arvin's authenticated Jira session. The [recorded observations](../scrum/sprint-03/evidence/kan1780-20261029/scope-review.txt) identify CR-2/4/6 notification criteria and their test cases, the original-scope split and the native 5 + 3 SP fields. **Pass** for the static mapping review only. No shared values or data were modified and no product workflow was executed; full KAN-80 integrated acceptance remains **Not executed**.
+
+## 29 October 2026 - PR #70 review corrections
+
+**Run:** `AUTO-20261029-KAN1780-02`, Codex on Windows / Node 24.22.1, merge commit `eca4cd1` plus the uncommitted review corrections. Isolated PostgreSQL 17 on localhost and synthetic accounts; browser API responses substituted. No shared Supabase or real login.
+
+`npm run check` passed: 1,051 frontend and 1,727 backend tests, typechecks and builds. `npm run test:coverage` passed: frontend 95.95% statements / 92.86% branches / 97.83% functions / 98.28% lines; backend 93.39% / 93.99% / 92.01% / 93.34%. `npm run test:integration` passed 639 tests in 35 files. `npm run test:e2e` passed 192 tests, including the duplicate-name registration target, with substituted browser APIs. The targeted PostgreSQL cancellation and outcome suites passed 19 tests. Cancellation and inbox reached 100% line coverage; branch and SQL coverage remain incomplete.
+
+The first full database attempt failed an older cancellation test expecting no attendee link. A subsequent check failed because the first test edit declared its fixture ID in the wrong test. Both test expectations were corrected; the targeted and final full retests passed. Two overlapping integration attempts were stopped after stalling; the final full run was restarted alone. These are test/fixture and execution issues, not recorded product-case failures. Logs are registered in S3-E29.
+
+The real PostgreSQL scenarios assert that only current arrangement staff receive confirmation or cancellation, and that cancellation's single writer preserves the existing manager message. Purpose-change and browser/component scenarios check a recipient-scoped registration link, current purpose and duplicate event names. Notification labels cover venue requirements and accessibility needs without exposing their internal values. These are partial scenario results: TC-20-417 and other whole-case placeholders remain Not executed; no suite total is represented as connected or case-level acceptance. Real authentication, shared migration 019, KAN-14/18/61 dependencies, integrated acceptance and renewed review remain outstanding.
+
+**Artifact readability:** the earlier S3-E29 PowerShell output files were converted from UTF-16 to UTF-8 with line-end whitespace normalized; the contents and reported outcomes were retained.
 
 ## 29 October 2026 — KAN-14 register for an event
 

@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { param, workflowRoute, type WorkflowRouterDependencies } from '../events/workflow-http.js';
 import { parseBookingFilter } from './booking-input.js';
 import {
-  cancelVenueHold, createVenueBooking, decideVenueBooking, getVenueBooking, listVenueBookings,
+  cancelVenueArrangement, cancelVenueHold, createVenueBooking, decideVenueBooking, getVenueBooking, listVenueBookings,
   placeVenueHold,
 } from './booking-service.js';
 
@@ -42,6 +42,14 @@ export function createVenueBookingsRouter(dependencies: WorkflowRouterDependenci
     roles: ['VENUE_STAFF'], uuidParams: { id: 'INVALID_VENUE_BOOKING_ID' },
   }, async (actor, request) => ({
     booking: await cancelVenueHold(dependencies,
+      { actor, bookingId: param(request, 'id'), input: request.body }),
+  })));
+  // KAN-82: the assigned coordinator cancels one arrangement; the others are untouched.
+  router.post('/:id/cancel', workflowRoute(dependencies, {
+    signInMessage: 'Sign in to cancel a venue arrangement.',
+    roles: ['EVENT_COORDINATOR'], uuidParams: { id: 'INVALID_VENUE_BOOKING_ID' },
+  }, async (actor, request) => ({
+    booking: await cancelVenueArrangement(dependencies,
       { actor, bookingId: param(request, 'id'), input: request.body }),
   })));
   return router;

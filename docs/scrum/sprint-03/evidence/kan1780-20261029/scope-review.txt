@@ -1,0 +1,12 @@
+MAN-20261029-01 — TC-20-430 static scope review
+Date: 2026-10-29 (Singapore). Executor: Codex, using the authenticated Jira account and repository worktree.
+Environment: Jira MCP and repository. No product workflow was executed and no shared database was changed.
+Source build: implementation worktree subsequently committed as 1855ab588bfce3d44d0fceb57be03622cf5e053b; documentation working tree.
+
+Observations:
+- Live KAN-64-AC209 and KAN-80-AC9 assign original equipment, significant-change, final-event and registration triggers to KAN-80, and leave customer-change triggers in their own stories. The Sprint 3 split mapping retains the individual original-to-current criterion links.
+- KAN-81-AC5 owns CR-2 outage notices; specifications TC-09-05 and TC-09-18 exist.
+- KAN-83-AC7/AC8 own CR-4 hold/deadline/expiry notices; specifications TC-14-14 and TC-14-311 exist.
+- KAN-84-AC11 owns CR-6 safety notices; specification TC-06-30 exists.
+- Jira native story-point fields read KAN-64 = 5 and KAN-80 = 3; the historical original total is 8 in docs/scrum/sprint-03/sprint-backlog.md. No values or acceptance records were changed by this review.
+Result: Pass for the scoped responsibility/traceability review. This result does not establish implementation, delivery, integrated acceptance or customer approval of the notification flows.

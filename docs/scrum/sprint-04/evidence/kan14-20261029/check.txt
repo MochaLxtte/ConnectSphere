@@ -1,3 +1,4 @@
+> connectsphere@0.1.0 build
 > npm run build --workspaces
 
 
@@ -6,14 +7,14 @@
 
 vite v8.2.2 building client environment for production...
 transforming...
-✓ 243 modules transformed.
+✓ 250 modules transformed.
 rendering chunks...
 computing gzip size...
 dist/index.html                   0.68 kB │ gzip:   0.39 kB
-dist/assets/index-LtbLMeax.css   74.33 kB │ gzip:  13.07 kB
-dist/assets/index-BSOAfVBe.js   593.50 kB │ gzip: 159.13 kB
+dist/assets/index-BtUZjw7V.css   76.99 kB │ gzip:  13.53 kB
+dist/assets/index-BfXzBgzm.js   609.10 kB │ gzip: 162.97 kB
 
-✓ built in 461ms
+✓ built in 611ms
 [plugin builtin:vite-reporter] 
 (!) Some chunks are larger than 500 kB after minification. Consider:
 - Using dynamic import() to code-split the application

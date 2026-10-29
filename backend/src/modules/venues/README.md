@@ -139,7 +139,9 @@ saves the outage and, inside the same venue-locked transaction, records each aff
   booking response carries its `recovery` list.
 - Phase 3: a request with `replacesBookingId` must target a same-event booking that still needs
   recovery, for an approved or confirmed event, and pass capacity and opening-hours checks. Approving
-  it locks the original after booking -> event -> venue, refuses if recovery is no longer needed, then
+  it locks the original right after the replacement's own row and before the event (booking ->
+  original -> event -> venue, since the KAN-82 review on 29 October 2026, so it cannot deadlock with
+  a cancel of that original), refuses if recovery is no longer needed, then
   resolves the original's flags and cancels it (migration 011).
 
 ### Verification
@@ -307,3 +309,7 @@ KAN-77 configuration is now merged. Buffer saves use its existing field-aware co
 Catalogue PATCH affected-booking entries include `eventName`, ISO `startsAt`/`endsAt`, IDs and warning codes under existing Venue Staff authorization. The editor renders names (booking-ID fallback), Singapore periods and readable warnings. Buffer edits do not cancel/move bookings. Hold entry validates its deadline against `occupiedStartsAt` (fallback `startsAt` for older responses), allowing the exact boundary. Booking-detail decision controls allow `CONFIRMED` only for a linked replacement, matching the backend and preserving role/state restrictions.
 
 Current full-suite and shared scheduler evidence: `AUTO-20261025-CLOSEOUT-01` / `OPS-20261025-HOLD-EXPIRY-01`. No historical migration was edited. The current fixes still require the short manual retest listed in the testing README.
+
+## 28 October 2026 — KAN-82 independent arrangements
+
+`cancelVenueArrangement` in `booking-service.ts` lets the event's current coordinator cancel one pending, live held or approved booking with a reason (venue gate → booking → event locks, like decisions). `assertReplaceable` now also accepts an explicitly cancelled original (`cancelled_at` set) with at most one live replacement; a KAN-81-resolved original (cancelled without `cancelled_at`) stays a recovery original. Approval of a replacement checks under the original's lock that no other replacement already holds the venue. `venueArrangementReadiness` derives venue readiness for KAN-61/KAN-84 from the current rows. Responses carry `replacedByBookingIds`. Notices are in `../notifications/arrangement-notifications.ts`, outside the KAN-64 matrix. No migration.

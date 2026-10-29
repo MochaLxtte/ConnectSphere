@@ -1,5 +1,11 @@
 # ConnectSphere Database Diagram
 
+## 29 October 2026 — registration and notification outcomes (migration 019)
+
+`event_registrations.outcome_version` is a positive integer, initialized to 1 and incremented on a status transition. The existing unique `(event_request_id, attendee_id)` row, `registered_at`, `withdrawn_at`, and `cancellation_outcome_at` remain the history and capacity inputs; only `REGISTERED` contributes to capacity. `notifications.registration_id` optionally references `event_registrations.id`, and `notifications.change_request_id` optionally references `event_change_requests.id`. The existing recipient/outcome unique index remains the deduplication boundary. Migration 019 adds actor-transaction triggers for registration status outcomes, final confirmation/cancellation and affected equipment shortfalls; their inserted notifications roll back with their source transaction. The KAN-15 service inserts accepted attendee-change notices through the same writer.
+
+The migration was exercised against isolated PostgreSQL only; application to the shared database is **Not executed**. Existing data is retained; new references are nullable and the registration version defaults to 1. See the [API contract](architecture/api-contract.md#29-october-2026--kan-17-kan-67-and-kan-80-registration-outcomes) and [run evidence](testing/test-evidence.md#29-october-2026--kan-17-kan-67-and-kan-80-implementation-verification).
+
 **KAN-62 / KAN-63 schema update — 27 October 2026.** Migration 018 adds `event_cancellations`
 (one immutable row per cancelled event, with actor, timestamp, internal reason and
 affected-arrangement counts). `event_status_history.reason` retains the cancellation
@@ -61,6 +67,8 @@ erDiagram
     app_users ||..o{ notifications : "recipient_id"
     venue_bookings |o..o{ notifications : "venue_booking_id"
     equipment_requests |o..o{ notifications : "equipment_request_id"
+    event_registrations |o..o{ notifications : "registration_id"
+    event_change_requests |o..o{ notifications : "change_request_id"
     app_users |o..o{ venue_bookings : "decided_by"
     app_users |o..o{ venue_bookings : "held_by"
     app_users |o..o{ venue_bookings : "cancelled_by"
@@ -281,6 +289,7 @@ erDiagram
         uuid event_request_id FK
         uuid attendee_id FK
         text status
+        integer outcome_version "migration 019"
         timestamptz registered_at
         timestamptz withdrawn_at "nullable"
         timestamptz cancellation_outcome_at "nullable, migration 018"
@@ -310,6 +319,8 @@ erDiagram
         uuid event_request_id FK "nullable"
         uuid venue_booking_id FK "nullable, migration 008"
         uuid equipment_request_id FK "nullable, migration 015"
+        uuid registration_id FK "nullable, migration 019"
+        uuid change_request_id FK "nullable, migration 019"
         text dedupe_key "nullable, unique with recipient_id, migration 008"
         text type
         text title

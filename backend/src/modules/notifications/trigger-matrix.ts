@@ -35,8 +35,7 @@ export const NOTIFICATION_TYPES = [
   'VENUE_BOOKING_REJECTED',
   'VENUE_OUTAGE_RECOVERY_REQUIRED',
   'EQUIPMENT_RESERVED',
-  'REGISTRATION_CONFIRMED',
-  'REGISTRATION_RECEIVED',
+  'EVENT_COMPLETED',
 ] as const;
 export type NotificationType = (typeof NOTIFICATION_TYPES)[number];
 
@@ -54,25 +53,19 @@ export function equipmentReservationNotifications(input: {
 }
 
 /**
- * KAN-14-AC104, a KAN-80 trigger slice: a committed registration is acknowledged to the attendee and reported to
- * the event's organiser and assigned coordinator. The managers' notice carries only the running count, never the
- * attendee's identity, and no notice reaches another attendee. The stamp is the registration time, so registering
- * again after a withdrawal produces new notices while a repeat of the same outcome is ignored.
+ * KAN-10-AC103, a KAN-80 trigger slice: completing a confirmed event tells its organiser, and acknowledges the
+ * completing coordinator. Registered attendees are not notified. One notice per person and event, so a repeat is ignored.
  */
-export function registrationNotifications(input: {
-  eventId: string; eventName: string | null; attendeeId: string; registrationId: string; stamp: string;
-  managerIds: readonly string[]; registered: number; capacity: number | null;
+export function eventCompletedNotifications(input: {
+  eventId: string; eventName: string | null; organiserId: string; coordinatorId: string;
 }): NotificationInput[] {
-  const where = label({ name: input.eventName });
-  const places = input.capacity === null ? `${input.registered} registered` : `${input.registered} of ${input.capacity} places taken`;
-  return [
-    { recipientId: input.attendeeId, eventRequestId: input.eventId, type: 'REGISTRATION_CONFIRMED', title: 'Registration confirmed',
-      message: `You are registered for ${where}.`, dedupeKey: `REGISTRATION_CONFIRMED:${input.registrationId}:${input.stamp}` },
-    ...[...new Set(input.managerIds)].filter(id => id !== input.attendeeId).map(recipientId => ({
-      recipientId, eventRequestId: input.eventId, type: 'REGISTRATION_RECEIVED', title: 'New registration',
-      message: `A new attendee registered for ${where}: ${places}.`,
-      dedupeKey: `REGISTRATION_RECEIVED:${input.registrationId}:${input.stamp}` })),
-  ];
+  return [...new Set([input.organiserId, input.coordinatorId])].map(recipientId => ({
+    recipientId, eventRequestId: input.eventId, type: 'EVENT_COMPLETED', title: 'Event completed',
+    message: recipientId === input.organiserId
+      ? `${input.eventName?.trim() ? `Your event request “${input.eventName.trim()}”` : 'Your untitled event request'} was marked completed. Registration is now closed.`
+      : `You marked ${label({ name: input.eventName })} as completed. Its equipment reservations were released and registration is closed.`,
+    dedupeKey: `EVENT_COMPLETED:${input.eventId}`,
+  }));
 }
 
 /** Shown to a coordinator who has lost access. It must stay free of event details (AC202, AC206). */

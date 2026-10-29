@@ -55,7 +55,8 @@ const rows = async (eventId: string, attendeeId?: string) => (await fixture.pool
 const active = async (eventId: string) => Number((await fixture.pool.query(
   `SELECT count(*) FROM event_registrations WHERE event_request_id=$1 AND status='REGISTERED'`, [eventId])).rows[0].count);
 const notices = async (eventId: string, type: string) => (await fixture.pool.query(
-  'SELECT recipient_id, message FROM notifications WHERE event_request_id=$1 AND type=$2 ORDER BY recipient_id', [eventId, type])).rows;
+  'SELECT recipient_id, registration_id, message, dedupe_key FROM notifications WHERE event_request_id=$1 AND type=$2 ORDER BY recipient_id, dedupe_key', [eventId, type])).rows;
+const sorted = (ids: string[]) => [...ids].sort();
 
 describe('KAN-14 registering for an event against real PostgreSQL', () => {
   it('KAN-14-AC1/AC101 shows the details and conditions an attendee needs, and nothing about people', async () => {
@@ -173,13 +174,15 @@ describe('KAN-14 registering for an event against real PostgreSQL', () => {
     expect(again.body.error.code).toBe('REGISTRATION_ALREADY_REGISTERED');
     expect(await rows(id, a1.id)).toHaveLength(1);
     expect(await active(id)).toBe(1);
-    expect(await notices(id, 'REGISTRATION_CONFIRMED')).toHaveLength(1);
+    // The attendee has one notice; the organiser and coordinator have one each. A refused attempt adds nothing.
+    expect(await notices(id, 'REGISTRATION_CONFIRMED')).toHaveLength(3);
+    expect((await notices(id, 'REGISTRATION_CONFIRMED')).filter(item => item.recipient_id === a1.id)).toHaveLength(1);
   });
 
   it('KAN-14-AC103 lets a withdrawn attendee re-register on the same record, taking one place', async () => {
     const id = await event({ capacity: 2 });
     const first = await register(id, a1);
-    await fixture.pool.query(`UPDATE event_registrations SET status='WITHDRAWN', withdrawn_at=now() WHERE id=$1`, [first.body.registration.id]);
+    await request(app(a1)).post(`/api/registrations/${first.body.registration.id}/withdraw`).send({ confirm: true }).expect(200);
     expect(await active(id)).toBe(0);
     const again = await register(id, a1);
     expect(again.status).toBe(201);
@@ -187,7 +190,7 @@ describe('KAN-14 registering for an event against real PostgreSQL', () => {
     expect(again.body.registration).toMatchObject({ status: 'REGISTERED', withdrawnAt: null });
     expect(await rows(id, a1.id)).toHaveLength(1);
     expect(await active(id)).toBe(1);
-    expect(await notices(id, 'REGISTRATION_CONFIRMED')).toHaveLength(2);
+    expect((await notices(id, 'REGISTRATION_CONFIRMED')).filter(item => item.recipient_id === a1.id)).toHaveLength(2);
   });
 
   it('KAN-14-AC103 refuses a withdrawn attendee when the window has closed or the event is full, leaving the record unchanged', async () => {
@@ -215,8 +218,9 @@ describe('KAN-14 registering for an event against real PostgreSQL', () => {
       expect(results.find(result => result.status === 409)!.body.error.code).toBe('REGISTRATION_FULL');
       expect(await active(id)).toBe(1);
       const winner = (await rows(id))[0].attendee_id;
-      expect((await notices(id, 'REGISTRATION_CONFIRMED')).map(item => item.recipient_id)).toEqual([winner]);
-      expect((await notices(id, 'REGISTRATION_RECEIVED')).map(item => item.recipient_id).sort()).toEqual([organiser.id, coordinator.id].sort());
+      // Migration 019's trigger is the only writer: the winner, the organiser and the coordinator each get one notice, the loser none.
+      expect((await notices(id, 'REGISTRATION_CONFIRMED')).map(item => item.recipient_id)).toEqual(sorted([winner, organiser.id, coordinator.id]));
+      expect(await notices(id, 'REGISTRATION_RECEIVED')).toEqual([]);
     }
   });
 
@@ -255,34 +259,67 @@ describe('KAN-14 registering for an event against real PostgreSQL', () => {
     expect(results.filter(result => result.status === 201)).toHaveLength(3);
     expect(results.filter(result => result.status === 409).every(result => result.body.error.code === 'REGISTRATION_FULL')).toBe(true);
     expect(await active(id)).toBe(3);
-    expect((await notices(id, 'REGISTRATION_CONFIRMED'))).toHaveLength(3);
+    // Three registrations, each noticed once to the attendee, the organiser and the coordinator.
+    expect(await notices(id, 'REGISTRATION_CONFIRMED')).toHaveLength(9);
   });
 
-  it('KAN-14-AC104 acknowledges the attendee and tells the managers only the running count', async () => {
+  it('KAN-14-AC104 writes each notice once, to the attendee and the managers, and no other attendee sees it', async () => {
     const id = await event({ capacity: 4 });
-    await register(id, a1).expect(201);
+    const first = await register(id, a1).expect(201);
     await register(id, a2).expect(201);
-    expect((await notices(id, 'REGISTRATION_CONFIRMED')).map(item => item.recipient_id).sort()).toEqual([a1.id, a2.id].sort());
-    const managers = await notices(id, 'REGISTRATION_RECEIVED');
-    expect(managers.map(item => item.recipient_id).sort()).toEqual([organiser.id, coordinator.id, organiser.id, coordinator.id].sort());
-    const name = (await fixture.eventRow(id)).name as string;
-    expect(managers.map(item => item.message).sort()).toEqual([
-      `A new attendee registered for “${name}”: 1 of 4 places taken.`, `A new attendee registered for “${name}”: 1 of 4 places taken.`,
-      `A new attendee registered for “${name}”: 2 of 4 places taken.`, `A new attendee registered for “${name}”: 2 of 4 places taken.`,
-    ]);
-    expect(managers.every(item => !item.message.includes('Ava') && !item.message.includes('Ben'))).toBe(true);
-    const inbox = await request(app(a1)).get('/api/notifications').expect(200);
-    expect(inbox.body.items.find((item: { type: string; link: string | null }) => item.type === 'REGISTRATION_CONFIRMED' && item.link === `/attend/${id}`)).toMatchObject({ event: null });
-    const strangerInbox = (await request(app(a3)).get('/api/notifications').expect(200)).body.items as { link: string | null }[];
-    expect(strangerInbox.filter(item => item.link === `/attend/${id}`)).toEqual([]);
+    const confirmed = await notices(id, 'REGISTRATION_CONFIRMED');
+    expect(confirmed.map(item => item.recipient_id).sort()).toEqual(sorted([a1.id, a2.id, organiser.id, organiser.id, coordinator.id, coordinator.id]));
+    expect(new Set(confirmed.map(item => `${item.recipient_id}:${item.dedupe_key}`)).size).toBe(6);
+    expect(await notices(id, 'REGISTRATION_RECEIVED')).toEqual([]);
+    expect(confirmed.every(item => !item.message.includes('Ava') && !item.message.includes('Ben'))).toBe(true);
+    const inbox = (await request(app(a1)).get('/api/notifications').expect(200)).body.items as { type: string; link: string | null }[];
+    expect(inbox.filter(item => item.link === `/registrations?registration=${first.body.registration.id}`)).toEqual([
+      expect.objectContaining({ type: 'REGISTRATION_CONFIRMED' })]);
+    const strangerInbox = (await request(app(a3)).get('/api/notifications').expect(200)).body.items as { type: string }[];
+    expect(strangerInbox.filter(item => item.type.startsWith('REGISTRATION'))).toEqual([]);
     const organiserInbox = (await request(app(organiser)).get('/api/notifications').expect(200)).body.items as { type: string; event: { id: string } | null }[];
-    expect(organiserInbox.filter(item => item.type === 'REGISTRATION_RECEIVED' && item.event?.id === id)).toHaveLength(2);
+    expect(organiserInbox.filter(item => item.type === 'REGISTRATION_CONFIRMED' && item.event?.id === id)).toHaveLength(2);
+  });
+
+  it('KAN-14/KAN-17 registration, withdrawal and re-registration each notice once and reuse the one record', async () => {
+    const id = await event({ capacity: 1 });
+    const recipients = sorted([a1.id, organiser.id, coordinator.id]);
+    const first = await register(id, a1).expect(201);
+    const registrationId = first.body.registration.id as string;
+    expect((await notices(id, 'REGISTRATION_CONFIRMED')).map(item => item.recipient_id)).toEqual(recipients);
+
+    const withdraw = () => request(app(a1)).post(`/api/registrations/${registrationId}/withdraw`).send({ confirm: true });
+    await withdraw().expect(200);
+    expect(await active(id)).toBe(0);
+    expect((await notices(id, 'REGISTRATION_WITHDRAWN')).map(item => item.recipient_id)).toEqual(recipients);
+
+    // A replayed withdrawal changes nothing and adds no notice.
+    await withdraw().expect(200);
+    expect(await notices(id, 'REGISTRATION_WITHDRAWN')).toHaveLength(3);
+
+    const again = await register(id, a1).expect(201);
+    expect(again.body.registration.id).toBe(registrationId);
+    expect(await rows(id, a1.id)).toEqual([expect.objectContaining({ id: registrationId, status: 'REGISTERED', withdrawn_at: null })]);
+    expect(await active(id)).toBe(1);
+
+    const confirmed = await notices(id, 'REGISTRATION_CONFIRMED');
+    expect(confirmed).toHaveLength(6);
+    for (const recipient of recipients) {
+      expect(confirmed.filter(item => item.recipient_id === recipient).map(item => item.dedupe_key)).toEqual([
+        `REGISTRATION_CONFIRMED:${registrationId}:1`, `REGISTRATION_CONFIRMED:${registrationId}:3`]);
+    }
+    expect(await notices(id, 'REGISTRATION_RECEIVED')).toEqual([]);
+    const total = await fixture.pool.query(`SELECT count(*)::int AS n FROM notifications WHERE event_request_id=$1 AND type LIKE 'REGISTRATION%'`, [id]);
+    expect(total.rows[0].n).toBe(9);
+    // Registering again while registered is refused and adds nothing.
+    expect((await register(id, a1)).body.error.code).toBe('REGISTRATION_ALREADY_REGISTERED');
+    expect((await fixture.pool.query(`SELECT count(*)::int AS n FROM notifications WHERE event_request_id=$1`, [id])).rows[0].n).toBe(9);
   });
 
   it('rolls the registration back, and frees the place, if a notice cannot be written', async () => {
     const id = await event({ capacity: 1 });
     await fixture.pool.query(`CREATE FUNCTION registration_notice_fails() RETURNS trigger LANGUAGE plpgsql AS $$
-      BEGIN IF NEW.type = 'REGISTRATION_RECEIVED' THEN RAISE EXCEPTION 'notice failed'; END IF; RETURN NEW; END $$`);
+      BEGIN IF NEW.type = 'REGISTRATION_CONFIRMED' AND NEW.recipient_id = '${organiser.id}' THEN RAISE EXCEPTION 'notice failed'; END IF; RETURN NEW; END $$`);
     await fixture.pool.query('CREATE TRIGGER registration_notice_fails BEFORE INSERT ON notifications FOR EACH ROW EXECUTE FUNCTION registration_notice_fails()');
     try {
       expect((await register(id, a1)).status).toBe(500);

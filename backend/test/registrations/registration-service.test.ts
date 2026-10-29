@@ -1,21 +1,17 @@
 import type { Pool } from 'pg';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { WorkflowActor } from '../../src/modules/events/workflow-support.js';
-import { recordNotifications } from '../../src/modules/notifications/notify.js';
 import { getAttendeeEvent, listAttendeeEvents, listOwnRegistrations, registerForEvent } from '../../src/modules/registrations/registration-service.js';
 
-vi.mock('../../src/modules/notifications/notify.js', () => ({ recordNotifications: vi.fn(async (_c: unknown, items: unknown[]) => items.length) }));
 const actor: WorkflowActor = { id: '14000000-0000-4000-8000-000000000001', role: 'ATTENDEE' };
 const eventId = '14000000-0000-4000-8000-000000000002';
-const organiserId = '14000000-0000-4000-8000-000000000003';
-const coordinatorId = '14000000-0000-4000-8000-000000000004';
 
 const base = () => ({ id: eventId, name: 'Career fair', purpose: 'Meet employers', description: null as string | null, startsAt: '2031-01-12T02:00:00.000Z' as string | null,
   endsAt: '2031-01-12T06:00:00.000Z' as string | null, accessibilityNeeds: null, status: 'CONFIRMED', registrationRequired: true as boolean | null, capacity: 5 as number | null,
-  opensAt: null as unknown, closesAt: null as unknown, organiserId, coordinatorId: coordinatorId as string | null, started: false, beforeOpen: false, afterClose: false,
+  opensAt: null as unknown, closesAt: null as unknown, started: false, beforeOpen: false, afterClose: false,
   registered: 2, own: null as unknown, ownStatus: null as string | null, venues: [] as unknown[] });
 let row: ReturnType<typeof base> | undefined; let freshRow: ReturnType<typeof base> | undefined; let listRows: ReturnType<typeof base>[];
-let role: string | null; let locked: boolean; let writeError: unknown; let writeRows: { id: string; at: string }[]; let managers: { id: string; role: string }[]; let mine: unknown[];
+let role: string | null; let locked: boolean; let writeError: unknown; let writeRows: { id: string; at: string }[]; let mine: unknown[];
 const statements: string[] = []; let written = false;
 const release = vi.fn();
 const query = vi.fn(async (raw: string) => {
@@ -23,7 +19,6 @@ const query = vi.fn(async (raw: string) => {
   if (sql.startsWith('BEGIN')) written = false;
   if (sql.includes('FROM app_users WHERE id = $1 FOR SHARE')) return { rows: role ? [{ role }] : [] };
   if (sql.startsWith('SELECT id FROM event_requests WHERE id = $1 FOR UPDATE')) return { rows: locked ? [{ id: eventId }] : [] };
-  if (sql.includes('FROM app_users WHERE id = ANY')) return { rows: managers };
   if (sql.includes("WHERE e.status = 'CONFIRMED'")) return { rows: listRows };
   if (sql.includes('FROM event_registrations r JOIN event_requests e')) return { rows: mine };
   if (sql.includes('WHERE e.id = $2')) { const found = written ? freshRow : row; return { rows: found ? [found] : [] }; }
@@ -38,7 +33,7 @@ const dependencies = { pool: { query, connect: vi.fn(async () => ({ query, relea
 beforeEach(() => {
   vi.clearAllMocks(); statements.length = 0; written = false; role = 'ATTENDEE'; locked = true; writeError = null;
   row = base(); freshRow = { ...base(), registered: 3, ownStatus: 'REGISTERED', own: { id: 'r1', status: 'REGISTERED', registeredAt: '2026-10-29T03:00:00.000Z', withdrawnAt: null } };
-  writeRows = [{ id: 'r1', at: '2026-10-29T03:00:00.000Z' }]; managers = [{ id: organiserId, role: 'EVENT_ORGANISER' }, { id: coordinatorId, role: 'EVENT_COORDINATOR' }];
+  writeRows = [{ id: 'r1', at: '2026-10-29T03:00:00.000Z' }];
   listRows = [base()]; mine = [];
 });
 const register = (input: unknown = {}, who: WorkflowActor = actor) => registerForEvent(dependencies, { actor: who, eventId, input });
@@ -96,7 +91,7 @@ describe('KAN-14 registration service reads', () => {
 });
 
 describe('KAN-14 registering', () => {
-  it('KAN-14-AC3/AC104 locks the event, reads fresh counts, inserts and notifies the attendee and the managers', async () => {
+  it('KAN-14-AC3/AC104 locks the event, reads fresh counts and inserts, leaving every notice to migration 019', async () => {
     const result = await register();
     expect(result).toMatchObject({ changed: true, registration: { id: 'r1', status: 'REGISTERED' }, availability: { reason: 'ALREADY_REGISTERED' } });
     const lockAt = statements.findIndex(sql => sql.startsWith('SELECT id FROM event_requests WHERE id = $1 FOR UPDATE'));
@@ -104,29 +99,13 @@ describe('KAN-14 registering', () => {
     expect(lockAt).toBeGreaterThan(-1);
     expect(readAt).toBeGreaterThan(lockAt);
     expect(statements.some(sql => sql.startsWith('INSERT INTO event_registrations'))).toBe(true);
-    const sent = vi.mocked(recordNotifications).mock.calls[0]![1];
-    expect(sent.map(item => [item.recipientId, item.type])).toEqual([
-      [actor.id, 'REGISTRATION_CONFIRMED'], [organiserId, 'REGISTRATION_RECEIVED'], [coordinatorId, 'REGISTRATION_RECEIVED']]);
-    expect(sent[1]!.message).toContain('3 of 5 places taken');
+    expect(statements.some(sql => /notifications/i.test(sql))).toBe(false);
   });
   it('KAN-14-AC103 reuses a withdrawn record with an UPDATE, never a second INSERT', async () => {
     row = { ...base(), ownStatus: 'WITHDRAWN', own: { id: 'r1', status: 'WITHDRAWN', registeredAt: '2026-10-01T00:00:00.000Z', withdrawnAt: '2026-10-02T00:00:00.000Z' } };
     await register();
     expect(statements.some(sql => sql.startsWith('UPDATE event_registrations'))).toBe(true);
     expect(statements.some(sql => sql.startsWith('INSERT INTO event_registrations'))).toBe(false);
-  });
-  it('only notifies managers who still hold the right role, and skips an unassigned coordinator', async () => {
-    managers = [{ id: organiserId, role: 'ATTENDEE' }, { id: coordinatorId, role: 'EVENT_COORDINATOR' }];
-    await register();
-    expect(vi.mocked(recordNotifications).mock.calls[0]![1].map(item => item.recipientId)).toEqual([actor.id, coordinatorId]);
-    vi.mocked(recordNotifications).mockClear();
-    row = { ...base(), coordinatorId: null }; managers = [{ id: organiserId, role: 'EVENT_ORGANISER' }];
-    await register();
-    expect(vi.mocked(recordNotifications).mock.calls[0]![1].map(item => item.recipientId)).toEqual([actor.id, organiserId]);
-    vi.mocked(recordNotifications).mockClear();
-    row = { ...base(), organiserId: coordinatorId, coordinatorId: null }; managers = [];
-    await register();
-    expect(vi.mocked(recordNotifications).mock.calls[0]![1].map(item => item.recipientId)).toEqual([actor.id]);
   });
   it.each([
     ['ALREADY_REGISTERED', { ownStatus: 'REGISTERED' }, 'REGISTRATION_ALREADY_REGISTERED'], ['not confirmed', { status: 'CONFIRMED', registrationRequired: false }, 'REGISTRATION_DISABLED'],
@@ -136,7 +115,6 @@ describe('KAN-14 registering', () => {
     row = { ...base(), ...over } as never;
     await expect(register()).rejects.toMatchObject({ kind: 'CONFLICT', code, message: expect.stringMatching(/.{10}/) });
     expect(statements.some(sql => /^(INSERT|UPDATE) event_registrations/.test(sql))).toBe(false);
-    expect(recordNotifications).not.toHaveBeenCalled();
     expect(statements).toContain('ROLLBACK');
   });
   it('treats an event that is not visible, or gone, as not found', async () => {

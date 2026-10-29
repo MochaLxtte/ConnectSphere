@@ -2,8 +2,6 @@ import type { PoolClient } from 'pg';
 import {
   inActorTransaction, iso, parseObjectBody, UUID_PATTERN, WorkflowError, type WorkflowActor, type WorkflowDependencies,
 } from '../events/workflow-support.js';
-import { recordNotifications } from '../notifications/notify.js';
-import { registrationNotifications } from '../notifications/trigger-matrix.js';
 import { registrationAvailability, REGISTRATION_MESSAGES, type OwnRegistrationStatus, type RegistrationBlock, type RegistrationFacts } from './registration-rules.js';
 import type {
   AttendeeEvent, AttendeeEventDetail, AttendeeEventSummary, OwnRegistration, OwnRegistrationSummary, RegistrationResult,
@@ -21,8 +19,6 @@ interface FactsRow extends RegistrationFacts {
   accessibilityNeeds: string | null;
   opensAt: Date | string | null;
   closesAt: Date | string | null;
-  organiserId: string;
-  coordinatorId: string | null;
   own: { id: string; status: OwnRegistrationStatus; registeredAt: string; withdrawnAt: string | null } | null;
   venues: { name: string; location: string | null; startsAt: string; endsAt: string }[];
   ownStatus: OwnRegistrationStatus | null;
@@ -44,7 +40,6 @@ function requireEventId(id: string): void {
 const FACTS_SELECT = `SELECT e.id, e.name, e.purpose, e.description, e.starts_at AS "startsAt", e.ends_at AS "endsAt",
     e.accessibility_needs AS "accessibilityNeeds", e.status, e.registration_required AS "registrationRequired",
     e.registration_capacity AS capacity, e.registration_opens_at AS "opensAt", e.registration_closes_at AS "closesAt",
-    e.organiser_id AS "organiserId", e.coordinator_id AS "coordinatorId",
     COALESCE(clock_timestamp() >= e.starts_at, true) AS started,
     COALESCE(clock_timestamp() < e.registration_opens_at, false) AS "beforeOpen",
     COALESCE(clock_timestamp() >= e.registration_closes_at, false) AS "afterClose",
@@ -140,8 +135,9 @@ const BLOCK_CODES: Record<RegistrationBlock, string> = {
 
 /**
  * KAN-14-AC2/AC3/AC5/AC7/AC103/AC104: register the caller. The event row is locked first, so competing attendees
- * are counted one at a time and the last place goes to exactly one of them; the registration and its notices
- * commit together. A withdrawn attendee's existing record is reused. The body may carry nothing: the identity is
+ * are counted one at a time and the last place goes to exactly one of them. This service writes no notices:
+ * migration 019's `notify_registration_outcome` trigger is the single writer, in the same transaction, and its
+ * `outcome_version` key makes a re-registration after a withdrawal a new outcome. A withdrawn attendee's existing record is reused. The body may carry nothing: the identity is
  * always the signed-in caller, never a field the caller supplies (AC8, AC101).
  */
 export async function registerForEvent(
@@ -166,7 +162,7 @@ export async function registerForEvent(
     if (!availability.canRegister && availability.reason) {
       throw new WorkflowError('CONFLICT', BLOCK_CODES[availability.reason], REGISTRATION_MESSAGES[availability.reason]);
     }
-    const stamped = await (row.ownStatus === 'WITHDRAWN'
+    const written = await (row.ownStatus === 'WITHDRAWN'
       ? client.query<{ id: string; at: Date | string }>(
         `UPDATE event_registrations SET status = 'REGISTERED', registered_at = clock_timestamp(), withdrawn_at = NULL
          WHERE event_request_id = $1 AND attendee_id = $2 AND status = 'WITHDRAWN' RETURNING id, registered_at AS at`, [eventId, actor.id])
@@ -179,17 +175,7 @@ export async function registerForEvent(
         }
         throw error;
       });
-    const saved = stamped.rows[0];
-    if (!saved) throw new Error('The registration was not saved.');
-    const managers = [row.organiserId, row.coordinatorId].filter((id): id is string => id !== null);
-    const validManagers = managers.length === 0 ? [] : (await client.query<{ id: string; role: string }>(
-      'SELECT id, role FROM app_users WHERE id = ANY($1::uuid[])', [managers])).rows
-      .filter(user => (user.id === row.organiserId && user.role === 'EVENT_ORGANISER') || (user.id === row.coordinatorId && user.role === 'EVENT_COORDINATOR'))
-      .map(user => user.id);
-    await recordNotifications(client, registrationNotifications({
-      eventId, eventName: row.name, attendeeId: actor.id, registrationId: saved.id, stamp: String(new Date(saved.at).getTime()),
-      managerIds: validManagers, registered: row.registered + 1, capacity: row.capacity,
-    }));
+    if (!written.rows[0]) throw new Error('The registration was not saved.');
     const fresh = await readEvent(client, eventId, actor.id);
     if (!fresh) throw new Error('The saved registration could not be read back.');
     return { ...toDetail(fresh), changed: true };

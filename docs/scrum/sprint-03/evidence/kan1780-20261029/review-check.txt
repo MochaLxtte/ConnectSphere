@@ -1,0 +1,67 @@
+
+> connectsphere@0.1.0 check
+> npm run typecheck && npm test && npm run build
+
+
+> connectsphere@0.1.0 typecheck
+> tsc -p tsconfig.tools.json && npm run typecheck --workspaces
+
+
+> @connectsphere/frontend@0.1.0 typecheck
+> vue-tsc --noEmit
+
+
+> @connectsphere/backend@0.1.0 typecheck
+> tsc --noEmit
+
+
+> connectsphere@0.1.0 test
+> npm run test --workspaces
+
+
+> @connectsphere/frontend@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.11 C:/Users/arvin/Downloads/GitHub/ConnectSphere-ac-test-specs/frontend
+
+
+ Test Files  51 passed (51)
+      Tests  1051 passed (1051)
+   Start at  17:31:09
+   Duration  42.44s (transform 47.24s, setup 137.79s, import 85.18s, tests 140.04s, environment 169.02s)
+
+
+> @connectsphere/backend@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.11 C:/Users/arvin/Downloads/GitHub/ConnectSphere-ac-test-specs/backend
+
+
+ Test Files  62 passed (62)
+      Tests  1727 passed (1727)
+   Start at  17:31:53
+   Duration  31.88s (transform 96.61s, setup 0ms, import 205.57s, tests 59.95s, environment 40ms)
+
+
+> connectsphere@0.1.0 build
+> npm run build --workspaces
+
+
+> @connectsphere/frontend@0.1.0 build
+> vue-tsc --noEmit && vite build
+
+vite v8.2.2 building client environment for production...
+transforming...
+✓ 237 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.69 kB │ gzip:   0.39 kB
+dist/assets/index-DaxBFAkT.css   74.94 kB │ gzip:  13.19 kB
+dist/assets/index-DSviFySb.js   590.30 kB │ gzip: 158.60 kB
+
+✓ built in 15.87s
+
+> @connectsphere/backend@0.1.0 build
+> tsc -p tsconfig.build.json

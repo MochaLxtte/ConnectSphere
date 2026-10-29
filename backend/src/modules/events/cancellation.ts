@@ -1,5 +1,5 @@
 import type { Pool, PoolClient } from 'pg';
-import { recordNotifications } from '../notifications/notify.js';
+import { recordNotifications, type NotificationInput } from '../notifications/notify.js';
 import { inActorTransaction, WorkflowError, type WorkflowActor } from './workflow-support.js';
 import { assertVenueBookingsLocked, lockVenueBookingsBeforeEvent } from './arrangement-locks.js';
 
@@ -50,6 +50,13 @@ export async function cancelEvent(
       ORDER BY t.id FOR UPDATE`, [eventRequestId]);
     await client.query('SELECT id FROM equipment_requests WHERE event_request_id = $1 ORDER BY id FOR UPDATE', [eventRequestId]);
 
+    // Capture only arrangements being released by this cancellation, before their statuses change.
+    const staff = await client.query<{ recipientId: string; venueBookingId: string | null; equipmentRequestId: string | null }>(`
+      SELECT decided_by AS "recipientId", id AS "venueBookingId", NULL::uuid AS "equipmentRequestId"
+      FROM venue_bookings WHERE event_request_id = $1 AND status = 'APPROVED' AND decided_by IS NOT NULL
+      UNION ALL
+      SELECT decided_by, NULL::uuid, id FROM equipment_requests
+      WHERE event_request_id = $1 AND status = 'RESERVED' AND decided_by IS NOT NULL`, [eventRequestId]);
     const equipmentCount = await client.query<{ count: string }>(`SELECT count(*)::text AS count FROM equipment_requests
       WHERE event_request_id = $1 AND status IN ('REQUESTED', 'RESERVED', 'REJECTED')`, [eventRequestId]);
     const venues = await client.query<{ id: string }>(`UPDATE venue_bookings SET status = 'CANCELLED',
@@ -77,13 +84,16 @@ export async function cancelEvent(
       SELECT id FROM event_status_history WHERE event_request_id = $1 ORDER BY created_at DESC, id DESC LIMIT 1)`,
     [eventRequestId, reason]);
 
-    const notices = [event.organiserId, event.coordinatorId].filter((id): id is string => id !== null)
+    const notices: NotificationInput[] = [event.organiserId, event.coordinatorId].filter((id): id is string => id !== null)
       .map((recipientId) => ({ recipientId, eventRequestId, type: 'EVENT_CANCELLED',
         title: 'Event cancelled', message: `${event.name ?? 'Your event'} was cancelled.`,
         dedupeKey: `EVENT_CANCELLED:${eventRequestId}` }));
     for (const { attendeeId } of registrations.rows) notices.push({ recipientId: attendeeId, eventRequestId,
       type: 'EVENT_CANCELLED', title: 'Event cancelled',
       message: `${event.name ?? 'The event'} has been cancelled. Your registration is no longer active.`,
+      dedupeKey: `EVENT_CANCELLED:${eventRequestId}` });
+    for (const member of staff.rows) notices.push({ ...member, eventRequestId, type: 'EVENT_CANCELLED',
+      title: 'Event cancelled', message: `${event.name ?? 'The event'} was cancelled.`,
       dedupeKey: `EVENT_CANCELLED:${eventRequestId}` });
     await recordNotifications(client, notices);
     return { eventRequestId, status: 'CANCELLED', cancelledBy: actor.id,
