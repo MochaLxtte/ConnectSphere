@@ -27,6 +27,7 @@ import { createEquipmentAvailabilityRouter } from './modules/equipment/availabil
 import { createEquipmentReservationRouter } from './modules/equipment/reservation-router.js';
 import { createEquipmentRouter } from './modules/equipment/equipment-router.js';
 import { createAttendeeRegistrationRouter } from './modules/registrations/registration-router.js';
+import { createEquipmentStockRouter } from './modules/equipment/stock-router.js';
 import { createRegistrationRouter } from './modules/registrations/router.js';
 
 export interface AppDependencies {
@@ -85,6 +86,8 @@ export function createApp({
     app.use('/api/equipment/reservations', createEquipmentReservationRouter(workspace));
     // KAN-14: attendees see confirmed events and register for them.
     app.use('/api/attendee', createAttendeeRegistrationRouter(workspace));
+    // KAN-18: Technical Support maintains pooled stock and operational losses.
+    app.use('/api/equipment/stock', createEquipmentStockRouter(workspace));
     app.use('/api', createEquipmentRouter(workspace));
     // KAN-64: the signed-in user's own in-app inbox.
     app.use('/api/notifications', createNotificationRouter(workspace));

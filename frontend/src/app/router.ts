@@ -30,6 +30,7 @@ import AttendeeEventsPage from '../features/registrations/pages/AttendeeEventsPa
 import EquipmentAccessPage from '../features/equipment/pages/EquipmentAccessPage.vue';
 import EquipmentAvailabilityPage from '../features/equipment/pages/EquipmentAvailabilityPage.vue';
 import EventEquipmentAvailabilityPage from '../features/equipment/pages/EventEquipmentAvailabilityPage.vue';
+import EquipmentStockPage from '../features/equipment/pages/EquipmentStockPage.vue';
 import EquipmentQueuePage from '../features/events/pages/EquipmentQueuePage.vue';
 import RegistrationsPage from '../features/registrations/RegistrationsPage.vue';
 
@@ -63,6 +64,10 @@ export const router = createRouter({
         { path: '', component: AttendeeEventsPage, meta: { title: 'Events' } },
         { path: ':id', component: AttendeeEventPage, meta: { title: 'Event registration' } },
       ],
+    },
+    {
+      path: '/equipment/stock', component: EquipmentAccessPage,
+      children: [{ path: '', component: EquipmentStockPage, meta: { title: 'Equipment stock' } }],
     },
     {
       path: '/reviews', component: ReviewAccessPage,
