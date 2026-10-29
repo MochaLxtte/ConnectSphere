@@ -1,4 +1,5 @@
 import { getJson, postJson } from '../../../lib/api-client';
+import type { VenueBookingStatus } from './venue-bookings';
 
 export interface SuitabilityEvent {
   id: string;
@@ -24,11 +25,21 @@ export interface SuitabilityVenue {
 
 export interface VenueSuitabilityContext {
   event: SuitabilityEvent;
+  arrangement?: {
+    id: string;
+    venueId: string;
+    startsAt: string | null;
+    endsAt: string | null;
+    layout: string | null;
+    notes: string | null;
+    status: VenueBookingStatus;
+  };
   requirementsVersion: string;
   venues: SuitabilityVenue[];
 }
 
 export interface VenueSuitabilityInput {
+  bookingId?: string;
   venueId: string;
   requirementsVersion: string;
   facilities: string[];
@@ -46,6 +57,7 @@ export interface VenueSuitabilityCheck {
 }
 
 export interface VenueSuitabilityAssessment {
+  bookingId?: string;
   eventId: string;
   eventName: string | null;
   venueId: string;
@@ -57,8 +69,9 @@ export interface VenueSuitabilityAssessment {
   checks: VenueSuitabilityCheck[];
 }
 
-export function fetchVenueSuitabilityContext(eventId: string, signal?: AbortSignal): Promise<VenueSuitabilityContext> {
-  return getJson<VenueSuitabilityContext>(`/api/events/${encodeURIComponent(eventId)}/venue-suitability`, signal);
+export function fetchVenueSuitabilityContext(eventId: string, signal?: AbortSignal, bookingId?: string): Promise<VenueSuitabilityContext> {
+  const query = bookingId ? `?bookingId=${encodeURIComponent(bookingId)}` : '';
+  return getJson<VenueSuitabilityContext>(`/api/events/${encodeURIComponent(eventId)}/venue-suitability${query}`, signal);
 }
 
 export async function assessVenueSuitability(

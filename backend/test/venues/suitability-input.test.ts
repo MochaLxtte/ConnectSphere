@@ -1,10 +1,30 @@
 import { describe, expect, it } from 'vitest';
-import { parseVenueSuitabilityInput } from '../../src/modules/venues/suitability-input.js';
+import { parseSuitabilityBookingId, parseVenueSuitabilityInput } from '../../src/modules/venues/suitability-input.js';
 
 const valid = () => ({
   venueId: '52000000-0000-4000-8000-000000000001', requirementsVersion: 'a'.repeat(64),
   facilities: [], accessibility: [], layout: null, wheelchairRequired: false,
   requirementsConfirmed: true, unresolvedRequirements: null,
+});
+
+describe('KAN-82 selected arrangement input', () => {
+  const bookingId = '82000000-AAAA-4000-8000-000000000001';
+  it('normalises the optional identifier and supports saved layout lengths accepted by booking creation', () => {
+    expect(parseSuitabilityBookingId(undefined)).toBeUndefined();
+    expect(parseVenueSuitabilityInput({ ...valid(), bookingId, layout: 'x'.repeat(2000) }))
+      .toMatchObject({ bookingId: bookingId.toLowerCase(), layout: 'x'.repeat(2000) });
+    expect(() => parseVenueSuitabilityInput({ ...valid(), bookingId, layout: 'x'.repeat(2001) })).toThrow();
+  });
+  it.each([null, '', 'invalid', 1, ['82000000-0000-4000-8000-000000000001']])(
+    'rejects malformed or repeated booking identifiers %j', bookingId => {
+      expect(() => parseVenueSuitabilityInput({ ...valid(), bookingId })).toThrow('bookingId must be a UUID');
+    },
+  );
+  it('rejects forged authoritative timing and notes fields', () => {
+    for (const field of ['startsAt', 'endsAt', 'notes', 'status']) {
+      expect(() => parseVenueSuitabilityInput({ ...valid(), bookingId, [field]: 'override' })).toThrow('unsupported field');
+    }
+  });
 });
 
 describe('KAN-52 structured requirement input', () => {

@@ -1,0 +1,12 @@
+
+> connectsphere@0.1.0 test:integration
+> vitest run --config vitest.integration.config.ts
+
+
+ RUN  v4.1.11 C:/Users/trist/.codex/worktrees/sprint4-acceptance-fixes/ConnectSphere
+
+
+ Test Files  42 passed (42)
+      Tests  814 passed (814)
+   Start at  00:29:00
+   Duration  146.04s (transform 3.56s, setup 0ms, import 17.39s, tests 120.96s, environment 3ms)

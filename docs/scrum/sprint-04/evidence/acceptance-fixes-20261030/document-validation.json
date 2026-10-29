@@ -1,0 +1,156 @@
+{
+  "validation_scope": "Read-only independent comparison of changed CSV registers and changed Markdown references; no repository edits performed by this validation.",
+  "workspace": "C:\\Users\\trist\\.codex\\worktrees\\sprint4-acceptance-fixes\\ConnectSphere",
+  "baseline_ref": "HEAD",
+  "baseline_commit": "6b26503a306c7a56db5ba7b67f8b6537b2da0a27",
+  "report_written_at": "2026-10-30T00:44:26.978400+08:00",
+  "counts": {
+    "test_case_rows": 593,
+    "execution_rows": 1045,
+    "traceability_rows": 204,
+    "original_execution_rows": 1033,
+    "new_case_rows": 11,
+    "new_execution_rows": 12,
+    "new_execution_results": {
+      "Pass": 9,
+      "Not executed": 3
+    },
+    "changed_markdown_links_checked": 9
+  },
+  "preservation": {
+    "original_execution_ids_missing": [],
+    "original_execution_cell_changes": [],
+    "original_execution_raw_record_byte_changes": [],
+    "original_execution_order_preserved": true,
+    "changed_existing_specifications": [
+      "TC-20-405"
+    ],
+    "method": "Read HEAD and working-tree CSVs using Python csv; map execution_id to both parsed cells and exact raw physical record bytes; compare presence, order, cells and record bytes."
+  },
+  "new_cases": [
+    "TC-12-15",
+    "TC-12-16",
+    "TC-12-17",
+    "TC-12-18",
+    "TC-12-19",
+    "TC-06-442",
+    "TC-06-443",
+    "TC-06-444",
+    "TC-12-20",
+    "TC-06-445",
+    "TC-20-431"
+  ],
+  "checks": {
+    "csv_column_widths_valid": true,
+    "duplicate_specification_ids": [],
+    "duplicate_execution_ids": [],
+    "empty_specification_fields": [],
+    "empty_execution_fields": [],
+    "new_empty_traceability_fields": [],
+    "unknown_execution_case_references": [],
+    "unknown_traceability_case_references": [],
+    "invalid_new_planned_levels": [],
+    "accepted_planned_levels": [
+      "unit",
+      "integration",
+      "e2e",
+      "Not assessed"
+    ],
+    "multiple_levels_separator": ";",
+    "invalid_not_executed_metadata": [],
+    "not_executed_fields_checked": [
+      "run_id",
+      "actual_result",
+      "executed_by",
+      "date_of_execution",
+      "build",
+      "environment"
+    ],
+    "required_unperformed_value": "Not recorded",
+    "missing_actual_mapped_paths": [],
+    "path_validation_note": "All actual implementation/test paths exist. Historical parenthetical symbol or suite annotations were distinguished from filesystem paths; no missing path was introduced.",
+    "changed_markdown_missing_file_or_heading_targets": []
+  },
+  "manual_case_consistency": {
+    "TC-12-20": {
+      "planned_level": "e2e",
+      "spec_explicitly_manual_not_executed": true,
+      "execution_rows": 1,
+      "execution_results": [
+        "Not executed"
+      ],
+      "traceability_rows": 1,
+      "dedicated_automated_test_path": "Not recorded",
+      "traceability_explicitly_not_executed": true,
+      "evidence": "Not recorded"
+    },
+    "TC-06-445": {
+      "planned_level": "e2e",
+      "spec_explicitly_manual_not_executed": true,
+      "execution_rows": 1,
+      "execution_results": [
+        "Not executed"
+      ],
+      "traceability_rows": 1,
+      "dedicated_automated_test_path": "Not recorded",
+      "traceability_explicitly_not_executed": true,
+      "evidence": "Not recorded"
+    },
+    "TC-20-431": {
+      "planned_level": "e2e",
+      "spec_explicitly_manual_not_executed": true,
+      "execution_rows": 1,
+      "execution_results": [
+        "Not executed"
+      ],
+      "traceability_rows": 2,
+      "dedicated_automated_test_path": "Not recorded",
+      "traceability_explicitly_not_executed": true,
+      "evidence": "Not recorded",
+      "aggregate_mapping_note": "Also appears in the KAN-80-AC2 aggregate mapping with existing automated paths. That row explicitly limits those paths to relevant slices and states connected TC-20-431 remains Not executed."
+    }
+  },
+  "unchanged_baseline_issues": {
+    "legacy_noncanonical_planned_level_rows": 326,
+    "blank_traceability_acceptance_criterion_cells": [
+      {
+        "csv_row": 16,
+        "field": "acceptance_criterion_ids"
+      },
+      {
+        "csv_row": 17,
+        "field": "acceptance_criterion_ids"
+      },
+      {
+        "csv_row": 18,
+        "field": "acceptance_criterion_ids"
+      },
+      {
+        "csv_row": 19,
+        "field": "acceptance_criterion_ids"
+      },
+      {
+        "csv_row": 20,
+        "field": "acceptance_criterion_ids"
+      },
+      {
+        "csv_row": 21,
+        "field": "acceptance_criterion_ids"
+      }
+    ],
+    "newly_introduced": false,
+    "scope_note": "These pre-existing classification and traceability issues were not changed. Prior uncommitted classification work is preserved separately by the root agent and is outside this task."
+  },
+  "documentation_findings": [
+    {
+      "path": "docs/testing/README.md",
+      "line_at_validation": 296,
+      "observed_text": "No turnover buffer is added.",
+      "finding": "Existing current KAN-52 walkthrough wording conflicts with current buffered suitability rules and the updated venue/API documentation.",
+      "reported_to_root": true,
+      "follow_up": "Root stated it is correcting the sentence with dated current guidance. This report preserves the finding at the validation snapshot; this agent has not asserted a post-correction recheck."
+    }
+  ],
+  "result": "Changed CSV registers and checked Markdown links passed the stated checks. One pre-existing current-guidance contradiction was reported for correction; unchanged baseline issues are recorded separately.",
+  "limitations": "Structural/reference validation does not establish manual E2E acceptance, story acceptance or independent execution of the automated tests referenced by the records."
+}

@@ -47,10 +47,11 @@ async function setup(options: { status?: EventStatus; coordinatorId?: string | n
   return { eventId, venueId };
 }
 
-async function inputFor(eventId: string, venueId: string): Promise<VenueSuitabilityInput> {
-  const context = await getVenueSuitabilityContext(fixture.dependencies, { actor: coordinator, eventId });
-  return { venueId, requirementsVersion: context.requirementsVersion, facilities: ['projector'],
-    accessibility: ['hearing LOOP'], layout: 'theatre', wheelchairRequired: true,
+async function inputFor(eventId: string, venueId: string, bookingId?: string): Promise<VenueSuitabilityInput> {
+  const context = await getVenueSuitabilityContext(fixture.dependencies, { actor: coordinator, eventId,
+    ...(bookingId ? { bookingId } : {}) });
+  return { venueId, ...(bookingId ? { bookingId } : {}), requirementsVersion: context.requirementsVersion, facilities: ['projector'],
+    accessibility: ['hearing LOOP'], layout: context.arrangement ? context.arrangement.layout : 'theatre', wheelchairRequired: true,
     requirementsConfirmed: true, unresolvedRequirements: null };
 }
 
@@ -290,6 +291,191 @@ describe('KAN-52 current-data venue suitability against PostgreSQL', () => {
   });
 });
 
+describe('KAN-82 independent saved arrangement suitability against PostgreSQL', () => {
+  const ownStart = '2026-12-01T05:00:00.000Z';
+  const ownEnd = '2026-12-01T06:00:00.000Z';
+
+  async function arrangement(status = 'PENDING', start = ownStart, end = ownEnd) {
+    const pair = await setup();
+    const bookingId = await addBooking(pair, status, start, end);
+    await fixture.pool.query('UPDATE venue_bookings SET layout=$2,notes=$3 WHERE id=$1',
+      [bookingId, 'Theatre', 'Projector and hearing loop for this session']);
+    return { ...pair, bookingId };
+  }
+
+  async function hold(pair: { eventId: string; venueId: string }, start = ownStart, end = ownEnd) {
+    const id = await addBooking(pair, 'PENDING', start, end);
+    await fixture.pool.query(`UPDATE venue_bookings SET status='HELD',held_by=$2,held_at=now(),
+      hold_expires_at=now()+interval '1 hour' WHERE id=$1`, [id, staff.id]);
+    return id;
+  }
+
+  it('loads the saved arrangement alongside parent requirements and assesses its own interval without writes', async () => {
+    const pair = await arrangement('APPROVED');
+    // Only the arrangement fits these hours. A parent-interval assessment would fail.
+    await fixture.pool.query("UPDATE venues SET opens_at='13:00',closes_at='14:00' WHERE id=$1", [pair.venueId]);
+    const context = await getVenueSuitabilityContext(fixture.dependencies, { actor: coordinator, ...pair });
+    expect(context.event).toMatchObject({ startsAt, endsAt, venueRequirements: 'A projector and theatre seating' });
+    expect(context.arrangement).toEqual({ id: pair.bookingId, venueId: pair.venueId, startsAt: ownStart, endsAt: ownEnd,
+      layout: 'Theatre', notes: 'Projector and hearing loop for this session', status: 'APPROVED' });
+    const snapshot = async () => ({
+      event: (await fixture.pool.query('SELECT * FROM event_requests WHERE id=$1', [pair.eventId])).rows,
+      venue: (await fixture.pool.query('SELECT * FROM venues WHERE id=$1', [pair.venueId])).rows,
+      bookings: (await fixture.pool.query('SELECT * FROM venue_bookings WHERE event_request_id=$1 ORDER BY id', [pair.eventId])).rows,
+      history: await fixture.history(pair.eventId), notifications: await fixture.notifications(pair.eventId),
+    });
+    const before = await snapshot();
+    const input = await inputFor(pair.eventId, pair.venueId, pair.bookingId);
+    expect(await assess(pair.eventId, input)).toMatchObject({ bookingId: pair.bookingId, outcome: 'SUITABLE',
+      occupiedStartsAt: ownStart, occupiedEndsAt: ownEnd });
+    expect(await snapshot()).toEqual(before);
+    expect((await assess(pair.eventId, await inputFor(pair.eventId, pair.venueId))).outcome).toBe('UNSUITABLE');
+  });
+
+  it('detects saved-interval opening-hour failure even though the parent interval fits', async () => {
+    const pair = await arrangement();
+    await fixture.pool.query("UPDATE venues SET closes_at='12:00' WHERE id=$1", [pair.venueId]);
+    const result = await assess(pair.eventId, await inputFor(pair.eventId, pair.venueId, pair.bookingId));
+    expect(result.checks.find(check => check.key === 'availability')).toMatchObject({ status: 'FAIL',
+      message: expect.stringContaining('outside the venue opening hours') });
+  });
+
+  it('uses the saved layout, rejects a forged easier layout, and retains unresolved own requirements', async () => {
+    const pair = await arrangement();
+    await fixture.pool.query("UPDATE venue_bookings SET layout='Cabaret' WHERE id=$1", [pair.bookingId]);
+    const input = await inputFor(pair.eventId, pair.venueId, pair.bookingId);
+    const failed = await assess(pair.eventId, input);
+    expect(failed.checks.find(check => check.key === 'layout')).toMatchObject({ status: 'FAIL',
+      message: 'Required layout is unavailable: Cabaret.' });
+    for (const layout of [null, 'Theatre']) {
+      await expect(assess(pair.eventId, { ...input, layout })).rejects.toMatchObject({ code: 'SUITABILITY_CONTEXT_CHANGED' });
+    }
+    await fixture.pool.query("UPDATE venues SET layouts=ARRAY['Cabaret'] WHERE id=$1", [pair.venueId]);
+    expect((await assess(pair.eventId, { ...input, unresolvedRequirements: 'The arrangement notes need checking' })).outcome)
+      .toBe('NEEDS_REVIEW');
+    expect((await assess(pair.eventId, { ...input, requirementsConfirmed: false })).outcome).toBe('NEEDS_REVIEW');
+    expect((await assess(pair.eventId, input)).outcome).toBe('SUITABLE');
+  });
+
+  it('excludes only the selected approved booking, retaining a same-event conflict introduced by buffer changes', async () => {
+    const pair = await arrangement('APPROVED');
+    await addBooking(pair, 'APPROVED', ownEnd, '2026-12-01T07:00:00Z');
+    const input = await inputFor(pair.eventId, pair.venueId, pair.bookingId);
+    expect((await assess(pair.eventId, input)).outcome).toBe('SUITABLE');
+    await fixture.pool.query('UPDATE venues SET turnaround_minutes=1 WHERE id=$1', [pair.venueId]);
+    const failed = await assess(pair.eventId, input);
+    expect(failed.checks.find(check => check.key === 'availability')).toMatchObject({ status: 'FAIL',
+      message: expect.stringContaining('approved booking or live venue hold') });
+  });
+
+  it('ignores a live hold on the selected row and rejects its stale interpretation after database-clock expiry', async () => {
+    const pair = await setup();
+    const bookingId = await hold(pair);
+    const input = await inputFor(pair.eventId, pair.venueId, bookingId);
+    expect((await assess(pair.eventId, input)).outcome).toBe('SUITABLE');
+    await fixture.pool.query("UPDATE venue_bookings SET hold_expires_at=now()-interval '1 second' WHERE id=$1", [bookingId]);
+    await expect(assess(pair.eventId, input)).rejects.toMatchObject({ code: 'SUITABILITY_CONTEXT_CHANGED' });
+    const context = await getVenueSuitabilityContext(fixture.dependencies, { actor: coordinator, eventId: pair.eventId, bookingId });
+    expect(context.arrangement?.status).toBe('EXPIRED');
+    expect((await assess(pair.eventId, await inputFor(pair.eventId, pair.venueId, bookingId))).outcome).toBe('SUITABLE');
+  });
+
+  it('detects another same-event live hold at the saved interval, then ignores it after expiry', async () => {
+    const pair = await arrangement();
+    const held = await hold(pair);
+    const input = await inputFor(pair.eventId, pair.venueId, pair.bookingId);
+    expect((await assess(pair.eventId, input)).checks.find(check => check.key === 'availability')?.status).toBe('FAIL');
+    await fixture.pool.query("UPDATE venue_bookings SET hold_expires_at=now()-interval '1 second' WHERE id=$1", [held]);
+    expect((await assess(pair.eventId, input)).outcome).toBe('SUITABLE');
+  });
+
+  it('uses buffered saved timing for exact half-open boundaries with bookings and operational blocks', async () => {
+    const pair = await arrangement();
+    await fixture.pool.query('UPDATE venues SET setup_minutes=15,turnaround_minutes=15 WHERE id=$1', [pair.venueId]);
+    await addBooking(pair, 'APPROVED', '2026-12-01T03:30:00Z', '2026-12-01T04:30:00Z');
+    await fixture.pool.query('INSERT INTO venue_unavailability(venue_id,starts_at,ends_at) VALUES($1,$2,$3)',
+      [pair.venueId, '2026-12-01T06:15:00Z', '2026-12-01T07:00:00Z']);
+    const input = await inputFor(pair.eventId, pair.venueId, pair.bookingId);
+    expect(await assess(pair.eventId, input)).toMatchObject({ outcome: 'SUITABLE',
+      occupiedStartsAt: '2026-12-01T04:45:00.000Z', occupiedEndsAt: '2026-12-01T06:15:00.000Z' });
+    await fixture.pool.query('UPDATE venue_unavailability SET starts_at=$2 WHERE venue_id=$1',
+      [pair.venueId, '2026-12-01T06:14:59.999Z']);
+    expect((await assess(pair.eventId, input)).checks.find(check => check.key === 'availability'))
+      .toMatchObject({ status: 'FAIL', message: expect.stringContaining('operational block') });
+  });
+
+  it.each([
+    { column: 'starts_at', value: '2026-12-01T05:30:00Z' },
+    { column: 'ends_at', value: '2026-12-01T07:00:00Z' },
+    { column: 'layout', value: 'Classroom' },
+    { column: 'notes', value: 'A quiet room for the saved session' },
+    { column: 'status', value: 'CANCELLED' },
+    { column: 'status', value: 'REJECTED' },
+    { column: 'status', value: 'APPROVED' },
+  ])('rejects stale saved $column=$value without relying on updated_at', async ({ column, value }) => {
+    const pair = await arrangement();
+    const input = await inputFor(pair.eventId, pair.venueId, pair.bookingId);
+    if (column === 'status' && ['APPROVED', 'REJECTED'].includes(value)) {
+      await fixture.pool.query('UPDATE venue_bookings SET status=$2,decided_by=$3,decided_at=now() WHERE id=$1',
+        [pair.bookingId, value, staff.id]);
+    } else {
+      await fixture.pool.query(`UPDATE venue_bookings SET ${column}=$2 WHERE id=$1`, [pair.bookingId, value]);
+    }
+    await expect(assess(pair.eventId, input)).rejects.toMatchObject({ code: 'SUITABILITY_CONTEXT_CHANGED' });
+  });
+
+  it('keeps parent source changes and event cancellation in the arrangement freshness check', async () => {
+    const pair = await arrangement();
+    const input = await inputFor(pair.eventId, pair.venueId, pair.bookingId);
+    await fixture.pool.query("UPDATE event_requests SET venue_requirements='Changed parent requirements' WHERE id=$1", [pair.eventId]);
+    await expect(assess(pair.eventId, input)).rejects.toMatchObject({ code: 'SUITABILITY_CONTEXT_CHANGED' });
+    const refreshed = await inputFor(pair.eventId, pair.venueId, pair.bookingId);
+    await fixture.pool.query("UPDATE event_requests SET status='CANCELLED' WHERE id=$1", [pair.eventId]);
+    await expect(assess(pair.eventId, refreshed)).rejects.toMatchObject({ code: 'SUITABILITY_CONTEXT_CHANGED' });
+  });
+
+  it('rejects selecting a different venue and a saved venue changed since context loading', async () => {
+    const pair = await arrangement();
+    const input = await inputFor(pair.eventId, pair.venueId, pair.bookingId);
+    const otherVenue = await venue();
+    await expect(assess(pair.eventId, { ...input, venueId: otherVenue }))
+      .rejects.toMatchObject({ code: 'SUITABILITY_CONTEXT_CHANGED' });
+    await fixture.pool.query('UPDATE venue_bookings SET venue_id=$2 WHERE id=$1', [pair.bookingId, otherVenue]);
+    await expect(assess(pair.eventId, input)).rejects.toMatchObject({ code: 'SUITABILITY_CONTEXT_CHANGED' });
+  });
+
+  it('reads current capacity and facilities and can explain an inactive saved venue', async () => {
+    const pair = await arrangement();
+    const input = await inputFor(pair.eventId, pair.venueId, pair.bookingId);
+    await fixture.pool.query("UPDATE venues SET capacity=49,facilities='{}',is_active=false WHERE id=$1", [pair.venueId]);
+    const context = await getVenueSuitabilityContext(fixture.dependencies, { actor: coordinator, ...pair });
+    expect(context.venues.find(venue => venue.id === pair.venueId)).toMatchObject({ capacity: 49, facilities: [] });
+    const result = await assess(pair.eventId, input);
+    expect(result.outcome).toBe('UNSUITABLE');
+    expect(result.checks.filter(check => check.status === 'FAIL').map(check => check.key)).toEqual(['venueActive', 'capacity', 'facilities']);
+  });
+
+  it('hides cross-event, missing and no-longer-assigned arrangements and refuses direct wrong-role reads', async () => {
+    const pair = await arrangement();
+    const other = await arrangement();
+    const input = await inputFor(pair.eventId, pair.venueId, pair.bookingId);
+    for (const bookingId of [other.bookingId, randomUUID()]) {
+      await expect(getVenueSuitabilityContext(fixture.dependencies, { actor: coordinator, eventId: pair.eventId, bookingId }))
+        .rejects.toMatchObject({ code: 'VENUE_BOOKING_NOT_FOUND' });
+      await expect(assess(pair.eventId, { ...input, bookingId })).rejects.toMatchObject({ code: 'VENUE_BOOKING_NOT_FOUND' });
+    }
+    await expect(getVenueSuitabilityContext(fixture.dependencies, { actor: staff, ...pair }))
+      .rejects.toMatchObject({ code: 'ACTION_FORBIDDEN' });
+    await expect(assess(pair.eventId, input, staff)).rejects.toMatchObject({ code: 'ACTION_FORBIDDEN' });
+    await expect(getVenueSuitabilityContext(fixture.dependencies, { actor: coordinator, ...pair, bookingId: 'invalid' }))
+      .rejects.toMatchObject({ code: 'INVALID_SUITABILITY_INPUT' });
+    await fixture.pool.query('UPDATE event_requests SET coordinator_id=$2 WHERE id=$1', [pair.eventId, otherCoordinator.id]);
+    await expect(getVenueSuitabilityContext(fixture.dependencies, { actor: coordinator, ...pair }))
+      .rejects.toMatchObject({ code: 'EVENT_REQUEST_NOT_FOUND' });
+    await expect(assess(pair.eventId, input)).rejects.toMatchObject({ code: 'EVENT_REQUEST_NOT_FOUND' });
+  });
+});
+
 describe('KAN-52 running app cookie authentication and mapped authorisation', () => {
   it('mounts read-only context/assessment with verified profiles, not caller role or event-data overrides', async () => {
     const tokens = new Map<string, string>();
@@ -334,6 +520,20 @@ describe('KAN-52 running app cookie authentication and mapped authorisation', ()
     expect(result.status).toBe(200);
     expect(result.body.assessment.outcome).toBe('SUITABLE');
     expect((await own.post(path).send({ ...input, expectedAttendance: 1 })).status).toBe(400);
+    // KAN-82 exercises the real query/body parsing and saved association through cookie auth.
+    const bookingId = await addBooking(pair, 'APPROVED', '2026-12-01T05:00:00Z', '2026-12-01T06:00:00Z');
+    const arrangementContext = await own.get(path).query({ bookingId });
+    expect(arrangementContext.status).toBe(200);
+    expect(arrangementContext.body.arrangement).toMatchObject({ id: bookingId, venueId: pair.venueId });
+    const arrangementInput = { ...input, bookingId, layout: null, requirementsVersion: arrangementContext.body.requirementsVersion };
+    expect((await request(app).get(path).query({ bookingId })).status).toBe(401);
+    expect((await request(app).post(path).send(arrangementInput)).status).toBe(401);
+    expect((await unrelated.get(path).query({ bookingId })).status).toBe(404);
+    expect((await unrelated.post(path).send(arrangementInput)).status).toBe(404);
+    const arrangementResult = await own.post(path).send(arrangementInput);
+    expect(arrangementResult.status).toBe(200);
+    expect(arrangementResult.body.assessment).toMatchObject({ bookingId, outcome: 'SUITABLE',
+      occupiedStartsAt: '2026-12-01T05:00:00.000Z', occupiedEndsAt: '2026-12-01T06:00:00.000Z' });
     await fixture.pool.query('UPDATE event_requests SET venue_requirements=$2 WHERE id=$1', [pair.eventId, 'Current changed needs']);
     const stale = await own.post(path).send(input);
     expect(stale.status).toBe(409);

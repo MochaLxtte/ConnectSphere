@@ -478,6 +478,7 @@ the team and records their name (§2).
 | `docs/testing/test-evidence.md` | Run narratives, suite results, source limitations and coverage gaps | Required |
 | `docs/testing/archive/test-cases-2026-10-21.csv` | Unchanged pre-standardisation register retained as historical source evidence | Never edit; current records live in the separate registers |
 | `docs/testing/README.md` | Register workflow, test levels, environments and integrated check scripts | If (testing workflow or integrated check changes) |
+| `docs/testing/release-e2e-walkthrough.md` + matching `.docx` | Shareable Sprints 1–4 manual E2E release guide, coverage map and separate blank results form; execution evidence remains in the registers | If (release workflow changes); keep source and Word export aligned |
 | `docs/testing/coverage-reports/` | Coverage summary per sprint | Any one member, sprint close |
 
 ### 8.5 Scrum records (folder 4)

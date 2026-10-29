@@ -10,7 +10,7 @@ import {
 
 /** KAN-84-AC3/AC4/AC6/AC10/AC12: review the current arrangements and record one decision. */
 const route = useRoute();
-const reviewId = computed(() => typeof route.params.id === 'string' ? route.params.id : '');
+const reviewId = computed(() => typeof route.params.id === 'string' ? route.params.id.toLowerCase() : '');
 const permitted = computed(() => !authSession.loading && authSession.user?.role === 'SAFETY_OFFICER');
 const detail = ref<SafetyReviewDetail | null>(null);
 const loading = ref(false);
@@ -22,47 +22,75 @@ const notes = ref('');
 const areas = ref<SafetyArea[]>([]);
 const noteFields = Object.keys(noteLabels) as SafetyNoteField[];
 let controller: AbortController | undefined;
+let generation = 0;
+let mounted = true;
+type ReviewContext = { generation: number; reviewId: string; userId: string | undefined };
+const context = (): ReviewContext => ({ generation, reviewId: reviewId.value, userId: authSession.user?.id });
+const isCurrent = (request: ReviewContext) => mounted && request.generation === generation && permitted.value
+  && request.reviewId === reviewId.value && request.userId === authSession.user?.id;
 const needsNotes = computed(() => decision.value === 'REJECTED' || decision.value === 'CHANGES_REQUESTED');
-const canSave = computed(() => !!decision.value && (!needsNotes.value || !!notes.value.trim())
+const canSave = computed(() => permitted.value && !loading.value && !busy.value && detail.value?.canDecide
+  && detail.value.review.id === reviewId.value && !!decision.value && (!needsNotes.value || !!notes.value.trim())
   && (decision.value !== 'CHANGES_REQUESTED' || areas.value.length > 0)
   && !(decision.value === 'APPROVED' && (detail.value?.stale || detail.value?.readiness?.ready === false)));
 const list = (values: string[]) => values.length ? values.join(', ') : 'None recorded';
 
-async function load(keepMessage = false) {
+function clearReview() {
+  detail.value = null; decision.value = ''; notes.value = ''; areas.value = [];
+}
+async function load(request: ReviewContext, keepMessage = false): Promise<boolean> {
   // After a write, keep its outcome or refusal visible while the saved state is re-read.
   controller?.abort(); if (!keepMessage) { error.value = ''; savedMessage.value = ''; }
-  if (!permitted.value || !reviewId.value) { detail.value = null; return; }
+  clearReview();
   const current = new AbortController(); controller = current;
+  const ownsLoad = () => isCurrent(request) && controller === current && !current.signal.aborted;
   loading.value = true;
   try {
-    const result = await fetchSafetyReview(reviewId.value, current.signal);
-    if (current.signal.aborted) return;
-    detail.value = result; decision.value = ''; notes.value = ''; areas.value = [];
+    const result = await fetchSafetyReview(request.reviewId, current.signal);
+    if (!ownsLoad()) return false;
+    detail.value = result;
+    return true;
   } catch (caught) {
-    if (current.signal.aborted) return;
-    detail.value = null;
-    if (caught instanceof ApiError && caught.status === 401) clearLocalSession();
+    if (!ownsLoad()) return false;
+    if (caught instanceof ApiError && caught.status === 401) { clearLocalSession(); return false; }
     error.value = caught instanceof Error ? caught.message : 'The safety review could not be loaded.';
-  } finally { if (!current.signal.aborted) loading.value = false; }
+    return false;
+  } finally { if (ownsLoad()) loading.value = false; }
 }
 async function save() {
-  if (!detail.value || !decision.value || !canSave.value || busy.value) return;
+  if (!detail.value || !decision.value || !canSave.value) return;
+  const request = context();
   busy.value = true; error.value = ''; savedMessage.value = '';
+  let writeError = '';
   try {
-    const result = await decideSafetyReview(reviewId.value, { decision: decision.value, notes: notes.value.trim() || undefined,
-      areas: decision.value === 'CHANGES_REQUESTED' ? areas.value : undefined, fingerprint: detail.value.review.fingerprint });
+    const result = await decideSafetyReview(request.reviewId, { decision: decision.value, notes: notes.value.trim() || undefined,
+      areas: decision.value === 'CHANGES_REQUESTED' ? [...areas.value] : undefined, fingerprint: detail.value.review.fingerprint });
+    if (!isCurrent(request)) return;
     savedMessage.value = result.changed ? `Decision saved: ${statusLabels[result.review.status]}.` : 'This decision was already saved.';
   } catch (caught) {
-    if (caught instanceof ApiError && caught.status === 401) clearLocalSession();
+    if (!isCurrent(request)) return;
+    if (caught instanceof ApiError && caught.status === 401) { clearLocalSession(); return; }
     // A failed response may follow a committed write; the reload below shows the saved state.
-    error.value = `${caught instanceof Error ? caught.message : 'The decision may not have been saved.'} The review has been reloaded.`;
+    writeError = caught instanceof Error ? caught.message : 'The decision may not have been saved.';
+    error.value = `${writeError} Checking the review's saved state…`;
   } finally {
-    busy.value = false;
-    await load(true);
+    // A response belongs only to the route and reviewer that submitted it, including the reload.
+    if (isCurrent(request)) {
+      const reloaded = await load(request, true);
+      if (isCurrent(request)) {
+        if (writeError) error.value = reloaded ? `${writeError} The review has been reloaded.`
+          : `${writeError} The review could not be reloaded. Reload this page before trying again.`;
+        busy.value = false;
+      }
+    }
   }
 }
-watch(() => [reviewId.value, authSession.loading, authSession.user?.id, authSession.user?.role], () => { void load(); }, { immediate: true });
-onBeforeUnmount(() => controller?.abort());
+watch(() => [reviewId.value, authSession.loading, authSession.user?.id, authSession.user?.role], () => {
+  generation += 1; controller?.abort();
+  clearReview(); busy.value = false; loading.value = false; error.value = ''; savedMessage.value = '';
+  if (permitted.value && reviewId.value) void load(context());
+}, { immediate: true, flush: 'sync' });
+onBeforeUnmount(() => { mounted = false; generation += 1; controller?.abort(); });
 </script>
 
 <template>
@@ -123,7 +151,7 @@ onBeforeUnmount(() => controller?.abort());
       </ul>
 
       <form v-if="detail.canDecide" class="decision" @submit.prevent="save">
-        <fieldset :disabled="busy">
+        <fieldset :disabled="busy || loading">
           <legend>Decision</legend>
           <label><input v-model="decision" type="radio" value="APPROVED" :disabled="detail.stale || detail.readiness?.ready === false" /> Approve</label>
           <label><input v-model="decision" type="radio" value="CHANGES_REQUESTED" /> Request changes</label>
@@ -133,7 +161,7 @@ onBeforeUnmount(() => controller?.abort());
             <label v-for="area in (['VENUE', 'TECHNICAL'] as const)" :key="area"><input v-model="areas" type="checkbox" :value="area" /> {{ areaLabels[area] }}</label>
           </fieldset>
           <label>Notes{{ needsNotes ? ' (required)' : ' (optional)' }}<textarea v-model="notes" maxlength="2000" :required="needsNotes" /></label>
-          <button class="button" type="submit" :disabled="busy || !canSave">{{ busy ? 'Saving…' : 'Save decision' }}</button>
+          <button class="button" type="submit" :disabled="!canSave">{{ busy ? 'Saving…' : 'Save decision' }}</button>
         </fieldset>
       </form>
       <p v-else-if="detail.review.decidedAt">Decided by {{ detail.review.decidedByName ?? 'a Safety Officer' }} {{ singaporeTime(detail.review.decidedAt) }}.

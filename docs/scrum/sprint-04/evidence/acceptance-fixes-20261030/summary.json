@@ -1,0 +1,101 @@
+{
+  "runId": "AUTO-20261030-S4-AC-FIXES",
+  "date": "2026-10-30",
+  "timezone": "Asia/Singapore",
+  "baseCommit": "6b26503a306c7a56db5ba7b67f8b6537b2da0a27",
+  "branch": "fix/sprint-4-acceptance-gaps",
+  "buildDescription": "Base commit plus uncommitted application/test changes identified below",
+  "sourceHashes": {
+    "backend/src/modules/venues/suitability-input.ts": "8c6a7bfd65769484c3195208f20514ed9d8f0b2d4abf63d93d624d4b5ad6d5b2",
+    "backend/src/modules/venues/suitability-router.ts": "8eb127306a8bc7d215a890338e60609af585bccf57a87f4596e4ae4691a29556",
+    "backend/src/modules/venues/suitability-rules.ts": "5980d75bdbd7ac279d5729ad58c4e5cf7cbacd8ec5327575b437dfce31e5b5cb",
+    "backend/src/modules/venues/suitability-service.ts": "662d58cd70d490f2453cb8d0c63f36347b1d014f7a7c9873f2099d2b7fd7bd2e",
+    "backend/test/venues/suitability-input.test.ts": "2cf482050ff5e05e290979df831313e0b3bbe1729c2e82ab150e775a80836e6f",
+    "backend/test/venues/suitability-router.test.ts": "237d23fa8c0491d08da5143f697b97f38b0e6b7b011418f20e5dcceaa44304e6",
+    "database/tests/notifications/later-workflows.integration.test.ts": "5418d5361a6f3fab1ad5bd36a0ced5644931ab825cc453a80192515e3f03ba5b",
+    "database/tests/venues/venue-suitability.integration.test.ts": "c467479d488f93175d580c9e355565e88880db765ed1a06aca773b3cf0718e0e",
+    "frontend/src/features/events/components/VenueBookingPanel.test.ts": "e50290a40636a0171d25cdaec2e1fb56fa582a08c395adb02151234d2a2e31ce",
+    "frontend/src/features/events/components/VenueBookingPanel.vue": "58ad6a96b5626c16fbd4cb704cbf5ca1935e20a861cb0982bf7dfd5a645a2e86",
+    "frontend/src/features/safety/SafetyPages.test.ts": "9ddaa255edeab735fc93b74d0d6d3caa3c610d7e42b7c62976ac3d5c1dd5a456",
+    "frontend/src/features/safety/SafetyReviewPage.vue": "e9c0058749c36fb69e8caf2a0a2e27998c9b79de445103e8edc5cc89af7bac43",
+    "frontend/src/features/venues/api/venue-suitability.ts": "fde165f197b0b6984943a8948b5412c348e904e940e22351bef32e7b5c87f63e",
+    "frontend/src/features/venues/pages/VenueSuitabilityPage.test.ts": "d3468456bfbcf07a9be01b08fedc7ac294b10025082b8aa6831b1b17e3701bb8",
+    "frontend/src/features/venues/pages/VenueSuitabilityPage.vue": "892de0b6f84ab3b1d618c82b35ba85b31a2c89d52e67e8a86c5308f13b0767ed",
+    "tests/e2e/safety-review.spec.ts": "4bb288524dd0c0ea2adbaadf3e599a1d8a64f25ce09d1ec1968484624d61f3e6",
+    "tests/e2e/venue-suitability.spec.ts": "cb476f4288e9cc954afbc6e7c674dd291a3bdaff6a75d68d7605dea0fea52ed2"
+  },
+  "environment": {
+    "node": "v24.21.0",
+    "os": "Windows",
+    "database": "Disposable local PostgreSQL 17, isolated schemas and synthetic identities; no shared Supabase",
+    "browser": "Chromium; API substitutes; four workers; retries=0"
+  },
+  "results": {
+    "check": {
+      "result": "Pass",
+      "frontendTests": 1208,
+      "backendTests": 1959
+    },
+    "coverage": {
+      "result": "Pass",
+      "frontend": {
+        "statements": 95.67,
+        "branches": 92.37,
+        "functions": 97.55,
+        "lines": 98.28
+      },
+      "backend": {
+        "statements": 89.75,
+        "branches": 89.42,
+        "functions": 89.25,
+        "lines": 89.88
+      }
+    },
+    "integration": {
+      "result": "Pass",
+      "tests": 814,
+      "files": 42
+    },
+    "browser": {
+      "result": "Pass",
+      "tests": 229,
+      "scope": "Before final safety route UUID normalization; unchanged backend and other frontend sources"
+    },
+    "finalSafetyBrowserRetest": {
+      "result": "Pass",
+      "tests": 4
+    },
+    "focusedServiceIntegrationCoverage": {
+      "statements": {
+        "covered": 45,
+        "total": 45
+      },
+      "functions": {
+        "covered": 9,
+        "total": 9
+      },
+      "branches": {
+        "covered": 40,
+        "total": 40
+      },
+      "lines": {
+        "covered": 39,
+        "total": 39
+      }
+    }
+  },
+  "manualAcceptance": "Not executed",
+  "storyAcceptance": "Not assessed",
+  "sharedMigrations": "No migration applied by this run; user reports 021 and 022 applied separately",
+  "cleanup": "Integration fixtures destroyed their isolated schemas. The owned disposable container connectsphere-s4-acceptance-audit was stopped and removed after verification; no shared Supabase data was changed.",
+  "developmentAttempts": [
+    "Initial focused suitability fixture run passed 50/51; rejected fixture needed required decision metadata; corrected and extended suite passed 52/52.",
+    "Independent review found uppercase UUID query mismatch; normalized before full tests.",
+    "Final review found analogous uppercase safety UUID route mismatch; normalized and added a regression, then full check/coverage passed 1,208 frontend and 1,959 backend tests and all 4 safety browser cases passed."
+  ],
+  "coverageLimits": [
+    "Unit-only backend report excludes most real PostgreSQL service paths; targeted database coverage is separate.",
+    "SafetyReviewPage lines 98.64%, branches 89.39%; existing readiness-list line 150 and generated/template branches remain uncovered.",
+    "Browser API substitutes do not establish full-system E2E acceptance."
+  ]
+}

@@ -55,14 +55,14 @@ async function settle(pending: ReturnType<typeof deferred>, response: Response) 
   pending.resolve(response);
   await new Promise((resolve) => setTimeout(resolve, 0));
 }
-async function open(id = 'event-a') {
+async function open(id = 'event-a', query = '') {
   const router = createRouter({ history: createMemoryHistory(), routes: [
     { path: '/reviews/:id/venue-suitability', component: VenueSuitabilityPage },
     { path: '/reviews/:id', component: { template: '<h1>Event review destination</h1>' } },
     { path: '/reviews', component: { template: '<h1>Review queue destination</h1>' } },
     { path: '/:pathMatch(.*)*', component: { template: '<h1>Other destination</h1>' } },
   ] });
-  await router.push(`/reviews/${id}/venue-suitability`);
+  await router.push(`/reviews/${id}/venue-suitability${query}`);
   await router.isReady();
   return { ...render(RouterView, { global: { plugins: [router] } }), router };
 }
@@ -425,5 +425,209 @@ describe('KAN-52 venue suitability page', () => {
     await nextTick();
     expect(screen.getByRole('link', { name: 'Sign in' })).toBeInTheDocument();
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+});
+
+describe('KAN-82 saved arrangement suitability', () => {
+  const bookingId = '82000000-0000-4000-8000-000000000001';
+  const otherBookingId = '82000000-0000-4000-8000-000000000002';
+  const arrangementContext = (): VenueSuitabilityContext => ({
+    ...context,
+    arrangement: { id: bookingId, venueId: 'venue-a', startsAt: '2026-10-07T05:00:00Z',
+      endsAt: '2026-10-07T07:00:00Z', layout: 'Banquet', notes: 'A portable stage and a hearing loop are required.', status: 'APPROVED' },
+  });
+  const arrangementResult = { ...result, bookingId };
+  async function assessArrangement() {
+    await screen.findByRole('heading', { name: 'Saved arrangement' });
+    await confirm();
+    await fireEvent.click(screen.getByRole('button', { name: 'Check suitability' }));
+  }
+
+  it('uses the saved venue, distinct period, layout and notes alongside parent requirements and posts the booking identity', async () => {
+    const data = arrangementContext();
+    const fetchMock = vi.fn().mockResolvedValueOnce(json(data)).mockResolvedValueOnce(json({ assessment: arrangementResult }));
+    vi.stubGlobal('fetch', fetchMock);
+    await open('event-a', `?bookingId=${bookingId}`);
+    const saved = await screen.findByRole('region', { name: 'Saved arrangement' });
+    expect(within(saved).getByText('7 Oct 2026, 1:00 pm')).toBeInTheDocument();
+    expect(within(saved).getByText('7 Oct 2026, 3:00 pm')).toBeInTheDocument();
+    expect(within(saved).getByText(data.arrangement!.notes!)).toBeInTheDocument();
+    expect(screen.getByText('5 Oct 2026, 10:00 am')).toBeInTheDocument();
+    expect(screen.getByText(context.event.venueRequirements!)).toBeInTheDocument();
+    expect(screen.getByText(context.event.accessibilityNeeds!)).toBeInTheDocument();
+    expect(screen.getByRole('combobox', { name: 'Venue to assess' })).toBeDisabled();
+    expect(screen.getByRole('combobox', { name: 'Venue to assess' })).toHaveValue('venue-a');
+    expect(screen.getByRole('textbox', { name: 'Saved room layout' })).toHaveAttribute('readonly');
+    expect(screen.getByRole('textbox', { name: 'Saved room layout' })).toHaveValue('Banquet');
+    expect(screen.getByRole('button', { name: 'Check suitability' })).toBeDisabled();
+    await fireEvent.update(screen.getByRole('textbox', { name: 'Required facilities' }), 'Portable stage');
+    await fireEvent.update(screen.getByRole('textbox', { name: 'Required accessibility features' }), 'Hearing loop');
+    await assessArrangement();
+    expect(await screen.findByRole('heading', { name: 'Suitable' })).toBeInTheDocument();
+    expect(fetchMock.mock.calls[0]![0]).toBe(`/api/events/event-a/venue-suitability?bookingId=${bookingId}`);
+    expect(JSON.parse((fetchMock.mock.calls[1]![1] as RequestInit).body as string)).toEqual({
+      bookingId, venueId: 'venue-a', requirementsVersion: context.requirementsVersion,
+      facilities: ['Portable stage'], accessibility: ['Hearing loop'], layout: 'Banquet',
+      wheelchairRequired: false, requirementsConfirmed: true, unresolvedRequirements: null,
+    });
+    expect(screen.getByText(/does not reserve a venue or change the event request/)).toBeInTheDocument();
+  });
+
+  it('keeps an absent saved layout and notes explicit without substituting parent prose', async () => {
+    const data = arrangementContext();
+    data.arrangement = { ...data.arrangement!, layout: null, notes: null };
+    const fetchMock = vi.fn().mockResolvedValueOnce(json(data)).mockResolvedValueOnce(json({ assessment: arrangementResult }));
+    vi.stubGlobal('fetch', fetchMock);
+    await open('event-a', `?bookingId=${bookingId}`);
+    await assessArrangement();
+    await screen.findByRole('heading', { name: 'Suitable' });
+    expect(screen.getByText('No particular layout saved')).toBeInTheDocument();
+    expect(screen.getByText('No notes saved')).toBeInTheDocument();
+    expect(screen.getByRole('textbox', { name: 'Saved room layout' })).toHaveValue('');
+    expect(JSON.parse((fetchMock.mock.calls[1]![1] as RequestInit).body as string).layout).toBeNull();
+  });
+
+  it('normalizes an uppercase booking UUID deep link before loading and assessing its saved record', async () => {
+    const uppercaseId = '82ABCDEF-AAAA-4BBB-8CCC-000000000001';
+    const canonicalId = uppercaseId.toLowerCase();
+    const data = arrangementContext();
+    data.arrangement!.id = canonicalId;
+    const fetchMock = vi.fn().mockResolvedValueOnce(json(data))
+      .mockResolvedValueOnce(json({ assessment: { ...arrangementResult, bookingId: canonicalId } }));
+    vi.stubGlobal('fetch', fetchMock);
+    await open('event-a', `?bookingId=${uppercaseId}`);
+    await assessArrangement();
+    expect(await screen.findByRole('heading', { name: 'Suitable' })).toBeInTheDocument();
+    expect(fetchMock.mock.calls[0]![0]).toBe(`/api/events/event-a/venue-suitability?bookingId=${canonicalId}`);
+    expect(JSON.parse((fetchMock.mock.calls[1]![1] as RequestInit).body as string).bookingId).toBe(canonicalId);
+  });
+
+  it('assesses the full saved layout when it exceeds the event interpretation field limit', async () => {
+    const data = arrangementContext();
+    data.arrangement!.layout = 'x'.repeat(2000);
+    const fetchMock = vi.fn().mockResolvedValueOnce(json(data)).mockResolvedValueOnce(json({ assessment: arrangementResult }));
+    vi.stubGlobal('fetch', fetchMock);
+    await open('event-a', `?bookingId=${bookingId}`);
+    await assessArrangement();
+    await screen.findByRole('heading', { name: 'Suitable' });
+    expect(screen.getByRole('textbox', { name: 'Saved room layout' })).toHaveValue(data.arrangement!.layout);
+    expect(JSON.parse((fetchMock.mock.calls[1]![1] as RequestInit).body as string).layout).toBe(data.arrangement!.layout);
+  });
+
+  it('removes a deleted arrangement when the assessment returns a missing-record response', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValueOnce(json(arrangementContext()))
+      .mockResolvedValueOnce(apiError(404, 'VENUE_BOOKING_NOT_FOUND')));
+    await open('event-a', `?bookingId=${bookingId}`);
+    await assessArrangement();
+    expect(await screen.findByRole('alert')).toHaveTextContent('saved arrangement is unavailable');
+    expect(screen.queryByRole('region', { name: 'Saved arrangement' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('form')).not.toBeInTheDocument();
+  });
+
+  it('clears previous arrangement results and private details immediately when the booking query changes', async () => {
+    const next = deferred();
+    const other = arrangementContext();
+    other.arrangement = { ...other.arrangement!, id: otherBookingId, venueId: 'venue-b', layout: null, notes: 'Outdoor reception' };
+    const fetchMock = vi.fn().mockResolvedValueOnce(json(arrangementContext()))
+      .mockResolvedValueOnce(json({ assessment: arrangementResult })).mockReturnValueOnce(next.promise);
+    vi.stubGlobal('fetch', fetchMock);
+    const { router } = await open('event-a', `?bookingId=${bookingId}`);
+    await assessArrangement();
+    await screen.findByRole('heading', { name: 'Suitable' });
+    await router.push(`/reviews/event-a/venue-suitability?bookingId=${otherBookingId}`);
+    expect(screen.queryByRole('region', { name: 'Suitability assessment' })).not.toBeInTheDocument();
+    expect(screen.queryByText('A portable stage and a hearing loop are required.')).not.toBeInTheDocument();
+    expect(screen.queryByRole('form')).not.toBeInTheDocument();
+    await settle(next, json(other));
+    expect(screen.getByText('Outdoor reception')).toBeInTheDocument();
+    expect(screen.getByRole('combobox', { name: 'Venue to assess' })).toHaveValue('venue-b');
+    expect(screen.getByRole('textbox', { name: 'Required facilities' })).toHaveValue('');
+    expect(screen.getByRole('button', { name: 'Check suitability' })).toBeDisabled();
+    expect(fetchMock.mock.calls[2]![0]).toContain(`bookingId=${otherBookingId}`);
+  });
+
+  it.each(['context', 'assessment'] as const)('ignores a late %s response after switching to another booking', async (stage) => {
+    const pending = deferred();
+    const fetchMock = vi.fn();
+    if (stage === 'assessment') fetchMock.mockResolvedValueOnce(json(arrangementContext()));
+    fetchMock.mockReturnValueOnce(pending.promise).mockResolvedValueOnce(apiError(404, 'VENUE_BOOKING_NOT_FOUND'));
+    vi.stubGlobal('fetch', fetchMock);
+    const { router } = await open('event-a', `?bookingId=${bookingId}`);
+    if (stage === 'assessment') await assessArrangement();
+    await router.push(`/reviews/event-a/venue-suitability?bookingId=${otherBookingId}`);
+    expect(await screen.findByRole('alert')).toHaveTextContent('saved arrangement is unavailable');
+    await settle(pending, json(stage === 'context' ? arrangementContext() : { assessment: arrangementResult }));
+    expect(screen.queryByRole('region', { name: 'Suitability assessment' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('region', { name: 'Saved arrangement' })).not.toBeInTheDocument();
+  });
+
+  it('refreshes changed saved details after 409 and requires interpretation and confirmation again', async () => {
+    const updated = arrangementContext();
+    updated.arrangement = { ...updated.arrangement!, layout: 'Theatre', notes: 'New requirement: stage', startsAt: '2026-10-08T05:00:00Z' };
+    updated.requirementsVersion = 'd'.repeat(64);
+    const fetchMock = vi.fn().mockResolvedValueOnce(json(arrangementContext()))
+      .mockResolvedValueOnce(apiError(409, 'SUITABILITY_CONTEXT_CHANGED')).mockResolvedValueOnce(json(updated))
+      .mockResolvedValueOnce(json({ assessment: arrangementResult }));
+    vi.stubGlobal('fetch', fetchMock);
+    await open('event-a', `?bookingId=${bookingId}`);
+    await screen.findByRole('heading', { name: 'Saved arrangement' });
+    await fireEvent.update(screen.getByRole('textbox', { name: 'Required facilities' }), 'Portable stage');
+    await assessArrangement();
+    expect(await screen.findByText('New requirement: stage')).toBeInTheDocument();
+    expect(screen.getByRole('alert')).toHaveTextContent('saved arrangement or event requirements have changed');
+    expect(screen.getByText('8 Oct 2026, 1:00 pm')).toBeInTheDocument();
+    expect(screen.getByRole('textbox', { name: 'Saved room layout' })).toHaveValue('Theatre');
+    expect(screen.getByRole('textbox', { name: 'Required facilities' })).toHaveValue('');
+    expect(screen.getByRole('button', { name: 'Check suitability' })).toBeDisabled();
+    await assessArrangement();
+    await screen.findByRole('heading', { name: 'Suitable' });
+    expect(JSON.parse((fetchMock.mock.calls[3]![1] as RequestInit).body as string)).toMatchObject({
+      bookingId, requirementsVersion: updated.requirementsVersion, layout: 'Theatre',
+    });
+  });
+
+  it('removes a cancelled arrangement when a changed-context refresh is refused', async () => {
+    const fetchMock = vi.fn().mockResolvedValueOnce(json(arrangementContext()))
+      .mockResolvedValueOnce(apiError(409, 'SUITABILITY_CONTEXT_CHANGED'))
+      .mockResolvedValueOnce(apiError(409, 'SUITABILITY_CONTEXT_CHANGED', 'This arrangement can no longer be assessed.'));
+    vi.stubGlobal('fetch', fetchMock);
+    await open('event-a', `?bookingId=${bookingId}`);
+    await assessArrangement();
+    expect(await screen.findByText('This arrangement can no longer be assessed.')).toBeInTheDocument();
+    expect(screen.queryByRole('form')).not.toBeInTheDocument();
+    expect(screen.queryByRole('region', { name: 'Saved arrangement' })).not.toBeInTheDocument();
+  });
+
+  it('returns to event mode with a fresh blank selection after removing the booking query', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValueOnce(json(arrangementContext()))
+      .mockResolvedValueOnce(json({ assessment: arrangementResult })).mockResolvedValueOnce(json(context)));
+    const { router } = await open('event-a', `?bookingId=${bookingId}`);
+    await assessArrangement();
+    await screen.findByRole('heading', { name: 'Suitable' });
+    await router.push('/reviews/event-a/venue-suitability');
+    const selection = await screen.findByRole('combobox', { name: 'Venue to assess' });
+    expect(selection).toBeEnabled();
+    expect(selection).toHaveValue('');
+    expect(screen.queryByRole('region', { name: 'Suitability assessment' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('region', { name: 'Saved arrangement' })).not.toBeInTheDocument();
+  });
+
+  it.each(['?bookingId=', '?bookingId=one&bookingId=two'])('does not fall back to event assessment for invalid booking query %s', async (query) => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+    await open('event-a', query);
+    expect(await screen.findByRole('alert')).toHaveTextContent('Choose a saved arrangement');
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it.each(['missing', 'different', 'missing venue'] as const)('fails closed when context has a %s arrangement instead of the requested saved record', async (kind) => {
+    const data = arrangementContext();
+    if (kind === 'missing') delete data.arrangement;
+    if (kind === 'different') data.arrangement!.id = otherBookingId;
+    if (kind === 'missing venue') data.venues = [];
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValueOnce(json(data)));
+    await open('event-a', `?bookingId=${bookingId}`);
+    expect(await screen.findByRole('alert')).toHaveTextContent('saved arrangement could not be loaded');
+    expect(screen.queryByRole('form')).not.toBeInTheDocument();
   });
 });

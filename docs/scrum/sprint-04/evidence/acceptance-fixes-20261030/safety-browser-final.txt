@@ -1,0 +1,19 @@
+[WebServer] (node:30236) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:23288) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:8660) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 4 tests using 2 workers
+
+(node:27232) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:37704) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 2 [chromium] › tests\e2e\safety-review.spec.ts:68:1 › KAN-84-AC1/AC4/AC6 Safety Officer opens the queue, sees missing information and requests technical changes (1.4s)
+  ok 1 [chromium] › tests\e2e\safety-review.spec.ts:43:1 › KAN-84-AC2/AC3 coordinator submits safety notes and sees the round awaiting the officer after reload (1.6s)
+  ok 4 [chromium] › tests\e2e\safety-review.spec.ts:141:1 › KAN-84-AC4/AC12 leaving a saving review keeps its late result out of the next review (1.0s)
+  ok 3 [chromium] › tests\e2e\safety-review.spec.ts:107:1 › KAN-84-AC8/AC9 preparation starts on current approval and the organiser sees it blocked after a change (1.4s)
+
+  4 passed (7.6s)

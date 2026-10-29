@@ -137,3 +137,54 @@ test('KAN-84-AC8/AC9 preparation starts on current approval and the organiser se
   await expect(organiserPanel.getByTestId('preparation-status')).toContainText('Preparation blocked');
   await expect(organiserPanel.getByRole('button')).toHaveCount(0);
 });
+
+test('KAN-84-AC4/AC12 leaving a saving review keeps its late result out of the next review', async ({ page }) => {
+  const nextId = '50000000-0000-4000-8000-000000000085';
+  let releaseWrite!: () => void;
+  const writeGate = new Promise<void>(resolve => { releaseWrite = resolve; });
+  let releaseRead!: () => void;
+  const readGate = new Promise<void>(resolve => { releaseRead = resolve; });
+  const reads: string[] = [];
+  const decisions: { path: string; body: unknown }[] = [];
+  const reviewDetail = (id: string) => ({ review: { ...round('PENDING'), id, fingerprint },
+    stale: false, canDecide: true, event: { ...event, name: id === reviewId ? 'Graduation dinner' : 'Next review event',
+      equipmentPlanStatus: 'NOT_REQUIRED' }, venues: [], equipment: [], readiness: { ready: true, checks: [] }, rounds: [] });
+  await stubApi(page, officer, async (path, request, route) => {
+    if (path === '/api/safety-reviews') await route.fulfill({ json: { items: [{ id: nextId, round: 1, eventId,
+      eventName: 'Next review event', startsAt: event.startsAt, submittedAt: '2034-12-01T02:00:00.000Z', stale: false }] } });
+    else if (path === `/api/safety-reviews/${reviewId}` || path === `/api/safety-reviews/${nextId}`) {
+      reads.push(path);
+      if (path.endsWith(nextId)) await readGate;
+      await route.fulfill({ json: reviewDetail(path.endsWith(nextId) ? nextId : reviewId) });
+    } else if (path === `/api/safety-reviews/${reviewId}/decision`) {
+      decisions.push({ path, body: request.postDataJSON() });
+      await writeGate;
+      await route.fulfill({ json: { changed: true, review: round('APPROVED') } });
+    } else return false;
+    return true;
+  });
+  try {
+    await page.goto(`/safety-reviews/${reviewId}`);
+    await page.getByLabel('Approve', { exact: true }).check();
+    await page.getByLabel(/Notes/).fill('Notes for the previous review');
+    await page.getByRole('button', { name: 'Save decision' }).click();
+    await expect(page.getByRole('button', { name: 'Saving…' })).toBeDisabled();
+    await page.getByRole('link', { name: 'Back to safety reviews' }).click();
+    await page.getByRole('link', { name: /Next review event · round 1/ }).click();
+    await expect(page.getByRole('status')).toHaveText('Loading the safety review…');
+    await expect(page.getByRole('button', { name: 'Save decision' })).toHaveCount(0);
+    const oldResponse = page.waitForResponse(response => new URL(response.url()).pathname === `/api/safety-reviews/${reviewId}/decision`);
+    releaseWrite();
+    await (await oldResponse).finished();
+    releaseRead();
+    await expect(page.getByRole('heading', { name: 'Next review event', exact: true })).toBeVisible();
+    await expect(page.getByText('Decision saved: Safety approved.')).toHaveCount(0);
+    await expect(page.getByRole('alert')).toHaveCount(0);
+    await expect(page.getByLabel(/Notes/)).toHaveValue('');
+    await expect(page.getByRole('button', { name: 'Save decision' })).toBeDisabled();
+    expect(reads).toEqual([`/api/safety-reviews/${reviewId}`, `/api/safety-reviews/${nextId}`]);
+    expect(decisions).toEqual([{ path: `/api/safety-reviews/${reviewId}/decision`, body: {
+      decision: 'APPROVED', notes: 'Notes for the previous review', fingerprint,
+    } }]);
+  } finally { releaseWrite(); releaseRead(); }
+});

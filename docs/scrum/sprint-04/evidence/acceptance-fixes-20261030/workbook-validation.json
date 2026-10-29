@@ -1,0 +1,2746 @@
+{
+  "head_commit": "6b26503a306c7a56db5ba7b67f8b6537b2da0a27",
+  "file": "C:\\Users\\trist\\.codex\\worktrees\\sprint4-acceptance-fixes\\ConnectSphere\\docs\\submission\\1\\product-backlog.xlsx",
+  "original_sha256": "617a277142b9eba66249fe6cd9e64d6bba1508274450b8d3afd0cf7d89a53369",
+  "current_sha256": "d10617b1b4e395d037498281142c0aab90fd11a33757ab84641fbb03f66c8e85",
+  "sheet_count_before": 7,
+  "sheet_count_after": 7,
+  "sheets_identical": false,
+  "sheets": [
+    {
+      "name": "Product backlog",
+      "path": "xl/worksheets/sheet1.xml",
+      "attributes": {
+        "name": "Product backlog",
+        "sheetId": "1",
+        "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id": "R3653951daad04e81"
+      }
+    },
+    {
+      "name": "Story specifications",
+      "path": "xl/worksheets/sheet2.xml",
+      "attributes": {
+        "name": "Story specifications",
+        "sheetId": "2",
+        "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id": "Rd24bd56635ed4840"
+      }
+    },
+    {
+      "name": "Delivery evidence",
+      "path": "xl/worksheets/sheet3.xml",
+      "attributes": {
+        "name": "Delivery evidence",
+        "sheetId": "3",
+        "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id": "Rc9f02dc4dd00462e"
+      }
+    },
+    {
+      "name": "Subtasks and archive",
+      "path": "xl/worksheets/sheet4.xml",
+      "attributes": {
+        "name": "Subtasks and archive",
+        "sheetId": "4",
+        "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id": "Rc6b3492b136a4738"
+      }
+    },
+    {
+      "name": "Feature coverage",
+      "path": "xl/worksheets/sheet5.xml",
+      "attributes": {
+        "name": "Feature coverage",
+        "sheetId": "5",
+        "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id": "Rfe7b749847414637"
+      }
+    },
+    {
+      "name": "Sprint record",
+      "path": "xl/worksheets/sheet6.xml",
+      "attributes": {
+        "name": "Sprint record",
+        "sheetId": "6",
+        "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id": "R70c394c7af5f439f"
+      }
+    },
+    {
+      "name": "Review notes",
+      "path": "xl/worksheets/sheet7.xml",
+      "attributes": {
+        "name": "Review notes",
+        "sheetId": "7",
+        "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id": "R7588df0b330945ab"
+      }
+    }
+  ],
+  "table_count_before": 11,
+  "table_count_after": 11,
+  "tables": {
+    "count": 11,
+    "identical": true,
+    "changed_or_missing": [],
+    "parts": [
+      "xl/tables/table1.xml",
+      "xl/tables/table10.xml",
+      "xl/tables/table11.xml",
+      "xl/tables/table2.xml",
+      "xl/tables/table3.xml",
+      "xl/tables/table4.xml",
+      "xl/tables/table5.xml",
+      "xl/tables/table6.xml",
+      "xl/tables/table7.xml",
+      "xl/tables/table8.xml",
+      "xl/tables/table9.xml"
+    ]
+  },
+  "formula_count_before": 18,
+  "formula_count_after": 18,
+  "formula_changes": [],
+  "relationships": {
+    "count": 9,
+    "identical": false,
+    "changed_or_missing": [
+      "_rels/.rels",
+      "xl/_rels/workbook.xml.rels",
+      "xl/worksheets/_rels/sheet1.xml.rels",
+      "xl/worksheets/_rels/sheet2.xml.rels",
+      "xl/worksheets/_rels/sheet3.xml.rels",
+      "xl/worksheets/_rels/sheet4.xml.rels",
+      "xl/worksheets/_rels/sheet5.xml.rels",
+      "xl/worksheets/_rels/sheet6.xml.rels",
+      "xl/worksheets/_rels/sheet7.xml.rels"
+    ],
+    "parts": [
+      "_rels/.rels",
+      "xl/_rels/workbook.xml.rels",
+      "xl/worksheets/_rels/sheet1.xml.rels",
+      "xl/worksheets/_rels/sheet2.xml.rels",
+      "xl/worksheets/_rels/sheet3.xml.rels",
+      "xl/worksheets/_rels/sheet4.xml.rels",
+      "xl/worksheets/_rels/sheet5.xml.rels",
+      "xl/worksheets/_rels/sheet6.xml.rels",
+      "xl/worksheets/_rels/sheet7.xml.rels"
+    ]
+  },
+  "styles_bytes_identical": true,
+  "styles_semantically_identical": true,
+  "fonts_identical": true,
+  "font_count_before": 8,
+  "font_count_after": 8,
+  "native_objects": {
+    "count": 0,
+    "identical": true,
+    "changed_or_missing": [],
+    "parts": []
+  },
+  "removed_parts": [],
+  "added_parts": [],
+  "changed_parts": [
+    "_rels/.rels",
+    "xl/_rels/workbook.xml.rels",
+    "xl/workbook.xml",
+    "xl/worksheets/_rels/sheet1.xml.rels",
+    "xl/worksheets/_rels/sheet2.xml.rels",
+    "xl/worksheets/_rels/sheet3.xml.rels",
+    "xl/worksheets/_rels/sheet4.xml.rels",
+    "xl/worksheets/_rels/sheet5.xml.rels",
+    "xl/worksheets/_rels/sheet6.xml.rels",
+    "xl/worksheets/_rels/sheet7.xml.rels",
+    "xl/worksheets/sheet1.xml",
+    "xl/worksheets/sheet2.xml",
+    "xl/worksheets/sheet3.xml",
+    "xl/worksheets/sheet4.xml",
+    "xl/worksheets/sheet5.xml",
+    "xl/worksheets/sheet6.xml",
+    "xl/worksheets/sheet7.xml"
+  ],
+  "worksheet_structure_changes_excluding_cell_values": [
+    "Delivery evidence",
+    "Feature coverage",
+    "Product backlog",
+    "Review notes",
+    "Sprint record",
+    "Story specifications",
+    "Subtasks and archive"
+  ],
+  "cell_metadata_changes": [],
+  "changed_cell_count": 32,
+  "changed_cells": [
+    {
+      "sheet": "Delivery evidence",
+      "cell": "C45",
+      "before": {
+        "value": "Partial local integration: KAN-26 writes the equipment-reserved confirmation transactionally for the current coordinator and deciding Technical Support. Other KAN-80 triggers and integrated acceptance remain pending.",
+        "type": "str",
+        "style": "87",
+        "attributes": {
+          "r": "C45",
+          "s": "87",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "after": {
+        "value": "Main contains significant-change submission, decision and recipient-link behavior. This branch clarifies AC2 and verifies the actionable review prompt; it adds no separate request-for-action transition.\n\nEarlier snapshot:\nPartial local integration: KAN-26 writes the equipment-reserved confirmation transactionally for the current coordinator and deciding Technical Support. Other KAN-80 triggers and integrated acceptance remain pending.",
+        "type": "str",
+        "style": "87",
+        "attributes": {
+          "r": "C45",
+          "s": "87",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "row_context": {
+        "A45": "KAN-80",
+        "B45": "Receive Equipment, Lifecycle, Change and Registration Notifications",
+        "C45": "Main contains significant-change submission, decision and recipient-link behavior. This branch clarifies AC2 and verifies the actionable review prompt; it adds no separate request-for-action transition.\n\nEarlier snapshot:\nPartial local integration: KAN-26 writes the equipment-reserved confirmation transactionally for the current coordinator and deciding Technical Support. Other KAN-80 triggers and integrated acceptance remain pending.",
+        "D45": "30 October 2026 targeted update: KAN-80 submission is the request for coordinator review (AC2 clarification); KAN-82 saved-arrangement advisory and KAN-84 stale-screen fixes verified locally on fix/sprint-4-acceptance-gaps. AUTO-20261030-S4-AC-FIXES: final check/coverage 1208 frontend + 1959 backend; full PostgreSQL 814 and browser 229 passed before the final safety UUID normalization, then all4 safety browser cases passed again. Browser APIs use substitutes; manual E2E Not executed; acceptance Not assessed. No estimate, Done date or sprint credit changes.\n\nEarlier evidence:\n26 October: TC-17-103 / AUTO-20261026-KAN26-01 verifies the reservation notification slice only. KAN-80 remains To Do; its full acceptance is Not assessed.\n\nEarlier evidence:\nCurrent 16 October rebalance: Sprint 4, 3 SP. Owner: Irfan; independent reviewer: Ernest. No application execution or acceptance is established by this planning update.",
+        "E45": "docs/testing/test-evidence.md#26-october-2026--kan-26-equipment-reservations\nbackend/src/modules/notifications/trigger-matrix.ts\nEarlier links:\ndocs/requirements/change-requests.md\ndocs/scrum/sprint-04/sprint-backlog.md\ndocs/scrum/sprint-04/planning.md"
+      }
+    },
+    {
+      "sheet": "Delivery evidence",
+      "cell": "D45",
+      "before": {
+        "value": "26 October: TC-17-103 / AUTO-20261026-KAN26-01 verifies the reservation notification slice only. KAN-80 remains To Do; its full acceptance is Not assessed.\n\nEarlier evidence:\nCurrent 16 October rebalance: Sprint 4, 3 SP. Owner: Irfan; independent reviewer: Ernest. No application execution or acceptance is established by this planning update.",
+        "type": "str",
+        "style": "87",
+        "attributes": {
+          "r": "D45",
+          "s": "87",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "after": {
+        "value": "30 October 2026 targeted update: KAN-80 submission is the request for coordinator review (AC2 clarification); KAN-82 saved-arrangement advisory and KAN-84 stale-screen fixes verified locally on fix/sprint-4-acceptance-gaps. AUTO-20261030-S4-AC-FIXES: final check/coverage 1208 frontend + 1959 backend; full PostgreSQL 814 and browser 229 passed before the final safety UUID normalization, then all4 safety browser cases passed again. Browser APIs use substitutes; manual E2E Not executed; acceptance Not assessed. No estimate, Done date or sprint credit changes.\n\nEarlier evidence:\n26 October: TC-17-103 / AUTO-20261026-KAN26-01 verifies the reservation notification slice only. KAN-80 remains To Do; its full acceptance is Not assessed.\n\nEarlier evidence:\nCurrent 16 October rebalance: Sprint 4, 3 SP. Owner: Irfan; independent reviewer: Ernest. No application execution or acceptance is established by this planning update.",
+        "type": "str",
+        "style": "87",
+        "attributes": {
+          "r": "D45",
+          "s": "87",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "row_context": {
+        "A45": "KAN-80",
+        "B45": "Receive Equipment, Lifecycle, Change and Registration Notifications",
+        "C45": "Main contains significant-change submission, decision and recipient-link behavior. This branch clarifies AC2 and verifies the actionable review prompt; it adds no separate request-for-action transition.\n\nEarlier snapshot:\nPartial local integration: KAN-26 writes the equipment-reserved confirmation transactionally for the current coordinator and deciding Technical Support. Other KAN-80 triggers and integrated acceptance remain pending.",
+        "D45": "30 October 2026 targeted update: KAN-80 submission is the request for coordinator review (AC2 clarification); KAN-82 saved-arrangement advisory and KAN-84 stale-screen fixes verified locally on fix/sprint-4-acceptance-gaps. AUTO-20261030-S4-AC-FIXES: final check/coverage 1208 frontend + 1959 backend; full PostgreSQL 814 and browser 229 passed before the final safety UUID normalization, then all4 safety browser cases passed again. Browser APIs use substitutes; manual E2E Not executed; acceptance Not assessed. No estimate, Done date or sprint credit changes.\n\nEarlier evidence:\n26 October: TC-17-103 / AUTO-20261026-KAN26-01 verifies the reservation notification slice only. KAN-80 remains To Do; its full acceptance is Not assessed.\n\nEarlier evidence:\nCurrent 16 October rebalance: Sprint 4, 3 SP. Owner: Irfan; independent reviewer: Ernest. No application execution or acceptance is established by this planning update.",
+        "E45": "docs/testing/test-evidence.md#26-october-2026--kan-26-equipment-reservations\nbackend/src/modules/notifications/trigger-matrix.ts\nEarlier links:\ndocs/requirements/change-requests.md\ndocs/scrum/sprint-04/sprint-backlog.md\ndocs/scrum/sprint-04/planning.md"
+      }
+    },
+    {
+      "sheet": "Delivery evidence",
+      "cell": "C47",
+      "before": {
+        "value": "Selected release work. Acceptance Not assessed; new test plans Not executed. Existing reusable functionality and historical evidence remain separate from the new requirement.",
+        "type": "str",
+        "style": "87",
+        "attributes": {
+          "r": "C47",
+          "s": "87",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "after": {
+        "value": "Main contains independent arrangement management. This local branch adds advisory assessment using each saved arrangement interval, venue, layout and notes, current permissions and freshness checks. Only the selected booking is excluded from occupancy.\n\nEarlier snapshot:\nSelected release work. Acceptance Not assessed; new test plans Not executed. Existing reusable functionality and historical evidence remain separate from the new requirement.",
+        "type": "str",
+        "style": "87",
+        "attributes": {
+          "r": "C47",
+          "s": "87",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "row_context": {
+        "A47": "KAN-82",
+        "B47": "Manage each venue arrangement independently for an event",
+        "C47": "Main contains independent arrangement management. This local branch adds advisory assessment using each saved arrangement interval, venue, layout and notes, current permissions and freshness checks. Only the selected booking is excluded from occupancy.\n\nEarlier snapshot:\nSelected release work. Acceptance Not assessed; new test plans Not executed. Existing reusable functionality and historical evidence remain separate from the new requirement.",
+        "D47": "30 October 2026 targeted update: KAN-80 submission is the request for coordinator review (AC2 clarification); KAN-82 saved-arrangement advisory and KAN-84 stale-screen fixes verified locally on fix/sprint-4-acceptance-gaps. AUTO-20261030-S4-AC-FIXES: final check/coverage 1208 frontend + 1959 backend; full PostgreSQL 814 and browser 229 passed before the final safety UUID normalization, then all4 safety browser cases passed again. Browser APIs use substitutes; manual E2E Not executed; acceptance Not assessed. No estimate, Done date or sprint credit changes.\n\nEarlier evidence:\nCurrent 16 October rebalance: Sprint 4, 5 SP. Owner: Ryan; independent reviewer: Arvin. No application execution or acceptance is established by this planning update.",
+        "E47": "docs/requirements/change-requests.md\ndocs/scrum/sprint-04/sprint-backlog.md\ndocs/scrum/sprint-04/planning.md"
+      }
+    },
+    {
+      "sheet": "Delivery evidence",
+      "cell": "D47",
+      "before": {
+        "value": "Current 16 October rebalance: Sprint 4, 5 SP. Owner: Ryan; independent reviewer: Arvin. No application execution or acceptance is established by this planning update.",
+        "type": "str",
+        "style": "87",
+        "attributes": {
+          "r": "D47",
+          "s": "87",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "after": {
+        "value": "30 October 2026 targeted update: KAN-80 submission is the request for coordinator review (AC2 clarification); KAN-82 saved-arrangement advisory and KAN-84 stale-screen fixes verified locally on fix/sprint-4-acceptance-gaps. AUTO-20261030-S4-AC-FIXES: final check/coverage 1208 frontend + 1959 backend; full PostgreSQL 814 and browser 229 passed before the final safety UUID normalization, then all4 safety browser cases passed again. Browser APIs use substitutes; manual E2E Not executed; acceptance Not assessed. No estimate, Done date or sprint credit changes.\n\nEarlier evidence:\nCurrent 16 October rebalance: Sprint 4, 5 SP. Owner: Ryan; independent reviewer: Arvin. No application execution or acceptance is established by this planning update.",
+        "type": "str",
+        "style": "87",
+        "attributes": {
+          "r": "D47",
+          "s": "87",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "row_context": {
+        "A47": "KAN-82",
+        "B47": "Manage each venue arrangement independently for an event",
+        "C47": "Main contains independent arrangement management. This local branch adds advisory assessment using each saved arrangement interval, venue, layout and notes, current permissions and freshness checks. Only the selected booking is excluded from occupancy.\n\nEarlier snapshot:\nSelected release work. Acceptance Not assessed; new test plans Not executed. Existing reusable functionality and historical evidence remain separate from the new requirement.",
+        "D47": "30 October 2026 targeted update: KAN-80 submission is the request for coordinator review (AC2 clarification); KAN-82 saved-arrangement advisory and KAN-84 stale-screen fixes verified locally on fix/sprint-4-acceptance-gaps. AUTO-20261030-S4-AC-FIXES: final check/coverage 1208 frontend + 1959 backend; full PostgreSQL 814 and browser 229 passed before the final safety UUID normalization, then all4 safety browser cases passed again. Browser APIs use substitutes; manual E2E Not executed; acceptance Not assessed. No estimate, Done date or sprint credit changes.\n\nEarlier evidence:\nCurrent 16 October rebalance: Sprint 4, 5 SP. Owner: Ryan; independent reviewer: Arvin. No application execution or acceptance is established by this planning update.",
+        "E47": "docs/requirements/change-requests.md\ndocs/scrum/sprint-04/sprint-backlog.md\ndocs/scrum/sprint-04/planning.md"
+      }
+    },
+    {
+      "sheet": "Delivery evidence",
+      "cell": "C49",
+      "before": {
+        "value": "Selected release work. Acceptance Not assessed; new test plans Not executed. Existing reusable functionality and historical evidence remain separate from the new requirement.",
+        "type": "str",
+        "style": "87",
+        "attributes": {
+          "r": "C49",
+          "s": "87",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "after": {
+        "value": "Main contains safety review and remediation through migration 022. This local branch clears old review state on route/reviewer change and ignores late read/write outcomes while reconciling uncertain saves.\n\nEarlier snapshot:\nSelected release work. Acceptance Not assessed; new test plans Not executed. Existing reusable functionality and historical evidence remain separate from the new requirement.",
+        "type": "str",
+        "style": "87",
+        "attributes": {
+          "r": "C49",
+          "s": "87",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "row_context": {
+        "A49": "KAN-84",
+        "B49": "Review operational safety before event preparation",
+        "C49": "Main contains safety review and remediation through migration 022. This local branch clears old review state on route/reviewer change and ignores late read/write outcomes while reconciling uncertain saves.\n\nEarlier snapshot:\nSelected release work. Acceptance Not assessed; new test plans Not executed. Existing reusable functionality and historical evidence remain separate from the new requirement.",
+        "D49": "30 October 2026 targeted update: KAN-80 submission is the request for coordinator review (AC2 clarification); KAN-82 saved-arrangement advisory and KAN-84 stale-screen fixes verified locally on fix/sprint-4-acceptance-gaps. AUTO-20261030-S4-AC-FIXES: final check/coverage 1208 frontend + 1959 backend; full PostgreSQL 814 and browser 229 passed before the final safety UUID normalization, then all4 safety browser cases passed again. Browser APIs use substitutes; manual E2E Not executed; acceptance Not assessed. No estimate, Done date or sprint credit changes.\n\nEarlier evidence:\nCurrent 16 October rebalance: Sprint 4, 8 SP. Owner: Kai Jie; independent reviewer: Tristan. No application execution or acceptance is established by this planning update.",
+        "E49": "docs/requirements/change-requests.md\ndocs/scrum/sprint-04/sprint-backlog.md\ndocs/scrum/sprint-04/planning.md"
+      }
+    },
+    {
+      "sheet": "Delivery evidence",
+      "cell": "D49",
+      "before": {
+        "value": "Current 16 October rebalance: Sprint 4, 8 SP. Owner: Kai Jie; independent reviewer: Tristan. No application execution or acceptance is established by this planning update.",
+        "type": "str",
+        "style": "87",
+        "attributes": {
+          "r": "D49",
+          "s": "87",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "after": {
+        "value": "30 October 2026 targeted update: KAN-80 submission is the request for coordinator review (AC2 clarification); KAN-82 saved-arrangement advisory and KAN-84 stale-screen fixes verified locally on fix/sprint-4-acceptance-gaps. AUTO-20261030-S4-AC-FIXES: final check/coverage 1208 frontend + 1959 backend; full PostgreSQL 814 and browser 229 passed before the final safety UUID normalization, then all4 safety browser cases passed again. Browser APIs use substitutes; manual E2E Not executed; acceptance Not assessed. No estimate, Done date or sprint credit changes.\n\nEarlier evidence:\nCurrent 16 October rebalance: Sprint 4, 8 SP. Owner: Kai Jie; independent reviewer: Tristan. No application execution or acceptance is established by this planning update.",
+        "type": "str",
+        "style": "87",
+        "attributes": {
+          "r": "D49",
+          "s": "87",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "row_context": {
+        "A49": "KAN-84",
+        "B49": "Review operational safety before event preparation",
+        "C49": "Main contains safety review and remediation through migration 022. This local branch clears old review state on route/reviewer change and ignores late read/write outcomes while reconciling uncertain saves.\n\nEarlier snapshot:\nSelected release work. Acceptance Not assessed; new test plans Not executed. Existing reusable functionality and historical evidence remain separate from the new requirement.",
+        "D49": "30 October 2026 targeted update: KAN-80 submission is the request for coordinator review (AC2 clarification); KAN-82 saved-arrangement advisory and KAN-84 stale-screen fixes verified locally on fix/sprint-4-acceptance-gaps. AUTO-20261030-S4-AC-FIXES: final check/coverage 1208 frontend + 1959 backend; full PostgreSQL 814 and browser 229 passed before the final safety UUID normalization, then all4 safety browser cases passed again. Browser APIs use substitutes; manual E2E Not executed; acceptance Not assessed. No estimate, Done date or sprint credit changes.\n\nEarlier evidence:\nCurrent 16 October rebalance: Sprint 4, 8 SP. Owner: Kai Jie; independent reviewer: Tristan. No application execution or acceptance is established by this planning update.",
+        "E49": "docs/requirements/change-requests.md\ndocs/scrum/sprint-04/sprint-backlog.md\ndocs/scrum/sprint-04/planning.md"
+      }
+    },
+    {
+      "sheet": "Feature coverage",
+      "cell": "D18",
+      "before": {
+        "value": "KAN-52\nKAN-78 (customer changes)\nKAN-84 (16 October allocation)",
+        "type": "str",
+        "style": "9",
+        "attributes": {
+          "r": "D18",
+          "s": "9",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "after": {
+        "value": "KAN-52\nKAN-78 (customer changes)\nKAN-84 (16 October allocation)\nKAN-82 (saved arrangement advisory, 30 October 2026)",
+        "type": "str",
+        "style": "9",
+        "attributes": {
+          "r": "D18",
+          "s": "9",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "row_context": {
+        "A18": "CF-11",
+        "B18": "Venue Suitability Checking",
+        "C18": "The system should assist users in determining whether a venue appears suitable for an event based on available event and venue information. For example, a venue should not normally be treated as suitable when the expected attendance exceeds its capacity or a required facility is unavailable.",
+        "D18": "KAN-52\nKAN-78 (customer changes)\nKAN-84 (16 October allocation)\nKAN-82 (saved arrangement advisory, 30 October 2026)",
+        "E18": "Venue suitability uses current event requirements, catalogue and buffered availability. Zero attendance is known valid data; missing data stays distinguishable. Original KAN-52 Sprint 2 evidence and Ernest’s Sprint 3 revision are recorded separately. 30 October: local KAN-82 arrangement mode uses the saved venue/period/layout and excludes only its own occupancy; manual E2E remains Not executed.",
+        "F18": "TC-11; S2-T09; S2-T10; TC-12-15; TC-12-16; TC-12-17; TC-12-18; TC-12-19; TC-12-20",
+        "G18": "First Release - Core Functionality, Table 3 row 12",
+        "H18": "docs/testing/test-evidence.md#25-october-2026--sprint-closeout-reconciliation\ndocs/requirements/traceability.csv"
+      }
+    },
+    {
+      "sheet": "Feature coverage",
+      "cell": "E18",
+      "before": {
+        "value": "Venue suitability uses current event requirements, catalogue and buffered availability. Zero attendance is known valid data; missing data stays distinguishable. Original KAN-52 Sprint 2 evidence and Ernest’s Sprint 3 revision are recorded separately.",
+        "type": "str",
+        "style": "9",
+        "attributes": {
+          "r": "E18",
+          "s": "9",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "after": {
+        "value": "Venue suitability uses current event requirements, catalogue and buffered availability. Zero attendance is known valid data; missing data stays distinguishable. Original KAN-52 Sprint 2 evidence and Ernest’s Sprint 3 revision are recorded separately. 30 October: local KAN-82 arrangement mode uses the saved venue/period/layout and excludes only its own occupancy; manual E2E remains Not executed.",
+        "type": "str",
+        "style": "9",
+        "attributes": {
+          "r": "E18",
+          "s": "9",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "row_context": {
+        "A18": "CF-11",
+        "B18": "Venue Suitability Checking",
+        "C18": "The system should assist users in determining whether a venue appears suitable for an event based on available event and venue information. For example, a venue should not normally be treated as suitable when the expected attendance exceeds its capacity or a required facility is unavailable.",
+        "D18": "KAN-52\nKAN-78 (customer changes)\nKAN-84 (16 October allocation)\nKAN-82 (saved arrangement advisory, 30 October 2026)",
+        "E18": "Venue suitability uses current event requirements, catalogue and buffered availability. Zero attendance is known valid data; missing data stays distinguishable. Original KAN-52 Sprint 2 evidence and Ernest’s Sprint 3 revision are recorded separately. 30 October: local KAN-82 arrangement mode uses the saved venue/period/layout and excludes only its own occupancy; manual E2E remains Not executed.",
+        "F18": "TC-11; S2-T09; S2-T10; TC-12-15; TC-12-16; TC-12-17; TC-12-18; TC-12-19; TC-12-20",
+        "G18": "First Release - Core Functionality, Table 3 row 12",
+        "H18": "docs/testing/test-evidence.md#25-october-2026--sprint-closeout-reconciliation\ndocs/requirements/traceability.csv"
+      }
+    },
+    {
+      "sheet": "Feature coverage",
+      "cell": "F18",
+      "before": {
+        "value": "TC-11; S2-T09; S2-T10",
+        "type": "str",
+        "style": "9",
+        "attributes": {
+          "r": "F18",
+          "s": "9",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "after": {
+        "value": "TC-11; S2-T09; S2-T10; TC-12-15; TC-12-16; TC-12-17; TC-12-18; TC-12-19; TC-12-20",
+        "type": "str",
+        "style": "9",
+        "attributes": {
+          "r": "F18",
+          "s": "9",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "row_context": {
+        "A18": "CF-11",
+        "B18": "Venue Suitability Checking",
+        "C18": "The system should assist users in determining whether a venue appears suitable for an event based on available event and venue information. For example, a venue should not normally be treated as suitable when the expected attendance exceeds its capacity or a required facility is unavailable.",
+        "D18": "KAN-52\nKAN-78 (customer changes)\nKAN-84 (16 October allocation)\nKAN-82 (saved arrangement advisory, 30 October 2026)",
+        "E18": "Venue suitability uses current event requirements, catalogue and buffered availability. Zero attendance is known valid data; missing data stays distinguishable. Original KAN-52 Sprint 2 evidence and Ernest’s Sprint 3 revision are recorded separately. 30 October: local KAN-82 arrangement mode uses the saved venue/period/layout and excludes only its own occupancy; manual E2E remains Not executed.",
+        "F18": "TC-11; S2-T09; S2-T10; TC-12-15; TC-12-16; TC-12-17; TC-12-18; TC-12-19; TC-12-20",
+        "G18": "First Release - Core Functionality, Table 3 row 12",
+        "H18": "docs/testing/test-evidence.md#25-october-2026--sprint-closeout-reconciliation\ndocs/requirements/traceability.csv"
+      }
+    },
+    {
+      "sheet": "Product backlog",
+      "cell": "A3",
+      "before": {
+        "value": "26 October targeted Jira update: KAN-26 In Progress / Tristan (3 SP), KAN-104–106 In Progress / Tristan (unestimated). KAN-9 local commits included. Earlier whole-project snapshots remain historical.\n\n26 October targeted Jira read: KAN-9 In Progress / Tristan, KAN-26 To Do / Tristan, KAN-101–103 In Progress / Tristan. Earlier full-project and historical sprint snapshots remain unchanged.\n\nJira story snapshot: 13 Sprint 3 parents refreshed 25 October. Administrative sprint state read 26 October. Review acceptance below is the team report supplied 26 October; historical build/DoD verification remains limited by the retained evidence.",
+        "type": "str",
+        "style": "4",
+        "attributes": {
+          "r": "A3",
+          "s": "4",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "after": {
+        "value": "30 October 2026 targeted update: KAN-80 submission is the request for coordinator review (AC2 clarification); KAN-82 saved-arrangement advisory and KAN-84 stale-screen fixes verified locally on fix/sprint-4-acceptance-gaps. AUTO-20261030-S4-AC-FIXES: final check/coverage 1208 frontend + 1959 backend; full PostgreSQL 814 and browser 229 passed before the final safety UUID normalization, then all4 safety browser cases passed again. Browser APIs use substitutes; manual E2E Not executed; acceptance Not assessed. No estimate, Done date or sprint credit changes.\n\nEarlier dated snapshots:\n26 October targeted Jira update: KAN-26 In Progress / Tristan (3 SP), KAN-104–106 In Progress / Tristan (unestimated). KAN-9 local commits included. Earlier whole-project snapshots remain historical.\n\n26 October targeted Jira read: KAN-9 In Progress / Tristan, KAN-26 To Do / Tristan, KAN-101–103 In Progress / Tristan. Earlier full-project and historical sprint snapshots remain unchanged.\n\nJira story snapshot: 13 Sprint 3 parents refreshed 25 October. Administrative sprint state read 26 October. Review acceptance below is the team report supplied 26 October; historical build/DoD verification remains limited by the retained evidence.",
+        "type": "str",
+        "style": "4",
+        "attributes": {
+          "r": "A3",
+          "s": "4",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "row_context": {
+        "A3": "30 October 2026 targeted update: KAN-80 submission is the request for coordinator review (AC2 clarification); KAN-82 saved-arrangement advisory and KAN-84 stale-screen fixes verified locally on fix/sprint-4-acceptance-gaps. AUTO-20261030-S4-AC-FIXES: final check/coverage 1208 frontend + 1959 backend; full PostgreSQL 814 and browser 229 passed before the final safety UUID normalization, then all4 safety browser cases passed again. Browser APIs use substitutes; manual E2E Not executed; acceptance Not assessed. No estimate, Done date or sprint credit changes.\n\nEarlier dated snapshots:\n26 October targeted Jira update: KAN-26 In Progress / Tristan (3 SP), KAN-104–106 In Progress / Tristan (unestimated). KAN-9 local commits included. Earlier whole-project snapshots remain historical.\n\n26 October targeted Jira read: KAN-9 In Progress / Tristan, KAN-26 To Do / Tristan, KAN-101–103 In Progress / Tristan. Earlier full-project and historical sprint snapshots remain unchanged.\n\nJira story snapshot: 13 Sprint 3 parents refreshed 25 October. Administrative sprint state read 26 October. Review acceptance below is the team report supplied 26 October; historical build/DoD verification remains limited by the retained evidence."
+      }
+    },
+    {
+      "sheet": "Product backlog",
+      "cell": "F45",
+      "before": {
+        "value": "To Do",
+        "type": "str",
+        "style": "87",
+        "attributes": {
+          "r": "F45",
+          "s": "87",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "after": {
+        "value": "In Progress",
+        "type": "str",
+        "style": "87",
+        "attributes": {
+          "r": "F45",
+          "s": "87",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "row_context": {
+        "A45": "KAN-80",
+        "B45": "Receive Equipment, Lifecycle, Change and Registration Notifications",
+        "C45": "Story",
+        "D45": "High",
+        "E45": "3",
+        "F45": "In Progress",
+        "G45": "Arvin",
+        "H45": "Sprint 4",
+        "I45": "CF-20",
+        "J45": "Main contains significant-change submission, decision and recipient-link behavior. This branch clarifies AC2 and verifies the actionable review prompt; it adds no separate request-for-action transition.\n\nEarlier snapshot:\nKAN-26 locally implements the EQUIPMENT_RESERVED trigger and scoped recipient links using the shared inbox. Other KAN-80 triggers remain pending; this is not complete story delivery.",
+        "K45": "30 October 2026 targeted update: KAN-80 submission is the request for coordinator review (AC2 clarification); KAN-82 saved-arrangement advisory and KAN-84 stale-screen fixes verified locally on fix/sprint-4-acceptance-gaps. AUTO-20261030-S4-AC-FIXES: final check/coverage 1208 frontend + 1959 backend; full PostgreSQL 814 and browser 229 passed before the final safety UUID normalization, then all4 safety browser cases passed again. Browser APIs use substitutes; manual E2E Not executed; acceptance Not assessed. No estimate, Done date or sprint credit changes.\n\nEarlier evidence:\nNot assessed; selected Sprint 4 work",
+        "L45": "KAN-64; KAN-63; KAN-26; KAN-15; KAN-61; KAN-62; KAN-14; KAN-17",
+        "M45": "2026-10-16T00:00:00.000Z",
+        "N45": "https://smu-g7-grp1.atlassian.net/browse/KAN-80",
+        "O45": "docs/scrum/sprint-04/sprint-backlog.md\ndocs/testing/test-evidence.md\nSee Delivery evidence and Feature coverage, KAN-80",
+        "P45": "0|i000k2:"
+      }
+    },
+    {
+      "sheet": "Product backlog",
+      "cell": "G45",
+      "before": {
+        "value": "Unassigned",
+        "type": "str",
+        "style": "87",
+        "attributes": {
+          "r": "G45",
+          "s": "87",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "after": {
+        "value": "Arvin",
+        "type": "str",
+        "style": "87",
+        "attributes": {
+          "r": "G45",
+          "s": "87",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "row_context": {
+        "A45": "KAN-80",
+        "B45": "Receive Equipment, Lifecycle, Change and Registration Notifications",
+        "C45": "Story",
+        "D45": "High",
+        "E45": "3",
+        "F45": "In Progress",
+        "G45": "Arvin",
+        "H45": "Sprint 4",
+        "I45": "CF-20",
+        "J45": "Main contains significant-change submission, decision and recipient-link behavior. This branch clarifies AC2 and verifies the actionable review prompt; it adds no separate request-for-action transition.\n\nEarlier snapshot:\nKAN-26 locally implements the EQUIPMENT_RESERVED trigger and scoped recipient links using the shared inbox. Other KAN-80 triggers remain pending; this is not complete story delivery.",
+        "K45": "30 October 2026 targeted update: KAN-80 submission is the request for coordinator review (AC2 clarification); KAN-82 saved-arrangement advisory and KAN-84 stale-screen fixes verified locally on fix/sprint-4-acceptance-gaps. AUTO-20261030-S4-AC-FIXES: final check/coverage 1208 frontend + 1959 backend; full PostgreSQL 814 and browser 229 passed before the final safety UUID normalization, then all4 safety browser cases passed again. Browser APIs use substitutes; manual E2E Not executed; acceptance Not assessed. No estimate, Done date or sprint credit changes.\n\nEarlier evidence:\nNot assessed; selected Sprint 4 work",
+        "L45": "KAN-64; KAN-63; KAN-26; KAN-15; KAN-61; KAN-62; KAN-14; KAN-17",
+        "M45": "2026-10-16T00:00:00.000Z",
+        "N45": "https://smu-g7-grp1.atlassian.net/browse/KAN-80",
+        "O45": "docs/scrum/sprint-04/sprint-backlog.md\ndocs/testing/test-evidence.md\nSee Delivery evidence and Feature coverage, KAN-80",
+        "P45": "0|i000k2:"
+      }
+    },
+    {
+      "sheet": "Product backlog",
+      "cell": "J45",
+      "before": {
+        "value": "KAN-26 locally implements the EQUIPMENT_RESERVED trigger and scoped recipient links using the shared inbox. Other KAN-80 triggers remain pending; this is not complete story delivery.",
+        "type": "str",
+        "style": "87",
+        "attributes": {
+          "r": "J45",
+          "s": "87",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "after": {
+        "value": "Main contains significant-change submission, decision and recipient-link behavior. This branch clarifies AC2 and verifies the actionable review prompt; it adds no separate request-for-action transition.\n\nEarlier snapshot:\nKAN-26 locally implements the EQUIPMENT_RESERVED trigger and scoped recipient links using the shared inbox. Other KAN-80 triggers remain pending; this is not complete story delivery.",
+        "type": "str",
+        "style": "87",
+        "attributes": {
+          "r": "J45",
+          "s": "87",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "row_context": {
+        "A45": "KAN-80",
+        "B45": "Receive Equipment, Lifecycle, Change and Registration Notifications",
+        "C45": "Story",
+        "D45": "High",
+        "E45": "3",
+        "F45": "In Progress",
+        "G45": "Arvin",
+        "H45": "Sprint 4",
+        "I45": "CF-20",
+        "J45": "Main contains significant-change submission, decision and recipient-link behavior. This branch clarifies AC2 and verifies the actionable review prompt; it adds no separate request-for-action transition.\n\nEarlier snapshot:\nKAN-26 locally implements the EQUIPMENT_RESERVED trigger and scoped recipient links using the shared inbox. Other KAN-80 triggers remain pending; this is not complete story delivery.",
+        "K45": "30 October 2026 targeted update: KAN-80 submission is the request for coordinator review (AC2 clarification); KAN-82 saved-arrangement advisory and KAN-84 stale-screen fixes verified locally on fix/sprint-4-acceptance-gaps. AUTO-20261030-S4-AC-FIXES: final check/coverage 1208 frontend + 1959 backend; full PostgreSQL 814 and browser 229 passed before the final safety UUID normalization, then all4 safety browser cases passed again. Browser APIs use substitutes; manual E2E Not executed; acceptance Not assessed. No estimate, Done date or sprint credit changes.\n\nEarlier evidence:\nNot assessed; selected Sprint 4 work",
+        "L45": "KAN-64; KAN-63; KAN-26; KAN-15; KAN-61; KAN-62; KAN-14; KAN-17",
+        "M45": "2026-10-16T00:00:00.000Z",
+        "N45": "https://smu-g7-grp1.atlassian.net/browse/KAN-80",
+        "O45": "docs/scrum/sprint-04/sprint-backlog.md\ndocs/testing/test-evidence.md\nSee Delivery evidence and Feature coverage, KAN-80",
+        "P45": "0|i000k2:"
+      }
+    },
+    {
+      "sheet": "Product backlog",
+      "cell": "K45",
+      "before": {
+        "value": "Not assessed; selected Sprint 4 work",
+        "type": "str",
+        "style": "87",
+        "attributes": {
+          "r": "K45",
+          "s": "87",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "after": {
+        "value": "30 October 2026 targeted update: KAN-80 submission is the request for coordinator review (AC2 clarification); KAN-82 saved-arrangement advisory and KAN-84 stale-screen fixes verified locally on fix/sprint-4-acceptance-gaps. AUTO-20261030-S4-AC-FIXES: final check/coverage 1208 frontend + 1959 backend; full PostgreSQL 814 and browser 229 passed before the final safety UUID normalization, then all4 safety browser cases passed again. Browser APIs use substitutes; manual E2E Not executed; acceptance Not assessed. No estimate, Done date or sprint credit changes.\n\nEarlier evidence:\nNot assessed; selected Sprint 4 work",
+        "type": "str",
+        "style": "87",
+        "attributes": {
+          "r": "K45",
+          "s": "87",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "row_context": {
+        "A45": "KAN-80",
+        "B45": "Receive Equipment, Lifecycle, Change and Registration Notifications",
+        "C45": "Story",
+        "D45": "High",
+        "E45": "3",
+        "F45": "In Progress",
+        "G45": "Arvin",
+        "H45": "Sprint 4",
+        "I45": "CF-20",
+        "J45": "Main contains significant-change submission, decision and recipient-link behavior. This branch clarifies AC2 and verifies the actionable review prompt; it adds no separate request-for-action transition.\n\nEarlier snapshot:\nKAN-26 locally implements the EQUIPMENT_RESERVED trigger and scoped recipient links using the shared inbox. Other KAN-80 triggers remain pending; this is not complete story delivery.",
+        "K45": "30 October 2026 targeted update: KAN-80 submission is the request for coordinator review (AC2 clarification); KAN-82 saved-arrangement advisory and KAN-84 stale-screen fixes verified locally on fix/sprint-4-acceptance-gaps. AUTO-20261030-S4-AC-FIXES: final check/coverage 1208 frontend + 1959 backend; full PostgreSQL 814 and browser 229 passed before the final safety UUID normalization, then all4 safety browser cases passed again. Browser APIs use substitutes; manual E2E Not executed; acceptance Not assessed. No estimate, Done date or sprint credit changes.\n\nEarlier evidence:\nNot assessed; selected Sprint 4 work",
+        "L45": "KAN-64; KAN-63; KAN-26; KAN-15; KAN-61; KAN-62; KAN-14; KAN-17",
+        "M45": "2026-10-16T00:00:00.000Z",
+        "N45": "https://smu-g7-grp1.atlassian.net/browse/KAN-80",
+        "O45": "docs/scrum/sprint-04/sprint-backlog.md\ndocs/testing/test-evidence.md\nSee Delivery evidence and Feature coverage, KAN-80",
+        "P45": "0|i000k2:"
+      }
+    },
+    {
+      "sheet": "Product backlog",
+      "cell": "O45",
+      "before": {
+        "value": "See Delivery evidence and Feature coverage, KAN-80",
+        "type": "str",
+        "style": "87",
+        "attributes": {
+          "r": "O45",
+          "s": "87",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "after": {
+        "value": "docs/scrum/sprint-04/sprint-backlog.md\ndocs/testing/test-evidence.md\nSee Delivery evidence and Feature coverage, KAN-80",
+        "type": "str",
+        "style": "87",
+        "attributes": {
+          "r": "O45",
+          "s": "87",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "row_context": {
+        "A45": "KAN-80",
+        "B45": "Receive Equipment, Lifecycle, Change and Registration Notifications",
+        "C45": "Story",
+        "D45": "High",
+        "E45": "3",
+        "F45": "In Progress",
+        "G45": "Arvin",
+        "H45": "Sprint 4",
+        "I45": "CF-20",
+        "J45": "Main contains significant-change submission, decision and recipient-link behavior. This branch clarifies AC2 and verifies the actionable review prompt; it adds no separate request-for-action transition.\n\nEarlier snapshot:\nKAN-26 locally implements the EQUIPMENT_RESERVED trigger and scoped recipient links using the shared inbox. Other KAN-80 triggers remain pending; this is not complete story delivery.",
+        "K45": "30 October 2026 targeted update: KAN-80 submission is the request for coordinator review (AC2 clarification); KAN-82 saved-arrangement advisory and KAN-84 stale-screen fixes verified locally on fix/sprint-4-acceptance-gaps. AUTO-20261030-S4-AC-FIXES: final check/coverage 1208 frontend + 1959 backend; full PostgreSQL 814 and browser 229 passed before the final safety UUID normalization, then all4 safety browser cases passed again. Browser APIs use substitutes; manual E2E Not executed; acceptance Not assessed. No estimate, Done date or sprint credit changes.\n\nEarlier evidence:\nNot assessed; selected Sprint 4 work",
+        "L45": "KAN-64; KAN-63; KAN-26; KAN-15; KAN-61; KAN-62; KAN-14; KAN-17",
+        "M45": "2026-10-16T00:00:00.000Z",
+        "N45": "https://smu-g7-grp1.atlassian.net/browse/KAN-80",
+        "O45": "docs/scrum/sprint-04/sprint-backlog.md\ndocs/testing/test-evidence.md\nSee Delivery evidence and Feature coverage, KAN-80",
+        "P45": "0|i000k2:"
+      }
+    },
+    {
+      "sheet": "Product backlog",
+      "cell": "F47",
+      "before": {
+        "value": "To Do",
+        "type": "str",
+        "style": "87",
+        "attributes": {
+          "r": "F47",
+          "s": "87",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "after": {
+        "value": "In Progress",
+        "type": "str",
+        "style": "87",
+        "attributes": {
+          "r": "F47",
+          "s": "87",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "row_context": {
+        "A47": "KAN-82",
+        "B47": "Manage each venue arrangement independently for an event",
+        "C47": "Story",
+        "D47": "High",
+        "E47": "5",
+        "F47": "In Progress",
+        "G47": "Irfan",
+        "H47": "Sprint 4",
+        "I47": "CF-11; CF-12; CF-13; CF-14; CF-19",
+        "J47": "Main contains independent arrangement management. This local branch adds advisory assessment using each saved arrangement interval, venue, layout and notes, current permissions and freshness checks. Only the selected booking is excluded from occupancy.\n\nEarlier snapshot:\nNot implemented",
+        "K47": "30 October 2026 targeted update: KAN-80 submission is the request for coordinator review (AC2 clarification); KAN-82 saved-arrangement advisory and KAN-84 stale-screen fixes verified locally on fix/sprint-4-acceptance-gaps. AUTO-20261030-S4-AC-FIXES: final check/coverage 1208 frontend + 1959 backend; full PostgreSQL 814 and browser 229 passed before the final safety UUID normalization, then all4 safety browser cases passed again. Browser APIs use substitutes; manual E2E Not executed; acceptance Not assessed. No estimate, Done date or sprint credit changes.\n\nEarlier evidence:\nNot assessed; selected Sprint 4 work",
+        "L47": "Existing venue request and decision workflows; CR-2 recovery links and CR-4 hold states; KAN-78 buffered conflict rules; KAN-64 notification mechanism",
+        "M47": "2026-10-16T00:00:00.000Z",
+        "N47": "https://smu-g7-grp1.atlassian.net/browse/KAN-82",
+        "O47": "docs/scrum/sprint-04/sprint-backlog.md\ndocs/testing/test-evidence.md\nSee Delivery evidence and Feature coverage, KAN-82",
+        "P47": "0|i000kf:"
+      }
+    },
+    {
+      "sheet": "Product backlog",
+      "cell": "G47",
+      "before": {
+        "value": "Unassigned",
+        "type": "str",
+        "style": "87",
+        "attributes": {
+          "r": "G47",
+          "s": "87",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "after": {
+        "value": "Irfan",
+        "type": "str",
+        "style": "87",
+        "attributes": {
+          "r": "G47",
+          "s": "87",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "row_context": {
+        "A47": "KAN-82",
+        "B47": "Manage each venue arrangement independently for an event",
+        "C47": "Story",
+        "D47": "High",
+        "E47": "5",
+        "F47": "In Progress",
+        "G47": "Irfan",
+        "H47": "Sprint 4",
+        "I47": "CF-11; CF-12; CF-13; CF-14; CF-19",
+        "J47": "Main contains independent arrangement management. This local branch adds advisory assessment using each saved arrangement interval, venue, layout and notes, current permissions and freshness checks. Only the selected booking is excluded from occupancy.\n\nEarlier snapshot:\nNot implemented",
+        "K47": "30 October 2026 targeted update: KAN-80 submission is the request for coordinator review (AC2 clarification); KAN-82 saved-arrangement advisory and KAN-84 stale-screen fixes verified locally on fix/sprint-4-acceptance-gaps. AUTO-20261030-S4-AC-FIXES: final check/coverage 1208 frontend + 1959 backend; full PostgreSQL 814 and browser 229 passed before the final safety UUID normalization, then all4 safety browser cases passed again. Browser APIs use substitutes; manual E2E Not executed; acceptance Not assessed. No estimate, Done date or sprint credit changes.\n\nEarlier evidence:\nNot assessed; selected Sprint 4 work",
+        "L47": "Existing venue request and decision workflows; CR-2 recovery links and CR-4 hold states; KAN-78 buffered conflict rules; KAN-64 notification mechanism",
+        "M47": "2026-10-16T00:00:00.000Z",
+        "N47": "https://smu-g7-grp1.atlassian.net/browse/KAN-82",
+        "O47": "docs/scrum/sprint-04/sprint-backlog.md\ndocs/testing/test-evidence.md\nSee Delivery evidence and Feature coverage, KAN-82",
+        "P47": "0|i000kf:"
+      }
+    },
+    {
+      "sheet": "Product backlog",
+      "cell": "I47",
+      "before": {
+        "value": "CF-12; CF-13; CF-14; CF-19",
+        "type": "str",
+        "style": "87",
+        "attributes": {
+          "r": "I47",
+          "s": "87",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "after": {
+        "value": "CF-11; CF-12; CF-13; CF-14; CF-19",
+        "type": "str",
+        "style": "87",
+        "attributes": {
+          "r": "I47",
+          "s": "87",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "row_context": {
+        "A47": "KAN-82",
+        "B47": "Manage each venue arrangement independently for an event",
+        "C47": "Story",
+        "D47": "High",
+        "E47": "5",
+        "F47": "In Progress",
+        "G47": "Irfan",
+        "H47": "Sprint 4",
+        "I47": "CF-11; CF-12; CF-13; CF-14; CF-19",
+        "J47": "Main contains independent arrangement management. This local branch adds advisory assessment using each saved arrangement interval, venue, layout and notes, current permissions and freshness checks. Only the selected booking is excluded from occupancy.\n\nEarlier snapshot:\nNot implemented",
+        "K47": "30 October 2026 targeted update: KAN-80 submission is the request for coordinator review (AC2 clarification); KAN-82 saved-arrangement advisory and KAN-84 stale-screen fixes verified locally on fix/sprint-4-acceptance-gaps. AUTO-20261030-S4-AC-FIXES: final check/coverage 1208 frontend + 1959 backend; full PostgreSQL 814 and browser 229 passed before the final safety UUID normalization, then all4 safety browser cases passed again. Browser APIs use substitutes; manual E2E Not executed; acceptance Not assessed. No estimate, Done date or sprint credit changes.\n\nEarlier evidence:\nNot assessed; selected Sprint 4 work",
+        "L47": "Existing venue request and decision workflows; CR-2 recovery links and CR-4 hold states; KAN-78 buffered conflict rules; KAN-64 notification mechanism",
+        "M47": "2026-10-16T00:00:00.000Z",
+        "N47": "https://smu-g7-grp1.atlassian.net/browse/KAN-82",
+        "O47": "docs/scrum/sprint-04/sprint-backlog.md\ndocs/testing/test-evidence.md\nSee Delivery evidence and Feature coverage, KAN-82",
+        "P47": "0|i000kf:"
+      }
+    },
+    {
+      "sheet": "Product backlog",
+      "cell": "J47",
+      "before": {
+        "value": "Not implemented",
+        "type": "str",
+        "style": "87",
+        "attributes": {
+          "r": "J47",
+          "s": "87",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "after": {
+        "value": "Main contains independent arrangement management. This local branch adds advisory assessment using each saved arrangement interval, venue, layout and notes, current permissions and freshness checks. Only the selected booking is excluded from occupancy.\n\nEarlier snapshot:\nNot implemented",
+        "type": "str",
+        "style": "87",
+        "attributes": {
+          "r": "J47",
+          "s": "87",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "row_context": {
+        "A47": "KAN-82",
+        "B47": "Manage each venue arrangement independently for an event",
+        "C47": "Story",
+        "D47": "High",
+        "E47": "5",
+        "F47": "In Progress",
+        "G47": "Irfan",
+        "H47": "Sprint 4",
+        "I47": "CF-11; CF-12; CF-13; CF-14; CF-19",
+        "J47": "Main contains independent arrangement management. This local branch adds advisory assessment using each saved arrangement interval, venue, layout and notes, current permissions and freshness checks. Only the selected booking is excluded from occupancy.\n\nEarlier snapshot:\nNot implemented",
+        "K47": "30 October 2026 targeted update: KAN-80 submission is the request for coordinator review (AC2 clarification); KAN-82 saved-arrangement advisory and KAN-84 stale-screen fixes verified locally on fix/sprint-4-acceptance-gaps. AUTO-20261030-S4-AC-FIXES: final check/coverage 1208 frontend + 1959 backend; full PostgreSQL 814 and browser 229 passed before the final safety UUID normalization, then all4 safety browser cases passed again. Browser APIs use substitutes; manual E2E Not executed; acceptance Not assessed. No estimate, Done date or sprint credit changes.\n\nEarlier evidence:\nNot assessed; selected Sprint 4 work",
+        "L47": "Existing venue request and decision workflows; CR-2 recovery links and CR-4 hold states; KAN-78 buffered conflict rules; KAN-64 notification mechanism",
+        "M47": "2026-10-16T00:00:00.000Z",
+        "N47": "https://smu-g7-grp1.atlassian.net/browse/KAN-82",
+        "O47": "docs/scrum/sprint-04/sprint-backlog.md\ndocs/testing/test-evidence.md\nSee Delivery evidence and Feature coverage, KAN-82",
+        "P47": "0|i000kf:"
+      }
+    },
+    {
+      "sheet": "Product backlog",
+      "cell": "K47",
+      "before": {
+        "value": "Not assessed; selected Sprint 4 work",
+        "type": "str",
+        "style": "87",
+        "attributes": {
+          "r": "K47",
+          "s": "87",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "after": {
+        "value": "30 October 2026 targeted update: KAN-80 submission is the request for coordinator review (AC2 clarification); KAN-82 saved-arrangement advisory and KAN-84 stale-screen fixes verified locally on fix/sprint-4-acceptance-gaps. AUTO-20261030-S4-AC-FIXES: final check/coverage 1208 frontend + 1959 backend; full PostgreSQL 814 and browser 229 passed before the final safety UUID normalization, then all4 safety browser cases passed again. Browser APIs use substitutes; manual E2E Not executed; acceptance Not assessed. No estimate, Done date or sprint credit changes.\n\nEarlier evidence:\nNot assessed; selected Sprint 4 work",
+        "type": "str",
+        "style": "87",
+        "attributes": {
+          "r": "K47",
+          "s": "87",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "row_context": {
+        "A47": "KAN-82",
+        "B47": "Manage each venue arrangement independently for an event",
+        "C47": "Story",
+        "D47": "High",
+        "E47": "5",
+        "F47": "In Progress",
+        "G47": "Irfan",
+        "H47": "Sprint 4",
+        "I47": "CF-11; CF-12; CF-13; CF-14; CF-19",
+        "J47": "Main contains independent arrangement management. This local branch adds advisory assessment using each saved arrangement interval, venue, layout and notes, current permissions and freshness checks. Only the selected booking is excluded from occupancy.\n\nEarlier snapshot:\nNot implemented",
+        "K47": "30 October 2026 targeted update: KAN-80 submission is the request for coordinator review (AC2 clarification); KAN-82 saved-arrangement advisory and KAN-84 stale-screen fixes verified locally on fix/sprint-4-acceptance-gaps. AUTO-20261030-S4-AC-FIXES: final check/coverage 1208 frontend + 1959 backend; full PostgreSQL 814 and browser 229 passed before the final safety UUID normalization, then all4 safety browser cases passed again. Browser APIs use substitutes; manual E2E Not executed; acceptance Not assessed. No estimate, Done date or sprint credit changes.\n\nEarlier evidence:\nNot assessed; selected Sprint 4 work",
+        "L47": "Existing venue request and decision workflows; CR-2 recovery links and CR-4 hold states; KAN-78 buffered conflict rules; KAN-64 notification mechanism",
+        "M47": "2026-10-16T00:00:00.000Z",
+        "N47": "https://smu-g7-grp1.atlassian.net/browse/KAN-82",
+        "O47": "docs/scrum/sprint-04/sprint-backlog.md\ndocs/testing/test-evidence.md\nSee Delivery evidence and Feature coverage, KAN-82",
+        "P47": "0|i000kf:"
+      }
+    },
+    {
+      "sheet": "Product backlog",
+      "cell": "O47",
+      "before": {
+        "value": "See Delivery evidence and Feature coverage, KAN-82",
+        "type": "str",
+        "style": "87",
+        "attributes": {
+          "r": "O47",
+          "s": "87",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "after": {
+        "value": "docs/scrum/sprint-04/sprint-backlog.md\ndocs/testing/test-evidence.md\nSee Delivery evidence and Feature coverage, KAN-82",
+        "type": "str",
+        "style": "87",
+        "attributes": {
+          "r": "O47",
+          "s": "87",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "row_context": {
+        "A47": "KAN-82",
+        "B47": "Manage each venue arrangement independently for an event",
+        "C47": "Story",
+        "D47": "High",
+        "E47": "5",
+        "F47": "In Progress",
+        "G47": "Irfan",
+        "H47": "Sprint 4",
+        "I47": "CF-11; CF-12; CF-13; CF-14; CF-19",
+        "J47": "Main contains independent arrangement management. This local branch adds advisory assessment using each saved arrangement interval, venue, layout and notes, current permissions and freshness checks. Only the selected booking is excluded from occupancy.\n\nEarlier snapshot:\nNot implemented",
+        "K47": "30 October 2026 targeted update: KAN-80 submission is the request for coordinator review (AC2 clarification); KAN-82 saved-arrangement advisory and KAN-84 stale-screen fixes verified locally on fix/sprint-4-acceptance-gaps. AUTO-20261030-S4-AC-FIXES: final check/coverage 1208 frontend + 1959 backend; full PostgreSQL 814 and browser 229 passed before the final safety UUID normalization, then all4 safety browser cases passed again. Browser APIs use substitutes; manual E2E Not executed; acceptance Not assessed. No estimate, Done date or sprint credit changes.\n\nEarlier evidence:\nNot assessed; selected Sprint 4 work",
+        "L47": "Existing venue request and decision workflows; CR-2 recovery links and CR-4 hold states; KAN-78 buffered conflict rules; KAN-64 notification mechanism",
+        "M47": "2026-10-16T00:00:00.000Z",
+        "N47": "https://smu-g7-grp1.atlassian.net/browse/KAN-82",
+        "O47": "docs/scrum/sprint-04/sprint-backlog.md\ndocs/testing/test-evidence.md\nSee Delivery evidence and Feature coverage, KAN-82",
+        "P47": "0|i000kf:"
+      }
+    },
+    {
+      "sheet": "Product backlog",
+      "cell": "G49",
+      "before": {
+        "value": "Unassigned",
+        "type": "str",
+        "style": "87",
+        "attributes": {
+          "r": "G49",
+          "s": "87",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "after": {
+        "value": "Kai Jie",
+        "type": "str",
+        "style": "87",
+        "attributes": {
+          "r": "G49",
+          "s": "87",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "row_context": {
+        "A49": "KAN-84",
+        "B49": "Review operational safety before event preparation",
+        "C49": "Story",
+        "D49": "High",
+        "E49": "8",
+        "F49": "To Do",
+        "G49": "Kai Jie",
+        "H49": "Sprint 4",
+        "I49": "CF-01; CF-06; CF-11; CF-15; CF-17; CF-19; CF-20",
+        "J49": "Main contains safety review and remediation through migration 022. This local branch clears old review state on route/reviewer change and ignores late read/write outcomes while reconciling uncertain saves.\n\nEarlier snapshot:\nNot implemented",
+        "K49": "30 October 2026 targeted update: KAN-80 submission is the request for coordinator review (AC2 clarification); KAN-82 saved-arrangement advisory and KAN-84 stale-screen fixes verified locally on fix/sprint-4-acceptance-gaps. AUTO-20261030-S4-AC-FIXES: final check/coverage 1208 frontend + 1959 backend; full PostgreSQL 814 and browser 229 passed before the final safety UUID normalization, then all4 safety browser cases passed again. Browser APIs use substitutes; manual E2E Not executed; acceptance Not assessed. No estimate, Done date or sprint credit changes.\n\nEarlier evidence:\nNot assessed; selected Sprint 4 work",
+        "L49": "KAN-61 event and arrangement readiness; KAN-63/KAN-26 technical arrangement reservation; KAN-15/KAN-66 revision-aware changes; CR-3 independent venue actions and CR-2 recovery state; KAN-64 persisted notification delivery",
+        "M49": "2026-10-16T00:00:00.000Z",
+        "N49": "https://smu-g7-grp1.atlassian.net/browse/KAN-84",
+        "O49": "docs/scrum/sprint-04/sprint-backlog.md\ndocs/testing/test-evidence.md\nSee Delivery evidence and Feature coverage, KAN-84",
+        "P49": "0|i000kq:"
+      }
+    },
+    {
+      "sheet": "Product backlog",
+      "cell": "J49",
+      "before": {
+        "value": "Not implemented",
+        "type": "str",
+        "style": "87",
+        "attributes": {
+          "r": "J49",
+          "s": "87",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "after": {
+        "value": "Main contains safety review and remediation through migration 022. This local branch clears old review state on route/reviewer change and ignores late read/write outcomes while reconciling uncertain saves.\n\nEarlier snapshot:\nNot implemented",
+        "type": "str",
+        "style": "87",
+        "attributes": {
+          "r": "J49",
+          "s": "87",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "row_context": {
+        "A49": "KAN-84",
+        "B49": "Review operational safety before event preparation",
+        "C49": "Story",
+        "D49": "High",
+        "E49": "8",
+        "F49": "To Do",
+        "G49": "Kai Jie",
+        "H49": "Sprint 4",
+        "I49": "CF-01; CF-06; CF-11; CF-15; CF-17; CF-19; CF-20",
+        "J49": "Main contains safety review and remediation through migration 022. This local branch clears old review state on route/reviewer change and ignores late read/write outcomes while reconciling uncertain saves.\n\nEarlier snapshot:\nNot implemented",
+        "K49": "30 October 2026 targeted update: KAN-80 submission is the request for coordinator review (AC2 clarification); KAN-82 saved-arrangement advisory and KAN-84 stale-screen fixes verified locally on fix/sprint-4-acceptance-gaps. AUTO-20261030-S4-AC-FIXES: final check/coverage 1208 frontend + 1959 backend; full PostgreSQL 814 and browser 229 passed before the final safety UUID normalization, then all4 safety browser cases passed again. Browser APIs use substitutes; manual E2E Not executed; acceptance Not assessed. No estimate, Done date or sprint credit changes.\n\nEarlier evidence:\nNot assessed; selected Sprint 4 work",
+        "L49": "KAN-61 event and arrangement readiness; KAN-63/KAN-26 technical arrangement reservation; KAN-15/KAN-66 revision-aware changes; CR-3 independent venue actions and CR-2 recovery state; KAN-64 persisted notification delivery",
+        "M49": "2026-10-16T00:00:00.000Z",
+        "N49": "https://smu-g7-grp1.atlassian.net/browse/KAN-84",
+        "O49": "docs/scrum/sprint-04/sprint-backlog.md\ndocs/testing/test-evidence.md\nSee Delivery evidence and Feature coverage, KAN-84",
+        "P49": "0|i000kq:"
+      }
+    },
+    {
+      "sheet": "Product backlog",
+      "cell": "K49",
+      "before": {
+        "value": "Not assessed; selected Sprint 4 work",
+        "type": "str",
+        "style": "87",
+        "attributes": {
+          "r": "K49",
+          "s": "87",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "after": {
+        "value": "30 October 2026 targeted update: KAN-80 submission is the request for coordinator review (AC2 clarification); KAN-82 saved-arrangement advisory and KAN-84 stale-screen fixes verified locally on fix/sprint-4-acceptance-gaps. AUTO-20261030-S4-AC-FIXES: final check/coverage 1208 frontend + 1959 backend; full PostgreSQL 814 and browser 229 passed before the final safety UUID normalization, then all4 safety browser cases passed again. Browser APIs use substitutes; manual E2E Not executed; acceptance Not assessed. No estimate, Done date or sprint credit changes.\n\nEarlier evidence:\nNot assessed; selected Sprint 4 work",
+        "type": "str",
+        "style": "87",
+        "attributes": {
+          "r": "K49",
+          "s": "87",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "row_context": {
+        "A49": "KAN-84",
+        "B49": "Review operational safety before event preparation",
+        "C49": "Story",
+        "D49": "High",
+        "E49": "8",
+        "F49": "To Do",
+        "G49": "Kai Jie",
+        "H49": "Sprint 4",
+        "I49": "CF-01; CF-06; CF-11; CF-15; CF-17; CF-19; CF-20",
+        "J49": "Main contains safety review and remediation through migration 022. This local branch clears old review state on route/reviewer change and ignores late read/write outcomes while reconciling uncertain saves.\n\nEarlier snapshot:\nNot implemented",
+        "K49": "30 October 2026 targeted update: KAN-80 submission is the request for coordinator review (AC2 clarification); KAN-82 saved-arrangement advisory and KAN-84 stale-screen fixes verified locally on fix/sprint-4-acceptance-gaps. AUTO-20261030-S4-AC-FIXES: final check/coverage 1208 frontend + 1959 backend; full PostgreSQL 814 and browser 229 passed before the final safety UUID normalization, then all4 safety browser cases passed again. Browser APIs use substitutes; manual E2E Not executed; acceptance Not assessed. No estimate, Done date or sprint credit changes.\n\nEarlier evidence:\nNot assessed; selected Sprint 4 work",
+        "L49": "KAN-61 event and arrangement readiness; KAN-63/KAN-26 technical arrangement reservation; KAN-15/KAN-66 revision-aware changes; CR-3 independent venue actions and CR-2 recovery state; KAN-64 persisted notification delivery",
+        "M49": "2026-10-16T00:00:00.000Z",
+        "N49": "https://smu-g7-grp1.atlassian.net/browse/KAN-84",
+        "O49": "docs/scrum/sprint-04/sprint-backlog.md\ndocs/testing/test-evidence.md\nSee Delivery evidence and Feature coverage, KAN-84",
+        "P49": "0|i000kq:"
+      }
+    },
+    {
+      "sheet": "Product backlog",
+      "cell": "O49",
+      "before": {
+        "value": "See Delivery evidence and Feature coverage, KAN-84",
+        "type": "str",
+        "style": "87",
+        "attributes": {
+          "r": "O49",
+          "s": "87",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "after": {
+        "value": "docs/scrum/sprint-04/sprint-backlog.md\ndocs/testing/test-evidence.md\nSee Delivery evidence and Feature coverage, KAN-84",
+        "type": "str",
+        "style": "87",
+        "attributes": {
+          "r": "O49",
+          "s": "87",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "row_context": {
+        "A49": "KAN-84",
+        "B49": "Review operational safety before event preparation",
+        "C49": "Story",
+        "D49": "High",
+        "E49": "8",
+        "F49": "To Do",
+        "G49": "Kai Jie",
+        "H49": "Sprint 4",
+        "I49": "CF-01; CF-06; CF-11; CF-15; CF-17; CF-19; CF-20",
+        "J49": "Main contains safety review and remediation through migration 022. This local branch clears old review state on route/reviewer change and ignores late read/write outcomes while reconciling uncertain saves.\n\nEarlier snapshot:\nNot implemented",
+        "K49": "30 October 2026 targeted update: KAN-80 submission is the request for coordinator review (AC2 clarification); KAN-82 saved-arrangement advisory and KAN-84 stale-screen fixes verified locally on fix/sprint-4-acceptance-gaps. AUTO-20261030-S4-AC-FIXES: final check/coverage 1208 frontend + 1959 backend; full PostgreSQL 814 and browser 229 passed before the final safety UUID normalization, then all4 safety browser cases passed again. Browser APIs use substitutes; manual E2E Not executed; acceptance Not assessed. No estimate, Done date or sprint credit changes.\n\nEarlier evidence:\nNot assessed; selected Sprint 4 work",
+        "L49": "KAN-61 event and arrangement readiness; KAN-63/KAN-26 technical arrangement reservation; KAN-15/KAN-66 revision-aware changes; CR-3 independent venue actions and CR-2 recovery state; KAN-64 persisted notification delivery",
+        "M49": "2026-10-16T00:00:00.000Z",
+        "N49": "https://smu-g7-grp1.atlassian.net/browse/KAN-84",
+        "O49": "docs/scrum/sprint-04/sprint-backlog.md\ndocs/testing/test-evidence.md\nSee Delivery evidence and Feature coverage, KAN-84",
+        "P49": "0|i000kq:"
+      }
+    },
+    {
+      "sheet": "Review notes",
+      "cell": "A3",
+      "before": {
+        "value": "26 October: the team reports collective review acceptance on 19 September, 3 October and 17 October. Localhost acceptance is permitted. Reported outcomes, observed Jira state, reviewed-build gaps and later defect evidence remain separate.",
+        "type": "str",
+        "style": "4",
+        "attributes": {
+          "r": "A3",
+          "s": "4",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "after": {
+        "value": "30 October 2026 targeted update: KAN-80 submission is the request for coordinator review (AC2 clarification); KAN-82 saved-arrangement advisory and KAN-84 stale-screen fixes verified locally on fix/sprint-4-acceptance-gaps. AUTO-20261030-S4-AC-FIXES: final check/coverage 1208 frontend + 1959 backend; full PostgreSQL 814 and browser 229 passed before the final safety UUID normalization, then all4 safety browser cases passed again. Browser APIs use substitutes; manual E2E Not executed; acceptance Not assessed. No estimate, Done date or sprint credit changes.\n\n26 October: the team reports collective review acceptance on 19 September, 3 October and 17 October. Localhost acceptance is permitted. Reported outcomes, observed Jira state, reviewed-build gaps and later defect evidence remain separate.",
+        "type": "str",
+        "style": "4",
+        "attributes": {
+          "r": "A3",
+          "s": "4",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "row_context": {
+        "A3": "30 October 2026 targeted update: KAN-80 submission is the request for coordinator review (AC2 clarification); KAN-82 saved-arrangement advisory and KAN-84 stale-screen fixes verified locally on fix/sprint-4-acceptance-gaps. AUTO-20261030-S4-AC-FIXES: final check/coverage 1208 frontend + 1959 backend; full PostgreSQL 814 and browser 229 passed before the final safety UUID normalization, then all4 safety browser cases passed again. Browser APIs use substitutes; manual E2E Not executed; acceptance Not assessed. No estimate, Done date or sprint credit changes.\n\n26 October: the team reports collective review acceptance on 19 September, 3 October and 17 October. Localhost acceptance is permitted. Reported outcomes, observed Jira state, reviewed-build gaps and later defect evidence remain separate."
+      }
+    },
+    {
+      "sheet": "Sprint record",
+      "cell": "F76",
+      "before": {
+        "value": "To Do",
+        "type": "str",
+        "style": "74",
+        "attributes": {
+          "r": "F76",
+          "s": "74",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "after": {
+        "value": "In Progress",
+        "type": "str",
+        "style": "74",
+        "attributes": {
+          "r": "F76",
+          "s": "74",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "row_context": {
+        "A76": "Sprint 4",
+        "B76": "KAN-80",
+        "C76": "3",
+        "D76": "Split of KAN-64 (no added SP)",
+        "E76": "Not assessed",
+        "F76": "In Progress",
+        "G76": "2026-10-18T00:00:00.000Z",
+        "H76": "2026-10-31T00:00:00.000Z",
+        "I76": "Arvin",
+        "J76": "Receive Equipment, Lifecycle, Change and Registration Notifications",
+        "K76": "To agree"
+      }
+    },
+    {
+      "sheet": "Sprint record",
+      "cell": "I76",
+      "before": {
+        "value": "Unassigned",
+        "type": "str",
+        "style": "74",
+        "attributes": {
+          "r": "I76",
+          "s": "74",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "after": {
+        "value": "Arvin",
+        "type": "str",
+        "style": "74",
+        "attributes": {
+          "r": "I76",
+          "s": "74",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "row_context": {
+        "A76": "Sprint 4",
+        "B76": "KAN-80",
+        "C76": "3",
+        "D76": "Split of KAN-64 (no added SP)",
+        "E76": "Not assessed",
+        "F76": "In Progress",
+        "G76": "2026-10-18T00:00:00.000Z",
+        "H76": "2026-10-31T00:00:00.000Z",
+        "I76": "Arvin",
+        "J76": "Receive Equipment, Lifecycle, Change and Registration Notifications",
+        "K76": "To agree"
+      }
+    },
+    {
+      "sheet": "Sprint record",
+      "cell": "F77",
+      "before": {
+        "value": "To Do",
+        "type": "str",
+        "style": "74",
+        "attributes": {
+          "r": "F77",
+          "s": "74",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "after": {
+        "value": "In Progress",
+        "type": "str",
+        "style": "74",
+        "attributes": {
+          "r": "F77",
+          "s": "74",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "row_context": {
+        "A77": "Sprint 4",
+        "B77": "KAN-82",
+        "C77": "5",
+        "D77": "New customer requirement",
+        "E77": "Not assessed",
+        "F77": "In Progress",
+        "G77": "2026-10-18T00:00:00.000Z",
+        "H77": "2026-10-31T00:00:00.000Z",
+        "I77": "Irfan",
+        "J77": "Manage each venue arrangement independently for an event",
+        "K77": "To agree"
+      }
+    },
+    {
+      "sheet": "Sprint record",
+      "cell": "I77",
+      "before": {
+        "value": "Unassigned",
+        "type": "str",
+        "style": "74",
+        "attributes": {
+          "r": "I77",
+          "s": "74",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "after": {
+        "value": "Irfan",
+        "type": "str",
+        "style": "74",
+        "attributes": {
+          "r": "I77",
+          "s": "74",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "row_context": {
+        "A77": "Sprint 4",
+        "B77": "KAN-82",
+        "C77": "5",
+        "D77": "New customer requirement",
+        "E77": "Not assessed",
+        "F77": "In Progress",
+        "G77": "2026-10-18T00:00:00.000Z",
+        "H77": "2026-10-31T00:00:00.000Z",
+        "I77": "Irfan",
+        "J77": "Manage each venue arrangement independently for an event",
+        "K77": "To agree"
+      }
+    },
+    {
+      "sheet": "Sprint record",
+      "cell": "I78",
+      "before": {
+        "value": "Unassigned",
+        "type": "str",
+        "style": "74",
+        "attributes": {
+          "r": "I78",
+          "s": "74",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "after": {
+        "value": "Kai Jie",
+        "type": "str",
+        "style": "74",
+        "attributes": {
+          "r": "I78",
+          "s": "74",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "row_context": {
+        "A78": "Sprint 4",
+        "B78": "KAN-84",
+        "C78": "8",
+        "D78": "New customer requirement",
+        "E78": "Not assessed",
+        "F78": "To Do",
+        "G78": "2026-10-18T00:00:00.000Z",
+        "H78": "2026-10-31T00:00:00.000Z",
+        "I78": "Kai Jie",
+        "J78": "Review operational safety before event preparation",
+        "K78": "To agree"
+      }
+    },
+    {
+      "sheet": "Story specifications",
+      "cell": "F618",
+      "before": {
+        "value": "KAN-80-AC2: Significant-change submission, requests for action and decisions notify the organiser and reviewing coordinator; changes that affect registered attendees notify those active attendees.",
+        "type": "str",
+        "style": "116",
+        "attributes": {
+          "r": "F618",
+          "s": "116",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "after": {
+        "value": "KAN-80-AC2: Submitting a significant-change request acknowledges the organiser and asks the currently assigned coordinator to review it. Approval or rejection notifies the organiser and reviewing coordinator. Approved changes affecting registered attendees notify those active attendees.",
+        "type": "str",
+        "style": "116",
+        "attributes": {
+          "r": "F618",
+          "s": "116",
+          "t": "str"
+        },
+        "formula": null
+      },
+      "row_context": {
+        "A618": "KAN-80",
+        "B618": "WB:KAN-80:AC02",
+        "C618": "KAN-80-AC2",
+        "D618": "Acceptance criterion",
+        "E618": "Acceptance Criteria",
+        "F618": "KAN-80-AC2: Submitting a significant-change request acknowledges the organiser and asks the currently assigned coordinator to review it. Approval or rejection notifies the organiser and reviewing coordinator. Approved changes affecting registered attendees notify those active attendees.",
+        "G618": "https://smu-g7-grp1.atlassian.net/browse/KAN-80"
+      }
+    }
+  ],
+  "formula_errors_before": [],
+  "formula_errors_after": [],
+  "method": "Read-only Python zipfile/XML comparison of current XLSX against git HEAD binary; no Excel calculation or visual rendering performed.",
+  "bytewise_structure_identity_pass": false,
+  "sheet_metadata_before": [
+    {
+      "name": "Product backlog",
+      "path": "xl/worksheets/sheet1.xml",
+      "attributes": {
+        "name": "Product backlog",
+        "sheetId": "1",
+        "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id": "Rd862dfb9ed7c4471"
+      }
+    },
+    {
+      "name": "Story specifications",
+      "path": "xl/worksheets/sheet2.xml",
+      "attributes": {
+        "name": "Story specifications",
+        "sheetId": "2",
+        "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id": "Ra707d0aa91d04a54"
+      }
+    },
+    {
+      "name": "Delivery evidence",
+      "path": "xl/worksheets/sheet3.xml",
+      "attributes": {
+        "name": "Delivery evidence",
+        "sheetId": "3",
+        "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id": "R322f719501a746ff"
+      }
+    },
+    {
+      "name": "Subtasks and archive",
+      "path": "xl/worksheets/sheet4.xml",
+      "attributes": {
+        "name": "Subtasks and archive",
+        "sheetId": "4",
+        "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id": "R9b0514462bb247d6"
+      }
+    },
+    {
+      "name": "Feature coverage",
+      "path": "xl/worksheets/sheet5.xml",
+      "attributes": {
+        "name": "Feature coverage",
+        "sheetId": "5",
+        "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id": "Ra4057d9b8fee4e65"
+      }
+    },
+    {
+      "name": "Sprint record",
+      "path": "xl/worksheets/sheet6.xml",
+      "attributes": {
+        "name": "Sprint record",
+        "sheetId": "6",
+        "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id": "R478df1aea3584082"
+      }
+    },
+    {
+      "name": "Review notes",
+      "path": "xl/worksheets/sheet7.xml",
+      "attributes": {
+        "name": "Review notes",
+        "sheetId": "7",
+        "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id": "Re4b1c367f9854d37"
+      }
+    }
+  ],
+  "sheet_metadata_after": [
+    {
+      "name": "Product backlog",
+      "path": "xl/worksheets/sheet1.xml",
+      "attributes": {
+        "name": "Product backlog",
+        "sheetId": "1",
+        "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id": "R3653951daad04e81"
+      }
+    },
+    {
+      "name": "Story specifications",
+      "path": "xl/worksheets/sheet2.xml",
+      "attributes": {
+        "name": "Story specifications",
+        "sheetId": "2",
+        "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id": "Rd24bd56635ed4840"
+      }
+    },
+    {
+      "name": "Delivery evidence",
+      "path": "xl/worksheets/sheet3.xml",
+      "attributes": {
+        "name": "Delivery evidence",
+        "sheetId": "3",
+        "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id": "Rc9f02dc4dd00462e"
+      }
+    },
+    {
+      "name": "Subtasks and archive",
+      "path": "xl/worksheets/sheet4.xml",
+      "attributes": {
+        "name": "Subtasks and archive",
+        "sheetId": "4",
+        "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id": "Rc6b3492b136a4738"
+      }
+    },
+    {
+      "name": "Feature coverage",
+      "path": "xl/worksheets/sheet5.xml",
+      "attributes": {
+        "name": "Feature coverage",
+        "sheetId": "5",
+        "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id": "Rfe7b749847414637"
+      }
+    },
+    {
+      "name": "Sprint record",
+      "path": "xl/worksheets/sheet6.xml",
+      "attributes": {
+        "name": "Sprint record",
+        "sheetId": "6",
+        "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id": "R70c394c7af5f439f"
+      }
+    },
+    {
+      "name": "Review notes",
+      "path": "xl/worksheets/sheet7.xml",
+      "attributes": {
+        "name": "Review notes",
+        "sheetId": "7",
+        "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id": "R7588df0b330945ab"
+      }
+    }
+  ],
+  "relationship_xml_comparison": {
+    "_rels/.rels": {
+      "semantic_equal": false,
+      "before": [
+        "{http://schemas.openxmlformats.org/package/2006/relationships}Relationships",
+        [],
+        "",
+        [
+          [
+            "{http://schemas.openxmlformats.org/package/2006/relationships}Relationship",
+            [
+              [
+                "Id",
+                "R3ccadd5d19f54038"
+              ],
+              [
+                "Target",
+                "/xl/workbook.xml"
+              ],
+              [
+                "Type",
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument"
+              ]
+            ],
+            "",
+            []
+          ]
+        ]
+      ],
+      "after": [
+        "{http://schemas.openxmlformats.org/package/2006/relationships}Relationships",
+        [],
+        "",
+        [
+          [
+            "{http://schemas.openxmlformats.org/package/2006/relationships}Relationship",
+            [
+              [
+                "Id",
+                "Rb242f833fb054816"
+              ],
+              [
+                "Target",
+                "/xl/workbook.xml"
+              ],
+              [
+                "Type",
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument"
+              ]
+            ],
+            "",
+            []
+          ]
+        ]
+      ]
+    },
+    "xl/_rels/workbook.xml.rels": {
+      "semantic_equal": false,
+      "before": [
+        "{http://schemas.openxmlformats.org/package/2006/relationships}Relationships",
+        [],
+        "",
+        [
+          [
+            "{http://schemas.openxmlformats.org/package/2006/relationships}Relationship",
+            [
+              [
+                "Id",
+                "R38760c515f6f4f0d"
+              ],
+              [
+                "Target",
+                "/xl/styles.xml"
+              ],
+              [
+                "Type",
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles"
+              ]
+            ],
+            "",
+            []
+          ],
+          [
+            "{http://schemas.openxmlformats.org/package/2006/relationships}Relationship",
+            [
+              [
+                "Id",
+                "Rcff24ebc16c44d67"
+              ],
+              [
+                "Target",
+                "/xl/theme/theme1.xml"
+              ],
+              [
+                "Type",
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme"
+              ]
+            ],
+            "",
+            []
+          ],
+          [
+            "{http://schemas.openxmlformats.org/package/2006/relationships}Relationship",
+            [
+              [
+                "Id",
+                "R986349684655491b"
+              ],
+              [
+                "Target",
+                "/xl/sharedStrings.xml"
+              ],
+              [
+                "Type",
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings"
+              ]
+            ],
+            "",
+            []
+          ],
+          [
+            "{http://schemas.openxmlformats.org/package/2006/relationships}Relationship",
+            [
+              [
+                "Id",
+                "Rd862dfb9ed7c4471"
+              ],
+              [
+                "Target",
+                "/xl/worksheets/sheet1.xml"
+              ],
+              [
+                "Type",
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet"
+              ]
+            ],
+            "",
+            []
+          ],
+          [
+            "{http://schemas.openxmlformats.org/package/2006/relationships}Relationship",
+            [
+              [
+                "Id",
+                "Ra707d0aa91d04a54"
+              ],
+              [
+                "Target",
+                "/xl/worksheets/sheet2.xml"
+              ],
+              [
+                "Type",
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet"
+              ]
+            ],
+            "",
+            []
+          ],
+          [
+            "{http://schemas.openxmlformats.org/package/2006/relationships}Relationship",
+            [
+              [
+                "Id",
+                "R322f719501a746ff"
+              ],
+              [
+                "Target",
+                "/xl/worksheets/sheet3.xml"
+              ],
+              [
+                "Type",
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet"
+              ]
+            ],
+            "",
+            []
+          ],
+          [
+            "{http://schemas.openxmlformats.org/package/2006/relationships}Relationship",
+            [
+              [
+                "Id",
+                "R9b0514462bb247d6"
+              ],
+              [
+                "Target",
+                "/xl/worksheets/sheet4.xml"
+              ],
+              [
+                "Type",
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet"
+              ]
+            ],
+            "",
+            []
+          ],
+          [
+            "{http://schemas.openxmlformats.org/package/2006/relationships}Relationship",
+            [
+              [
+                "Id",
+                "Ra4057d9b8fee4e65"
+              ],
+              [
+                "Target",
+                "/xl/worksheets/sheet5.xml"
+              ],
+              [
+                "Type",
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet"
+              ]
+            ],
+            "",
+            []
+          ],
+          [
+            "{http://schemas.openxmlformats.org/package/2006/relationships}Relationship",
+            [
+              [
+                "Id",
+                "R478df1aea3584082"
+              ],
+              [
+                "Target",
+                "/xl/worksheets/sheet6.xml"
+              ],
+              [
+                "Type",
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet"
+              ]
+            ],
+            "",
+            []
+          ],
+          [
+            "{http://schemas.openxmlformats.org/package/2006/relationships}Relationship",
+            [
+              [
+                "Id",
+                "Re4b1c367f9854d37"
+              ],
+              [
+                "Target",
+                "/xl/worksheets/sheet7.xml"
+              ],
+              [
+                "Type",
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet"
+              ]
+            ],
+            "",
+            []
+          ]
+        ]
+      ],
+      "after": [
+        "{http://schemas.openxmlformats.org/package/2006/relationships}Relationships",
+        [],
+        "",
+        [
+          [
+            "{http://schemas.openxmlformats.org/package/2006/relationships}Relationship",
+            [
+              [
+                "Id",
+                "R89ee66ede617445f"
+              ],
+              [
+                "Target",
+                "/xl/styles.xml"
+              ],
+              [
+                "Type",
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles"
+              ]
+            ],
+            "",
+            []
+          ],
+          [
+            "{http://schemas.openxmlformats.org/package/2006/relationships}Relationship",
+            [
+              [
+                "Id",
+                "Rf2024f8b2a994f9d"
+              ],
+              [
+                "Target",
+                "/xl/theme/theme1.xml"
+              ],
+              [
+                "Type",
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme"
+              ]
+            ],
+            "",
+            []
+          ],
+          [
+            "{http://schemas.openxmlformats.org/package/2006/relationships}Relationship",
+            [
+              [
+                "Id",
+                "R61bf89d501ff4b73"
+              ],
+              [
+                "Target",
+                "/xl/sharedStrings.xml"
+              ],
+              [
+                "Type",
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings"
+              ]
+            ],
+            "",
+            []
+          ],
+          [
+            "{http://schemas.openxmlformats.org/package/2006/relationships}Relationship",
+            [
+              [
+                "Id",
+                "R3653951daad04e81"
+              ],
+              [
+                "Target",
+                "/xl/worksheets/sheet1.xml"
+              ],
+              [
+                "Type",
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet"
+              ]
+            ],
+            "",
+            []
+          ],
+          [
+            "{http://schemas.openxmlformats.org/package/2006/relationships}Relationship",
+            [
+              [
+                "Id",
+                "Rd24bd56635ed4840"
+              ],
+              [
+                "Target",
+                "/xl/worksheets/sheet2.xml"
+              ],
+              [
+                "Type",
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet"
+              ]
+            ],
+            "",
+            []
+          ],
+          [
+            "{http://schemas.openxmlformats.org/package/2006/relationships}Relationship",
+            [
+              [
+                "Id",
+                "Rc9f02dc4dd00462e"
+              ],
+              [
+                "Target",
+                "/xl/worksheets/sheet3.xml"
+              ],
+              [
+                "Type",
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet"
+              ]
+            ],
+            "",
+            []
+          ],
+          [
+            "{http://schemas.openxmlformats.org/package/2006/relationships}Relationship",
+            [
+              [
+                "Id",
+                "Rc6b3492b136a4738"
+              ],
+              [
+                "Target",
+                "/xl/worksheets/sheet4.xml"
+              ],
+              [
+                "Type",
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet"
+              ]
+            ],
+            "",
+            []
+          ],
+          [
+            "{http://schemas.openxmlformats.org/package/2006/relationships}Relationship",
+            [
+              [
+                "Id",
+                "Rfe7b749847414637"
+              ],
+              [
+                "Target",
+                "/xl/worksheets/sheet5.xml"
+              ],
+              [
+                "Type",
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet"
+              ]
+            ],
+            "",
+            []
+          ],
+          [
+            "{http://schemas.openxmlformats.org/package/2006/relationships}Relationship",
+            [
+              [
+                "Id",
+                "R70c394c7af5f439f"
+              ],
+              [
+                "Target",
+                "/xl/worksheets/sheet6.xml"
+              ],
+              [
+                "Type",
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet"
+              ]
+            ],
+            "",
+            []
+          ],
+          [
+            "{http://schemas.openxmlformats.org/package/2006/relationships}Relationship",
+            [
+              [
+                "Id",
+                "R7588df0b330945ab"
+              ],
+              [
+                "Target",
+                "/xl/worksheets/sheet7.xml"
+              ],
+              [
+                "Type",
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet"
+              ]
+            ],
+            "",
+            []
+          ]
+        ]
+      ]
+    },
+    "xl/worksheets/_rels/sheet1.xml.rels": {
+      "semantic_equal": false,
+      "before": [
+        "{http://schemas.openxmlformats.org/package/2006/relationships}Relationships",
+        [],
+        "",
+        [
+          [
+            "{http://schemas.openxmlformats.org/package/2006/relationships}Relationship",
+            [
+              [
+                "Id",
+                "Rc7c2a5da7be44dca"
+              ],
+              [
+                "Target",
+                "/xl/tables/table1.xml"
+              ],
+              [
+                "Type",
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/table"
+              ]
+            ],
+            "",
+            []
+          ]
+        ]
+      ],
+      "after": [
+        "{http://schemas.openxmlformats.org/package/2006/relationships}Relationships",
+        [],
+        "",
+        [
+          [
+            "{http://schemas.openxmlformats.org/package/2006/relationships}Relationship",
+            [
+              [
+                "Id",
+                "R14d4d037a73d4c5c"
+              ],
+              [
+                "Target",
+                "/xl/tables/table1.xml"
+              ],
+              [
+                "Type",
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/table"
+              ]
+            ],
+            "",
+            []
+          ]
+        ]
+      ]
+    },
+    "xl/worksheets/_rels/sheet2.xml.rels": {
+      "semantic_equal": false,
+      "before": [
+        "{http://schemas.openxmlformats.org/package/2006/relationships}Relationships",
+        [],
+        "",
+        [
+          [
+            "{http://schemas.openxmlformats.org/package/2006/relationships}Relationship",
+            [
+              [
+                "Id",
+                "R205de206d78f4626"
+              ],
+              [
+                "Target",
+                "/xl/tables/table2.xml"
+              ],
+              [
+                "Type",
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/table"
+              ]
+            ],
+            "",
+            []
+          ]
+        ]
+      ],
+      "after": [
+        "{http://schemas.openxmlformats.org/package/2006/relationships}Relationships",
+        [],
+        "",
+        [
+          [
+            "{http://schemas.openxmlformats.org/package/2006/relationships}Relationship",
+            [
+              [
+                "Id",
+                "Re427696cdf7e4f63"
+              ],
+              [
+                "Target",
+                "/xl/tables/table2.xml"
+              ],
+              [
+                "Type",
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/table"
+              ]
+            ],
+            "",
+            []
+          ]
+        ]
+      ]
+    },
+    "xl/worksheets/_rels/sheet3.xml.rels": {
+      "semantic_equal": false,
+      "before": [
+        "{http://schemas.openxmlformats.org/package/2006/relationships}Relationships",
+        [],
+        "",
+        [
+          [
+            "{http://schemas.openxmlformats.org/package/2006/relationships}Relationship",
+            [
+              [
+                "Id",
+                "R0a96c59b938d4402"
+              ],
+              [
+                "Target",
+                "/xl/tables/table3.xml"
+              ],
+              [
+                "Type",
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/table"
+              ]
+            ],
+            "",
+            []
+          ]
+        ]
+      ],
+      "after": [
+        "{http://schemas.openxmlformats.org/package/2006/relationships}Relationships",
+        [],
+        "",
+        [
+          [
+            "{http://schemas.openxmlformats.org/package/2006/relationships}Relationship",
+            [
+              [
+                "Id",
+                "R107a6cd35e6b41b9"
+              ],
+              [
+                "Target",
+                "/xl/tables/table3.xml"
+              ],
+              [
+                "Type",
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/table"
+              ]
+            ],
+            "",
+            []
+          ]
+        ]
+      ]
+    },
+    "xl/worksheets/_rels/sheet4.xml.rels": {
+      "semantic_equal": false,
+      "before": [
+        "{http://schemas.openxmlformats.org/package/2006/relationships}Relationships",
+        [],
+        "",
+        [
+          [
+            "{http://schemas.openxmlformats.org/package/2006/relationships}Relationship",
+            [
+              [
+                "Id",
+                "Rbbdefe8ef9954601"
+              ],
+              [
+                "Target",
+                "/xl/tables/table4.xml"
+              ],
+              [
+                "Type",
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/table"
+              ]
+            ],
+            "",
+            []
+          ]
+        ]
+      ],
+      "after": [
+        "{http://schemas.openxmlformats.org/package/2006/relationships}Relationships",
+        [],
+        "",
+        [
+          [
+            "{http://schemas.openxmlformats.org/package/2006/relationships}Relationship",
+            [
+              [
+                "Id",
+                "R885a21d8e07a43be"
+              ],
+              [
+                "Target",
+                "/xl/tables/table4.xml"
+              ],
+              [
+                "Type",
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/table"
+              ]
+            ],
+            "",
+            []
+          ]
+        ]
+      ]
+    },
+    "xl/worksheets/_rels/sheet5.xml.rels": {
+      "semantic_equal": false,
+      "before": [
+        "{http://schemas.openxmlformats.org/package/2006/relationships}Relationships",
+        [],
+        "",
+        [
+          [
+            "{http://schemas.openxmlformats.org/package/2006/relationships}Relationship",
+            [
+              [
+                "Id",
+                "R76371975c7a4497d"
+              ],
+              [
+                "Target",
+                "/xl/tables/table5.xml"
+              ],
+              [
+                "Type",
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/table"
+              ]
+            ],
+            "",
+            []
+          ],
+          [
+            "{http://schemas.openxmlformats.org/package/2006/relationships}Relationship",
+            [
+              [
+                "Id",
+                "Rfba8d8ef217e4ddf"
+              ],
+              [
+                "Target",
+                "/xl/tables/table6.xml"
+              ],
+              [
+                "Type",
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/table"
+              ]
+            ],
+            "",
+            []
+          ]
+        ]
+      ],
+      "after": [
+        "{http://schemas.openxmlformats.org/package/2006/relationships}Relationships",
+        [],
+        "",
+        [
+          [
+            "{http://schemas.openxmlformats.org/package/2006/relationships}Relationship",
+            [
+              [
+                "Id",
+                "R2dcc6623748c49ff"
+              ],
+              [
+                "Target",
+                "/xl/tables/table5.xml"
+              ],
+              [
+                "Type",
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/table"
+              ]
+            ],
+            "",
+            []
+          ],
+          [
+            "{http://schemas.openxmlformats.org/package/2006/relationships}Relationship",
+            [
+              [
+                "Id",
+                "Rf2f0d7449d8c4b6b"
+              ],
+              [
+                "Target",
+                "/xl/tables/table6.xml"
+              ],
+              [
+                "Type",
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/table"
+              ]
+            ],
+            "",
+            []
+          ]
+        ]
+      ]
+    },
+    "xl/worksheets/_rels/sheet6.xml.rels": {
+      "semantic_equal": false,
+      "before": [
+        "{http://schemas.openxmlformats.org/package/2006/relationships}Relationships",
+        [],
+        "",
+        [
+          [
+            "{http://schemas.openxmlformats.org/package/2006/relationships}Relationship",
+            [
+              [
+                "Id",
+                "Rb4e0d22150b94eb2"
+              ],
+              [
+                "Target",
+                "/xl/tables/table7.xml"
+              ],
+              [
+                "Type",
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/table"
+              ]
+            ],
+            "",
+            []
+          ],
+          [
+            "{http://schemas.openxmlformats.org/package/2006/relationships}Relationship",
+            [
+              [
+                "Id",
+                "R2dcde3524d9c4707"
+              ],
+              [
+                "Target",
+                "/xl/tables/table8.xml"
+              ],
+              [
+                "Type",
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/table"
+              ]
+            ],
+            "",
+            []
+          ],
+          [
+            "{http://schemas.openxmlformats.org/package/2006/relationships}Relationship",
+            [
+              [
+                "Id",
+                "R390fc3e857724787"
+              ],
+              [
+                "Target",
+                "/xl/tables/table9.xml"
+              ],
+              [
+                "Type",
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/table"
+              ]
+            ],
+            "",
+            []
+          ],
+          [
+            "{http://schemas.openxmlformats.org/package/2006/relationships}Relationship",
+            [
+              [
+                "Id",
+                "R221ef1c9fbaa4ef7"
+              ],
+              [
+                "Target",
+                "/xl/tables/table10.xml"
+              ],
+              [
+                "Type",
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/table"
+              ]
+            ],
+            "",
+            []
+          ]
+        ]
+      ],
+      "after": [
+        "{http://schemas.openxmlformats.org/package/2006/relationships}Relationships",
+        [],
+        "",
+        [
+          [
+            "{http://schemas.openxmlformats.org/package/2006/relationships}Relationship",
+            [
+              [
+                "Id",
+                "R6ec43c73ca9b4f79"
+              ],
+              [
+                "Target",
+                "/xl/tables/table7.xml"
+              ],
+              [
+                "Type",
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/table"
+              ]
+            ],
+            "",
+            []
+          ],
+          [
+            "{http://schemas.openxmlformats.org/package/2006/relationships}Relationship",
+            [
+              [
+                "Id",
+                "Raa821d52ac614edf"
+              ],
+              [
+                "Target",
+                "/xl/tables/table8.xml"
+              ],
+              [
+                "Type",
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/table"
+              ]
+            ],
+            "",
+            []
+          ],
+          [
+            "{http://schemas.openxmlformats.org/package/2006/relationships}Relationship",
+            [
+              [
+                "Id",
+                "Rb02d7a074992489d"
+              ],
+              [
+                "Target",
+                "/xl/tables/table9.xml"
+              ],
+              [
+                "Type",
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/table"
+              ]
+            ],
+            "",
+            []
+          ],
+          [
+            "{http://schemas.openxmlformats.org/package/2006/relationships}Relationship",
+            [
+              [
+                "Id",
+                "Re97789ff79304ba8"
+              ],
+              [
+                "Target",
+                "/xl/tables/table10.xml"
+              ],
+              [
+                "Type",
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/table"
+              ]
+            ],
+            "",
+            []
+          ]
+        ]
+      ]
+    },
+    "xl/worksheets/_rels/sheet7.xml.rels": {
+      "semantic_equal": false,
+      "before": [
+        "{http://schemas.openxmlformats.org/package/2006/relationships}Relationships",
+        [],
+        "",
+        [
+          [
+            "{http://schemas.openxmlformats.org/package/2006/relationships}Relationship",
+            [
+              [
+                "Id",
+                "Rbbd46bb714cc4274"
+              ],
+              [
+                "Target",
+                "/xl/tables/table11.xml"
+              ],
+              [
+                "Type",
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/table"
+              ]
+            ],
+            "",
+            []
+          ]
+        ]
+      ],
+      "after": [
+        "{http://schemas.openxmlformats.org/package/2006/relationships}Relationships",
+        [],
+        "",
+        [
+          [
+            "{http://schemas.openxmlformats.org/package/2006/relationships}Relationship",
+            [
+              [
+                "Id",
+                "R3b169f5ecf364f2c"
+              ],
+              [
+                "Target",
+                "/xl/tables/table11.xml"
+              ],
+              [
+                "Type",
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/table"
+              ]
+            ],
+            "",
+            []
+          ]
+        ]
+      ]
+    }
+  },
+  "worksheet_structure_difference_details": {
+    "Delivery evidence": [
+      {
+        "path": "[3][6][3][0][1][0]",
+        "before": [
+          "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id",
+          "R0a96c59b938d4402"
+        ],
+        "after": [
+          "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id",
+          "R107a6cd35e6b41b9"
+        ]
+      }
+    ],
+    "Feature coverage": [
+      {
+        "path": "[3][6][3][0][1][0]",
+        "before": [
+          "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id",
+          "R76371975c7a4497d"
+        ],
+        "after": [
+          "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id",
+          "R2dcc6623748c49ff"
+        ]
+      },
+      {
+        "path": "[3][6][3][1][1][0]",
+        "before": [
+          "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id",
+          "Rfba8d8ef217e4ddf"
+        ],
+        "after": [
+          "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id",
+          "Rf2f0d7449d8c4b6b"
+        ]
+      }
+    ],
+    "Product backlog": [
+      {
+        "path": "[3][8][3][0][1][0]",
+        "before": [
+          "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id",
+          "Rc7c2a5da7be44dca"
+        ],
+        "after": [
+          "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id",
+          "R14d4d037a73d4c5c"
+        ]
+      }
+    ],
+    "Review notes": [
+      {
+        "path": "[3][6][3][0][1][0]",
+        "before": [
+          "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id",
+          "Rbbd46bb714cc4274"
+        ],
+        "after": [
+          "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id",
+          "R3b169f5ecf364f2c"
+        ]
+      }
+    ],
+    "Sprint record": [
+      {
+        "path": "[3][6][3][0][1][0]",
+        "before": [
+          "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id",
+          "Rb4e0d22150b94eb2"
+        ],
+        "after": [
+          "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id",
+          "R6ec43c73ca9b4f79"
+        ]
+      },
+      {
+        "path": "[3][6][3][1][1][0]",
+        "before": [
+          "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id",
+          "R2dcde3524d9c4707"
+        ],
+        "after": [
+          "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id",
+          "Raa821d52ac614edf"
+        ]
+      },
+      {
+        "path": "[3][6][3][2][1][0]",
+        "before": [
+          "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id",
+          "R390fc3e857724787"
+        ],
+        "after": [
+          "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id",
+          "Rb02d7a074992489d"
+        ]
+      },
+      {
+        "path": "[3][6][3][3][1][0]",
+        "before": [
+          "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id",
+          "R221ef1c9fbaa4ef7"
+        ],
+        "after": [
+          "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id",
+          "Re97789ff79304ba8"
+        ]
+      }
+    ],
+    "Story specifications": [
+      {
+        "path": "[3][6][3][0][1][0]",
+        "before": [
+          "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id",
+          "R205de206d78f4626"
+        ],
+        "after": [
+          "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id",
+          "Re427696cdf7e4f63"
+        ]
+      }
+    ],
+    "Subtasks and archive": [
+      {
+        "path": "[3][7][3][0][1][0]",
+        "before": [
+          "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id",
+          "Rbbdefe8ef9954601"
+        ],
+        "after": [
+          "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id",
+          "R885a21d8e07a43be"
+        ]
+      }
+    ]
+  },
+  "relationship_targets_preserved": true,
+  "missing_relationship_targets": [],
+  "unresolved_relationship_references": [],
+  "workbook_metadata_preserved_after_relationship_id_normalization": true,
+  "worksheet_structure_changes_after_relationship_id_normalization": {},
+  "cell_style_changes": [],
+  "unexpected_changed_cells": [],
+  "nontext_value_changes": [],
+  "semantic_preservation_pass": true,
+  "limitations": [
+    "No Excel recalculation or visual layout validation was performed.",
+    "No charts, drawing, image, pivot, embedded, or VBA parts existed in either package; native table parts are checked separately."
+  ],
+  "structural_preservation_pass": true,
+  "scope_note": "Parent confirmed four additional targeted CF-11 mapping/coverage cells: Product backlog I47 and Feature coverage D18:F18.",
+  "relationship_id_note": "Relationship IDs were regenerated, but all relationship types, targets, owners and references resolve identically. This is serialization-only, not a lost feature.",
+  "changed_cell_groups": {
+    "Delivery evidence": [
+      "C45",
+      "D45",
+      "C47",
+      "D47",
+      "C49",
+      "D49"
+    ],
+    "Feature coverage": [
+      "D18",
+      "E18",
+      "F18"
+    ],
+    "Product backlog": [
+      "A3",
+      "F45",
+      "G45",
+      "J45",
+      "K45",
+      "O45",
+      "F47",
+      "G47",
+      "I47",
+      "J47",
+      "K47",
+      "O47",
+      "G49",
+      "J49",
+      "K49",
+      "O49"
+    ],
+    "Review notes": [
+      "A3"
+    ],
+    "Sprint record": [
+      "F76",
+      "I76",
+      "F77",
+      "I77",
+      "I78"
+    ],
+    "Story specifications": [
+      "F618"
+    ]
+  }
+}

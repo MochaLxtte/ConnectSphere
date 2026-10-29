@@ -6,6 +6,10 @@ import VenueBookingPanel from './VenueBookingPanel.vue';
 import type { VenueBooking } from '../../venues/api/venue-bookings';
 import { apiError, stubApi } from './test-api';
 
+const global = { stubs: { RouterLink: {
+  props: ['to'], template: '<a :href="to.path + \'?bookingId=\' + to.query.bookingId"><slot /></a>',
+} } };
+
 vi.mock('../../auth/session.js', async () => {
   const { reactive } = await import('vue');
   const state = reactive({ user: null, loading: false });
@@ -54,13 +58,30 @@ async function fillAndSubmit() {
 }
 
 describe('KAN-53 venue booking request panel', () => {
+  it('KAN-82 links each eligible saved arrangement to its own advisory suitability check', async () => {
+    const api = stubApi({
+      [`GET /api/venue-bookings?eventRequestId=${eventRequestId}`]: { body: { items: [
+        pending, { ...pending, id: 'b2', status: 'APPROVED', venueName: 'Studio' },
+        { ...pending, id: 'b3', status: 'HELD' }, { ...pending, id: 'b4', status: 'EXPIRED' },
+        { ...pending, id: 'b5', status: 'CANCELLED' }, { ...pending, id: 'b6', status: 'REJECTED' },
+      ] } },
+      'GET /api/venues/search-venues': venues,
+    });
+    render(VenueBookingPanel, { global, props: coordinatorProps });
+    const links = await screen.findAllByRole('link', { name: 'Check suitability' });
+    expect(links.map((link) => link.getAttribute('href'))).toEqual(['b1', 'b2', 'b3', 'b4'].map((bookingId) =>
+      `/reviews/${eventRequestId}/venue-suitability?bookingId=${bookingId}`));
+    expect(api.writes()).toEqual([]);
+    expect(screen.getByRole('button', { name: 'Request this venue' })).toBeInTheDocument();
+  });
+
   it('lets the coordinator submit a request and shows it after reload', async () => {
     const api = stubApi({
       [`GET /api/venue-bookings?eventRequestId=${eventRequestId}`]: { body: { items: [] } },
       'GET /api/venues/search-venues': venues,
       [`POST ${base}/venue-bookings`]: { status: 201, body: { booking: pending } },
     });
-    const view = render(VenueBookingPanel, { props: coordinatorProps });
+    const view = render(VenueBookingPanel, { global, props: coordinatorProps });
     expect(await screen.findByText('No venue has been requested for this event yet.')).toBeInTheDocument();
     const submit = screen.getByRole('button', { name: 'Request this venue' });
     expect(submit).toBeDisabled();
@@ -83,7 +104,7 @@ describe('KAN-53 venue booking request panel', () => {
       [`GET /api/venue-bookings?eventRequestId=${eventRequestId}`]: { body: { items: [] } },
       'GET /api/venues/search-venues': venues,
     });
-    render(VenueBookingPanel, { props: coordinatorProps });
+    render(VenueBookingPanel, { global, props: coordinatorProps });
     await fireEvent.update(await screen.findByRole('combobox', { name: 'Venue' }), 'hall');
     await fireEvent.update(screen.getByLabelText('Starts (Singapore time)'), '2026-12-01T10:00');
     await fireEvent.update(screen.getByLabelText('Ends (Singapore time)'), '2026-12-01T09:00');
@@ -97,7 +118,7 @@ describe('KAN-53 venue booking request panel', () => {
       'GET /api/venues/search-venues': venues,
       [`POST ${base}/venue-bookings`]: apiError(409, 'EVENT_NOT_ELIGIBLE', 'A venue booking cannot be requested for this event.'),
     });
-    const view = render(VenueBookingPanel, { props: coordinatorProps });
+    const view = render(VenueBookingPanel, { global, props: coordinatorProps });
     await fillAndSubmit();
     expect(await screen.findByRole('alert')).toHaveTextContent('A venue booking cannot be requested for this event.');
     expect(view.emitted('changed')).toBeUndefined();
@@ -106,7 +127,7 @@ describe('KAN-53 venue booking request panel', () => {
   it('lists existing requests with their decision outcome for the coordinator', async () => {
     const decided: VenueBooking = { ...pending, status: 'REJECTED', decidedBy: 'staff', decisionReason: 'No capacity.' };
     const api = stubApi({ [`GET /api/venue-bookings?eventRequestId=${eventRequestId}`]: { body: { items: [decided] } } });
-    render(VenueBookingPanel, { props: { ...coordinatorProps, status: 'REJECTED' } });
+    render(VenueBookingPanel, { global, props: { ...coordinatorProps, status: 'REJECTED' } });
     expect(await screen.findByText('Rejected')).toBeInTheDocument();
     expect(screen.getByText('Decision note: No capacity.')).toBeInTheDocument();
     expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
@@ -115,9 +136,10 @@ describe('KAN-53 venue booking request panel', () => {
 
   it.each(['REJECTED', 'CANCELLED', 'COMPLETED'])('is read-only for a coordinator once the event is %s', async (status) => {
     const api = stubApi({ [`GET /api/venue-bookings?eventRequestId=${eventRequestId}`]: { body: { items: [] } } });
-    render(VenueBookingPanel, { props: { ...coordinatorProps, status } });
+    render(VenueBookingPanel, { global, props: { ...coordinatorProps, status } });
     await screen.findByText('No venue has been requested for this event yet.');
     expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Check suitability' })).not.toBeInTheDocument();
     expect(api.calls.map((call) => call.key)).toEqual([`GET /api/venue-bookings?eventRequestId=${eventRequestId}`]);
   });
 
@@ -126,7 +148,7 @@ describe('KAN-53 venue booking request panel', () => {
       [`GET /api/venue-bookings?eventRequestId=${eventRequestId}`]: apiError(500, 'INTERNAL_ERROR', 'An unexpected error occurred.'),
       'GET /api/venues/search-venues': venues,
     });
-    render(VenueBookingPanel, { props: coordinatorProps });
+    render(VenueBookingPanel, { global, props: coordinatorProps });
     expect(await screen.findByRole('alert')).toHaveTextContent('An unexpected error occurred.');
     expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
     api.set(`GET /api/venue-bookings?eventRequestId=${eventRequestId}`, { body: { items: [] } });
@@ -138,7 +160,7 @@ describe('KAN-53 venue booking request panel', () => {
     'does not expose or request booking information for %s even with coordinator props', async (role) => {
       session.user = { ...coordinator, role };
       const api = stubApi({});
-      render(VenueBookingPanel, { props: coordinatorProps });
+      render(VenueBookingPanel, { global, props: coordinatorProps });
       await nextTick();
       expect(screen.queryByRole('heading', { name: 'Venue booking requests' })).not.toBeInTheDocument();
       expect(api.calls).toEqual([]);
@@ -147,7 +169,7 @@ describe('KAN-53 venue booking request panel', () => {
 
   it('does not fetch for organiser props, an unresolved session, a visitor or a draft', async () => {
     const api = stubApi({});
-    const view = render(VenueBookingPanel, { props: { ...coordinatorProps, viewerRole: 'EVENT_ORGANISER' } });
+    const view = render(VenueBookingPanel, { global, props: { ...coordinatorProps, viewerRole: 'EVENT_ORGANISER' } });
     session.loading = true;
     await view.rerender(coordinatorProps);
     session.user = null; session.loading = false;
@@ -166,7 +188,7 @@ describe('KAN-53 venue booking request panel', () => {
         'GET /api/venues/search-venues': venues,
         [`POST ${base}/venue-bookings`]: apiError(409, code, 'This period is unavailable.'),
       });
-      const view = render(VenueBookingPanel, { props: coordinatorProps });
+      const view = render(VenueBookingPanel, { global, props: coordinatorProps });
       await fillAndSubmit();
       expect(await screen.findByRole('alert')).toHaveTextContent('This period is unavailable.');
       expect(screen.getByRole('combobox', { name: 'Venue' })).toHaveValue('hall');
@@ -180,7 +202,7 @@ describe('KAN-53 venue booking request panel', () => {
       [`GET /api/venue-bookings?eventRequestId=${eventRequestId}`]: { body: { items: [] } },
       'GET /api/venues/search-venues': apiError(500, 'INTERNAL_ERROR', 'Unavailable'),
     });
-    render(VenueBookingPanel, { props: coordinatorProps });
+    render(VenueBookingPanel, { global, props: coordinatorProps });
     expect(await screen.findByRole('alert')).toHaveTextContent('The venue catalogue could not be loaded');
     api.set('GET /api/venues/search-venues', venues);
     await fireEvent.click(screen.getByRole('button', { name: 'Retry venue catalogue' }));
@@ -194,7 +216,7 @@ describe('KAN-53 venue booking request panel', () => {
       'GET /api/venues/search-venues': venues,
       [`POST ${base}/venue-bookings`]: apiError(500, 'INTERNAL_ERROR', 'Unavailable'),
     });
-    const view = render(VenueBookingPanel, { props: coordinatorProps });
+    const view = render(VenueBookingPanel, { global, props: coordinatorProps });
     await fillAndSubmit();
     expect(await screen.findByRole('alert')).toHaveTextContent('could not confirm whether the booking request was saved');
     expect(screen.getByRole('button', { name: 'Request this venue' })).toBeDisabled();
@@ -214,7 +236,7 @@ describe('KAN-53 venue booking request panel', () => {
         return Promise.resolve(json(url.includes('search-venues') ? venues.body : { items: [] }));
       });
       vi.stubGlobal('fetch', fetchMock);
-      const view = render(VenueBookingPanel, { props: coordinatorProps });
+      const view = render(VenueBookingPanel, { global, props: coordinatorProps });
       await fillAndSubmit();
       expect(screen.getByRole('button', { name: 'Submitting…' })).toBeDisabled();
       const postSignal = fetchMock.mock.calls.find(([, init]) => init?.method === 'POST')![1]!.signal;
@@ -241,7 +263,7 @@ describe('KAN-53 venue booking request panel', () => {
       return Promise.resolve(json(catalogue ? venues.body : { items: [] }));
     });
     vi.stubGlobal('fetch', fetchMock);
-    render(VenueBookingPanel, { props: coordinatorProps });
+    render(VenueBookingPanel, { global, props: coordinatorProps });
     session.user = null;
     await settle(response, json(source === 'catalogue' ? venues.body : { items: [pending] }));
     expect(screen.queryByText('Main Hall')).not.toBeInTheDocument();
@@ -255,7 +277,7 @@ describe('KAN-53 venue booking request panel', () => {
       'GET /api/venues/search-venues': venues,
       [`POST ${base}/venue-bookings`]: apiError(status, 'EVENT_REQUEST_NOT_FOUND', 'Unavailable'),
     });
-    render(VenueBookingPanel, { props: coordinatorProps });
+    render(VenueBookingPanel, { global, props: coordinatorProps });
     await fillAndSubmit();
     await waitFor(() => expect(screen.queryByRole('combobox')).not.toBeInTheDocument());
     expect(screen.queryByText('Pending')).not.toBeInTheDocument();
@@ -277,7 +299,7 @@ describe('KAN-81 phase 2: recovery in the coordinator venue panel (AC12)', () =>
       },
       'GET /api/venues/search-venues': venues,
     });
-    render(VenueBookingPanel, { props: coordinatorProps });
+    render(VenueBookingPanel, { global, props: coordinatorProps });
     expect(await screen.findByText('Recovery required')).toBeInTheDocument();
     expect(screen.getByText(/The venue is unavailable for part of this booking/)).toBeInTheDocument();
   });
@@ -289,7 +311,7 @@ describe('KAN-81 phase 2: recovery in the coordinator venue panel (AC12)', () =>
       },
       'GET /api/venues/search-venues': venues,
     });
-    render(VenueBookingPanel, { props: coordinatorProps });
+    render(VenueBookingPanel, { global, props: coordinatorProps });
     expect(await screen.findByText('Approved')).toBeInTheDocument();
     expect(screen.queryByText('Recovery required')).not.toBeInTheDocument();
   });
@@ -309,7 +331,7 @@ describe('KAN-81 phase 3: requesting a replacement venue from the panel (AC7, AC
       'GET /api/venues/search-venues': venues,
       [`POST ${base}/venue-bookings`]: { status: 201, body: { booking: { ...pending, replacesBookingId: 'affected-1' } } },
     });
-    render(VenueBookingPanel, { props: coordinatorProps });
+    render(VenueBookingPanel, { global, props: coordinatorProps });
     const select = await screen.findByLabelText(/This request replaces/);
     expect([...(select as HTMLSelectElement).options].map((option) => option.value)).toEqual(['', 'affected-1']);
     await fireEvent.update(select, 'affected-1');
@@ -324,7 +346,7 @@ describe('KAN-81 phase 3: requesting a replacement venue from the panel (AC7, AC
       'GET /api/venues/search-venues': venues,
       [`POST ${base}/venue-bookings`]: { status: 201, body: { booking: pending } },
     });
-    render(VenueBookingPanel, { props: coordinatorProps });
+    render(VenueBookingPanel, { global, props: coordinatorProps });
     await screen.findByText('No venue has been requested for this event yet.');
     expect(screen.queryByLabelText(/This request replaces/)).not.toBeInTheDocument();
     await fillAndSubmit();
@@ -339,7 +361,7 @@ describe('KAN-81 phase 3: requesting a replacement venue from the panel (AC7, AC
       [`POST ${base}/venue-bookings`]: apiError(409, 'REPLACEMENT_NOT_NEEDED',
         'The booking being replaced no longer needs recovery. Refresh to see its current state.'),
     });
-    render(VenueBookingPanel, { props: coordinatorProps });
+    render(VenueBookingPanel, { global, props: coordinatorProps });
     await fireEvent.update(await screen.findByLabelText(/This request replaces/), 'affected-1');
     api.set(list, { body: { items: [{ ...affected, status: 'CANCELLED', recovery: [{ ...affected.recovery[0]!, status: 'RESOLVED' as const }] }] } });
     await fillAndSubmit();
@@ -353,7 +375,7 @@ describe('KAN-81 phase 3: requesting a replacement venue from the panel (AC7, AC
       [list]: { body: { items: [{ ...pending, replacesBookingId: 'affected-1' }] } },
       'GET /api/venues/search-venues': venues,
     });
-    render(VenueBookingPanel, { props: coordinatorProps });
+    render(VenueBookingPanel, { global, props: coordinatorProps });
     expect(await screen.findByText('Replacement for an outage-affected booking.')).toBeInTheDocument();
   });
 });
@@ -365,7 +387,7 @@ describe('KAN-83 hold details for the coordinator', () => {
       { ...pending, id: 'h2', status: 'EXPIRED', holdExpiresAt: '2026-11-20T10:00:00.000Z' },
       { ...pending, id: 'h3', status: 'CANCELLED', cancellationReason: 'Venue unavailable: Burst pipe' },
     ] } } });
-    render(VenueBookingPanel, { props: { ...coordinatorProps, status: 'REJECTED' } });
+    render(VenueBookingPanel, { global, props: { ...coordinatorProps, status: 'REJECTED' } });
     expect(await screen.findByText(/^Held until 28 Nov 2026, 6:00 pm \(Singapore time\)\. Venue staff must approve it before then/))
       .toBeInTheDocument();
     expect(screen.getByText(/^The hold expired at 20 Nov 2026, 6:00 pm and the venue period was released\./)).toBeInTheDocument();
@@ -387,7 +409,7 @@ describe('KAN-82 managing one arrangement at a time', () => {
       'GET /api/venues/search-venues': venues,
       'POST /api/venue-bookings/a1/cancel': { body: { booking: cancelled } },
     });
-    const { emitted } = render(VenueBookingPanel, { props: coordinatorProps });
+    const { emitted } = render(VenueBookingPanel, { global, props: coordinatorProps });
     const buttons = await screen.findAllByRole('button', { name: 'Cancel arrangement' });
     expect(buttons).toHaveLength(2);
     await fireEvent.click(buttons[0]!);
@@ -411,7 +433,7 @@ describe('KAN-82 managing one arrangement at a time', () => {
 
   it('KAN-82-AC12 can back out of a cancellation without writing anything', async () => {
     const api = stubApi({ [list]: { body: { items: [approved] } }, 'GET /api/venues/search-venues': venues });
-    render(VenueBookingPanel, { props: coordinatorProps });
+    render(VenueBookingPanel, { global, props: coordinatorProps });
     await fireEvent.click(await screen.findByRole('button', { name: 'Cancel arrangement' }));
     await fireEvent.click(screen.getByRole('button', { name: 'Keep arrangement' }));
     expect(screen.queryByRole('form', { name: 'Cancel Main Hall' })).not.toBeInTheDocument();
@@ -428,7 +450,7 @@ describe('KAN-82 managing one arrangement at a time', () => {
       'GET /api/venues/search-venues': venues,
       'POST /api/venue-bookings/a1/cancel': reply,
     });
-    render(VenueBookingPanel, { props: coordinatorProps });
+    render(VenueBookingPanel, { global, props: coordinatorProps });
     await fireEvent.click((await screen.findAllByRole('button', { name: 'Cancel arrangement' }))[0]!);
     await fireEvent.update(screen.getByLabelText('Reason for cancelling'), 'Too small');
     await fireEvent.click(screen.getByRole('button', { name: 'Confirm cancellation' }));
@@ -452,7 +474,7 @@ describe('KAN-82 managing one arrangement at a time', () => {
       'GET /api/venues/search-venues': venues,
       [`POST ${base}/venue-bookings`]: { status: 201, body: { booking: { ...pending, id: 'r1', replacesBookingId: 'a1' } } },
     });
-    render(VenueBookingPanel, { props: coordinatorProps });
+    render(VenueBookingPanel, { global, props: coordinatorProps });
     expect(await screen.findByText('Cancelled; not replaced. This arrangement no longer reserves the venue.')).toBeInTheDocument();
     await fireEvent.click(screen.getByRole('button', { name: 'Request replacement' }));
     const select = screen.getByLabelText(/This request replaces/) as HTMLSelectElement;
@@ -472,7 +494,7 @@ describe('KAN-82 managing one arrangement at a time', () => {
       ] } },
       'GET /api/venues/search-venues': venues,
     });
-    render(VenueBookingPanel, { props: coordinatorProps });
+    render(VenueBookingPanel, { global, props: coordinatorProps });
     expect(await screen.findByText(/^Replaced by Studio, 1 Dec 2026.*\(Pending\)\.$/)).toBeInTheDocument();
     expect(screen.getByText(/^Replaces the cancelled arrangement Main Hall, 1 Dec 2026/)).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Request replacement' })).not.toBeInTheDocument();
@@ -483,7 +505,7 @@ describe('KAN-82 managing one arrangement at a time', () => {
     const api = stubApi({ [list]: { body: { items: [approved, cancelled, other] } }, 'GET /api/venues/search-venues': venues });
     const twoCancelled = [approved, { ...cancelled, id: 'c1' }, other];
     api.set(list, { body: { items: twoCancelled } });
-    render(VenueBookingPanel, { props: coordinatorProps });
+    render(VenueBookingPanel, { global, props: coordinatorProps });
     await fireEvent.click(await screen.findByRole('button', { name: 'Request replacement' }));
     expect((screen.getByLabelText(/This request replaces/) as HTMLSelectElement).value).toBe('c1');
     await fireEvent.click(screen.getAllByRole('button', { name: 'Cancel arrangement' })[0]!);
@@ -501,7 +523,7 @@ describe('KAN-82 managing one arrangement at a time', () => {
       'GET /api/venues/search-venues': venues,
       [`POST ${base}/venue-bookings`]: { status: 201, body: { booking: { ...pending, id: 'r2' } } },
     });
-    render(VenueBookingPanel, { props: coordinatorProps });
+    render(VenueBookingPanel, { global, props: coordinatorProps });
     await fireEvent.click(await screen.findByRole('button', { name: 'Request replacement' }));
     expect((screen.getByLabelText(/This request replaces/) as HTMLSelectElement).value).toBe('a1');
     // Another session submitted a live replacement for a1 meanwhile.
@@ -523,7 +545,7 @@ describe('KAN-82 managing one arrangement at a time', () => {
       'GET /api/venues/search-venues': venues,
       'POST /api/venue-bookings/a1/cancel': apiError(404, 'VENUE_BOOKING_NOT_FOUND', 'The venue booking request was not found.'),
     });
-    render(VenueBookingPanel, { props: coordinatorProps });
+    render(VenueBookingPanel, { global, props: coordinatorProps });
     await fireEvent.click(await screen.findByRole('button', { name: 'Cancel arrangement' }));
     await fireEvent.update(screen.getByLabelText('Reason for cancelling'), 'Too small');
     await fireEvent.click(screen.getByRole('button', { name: 'Confirm cancellation' }));
@@ -533,7 +555,7 @@ describe('KAN-82 managing one arrangement at a time', () => {
 
   it.each(['SUBMITTED', 'CANCELLED'])('KAN-82-AC4 offers no per-arrangement actions for a %s event', async (status) => {
     stubApi({ [list]: { body: { items: [approved, cancelled] } }, 'GET /api/venues/search-venues': venues });
-    render(VenueBookingPanel, { props: { ...coordinatorProps, status } });
+    render(VenueBookingPanel, { global, props: { ...coordinatorProps, status } });
     await screen.findAllByText('Main Hall');
     expect(screen.queryByRole('button', { name: 'Cancel arrangement' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Request replacement' })).not.toBeInTheDocument();

@@ -5,7 +5,7 @@ import { inActorTransaction, type WorkflowActor } from '../../../backend/src/mod
 import { listNotifications } from '../../../backend/src/modules/notifications/inbox.js';
 import { listOwnRegistrations } from '../../../backend/src/modules/registrations/service.js';
 import { cancelEvent } from '../../../backend/src/modules/events/cancellation.js';
-import { submitChangeRequest, decideChangeRequest } from '../../../backend/src/modules/events/change-requests.js';
+import { submitChangeRequest, decideChangeRequest, listChangeRequests } from '../../../backend/src/modules/events/change-requests.js';
 let f:WorkflowFixture;
 let owner:WorkflowActor,coordinator:WorkflowActor,technical:WorkflowActor,venue:WorkflowActor,a1:WorkflowActor,a2:WorkflowActor;
 beforeAll(async()=>{
@@ -33,6 +33,35 @@ async function registration(id:string,actor=a1,status='REGISTERED'){
 const transition=(id:string,status:string)=>inActorTransaction(f.pool,coordinator.id,c=>c.query('UPDATE event_requests SET status=$2 WHERE id=$1',[id,status]));
 
 describe('KAN-80 added trigger integrations on real PostgreSQL',()=>{
+  it('TC-20-405: submission requests review through the correct change link with current access',async()=>{
+    const {id}=await setup(false);
+    const otherCoordinator=await f.createUser('EVENT_COORDINATOR');
+    const otherOwner=await f.createUser('EVENT_ORGANISER');
+    const revision=(await f.pool.query('SELECT revision FROM event_requests WHERE id=$1',[id])).rows[0].revision;
+    const change=await submitChangeRequest(f.dependencies,{eventRequestId:id,actor:owner,
+      input:{changes:{purpose:'Proposed programme'},expectedRevision:revision}});
+    const coordinatorNotices=await listNotifications(f.dependencies,coordinator);
+    expect(coordinatorNotices).toEqual(expect.arrayContaining([expect.objectContaining({
+      type:'CHANGE_REQUEST_SUBMITTED',title:'Change request to review',link:`/reviews/${id}?change=${change.id}`,
+      message:expect.stringContaining('Open the event to review it.'),
+    })]));
+    expect(await listNotifications(f.dependencies,owner)).toEqual(expect.arrayContaining([expect.objectContaining({
+      type:'CHANGE_REQUEST_SUBMITTED',title:'Change request submitted',link:`/events/${id}?change=${change.id}`,
+    })]));
+    expect(await listNotifications(f.dependencies,otherCoordinator)).toEqual([]);
+    expect(await listNotifications(f.dependencies,otherOwner)).toEqual([]);
+    expect(await listChangeRequests(f.dependencies,{eventRequestId:id,actor:coordinator}))
+      .toEqual([expect.objectContaining({id:change.id,status:'PENDING'})]);
+    expect((await f.pool.query('SELECT purpose FROM event_requests WHERE id=$1',[id])).rows[0].purpose).toBe('Purpose');
+    expect((await f.notifications(id)).filter(n=>n.type==='CHANGE_REQUEST_SUBMITTED')).toHaveLength(2);
+
+    // The notification link does not preserve access after the coordinator is reassigned.
+    await f.pool.query('UPDATE event_requests SET coordinator_id=$2 WHERE id=$1',[id,otherCoordinator.id]);
+    expect((await listNotifications(f.dependencies,coordinator)).some(n=>n.link===`/reviews/${id}?change=${change.id}`)).toBe(false);
+    await expect(listChangeRequests(f.dependencies,{eventRequestId:id,actor:coordinator})).rejects.toMatchObject({kind:'NOT_FOUND'});
+    expect(await listChangeRequests(f.dependencies,{eventRequestId:id,actor:otherCoordinator}))
+      .toEqual([expect.objectContaining({id:change.id,status:'PENDING'})]);
+  });
   it('TC-20-409: confirmation notifies current managers, active attendees and arrangement staff once',async()=>{
     const {id}=await setup();const ownId=await registration(id);await registration(id,a2,'WITHDRAWN');
     await transition(id,'CONFIRMED');await transition(id,'CONFIRMED');
