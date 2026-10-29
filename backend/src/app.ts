@@ -11,6 +11,7 @@ import { createAssignmentRouter } from './modules/events/assignment-router.js';
 import { createClarificationRouter } from './modules/events/clarification-router.js';
 import { createChangeRequestRouter } from './modules/events/change-request-router.js';
 import { createStatusHistoryRouter } from './modules/events/status-history-router.js';
+import { createCompletionRouter } from './modules/events/completion-router.js';
 import { createCancellationRouter } from './modules/events/cancellation-router.js';
 import { createVenueRouter } from './modules/venues/venue-router.js';
 import {
@@ -92,6 +93,8 @@ export function createApp({
     app.use('/api/events', createChangeRequestRouter(workspace));
     app.use('/api/events', createStatusHistoryRouter(workspace));
     app.use('/api/events', createCancellationRouter(workspace));
+    // KAN-10: the assigned coordinator marks a confirmed, ended event completed.
+    app.use('/api/events', createCompletionRouter(workspace));
     app.use('/api/events', createVenueSuitabilityRouter(workspace));
     // KAN-53: coordinator venue booking submission, nested under the event request.
     app.use('/api/events', createVenueBookingSubmissionRouter(workspace));
