@@ -1871,6 +1871,21 @@ Static review of `database/tests/events/cancellation-equipment.integration.test.
 
 **Documentation verification.** Current AC wording and ownership were read from Jira; archived sprint data was preserved. The workbook refresh changed only 18 cells, retaining seven sheets, 11 tables, seven frozen panes and 18 formulas; 14,104 other cells were checked unchanged. The affected architecture diagrams were regenerated and visually inspected. Source, case/file references, stable IDs and append-only execution history are checked in the accompanying document-validation artifact.
 
+## 28 October 2026 — KAN-15 observation O-1 fix
+
+**Run:** `AUTO-20261028-KAN15-O1-01`. **Executor:** Claude Code (AI agent) in Irfan's working session. **Build:** `fix/KAN-15-venue-panel-refresh` working tree from `main` `ac5cd8b`. **Environment:** local Windows 11, Node 22.20; browser suite against a disposable local PostgreSQL 17 database, not shared Supabase.
+
+**Defect.** Observation O-1 from `MAN-20261028-KAN66-KAN15-01`: after **Approve and apply** on a change request, the coordinator's Venue booking requests panel kept showing a booking cancelled by that approval as Pending until it was refreshed by hand. The approval advances the event revision; the equipment panel reloads on revision changes, but the venue panel only watched the event id, status and signed-in user.
+
+**Fix.** `EventPlanningPanels.vue` keys the venue panel on the event revision, so it remounts and reloads its list when the revision advances. A new `EventPlanningPanels.test.ts` case checks that the list is fetched again when the revision changes and not when the parent refreshes with the same revision; it fails without the fix (one fetch instead of two).
+
+| Command | Result |
+| --- | --- |
+| `npm run check` | Pass — frontend 1,035 tests / 49 files, backend 1,691 / 60, typecheck and builds |
+| `npx playwright test` | Pass — 189/189 (disposable local database) |
+
+**Not executed:** a manual re-check on localhost; planned with the KAN-82 hands-on run. TC-19-08's earlier Pass stands; this changes only when the panel reloads.
+
 ## 29 October 2026 — KAN-17, KAN-67 and KAN-80 test specification expansion
 
 This is test preparation under AGENTS.md §4 steps 9–12, approved by Arvin in chat and prepared with Codex. It is not an AUTO/MAN run, implementation delivery, meeting, review or acceptance decision. Sources: live [KAN-17](https://smu-g7-grp1.atlassian.net/browse/KAN-17), [KAN-67](https://smu-g7-grp1.atlassian.net/browse/KAN-67) and [KAN-80](https://smu-g7-grp1.atlassian.net/browse/KAN-80), read through authenticated Jira MCP on 28 October 2026. All three were To Do / Arvin / Sprint 4 (Future), with unchanged 2/2/3 SP. KAN-14 supplies registration/re-entry prerequisites; KAN-64 is Done in Jira and supplies inbox infrastructure. A dependent card's status does not execute these cases. The current master guide at `ac5cd8bb442e45a5e1c5e32986132ce22ca25f12` uses integrated local acceptance; older hosted-only notes remain historical.
