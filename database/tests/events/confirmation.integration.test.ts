@@ -188,3 +188,59 @@ describe('KAN-61 event confirmation on real PostgreSQL', () => {
     expect((await f.notifications(id)).filter(row => row.type === 'EVENT_CONFIRMED')).toEqual([]);
   });
 });
+
+// PR #77 review (29 October 2026): venue catalogue edits after approval can make an approved booking conflict.
+describe('KAN-61-AC101 confirmation rechecks current venue buffers and hours', () => {
+  /** A ready event at 10:00–13:00 Singapore time plus another event's approved booking right after it. */
+  async function readyWithNeighbour() {
+    const ready = await readyEvent();
+    const neighbour = await f.createEvent({ organiserId: owner.id, coordinatorId: other.id, status: 'APPROVED', startsAt: end, endsAt: '2035-01-01T07:00:00Z' });
+    await f.pool.query(`INSERT INTO venue_bookings(event_request_id, venue_id, requested_by, status, starts_at, ends_at, decided_by, decided_at)
+      VALUES ($1, $2, $3, 'APPROVED', $4, '2035-01-01T07:00:00Z', $5, now())`, [neighbour, ready.venue, other.id, end, venueStaff.id]);
+    return ready;
+  }
+
+  it('TC-06-03: a turnaround buffer raised after approval makes adjacent bookings overlap and blocks confirmation', async () => {
+    const { id, venue } = await readyWithNeighbour();
+    expect((await getEventConfirmation(f.pool, { eventRequestId: id, actor: coordinator })).canConfirm).toBe(true);
+    await f.pool.query('UPDATE venues SET turnaround_minutes = 15 WHERE id = $1', [venue]);
+    const view = await getEventConfirmation(f.pool, { eventRequestId: id, actor: coordinator });
+    expect(view.canConfirm).toBe(false);
+    expect(view.readiness?.checks[0]).toMatchObject({ key: 'VENUE', ready: false });
+    const error = await refusal(confirm(id));
+    expect(error.code).toBe('EVENT_NOT_READY');
+    expect(error.message).toMatch(/now overlapping another approved booking/);
+    expect((await f.eventRow(id)).status).toBe('APPROVED');
+    // Restoring the buffer clears the conflict.
+    await f.pool.query('UPDATE venues SET turnaround_minutes = 0 WHERE id = $1', [venue]);
+    expect(await confirm(id)).toMatchObject({ changed: true });
+  });
+
+  it('TC-06-03: closing hours moved inside the booking block confirmation', async () => {
+    const { id, venue } = await readyEvent();
+    await f.pool.query("UPDATE venues SET opens_at = '09:00', closes_at = '10:30' WHERE id = $1", [venue]);
+    const error = await refusal(confirm(id));
+    expect(error.message).toMatch(/outside the venue's operating hours/);
+    expect(await confirmations(id)).toEqual([]);
+  });
+
+  it('TC-06-05: a buffer edit committed while confirmation waits is seen and blocks it', async () => {
+    const { id, venue } = await readyWithNeighbour();
+    const editor = await f.pool.connect();
+    try {
+      await editor.query('BEGIN');
+      await editor.query('SELECT id FROM venues WHERE id = $1 FOR UPDATE', [venue]);
+      await editor.query('UPDATE venues SET turnaround_minutes = 15 WHERE id = $1', [venue]);
+      const waiting = confirm(id).catch((caught: unknown) => caught);
+      await new Promise(resolve => setTimeout(resolve, 200));
+      await editor.query('COMMIT');
+      const outcome = await waiting;
+      expect(outcome).toBeInstanceOf(WorkflowError);
+      expect((outcome as WorkflowError).code).toBe('EVENT_NOT_READY');
+    } finally {
+      await editor.query('ROLLBACK').catch(() => undefined);
+      editor.release();
+    }
+    expect((await f.eventRow(id)).status).toBe('APPROVED');
+  });
+});

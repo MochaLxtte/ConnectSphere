@@ -1462,6 +1462,30 @@ Reason: the previous order (booking → event → venue → original) deadlocked
 
 **Source:** PR #70 review and Arvin's answer in the development conversation. Arvin confirmed that changes to venue requirements and accessibility needs should trigger attendee notifications alongside purpose and event-time changes. The notice identifies the changed categories without exposing their internal values; current purpose and event time are shown on the recipient's own registration. This records Arvin's answer, not a reported team decision. The separate KAN-80 request-for-action interpretation remains To agree.
 
+## 29 October 2026 — KAN-14 attendee registration: rules and what attendees may see
+
+Source: Jira KAN-14 AC1 to AC8 and AC101 to AC104, and Ernest's instruction of 29 October to implement them. This record is a **proposal to agree**: no team vote, Product Owner decision or independent review is recorded. The 5-SP estimate and the criteria are unchanged.
+
+- **Who and what.** Only signed-in attendees. The attendee is always the signed-in account; the request body may carry nothing, so no identity can be supplied. No other personal data is collected.
+- **When registration is accepted (AC2, AC102).** CONFIRMED event, registration switched on, window [opens, closes) with null bounds unbounded, before the event starts, and a place left (null capacity unlimited, zero capacity full). Every time comparison uses the database clock inside the same statement that counts the places. An event that is not CONFIRMED is not revealed to an attendee who has no registration for it (404); a CONFIRMED event that is not taking registrations is shown, with a clear reason.
+- **What an attendee sees (AC1).** The event's name, purpose, description, time, approved venue bookings only (name and location), accessibility notes, the window, the capacity and places left, and their own registration. Never the organiser, coordinator, other attendees, equipment or internal notes. Whether venue location should be shown before confirmation is **To agree**.
+- **Capacity (AC5).** The event row is locked first and the counts are read afterwards, so places are counted one attendee at a time; the existing database trigger stays as the last guard.
+- **Re-registration (AC103).** A withdrawn attendee reuses the same record (new registration time, no withdrawal time) and takes one place, under the same rules as anyone else. Withdrawal itself is KAN-17 (merged); the integration test uses its real endpoint.
+- **Notices (AC104, a KAN-80 slice) — one writer.** Migration 019's `notify_registration_outcome` trigger (KAN-17/67/80, merged in PR #70) is the only writer: one `REGISTRATION_CONFIRMED` each for the attendee, organiser and assigned coordinator, in the registering transaction, never naming another attendee. The first version of KAN-14 also wrote its own `REGISTRATION_CONFIRMED` / `REGISTRATION_RECEIVED` notices with different dedupe keys, which duplicated them; that writer and the `REGISTRATION_RECEIVED` type were removed in the integration with main (PR #76 review, 29 October 2026). Whether managers should be told every time or only at milestones remains **To agree**.
+- **Not done.** Any change to how an event becomes CONFIRMED (KAN-61, not built: tests set the status directly).
+
+## 29 October 2026 — KAN-18 stock maintenance: shortfall and notice rules
+
+Source: Jira KAN-18 AC1 to AC6 and the repository's AC101 to AC103, and Ernest's instruction of 29 October to implement them. **Agreed by Ernest and Arvin on 29 October 2026**, including migration 020 (see below). The 3-SP estimate and the criteria are unchanged.
+
+- **What "unavailable" means.** The damaged and maintenance quantities. Marking equipment unavailable raises them; restoring lowers them. An inactive type already counts as zero operational units everywhere. No new availability rule was added because KAN-9 checks and KAN-26 reservations already use total minus damaged minus maintenance.
+- **A loss never touches reservations (AC102).** A change that leaves existing reservations uncovered is saved. They stay Reserved, and the gap is reported. A reservation is "uncovered" when, at some instant of its own period, everything reserved at once is more than the operational stock. An event with several lines is reported once, at its largest gap.
+- **Who is told (AC102, a KAN-80 slice) — one writer.** Migration 019's `notify_equipment_shortfall` trigger (PR #70) is the only writer. It fires on the stock UPDATE, only when the operational quantity falls, and writes one `EQUIPMENT_UNAVAILABLE` notice per affected APPROVED or CONFIRMED event for the event's assigned coordinator, the Technical Support user who decided the reservation and the Technical Support user making the change (one notice per person when these coincide). Organisers and unrelated coordinators are not notified; restoring or raising stock sends nothing. KAN-18's first version wrote its own `EQUIPMENT_STOCK_SHORTFALL` notices (coordinator only) as well, which duplicated these for the same outcome; that writer and type were removed on the PR #74 review (29 October 2026). Whether the Lead should also be told is **To agree**.
+- **Limits.** Quantities are whole numbers from 0 to 1,000,000; a reason of 1 to 500 characters is required; damaged plus maintenance may not exceed the total (also a database constraint). Lowering the total below the reserved peak is allowed and reported as a shortfall.
+- **Concurrency (AC103).** Each type has a revision that rises with every accepted change; a form must quote the revision it was based on. The pool is locked with the lock that reservations and releases use, after the affected events (the order cancellation and completion use). A reservation that commits between choosing the events and taking the pool restarts the attempt with the larger set, at most five times, then answers `409 EQUIPMENT_STOCK_BUSY`. A retry of the change that just committed is answered with the saved state instead of an error.
+- **Not done.** Activating or deactivating a type, adding or renaming types and a Lead notification are not part of KAN-18. Whether the Lead should also be told remains open.
+- **Migration 020.** Numbered after main's 019 (registration outcomes). Ernest and Arvin agreed to apply it, and it was applied to the shared Supabase database on 29 October 2026 with main's 019. The revision column is a design choice (the existing `updated_at` could have been the version token); it was accepted with the migration.
+
 ## 29 October 2026 — KAN-61 confirmation implementation decisions
 
 **Source:** KAN-61 owner Kai Jie in the AI-assisted working session on 29 October 2026, choosing between proposed options. No customer clarification or team vote; the independent reviewer (Tristan) can raise disagreement on the PR.
@@ -1476,6 +1500,14 @@ Reason: the previous order (booking → event → venue → original) deadlocked
 | D6 | "Required" equipment with no active lines is not ready; the coordinator must explicitly record Not Required. | KAN-61-AC3/AC102 require an explicit choice. |
 
 Consequences: `POST /api/events/:id/confirm` and `GET /api/events/:id/confirmation` are added (API contract updated). The equipment module exports its existing readiness function unchanged.
+
+## 29 October 2026 — KAN-61 review fix: current venue conflicts block confirmation
+
+**Source:** PR #77 review by MochaLxtte (Tristan), 29 October 2026, changes requested (P1), reproduced on an isolated database: after two adjacent bookings were approved, raising the venue turnaround buffer to 15 minutes made `venue_booking_warnings` report `APPROVED_BOOKING_OVERLAP` for both, yet confirmation succeeded. Fix approved by the KAN-61 owner Kai Jie in the AI-assisted session.
+
+**Decision D7:** readiness now also requires every APPROVED venue booking of the event to have no current `APPROVED_BOOKING_OVERLAP` or `OUTSIDE_OPERATING_HOURS` warning, evaluated with the venue's current buffers and hours. `OPERATIONAL_BLOCK_OVERLAP` stays with the KAN-81 recovery check, as in `booking-service.ts`. Confirmation share-locks the event's venue rows after the existing KAN-62 lock order, so a catalogue edit (which locks the venue row) either commits before the check or waits for the confirmation.
+
+**Why:** KAN-61-AC101 requires approved venue arrangements to be conflict-free against current data, and catalogue edits deliberately do not re-judge or cancel existing approvals. Consequence: the same readiness check is reused by KAN-84 (PR #78), so safety submission, approval and preparation inherit the rule. No migration, API shape or AC wording changes; the confirmation panel shows the new reasons.
 
 ## 29 October 2026 — KAN-84 safety review implementation decisions
 
