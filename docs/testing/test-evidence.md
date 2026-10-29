@@ -1871,6 +1871,26 @@ Static review of `database/tests/events/cancellation-equipment.integration.test.
 
 **Documentation verification.** Current AC wording and ownership were read from Jira; archived sprint data was preserved. The workbook refresh changed only 18 cells, retaining seven sheets, 11 tables, seven frozen panes and 18 formulas; 14,104 other cells were checked unchanged. The affected architecture diagrams were regenerated and visually inspected. Source, case/file references, stable IDs and append-only execution history are checked in the accompanying document-validation artifact.
 
+## 28 October 2026 — KAN-82 independent venue arrangements automated runs
+
+**Run:** `AUTO-20261028-KAN82-01`. **Executor:** Claude Code (AI agent) in Irfan's working session. **Build:** working tree on `feat/KAN-82-independent-venue-arrangements` from `main` `ac5cd8b`, committed unchanged as `a2a31f4`, `2339f3c` and `0b50c37` (code and tests). **Environment:** local Windows 11 workstation, Node 22.20.0 (project specifies Node 24; `EBADENGINE` warning only); disposable local PostgreSQL 17.11 cluster on `127.0.0.1:55482` for the database and browser runs, never shared Supabase. Summary: [coverage report](coverage-reports/2026-10-28-kan82.txt).
+
+| Run | Command | Result |
+| --- | --- | --- |
+| AUTO-20261028-KAN82-01 | `npm run check`; `npm run test:coverage` | Pass — frontend 1,044 tests / 48 files, backend 1,723 / 61, typecheck and builds. New backend KAN-82 lines 100% covered; `VenueBookingPanel.vue` 98.21% lines (uncovered KAN-82 parts are in-flight click guards). |
+| AUTO-20261028-KAN82-01 | `TEST_DATABASE_URL=… npm run test:integration` | Pass — 637/637 across 34 files, including 21 in `venue-arrangements.integration.test.ts` (three consecutive runs of that file, 21/21 each). |
+| AUTO-20261028-KAN82-01 | `DATABASE_URL=… npx playwright test` | Pass — 191/191, including the two `kan82-independent-arrangements.spec.ts` tests (substituted API responses). |
+
+**Case-level results.** `test-executions.csv` rows `EX-12-01-A02` to `EX-12-12-A03` record Pass at the unit/component (`A01`), PostgreSQL (`A02`) and browser-fixture (`A03`) boundaries only. The `EX-12-0x-P01` placeholders stay until the integrated local run is appended. TC-12-09 covers the readiness half of KAN-82-AC9; the safety-approval half is not applicable until KAN-84 stores safety approvals (decision D4).
+
+**Regression found during development.** The first replacement change treated any `CANCELLED` original as a KAN-82 original. The existing KAN-81 suite failed two cases (a second replacement after recovery was resolved; two concurrent replacement approvals). The fix limits KAN-82 originals to explicitly cancelled rows (`cancelled_at` set) and adds an approval check under the original's lock (decision D2); the KAN-81 suite then passed in full.
+
+**Changes to existing tests.** `backend/test/venues/booking-conflicts.test.ts` matches the changed original-booking queries; `venue-bookings-router.test.ts` mocks the new service; booking fixtures in four frontend tests and three browser specs include `replacedByBookingIds`.
+
+**Limitations.** Unit tests use fake database clients, browser tests substitute API responses and the PostgreSQL suite uses synthetic verified identities; none uses live Supabase sign-in. GitHub CI, local integrated acceptance and independent review remain outstanding. No story acceptance, Done SP or Jira transition follows from these runs.
+
+**GitHub CI — 28 October 2026 (`CI-20261028-KAN82-02`, GitHub Actions run 40684714674, PR #67, build `4414fde`): Pass.** The `verify` job ran on ubuntu-latest with Node from `.nvmrc` and a PostgreSQL 17 service holding an isolated test database: `npm run check` and coverage (frontend 1,044 / 48 files, backend 1,723 / 61), `npm run test:integration` 637/637 across 34 files including `venue-arrangements.integration.test.ts`, and `npx playwright test` 191/191 including `kan82-independent-arrangements.spec.ts`. Same counts as `AUTO-20261028-KAN82-01`. Rows `EX-12-01-A04` to `EX-12-12-A04` record the CI boundary per case. Local integrated acceptance with real sign-in remains **Not executed**; no acceptance is inferred.
+
 ## 28 October 2026 — KAN-15 observation O-1 fix
 
 **Run:** `AUTO-20261028-KAN15-O1-01`. **Executor:** Claude Code (AI agent) in Irfan's working session. **Build:** `fix/KAN-15-venue-panel-refresh` working tree from `main` `ac5cd8b`. **Environment:** local Windows 11, Node 22.20; browser suite against a disposable local PostgreSQL 17 database, not shared Supabase.
@@ -1885,6 +1905,30 @@ Static review of `database/tests/events/cancellation-equipment.integration.test.
 | `npx playwright test` | Pass — 189/189 (disposable local database) |
 
 **Not executed:** a manual re-check on localhost; planned with the KAN-82 hands-on run. TC-19-08's earlier Pass stands; this changes only when the panel reloads.
+
+## 29 October 2026 — KAN-82 PR #67 review fixes
+
+**Run:** `AUTO-20261029-KAN82-03`. **Executor:** Claude Code (AI agent) in Irfan's working session. **Build:** `feat/KAN-82-independent-venue-arrangements` at `dc75ce5` (after merging `main` `409c43f`) plus the uncommitted review fixes. The pre-fix attempts ran on the same commit with only the new tests added. **Environment:** local Windows 11 workstation, Node 22.20.0, Docker Compose PostgreSQL 17.11 on 127.0.0.1:5432 (`connectsphere_test` for integration, `connectsphere` migrated to 018 for the browser API server); not the shared Supabase database.
+
+**Review findings (MochaLxtte, 28 October, changes requested).** (1) Cancelling an arrangement locked the original booking and then the event, while approving a replacement locked the event and then the original, so the two could deadlock across venues. (2) A refresh did not clear a replacement source that was still listed but no longer replaceable, so a hidden stale ID could be submitted. (3) `confirmCancel` and its button were not guarded by `needsRefresh`, so a cancel could be retried after a 409 or 500 before the required refresh.
+
+**Fixes.** `decideVenueBooking` now locks a replacement's original booking right after the replacement's own row and before the event, matching the venue gate → booking → event order of arrangement cancellation and of `arrangement-locks.ts` (KAN-62, KAN-15). The original's checks are unchanged and still run under its lock. `VenueBookingPanel.vue` clears the selected replacement source on reload unless it is still in the replaceable list, and blocks both `confirmCancel` and the **Confirm cancellation** button while a refresh is required.
+
+| Run | Command | Result |
+| --- | --- | --- |
+| Pre-fix, TC-12-13 | `npx vitest run --config vitest.integration.config.ts …venue-arrangements… -t "never deadlocks"` | **Fail** (expected): both scenarios rejected the cancel with PostgreSQL `40P01 deadlock detected` |
+| Pre-fix, TC-12-14 | `npx vitest run …VenueBookingPanel.test.ts` (component without the fixes) | **Fail** (expected): 3 of 45 |
+| After fixes | Venue integration suites, three consecutive runs | Pass — 285/285 each run |
+| After fixes | `npm run check` | Pass — frontend 1,046 / 49 files, backend 1,723 / 61, typecheck and builds. The first attempt timed out in two unrelated tests (KAN-34 `EventDraftEditPage`, KAN-51 `VenueAvailabilityPage`) while Docker Desktop was starting; both passed alone (31/31) and in the full re-run. |
+| After fixes | `npm run test:integration` | Pass — 639/639 across 34 files |
+| After fixes | `npm run test:coverage` | Pass — frontend 98.26% lines, backend 93.4% lines (venues module 94.84%) |
+| After fixes | `npx playwright test tests/e2e/kan82-independent-arrangements.spec.ts tests/e2e/venue- --workers=1` | Pass — 76/76 in 2.5 minutes (substituted API responses) |
+
+**Case-level results.** `test-executions.csv` rows `EX-12-13-A01` (Fail) to `-A03`, `EX-12-14-A01` (Fail) and `-A02`, plus regressions `EX-12-10-A05` and `EX-12-12-A05`. New specifications TC-12-13 and TC-12-14 were added rather than changing TC-12-10 and TC-12-12, so their earlier runs stay comparable.
+
+**Test design.** TC-12-13 holds the event row in a third session, lets the approval queue first, then the cancel, and waits on `pg_stat_activity` lock waits rather than timers. With the old order the approval obtains the event and then waits for the original that the cancel holds; with the new order the cancel waits for the original and is refused once the approval commits. The unit assertion in `booking-conflicts.test.ts` now expects the original's lock between the replacement's row and the event row.
+
+**Limitations.** The browser run covered only the KAN-82 and venue specs, with one worker; the first full-suite attempt overloaded the workstation and was stopped by the user. The full browser suite runs in CI on push. Synthetic identities and substituted API responses only; no live Supabase sign-in. Local integrated acceptance (AGENTS.md §5.12) remains **Not executed**; acceptance **Not assessed**. No new coverage report file was saved.
 
 ## 29 October 2026 — KAN-17, KAN-67 and KAN-80 test specification expansion
 

@@ -909,3 +909,7 @@ The events component gains `change-requests.ts` and `change-request-impact.ts`: 
 ## 28 October 2026 — Integrated diagram refresh
 
 C3, class, event/planning ERDs and the cancellation/equipment sequence were re-exported from the current source through migrations 016–018. This supersedes the pending-export notes above, not their historical shared-migration status. The new export is [seq-event-cancellation-equipment.png](exports/seq-event-cancellation-equipment.png). The lock sequence and opaque plan version are application protocols, not additional database tables. Real isolated PostgreSQL verification is in AUTO-20261028-PR63-01; shared schema rollout and manual acceptance remain separate.
+
+## 28 October 2026 — KAN-82 independent venue arrangements
+
+The venues component adds coordinator cancellation of one venue arrangement and replacement requests linked to a cancelled arrangement, without a schema change. Venue readiness is derived from booking rows for later confirmation (KAN-61) and safety review (KAN-84). Notifications reuse the KAN-64 inbox. The C4 diagram exports are not regenerated for this change.
