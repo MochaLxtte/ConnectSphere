@@ -7,6 +7,8 @@ import {
   decideSafetyReview, getEventSafety, getSafetyReview, listSafetyQueue, startPreparation, submitSafetyReview,
 } from '../../../backend/src/modules/safety/service.js';
 import { WorkflowError, type WorkflowActor } from '../../../backend/src/modules/events/workflow-support.js';
+import { getEventEquipmentPlan, replaceReservedEquipmentLine } from '../../../backend/src/modules/equipment/equipment-service.js';
+import { changeEquipmentReservation, getEquipmentReservationContext } from '../../../backend/src/modules/equipment/reservation-service.js';
 
 let f: WorkflowFixture;
 let owner: WorkflowActor, coordinator: WorkflowActor, other: WorkflowActor, officer: WorkflowActor, officer2: WorkflowActor;
@@ -214,5 +216,61 @@ describe('KAN-84 safety review on real PostgreSQL', () => {
       await f.pool.query('DROP FUNCTION kan84_fail()');
     }
     expect((await f.pool.query('SELECT 1 FROM safety_reviews WHERE event_request_id = $1', [id])).rowCount).toBe(0);
+  });
+});
+
+// PR #78 review (29 October 2026): venue rule changes and confirmed-event technical remediation.
+describe('KAN-84 review fixes on real PostgreSQL', () => {
+  const prepare = (id: string) => startPreparation(f.pool, { eventRequestId: id, actor: coordinator, input: {} });
+
+  it('TC-06-28 / KAN-84-AC9: changed venue hours or buffers make a pending round unapprovable and an approval stale', async () => {
+    // The booking runs 10:00–13:00 Singapore time.
+    const { id, venue } = await readyEvent();
+    const pending = (await submit(id)).review;
+    await f.pool.query("UPDATE venues SET closes_at = '10:30' WHERE id = $1", [venue]);
+    expect((await refusal(decide(pending.id, { decision: 'APPROVED' }))).code).toBe('SAFETY_REVIEW_STALE');
+    expect((await safety(id)).pendingStale).toBe(true);
+    await f.pool.query('UPDATE venues SET closes_at = NULL WHERE id = $1', [venue]);
+    await decide(pending.id, { decision: 'APPROVED' });
+    await confirmEvent(f.pool, { eventRequestId: id, actor: coordinator, input: {} });
+    await f.pool.query('UPDATE venues SET setup_minutes = 30 WHERE id = $1', [venue]);
+    expect((await safety(id)).outcome).toBe('STALE');
+    expect((await refusal(prepare(id))).code).toBe('SAFETY_APPROVAL_STALE');
+    // A booking now outside operating hours cannot even be resubmitted (KAN-61 readiness).
+    await f.pool.query("UPDATE venues SET setup_minutes = 0, closes_at = '10:30' WHERE id = $1", [venue]);
+    expect((await refusal(submit(id))).message).toMatch(/outside the venue's operating hours/);
+  });
+
+  it('TC-06-25/26 / KAN-84-AC6/AC7: a confirmed event carries out requested technical changes and is re-reviewed', async () => {
+    const { id, line, type } = await readyEvent();
+    await confirmEvent(f.pool, { eventRequestId: id, actor: coordinator, input: {} });
+    const first = (await submit(id)).review;
+    const replacement = { equipmentTypeId: type, quantity: 1, startsAt: start, endsAt: end };
+    // Before technical changes are requested a confirmed plan stays closed.
+    const closed = await getEventEquipmentPlan(f.pool, { eventId: id, actor: coordinator });
+    expect(closed.technicalRemediation).toBe(false);
+    await expect(replaceReservedEquipmentLine(f.pool, { actor: coordinator, lineId: line,
+      input: { revision: closed.revision, replacement } })).rejects.toMatchObject({ code: 'EVENT_NOT_APPROVED' });
+
+    await decide(first.id, { decision: 'CHANGES_REQUESTED', notes: 'Use one speaker away from the exits.', areas: ['TECHNICAL'] });
+    const open = await getEventEquipmentPlan(f.pool, { eventId: id, actor: coordinator });
+    expect(open.technicalRemediation).toBe(true);
+    const replaced = await replaceReservedEquipmentLine(f.pool, { actor: coordinator, lineId: line,
+      input: { revision: open.revision, replacement } });
+    expect(replaced.replacement.status).toBe('REQUESTED');
+    const context = await getEquipmentReservationContext(f.dependencies, { actor: technical, eventId: id });
+    expect(context.event.technicalRemediation).toBe(true);
+    await changeEquipmentReservation(f.dependencies, { actor: technical, eventId: id, requestId: replaced.replacement.id,
+      action: 'reserve', input: { requirementsVersion: context.requirementsVersion } });
+    // The event stays confirmed and its venue arrangement is untouched.
+    expect((await f.eventRow(id)).status).toBe('CONFIRMED');
+    expect((await f.pool.query("SELECT status FROM venue_bookings WHERE event_request_id = $1", [id])).rows).toEqual([{ status: 'APPROVED' }]);
+
+    // Resubmitting closes the remediation window; the new round is approved and preparation starts.
+    const second = (await submit(id)).review;
+    expect(second.round).toBe(2);
+    expect((await getEventEquipmentPlan(f.pool, { eventId: id, actor: coordinator })).technicalRemediation).toBe(false);
+    await decide(second.id, { decision: 'APPROVED' });
+    expect(await prepare(id)).toEqual({ eventRequestId: id, changed: true });
   });
 });
