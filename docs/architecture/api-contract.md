@@ -978,6 +978,19 @@ Replacement of a cancelled arrangement: `409 REPLACEMENT_IN_PROGRESS` while anot
 
 Every `VenueBooking` response now includes `replacedByBookingIds` (ids of bookings whose `replacesBookingId` is this booking, earliest first). New notification types: `VENUE_ARRANGEMENT_CANCELLED` and `VENUE_REPLACEMENT_REQUESTED`, to the current coordinator and every Venue Staff account, linked to the booking.
 
+## Attendee registration (KAN-14, CF-18) — 29 October 2026
+
+Mounted at `/api/attendee`. Every route is limited to signed-in attendees (`403 ACTION_FORBIDDEN` for any other role, `401 AUTHENTICATION_REQUIRED` signed out), is scoped to the caller and sets `Cache-Control: no-store`. No route names another attendee.
+
+| Route | Result and errors |
+| --- | --- |
+| `GET /api/attendee/events` | `200 { items }`: CONFIRMED events that take registrations and have not started, by start time, at most 100. Each item: `id`, `name`, `startsAt`, `endsAt`, `registration` (`required`, `opensAt`, `closesAt`, `capacity`, `placesRemaining`), `ownStatus` and `availability` |
+| `GET /api/attendee/registrations` | `200 { items }`: the caller's own registrations (`id`, `status` REGISTERED, WITHDRAWN or CANCELLED, `registeredAt`, `withdrawnAt`, `event`) |
+| `GET /api/attendee/events/:id` | `200 { event, registration, availability }`. `event`: `id`, `name`, `purpose`, `description`, `startsAt`, `endsAt`, `accessibilityNeeds`, `status`, `venues` (approved bookings: `name`, `location`, `startsAt`, `endsAt`) and `registration`. `registration`: the caller's own record or null. `availability`: `canRegister`, `reason` (`ALREADY_REGISTERED`, `NOT_CONFIRMED`, `REGISTRATION_DISABLED`, `EVENT_STARTED`, `CLOSED`, `NOT_YET_OPEN`, `FULL` or null), `message`, `placesRemaining`. `400 INVALID_EVENT_ID`; `404 EVENT_NOT_FOUND` for a missing event, or one that is not CONFIRMED and has no registration of the caller's |
+| `POST /api/attendee/events/:id/register` | `201 { event, registration, availability, changed: true }`. The body must be empty (`400 INVALID_INPUT` if it names anything). `409` with one of `REGISTRATION_ALREADY_REGISTERED`, `REGISTRATION_EVENT_NOT_OPEN`, `REGISTRATION_DISABLED`, `REGISTRATION_EVENT_STARTED`, `REGISTRATION_CLOSED`, `REGISTRATION_NOT_OPEN`, `REGISTRATION_FULL`; `404 EVENT_NOT_FOUND`. Nothing is written for any refusal |
+
+One transaction locks the event, reads the counts and the caller's record afresh, inserts the registration (or reuses a WITHDRAWN record). The service writes no notice: migration 019's `notify_registration_outcome` trigger records one `REGISTRATION_CONFIRMED` each for the attendee, organiser and assigned coordinator in the same transaction, keyed by the registration's `outcome_version`, so a re-registration after withdrawal is a new outcome and a refused attempt adds nothing. The inbox link for the attendee is main's `/registrations?registration=<id>`. The rules are **To agree** in the [decision log](../requirements/assumptions-and-questions.md#29-october-2026--kan-14-attendee-registration-rules-and-what-attendees-may-see). Verification: `backend/test/registrations/`, `database/tests/registrations/registration.integration.test.ts`, `frontend/src/features/registrations/` and `tests/e2e/attendee-registration.spec.ts`; see AUTO-20261029-KAN14-01 in the [test evidence](../testing/test-evidence.md#29-october-2026--kan-14-register-for-an-event).
+
 ## Equipment stock (KAN-18, CF-16) — 29 October 2026
 
 Mounted at `/api/equipment/stock`. Every route is limited to Technical Support Staff (`403 ACTION_FORBIDDEN` for any other role, `401 AUTHENTICATION_REQUIRED` signed out) and sets `Cache-Control: no-store`. Operational quantity is `total - damaged - maintenance`, or 0 for an inactive type, the same figure the availability and reservation checks use.

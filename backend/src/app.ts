@@ -26,6 +26,7 @@ import { createVenueSuitabilityRouter } from './modules/venues/suitability-route
 import { createEquipmentAvailabilityRouter } from './modules/equipment/availability-router.js';
 import { createEquipmentReservationRouter } from './modules/equipment/reservation-router.js';
 import { createEquipmentRouter } from './modules/equipment/equipment-router.js';
+import { createAttendeeRegistrationRouter } from './modules/registrations/registration-router.js';
 import { createEquipmentStockRouter } from './modules/equipment/stock-router.js';
 import { createRegistrationRouter } from './modules/registrations/router.js';
 
@@ -83,6 +84,8 @@ export function createApp({
     // KAN-9: equipment context and advisory checks stay separate from general event access.
     app.use('/api/equipment/availability', createEquipmentAvailabilityRouter(workspace));
     app.use('/api/equipment/reservations', createEquipmentReservationRouter(workspace));
+    // KAN-14: attendees see confirmed events and register for them.
+    app.use('/api/attendee', createAttendeeRegistrationRouter(workspace));
     // KAN-18: Technical Support maintains pooled stock and operational losses.
     app.use('/api/equipment/stock', createEquipmentStockRouter(workspace));
     app.use('/api', createEquipmentRouter(workspace));

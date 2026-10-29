@@ -2100,6 +2100,52 @@ The real PostgreSQL scenarios assert that only current arrangement staff receive
 
 **Artifact readability:** the earlier S3-E29 PowerShell output files were converted from UTF-16 to UTF-8 with line-end whitespace normalized; the contents and reported outcomes were retained.
 
+## 29 October 2026 — KAN-14 register for an event
+
+**Run ID: AUTO-20261029-KAN14-01.** Branch `feat/KAN-14-register-for-event`, base `main` at `409c43f` (merge of PR #69). The tested working tree is committed without further code changes as `3940f921c849fc2ecaa6fc778927125819d035f8`. Execution: 29 October 2026 Singapore time (exact start and end times Not recorded). Environment: macOS arm64, Node.js 24.21.0 (via nvm), Vitest, Playwright 1.63.0 Chromium on spare ports 3100/5273 and PostgreSQL 17.11 from `npm run db:up` with an isolated schema per integration file. Synthetic data only; no shared Supabase or real login. No migration was needed. Registered as [S4-E19](../scrum/sprint-04/evidence/README.md).
+
+| Command / check | Actual result |
+| --- | --- |
+| `npm run check` | Pass on rerun: type checks and both production builds; 1,066 frontend tests (51 files) and 1,750 backend tests (64 files). The first run stopped at the type check because of type errors in my own new unit test; they were corrected and the full check passed |
+| `npm run test:coverage` | Pass: same totals. Frontend 95.95% statements / 93.05% branches / 97.84% functions / 98.31% lines; backend 93.58% / 94.11% / 92.28% / 93.47%. New backend files `registration-rules.ts`, `registration-service.ts` and `registration-router.ts` are 100% on lines and functions and all branches. Frontend: `attendee-events.ts` and `AttendeeAccessPage.vue` 100% on all four measures, `AttendeeEventPage.vue` 94.11% / 93.8% / 100% / 100%, `AttendeeEventsPage.vue` 96.77% / 95.83% / 100% / 100%. One line was added to the frontend coverage configuration to include the new feature folder |
+| `npm run test:integration` with `TEST_DATABASE_URL` | Pass: 649 tests in 34 files, including the 33 in `registration.integration.test.ts` |
+| Browser suite on spare ports | Pass: 199 tests, including the 10 new `attendee-registration.spec.ts` tests |
+
+**Behaviour verified (KAN-14-AC1 to AC8, AC101 to AC104).**
+- An attendee sees a CONFIRMED event's name, purpose, description, time, approved venues, accessibility notes and registration conditions (window, capacity, places left) and nothing about people: no organiser, coordinator or other attendee appears in the response (AC1, AC101). No personal-data form exists; the signed-in account is the only input.
+- Registration is accepted only for a CONFIRMED event that takes registrations, inside [opens, closes) by the database clock, before the event starts and with a place left; a null window is unbounded, a null capacity unlimited and capacity zero full (AC2, AC102). Approved, submitted, completed and cancelled events are not revealed to someone with no registration (404). A switched-off or undecided registration, a window not yet open or already closed, a started event and a full event each give their own 409 code and message and create no record (AC6).
+- A registration is saved against the right attendee and event and is shown again, with its status, after a reload and in the attendee's own list, even after the event is completed (AC3, AC4). Another attendee sees no trace of it, and a body naming another attendee's id is refused (AC8).
+- Capacity: exactly one of two simultaneous attendees gets the last place (three repeats), 8 attendees racing for 3 places gives exactly 3, and a request that waited on the event lock while a competitor committed is refused as full (AC5). The database capacity trigger remains the last line of defence and the service maps it to the same Full answer.
+- A duplicate active registration is refused; a withdrawn attendee reuses the same record and one place, and is refused, unchanged, when the window has closed or the event is full (AC7, AC103). The record was marked WITHDRAWN through SQL because withdrawal (KAN-17) does not exist.
+- The attendee gets a `REGISTRATION_CONFIRMED` notice and the organiser and coordinator each a `REGISTRATION_RECEIVED` notice carrying only the running count, in the same transaction; a failing notice rolls the registration back and frees the place (AC104). The attendee's notice links to `/attend/:id`; a stranger sees none.
+- Only attendees can use any route: organiser, coordinator, Lead, Venue Staff and Technical Support get 403, signed-out callers 401, and an attendee whose role was removed before the write 403 (AC101).
+- Mutation check: removing the "full" rule made 1 integration test fail. Reverting to a single locking read, which counts places before waiting for the lock, did **not** change any outcome, because the database capacity guard and its mapping return the same Full answer; the lock-wait test therefore documents the behaviour but cannot tell the two implementations apart.
+
+**Case-level results.** TC-18-04 and TC-18-05 (integration) are recorded Pass in [test-executions.csv](test-executions.csv). TC-18-01, TC-18-02, TC-18-03 and TC-18-06 are planned as manual runs; their scenarios are reproduced by automated tests (details, the state/window/capacity matrix, success and persistence, and cross-attendee refusal), but the manual cases stay **Not executed**.
+
+**Failures and problems found (none hidden).** A first version read the registration counts in the same statement that took the event lock; in a race the losing attendee got a 500 instead of a Full answer because the counts came from the snapshot taken before the wait. The service now takes the lock in one statement and reads the counts in the next, and maps the capacity trigger's error to the same Full answer. One list query passed an unused parameter and returned 500. A mock in my unit test mixed up which read it was answering, and several integration assertions wrongly assumed an attendee had no registrations from earlier tests in the same file; all were corrected in the tests. An unrelated flake class (`socket hang up`, `Parse Error: Expected HTTP/`) seen in earlier runs did not appear in the credited full runs.
+
+**Limitations:** not a hosted run. KAN-61 (confirmation) is not built, so the application cannot yet produce a CONFIRMED event; fixtures set the status directly, and an end-to-end hosted run is blocked until KAN-61 exists. KAN-17 (withdrawal) is not built. The venue and conditions shown to attendees, the manager notices (running count, attendee not named) and the 100-event list limit are team assumptions marked **To agree**. Peer review, CI on the pushed branch and merge are **Not assessed**; Jira status and assignee **Not recorded**. Unit coverage does not merge browser or integration execution; no 100% whole-project claim is made. The browser spec uses substituted API responses.
+
+### Rerun on the merged tree — AUTO-20261029-KAN14-02 (PR #76 review)
+
+The review of PR #76 found that the isolated-branch run did not establish the integration: `registration-service.ts` wrote `REGISTRATION_CONFIRMED` / `REGISTRATION_RECEIVED` itself while main's migration 019 (`notify_registration_outcome`) already emits `REGISTRATION_CONFIRMED` to the attendee, organiser and coordinator, with different dedupe keys, so registration and re-registration produced duplicates. AUTO-20261029-KAN14-01 above therefore **no longer describes the delivered behaviour for notices**: its statements about `REGISTRATION_RECEIVED`, the `/attend/:id` notice link, and the unavailable withdrawal feature are superseded by this run.
+
+**Run ID: AUTO-20261029-KAN14-02.** Commit `a37ddeb5067971f68bafd8454f0c1cf6f40f5ad1` (merge of `origin/main` at `ba869a8` into the KAN-14 branch; the later documentation commit changes no code). Environment as above (macOS arm64, Node.js 24.21.0, PostgreSQL 17.11 from `npm run db:up`, isolated schema per file, Playwright 1.63.0 Chromium on ports 3100/5273); synthetic data only, no shared Supabase or real login. The complete schema (migrations 001 to 019 as on main) is applied by the test fixture.
+
+**Change made.** The service writes no notice. The `registrationNotifications` builder, the `REGISTRATION_RECEIVED` type and the `/attend/:id` inbox rule were removed, so there is one writer (migration 019) and attendees keep main's protected `/registrations?registration=<id>` link. Main's `service.ts` / `router.ts` (withdrawal and roster) were kept; both routers are mounted.
+
+| Command / check | Actual result |
+| --- | --- |
+| `npm run check` | Pass: type checks and both production builds; 1,112 frontend tests (54 files) and 1,836 backend tests (69 files) |
+| `npm run test:coverage` | Pass: same totals. Frontend 95.90% statements / 92.90% branches / 97.87% functions / 98.36% lines; backend 93.83% / 94.26% / 92.61% / 93.78%. Module-level only: backend `registrations` 100 / 98.76 / 100 / 100; frontend `registrations` 95.28 / 88.37 / 100 / 100 |
+| `npm run test:integration` with `TEST_DATABASE_URL` | Pass: 719 tests in 38 files, including the 34 in `registration.integration.test.ts` |
+| Browser suite on spare ports | Pass: 210 tests |
+
+**Integration verified.** Registration → withdrawal through the real `POST /api/registrations/:id/withdraw` → replayed withdrawal → re-registration, against the complete schema: the attendee, organiser and coordinator each have exactly one `REGISTRATION_CONFIRMED` per outcome (dedupe keys `…:<registration id>:1` and `…:3`) and one `REGISTRATION_WITHDRAWN`; no `REGISTRATION_RECEIVED` exists; the replay and a refused duplicate add no notice (9 notices in total); the record is reused with no withdrawal time; a stranger's inbox shows nothing; a failing notice insert rolls the registration back and frees the place. The race, lock-wait and capacity tests also pass with the trigger as the only writer.
+
+**Not done / limits.** I did not mutate the code to re-introduce a second writer; the exact-count assertions would fail on one, but that is reasoning, not a recorded mutation run. The earlier note about the single-statement lock still applies. The e2e specs use substituted API responses. Hosted/manual runs, CI on this merge, independent review and acceptance remain **Not executed / Not assessed**; KAN-61 is still not built, so tests set CONFIRMED in SQL.
+
 ## 29 October 2026 — KAN-18 equipment stock and operational status
 
 **Run ID: AUTO-20261029-KAN18-01.** Branch `feat/KAN-18-equipment-stock-status`, base `main` at `409c43f` (merge of PR #69). The tested working tree is committed without further code changes as `b0ba1ce18d32e5a9e7482b60917e5acccb36493e`. Execution: 29 October 2026 Singapore time (exact start and end times Not recorded). Environment: macOS arm64, Node.js 24.21.0 (via nvm), Vitest, Playwright 1.63.0 Chromium on spare ports 3100/5273 (the developer's own dev servers hold 3000/5173) and PostgreSQL 17.11 from `npm run db:up`, using the dedicated `connectsphere_test` database with an isolated schema per integration file. Synthetic data only; no shared Supabase or real login. Migration 019 was applied only to those isolated schemas. Registered as [S4-E17](../scrum/sprint-04/evidence/README.md).
@@ -2145,3 +2191,19 @@ The review of PR #74 found, against the combined schema: (1) two notice writers 
 **Mutation check.** I removed the event-first locking step: the deterministic lock-order test failed (the stock change never waited for the event lock) and both race tests failed with the stock request returning 500 ("Unexpected API error"); the code was restored. I did not mutate the notification consolidation; its exact-count assertions would fail on a second writer, but that is reasoning, not a recorded mutation run.
 
 **Limits.** Not a hosted run; hosted acceptance and the manual TC-16-02 and TC-16-05 remain **Not executed**. Migration 020 was not applied to shared Supabase when this run was made; Ernest and Arvin then agreed and it was applied on 29 October 2026 with main's 019 (see database/README.md). The recipients (coordinator, deciding and acting Technical Support) are main's trigger's, and Ernest and Arvin agreed the KAN-18 rules afterwards (decision log, 29 October 2026). CI on this merge, independent review and acceptance are **Not assessed**; Jira status and assignee **Not recorded**.
+
+## AUTO-20261029-KAN14-KAN18-MERGE — PR #76 integration with equipment stock
+
+**Date:** 29 October 2026. **Build:** merge candidate combining KAN-14 head `ff9d9eb88c0ca7334d77bd5f16901e70b862baff` with main `43249ae38c6265590b1ed7ac04d7c264aea49da2` (PR #74). **Environment:** Windows, Node 24, isolated PostgreSQL 17 on localhost:55439, Chromium. No shared Supabase data was used or changed.
+
+Both API mounts and separate frontend routes were retained. The seven documentation conflicts preserve both stories' original records. The execution register contains 1,002 rows with unique execution IDs; the four KAN-14 and six KAN-18 added rows remain intact.
+
+| Command / check | Actual result |
+| --- | --- |
+| `npm run check` | Pass: type checks, 1,145 frontend tests in 56 files, 1,904 backend tests in 73 files, both production builds |
+| `npm run db:migrate` and `npm run db:seed` | Pass on the isolated local database; migrations 001–020 applied |
+| `npm run test:integration -- database/tests/equipment/stock.integration.test.ts database/tests/registrations/registration.integration.test.ts database/tests/events/registrations.integration.test.ts database/tests/database.integration.test.ts` | Pass: 104 tests in four files |
+| `npm run test:e2e -- tests/e2e/equipment-stock.spec.ts tests/e2e/attendee-registration.spec.ts tests/e2e/registrations.spec.ts --workers=2` | Pass: 24 Chromium tests, no retries needed |
+| Conflict-marker, whitespace and execution-ID checks | Pass |
+
+**Limits:** Browser scenarios mainly substitute API responses; the unauthenticated API checks use the local running server. Database integration uses real isolated PostgreSQL with test identities. These results do not establish connected manual acceptance. No manual result or historical execution was changed. Coverage was not rerun locally for this merge; the fresh PR CI run remains the coverage/full-suite gate before merging. The existing large-frontend-chunk build warning remains non-blocking.

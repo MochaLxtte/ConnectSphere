@@ -1462,6 +1462,18 @@ Reason: the previous order (booking → event → venue → original) deadlocked
 
 **Source:** PR #70 review and Arvin's answer in the development conversation. Arvin confirmed that changes to venue requirements and accessibility needs should trigger attendee notifications alongside purpose and event-time changes. The notice identifies the changed categories without exposing their internal values; current purpose and event time are shown on the recipient's own registration. This records Arvin's answer, not a reported team decision. The separate KAN-80 request-for-action interpretation remains To agree.
 
+## 29 October 2026 — KAN-14 attendee registration: rules and what attendees may see
+
+Source: Jira KAN-14 AC1 to AC8 and AC101 to AC104, and Ernest's instruction of 29 October to implement them. This record is a **proposal to agree**: no team vote, Product Owner decision or independent review is recorded. The 5-SP estimate and the criteria are unchanged.
+
+- **Who and what.** Only signed-in attendees. The attendee is always the signed-in account; the request body may carry nothing, so no identity can be supplied. No other personal data is collected.
+- **When registration is accepted (AC2, AC102).** CONFIRMED event, registration switched on, window [opens, closes) with null bounds unbounded, before the event starts, and a place left (null capacity unlimited, zero capacity full). Every time comparison uses the database clock inside the same statement that counts the places. An event that is not CONFIRMED is not revealed to an attendee who has no registration for it (404); a CONFIRMED event that is not taking registrations is shown, with a clear reason.
+- **What an attendee sees (AC1).** The event's name, purpose, description, time, approved venue bookings only (name and location), accessibility notes, the window, the capacity and places left, and their own registration. Never the organiser, coordinator, other attendees, equipment or internal notes. Whether venue location should be shown before confirmation is **To agree**.
+- **Capacity (AC5).** The event row is locked first and the counts are read afterwards, so places are counted one attendee at a time; the existing database trigger stays as the last guard.
+- **Re-registration (AC103).** A withdrawn attendee reuses the same record (new registration time, no withdrawal time) and takes one place, under the same rules as anyone else. Withdrawal itself is KAN-17 (merged); the integration test uses its real endpoint.
+- **Notices (AC104, a KAN-80 slice) — one writer.** Migration 019's `notify_registration_outcome` trigger (KAN-17/67/80, merged in PR #70) is the only writer: one `REGISTRATION_CONFIRMED` each for the attendee, organiser and assigned coordinator, in the registering transaction, never naming another attendee. The first version of KAN-14 also wrote its own `REGISTRATION_CONFIRMED` / `REGISTRATION_RECEIVED` notices with different dedupe keys, which duplicated them; that writer and the `REGISTRATION_RECEIVED` type were removed in the integration with main (PR #76 review, 29 October 2026). Whether managers should be told every time or only at milestones remains **To agree**.
+- **Not done.** Any change to how an event becomes CONFIRMED (KAN-61, not built: tests set the status directly).
+
 ## 29 October 2026 — KAN-18 stock maintenance: shortfall and notice rules
 
 Source: Jira KAN-18 AC1 to AC6 and the repository's AC101 to AC103, and Ernest's instruction of 29 October to implement them. **Agreed by Ernest and Arvin on 29 October 2026**, including migration 020 (see below). The 3-SP estimate and the criteria are unchanged.
