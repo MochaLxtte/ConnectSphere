@@ -172,6 +172,7 @@ onBeforeUnmount(() => {
       :current-coordinator-id="state.detail.coordinatorId"
       :status="state.detail.status"
       :revision="state.detail.revision"
+      :ends-at="state.detail.endsAt"
       viewer-role="EVENT_COORDINATOR"
       :is-owner="false"
       @changed="refreshQuietly"

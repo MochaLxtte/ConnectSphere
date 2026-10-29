@@ -35,6 +35,7 @@ export const NOTIFICATION_TYPES = [
   'VENUE_BOOKING_REJECTED',
   'VENUE_OUTAGE_RECOVERY_REQUIRED',
   'EQUIPMENT_RESERVED',
+  'EVENT_COMPLETED',
 ] as const;
 export type NotificationType = (typeof NOTIFICATION_TYPES)[number];
 
@@ -48,6 +49,22 @@ export function equipmentReservationNotifications(input: {
     type: 'EQUIPMENT_RESERVED', title: 'Equipment reserved',
     message: `${input.quantity} × ${input.equipmentName} reserved for ${label({ name: input.eventName })}.`,
     dedupeKey: `EQUIPMENT_RESERVED:${input.requestId}`,
+  }));
+}
+
+/**
+ * KAN-10-AC103, a KAN-80 trigger slice: completing a confirmed event tells its organiser, and acknowledges the
+ * completing coordinator. Registered attendees are not notified. One notice per person and event, so a repeat is ignored.
+ */
+export function eventCompletedNotifications(input: {
+  eventId: string; eventName: string | null; organiserId: string; coordinatorId: string;
+}): NotificationInput[] {
+  return [...new Set([input.organiserId, input.coordinatorId])].map(recipientId => ({
+    recipientId, eventRequestId: input.eventId, type: 'EVENT_COMPLETED', title: 'Event completed',
+    message: recipientId === input.organiserId
+      ? `${input.eventName?.trim() ? `Your event request “${input.eventName.trim()}”` : 'Your untitled event request'} was marked completed. Registration is now closed.`
+      : `You marked ${label({ name: input.eventName })} as completed. Its equipment reservations were released and registration is closed.`,
+    dedupeKey: `EVENT_COMPLETED:${input.eventId}`,
   }));
 }
 
