@@ -1,5 +1,7 @@
 # Requirements and scope
 
+**30 October 2026 scoped acceptance corrections:** KAN-82-AC2 links CF-11 venue suitability to each saved arrangement's actual venue, interval, layout and interpreted requirements. KAN-84-AC4/AC12 protect the officer screen from previous-review responses. KAN-80-AC2 clarifies that significant-change submission asks the assigned coordinator to review it; no separate request-for-action transition is required. The [decision log](assumptions-and-questions.md#30-october-2026--sprint-4-acceptance-clarification-and-corrections), [traceability](traceability.csv), [Sprint 4 card](../scrum/sprint-04/sprint-backlog.md) and [master workbook](../submission/1/product-backlog.xlsx) retain the same interpretation and evidence boundaries. These are local corrections/clarification, not new scope or recorded acceptance.
+
 **26 October 2026 KAN-26 implementation:** CF-17 now has a local saved-request reservation and audited-release workflow, with current-stock locking and recipient-scoped equipment reservation notices. KAN-9 is included. Migration 015 must be coordinated/applied before shared manual testing; migration 014 and account setup are reported complete. KAN-63 request entry, KAN-18 stock editing and KAN-62/KAN-10 lifecycle UI acceptance remain separate. This supplies only the equipment-reserved slice of KAN-80, not its complete notification matrix. See [current tests and limits](../testing/test-evidence.md#26-october-2026--kan-26-equipment-reservations); no story acceptance or additional scope is recorded.
 
 **26 October 2026 KAN-9 implementation:** CF-16 now includes a Technical Support-only read-only equipment checker on the local feature branch. It uses migration 014 operational counters and saved or unsaved requirements. KAN-18 stock editing, KAN-63 request entry and KAN-26 reservation writes remain separate. [Verification](../testing/test-evidence.md#26-october-2026--kan-9-equipment-availability) distinguishes automated checks from unperformed integrated manual acceptance. This does not change release scope or historical sprint outcomes.
@@ -88,7 +90,7 @@ Hosted approval and rejection checks passed on 15–16 September. On 17 Septembe
 | CF-08 | Venue Catalogue | KAN-50; KAN-77 | Venues |
 | CF-09 | Venue Availability Calendar | KAN-51; KAN-55 (operational blocks), KAN-78, KAN-81, KAN-83 | Venues |
 | CF-10 | Venue Search and Filtering | KAN-12, KAN-78 | Venues |
-| CF-11 | Venue Suitability Checking | KAN-52, KAN-78, KAN-84 | Venues |
+| CF-11 | Venue Suitability Checking | KAN-52, KAN-78, KAN-82 (saved arrangement advisory), KAN-84 | Venues |
 | CF-12 | Venue Booking Request | KAN-53, KAN-78, KAN-81, KAN-82, KAN-83 | Venues |
 | CF-13 | Venue Booking Approval | KAN-8, KAN-78, KAN-81, KAN-82, KAN-83 | Venues |
 | CF-14 | Booking Conflict Detection | KAN-54; KAN-55 (block conflict support), KAN-78, KAN-81, KAN-82, KAN-83 | Venues |
