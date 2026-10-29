@@ -434,3 +434,50 @@ Migration 017 has **not** been applied to shared Supabase; announce it first (AG
 The current diagram includes migrations 016–018. Architecture exports now include event revision/edit history, change-request revision/impact fields, cancellation audit and equipment/registration state. Earlier pending-export notes are superseded by this refresh. The equipment API uses a derived opaque version over event and line data rather than exposing the stored integer as its concurrency token. Cancellation counts are captured before migration 015 releases RESERVED equipment; all release records remain immutable. No migration was rewritten and no shared Supabase schema change was performed during this repair. AUTO-20261028-PR63-01 records fresh-install/upgrade and workflow tests on disposable PostgreSQL 17.
 
 - KAN-18 migration 020 adds `equipment_types.stock_revision` (default 0, `>= 0`) and the append-only `equipment_stock_changes` history (one row per accepted stock change, unique per type and revision; a trigger refuses updates and deletes; row-level security with no Data API access). Existing equipment types, reservations and history are untouched. It was agreed by Ernest and Arvin and applied to shared Supabase on 29 October 2026, together with main's migration 019.
+
+## 29 October 2026 — Migration 021 safety reviews (KAN-84)
+
+```mermaid
+erDiagram
+  event_requests ||--o{ safety_reviews : "review rounds"
+  app_users ||--o{ safety_reviews : "submitted_by / decided_by"
+  safety_reviews ||--o{ notifications : "safety_review_id"
+  safety_reviews |o--o| event_requests : "preparation_safety_review_id"
+  safety_reviews {
+    uuid id PK
+    uuid event_request_id FK
+    int round "unique per event"
+    text status "PENDING, APPROVED, REJECTED, CHANGES_REQUESTED"
+    text arrangement_fingerprint "md5 of safety-relevant arrangements"
+    text emergency_access "nullable = missing"
+    text equipment_placement "nullable = missing"
+    text crowd_movement "nullable = missing"
+    uuid submitted_by FK
+    timestamptz submitted_at
+    uuid decided_by FK
+    timestamptz decided_at
+    text decision_notes "required for REJECTED / CHANGES_REQUESTED"
+    text_array requested_areas "VENUE, TECHNICAL; only for CHANGES_REQUESTED"
+  }
+```
+
+`app_users.role` gains `SAFETY_OFFICER` (trusted provisioning only). `event_requests` gains `preparation_started_at`, `preparation_started_by` and `preparation_safety_review_id` (all set or all null). `notifications` gains `safety_review_id`. A partial unique index allows one PENDING round per event; a trigger makes decided rounds immutable. `safety_arrangement_fingerprint(event_id)` derives the digest an approval depends on; nothing about invalidation is stored.
+
+## 29 October 2026 — Migration 022 safety remediation baselines (KAN-84)
+
+```mermaid
+erDiagram
+  safety_reviews ||--o| safety_review_change_baselines : "change-request decision baseline"
+  safety_review_change_baselines {
+    uuid review_id PK, FK
+    text venue_fingerprint "32-character lowercase md5"
+    text technical_fingerprint "32-character lowercase md5"
+    timestamptz captured_at "actual baseline capture time"
+  }
+```
+
+[Migration 022](../database/migrations/022_safety_review_remediation.sql) adds this table without rewriting migration 021 or any review, preparation, notification or role record. `review_id` references exactly one review; the primary key permits at most one baseline per round. The application inserts a baseline only when recording `CHANGES_REQUESTED`; other outcomes do not need one. Both digest columns and `captured_at` are required, the digests must contain 32 lowercase hexadecimal characters, and a trigger rejects all updates/deletes. RLS is enabled and direct Data API privileges are revoked.
+
+`safety_planning_area_fingerprint(event_id, area)` computes the current `VENUE` or `TECHNICAL` digest. The API requires a change in every requested area plus valid current readiness before resubmission; notes and unrelated-area edits do not satisfy this condition. A missing baseline fails closed. The migration backfills existing `CHANGES_REQUESTED` rounds using **upgrade-time current data**, not an invented historical snapshot. The baseline's capture time records that distinction; the decided round and its original arrangement digest remain immutable.
+
+Migration 022 also strengthens the full arrangement digest with venue operating hours and buffers, and permits equipment reservation on confirmed events only during the latest `TECHNICAL` change-request decision. Original approvals may become stale under the stronger digest; no approval is rewritten to appear current. Helpers have pinned search paths and restricted execution privileges. See the [forward-upgrade procedure](../database/README.md#kan-84-forward-upgrade--migration-022-29-october-2026). Shared application of 022 is **Not executed** in the PR review run.

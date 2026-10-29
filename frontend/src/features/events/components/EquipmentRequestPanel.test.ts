@@ -177,6 +177,12 @@ describe('KAN-63/KAN-26 coordinator equipment request panel', () => {
     expect(screen.queryByRole('button', { name: 'Replace reserved line' })).not.toBeInTheDocument();
   });
 
+  it('KAN-84-AC6/AC7: reopens a confirmed plan while the safety review requests technical changes', async () => {
+    setup(plan({ eventStatus: 'CONFIRMED', technicalRemediation: true, items: [line({ status: 'RESERVED', eventStatus: 'CONFIRMED' })] }));
+    render(EquipmentRequestPanel, { props: { eventRequestId: eventId, status: 'CONFIRMED' } });
+    expect(await screen.findByRole('button', { name: 'Replace reserved line' })).toBeInTheDocument();
+  });
+
   it('does not fetch protected information for an unauthorised role', () => {
     session.user = { ...coordinator, role: 'ATTENDEE' };
     const api = setup();

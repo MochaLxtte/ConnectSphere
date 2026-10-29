@@ -8,6 +8,7 @@ import VenueBookingPanel from './VenueBookingPanel.vue';
 import EquipmentRequestPanel from './EquipmentRequestPanel.vue';
 import EventCancellationPanel from './EventCancellationPanel.vue';
 import EventConfirmationPanel from './EventConfirmationPanel.vue';
+import SafetyReviewPanel from './SafetyReviewPanel.vue';
 import EventCompletionPanel from './EventCompletionPanel.vue';
 
 /** Workflow panels shared by the organiser and coordinator pages for a submitted request. */
@@ -42,6 +43,8 @@ const shared = computed(() => ({
     <EquipmentRequestPanel v-if="viewerRole === 'EVENT_COORDINATOR'" v-bind="shared" :revision="revision" @changed="emit('changed')" />
     <!-- KAN-61: readiness checklist for the coordinator; the organiser sees the confirmation outcome. -->
     <EventConfirmationPanel :event-request-id="eventRequestId" :status="status" :revision="revision" @changed="emit('changed')" />
+    <!-- KAN-84: safety review rounds and the preparation gate; the organiser sees the outcome only. -->
+    <SafetyReviewPanel :event-request-id="eventRequestId" :status="status" :revision="revision" @changed="emit('changed')" />
     <StatusHistoryPanel :event-request-id="eventRequestId" :status="status" />
     <EventCompletionPanel :event-request-id="eventRequestId" :status="status" :ends-at="endsAt ?? null" :revision="revision" @changed="emit('changed')" />
     <EventCancellationPanel :event-request-id="eventRequestId" :status="status" :revision="revision" @changed="emit('changed')" />

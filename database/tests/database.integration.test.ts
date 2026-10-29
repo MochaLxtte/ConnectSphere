@@ -33,6 +33,8 @@ const applicationTables = [
   'event_reviews',
   'event_status_history',
   'notifications',
+  'safety_review_change_baselines',
+  'safety_reviews',
   'scaffold_metadata',
   'schema_migrations',
   'venue_bookings',
@@ -87,7 +89,7 @@ test('SCF-DB-01 migrations persist schema, seeds preserve edits, and HTTP readin
     '001_initial_scaffold.sql', '002_restrict_data_api_access.sql',
     '003_add_supabase_user_id.sql', '004_core_feature_schema.sql',
     '005_equipment_peak_availability.sql', '006_automatic_coordinator_assignment.sql',
-    '007_add_coordinator_lead.sql', '008_notification_inbox.sql', '009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_equipment_operational_quantities.sql', '015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql', '018_event_cancellation_equipment_workflows.sql', '019_registration_notification_outcomes.sql', '020_equipment_stock_changes.sql',
+    '007_add_coordinator_lead.sql', '008_notification_inbox.sql', '009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_equipment_operational_quantities.sql', '015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql', '018_event_cancellation_equipment_workflows.sql', '019_registration_notification_outcomes.sql', '020_equipment_stock_changes.sql', '021_safety_reviews.sql', '022_safety_review_remediation.sql',
   ]);
   expect(await migrate(scopedUrl.toString())).toEqual([]);
   expect((await pool.query("SELECT to_regclass('app_user_identities') AS legacy_table")).rows)
@@ -168,7 +170,7 @@ test('SCF-DB-02 upgrading the original schema preserves data and removes existin
     '002_restrict_data_api_access.sql',
     '003_add_supabase_user_id.sql', '004_core_feature_schema.sql',
     '005_equipment_peak_availability.sql', '006_automatic_coordinator_assignment.sql',
-    '007_add_coordinator_lead.sql', '008_notification_inbox.sql', '009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_equipment_operational_quantities.sql', '015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql', '018_event_cancellation_equipment_workflows.sql', '019_registration_notification_outcomes.sql', '020_equipment_stock_changes.sql',
+    '007_add_coordinator_lead.sql', '008_notification_inbox.sql', '009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_equipment_operational_quantities.sql', '015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql', '018_event_cancellation_equipment_workflows.sql', '019_registration_notification_outcomes.sql', '020_equipment_stock_changes.sql', '021_safety_reviews.sql', '022_safety_review_remediation.sql',
   ]);
   expect(await migrate(legacyUrl.toString())).toEqual([]);
   expect((await legacyPool.query("SELECT to_regclass('app_user_identities') AS legacy_table")).rows)
@@ -184,6 +186,8 @@ test('SCF-DB-02 upgrading the original schema preserves data and removes existin
 
 const retiredFirebaseName = '003_add_firebase_identities.sql';
 const retiredFirebaseChecksum = '1befbc68426fd4e58e0f3800c7cc6797de60ff0f350115fab5176243bf275ee4';
+// KAN-84 migration 021: existing events gain empty preparation columns.
+const noPreparation = { preparation_started_at: null, preparation_started_by: null, preparation_safety_review_id: null };
 
 async function applyHistoricalMigration(database: pg.Pool, currentName: string, historicalName: string): Promise<void> {
   const sql = await readFile(new URL(`../migrations/${currentName}`, import.meta.url), 'utf8');
@@ -281,18 +285,18 @@ test.each([
       assignments: (await database.query('SELECT * FROM coordinator_assignments')).rows,
       migrations: (await database.query('SELECT * FROM schema_migrations ORDER BY name')).rows,
     };
-    expect(await migrate(connectionString)).toEqual(['006_automatic_coordinator_assignment.sql', '007_add_coordinator_lead.sql', '008_notification_inbox.sql', '009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_equipment_operational_quantities.sql', '015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql', '018_event_cancellation_equipment_workflows.sql', '019_registration_notification_outcomes.sql', '020_equipment_stock_changes.sql']);
+    expect(await migrate(connectionString)).toEqual(['006_automatic_coordinator_assignment.sql', '007_add_coordinator_lead.sql', '008_notification_inbox.sql', '009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_equipment_operational_quantities.sql', '015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql', '018_event_cancellation_equipment_workflows.sql', '019_registration_notification_outcomes.sql', '020_equipment_stock_changes.sql', '021_safety_reviews.sql', '022_safety_review_remediation.sql']);
     expect(await migrate(connectionString)).toEqual([]);
     expect((await database.query('SELECT * FROM app_user_identities')).rows).toEqual(before.identities);
     expect((await database.query('SELECT * FROM app_users ORDER BY id')).rows)
       .toEqual(before.users.map((user) => ({ ...user, coordinator_available: false })));
     // Migrations 016/018 add revision and required equipment-plan defaults without changing existing event values.
     expect((await database.query('SELECT * FROM event_requests')).rows)
-      .toEqual(before.events.map((event) => ({ ...event, revision: 1, equipment_plan_status: 'REQUIRED' })));
+      .toEqual(before.events.map((event) => ({ ...event, revision: 1, equipment_plan_status: 'REQUIRED', ...noPreparation })));
     expect((await database.query('SELECT * FROM coordinator_assignments')).rows)
       .toEqual(before.assignments.map((assignment) => ({ ...assignment, assignment_method: 'MANUAL' })));
     const oldHistory = await database.query(
-      "SELECT * FROM schema_migrations WHERE name NOT IN ('006_automatic_coordinator_assignment.sql', '007_add_coordinator_lead.sql', '008_notification_inbox.sql', '009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_equipment_operational_quantities.sql', '015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql', '018_event_cancellation_equipment_workflows.sql', '019_registration_notification_outcomes.sql', '020_equipment_stock_changes.sql') ORDER BY name",
+      "SELECT * FROM schema_migrations WHERE name NOT IN ('006_automatic_coordinator_assignment.sql', '007_add_coordinator_lead.sql', '008_notification_inbox.sql', '009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_equipment_operational_quantities.sql', '015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql', '018_event_cancellation_equipment_workflows.sql', '019_registration_notification_outcomes.sql', '020_equipment_stock_changes.sql', '021_safety_reviews.sql', '022_safety_review_remediation.sql') ORDER BY name",
     );
     expect(oldHistory.rows).toEqual(before.migrations);
     if (historicalMigration.name !== retiredFirebaseName) {
@@ -334,9 +338,9 @@ test('SCF-DB-05 databases with old 007 keep their complete history without rerun
       assignments: (await database.query('SELECT * FROM coordinator_assignments')).rows,
       identities: (await database.query('SELECT * FROM app_user_identities')).rows,
     };
-    expect(await migrate(connectionString)).toEqual(['007_add_coordinator_lead.sql', '008_notification_inbox.sql', '009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_equipment_operational_quantities.sql', '015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql', '018_event_cancellation_equipment_workflows.sql', '019_registration_notification_outcomes.sql', '020_equipment_stock_changes.sql']);
+    expect(await migrate(connectionString)).toEqual(['007_add_coordinator_lead.sql', '008_notification_inbox.sql', '009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_equipment_operational_quantities.sql', '015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql', '018_event_cancellation_equipment_workflows.sql', '019_registration_notification_outcomes.sql', '020_equipment_stock_changes.sql', '021_safety_reviews.sql', '022_safety_review_remediation.sql']);
     expect(await migrate(connectionString)).toEqual([]);
-    expect((await database.query("SELECT * FROM schema_migrations WHERE name NOT IN ('007_add_coordinator_lead.sql', '008_notification_inbox.sql', '009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_equipment_operational_quantities.sql', '015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql', '018_event_cancellation_equipment_workflows.sql', '019_registration_notification_outcomes.sql', '020_equipment_stock_changes.sql') ORDER BY name")).rows).toEqual(before.migrations);
+    expect((await database.query("SELECT * FROM schema_migrations WHERE name NOT IN ('007_add_coordinator_lead.sql', '008_notification_inbox.sql', '009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_equipment_operational_quantities.sql', '015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql', '018_event_cancellation_equipment_workflows.sql', '019_registration_notification_outcomes.sql', '020_equipment_stock_changes.sql', '021_safety_reviews.sql', '022_safety_review_remediation.sql') ORDER BY name")).rows).toEqual(before.migrations);
     expect((await database.query('SELECT * FROM app_users ORDER BY id')).rows).toEqual(before.users);
     expect((await database.query('SELECT * FROM coordinator_assignments')).rows).toEqual(before.assignments);
     expect((await database.query('SELECT * FROM app_user_identities')).rows).toEqual(before.identities);
@@ -354,7 +358,7 @@ test('SCF-DB-06 a dashboard-era Supabase history name is preserved but is not tr
     const usersBefore = (await database.query('SELECT * FROM app_users ORDER BY id')).rows;
     expect(await migrate(connectionString)).toEqual([
       '003_add_supabase_user_id.sql', '006_automatic_coordinator_assignment.sql', '007_add_coordinator_lead.sql',
-      '008_notification_inbox.sql', '009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_equipment_operational_quantities.sql', '015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql', '018_event_cancellation_equipment_workflows.sql', '019_registration_notification_outcomes.sql', '020_equipment_stock_changes.sql',
+      '008_notification_inbox.sql', '009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_equipment_operational_quantities.sql', '015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql', '018_event_cancellation_equipment_workflows.sql', '019_registration_notification_outcomes.sql', '020_equipment_stock_changes.sql', '021_safety_reviews.sql', '022_safety_review_remediation.sql',
     ]);
     expect(await migrate(connectionString)).toEqual([]);
     expect((await database.query("SELECT * FROM schema_migrations WHERE name = '003_add_supabase_auth.sql'")).rows)
@@ -399,9 +403,9 @@ test('SCF-DB-08 matching current and prior ledger names are both retained withou
       SELECT '004_core_feature_schema.sql', checksum FROM schema_migrations
       WHERE name = '005_core_feature_schema.sql'`);
     const before = (await database.query('SELECT * FROM schema_migrations ORDER BY name')).rows;
-    expect(await migrate(connectionString)).toEqual(['006_automatic_coordinator_assignment.sql', '007_add_coordinator_lead.sql', '008_notification_inbox.sql', '009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_equipment_operational_quantities.sql', '015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql', '018_event_cancellation_equipment_workflows.sql', '019_registration_notification_outcomes.sql', '020_equipment_stock_changes.sql']);
+    expect(await migrate(connectionString)).toEqual(['006_automatic_coordinator_assignment.sql', '007_add_coordinator_lead.sql', '008_notification_inbox.sql', '009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_equipment_operational_quantities.sql', '015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql', '018_event_cancellation_equipment_workflows.sql', '019_registration_notification_outcomes.sql', '020_equipment_stock_changes.sql', '021_safety_reviews.sql', '022_safety_review_remediation.sql']);
     expect((await database.query(
-      "SELECT * FROM schema_migrations WHERE name NOT IN ('006_automatic_coordinator_assignment.sql', '007_add_coordinator_lead.sql', '008_notification_inbox.sql', '009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_equipment_operational_quantities.sql', '015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql', '018_event_cancellation_equipment_workflows.sql', '019_registration_notification_outcomes.sql', '020_equipment_stock_changes.sql') ORDER BY name",
+      "SELECT * FROM schema_migrations WHERE name NOT IN ('006_automatic_coordinator_assignment.sql', '007_add_coordinator_lead.sql', '008_notification_inbox.sql', '009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_equipment_operational_quantities.sql', '015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql', '018_event_cancellation_equipment_workflows.sql', '019_registration_notification_outcomes.sql', '020_equipment_stock_changes.sql', '021_safety_reviews.sql', '022_safety_review_remediation.sql') ORDER BY name",
     )).rows).toEqual(before);
     expect(await migrate(connectionString)).toEqual([]);
   });
@@ -417,13 +421,13 @@ test('KAN-79 migration adds trusted Lead profiles while preserving existing auto
       assignments: (await database.query('SELECT * FROM coordinator_assignments ORDER BY id')).rows,
       migrations: (await database.query('SELECT * FROM schema_migrations ORDER BY name')).rows,
     };
-    expect(await migrate(connectionString)).toEqual(['007_add_coordinator_lead.sql', '008_notification_inbox.sql', '009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_equipment_operational_quantities.sql', '015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql', '018_event_cancellation_equipment_workflows.sql', '019_registration_notification_outcomes.sql', '020_equipment_stock_changes.sql']);
+    expect(await migrate(connectionString)).toEqual(['007_add_coordinator_lead.sql', '008_notification_inbox.sql', '009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_equipment_operational_quantities.sql', '015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql', '018_event_cancellation_equipment_workflows.sql', '019_registration_notification_outcomes.sql', '020_equipment_stock_changes.sql', '021_safety_reviews.sql', '022_safety_review_remediation.sql']);
     expect(await migrate(connectionString)).toEqual([]);
     expect((await database.query('SELECT * FROM app_users ORDER BY id')).rows).toEqual(before.users);
     expect((await database.query('SELECT * FROM event_requests ORDER BY id')).rows)
-      .toEqual(before.events.map((event) => ({ ...event, revision: 1, equipment_plan_status: 'REQUIRED' })));
+      .toEqual(before.events.map((event) => ({ ...event, revision: 1, equipment_plan_status: 'REQUIRED', ...noPreparation })));
     expect((await database.query('SELECT * FROM coordinator_assignments ORDER BY id')).rows).toEqual(before.assignments);
-    expect((await database.query("SELECT * FROM schema_migrations WHERE name NOT IN ('007_add_coordinator_lead.sql', '008_notification_inbox.sql', '009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_equipment_operational_quantities.sql', '015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql', '018_event_cancellation_equipment_workflows.sql', '019_registration_notification_outcomes.sql', '020_equipment_stock_changes.sql') ORDER BY name")).rows).toEqual(before.migrations);
+    expect((await database.query("SELECT * FROM schema_migrations WHERE name NOT IN ('007_add_coordinator_lead.sql', '008_notification_inbox.sql', '009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_equipment_operational_quantities.sql', '015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql', '018_event_cancellation_equipment_workflows.sql', '019_registration_notification_outcomes.sql', '020_equipment_stock_changes.sql', '021_safety_reviews.sql', '022_safety_review_remediation.sql') ORDER BY name")).rows).toEqual(before.migrations);
     await database.query("INSERT INTO app_users (email, display_name, role) VALUES ('lead@example.test', 'Lead', 'EVENT_COORDINATOR_LEAD')");
     await expect(database.query("INSERT INTO app_users (email, display_name, role) VALUES ('invalid@example.test', 'Invalid', 'SUPER_ADMIN')"))
       .rejects.toMatchObject({ code: '23514' });
@@ -452,7 +456,7 @@ test('KAN-77 migration gives existing venues zero buffers and preserves bookings
       migrations: (await database.query('SELECT * FROM schema_migrations ORDER BY name')).rows,
     };
 
-    expect(await migrate(connectionString)).toEqual(['009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_equipment_operational_quantities.sql', '015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql', '018_event_cancellation_equipment_workflows.sql', '019_registration_notification_outcomes.sql', '020_equipment_stock_changes.sql']);
+    expect(await migrate(connectionString)).toEqual(['009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_equipment_operational_quantities.sql', '015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql', '018_event_cancellation_equipment_workflows.sql', '019_registration_notification_outcomes.sql', '020_equipment_stock_changes.sql', '021_safety_reviews.sql', '022_safety_review_remediation.sql']);
     expect(await migrate(connectionString)).toEqual([]);
 
     expect((await database.query('SELECT * FROM venues ORDER BY id')).rows)
@@ -466,7 +470,7 @@ test('KAN-77 migration gives existing venues zero buffers and preserves bookings
         hold_expires_at: null, held_by: null, held_at: null, expired_at: null,
         cancelled_by: null, cancelled_at: null, cancellation_reason: null,
       })));
-    expect((await database.query("SELECT * FROM schema_migrations WHERE name NOT IN ('009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_equipment_operational_quantities.sql', '015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql', '018_event_cancellation_equipment_workflows.sql', '019_registration_notification_outcomes.sql', '020_equipment_stock_changes.sql') ORDER BY name")).rows)
+    expect((await database.query("SELECT * FROM schema_migrations WHERE name NOT IN ('009_venue_buffer_durations.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_equipment_operational_quantities.sql', '015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql', '018_event_cancellation_equipment_workflows.sql', '019_registration_notification_outcomes.sql', '020_equipment_stock_changes.sql', '021_safety_reviews.sql', '022_safety_review_remediation.sql') ORDER BY name")).rows)
       .toEqual(before.migrations);
 
     await database.query('UPDATE venues SET setup_minutes = 1440, turnaround_minutes = 0 WHERE id = $1', [venue.id]);
@@ -486,9 +490,9 @@ test('KAN-77 integration preserves the original branch migration name without re
     await applyHistoricalMigration(database, '007_add_coordinator_lead.sql', '007_add_coordinator_lead.sql');
     await applyHistoricalMigration(database, '009_venue_buffer_durations.sql', '008_venue_buffer_durations.sql');
     const before = (await database.query('SELECT * FROM schema_migrations ORDER BY name')).rows;
-    expect(await migrate(connectionString)).toEqual(['008_notification_inbox.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_equipment_operational_quantities.sql', '015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql', '018_event_cancellation_equipment_workflows.sql', '019_registration_notification_outcomes.sql', '020_equipment_stock_changes.sql']);
+    expect(await migrate(connectionString)).toEqual(['008_notification_inbox.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_equipment_operational_quantities.sql', '015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql', '018_event_cancellation_equipment_workflows.sql', '019_registration_notification_outcomes.sql', '020_equipment_stock_changes.sql', '021_safety_reviews.sql', '022_safety_review_remediation.sql']);
     expect(await migrate(connectionString)).toEqual([]);
-    expect((await database.query("SELECT * FROM schema_migrations WHERE name NOT IN ('008_notification_inbox.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_equipment_operational_quantities.sql', '015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql', '018_event_cancellation_equipment_workflows.sql', '019_registration_notification_outcomes.sql', '020_equipment_stock_changes.sql') ORDER BY name")).rows)
+    expect((await database.query("SELECT * FROM schema_migrations WHERE name NOT IN ('008_notification_inbox.sql', '010_venue_outage_impacts.sql', '011_venue_booking_replacements.sql', '012_venue_occupied_intervals.sql', '013_venue_holds.sql', '014_equipment_operational_quantities.sql', '015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql', '018_event_cancellation_equipment_workflows.sql', '019_registration_notification_outcomes.sql', '020_equipment_stock_changes.sql', '021_safety_reviews.sql', '022_safety_review_remediation.sql') ORDER BY name")).rows)
       .toEqual(before);
     expect((await database.query(
       "SELECT name FROM schema_migrations WHERE name IN ('009_venue_buffer_durations.sql')",
@@ -520,15 +524,15 @@ test('KAN-9 migration 014 preserves existing equipment and reservations and enfo
       history: (await database.query('SELECT * FROM event_status_history ORDER BY id')).rows,
       migrations: (await database.query('SELECT * FROM schema_migrations ORDER BY name')).rows,
     };
-    expect(await migrate(connectionString)).toEqual(['014_equipment_operational_quantities.sql', '015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql', '018_event_cancellation_equipment_workflows.sql', '019_registration_notification_outcomes.sql', '020_equipment_stock_changes.sql']);
+    expect(await migrate(connectionString)).toEqual(['014_equipment_operational_quantities.sql', '015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql', '018_event_cancellation_equipment_workflows.sql', '019_registration_notification_outcomes.sql', '020_equipment_stock_changes.sql', '021_safety_reviews.sql', '022_safety_review_remediation.sql']);
     expect(await migrate(connectionString)).toEqual([]);
     expect((await database.query('SELECT * FROM equipment_types ORDER BY id')).rows)
       .toEqual(before.equipment.map(row => ({ ...row, damaged_quantity: 0, maintenance_quantity: 0, stock_revision: 0 })));
     expect((await database.query('SELECT * FROM equipment_requests ORDER BY id')).rows).toEqual(before.requests.map(row => ({ ...row, released_at: null, released_by: null, release_reason: null, release_cause: null, technical_requirements: null, revision: 1 })));
     // Migrations 016-020 add event/equipment defaults (020: stock_revision 0 and an empty stock history) and nullable history reasons; existing values remain unchanged.
-    expect((await database.query('SELECT * FROM event_requests ORDER BY id')).rows).toEqual(before.events.map(row => ({ ...row, revision: 1, equipment_plan_status: 'REQUIRED' })));
+    expect((await database.query('SELECT * FROM event_requests ORDER BY id')).rows).toEqual(before.events.map(row => ({ ...row, revision: 1, equipment_plan_status: 'REQUIRED', ...noPreparation })));
     expect((await database.query('SELECT * FROM event_status_history ORDER BY id')).rows).toEqual(before.history.map(row => ({ ...row, reason: null })));
-    expect((await database.query("SELECT * FROM schema_migrations WHERE name NOT IN ('014_equipment_operational_quantities.sql', '015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql', '018_event_cancellation_equipment_workflows.sql', '019_registration_notification_outcomes.sql', '020_equipment_stock_changes.sql') ORDER BY name")).rows)
+    expect((await database.query("SELECT * FROM schema_migrations WHERE name NOT IN ('014_equipment_operational_quantities.sql', '015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql', '018_event_cancellation_equipment_workflows.sql', '019_registration_notification_outcomes.sql', '020_equipment_stock_changes.sql', '021_safety_reviews.sql', '022_safety_review_remediation.sql') ORDER BY name")).rows)
       .toEqual(before.migrations);
 
     // Equality is valid: all stock may be non-operational. Reservations are retained for reassessment.
@@ -574,7 +578,7 @@ test('KAN-26 migration 015 preserves legacy decisions and unknown release metada
       notices: (await database.query('SELECT * FROM notifications ORDER BY id')).rows,
       migrations: (await database.query('SELECT * FROM schema_migrations ORDER BY name')).rows,
     };
-    expect(await migrate(connectionString)).toEqual(['015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql', '018_event_cancellation_equipment_workflows.sql', '019_registration_notification_outcomes.sql', '020_equipment_stock_changes.sql']);
+    expect(await migrate(connectionString)).toEqual(['015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql', '018_event_cancellation_equipment_workflows.sql', '019_registration_notification_outcomes.sql', '020_equipment_stock_changes.sql', '021_safety_reviews.sql', '022_safety_review_remediation.sql']);
     expect(await migrate(connectionString)).toEqual([]);
     const upgraded = before.requests.map(row => ({ ...row, released_at: null, released_by: null,
       release_reason: null, release_cause: null, technical_requirements: null, revision: 1 }));
@@ -582,11 +586,11 @@ test('KAN-26 migration 015 preserves legacy decisions and unknown release metada
     expect((await database.query('SELECT * FROM equipment_types ORDER BY id')).rows)
       .toEqual(before.equipment.map(row => ({ ...row, stock_revision: 0 })));
     // Migrations 016-020 add event/equipment defaults (020: stock_revision 0 and an empty stock history) and nullable history reasons; existing values remain unchanged.
-    expect((await database.query('SELECT * FROM event_requests ORDER BY id')).rows).toEqual(before.events.map(row => ({ ...row, revision: 1, equipment_plan_status: 'REQUIRED' })));
+    expect((await database.query('SELECT * FROM event_requests ORDER BY id')).rows).toEqual(before.events.map(row => ({ ...row, revision: 1, equipment_plan_status: 'REQUIRED', ...noPreparation })));
     expect((await database.query('SELECT * FROM event_status_history ORDER BY id')).rows).toEqual(before.history.map(row => ({ ...row, reason: null })));
     expect((await database.query('SELECT * FROM notifications ORDER BY id')).rows)
-      .toEqual(before.notices.map(row => ({ ...row, equipment_request_id: null, registration_id: null, change_request_id: null })));
-    expect((await database.query("SELECT * FROM schema_migrations WHERE name NOT IN ('015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql', '018_event_cancellation_equipment_workflows.sql', '019_registration_notification_outcomes.sql', '020_equipment_stock_changes.sql') ORDER BY name")).rows)
+      .toEqual(before.notices.map(row => ({ ...row, equipment_request_id: null, registration_id: null, change_request_id: null, safety_review_id: null })));
+    expect((await database.query("SELECT * FROM schema_migrations WHERE name NOT IN ('015_equipment_reservations.sql', '016_event_request_revisions.sql', '017_event_change_requests.sql', '018_event_cancellation_equipment_workflows.sql', '019_registration_notification_outcomes.sql', '020_equipment_stock_changes.sql', '021_safety_reviews.sql', '022_safety_review_remediation.sql') ORDER BY name")).rows)
       .toEqual(before.migrations);
     // A future operational loss must not rewrite or invalidate existing historical commitments.
     await database.query('UPDATE equipment_types SET damaged_quantity=9 WHERE id=$1', [type]);

@@ -95,8 +95,21 @@ KAN-26 is In Progress / Tristan (3 SP), with unestimated KAN-104–106 In Progre
 | --- | --- | --- | --- |
 | S4-E18 | [KAN-61 run logs](kan61-20261029/) (`check.txt`, `coverage.txt`, `integration.txt`, `e2e.txt`, `e2e-initial.txt`; PR #77 review retest `*-review-fix.txt`, run `AUTO-20261029-KAN61-02`) | `AUTO-20261029-KAN61-01`: check and coverage Pass; PostgreSQL integration 673/673 including 11 KAN-61 tests; browser fixtures 197/197 including 3 KAN-61 tests; `e2e-initial.txt` keeps the earlier flaky failure that led to the panel fix | Local Windows run, Node 24.11.1, disposable PostgreSQL 17; synthetic accounts; browser APIs substituted; no live authentication, CI or acceptance |
 
+| S4-E18 | [KAN-61 run logs](kan61-20261029/) (`check.txt`, `coverage.txt`, `integration.txt`, `e2e.txt`, `e2e-initial.txt`) | `AUTO-20261029-KAN61-01`: check and coverage Pass; PostgreSQL integration 673/673 including 11 KAN-61 tests; browser fixtures 197/197 including 3 KAN-61 tests; `e2e-initial.txt` keeps the earlier flaky failure that led to the panel fix | Local Windows run, Node 24.11.1, disposable PostgreSQL 17; synthetic accounts; browser APIs substituted; no live authentication, CI or acceptance |
+
+## KAN-84 automated verification — 29 October 2026
+
+| ID | Artifact | Source / result | Limits |
+| --- | --- | --- | --- |
+| S4-E19 | [KAN-84 run logs](kan84-20261029/) (`check.txt`, `coverage.txt`, `integration.txt`, `e2e.txt`, `e2e-repeat.txt`; PR #78 review retest `*-review-fix.txt`, run `AUTO-20261029-KAN84-02`) | `AUTO-20261029-KAN84-01`: check and coverage Pass; PostgreSQL integration 705/705 including 9 KAN-84 tests; browser fixtures 206/206 including 3 KAN-84 tests; KAN-84 spec repeated 15/15 | Local Windows run, Node 24.11.1, disposable PostgreSQL 17; synthetic accounts; browser APIs substituted; backend coverage excludes the integration-tested safety service; no live authentication, CI or acceptance |
 ## KAN-61 PR #77 operational-block review follow-up — 29 October 2026
 
 | ID | Artifact | Source / result | Limits |
 | --- | --- | --- | --- |
 | S4-E21 | [AUTO-20261029-PR77-REVIEW](../../../testing/test-evidence.md#auto-20261029-pr77-review--operational-block-readiness-regression), execution `EX-06-431-AUTO-20261029-PR77-01` | TC-06-431 failed before the fix and passed afterwards; 15/15 confirmation PostgreSQL tests; check and coverage Pass with 1,154 frontend and 1,933 backend tests. Tested code committed unchanged as `a31d2ef`. | Captured console results recorded in the run narrative; no separate raw log file retained. Disposable local PostgreSQL with synthetic identities, no shared Supabase or manual E2E acceptance; full database/browser suites not rerun for this follow-up. |
+
+## KAN-84 PR #78 follow-up — 29 October 2026
+
+| ID | Artifact | Source / result | Limits |
+| --- | --- | --- | --- |
+| S4-E22 | [Review follow-up logs](kan84-20261029/) (review-followup-check.txt, review-followup-coverage.txt, review-followup-integration.txt, review-followup-browser.txt, review-followup-browser-isolation.txt and initial-attempt logs) | AUTO-20261029-PR78-REVIEW: check/coverage 1,170 frontend + 1,947 backend; PostgreSQL 795/795 including five upgrade tests; browser 227/227 and final targeted repeat 18/18. Case-level mappings/results in the testing registers. | Windows/Node 24.21.0, disposable PostgreSQL17, synthetic identities; browser APIs substituted. Retains initial check/coverage/startup/browser failures. No shared 022 rollout or manual acceptance. Backend safety service unit-report coverage remains limited; separate database coverage is not merged into that percentage. |

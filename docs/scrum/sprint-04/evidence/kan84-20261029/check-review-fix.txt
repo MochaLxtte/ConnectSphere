@@ -1,0 +1,73 @@
+
+> connectsphere@0.1.0 check
+> npm run typecheck && npm test && npm run build
+
+
+> connectsphere@0.1.0 typecheck
+> tsc -p tsconfig.tools.json && npm run typecheck --workspaces
+
+
+> @connectsphere/frontend@0.1.0 typecheck
+> vue-tsc --noEmit
+
+
+> @connectsphere/backend@0.1.0 typecheck
+> tsc --noEmit
+
+
+> connectsphere@0.1.0 test
+> npm run test --workspaces
+
+
+> @connectsphere/frontend@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.11 C:/Users/iamle/ConnectSphere/frontend
+
+
+ Test Files  59 passed (59)
+      Tests  1167 passed (1167)
+   Start at  20:46:32
+   Duration  41.81s (transform 24.55s, setup 125.20s, import 46.50s, tests 121.13s, environment 183.32s)
+
+
+> @connectsphere/backend@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.11 C:/Users/iamle/ConnectSphere/backend
+
+
+ Test Files  76 passed (76)
+      Tests  1944 passed (1944)
+   Start at  20:47:15
+   Duration  10.88s (transform 15.89s, setup 0ms, import 60.02s, tests 14.30s, environment 19ms)
+
+
+> connectsphere@0.1.0 build
+> npm run build --workspaces
+
+
+> @connectsphere/frontend@0.1.0 build
+> vue-tsc --noEmit && vite build
+
+vite v8.2.2 building client environment for production...
+transforming...
+✓ 267 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.69 kB │ gzip:   0.40 kB
+dist/assets/index-HGVjX6sn.css   82.40 kB │ gzip:  14.41 kB
+dist/assets/index-BLXZOlA3.js   642.66 kB │ gzip: 170.99 kB
+
+✓ built in 1.06s
+[plugin builtin:vite-reporter]
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+
+> @connectsphere/backend@0.1.0 build
+> tsc -p tsconfig.build.json
+

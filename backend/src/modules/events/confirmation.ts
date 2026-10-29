@@ -110,11 +110,31 @@ async function readConfirmation(client: Reader, eventRequestId: string): Promise
   return row ? { ...row, confirmedAt: row.confirmedAt.toISOString() } : null;
 }
 
-async function requireTrustedRole(client: Reader, actor: WorkflowActor): Promise<void> {
+/** KAN-61/KAN-84: the stored role must still match the signed-in session. */
+export async function requireTrustedRole(client: Reader, actor: WorkflowActor): Promise<void> {
   const profile = await client.query<{ role: string }>('SELECT role FROM app_users WHERE id = $1 FOR SHARE', [actor.id]);
   if (profile.rows[0]?.role !== actor.role) {
     throw new WorkflowError('FORBIDDEN', 'ACTION_FORBIDDEN', 'Your account permissions changed. Sign in again.');
   }
+}
+
+/**
+ * KAN-61/KAN-84: venue gate -> booking -> event -> equipment types -> equipment requests, the
+ * KAN-62 order, so readiness read afterwards cannot change before the caller's write commits.
+ */
+export async function lockEventArrangements(client: Reader, eventRequestId: string): Promise<LockedEventRequest> {
+  const lockedBookings = await lockVenueBookingsBeforeEvent(client, eventRequestId);
+  const event = await lockEventRequest(client, eventRequestId);
+  await assertVenueBookingsLocked(client, eventRequestId, lockedBookings);
+  await client.query(`SELECT t.id FROM equipment_types t WHERE EXISTS (
+    SELECT 1 FROM equipment_requests r WHERE r.event_request_id = $1 AND r.equipment_type_id = t.id)
+    ORDER BY t.id FOR UPDATE`, [eventRequestId]);
+  await client.query('SELECT id FROM equipment_requests WHERE event_request_id = $1 ORDER BY id FOR UPDATE', [eventRequestId]);
+  // Venue catalogue edits (buffers, hours) lock the venue row; share-lock it so a concurrent edit
+  // either commits before the readiness check reads it or waits for this transaction.
+  await client.query(`SELECT v.id FROM venues v WHERE v.id IN (SELECT venue_id FROM venue_bookings
+    WHERE event_request_id = $1 AND status IN ('PENDING', 'HELD', 'APPROVED')) ORDER BY v.id FOR SHARE`, [eventRequestId]);
+  return event;
 }
 
 async function hasStarted(client: Reader, eventRequestId: string): Promise<boolean> {
@@ -162,8 +182,7 @@ export async function confirmEvent(
   }
   return inActorTransaction(pool, actor.id, async (client) => {
     await requireTrustedRole(client, actor);
-    const lockedBookings = await lockVenueBookingsBeforeEvent(client, eventRequestId);
-    const event = await lockEventRequest(client, eventRequestId);
+    const event = await lockEventArrangements(client, eventRequestId);
     requireRelation(actor, event, ['ASSIGNED_COORDINATOR'], 'Only the currently assigned coordinator can confirm this event.');
     // A repeated request returns the saved outcome without new history or notifications.
     if (event.status === 'CONFIRMED') {
@@ -175,15 +194,6 @@ export async function confirmEvent(
     if (await hasStarted(client, eventRequestId)) {
       throw new WorkflowError('CONFLICT', 'EVENT_ALREADY_STARTED', 'This event has already started, so it can no longer be confirmed.');
     }
-    await assertVenueBookingsLocked(client, eventRequestId, lockedBookings);
-    await client.query(`SELECT t.id FROM equipment_types t WHERE EXISTS (
-      SELECT 1 FROM equipment_requests r WHERE r.event_request_id = $1 AND r.equipment_type_id = t.id)
-      ORDER BY t.id FOR UPDATE`, [eventRequestId]);
-    await client.query('SELECT id FROM equipment_requests WHERE event_request_id = $1 ORDER BY id FOR UPDATE', [eventRequestId]);
-    // Venue catalogue edits (buffers, hours) lock the venue row; share-lock it so a concurrent edit
-    // either commits before the readiness check reads it or waits for this transaction.
-    await client.query(`SELECT v.id FROM venues v WHERE v.id IN (SELECT venue_id FROM venue_bookings
-      WHERE event_request_id = $1 AND status IN ('PENDING', 'HELD', 'APPROVED')) ORDER BY v.id FOR SHARE`, [eventRequestId]);
     const readiness = await eventReadiness(client, eventRequestId);
     if (!readiness.ready) {
       throw new WorkflowError('CONFLICT', 'EVENT_NOT_READY',

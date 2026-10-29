@@ -1,0 +1,20 @@
+
+Running 15 tests using 7 workers
+
+  ✓   1 [chromium] › tests\e2e\safety-review.spec.ts:67:1 › KAN-84-AC1/AC4/AC6 Safety Officer opens the queue, sees missing information and requests technical changes (3.6s)
+  ✓   7 [chromium] › tests\e2e\safety-review.spec.ts:67:1 › KAN-84-AC1/AC4/AC6 Safety Officer opens the queue, sees missing information and requests technical changes (4.4s)
+  ✓   3 [chromium] › tests\e2e\safety-review.spec.ts:42:1 › KAN-84-AC2/AC3 coordinator submits safety notes and sees the round awaiting the officer after reload (5.1s)
+  ✓   6 [chromium] › tests\e2e\safety-review.spec.ts:42:1 › KAN-84-AC2/AC3 coordinator submits safety notes and sees the round awaiting the officer after reload (5.1s)
+  ✓   4 [chromium] › tests\e2e\safety-review.spec.ts:42:1 › KAN-84-AC2/AC3 coordinator submits safety notes and sees the round awaiting the officer after reload (5.6s)
+  ✓   2 [chromium] › tests\e2e\safety-review.spec.ts:105:1 › KAN-84-AC8/AC9 preparation starts on current approval and the organiser sees it blocked after a change (5.8s)
+  ✓   5 [chromium] › tests\e2e\safety-review.spec.ts:105:1 › KAN-84-AC8/AC9 preparation starts on current approval and the organiser sees it blocked after a change (5.7s)
+  ✓  10 [chromium] › tests\e2e\safety-review.spec.ts:67:1 › KAN-84-AC1/AC4/AC6 Safety Officer opens the queue, sees missing information and requests technical changes (3.5s)
+  ✓   9 [chromium] › tests\e2e\safety-review.spec.ts:67:1 › KAN-84-AC1/AC4/AC6 Safety Officer opens the queue, sees missing information and requests technical changes (3.7s)
+  ✓  13 [chromium] › tests\e2e\safety-review.spec.ts:67:1 › KAN-84-AC1/AC4/AC6 Safety Officer opens the queue, sees missing information and requests technical changes (3.4s)
+  ✓   8 [chromium] › tests\e2e\safety-review.spec.ts:105:1 › KAN-84-AC8/AC9 preparation starts on current approval and the organiser sees it blocked after a change (4.8s)
+  ✓  12 [chromium] › tests\e2e\safety-review.spec.ts:105:1 › KAN-84-AC8/AC9 preparation starts on current approval and the organiser sees it blocked after a change (4.6s)
+  ✓  11 [chromium] › tests\e2e\safety-review.spec.ts:42:1 › KAN-84-AC2/AC3 coordinator submits safety notes and sees the round awaiting the officer after reload (5.2s)
+  ✓  14 [chromium] › tests\e2e\safety-review.spec.ts:42:1 › KAN-84-AC2/AC3 coordinator submits safety notes and sees the round awaiting the officer after reload (4.9s)
+  ✓  15 [chromium] › tests\e2e\safety-review.spec.ts:105:1 › KAN-84-AC8/AC9 preparation starts on current approval and the organiser sees it blocked after a change (1.6s)
+
+  15 passed (22.2s)

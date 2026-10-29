@@ -1,0 +1,24 @@
+
+> connectsphere@0.1.0 check
+> npm run typecheck && npm test && npm run build
+
+
+> connectsphere@0.1.0 typecheck
+> tsc -p tsconfig.tools.json && npm run typecheck --workspaces
+
+
+> @connectsphere/frontend@0.1.0 typecheck
+> vue-tsc --noEmit
+
+
+> @connectsphere/backend@0.1.0 typecheck
+> tsc --noEmit
+
+test/equipment/reservation-service.test.ts(143,5): error TS2322: Type 'string' is not assignable to type '"APPROVED" | "CONFIRMED"'.
+npm error Lifecycle script `typecheck` failed with error:
+npm error code 2
+npm error path C:\Users\trist\.codex\worktrees\review-pr78-followup\ConnectSphere\backend
+npm error workspace @connectsphere/backend@0.1.0
+npm error location C:\Users\trist\.codex\worktrees\review-pr78-followup\ConnectSphere\backend
+npm error command failed
+npm error command C:\WINDOWS\system32\cmd.exe /d /s /c tsc --noEmit

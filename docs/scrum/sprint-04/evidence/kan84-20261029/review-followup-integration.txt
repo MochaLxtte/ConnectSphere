@@ -1,0 +1,13 @@
+
+> connectsphere@0.1.0 test:integration
+> vitest run --config vitest.integration.config.ts
+
+
+ RUN  v4.1.11 C:/Users/trist/.codex/worktrees/review-pr78-followup/ConnectSphere
+
+
+ Test Files  42 passed (42)
+      Tests  795 passed (795)
+   Start at  21:20:04
+   Duration  95.49s (transform 2.18s, setup 0ms, import 15.04s, tests 73.95s, environment 3ms)
+

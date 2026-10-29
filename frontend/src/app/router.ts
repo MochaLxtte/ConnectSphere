@@ -33,12 +33,17 @@ import EventEquipmentAvailabilityPage from '../features/equipment/pages/EventEqu
 import EquipmentStockPage from '../features/equipment/pages/EquipmentStockPage.vue';
 import EquipmentQueuePage from '../features/events/pages/EquipmentQueuePage.vue';
 import RegistrationsPage from '../features/registrations/RegistrationsPage.vue';
+import SafetyQueuePage from '../features/safety/SafetyQueuePage.vue';
+import SafetyReviewPage from '../features/safety/SafetyReviewPage.vue';
 
 export const router = createRouter({
   history: createWebHistory(),
   routes: [
     { path: '/', component: DashboardPage, meta: { title: 'Overview' } },
     { path: '/login', component: LoginPage, meta: { title: 'Sign in' } },
+    // KAN-84: Safety Officer queue and review decision.
+    { path: '/safety-reviews', component: SafetyQueuePage, meta: { title: 'Safety reviews' } },
+    { path: '/safety-reviews/:id', component: SafetyReviewPage, meta: { title: 'Safety review' } },
     { path: '/registrations', component: RegistrationsPage, meta: { title: 'My registrations' } },
     { path: '/events/:id/registrations', component: RegistrationsPage, meta: { title: 'Event registrations' } },
     { path: '/events', component: EventRequestsPage, meta: { title: 'Event requests' } },

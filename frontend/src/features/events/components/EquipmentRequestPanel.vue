@@ -27,8 +27,10 @@ let writer: AbortController | undefined;
 const canRead = computed(() => !authSession.loading && !!props.eventRequestId &&
   ['EVENT_COORDINATOR', 'TECHNICAL_SUPPORT_STAFF'].includes(authSession.user?.role ?? '') &&
   ['APPROVED', 'CONFIRMED'].includes(props.status));
+// KAN-84 Option A: a confirmed event reopens while its safety review requests technical changes.
 const canEdit = computed(() => canRead.value && authSession.user?.role === 'EVENT_COORDINATOR' &&
-  props.status === 'APPROVED' && plan.value?.eventStatus === 'APPROVED');
+  ((props.status === 'APPROVED' && plan.value?.eventStatus === 'APPROVED')
+    || (props.status === 'CONFIRMED' && plan.value?.eventStatus === 'CONFIRMED' && plan.value?.technicalRemediation === true)));
 const canAct = computed(() => canEdit.value && !!plan.value?.revision && !loading.value && !busy.value && !stale.value);
 const lines = computed(() => plan.value?.items ?? []);
 const active = computed(() => lines.value.filter(line => line.status !== 'CANCELLED'));

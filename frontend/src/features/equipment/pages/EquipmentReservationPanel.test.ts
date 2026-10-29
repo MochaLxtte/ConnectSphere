@@ -116,6 +116,18 @@ describe('KAN-26 full saved reservations and readiness', () => {
     expect(screen.getByText('This event is confirmed. Reservations are read-only.')).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /^Reserve |^Cancel / })).not.toBeInTheDocument();
   });
+  it('KAN-84-AC6/AC7: allows reservation changes on a confirmed event during technical safety remediation', async () => {
+    const data = reserved(context(), 'r1'); data.event.status = 'CONFIRMED'; data.event.technicalRemediation = true; fixtures(data);
+    render(EquipmentReservationPanel, { props: { eventId: 'a' } }); await load();
+    expect(screen.getByText(/safety review requested technical changes/)).toBeInTheDocument();
+    expect(screen.queryByText('This event is confirmed. Reservations are read-only.')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^Cancel / })).toBeInTheDocument();
+  });
+  it.each(['CANCELLED', 'COMPLETED'])('KAN-84-AC6/AC7: hides reservation actions for a %s event with an old remediation round', async status => {
+    const data = reserved(context(), 'r1'); Object.assign(data.event, { status, technicalRemediation: true }); fixtures(data);
+    render(EquipmentReservationPanel, { props: { eventId: 'a' } }); await load();
+    expect(screen.queryByRole('button', { name: /^Reserve |^Cancel / })).not.toBeInTheDocument();
+  });
   it.each([0, -1, 1.5])('does not offer an action for invalid saved quantity %s', async quantity => {
     const data = context(); data.requests[0]!.quantity = quantity; fixtures(data);
     render(EquipmentReservationPanel, { props: { eventId: 'a' } }); await load();

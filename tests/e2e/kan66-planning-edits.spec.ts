@@ -93,6 +93,8 @@ test('KAN-66-AC103 a stale save is refused and the latest details can be reloade
 });
 
 test('KAN-66-AC102 coordinator sees only name and description for an approved event', async ({ page }) => {
+  const pageErrors: string[] = [];
+  page.on('pageerror', error => pageErrors.push(error.message));
   let current = eventRequest('APPROVED', {
     canEditDetails: true, editMode: 'PLANNING', editableFields: ['name', 'description'],
   });
@@ -107,11 +109,7 @@ test('KAN-66-AC102 coordinator sees only name and description for an approved ev
       }
       return true;
     }
-    if (path.startsWith(`/api/events/${current.id}/`)) {
-      await route.fulfill({ json: { items: [] } });
-      return true;
-    }
-    return false;
+    return fulfilWorkspaceRead(route, request, { coordinatorBookingEventId: current.id });
   });
 
   await page.goto(`/reviews/${current.id}`);
@@ -122,5 +120,7 @@ test('KAN-66-AC102 coordinator sees only name and description for an approved ev
   await page.getByLabel(/^Event name/).fill('Career fair 2026');
   await page.getByRole('button', { name: 'Save changes' }).click();
   await expect(page).toHaveURL(`/reviews/${current.id}`);
+  await expect(page.getByRole('region', { name: 'Safety review' })).toContainText('No safety review has been submitted yet.');
   expect(patches).toEqual([{ name: 'Career fair 2026', expectedRevision: 4 }]);
+  expect(pageErrors).toEqual([]);
 });
