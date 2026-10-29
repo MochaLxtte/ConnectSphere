@@ -15,6 +15,7 @@ The dev server runs at `http://127.0.0.1:5173` and fails clearly if that port is
 
 - Responsive application shell, navigation, page titles, and unknown-route handling.
 - KAN-9 Technical Support-only equipment event picker at `/equipment/availability` and saved/unsaved what-if checks at `/equipment/availability/:id`, with per-item stock and shortfall results.
+- KAN-14 attendee pages at `/attend` and `/attend/:id` (`src/features/registrations`): open events and the attendee's own registrations, an event's details and registration conditions, and registration with a single button and no personal-data form. Attendee-only; an Events link shows for attendees.
 - KAN-26 saved equipment reservations on the same event page: full-line confirmation, reasoned cancellation, live readiness and retained history; confirmed events are read-only.
 - Live API liveness and database readiness checks on the overview, with separate loading, error, success, and retry states.
 - A shared JSON API client that preserves structured backend error codes.

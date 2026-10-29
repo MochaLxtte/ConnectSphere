@@ -939,3 +939,17 @@ Event cancellation revalidates actor role and ownership. It locks venue gates an
 An affected attendee's inbox may return EVENT_CANCELLED only for that recipient's cancelled registration and event. The response uses a generic cancellation message and null protected event/booking links, excluding internal reasons even if stored in a notice. Attendees still cannot fetch protected event/cancellation details.
 
 KAN-15 approval uses the same venue prelock check. A timing/equipment change resets `equipment_plan_status` to REQUIRED and cancels affected REQUESTED lines with released_by/at/reason/cause and incremented revision. Purpose-only changes and rejected requests preserve Not Required. The existing `expectedRevision` and confirmed-arrangement refusal remain in force.
+
+## Attendee registration (KAN-14, CF-18) — 29 October 2026
+
+Mounted at `/api/attendee`. Every route is limited to signed-in attendees (`403 ACTION_FORBIDDEN` for any other role, `401 AUTHENTICATION_REQUIRED` signed out), is scoped to the caller and sets `Cache-Control: no-store`. No route names another attendee.
+
+| Route | Result and errors |
+| --- | --- |
+| `GET /api/attendee/events` | `200 { items }`: CONFIRMED events that take registrations and have not started, by start time, at most 100. Each item: `id`, `name`, `startsAt`, `endsAt`, `registration` (`required`, `opensAt`, `closesAt`, `capacity`, `placesRemaining`), `ownStatus` and `availability` |
+| `GET /api/attendee/registrations` | `200 { items }`: the caller's own registrations (`id`, `status` REGISTERED, WITHDRAWN or CANCELLED, `registeredAt`, `withdrawnAt`, `event`) |
+| `GET /api/attendee/events/:id` | `200 { event, registration, availability }`. `event`: `id`, `name`, `purpose`, `description`, `startsAt`, `endsAt`, `accessibilityNeeds`, `status`, `venues` (approved bookings: `name`, `location`, `startsAt`, `endsAt`) and `registration`. `registration`: the caller's own record or null. `availability`: `canRegister`, `reason` (`ALREADY_REGISTERED`, `NOT_CONFIRMED`, `REGISTRATION_DISABLED`, `EVENT_STARTED`, `CLOSED`, `NOT_YET_OPEN`, `FULL` or null), `message`, `placesRemaining`. `400 INVALID_EVENT_ID`; `404 EVENT_NOT_FOUND` for a missing event, or one that is not CONFIRMED and has no registration of the caller's |
+| `POST /api/attendee/events/:id/register` | `201 { event, registration, availability, changed: true }`. The body must be empty (`400 INVALID_INPUT` if it names anything). `409` with one of `REGISTRATION_ALREADY_REGISTERED`, `REGISTRATION_EVENT_NOT_OPEN`, `REGISTRATION_DISABLED`, `REGISTRATION_EVENT_STARTED`, `REGISTRATION_CLOSED`, `REGISTRATION_NOT_OPEN`, `REGISTRATION_FULL`; `404 EVENT_NOT_FOUND`. Nothing is written for any refusal |
+
+One transaction locks the event, reads the counts and the caller's record afresh, inserts the registration (or reuses a WITHDRAWN record) and writes one `REGISTRATION_CONFIRMED` notice to the attendee and one `REGISTRATION_RECEIVED` notice to the organiser and the assigned coordinator. The rules are **To agree** in the [decision log](../requirements/assumptions-and-questions.md#29-october-2026--kan-14-attendee-registration-rules-and-what-attendees-may-see). Verification: `backend/test/registrations/`, `database/tests/registrations/registration.integration.test.ts`, `frontend/src/features/registrations/` and `tests/e2e/attendee-registration.spec.ts`; see AUTO-20261029-KAN14-01 in the [test evidence](../testing/test-evidence.md#29-october-2026--kan-14-register-for-an-event).
+

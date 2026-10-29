@@ -1,0 +1,8 @@
+ Test Files  51 passed (51)
+      Tests  1066 passed (1066)
+All files          |   95.97 |    92.98 |   97.78 |   98.27 |                   
+ Test Files  64 passed (64)
+      Tests  1750 passed (1750)
+All files          |   93.58 |    94.11 |   92.28 |   93.47 |                   
+ .../registrations |     100 |    96.72 |     100 |     100 |                   
+Per-file frontend coverage (statements/branches/functions/lines): attendee-events.ts 100/100/100/100; AttendeeAccessPage.vue 100/100/100/100; AttendeeEventPage.vue 94.11/93.8/100/100; AttendeeEventsPage.vue 96.77/95.83/100/100. Backend lcov lines/functions: registration-router.ts 9/9, 5/5; registration-rules.ts 12/12, 2/2; registration-service.ts 57/57, 20/20 (branches 16/16).
