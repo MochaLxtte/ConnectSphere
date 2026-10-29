@@ -28,6 +28,8 @@ Daily Scrums follow Tuesday, Thursday and Saturday: planned dates 20, 22, 24, 27
 
 **28 October 2026 — KAN-82 development update outside a Daily Scrum (Irfan).** Design D1–D8 approved and implemented on `feat/KAN-82-independent-venue-arrangements` from `main` `ac5cd8b` (after #62–#66 merged); no migration. Jira subtasks KAN-113 (backend), KAN-114 (UI) and KAN-115 (verification) created; KAN-107/108/110/111 (KAN-66/KAN-15 implementation subtasks) moved to Done after their PRs merged. Evidence: `AUTO-20261028-KAN82-01` / S4-E17 (unit/component with coverage, PostgreSQL integration 637/637 and browser fixtures 191/191 on a disposable local database). Remaining: commit and pull request, independent review, CI, local integrated acceptance with real sign-in, and the AC9 safety-approval half with KAN-84 (D4). Estimate unchanged at 5 SP.
 
+**28 October 2026 — KAN-15 observation O-1 fix outside a Daily Scrum (Irfan).** The coordinator venue booking panel now reloads when the event revision advances, so bookings cancelled by an approved change request show as Cancelled without a manual refresh (`fix/KAN-15-venue-panel-refresh`, `AUTO-20261028-KAN15-O1-01`). A manual re-check is planned with the KAN-82 hands-on run.
+
 ## Impediments
 
 | Raised | Impediment / dependency | Owner | Planned action | Status |

@@ -1890,3 +1890,18 @@ Static review of `database/tests/events/cancellation-equipment.integration.test.
 **Limitations.** Unit tests use fake database clients, browser tests substitute API responses and the PostgreSQL suite uses synthetic verified identities; none uses live Supabase sign-in. GitHub CI, local integrated acceptance and independent review remain outstanding. No story acceptance, Done SP or Jira transition follows from these runs.
 
 **GitHub CI — 28 October 2026 (`CI-20261028-KAN82-02`, GitHub Actions run 40684714674, PR #67, build `4414fde`): Pass.** The `verify` job ran on ubuntu-latest with Node from `.nvmrc` and a PostgreSQL 17 service holding an isolated test database: `npm run check` and coverage (frontend 1,044 / 48 files, backend 1,723 / 61), `npm run test:integration` 637/637 across 34 files including `venue-arrangements.integration.test.ts`, and `npx playwright test` 191/191 including `kan82-independent-arrangements.spec.ts`. Same counts as `AUTO-20261028-KAN82-01`. Rows `EX-12-01-A04` to `EX-12-12-A04` record the CI boundary per case. Local integrated acceptance with real sign-in remains **Not executed**; no acceptance is inferred.
+
+## 28 October 2026 — KAN-15 observation O-1 fix
+
+**Run:** `AUTO-20261028-KAN15-O1-01`. **Executor:** Claude Code (AI agent) in Irfan's working session. **Build:** `fix/KAN-15-venue-panel-refresh` working tree from `main` `ac5cd8b`. **Environment:** local Windows 11, Node 22.20; browser suite against a disposable local PostgreSQL 17 database, not shared Supabase.
+
+**Defect.** Observation O-1 from `MAN-20261028-KAN66-KAN15-01`: after **Approve and apply** on a change request, the coordinator's Venue booking requests panel kept showing a booking cancelled by that approval as Pending until it was refreshed by hand. The approval advances the event revision; the equipment panel reloads on revision changes, but the venue panel only watched the event id, status and signed-in user.
+
+**Fix.** `EventPlanningPanels.vue` keys the venue panel on the event revision, so it remounts and reloads its list when the revision advances. A new `EventPlanningPanels.test.ts` case checks that the list is fetched again when the revision changes and not when the parent refreshes with the same revision; it fails without the fix (one fetch instead of two).
+
+| Command | Result |
+| --- | --- |
+| `npm run check` | Pass — frontend 1,035 tests / 49 files, backend 1,691 / 60, typecheck and builds |
+| `npx playwright test` | Pass — 189/189 (disposable local database) |
+
+**Not executed:** a manual re-check on localhost; planned with the KAN-82 hands-on run. TC-19-08's earlier Pass stands; this changes only when the panel reloads.
