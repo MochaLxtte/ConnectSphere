@@ -7,6 +7,7 @@ import StatusHistoryPanel from './StatusHistoryPanel.vue';
 import VenueBookingPanel from './VenueBookingPanel.vue';
 import EquipmentRequestPanel from './EquipmentRequestPanel.vue';
 import EventCancellationPanel from './EventCancellationPanel.vue';
+import EventConfirmationPanel from './EventConfirmationPanel.vue';
 
 /** Workflow panels shared by the organiser and coordinator pages for a submitted request. */
 const props = defineProps<{
@@ -36,6 +37,8 @@ const shared = computed(() => ({
          reload the booking list when the revision moves, as the equipment panel does. -->
     <VenueBookingPanel v-if="viewerRole === 'EVENT_COORDINATOR'" :key="`venue-${revision ?? 0}`" v-bind="shared" @changed="emit('changed')" />
     <EquipmentRequestPanel v-if="viewerRole === 'EVENT_COORDINATOR'" v-bind="shared" :revision="revision" @changed="emit('changed')" />
+    <!-- KAN-61: readiness checklist for the coordinator; the organiser sees the confirmation outcome. -->
+    <EventConfirmationPanel :event-request-id="eventRequestId" :status="status" :revision="revision" @changed="emit('changed')" />
     <StatusHistoryPanel :event-request-id="eventRequestId" :status="status" />
     <EventCancellationPanel :event-request-id="eventRequestId" :status="status" :revision="revision" @changed="emit('changed')" />
   </div>
