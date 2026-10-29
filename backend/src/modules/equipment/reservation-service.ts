@@ -12,6 +12,7 @@ import type { EquipmentTypeSummary, SavedEquipmentRequest } from './availability
 import {
   invalidReservation, parseEquipmentReservationInput, type EquipmentReservationAction,
 } from './reservation-input.js';
+import { equipmentWritable, technicalRemediationSql } from '../safety/remediation.js';
 import type {
   EquipmentReservationContext, EquipmentReservationRequest, EquipmentReservationResult, EquipmentReadiness,
 } from './reservation-types.js';
@@ -43,7 +44,8 @@ export async function readEquipmentReservationSnapshot(reader: Reader, eventId: 
   const found = await reader.query<EquipmentReservationSnapshot>(`SELECT
     jsonb_build_object('id', e.id, 'name', e.name, 'status', e.status,
       'startsAt', ${iso('e.starts_at')}, 'endsAt', ${iso('e.ends_at')},
-      'equipmentRequirements', e.equipment_requirements) AS event,
+      'equipmentRequirements', e.equipment_requirements,
+      'technicalRemediation', ${technicalRemediationSql('e.id')}) AS event,
     e.coordinator_id AS "coordinatorId",
     (SELECT COALESCE(jsonb_agg(jsonb_build_object(
       'id', r.id, 'equipmentTypeId', r.equipment_type_id, 'equipmentName', t.name,
@@ -117,13 +119,15 @@ export function equipmentReadiness(snapshot: EquipmentReservationSnapshot): Equi
 }
 
 export function equipmentReservationContext(snapshot: EquipmentReservationSnapshot): EquipmentReservationContext {
+  // KAN-84 Option A: a confirmed event is writable only while technical safety changes are requested.
+  const writable = snapshot.event.status === 'APPROVED' || snapshot.event.technicalRemediation === true;
   return {
     event: snapshot.event,
     requirementsVersion: equipmentRequirementsVersion(snapshot.event, activeRequests(snapshot.requests)),
     requests: snapshot.requests.map(row => ({ ...row,
-      canReserve: snapshot.event.status === 'APPROVED' && row.status === 'REQUESTED'
+      canReserve: writable && row.status === 'REQUESTED'
         && snapshot.coordinatorId !== null && matchingPeriod(snapshot.event, row),
-      canCancel: snapshot.event.status === 'APPROVED' && row.status === 'RESERVED',
+      canCancel: writable && row.status === 'RESERVED',
     })),
     readiness: equipmentReadiness(snapshot),
   };
@@ -169,7 +173,10 @@ export async function changeEquipmentReservation(
       const event = await client.query<{ status: string; coordinatorId: string | null }>(
         'SELECT status, coordinator_id AS "coordinatorId" FROM event_requests WHERE id = $1 FOR UPDATE', [eventId]);
       if (!event.rows[0]) throw requestNotFound();
-      if (event.rows[0].status !== 'APPROVED') throw conflict('EQUIPMENT_EVENT_NOT_APPROVED', 'Only an APPROVED event may have equipment reservations changed.');
+      if (!(await equipmentWritable(client, eventId, event.rows[0].status))) {
+        throw conflict('EQUIPMENT_EVENT_NOT_APPROVED',
+          'Only an APPROVED event, or a confirmed event whose safety review requested technical changes, may have equipment reservations changed.');
+      }
       // Assignment is stable under the event lock. Lock the recipient profile before any pool
       // so an administrative role change cannot commit a reservation with an unusable notice.
       let validCoordinator = false;

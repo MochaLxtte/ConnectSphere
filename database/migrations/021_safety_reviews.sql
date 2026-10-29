@@ -83,6 +83,9 @@ CREATE FUNCTION safety_arrangement_fingerprint(target uuid) RETURNS text LANGUAG
         'status', b.status, 'startsAt', b.starts_at, 'endsAt', b.ends_at, 'layout', b.layout,
         'capacity', v.capacity, 'layouts', v.layouts, 'accessibility', v.accessibility_features,
         'wheelchair', v.wheelchair_accessible, 'active', v.is_active,
+        -- Operating hours and buffers decide whether the booking is still usable (PR #78 review).
+        'opensAt', v.opens_at, 'closesAt', v.closes_at,
+        'setupMinutes', v.setup_minutes, 'turnaroundMinutes', v.turnaround_minutes,
         'recovery', EXISTS (SELECT 1 FROM venue_outage_impacts i
           WHERE i.venue_booking_id = b.id AND i.status = 'RECOVERY_REQUIRED')) ORDER BY b.id), '[]'::jsonb)
       FROM venue_bookings b JOIN venues v ON v.id = b.venue_id
@@ -96,6 +99,66 @@ CREATE FUNCTION safety_arrangement_fingerprint(target uuid) RETURNS text LANGUAG
   )::text)
 $$;
 
+-- KAN-84-AC6/AC7 (PR #78 review, Option A): requested technical changes on a CONFIRMED event must be
+-- performable. Same body as migration 015 except the event-state check.
+CREATE OR REPLACE FUNCTION prevent_equipment_overbooking() RETURNS trigger LANGUAGE plpgsql AS $$
+DECLARE
+  pool_size bigint;
+  reserved_peak bigint;
+  event_state text;
+  event_start timestamptz;
+  event_end timestamptz;
+BEGIN
+  IF TG_OP = 'UPDATE' AND OLD.status = 'RESERVED' THEN
+    IF (NEW.event_request_id, NEW.equipment_type_id, NEW.quantity, NEW.starts_at, NEW.ends_at)
+      IS DISTINCT FROM (OLD.event_request_id, OLD.equipment_type_id, OLD.quantity, OLD.starts_at, OLD.ends_at) THEN
+      RAISE EXCEPTION 'Cancel and replace a reservation to change its allocation.'
+        USING ERRCODE = 'check_violation', CONSTRAINT = 'equipment_reserved_allocation_immutable';
+    END IF;
+    -- Operational losses retain existing reservations; harmless metadata updates do not create stock.
+    RETURN NEW;
+  END IF;
+  IF TG_OP = 'UPDATE' AND OLD.status <> 'REQUESTED' THEN
+    RAISE EXCEPTION 'Only a requested line can become reserved.'
+      USING ERRCODE = 'check_violation', CONSTRAINT = 'equipment_reservation_requested_only';
+  END IF;
+  SELECT status, starts_at, ends_at INTO event_state, event_start, event_end
+    FROM event_requests WHERE id = NEW.event_request_id FOR UPDATE;
+  -- KAN-84 Option A: a confirmed event may reserve again only while its latest safety round
+  -- requested TECHNICAL changes; everything else keeps the KAN-26 rule from migration 015.
+  IF event_state IS DISTINCT FROM 'APPROVED' AND NOT (event_state = 'CONFIRMED' AND EXISTS (
+    SELECT 1 FROM safety_reviews s WHERE s.event_request_id = NEW.event_request_id
+      AND s.status = 'CHANGES_REQUESTED' AND 'TECHNICAL' = ANY(s.requested_areas)
+      AND s.round = (SELECT max(x.round) FROM safety_reviews x WHERE x.event_request_id = NEW.event_request_id))) THEN
+    RAISE EXCEPTION 'Only an approved event may receive a new equipment reservation.'
+      USING ERRCODE = 'check_violation', CONSTRAINT = 'equipment_reservation_event_approved';
+  END IF;
+  IF NEW.starts_at IS DISTINCT FROM event_start OR NEW.ends_at IS DISTINCT FROM event_end THEN
+    RAISE EXCEPTION 'Equipment reservation dates must match the current event.'
+      USING ERRCODE = 'check_violation', CONSTRAINT = 'equipment_reservation_event_period';
+  END IF;
+  SELECT CASE WHEN is_active THEN total_quantity::bigint - damaged_quantity - maintenance_quantity ELSE 0 END
+    INTO pool_size FROM equipment_types WHERE id = NEW.equipment_type_id FOR UPDATE;
+  WITH overlapping AS (
+    SELECT starts_at, ends_at, quantity FROM equipment_requests r
+    WHERE r.equipment_type_id = NEW.equipment_type_id AND r.id <> NEW.id
+      AND r.status = 'RESERVED' AND r.starts_at < NEW.ends_at AND r.ends_at > NEW.starts_at
+  ), instants AS (
+    SELECT NEW.starts_at AS at
+    UNION SELECT starts_at FROM overlapping WHERE starts_at > NEW.starts_at
+  )
+  SELECT COALESCE(max(load), 0) INTO reserved_peak FROM (
+    SELECT (SELECT COALESCE(sum(o.quantity::bigint), 0) FROM overlapping o
+      WHERE o.starts_at <= i.at AND o.ends_at > i.at) AS load FROM instants i
+  ) loads;
+  IF reserved_peak + NEW.quantity::bigint > pool_size THEN
+    RAISE EXCEPTION 'Not enough operational equipment is available in this period.'
+      USING ERRCODE = 'exclusion_violation', CONSTRAINT = 'equipment_requests_within_pool';
+  END IF;
+  RETURN NEW;
+END
+$$;
+
 -- Safety review notes are internal workflow data; expose them only through the application API.
 DO $$
 DECLARE
@@ -104,6 +167,14 @@ DECLARE
 BEGIN
   EXECUTE format('ALTER TABLE %I.safety_reviews ENABLE ROW LEVEL SECURITY', application_schema);
   EXECUTE format('REVOKE ALL PRIVILEGES ON TABLE %I.safety_reviews FROM PUBLIC', application_schema);
+  -- Match migration 015: CREATE OR REPLACE resets function settings, so pin search_path again and keep
+  -- these trigger/helper functions out of the Data API roles.
+  EXECUTE format('ALTER FUNCTION %I.prevent_equipment_overbooking() SET search_path = %I, pg_temp', application_schema, application_schema);
+  EXECUTE format('ALTER FUNCTION %I.protect_decided_safety_review() SET search_path = %I, pg_temp', application_schema, application_schema);
+  EXECUTE format('ALTER FUNCTION %I.safety_arrangement_fingerprint(uuid) SET search_path = %I, pg_temp', application_schema, application_schema);
+  EXECUTE format('REVOKE ALL ON FUNCTION %I.prevent_equipment_overbooking() FROM PUBLIC', application_schema);
+  EXECUTE format('REVOKE ALL ON FUNCTION %I.protect_decided_safety_review() FROM PUBLIC', application_schema);
+  EXECUTE format('REVOKE ALL ON FUNCTION %I.safety_arrangement_fingerprint(uuid) FROM PUBLIC', application_schema);
   FOREACH api_role IN ARRAY ARRAY['anon', 'authenticated', 'service_role'] LOOP
     IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = api_role) THEN
       EXECUTE format('REVOKE ALL PRIVILEGES ON TABLE %I.safety_reviews FROM %I', application_schema, api_role);

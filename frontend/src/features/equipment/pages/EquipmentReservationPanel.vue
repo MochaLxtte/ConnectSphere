@@ -54,7 +54,7 @@ async function load(notice: string | null = null) {
 }
 function canAct(item: EquipmentReservationRequest, action: 'reserve' | 'cancel') {
   return authorised.value && !pending.value && state.value.status === 'ready'
-    && state.value.context.event.status === 'APPROVED'
+    && (state.value.context.event.status === 'APPROVED' || state.value.context.event.technicalRemediation === true)
     && Number.isSafeInteger(item.quantity) && item.quantity > 0
     && (action === 'reserve' ? item.status === 'REQUESTED' && item.canReserve : item.status === 'RESERVED' && item.canCancel);
 }
@@ -118,7 +118,8 @@ onBeforeUnmount(reset);
       <p v-if="!pending">{{ state.context.readiness.message }}</p>
       <p v-if="!pending">{{ state.context.readiness.reservedCount }} of {{ state.context.readiness.activeCount }} active requests reserved.</p>
       <p class="hint">Readiness uses current operational stock and all overlapping reservations. A previous successful check or reservation is not a guarantee after stock changes.</p>
-      <p v-if="state.context.event.status === 'CONFIRMED'">This event is confirmed. Reservations are read-only.</p>
+      <p v-if="state.context.event.status === 'CONFIRMED' && state.context.event.technicalRemediation">This event is confirmed, but its safety review requested technical changes. Reservations can be changed until the coordinator resubmits for safety review.</p>
+      <p v-else-if="state.context.event.status === 'CONFIRMED'">This event is confirmed. Reservations are read-only.</p>
       <p v-if="!state.context.requests.length">No saved equipment requests. Ask the assigned coordinator to save equipment requests before reserving. Unsaved what-if items cannot be reserved.</p>
       <ul v-else class="reservation-list">
         <li v-for="item in state.context.requests" :key="item.id" :aria-label="`${item.equipmentName} reservation ${item.id}`">

@@ -3,6 +3,7 @@ import type { Pool, PoolClient } from 'pg';
 import { inActorTransaction, UUID_PATTERN, WorkflowError, type WorkflowActor } from '../events/workflow-support.js';
 import { recordNotifications } from '../notifications/notify.js';
 import { equipmentPeriod, MAX_EQUIPMENT_QUANTITY } from './availability-input.js';
+import { equipmentWritable, technicalRemediationSql } from '../safety/remediation.js';
 import { readEquipmentReservationSnapshot, reserveEquipmentInTransaction } from './reservation-service.js';
 
 const bad = (message: string) => new WorkflowError('INVALID_INPUT', 'INVALID_EQUIPMENT_REQUEST', message);
@@ -14,6 +15,8 @@ interface PlanEvent {
   id: string; name: string | null; coordinatorId: string | null; organiserId: string; status: string;
   startsAt: string | null; endsAt: string | null; equipmentRequirements: string | null;
   planStatus: string; eventRevision: number;
+  /** KAN-84 Option A: confirmed event under technical safety remediation. */
+  technicalRemediation?: boolean;
 }
 interface PlanLine extends LineInput {
   id: string; status: string; lineRevision: number; equipmentType: string; notes: string | null;
@@ -24,7 +27,8 @@ interface PlanSnapshot { event: PlanEvent; items: PlanLine[] }
 const iso = (column: string) => `to_char(${column} AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"')`;
 const SNAPSHOT = `SELECT jsonb_build_object('id', e.id, 'name', e.name, 'coordinatorId', e.coordinator_id,
   'organiserId', e.organiser_id, 'status', e.status, 'startsAt', ${iso('e.starts_at')}, 'endsAt', ${iso('e.ends_at')},
-  'equipmentRequirements', e.equipment_requirements, 'planStatus', e.equipment_plan_status, 'eventRevision', e.revision) AS event,
+  'equipmentRequirements', e.equipment_requirements, 'planStatus', e.equipment_plan_status, 'eventRevision', e.revision,
+  'technicalRemediation', ${technicalRemediationSql('e.id')}) AS event,
   (SELECT COALESCE(jsonb_agg(jsonb_build_object('id', r.id, 'equipmentTypeId', r.equipment_type_id,
     'equipmentType', t.name, 'quantity', r.quantity, 'startsAt', ${iso('r.starts_at')}, 'endsAt', ${iso('r.ends_at')},
     'technicalRequirements', r.technical_requirements, 'notes', r.notes, 'status', r.status,
@@ -43,6 +47,7 @@ function plan(snapshot: PlanSnapshot) {
   const revision = equipmentPlanRevision(snapshot);
   return { eventRequestId: snapshot.event.id, status: snapshot.event.planStatus, revision,
     eventStatus: snapshot.event.status, eventStartsAt: snapshot.event.startsAt, eventEndsAt: snapshot.event.endsAt,
+    technicalRemediation: snapshot.event.technicalRemediation === true,
     items: snapshot.items.map(line => ({ ...line, revision, eventRequestId: snapshot.event.id,
       eventName: snapshot.event.name, eventStatus: snapshot.event.status, coordinatorId: snapshot.event.coordinatorId })) };
 }
@@ -110,7 +115,9 @@ async function lockPlan(client: Reader, actor: WorkflowActor, eventId: string, e
     'SELECT status, coordinator_id AS "coordinatorId" FROM event_requests WHERE id = $1 FOR UPDATE', [eventId]);
   const event = found.rows[0];
   if (!event || (actor.role === 'EVENT_COORDINATOR' && event.coordinatorId !== actor.id)) throw notFound();
-  if (event.status !== 'APPROVED') conflict('EVENT_NOT_APPROVED', 'Equipment planning requires an approved event.');
+  if (!(await equipmentWritable(client, eventId, event.status))) {
+    conflict('EVENT_NOT_APPROVED', 'Equipment planning requires an approved event, or a confirmed event whose safety review requested technical changes.');
+  }
   let validCoordinator = false;
   if (actor.role === 'TECHNICAL_SUPPORT_STAFF' && event.coordinatorId) {
     const recipient = await client.query<{ role: string }>('SELECT role FROM app_users WHERE id = $1 FOR SHARE', [event.coordinatorId]);

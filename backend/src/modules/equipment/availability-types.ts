@@ -3,6 +3,8 @@ export interface EquipmentEventSummary {
   id: string;
   name: string | null;
   status: 'APPROVED' | 'CONFIRMED';
+  /** KAN-84 Option A: present on reservation contexts; true while technical safety changes are requested. */
+  technicalRemediation?: boolean;
   startsAt: string | null;
   endsAt: string | null;
 }

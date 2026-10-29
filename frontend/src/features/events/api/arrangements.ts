@@ -14,6 +14,8 @@ export interface EquipmentLineInput {
 export interface EquipmentPlan {
   eventRequestId: string; status: string; items: EquipmentLine[]; revision: string;
   eventStatus: string; eventStartsAt: string | null; eventEndsAt: string | null;
+  /** KAN-84: a confirmed event is editable while its safety review requests technical changes. */
+  technicalRemediation?: boolean;
 }
 
 export async function fetchEquipmentTypes(signal?: AbortSignal): Promise<EquipmentType[]> {
