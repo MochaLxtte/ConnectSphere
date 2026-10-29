@@ -45,7 +45,7 @@ export async function fulfilWorkspaceRead(
   const safety = /^\/api\/events\/([^/]+)\/safety$/.exec(path);
   if (safety) {
     await route.fulfill({ json: { eventRequestId: safety[1], eventStatus: 'APPROVED', outcome: 'NONE', readiness: null,
-      pendingStale: false, rounds: [], preparation: null, canSubmit: false, canStartPreparation: false } });
+      pendingStale: false, rounds: [], unresolvedAreas: [], preparation: null, canSubmit: false, canStartPreparation: false } });
     return true;
   }
   // KAN-10: a COMPLETED event's panel reads its saved outcome; other fixtures have none.

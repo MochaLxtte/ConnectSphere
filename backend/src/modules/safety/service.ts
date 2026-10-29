@@ -71,6 +71,18 @@ function outcomeOf(latest: RoundRow | undefined, current: string): SafetyOutcome
   return latest.status;
 }
 
+/** KAN-84-AC7: comments and changes to an unrelated planning area do not resolve requested work. */
+async function unresolvedPlanningAreas(client: Reader, eventId: string, latest: RoundRow | undefined): Promise<SafetyArea[]> {
+  if (latest?.status !== 'CHANGES_REQUESTED') return [];
+  const requested = latest.requestedAreas ?? [];
+  const baseline = (await client.query<{ venueChanged: boolean; technicalChanged: boolean }>(`SELECT
+      b.venue_fingerprint <> safety_planning_area_fingerprint($1, 'VENUE') AS "venueChanged",
+      b.technical_fingerprint <> safety_planning_area_fingerprint($1, 'TECHNICAL') AS "technicalChanged"
+    FROM safety_review_change_baselines b WHERE b.review_id = $2`, [eventId, latest.id])).rows[0];
+  // Missing historical metadata cannot establish that requested work was completed.
+  return requested.filter(area => !baseline || !(area === 'VENUE' ? baseline.venueChanged : baseline.technicalChanged));
+}
+
 const readinessMessage = (readiness: EventReadiness) =>
   readiness.checks.filter(check => !check.ready).map(check => check.message).join(' ');
 
@@ -104,16 +116,18 @@ export async function getEventSafety(
     const preparation = await preparationOf(client, eventRequestId);
     const coordinator = relation === 'ASSIGNED_COORDINATOR';
     const approvalCurrent = outcome === 'APPROVED';
+    const unresolvedAreas = await unresolvedPlanningAreas(client, eventRequestId, latest);
     return {
-      eventRequestId, eventStatus: event.status, outcome, readiness,
+      eventRequestId, eventStatus: event.status, outcome, readiness, unresolvedAreas,
       pendingStale: latest?.status === 'PENDING' && latest.fingerprint !== current,
       rounds: history.map(toRound),
       preparation: preparation.startedAt ? {
         startedAt: iso(preparation.startedAt), startedByName: preparation.startedByName,
-        // KAN-84-AC9: started preparation is blocked once its approval no longer matches.
-        blocked: !(approvalCurrent && preparation.reviewId === latest?.id),
+        // KAN-84-AC9: external booking/closure changes can break readiness without changing this event's fingerprint.
+        blocked: !(event.status === 'CONFIRMED' && approvalCurrent && preparation.reviewId === latest?.id && readiness?.ready === true),
       } : null,
-      canSubmit: coordinator && planning && readiness?.ready === true && latest?.status !== 'PENDING' && !approvalCurrent,
+      canSubmit: coordinator && planning && readiness?.ready === true && latest?.status !== 'PENDING' && !approvalCurrent
+        && unresolvedAreas.length === 0,
       canStartPreparation: coordinator && event.status === 'CONFIRMED' && approvalCurrent && readiness?.ready === true
         && preparation.reviewId !== latest?.id,
     };
@@ -148,6 +162,11 @@ export async function submitSafetyReview(
     if (history[0]?.status === 'PENDING') throw conflict('SAFETY_REVIEW_PENDING', 'A safety review is already waiting for a decision.');
     if (outcomeOf(history[0], current) === 'APPROVED') {
       throw conflict('SAFETY_ALREADY_APPROVED', 'The current arrangements already have safety approval.');
+    }
+    const unresolvedAreas = await unresolvedPlanningAreas(client, eventRequestId, history[0]);
+    if (unresolvedAreas.length) {
+      throw conflict('SAFETY_CHANGES_NOT_COMPLETED',
+        `Update the requested ${unresolvedAreas.map(area => area.toLowerCase()).join(' and ')} arrangements before submitting a new safety review. Notes alone do not complete the requested changes.`);
     }
     const readiness = await eventReadiness(client, eventRequestId);
     if (!readiness.ready) throw conflict('EVENT_NOT_READY', readinessMessage(readiness));
@@ -203,6 +222,8 @@ export async function getSafetyReview(
       status: string; startsAt: Date | null; endsAt: Date | null };
     const venues = await client.query(`SELECT b.id AS "bookingId", v.name, v.location, v.capacity, v.layouts,
         v.accessibility_features AS "accessibilityFeatures", v.wheelchair_accessible AS "wheelchairAccessible",
+        v.opens_at::text AS "opensAt", v.closes_at::text AS "closesAt",
+        v.setup_minutes AS "setupMinutes", v.turnaround_minutes AS "turnaroundMinutes",
         b.layout AS "bookedLayout", b.status, EXISTS (SELECT 1 FROM venue_outage_impacts i
           WHERE i.venue_booking_id = b.id AND i.status = 'RECOVERY_REQUIRED') AS "needsRecovery"
       FROM venue_bookings b JOIN venues v ON v.id = b.venue_id
@@ -291,6 +312,11 @@ export async function decideSafetyReview(
     await client.query(`UPDATE safety_reviews SET status = $2, decided_by = $3, decided_at = now(),
       decision_notes = $4, requested_areas = $5 WHERE id = $1`,
     [reviewId, decision.decision, actor.id, decision.notes, decision.areas]);
+    if (decision.decision === 'CHANGES_REQUESTED') {
+      await client.query(`INSERT INTO safety_review_change_baselines (review_id, venue_fingerprint, technical_fingerprint)
+        VALUES ($1, safety_planning_area_fingerprint($2, 'VENUE'), safety_planning_area_fingerprint($2, 'TECHNICAL'))`,
+      [reviewId, eventId]);
+    }
     const label = event.name ?? 'the event';
     const notices: NotificationInput[] = event.coordinatorId ? [{
       recipientId: event.coordinatorId, eventRequestId: eventId, safetyReviewId: reviewId,

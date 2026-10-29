@@ -120,7 +120,8 @@ export function equipmentReadiness(snapshot: EquipmentReservationSnapshot): Equi
 
 export function equipmentReservationContext(snapshot: EquipmentReservationSnapshot): EquipmentReservationContext {
   // KAN-84 Option A: a confirmed event is writable only while technical safety changes are requested.
-  const writable = snapshot.event.status === 'APPROVED' || snapshot.event.technicalRemediation === true;
+  const writable = snapshot.event.status === 'APPROVED'
+    || (snapshot.event.status === 'CONFIRMED' && snapshot.event.technicalRemediation === true);
   return {
     event: snapshot.event,
     requirementsVersion: equipmentRequirementsVersion(snapshot.event, activeRequests(snapshot.requests)),

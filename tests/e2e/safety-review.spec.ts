@@ -26,10 +26,11 @@ const round = (status: string, extra: Record<string, unknown> = {}) => ({ id: re
   submittedAt: '2034-12-01T02:00:00.000Z', decidedByName: null, decidedAt: null, decisionNotes: null, requestedAreas: null,
   missingNotes: ['equipmentPlacement'], ...extra });
 const safety = (overrides: Record<string, unknown>) => ({ eventRequestId: eventId, eventStatus: 'CONFIRMED', outcome: 'NONE',
-  readiness: { ready: true, checks: [] }, pendingStale: false, rounds: [], preparation: null, canSubmit: false, canStartPreparation: false, ...overrides });
+  readiness: { ready: true, checks: [] }, pendingStale: false, rounds: [], unresolvedAreas: [], preparation: null, canSubmit: false, canStartPreparation: false, ...overrides });
+const apiRoute = (url: URL) => url.pathname.startsWith('/api/');
 
 async function stubApi(page: Page, user: object, handle: (path: string, request: Request, route: Route) => Promise<boolean>) {
-  await page.route(url => url.pathname.startsWith('/api/'), async route => {
+  await page.route(apiRoute, async route => {
     const request = route.request(); const path = new URL(request.url()).pathname;
     if (path === '/api/auth/me') await route.fulfill({ json: { user } });
     else if (await handle(path, request, route)) return;
@@ -73,7 +74,8 @@ test('KAN-84-AC1/AC4/AC6 Safety Officer opens the queue, sees missing informatio
     event: { id: eventId, name: 'Graduation dinner', status: 'CONFIRMED', startsAt: event.startsAt, endsAt: event.endsAt, expectedAttendance: 120,
       venueRequirements: 'Ballroom', accessibilityNeeds: null, equipmentRequirements: 'Speakers', equipmentPlanStatus: 'REQUIRED' },
     venues: [{ bookingId: 'b1', name: 'Grand Hall', location: 'Level 1', capacity: 150, layouts: ['Banquet'], accessibilityFeatures: ['Ramp'],
-      wheelchairAccessible: true, bookedLayout: 'Banquet', status: 'APPROVED', needsRecovery: false }],
+      wheelchairAccessible: true, bookedLayout: 'Banquet', status: 'APPROVED', needsRecovery: false,
+      opensAt: '09:00:00', closesAt: '23:00:00', setupMinutes: 15, turnaroundMinutes: 20 }],
     equipment: [{ id: 'q1', name: 'Speaker', quantity: 2, status: 'RESERVED' }], readiness: { ready: true, checks: [] }, rounds: [] });
   await stubApi(page, officer, async (path, request, route) => {
     if (path === '/api/safety-reviews') await route.fulfill({ json: { items: decided ? [] : [{ id: reviewId, round: 1, eventId,
@@ -119,7 +121,8 @@ test('KAN-84-AC8/AC9 preparation starts on current approval and the organiser se
   await panel.getByRole('button', { name: 'Start preparation' }).click();
   await expect(panel.getByTestId('preparation-status')).toContainText('Preparation started by Casey Coordinator');
 
-  await page.unrouteAll({ behavior: 'ignoreErrors' });
+  // Switch the API persona without removing shared isolation (including the remote-font stub).
+  await page.unroute(apiRoute);
   await stubApi(page, organiser, async (path, _request, route) => {
     if (path === `/api/events/${eventId}`) await route.fulfill({ json: event });
     else if (path === `/api/events/${eventId}/safety`) {

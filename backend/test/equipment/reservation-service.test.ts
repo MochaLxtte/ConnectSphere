@@ -139,6 +139,12 @@ describe('KAN-26 reservation context and current equipment readiness', () => {
     state = initial(); state.coordinatorId = null;
     expect(equipmentReservationContext(state).requests[0]!.canReserve).toBe(false);
   });
+  it.each(['CANCELLED', 'COMPLETED'])('KAN-84-AC6/AC7: %s events remain read-only despite a technical remediation round', (status) => {
+    Object.assign(state.event, { status, technicalRemediation: true });
+    expect(equipmentReservationContext(state).requests[0]).toMatchObject({ canReserve: false, canCancel: false });
+    makeReserved();
+    expect(equipmentReservationContext(state).requests[0]).toMatchObject({ canReserve: false, canCancel: false });
+  });
   it('propagates an unexpected validation failure instead of disguising it as an invalid requirement', () => {
     vi.spyOn(availabilityInput, 'equipmentPeriod').mockImplementation(() => { throw new Error('unexpected calendar failure'); });
     expect(() => equipmentReservationContext(state)).toThrow('unexpected calendar failure');

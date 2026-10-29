@@ -97,8 +97,11 @@ onBeforeUnmount(reset);
         data-testid="safety-outcome">{{ statusLabels[state.outcome] }}</span></p>
       <p v-if="state.outcome === 'STALE'">The arrangements changed after safety approval. They need a new safety review before preparation.</p>
       <p v-if="state.pendingStale">The arrangements changed after this round was submitted; the Safety Officer cannot approve it as submitted.</p>
+      <p v-if="state.unresolvedAreas?.length" role="status">Update the requested
+        {{ state.unresolvedAreas.map(area => areaLabels[area]).join(' and ') }} arrangements before submitting a new safety review.
+        Notes alone do not complete the requested changes.</p>
       <div v-if="state.preparation" data-testid="preparation-status">
-        <p v-if="state.preparation.blocked" role="status"><strong>Preparation blocked</strong> until the changed arrangements have safety approval.</p>
+        <p v-if="state.preparation.blocked" role="status"><strong>Preparation blocked</strong> until the event is confirmed, its arrangements are ready and its safety approval is current.</p>
         <p v-else><strong>Preparation started</strong> by {{ state.preparation.startedByName ?? 'the coordinator' }}
           <time :datetime="state.preparation.startedAt">{{ singaporeTime(state.preparation.startedAt) }}</time> (Singapore time)</p>
       </div>

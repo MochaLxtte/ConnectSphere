@@ -54,7 +54,8 @@ async function load(notice: string | null = null) {
 }
 function canAct(item: EquipmentReservationRequest, action: 'reserve' | 'cancel') {
   return authorised.value && !pending.value && state.value.status === 'ready'
-    && (state.value.context.event.status === 'APPROVED' || state.value.context.event.technicalRemediation === true)
+    && (state.value.context.event.status === 'APPROVED'
+      || (state.value.context.event.status === 'CONFIRMED' && state.value.context.event.technicalRemediation === true))
     && Number.isSafeInteger(item.quantity) && item.quantity > 0
     && (action === 'reserve' ? item.status === 'REQUESTED' && item.canReserve : item.status === 'RESERVED' && item.canCancel);
 }

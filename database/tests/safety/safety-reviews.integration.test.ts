@@ -93,12 +93,13 @@ describe('KAN-84 safety review on real PostgreSQL', () => {
   });
 
   it('TC-06-22 / KAN-84-AC3: the officer sees attendance, venues, layouts, equipment and missing notes', async () => {
-    const { id } = await readyEvent();
+    const { id, venue } = await readyEvent();
+    await f.pool.query("UPDATE venues SET opens_at = '09:00', closes_at = '18:00', setup_minutes = 15, turnaround_minutes = 20 WHERE id = $1", [venue]);
     const { review } = await submit(id);
     const detail = await getSafetyReview(f.pool, { reviewId: review.id, actor: officer });
     expect(detail.event).toMatchObject({ expectedAttendance: 50, venueRequirements: 'A hall' });
     expect(detail.venues).toEqual([expect.objectContaining({ capacity: 120, layouts: ['Theatre', 'Banquet'],
-      bookedLayout: 'Theatre', needsRecovery: false })]);
+      bookedLayout: 'Theatre', needsRecovery: false, opensAt: '09:00:00', closesAt: '18:00:00', setupMinutes: 15, turnaroundMinutes: 20 })]);
     expect(detail.equipment).toEqual([expect.objectContaining({ quantity: 2, status: 'RESERVED' })]);
     expect(detail.review).toMatchObject({ emergencyAccess: 'Two exits on the east side', crowdMovement: null,
       missingNotes: ['crowdMovement'] });
@@ -126,7 +127,7 @@ describe('KAN-84 safety review on real PostgreSQL', () => {
   });
 
   it('TC-06-25/26 / KAN-84-AC6/AC7: request changes informs the area staff and keeps prior rounds', async () => {
-    const { id } = await readyEvent();
+    const { id, booking, line, type } = await readyEvent();
     const first = (await submit(id)).review;
     expect((await refusal(decide(first.id, { decision: 'CHANGES_REQUESTED', notes: 'Move speakers', areas: [] }))).kind).toBe('INVALID_INPUT');
     await decide(first.id, { decision: 'CHANGES_REQUESTED', notes: 'Move speakers away from exits.', areas: ['TECHNICAL', 'VENUE'] });
@@ -135,8 +136,25 @@ describe('KAN-84 safety review on real PostgreSQL', () => {
     expect((await listNotifications(f.dependencies, technical)).some(n => n.type === 'SAFETY_CHANGES_REQUESTED'
       && n.message.includes('technical changes'))).toBe(true);
     const view = await safety(id);
-    expect(view).toMatchObject({ outcome: 'CHANGES_REQUESTED', canSubmit: true });
+    expect(view).toMatchObject({ outcome: 'CHANGES_REQUESTED', canSubmit: false, unresolvedAreas: ['VENUE', 'TECHNICAL'] });
     expect(view.rounds[0]).toMatchObject({ requestedAreas: ['VENUE', 'TECHNICAL'], decisionNotes: 'Move speakers away from exits.' });
+    const noticeCount = (await f.notifications(id)).length;
+    expect((await refusal(submit(id, coordinator, { ...notes, crowdMovement: 'New comments only' }))).code).toBe('SAFETY_CHANGES_NOT_COMPLETED');
+    expect((await f.notifications(id)).length).toBe(noticeCount);
+    expect((await safety(id)).rounds).toHaveLength(1);
+    // Each requested area must change. A venue change cannot satisfy technical remediation.
+    await f.pool.query("UPDATE venue_bookings SET layout = 'Banquet' WHERE id = $1", [booking]);
+    expect((await safety(id)).unresolvedAreas).toEqual(['TECHNICAL']);
+    expect((await refusal(submit(id))).code).toBe('SAFETY_CHANGES_NOT_COMPLETED');
+    const plan = await getEventEquipmentPlan(f.pool, { eventId: id, actor: coordinator });
+    const replaced = await replaceReservedEquipmentLine(f.pool, { actor: coordinator, lineId: line,
+      input: { revision: plan.revision, replacement: { equipmentTypeId: type, quantity: 1, startsAt: start, endsAt: end } } });
+    // Updating arrangements is necessary but does not bypass ordinary readiness.
+    expect((await safety(id)).unresolvedAreas).toEqual([]);
+    expect((await refusal(submit(id))).code).toBe('EVENT_NOT_READY');
+    const context = await getEquipmentReservationContext(f.dependencies, { actor: technical, eventId: id });
+    await changeEquipmentReservation(f.dependencies, { actor: technical, eventId: id, requestId: replaced.replacement.id,
+      action: 'reserve', input: { requirementsVersion: context.requirementsVersion } });
     const second = (await submit(id, coordinator, { ...notes, crowdMovement: 'One-way flow to the foyer' })).review;
     expect(second.round).toBe(2);
     expect((await refusal(submit(id))).code).toBe('SAFETY_REVIEW_PENDING');
@@ -164,13 +182,13 @@ describe('KAN-84 safety review on real PostgreSQL', () => {
   });
 
   it('TC-06-28 / KAN-84-AC9/AC10: a changed arrangement makes approval stale; name edits do not', async () => {
-    const { id } = await readyEvent();
+    const { id, booking } = await readyEvent();
     const pending = (await submit(id)).review;
     await f.pool.query('UPDATE event_requests SET expected_attendance = 90 WHERE id = $1', [id]);
     expect((await refusal(decide(pending.id, { decision: 'APPROVED' }))).code).toBe('SAFETY_REVIEW_STALE');
     expect((await safety(id)).pendingStale).toBe(true);
     await decide(pending.id, { decision: 'CHANGES_REQUESTED', notes: 'Attendance changed; resubmit.', areas: ['VENUE'] });
-
+    await f.pool.query("UPDATE venue_bookings SET layout = 'Banquet' WHERE id = $1", [booking]);
     const approved = (await submit(id)).review;
     await decide(approved.id, { decision: 'APPROVED' });
     await f.pool.query("UPDATE event_requests SET name = 'Renamed dinner', description = 'New text' WHERE id = $1", [id]);
@@ -223,6 +241,47 @@ describe('KAN-84 safety review on real PostgreSQL', () => {
 describe('KAN-84 review fixes on real PostgreSQL', () => {
   const prepare = (id: string) => startPreparation(f.pool, { eventRequestId: id, actor: coordinator, input: {} });
 
+  it('KAN-84-AC7: missing remediation metadata fails closed without changing the retained round', async () => {
+    const { id, booking } = await readyEvent();
+    const round = (await submit(id)).review;
+    // Simulate missing metadata from an older writer; normal decisions always save a baseline.
+    await f.pool.query(`UPDATE safety_reviews SET status = 'CHANGES_REQUESTED', decided_by = $2, decided_at = now(),
+      decision_notes = 'Use the alternative layout.', requested_areas = '{VENUE}' WHERE id = $1`, [round.id, officer.id]);
+    await f.pool.query("UPDATE venue_bookings SET layout = 'Banquet' WHERE id = $1", [booking]);
+    expect((await refusal(submit(id))).code).toBe('SAFETY_CHANGES_NOT_COMPLETED');
+    expect(await safety(id)).toMatchObject({ canSubmit: false, unresolvedAreas: ['VENUE'], rounds: [{ id: round.id, status: 'CHANGES_REQUESTED' }] });
+  });
+
+  it('KAN-84-AC7/AC10: a failed change-request notification rolls back both the decision and its baseline', async () => {
+    const { id } = await readyEvent();
+    const round = (await submit(id)).review;
+    await f.pool.query(`CREATE FUNCTION kan84_decision_fail() RETURNS trigger LANGUAGE plpgsql AS $$
+      BEGIN RAISE EXCEPTION 'injected decision failure'; END $$`);
+    await f.pool.query(`CREATE TRIGGER kan84_decision_fail BEFORE INSERT ON notifications FOR EACH ROW
+      WHEN (NEW.type = 'SAFETY_CHANGES_REQUESTED') EXECUTE FUNCTION kan84_decision_fail()`);
+    try {
+      await expect(decide(round.id, { decision: 'CHANGES_REQUESTED', notes: 'Change layout.', areas: ['VENUE'] }))
+        .rejects.toThrow('injected decision failure');
+    } finally {
+      await f.pool.query('DROP TRIGGER kan84_decision_fail ON notifications');
+      await f.pool.query('DROP FUNCTION kan84_decision_fail()');
+    }
+    expect((await safety(id)).rounds[0]?.status).toBe('PENDING');
+    expect((await f.pool.query('SELECT 1 FROM safety_review_change_baselines WHERE review_id = $1', [round.id])).rowCount).toBe(0);
+  });
+
+  it('KAN-84-AC8/AC9: a pending event change blocks continuing preparation even with the same safety fingerprint', async () => {
+    const { id } = await readyEvent();
+    await confirmEvent(f.pool, { eventRequestId: id, actor: coordinator, input: {} });
+    const round = (await submit(id)).review;
+    await decide(round.id, { decision: 'APPROVED' });
+    await prepare(id);
+    await f.pool.query(`INSERT INTO event_change_requests(event_request_id, requested_by, proposed_changes, previous, base_revision)
+      VALUES ($1, $2, '{"purpose":"Proposed change"}', '{"purpose":"Purpose"}', 1)`, [id, owner.id]);
+    expect(await safety(id)).toMatchObject({ outcome: 'APPROVED', preparation: { blocked: true }, readiness: { ready: false } });
+    expect((await refusal(prepare(id))).code).toBe('EVENT_NOT_READY');
+  });
+
   it('TC-06-28 / KAN-84-AC9: changed venue hours or buffers make a pending round unapprovable and an approval stale', async () => {
     // The booking runs 10:00–13:00 Singapore time.
     const { id, venue } = await readyEvent();
@@ -253,6 +312,7 @@ describe('KAN-84 review fixes on real PostgreSQL', () => {
       input: { revision: closed.revision, replacement } })).rejects.toMatchObject({ code: 'EVENT_NOT_APPROVED' });
 
     await decide(first.id, { decision: 'CHANGES_REQUESTED', notes: 'Use one speaker away from the exits.', areas: ['TECHNICAL'] });
+    expect((await refusal(submit(id, coordinator, { ...notes, equipmentPlacement: 'Comments alone' }))).code).toBe('SAFETY_CHANGES_NOT_COMPLETED');
     const open = await getEventEquipmentPlan(f.pool, { eventId: id, actor: coordinator });
     expect(open.technicalRemediation).toBe(true);
     const replaced = await replaceReservedEquipmentLine(f.pool, { actor: coordinator, lineId: line,

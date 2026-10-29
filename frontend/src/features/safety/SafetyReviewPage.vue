@@ -106,6 +106,9 @@ onBeforeUnmount(() => controller?.abort());
           <span v-if="venue.needsRecovery" class="warning"> · needs outage recovery</span>
           <p>Booked layout: {{ venue.bookedLayout || 'Not recorded' }} · Available layouts: {{ list(venue.layouts) }}</p>
           <p>Accessibility: {{ list(venue.accessibilityFeatures) }}{{ venue.wheelchairAccessible ? ' · wheelchair accessible' : '' }}</p>
+          <p>Operating hours (Singapore time): {{ venue.opensAt ?? 'No opening restriction' }} –
+            {{ venue.closesAt ?? 'No closing restriction' }}.</p>
+          <p>Setup buffer: {{ venue.setupMinutes }} minutes · Turnaround buffer: {{ venue.turnaroundMinutes }} minutes.</p>
         </li>
       </ul>
 

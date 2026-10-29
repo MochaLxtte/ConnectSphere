@@ -15,7 +15,7 @@ export interface SafetyRound {
 export interface Readiness { ready: boolean; checks: ReadinessCheck[] }
 export interface EventSafety {
   eventRequestId: string; eventStatus: string; outcome: SafetyOutcome; readiness: Readiness | null;
-  pendingStale: boolean; rounds: SafetyRound[];
+  pendingStale: boolean; rounds: SafetyRound[]; unresolvedAreas: SafetyArea[];
   preparation: { startedAt: string; startedByName: string | null; blocked: boolean } | null;
   canSubmit: boolean; canStartPreparation: boolean;
 }
@@ -29,7 +29,8 @@ export interface SafetyReviewDetail {
     expectedAttendance: number | null; venueRequirements: string | null; accessibilityNeeds: string | null;
     equipmentRequirements: string | null; equipmentPlanStatus: string };
   venues: { bookingId: string; name: string; location: string | null; capacity: number; layouts: string[];
-    accessibilityFeatures: string[]; wheelchairAccessible: boolean; bookedLayout: string | null; status: string; needsRecovery: boolean }[];
+    accessibilityFeatures: string[]; wheelchairAccessible: boolean; bookedLayout: string | null; status: string; needsRecovery: boolean;
+    opensAt: string | null; closesAt: string | null; setupMinutes: number; turnaroundMinutes: number }[];
   equipment: { id: string; name: string; quantity: number; status: string }[];
   readiness: Readiness | null;
   rounds: SafetyRound[];

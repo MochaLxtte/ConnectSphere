@@ -25,7 +25,8 @@ const detail = (overrides: Record<string, unknown> = {}) => ({ body: {
   event: { id: 'e1', name: 'Graduation dinner', status: 'CONFIRMED', startsAt: '2035-01-01T10:00:00.000Z', endsAt: '2035-01-01T14:00:00.000Z',
     expectedAttendance: 120, venueRequirements: 'Ballroom', accessibilityNeeds: null, equipmentRequirements: 'Speakers', equipmentPlanStatus: 'REQUIRED' },
   venues: [{ bookingId: 'b1', name: 'Grand Hall', location: 'L1', capacity: 150, layouts: ['Banquet'], accessibilityFeatures: ['Ramp'],
-    wheelchairAccessible: true, bookedLayout: 'Banquet', status: 'APPROVED', needsRecovery: false }],
+    wheelchairAccessible: true, bookedLayout: 'Banquet', status: 'APPROVED', needsRecovery: false,
+    opensAt: '09:00:00', closesAt: '23:00:00', setupMinutes: 15, turnaroundMinutes: 20 }],
   equipment: [{ id: 'q1', name: 'Speaker', quantity: 2, status: 'RESERVED' }],
   readiness: { ready: true, checks: [] }, rounds: [{ id: 'r0', round: 1, status: 'CHANGES_REQUESTED', decisionNotes: 'Add exit plan.' }],
   ...overrides } });
@@ -69,6 +70,10 @@ describe('KAN-84 Safety Officer review decision', () => {
     await open(`/safety-reviews/${reviewId}`);
     expect(await screen.findByText('Missing — not provided by the coordinator')).toBeInTheDocument();
     expect(screen.getByText('Grand Hall').closest('li')).toHaveTextContent('capacity 150');
+    expect(screen.getByText('Grand Hall').closest('li')).toHaveTextContent('09:00:00');
+    expect(screen.getByText('Grand Hall').closest('li')).toHaveTextContent('23:00:00');
+    expect(screen.getByText('Grand Hall').closest('li')).toHaveTextContent('Setup buffer: 15 minutes');
+    expect(screen.getByText('Grand Hall').closest('li')).toHaveTextContent('Turnaround buffer: 20 minutes');
     expect(screen.getByText('2 × Speaker · RESERVED')).toBeInTheDocument();
     expect(screen.getByText(/Advisory venue suitability is not a safety approval/)).toBeInTheDocument();
     expect(screen.getByText(/Round 1 · Changes requested · Add exit plan./)).toBeInTheDocument();

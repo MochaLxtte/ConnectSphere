@@ -17,11 +17,20 @@ const round = (overrides: Record<string, unknown> = {}) => ({ id: 'r1', round: 1
   equipmentPlacement: null, crowdMovement: null, submittedByName: 'Casey', submittedAt: '2034-12-01T02:00:00.000Z',
   decidedByName: null, decidedAt: null, decisionNotes: null, requestedAreas: null, missingNotes: ['equipmentPlacement', 'crowdMovement'], ...overrides });
 const view = (overrides: Record<string, unknown> = {}) => ({ body: { eventRequestId: 'event-one', eventStatus: 'APPROVED', outcome: 'NONE',
-  readiness: { ready: true, checks: [] }, pendingStale: false, rounds: [], preparation: null, canSubmit: true, canStartPreparation: false, ...overrides } });
+  readiness: { ready: true, checks: [] }, pendingStale: false, rounds: [], unresolvedAreas: [], preparation: null, canSubmit: true, canStartPreparation: false, ...overrides } });
 const renderPanel = (status = 'APPROVED') => render(SafetyReviewPanel, { props: { eventRequestId: 'event-one', status } });
 beforeEach(() => { session.user = { ...coordinator }; session.loading = false; });
 
 describe('KAN-84 safety review panel', () => {
+  it('KAN-84-AC7: explains outstanding arrangement changes and does not offer note-only resubmission', async () => {
+    const api = stubApi({ [READ]: view({ outcome: 'CHANGES_REQUESTED', canSubmit: false, unresolvedAreas: ['VENUE', 'TECHNICAL'] }) });
+    renderPanel();
+    const message = await screen.findByText(/Update the requested Venue and Technical arrangements/);
+    expect(message).toHaveAttribute('role', 'status');
+    expect(message).toHaveTextContent('Notes alone do not complete the requested changes.');
+    expect(screen.queryByRole('button', { name: 'Submit for safety review' })).not.toBeInTheDocument();
+    expect(api.writes()).toEqual([]);
+  });
   it('KAN-84-AC2/AC3: submits the safety notes, flags missing ones and shows the new round', async () => {
     const api = stubApi({ [READ]: view(), 'POST /api/events/event-one/safety-reviews': { status: 201, body: { review: round() } } });
     const panel = renderPanel();
