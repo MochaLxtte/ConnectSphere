@@ -18,7 +18,7 @@ interface State {
   started?: boolean;
   venue?: { live: number; outstanding: number };
   recovering?: number;
-  conflicts?: { overlap: number; hours: number };
+  conflicts?: { overlap: number; hours: number; blocked?: number };
   planStatus?: 'REQUIRED' | 'NOT_REQUIRED';
   equipment?: 'NONE' | 'READY' | 'REQUESTED' | 'SHORTFALL';
   pendingChange?: boolean;
@@ -133,6 +133,8 @@ describe('KAN-61 event confirmation', () => {
       /1 venue booking now overlapping another approved booking/],
     ['KAN-61-AC101 a booking outside current operating hours', { conflicts: { overlap: 0, hours: 2 } },
       /2 venue bookings outside the venue's operating hours/],
+    ['KAN-61-AC101 a buffer overlapping an operational block without an outage flag', { conflicts: { overlap: 0, hours: 0, blocked: 1 } },
+      /1 venue booking overlapping operational unavailability/],
     ['no venue arrangement', { venue: { live: 0, outstanding: 0 } }, /Approve at least one venue arrangement/],
     ['a pending venue arrangement', { venue: { live: 2, outstanding: 1 } }, /1 venue arrangement awaiting approval/],
     ['KAN-61-AC105 outage recovery', { venue: { live: 1, outstanding: 1 }, recovering: 1 }, /1 venue booking still requiring outage recovery/],
