@@ -1,0 +1,9 @@
+ Test Files  51 passed (51)
+      Tests  1068 passed (1068)
+   Duration  11.95s (transform 8.35s, setup 12.86s, import 12.91s, tests 43.98s, environment 18.75s)
+All files          |   95.83 |    92.95 |   97.75 |    98.3 |                   
+  ...StockPage.vue |   92.45 |    92.26 |   96.77 |    99.1 | 223               
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+ Test Files  1 failed | 64 passed (65)
+      Tests  1 failed | 1760 passed (1761)
+   Duration  2.85s (transform 2.92s, setup 0ms, import 8.81s, tests 2.96s, environment 6ms)

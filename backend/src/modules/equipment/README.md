@@ -12,6 +12,10 @@ Technical Support Staff can assess equipment for an `APPROVED` or `CONFIRMED` ev
 | `reservation-types.ts`, `reservation-input.ts` | Saved-line/readiness DTOs and strict version/reason input validation |
 | `reservation-service.ts` | Full saved-request reservation, reasoned cancellation, current-stock readiness, locking and same-transaction notifications |
 | `reservation-router.ts` | Technical Support context, reserve and cancel endpoints |
+| `stock-types.ts`, `stock-input.ts` | KAN-18 stock DTOs and strict input: whole quantities from 0 to 1,000,000, a 1 to 500 character reason and the revision the form was based on |
+| `stock-rules.ts` | Operational quantity, Available / Partly unavailable / Unavailable status and the shortfall calculation (reservations the stock no longer covers) |
+| `stock-service.ts` | KAN-18 list, detail and update for Technical Support Staff: pool lock, revision check, append-only history and same-transaction shortfall notices |
+| `stock-router.ts` | KAN-18 `GET /api/equipment/stock`, `GET /api/equipment/stock/:id` and `PATCH /api/equipment/stock/:id` |
 | `equipment-service.ts` | KAN-63 coherent plan snapshots, opaque revisions, coordinator requests/cancellation/replacement and staff review using the KAN-26 reservation writer |
 | `equipment-router.ts` | KAN-63 protected plan, catalogue, request, review, replacement and cancellation endpoints |
 
@@ -119,3 +123,7 @@ files under `database/tests/events/`. Coverage includes stale saves, KAN-26 sour
 stock-lock waits, competing reservations, replacement/cancellation races and rollback. Executed
 results belong in [test evidence](../../../../docs/testing/test-evidence.md); these disposable
 PostgreSQL tests do not establish shared-Supabase or manual acceptance.
+
+## Stock maintenance (KAN-18)
+
+Technical Support Staff change a type's total, damaged and maintenance quantities with a reason and the revision they were based on. The change locks the equipment pool the reservation writers use, saves the quantities, raises `stock_revision` and appends an immutable `equipment_stock_changes` row. It never edits or cancels a reservation: events whose reservations the new operational stock no longer covers are listed, and when the change reduces operational stock each affected event's assigned coordinator gets one `EQUIPMENT_STOCK_SHORTFALL` notice in the same transaction. A stale form gets `409 EQUIPMENT_STOCK_REVISION_CONFLICT`; a retry of a change that just committed gets the saved state. The shortfall and notice rules are **To agree** (decision log, 29 October 2026). Requires migration 019. Contract: [API contract](../../../../docs/architecture/api-contract.md#equipment-stock-kan-18-cf-16--29-october-2026).

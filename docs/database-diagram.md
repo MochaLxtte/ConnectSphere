@@ -40,6 +40,8 @@ erDiagram
     app_users |o..o{ equipment_requests : "decided_by"
     app_users |o..o{ equipment_requests : "released_by"
     equipment_types ||..o{ equipment_requests : "equipment_type_id"
+    equipment_types ||..o{ equipment_stock_changes : "equipment_type_id"
+    app_users ||..o{ equipment_stock_changes : "changed_by"
     event_requests ||..o{ equipment_requests : "event_request_id"
     app_users ||..o{ equipment_requests : "requested_by"
     app_users |o..o{ event_change_requests : "decided_by"
@@ -249,8 +251,24 @@ erDiagram
         integer damaged_quantity "default 0, nonnegative; migration 014"
         integer maintenance_quantity "default 0, nonnegative; combined losses <= total"
         boolean is_active
+        integer stock_revision "default 0, rises with each stock change; migration 019"
         timestamptz created_at
         timestamptz updated_at
+    }
+
+    equipment_stock_changes {
+        uuid id PK
+        uuid equipment_type_id FK
+        integer revision "unique with equipment_type_id; migration 019"
+        uuid changed_by FK
+        timestamptz changed_at
+        text reason "1 to 500 characters"
+        integer previous_total_quantity
+        integer previous_damaged_quantity
+        integer previous_maintenance_quantity
+        integer new_total_quantity
+        integer new_damaged_quantity
+        integer new_maintenance_quantity "new damaged + maintenance <= new total; append-only"
     }
 
     equipment_requests {
@@ -403,3 +421,5 @@ Migration 017 has **not** been applied to shared Supabase; announce it first (AG
 ## 28 October 2026 — PR #63 model reconciliation
 
 The current diagram includes migrations 016–018. Architecture exports now include event revision/edit history, change-request revision/impact fields, cancellation audit and equipment/registration state. Earlier pending-export notes are superseded by this refresh. The equipment API uses a derived opaque version over event and line data rather than exposing the stored integer as its concurrency token. Cancellation counts are captured before migration 015 releases RESERVED equipment; all release records remain immutable. No migration was rewritten and no shared Supabase schema change was performed during this repair. AUTO-20261028-PR63-01 records fresh-install/upgrade and workflow tests on disposable PostgreSQL 17.
+
+- KAN-18 migration 019 adds `equipment_types.stock_revision` (default 0, `>= 0`) and the append-only `equipment_stock_changes` history (one row per accepted stock change, unique per type and revision; a trigger refuses updates and deletes; row-level security with no Data API access). Existing equipment types, reservations and history are untouched. It is applied only to local and test databases so far, not to shared Supabase.

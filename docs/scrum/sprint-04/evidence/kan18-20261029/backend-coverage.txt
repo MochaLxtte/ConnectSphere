@@ -1,0 +1,5 @@
+ Test Files  65 passed (65)
+      Tests  1761 passed (1761)
+   Duration  2.98s (transform 3.10s, setup 0ms, import 9.49s, tests 3.14s, environment 7ms)
+All files          |   93.67 |    94.35 |   92.44 |   93.57 |                   
+  stock-service.ts |     100 |       98 |     100 |     100 | 87                
