@@ -20,3 +20,11 @@ Request Changes captures immutable venue and technical fingerprints in `safety_r
 Officer venue context now includes opening/closing hours and setup/turnaround minutes. Existing preparation is blocked whenever the event is no longer CONFIRMED, its approval/round is stale, or live readiness fails, including conflicts that do not alter this event's fingerprint. Terminal events never expose equipment reservation controls through an old technical-remediation flag.
 
 Regression evidence: `AUTO-20261029-PR78-REVIEW`; upgrade preservation is tested in `database/tests/safety/safety-upgrade.integration.test.ts`. Automated results do not establish connected manual acceptance.
+
+## Officer screen response ownership — 30 October 2026
+
+`SafetyReviewPage.vue` clears the previous review, decision, notes, selected areas and messages when the route, reviewer, role or session-loading state changes. It also clears the form while refreshing after a write. Each read and decision response belongs to the route and reviewer that started it; leaving that context, returning to the same route later or unmounting the page invalidates the response. An old success, error or 401 cannot change the new screen, clear its session, release its save controls or start a reload for another review.
+
+On the current screen, decision controls stay unavailable during saving and the following read. A failed response can follow a committed write, so the page reads the current round before permitting another decision and never reports an unconfirmed write as saved. It reports a completed reload only after that read succeeds; if reconciliation fails, the form stays unavailable and the officer must reload the page. Current 401 responses clear the expired session. These are client-side corrections under KAN-84-AC4/AC10/AC12; the API, database decision guards and migration requirements are unchanged.
+
+Controlled response-order checks are in `SafetyPages.test.ts` (isolated components) and `tests/e2e/safety-review.spec.ts` (browser/UI integration with substituted API responses). TC-06-442–444 retain those automated boundaries. The connected manual journey, TC-06-445, remains **Not executed**; use the [focused local E2E acceptance steps](../../../../docs/testing/README.md#30-october-2026--focused-local-e2e-acceptance-for-kan-80-kan-82-and-kan-84).
