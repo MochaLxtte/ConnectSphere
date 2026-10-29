@@ -102,3 +102,8 @@ KAN-26 is In Progress / Tristan (3 SP), with unestimated KAN-104–106 In Progre
 | ID | Artifact | Source / result | Limits |
 | --- | --- | --- | --- |
 | S4-E19 | [KAN-84 run logs](kan84-20261029/) (`check.txt`, `coverage.txt`, `integration.txt`, `e2e.txt`, `e2e-repeat.txt`; PR #78 review retest `*-review-fix.txt`, run `AUTO-20261029-KAN84-02`) | `AUTO-20261029-KAN84-01`: check and coverage Pass; PostgreSQL integration 705/705 including 9 KAN-84 tests; browser fixtures 206/206 including 3 KAN-84 tests; KAN-84 spec repeated 15/15 | Local Windows run, Node 24.11.1, disposable PostgreSQL 17; synthetic accounts; browser APIs substituted; backend coverage excludes the integration-tested safety service; no live authentication, CI or acceptance |
+## KAN-61 PR #77 operational-block review follow-up — 29 October 2026
+
+| ID | Artifact | Source / result | Limits |
+| --- | --- | --- | --- |
+| S4-E21 | [AUTO-20261029-PR77-REVIEW](../../../testing/test-evidence.md#auto-20261029-pr77-review--operational-block-readiness-regression), execution `EX-06-431-AUTO-20261029-PR77-01` | TC-06-431 failed before the fix and passed afterwards; 15/15 confirmation PostgreSQL tests; check and coverage Pass with 1,154 frontend and 1,933 backend tests. Tested code committed unchanged as `a31d2ef`. | Captured console results recorded in the run narrative; no separate raw log file retained. Disposable local PostgreSQL with synthetic identities, no shared Supabase or manual E2E acceptance; full database/browser suites not rerun for this follow-up. |
