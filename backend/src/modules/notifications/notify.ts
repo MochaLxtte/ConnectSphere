@@ -7,6 +7,8 @@ export interface NotificationInput {
   venueBookingId?: string | null;
   equipmentRequestId?: string | null;
   changeRequestId?: string | null;
+  /** KAN-84: the safety review round the notice is about. */
+  safetyReviewId?: string | null;
   /** Stable machine-readable kind, for example `REVIEW_APPROVED`. */
   type: string;
   title: string;
@@ -28,19 +30,21 @@ export async function recordNotifications(
   if (notifications.length === 0) return 0;
   const equipment = notifications.some(item => item.equipmentRequestId != null);
   const change = notifications.some(item => item.changeRequestId != null);
-  const fieldCount = 7 + Number(equipment) + Number(change);
+  const safety = notifications.some(item => item.safetyReviewId != null);
+  const fieldCount = 7 + Number(equipment) + Number(change) + Number(safety);
   const values: unknown[] = [];
   const rows = notifications.map((item, index) => {
     values.push(item.recipientId, item.eventRequestId, item.venueBookingId ?? null,
       item.type, item.title, item.message, item.dedupeKey);
     if (equipment) values.push(item.equipmentRequestId ?? null);
     if (change) values.push(item.changeRequestId ?? null);
+    if (safety) values.push(item.safetyReviewId ?? null);
     const first = index * fieldCount;
     return `(${Array.from({ length: fieldCount }, (_, field) => `$${first + field + 1}`).join(', ')})`;
   });
   const result = await client.query(
     `INSERT INTO notifications
-       (recipient_id, event_request_id, venue_booking_id, type, title, message, dedupe_key${equipment ? ', equipment_request_id' : ''}${change ? ', change_request_id' : ''})
+       (recipient_id, event_request_id, venue_booking_id, type, title, message, dedupe_key${equipment ? ', equipment_request_id' : ''}${change ? ', change_request_id' : ''}${safety ? ', safety_review_id' : ''})
      VALUES ${rows.join(', ')}
      ON CONFLICT (recipient_id, dedupe_key) DO NOTHING`,
     values,

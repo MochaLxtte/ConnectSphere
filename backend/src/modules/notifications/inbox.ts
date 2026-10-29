@@ -33,6 +33,7 @@ const FROM = `
   LEFT JOIN venue_bookings b ON b.id = n.venue_booking_id
   LEFT JOIN equipment_requests r ON r.id = n.equipment_request_id AND r.event_request_id = e.id
   LEFT JOIN event_change_requests c ON c.id = n.change_request_id AND c.event_request_id = e.id
+  LEFT JOIN safety_reviews sr ON sr.id = n.safety_review_id AND sr.event_request_id = e.id
   LEFT JOIN event_registrations attendee_registration ON attendee_registration.event_request_id = e.id
     AND attendee_registration.attendee_id = $1`;
 
@@ -58,11 +59,14 @@ const CAN_VIEW_REGISTRATION = `($2 = 'ATTENDEE' AND EXISTS (
     AND ((n.registration_id = own.id AND n.type IN ('REGISTRATION_CONFIRMED','REGISTRATION_WITHDRAWN'))
       OR (own.status = 'REGISTERED' AND n.type IN ('EVENT_CONFIRMED','ATTENDEE_EVENT_CHANGED')))))`;
 
+// KAN-84-AC1/AC11: a Safety Officer sees only safety-round notices, never general event detail.
+const CAN_VIEW_SAFETY = `(sr.id IS NOT NULL AND $2 = 'SAFETY_OFFICER')`;
+
 const VISIBLE = `n.recipient_id = $1 AND (
   (n.event_request_id IS NULL AND n.venue_booking_id IS NULL AND n.equipment_request_id IS NULL)
   OR n.type = 'COORDINATOR_REASSIGNED_AWAY'
   OR ${CAN_VIEW_EVENT} OR ${CAN_VIEW_BOOKING} OR ${CAN_VIEW_EQUIPMENT}
-  OR ${CAN_VIEW_ATTENDEE_CANCELLATION} OR ${CAN_VIEW_REGISTRATION})`;
+  OR ${CAN_VIEW_ATTENDEE_CANCELLATION} OR ${CAN_VIEW_REGISTRATION} OR ${CAN_VIEW_SAFETY})`;
 
 interface Row {
   id: string;
@@ -82,6 +86,8 @@ interface Row {
   canViewEquipment: boolean;
   canViewAttendeeCancellation: boolean;
   canViewRegistration: boolean;
+  canViewSafety: boolean;
+  safetyReviewId: string | null;
   equipmentOpen: boolean;
 }
 
@@ -91,13 +97,15 @@ const SELECT = `SELECT n.id, n.type, n.title, n.message, n.read_at AS "readAt", 
   ${CAN_VIEW_EVENT} AS "canViewEvent", ${CAN_VIEW_BOOKING} AS "canViewBooking",
   ${CAN_VIEW_EQUIPMENT} AS "canViewEquipment", e.status IN ('APPROVED', 'CONFIRMED') AS "equipmentOpen",
   ${CAN_VIEW_ATTENDEE_CANCELLATION} AS "canViewAttendeeCancellation",
-  ${CAN_VIEW_REGISTRATION} AS "canViewRegistration"`;
+  ${CAN_VIEW_REGISTRATION} AS "canViewRegistration",
+  ${CAN_VIEW_SAFETY} AS "canViewSafety", sr.id AS "safetyReviewId"`;
 
 function toItem(row: Row, role: WorkflowActor['role']): InboxItem {
   const fields = Object.entries({ purpose: 'purpose', startsAt: 'start time', endsAt: 'end time',
     venueRequirements: 'venue requirements', accessibilityNeeds: 'accessibility needs' })
     .filter(([key]) => Object.hasOwn(row.proposedChanges ?? {}, key)).map(([, label]) => label);
-  const link = (row.canViewRegistration || row.canViewAttendeeCancellation) && row.attendeeRegistrationId
+  const link = row.canViewSafety && row.safetyReviewId ? `/safety-reviews/${row.safetyReviewId}`
+    : (row.canViewRegistration || row.canViewAttendeeCancellation) && row.attendeeRegistrationId
     ? `/registrations?registration=${encodeURIComponent(row.attendeeRegistrationId)}`
     : row.canViewEvent && row.eventId && row.changeRequestId
       ? `${role === 'EVENT_ORGANISER' ? '/events/' : '/reviews/'}${row.eventId}?change=${encodeURIComponent(row.changeRequestId)}`
