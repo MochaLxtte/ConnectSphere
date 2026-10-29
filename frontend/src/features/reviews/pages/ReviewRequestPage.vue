@@ -145,6 +145,7 @@ onBeforeUnmount(() => {
         class="availability-link"
         :to="`/reviews/${state.detail.id}/venue-suitability`"
       >Check venue suitability</RouterLink></p>
+      <p><RouterLink :to="`/events/${state.detail.id}/registrations`">View registrations</RouterLink></p>
       <!-- KAN-51: open the venue calendar at the week of the proposed start. -->
       <RouterLink
         v-if="state.detail.startsAt"

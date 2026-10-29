@@ -25,6 +25,7 @@ import { createVenueSuitabilityRouter } from './modules/venues/suitability-route
 import { createEquipmentAvailabilityRouter } from './modules/equipment/availability-router.js';
 import { createEquipmentReservationRouter } from './modules/equipment/reservation-router.js';
 import { createEquipmentRouter } from './modules/equipment/equipment-router.js';
+import { createRegistrationRouter } from './modules/registrations/router.js';
 
 export interface AppDependencies {
   database: HealthDatabase;
@@ -76,6 +77,7 @@ export function createApp({
   if (auth) app.use('/api/auth', createAuthRouter(auth));
 
   if (workspace) {
+    app.use('/api', createRegistrationRouter(workspace));
     // KAN-9: equipment context and advisory checks stay separate from general event access.
     app.use('/api/equipment/availability', createEquipmentAvailabilityRouter(workspace));
     app.use('/api/equipment/reservations', createEquipmentReservationRouter(workspace));

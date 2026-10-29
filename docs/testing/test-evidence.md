@@ -1885,3 +1885,113 @@ Static review of `database/tests/events/cancellation-equipment.integration.test.
 | `npx playwright test` | Pass — 189/189 (disposable local database) |
 
 **Not executed:** a manual re-check on localhost; planned with the KAN-82 hands-on run. TC-19-08's earlier Pass stands; this changes only when the panel reloads.
+
+## 29 October 2026 — KAN-17, KAN-67 and KAN-80 test specification expansion
+
+This is test preparation under AGENTS.md §4 steps 9–12, approved by Arvin in chat and prepared with Codex. It is not an AUTO/MAN run, implementation delivery, meeting, review or acceptance decision. Sources: live [KAN-17](https://smu-g7-grp1.atlassian.net/browse/KAN-17), [KAN-67](https://smu-g7-grp1.atlassian.net/browse/KAN-67) and [KAN-80](https://smu-g7-grp1.atlassian.net/browse/KAN-80), read through authenticated Jira MCP on 28 October 2026. All three were To Do / Arvin / Sprint 4 (Future), with unchanged 2/2/3 SP. KAN-14 supplies registration/re-entry prerequisites; KAN-64 is Done in Jira and supplies inbox infrastructure. A dependent card's status does not execute these cases. The current master guide at `ac5cd8bb442e45a5e1c5e32986132ce22ca25f12` uses integrated local acceptance; older hosted-only notes remain historical.
+
+Added **61** reusable specifications: **17 KAN-17**, **14 KAN-67**, **30 KAN-80**. Every one of the **29 live ACs** has a separate traceability row linking relevant detailed cases. Existing grouped cases, IDs, source notes and execution results are preserved. New cases carry explicit proposed synthetic data, prerequisites, steps, observable results and normal/boundary/conflict/failure purpose. Execution rows are preparation placeholders: result Not executed; run ID, actual result, executor, execution date, build, environment and evidence Not recorded. No earlier case result transfers automatically to a new specification.
+
+| Group | New cases | Main coverage |
+| --- | --- | --- |
+| S4-T09 / KAN-17 / CF-18 | TC-18-401–417 | Own withdrawal; cancel/confirm; persisted status; just before/exactly at/after start; close vs start; stale dialog; finite/unlimited capacity; concurrent/repeated requests; wrong owner/role; missing/inactive records; update/notice/commit failure; re-entry conditions; intended notices |
+| S4-T10 / KAN-67 / CF-18 | TC-18-418–431 | Owner/current coordinator; event/status/count accuracy; committed and failed mutations; empty/inactive-only rosters; UI/API denial; field allowlist; immediate reassignment revocation; delayed route/account responses; load errors |
+| S4-T13 / KAN-80 / CF-20 | TC-20-401–430 | Equipment confirmation/unavailability; significant change submission/action/decisions/affected attendees; confirmation/cancellation; registration/withdrawal; entities/links; recipient/read-state security; commit/rollback/replay/recipient overlap; actor acknowledgement; inbox reuse; separate CR responsibilities |
+
+**Existing source mapping, inspected but not rerun:** TC-20-401 links `backend/test/equipment/reservation-notifications.test.ts` and `database/tests/equipment/reservations.integration.test.ts` to the equipment-confirmation slice (AC1/5). TC-20-404/406/407 link `backend/test/notifications/change-request-notifications.test.ts` and `database/tests/events/change-requests.integration.test.ts` to change submission and organiser outcome slices (AC2/5). TC-20-429 links the equipment notification test to its overlapping-recipient builder/writer slice (AC7/8); the mock writer assertion does not prove concurrent PostgreSQL uniqueness. The referenced implementation lives in `backend/src/modules/notifications/trigger-matrix.ts`, `change-request-notifications.ts`, `notify.ts`, equipment reservation service and event change-request service. Traceability lists these paths only on the relevant AC rows. Remaining cases have no confirmed permanent automated path; none is invented. Existing notification source tests do not prove full recipient matrices, every business trigger, protected target navigation or integrated acceptance.
+
+**Execution boundaries and unresolved details:** notification requests for action use the recorded matrix; an unspecified exact recipient decision remains To agree. An attendee-relevant accepted change must be a legal KAN-15 transition; do not bypass major-change cancellation/new-request rules just to force a fixture. Any incompatible source condition is a dependency/policy gap, not a passing result. Read-state cases reuse supported KAN-64 behaviour and do not assume a new mark-unread endpoint. TC-20-422–425 are parameterised transaction specifications: record each trigger variation and fault separately; full-case Pass requires all specified variations. Static responsibility review TC-20-430 is not a functional test or a new story-point decision.
+
+**Environment and cleanup:** concurrency, clock boundaries and fault injection require isolated PostgreSQL. UI response-order fixtures cover UI isolation only. Integrated manual acceptance uses localhost frontend/API, real authentication and the agreed development database with the person signing in; record originals and coordinate restoration. No shared database was mutated for this preparation. New test fixtures are proposed, not claimed to exist or have been run. No migrations, new requirements, estimate changes or Jira transitions are part of this scope.
+
+**Verification of these documents — 29 October 2026:** structural validation passed for 61 new cases, 29 individual live AC rows, 61 Not executed placeholders and nine existing code/test paths. No missing AC links, orphan new cases or duplicate case/execution IDs were found. Every active criterion's wording was compared with a fresh authenticated Jira MCP read on 29 October and is unchanged. Historical CSV rows/narratives were compared against base `ac5cd8bb442e45a5e1c5e32986132ce22ca25f12` and preserved (ignoring Git line-ending conversion); backlog changes are limited to the approved case links and dated planning supplement. `git diff --check` passed. No application tests or coverage run is claimed. New application code coverage is not applicable because this change adds specifications only. Integrated acceptance and the newly specified cases remain Not executed; story acceptance remains Not assessed.
+
+The following repeatable PowerShell/Python check validates the delivered register links, required fields, real paths, placeholder metadata, unchanged historical CSV rows and active backlog wording against that base. The separate live Jira comparison above requires authenticated Jira access; this command does not claim to query Jira or execute application cases.
+
+```powershell
+@'
+import csv, io, re, subprocess
+from pathlib import Path
+root = Path.cwd()
+base = 'ac5cd8bb442e45a5e1c5e32986132ce22ca25f12'
+def rows(path, old=False):
+    text = (subprocess.check_output(['git', 'show', base + ':' + path]).decode('utf-8-sig')
+            if old else (root / path).read_text(encoding='utf-8-sig'))
+    return list(csv.DictReader(io.StringIO(text)))
+paths = ['docs/testing/test-cases.csv', 'docs/requirements/traceability.csv',
+         'docs/testing/test-executions.csv']
+for path in paths:
+    before, after = rows(path, True), rows(path)
+    assert after[:len(before)] == before, path
+cases, traces, executions = map(rows, paths)
+new = cases[len(rows(paths[0], True)):]
+ids = {r['test_case_id'] for r in new}
+assert len(new) == len(ids) == 61
+assert all(None not in r and all(v and v.strip() for v in r.values()) for r in new)
+assert len({r['test_case_id'] for r in cases}) == len(cases)
+assert len({r['execution_id'] for r in executions}) == len(executions)
+expected = {f'KAN-{story}-AC{ac}' for story in [17, 67, 80]
+            for ac in (list(range(1, 10)) if story == 80 else list(range(1, 8)) + [101, 102, 103])}
+selected = [r for r in traces if r['status'].startswith('29 October 2026 individual-AC specification;')]
+assert len(selected) == 29 and {r['acceptance_criterion_ids'] for r in selected} == expected
+by_id = {r['test_case_id']: r for r in new}
+linked = set()
+backlog = (root / 'docs/scrum/sprint-04/sprint-backlog.md').read_text(encoding='utf-8')
+old_backlog = subprocess.check_output(['git', 'show', base + ':docs/scrum/sprint-04/sprint-backlog.md']).decode('utf-8')
+for row in selected:
+    ac = row['acceptance_criterion_ids']
+    matches = re.findall(r'^\| \*\*' + re.escape(ac) + r'\*\* \| (.*?) \| (.*?) \|$', backlog, re.M)
+    old = re.findall(r'^\| \*\*' + re.escape(ac) + r'\*\* \| (.*?) \| (.*?) \|$', old_backlog, re.M)
+    assert len(matches) == len(old) == 1 and matches[0][0] == old[0][0]
+    for ident in row['test_case_ids'].split('; '):
+        assert ident in ids and ac in by_id[ident]['acceptance_criterion_ids'].split('; ')
+        assert ident in matches[0][1].split(', ')
+        linked.add(ident)
+    for field in ['implementation_path', 'automated_test_path']:
+        assert all(p == 'Not recorded' or (root / p).is_file() for p in row[field].split('; '))
+assert linked == ids
+planned = [r for r in executions if r['test_case_id'] in ids and r['result'] == 'Not executed']
+assert len(planned) == 61 and {r['test_case_id'] for r in planned} == ids
+for row in planned:
+    assert row['result'] == 'Not executed'
+    assert all(row[k] == 'Not recorded' for k in ['run_id', 'actual_result', 'executed_by',
+               'date_of_execution', 'build', 'environment', 'evidence'])
+subprocess.run(['git', 'diff', '--check'], check=True)
+print('PASS: 61 specifications, 29 AC mappings, 61 unperformed placeholders; history preserved')
+'@ | python -
+```
+
+## 29 October 2026 — KAN-17, KAN-67 and KAN-80 implementation verification
+
+**Run:** `AUTO-20261029-KAN1780-01`, executed by Codex on Windows with Node 24.22.1, isolated local PostgreSQL 17 and synthetic accounts. Build: the implementation worktree based on `ac5cd8bb442e45a5e1c5e32986132ce22ca25f12`, subsequently committed without code changes as `1855ab588bfce3d44d0fceb57be03622cf5e053b`; documentation remained uncommitted during the run. The local database was created for this run and migration 019 was applied there only. No shared Supabase changes or user sign-in occurred.
+
+| Check | Result and boundary |
+| --- | --- |
+| `npm run check` | Pass: 1,049 frontend and 1,726 backend tests, typechecks and builds. |
+| `npm run test:coverage` | Pass: frontend 95.80% statements / 92.49% branches / 97.72% functions / 98.18% lines; backend 93.41% / 94.06% / 91.98% / 93.33%. Frontend registrations: 95.14% statements / 88.79% branches / 100% functions / 100% lines. Backend registration service: 100% lines; branch coverage is below 100%. These are whole-file figures, not proof of every AC. The final small-screen CSS adjustment was verified in a subsequent focused browser run. |
+| `npm run test:integration` | Pass: 637 tests across 35 files against isolated PostgreSQL. Migration upgrade checks, authorization, concurrent withdrawal, rollback, notification persistence and reassignment are included. |
+| `npm run test:e2e` | Pass: 191 Chromium tests. The registration browser tests substitute API responses; they verify UI, confirmation, refresh and responsive layout, not a live integrated product workflow. A later focused run of the two registration cases passed after the mobile layout adjustment. |
+
+The initial full PostgreSQL run failed 12 migration-history expectations because migration 019 was not yet listed in the existing expected migrations. After updating those expectations, a second full run failed one KAN-15 assertion that selected an arbitrary decision recipient after a coordinator acknowledgement was added. The assertion was corrected to identify the organiser and separately verify the coordinator; its focused retest and the final full suite passed. The first focused browser attempt lacked `DATABASE_URL`; the next exposed an overbroad browser route fixture intercepting a frontend module. Both were corrected for the retest. A later first coverage attempt exposed a test fixture reusing a consumed `Response`; a fresh response per request fixed it. These were test/environment failures and are not recorded as failed product cases. Logs are registered as S3-E29.
+
+**Supported case-level execution:** `TC-18-408`, Pass, is backed by the named real-PostgreSQL concurrent-withdrawal scenario in `database/tests/events/registrations.integration.test.ts`: one request changed the row, one replay did not, a replacement registration remained active, the original time was retained and exactly three withdrawal notices persisted. `TC-20-430`, Pass, is the separate static responsibility review `MAN-20261029-01` below. Other new specifications remain **Not executed** at the whole-case level unless a separate result is added. Unit, database and browser suites exercise additional subsets of KAN-17/67/80, but their aggregate Pass does not establish every detailed specification or a complete story acceptance.
+
+**Coverage and dependency limits:** the API and service test suites do not cover every defensive branch. The browser layer uses substituted APIs; direct PostgreSQL/HTTP tests use synthetic authentication. Full registration creation and re-entry belong to KAN-14, final event confirmation to KAN-61, and stock editing to KAN-18; tests exercise their transaction hooks with isolated fixtures, not those unfinished user workflows. The KAN-15 attendee-change notice is tested for an allowed purpose change; other affected changes remain subject to KAN-15's cancel-and-resubmit policy. Whether KAN-80-AC2's request for action requires a distinct workflow, and its recipient details, remain **To agree** in the [decision log](../requirements/assumptions-and-questions.md#29-october-2026--kan-80-change-action-and-recipient-interpretation). Full connected local acceptance using real authentication and the agreed shared development database is **Not executed**; story acceptance is **Not assessed**. No review, merge, Done point or customer approval is claimed.
+
+**Cutoff and recipient follow-up:** the source was corrected so an already-active registration on a non-terminal event can be withdrawn before start without requiring the event to be Confirmed, and an unchanged replay at or after start is refused. Focused unit (24 tests), isolated PostgreSQL registration (12 tests) and notification (9 tests) retests passed, followed by the 637-test integration run above. A different Technical Support actor who records an equipment shortfall also receives an acknowledgement in addition to the relevant original deciding staff member. This is interpretation of the existing KAN-17-AC101 and KAN-80-AC1/8, not a new acceptance criterion or team decision.
+
+### MAN-20261029-01 — TC-20-430 static responsibility review
+
+On 29 October Codex read the live Jira KAN-64/80/81/83/84 cards and repository split mapping and case register, using Arvin's authenticated Jira session. The [recorded observations](../scrum/sprint-03/evidence/kan1780-20261029/scope-review.txt) identify CR-2/4/6 notification criteria and their test cases, the original-scope split and the native 5 + 3 SP fields. **Pass** for the static mapping review only. No shared values or data were modified and no product workflow was executed; full KAN-80 integrated acceptance remains **Not executed**.
+
+## 29 October 2026 - PR #70 review corrections
+
+**Run:** `AUTO-20261029-KAN1780-02`, Codex on Windows / Node 24.22.1, merge commit `eca4cd1` plus the uncommitted review corrections. Isolated PostgreSQL 17 on localhost and synthetic accounts; browser API responses substituted. No shared Supabase or real login.
+
+`npm run check` passed: 1,051 frontend and 1,727 backend tests, typechecks and builds. `npm run test:coverage` passed: frontend 95.95% statements / 92.86% branches / 97.83% functions / 98.28% lines; backend 93.39% / 93.99% / 92.01% / 93.34%. `npm run test:integration` passed 639 tests in 35 files. `npm run test:e2e` passed 192 tests, including the duplicate-name registration target, with substituted browser APIs. The targeted PostgreSQL cancellation and outcome suites passed 19 tests. Cancellation and inbox reached 100% line coverage; branch and SQL coverage remain incomplete.
+
+The first full database attempt failed an older cancellation test expecting no attendee link. A subsequent check failed because the first test edit declared its fixture ID in the wrong test. Both test expectations were corrected; the targeted and final full retests passed. Two overlapping integration attempts were stopped after stalling; the final full run was restarted alone. These are test/fixture and execution issues, not recorded product-case failures. Logs are registered in S3-E29.
+
+The real PostgreSQL scenarios assert that only current arrangement staff receive confirmation or cancellation, and that cancellation's single writer preserves the existing manager message. Purpose-change and browser/component scenarios check a recipient-scoped registration link, current purpose and duplicate event names. Notification labels cover venue requirements and accessibility needs without exposing their internal values. These are partial scenario results: TC-20-417 and other whole-case placeholders remain Not executed; no suite total is represented as connected or case-level acceptance. Real authentication, shared migration 019, KAN-14/18/61 dependencies, integrated acceptance and renewed review remain outstanding.
+
+**Artifact readability:** the earlier S3-E29 PowerShell output files were converted from UTF-16 to UTF-8 with line-end whitespace normalized; the contents and reported outcomes were retained.

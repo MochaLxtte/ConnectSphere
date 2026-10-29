@@ -1,0 +1,79 @@
+
+> connectsphere@0.1.0 check
+> npm run typecheck && npm test && npm run build
+
+
+> connectsphere@0.1.0 typecheck
+> tsc -p tsconfig.tools.json && npm run typecheck --workspaces
+
+
+> @connectsphere/frontend@0.1.0 typecheck
+> vue-tsc --noEmit
+
+
+> @connectsphere/backend@0.1.0 typecheck
+> tsc --noEmit
+
+
+> connectsphere@0.1.0 test
+> npm run test --workspaces
+
+
+> @connectsphere/frontend@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.11 C:/Users/arvin/Downloads/GitHub/ConnectSphere-ac-test-specs/frontend
+
+
+ Test Files  50 passed (50)
+      Tests  1049 passed (1049)
+   Start at  03:30:55
+   Duration  39.22s (transform 43.62s, setup 117.50s, import 76.32s, tests 147.55s, environment 151.79s)
+
+
+> @connectsphere/backend@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.11 C:/Users/arvin/Downloads/GitHub/ConnectSphere-ac-test-specs/backend
+
+
+ Test Files  62 passed (62)
+      Tests  1726 passed (1726)
+   Start at  03:31:35
+   Duration  10.67s (transform 18.97s, setup 0ms, import 71.22s, tests 16.88s, environment 41ms)
+
+
+> connectsphere@0.1.0 build
+> npm run build --workspaces
+
+
+> @connectsphere/frontend@0.1.0 build
+> vue-tsc --noEmit && vite build
+
+vite v8.2.2 building client environment for production...
+transforming...
+✓ 237 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.69 kB │ gzip:   0.40 kB
+dist/assets/index-CEiNC44P.css   74.83 kB │ gzip:  13.17 kB
+dist/assets/index-Bd16bwRS.js   589.71 kB │ gzip: 158.43 kB
+
+✓ built in 1.40s
+node.exe : [plugin builtin:vite-reporter]
+At C:\nvm4w\nodejs\npm.ps1:29 char:3
++   & $NODE_EXE $NPM_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([plugin builtin:vite-reporter] :String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking:
+https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+
+> @connectsphere/backend@0.1.0 build
+> tsc -p tsconfig.build.json

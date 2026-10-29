@@ -1,0 +1,40 @@
+
+> connectsphere@0.1.0 test:integration
+> vitest run --config vitest.integration.config.ts
+
+
+ RUN  v4.1.11 C:/Users/arvin/Downloads/GitHub/ConnectSphere-ac-test-specs
+
+ ❯ database/tests/events/change-requests.integration.test.ts (14 tests | 1 failed) 1659ms
+     × KAN-15-AC6/AC104 approval applies the values, audits them, and cancels affected pending arrangements only 53ms
+node.exe :
+At C:\nvm4w\nodejs\npm.ps1:29 char:3
++   & $NODE_EXE $NPM_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  database/tests/events/change-requests.integration.test.ts > KAN-15 submit and review > KAN-15-AC6/AC104
+approval applies the values, audits them, and cancels affected pending arrangements only
+AssertionError: expected 'You approved the change request for “…' to contain '1 pending arrangement was cancelled'
+
+Expected: "1 pending arrangement was cancelled"
+Received: "You approved the change request for “Open day”."
+
+ ❯ database/tests/events/change-requests.integration.test.ts:197:8
+    195|     expect(audit.rows).toEqual([{ editor_role: 'EVENT_COORDINATOR', ch…
+    196|     expect((await fixture.notifications(id)).find((row) => row.type ==…
+    197|       .toContain('1 pending arrangement was cancelled');
+       |        ^
+    198|     expect((await fixture.notifications(id)).some((row) => row.type ==…
+    199|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 34 passed (35)
+      Tests  1 failed | 634 passed (635)
+   Start at  03:07:37
+   Duration  180.74s (transform 1.88s, setup 0ms, import 21.45s, tests 148.05s, environment 6ms)

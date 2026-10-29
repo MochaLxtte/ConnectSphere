@@ -1411,3 +1411,13 @@ Consequences: the `sprint-scope.test.ts` guard no longer lists the four change-r
 ## 28 October 2026 — PR #63 correction within existing criteria
 
 The review repair was authorized in this working session. Existing KAN-63 AC6/7/101/103/104 require full availability-safe reservation and stale-form protection: the implementation now shares KAN-26's writer and uses an opaque plan revision across both APIs. Existing KAN-62 AC3/4/102/103/104 require atomic one-time release, accurate history and attendee-safe notifications: shared venue-before-event locks and recipient-scoped cancellation projections enforce those requirements. KAN-15 AC7 invalidates a previous Not Required declaration when approved timing/equipment changes affect planning. These are corrections/integration of existing criteria, not new customer scope, a team estimate decision or completed manual acceptance. Jira wording and the two 5 SP estimates remain unchanged.
+
+## 29 October 2026 — KAN-80 change-action and recipient interpretation
+
+**Source:** Jira KAN-80-AC2/8; KAN-15-AC10 and the 27 October D6 implementation record above. KAN-80 describes change submission, requests for action and decisions, while the current KAN-15 workflow implements submission, approve/reject and withdrawal without a separate change-specific request-for-action transition. Submission currently directs the coordinator to review; decision notifications include an acknowledgement for the reviewing coordinator as well as the organiser, following KAN-80's actor-recipient wording. The existing D6 owner outcome remains.
+
+**Question:** Is the submission notice the intended request for action, or is a distinct change-specific action and notification required? Who exactly should receive any such additional action? **To agree.** Do not infer a new workflow, acceptance criterion, team decision or completed KAN-80 acceptance from the current implementation. The source and KAN-15 owner's response are **Not recorded**. The 3 SP estimate remains unchanged; its fit after dependency integration is **To agree**.
+
+## 29 October 2026 - PR #70 attendee-change notification scope
+
+**Source:** PR #70 review and Arvin's answer in the development conversation. Arvin confirmed that changes to venue requirements and accessibility needs should trigger attendee notifications alongside purpose and event-time changes. The notice identifies the changed categories without exposing their internal values; current purpose and event time are shown on the recipient's own registration. This records Arvin's answer, not a reported team decision. The separate KAN-80 request-for-action interpretation remains To agree.
