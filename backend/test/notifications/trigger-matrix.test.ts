@@ -132,13 +132,13 @@ describe('KAN-64-AC203/AC208 venue booking decisions', () => {
 });
 
 describe('KAN-64 notification vocabulary', () => {
-  it('declares the KAN-26 reservation slice while other KAN-80 triggers remain separate', () => {
+  it('declares the KAN-26 reservation and KAN-14 registration slices while other KAN-80 triggers remain separate', () => {
     expect(NOTIFICATION_TYPES).toEqual([
       'REQUEST_SUBMITTED', 'CLARIFICATION_REQUESTED', 'REVIEW_APPROVED', 'REVIEW_REJECTED', 'COORDINATOR_ASSIGNED',
       'COORDINATOR_REASSIGNED', 'COORDINATOR_REASSIGNED_AWAY', 'VENUE_BOOKING_APPROVED', 'VENUE_BOOKING_REJECTED',
-      'VENUE_OUTAGE_RECOVERY_REQUIRED', 'EQUIPMENT_RESERVED',
+      'VENUE_OUTAGE_RECOVERY_REQUIRED', 'EQUIPMENT_RESERVED', 'REGISTRATION_CONFIRMED', 'REGISTRATION_RECEIVED',
     ]);
-    expect(NOTIFICATION_TYPES.some((type) => /CONFIRM|CANCEL|REGISTRATION|CHANGE/.test(type))).toBe(false);
+    expect(NOTIFICATION_TYPES.some((type) => /^EVENT_(CONFIRMED|CANCELLED)|CANCEL|WITHDRAW|CHANGE/.test(type))).toBe(false);
     const every = [
       ...submissionNotifications(event), ...clarificationNotifications(event, { id: 'c', message: 'm' }),
       ...reviewNotifications(event, { id: 'r', decision: 'APPROVED', reason: null }),
