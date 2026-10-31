@@ -131,3 +131,9 @@ KAN-26 is In Progress / Tristan (3 SP), with unestimated KAN-104–106 In Progre
 | ID | Artifact | Source / result | Limits |
 | --- | --- | --- | --- |
 | S4-E25 | [Logs, screenshots, audit observations and source hashes](ui-spacing-20261031/) (`before.txt`, `focused.txt`, `check.txt`, `coverage.txt`, `browser.txt`, `summary.json`, `layout-audit.json`, `source-inventory.json`, `layout-audit-harness.txt`; desktop/mobile queue and booking images) | AUTO-20261031-UI-SPACING: two product failures reproduced, 10 focused cases passed, check/coverage passed with 1,209 frontend + 1,959 backend tests, 244 browser tests passed. 229 inspected snapshots across 28 route patterns had no flagged inset/link/overflow issues. | Synthetic browser authentication/API responses and fallback fonts; sampled states, not every browser/state. CSS verified through geometry/style assertions and visual inspection. TC-04-233 Not executed; patch acceptance Not assessed. No shared database writes or migration. |
+
+## Booking replacement and feedback — 1 November 2026
+
+| ID | Artifact | Source / result | Limits |
+| --- | --- | --- | --- |
+| S4-E26 | [Logs, source hashes and desktop/mobile screenshots](booking-feedback-20261101/) (`before.txt`, `component-initial.txt`, `focused.txt`, `check.txt`, `coverage.txt`, `browser.txt`, `summary.json`, `document-validation.json`) | AUTO-20261101-BOOKING-FEEDBACK: two product failures reproduced; 11 focused and 248 full browser cases pass. Check/coverage pass with 1,209 frontend + 1,959 backend tests. Four screenshots visually inspected. | Synthetic browser authentication/API responses; no shared data writes or migration. TC-12-23 Not executed; patch acceptance Not assessed. Source hashes identify the tested candidate before documentation. |

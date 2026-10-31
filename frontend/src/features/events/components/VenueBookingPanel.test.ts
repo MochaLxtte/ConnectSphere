@@ -121,6 +121,7 @@ describe('KAN-53 venue booking request panel', () => {
     const view = render(VenueBookingPanel, { global, props: coordinatorProps });
     await fillAndSubmit();
     expect(await screen.findByRole('alert')).toHaveTextContent('A venue booking cannot be requested for this event.');
+    await waitFor(() => expect(screen.getByRole('alert')).toHaveFocus());
     expect(view.emitted('changed')).toBeUndefined();
   });
 
@@ -479,6 +480,8 @@ describe('KAN-82 managing one arrangement at a time', () => {
     await fireEvent.click(screen.getByRole('button', { name: 'Request replacement' }));
     const select = screen.getByLabelText(/This request replaces/) as HTMLSelectElement;
     expect(select.value).toBe('a1');
+    await waitFor(() => expect(screen.getByRole('heading', { name: 'Request a replacement venue' })).toHaveFocus());
+    expect(screen.getByText(/Replacing:/).closest('p')).toHaveTextContent('Main Hall');
     expect(select.selectedOptions[0]!.textContent).toContain('(cancelled)');
     expect(screen.getByText(/The cancelled arrangement stays cancelled\./)).toBeInTheDocument();
     await fillAndSubmit();

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref, useId, watch } from 'vue';
+import { computed, nextTick, onBeforeUnmount, ref, useId, watch } from 'vue';
 import { ApiError } from '../../../lib/api-client';
 import { authSession, clearLocalSession } from '../../auth/session.js';
 import {
@@ -21,6 +21,9 @@ const loadError = ref<string | null>(null);
 const busy = ref(false);
 const actionError = ref<string | null>(null);
 const savedMessage = ref<string | null>(null);
+const feedbackLocation = ref<'panel' | 'request'>('panel');
+const requestHeading = ref<HTMLElement | null>(null);
+const requestFeedback = ref<HTMLElement | null>(null);
 const uncertainSave = ref(false);
 const accessDenied = ref(false);
 const venues = ref<VenueResult[]>([]);
@@ -70,8 +73,19 @@ const awaitsReplacement = (item: VenueBooking) => item.status === 'CANCELLED' &&
 const replaceable = computed(() => bookings.value.filter((item) =>
   (item.status === 'APPROVED' && needsRecovery(item)) || (canManage.value && awaitsReplacement(item))));
 
+const replacementSource = computed(() => byId(replacesBookingId.value));
+
 const arrangementLabel = (item: VenueBooking) =>
   `${item.venueName}, ${formatEventTime(item.startsAt)} to ${formatEventTime(item.endsAt)}`;
+
+/** Focus only the current event's rendered feedback, without animated scrolling. */
+async function revealRequest(target: 'heading' | 'feedback', version: number) {
+  await nextTick();
+  if (version !== contextVersion || !canRequest.value) return;
+  const element = target === 'heading' ? requestHeading.value : requestFeedback.value;
+  element?.focus({ preventScroll: true });
+  element?.scrollIntoView?.({ block: target === 'heading' ? 'start' : 'center', behavior: 'auto' });
+}
 
 function abortPending() {
   listController?.abort(); venuesController?.abort(); submitController?.abort(); cancelController?.abort();
@@ -163,6 +177,7 @@ async function submit() {
   const current = new AbortController();
   submitController = current;
   const version = contextVersion;
+  feedbackLocation.value = 'request';
   busy.value = true; actionError.value = null; savedMessage.value = null;
   try {
     await submitVenueBooking(props.eventRequestId, {
@@ -183,15 +198,19 @@ async function submit() {
     } else {
       actionError.value = error.message;
       // KAN-81-AC12: the original was resolved or its outage removed meanwhile; show current state.
-      if (error.code === 'REPLACEMENT_NOT_NEEDED') { replacesBookingId.value = ''; void load(); }
+      if (error.code === 'REPLACEMENT_NOT_NEEDED') { replacesBookingId.value = ''; await load(); }
     }
   } finally {
-    if (!current.signal.aborted && version === contextVersion) busy.value = false;
+    if (!current.signal.aborted && version === contextVersion) {
+      busy.value = false;
+      void revealRequest('feedback', version);
+    }
   }
 }
 
 function startCancel(item: VenueBooking) {
   if (busy.value || needsRefresh.value) return;
+  feedbackLocation.value = 'panel';
   cancelTarget.value = item; cancelReason.value = ''; actionError.value = null; savedMessage.value = null;
 }
 
@@ -202,9 +221,10 @@ function stopCancel() {
 
 /** KAN-82-AC5: start a replacement request linked to a cancelled arrangement. */
 function startReplacement(item: VenueBooking) {
-  if (busy.value) return;
+  if (busy.value || loading.value || uncertainSave.value || needsRefresh.value) return;
   replacesBookingId.value = item.id;
-  savedMessage.value = `Request a replacement for ${arrangementLabel(item)} below. It starts pending until Venue Staff decide.`;
+  actionError.value = null; savedMessage.value = null;
+  void revealRequest('heading', contextVersion);
 }
 
 /**
@@ -241,7 +261,7 @@ async function confirmCancel() {
 
 watch(() => [props.eventRequestId, props.status, props.viewerRole, authSession.loading,
   authSession.user?.id, authSession.user?.role], () => {
-  contextVersion++; abortPending(); resetForm();
+  contextVersion++; abortPending(); resetForm(); feedbackLocation.value = 'panel';
   cancelTarget.value = null; cancelReason.value = ''; needsRefresh.value = false;
   bookings.value = []; venues.value = []; loading.value = false; busy.value = false; venuesLoading.value = false;
   accessDenied.value = false; uncertainSave.value = false;
@@ -261,8 +281,8 @@ onBeforeUnmount(() => { contextVersion++; abortPending(); });
       </p>
     </header>
 
-    <p v-if="savedMessage" class="panel-saved" role="status">{{ savedMessage }}</p>
-    <p v-if="actionError" class="panel-error" role="alert">{{ actionError }}</p>
+    <p v-if="savedMessage && feedbackLocation === 'panel'" class="panel-saved" role="status">{{ savedMessage }}</p>
+    <p v-if="actionError && feedbackLocation === 'panel'" class="panel-error" role="alert">{{ actionError }}</p>
     <div v-if="!accessDenied" class="panel-actions">
       <button type="button" class="button button-secondary" :disabled="busy || loading" @click="load">Refresh booking requests</button>
     </div>
@@ -308,7 +328,7 @@ onBeforeUnmount(() => { contextVersion++; abortPending(); });
             <button v-if="isLive(item)" type="button" class="button button-secondary"
               :disabled="busy || loading || needsRefresh" @click="startCancel(item)">Cancel arrangement</button>
             <button v-if="awaitsReplacement(item)" type="button" class="button button-secondary"
-              :disabled="busy || loading || replacesBookingId === item.id" @click="startReplacement(item)">Request replacement</button>
+              :disabled="busy || loading || uncertainSave || needsRefresh || replacesBookingId === item.id" @click="startReplacement(item)">Request replacement</button>
           </div>
 
           <!-- KAN-82-AC4/AC12: confirm the exact event, venue and period before cancelling. -->
@@ -329,8 +349,18 @@ onBeforeUnmount(() => { contextVersion++; abortPending(); });
         </li>
       </ul>
 
-      <form v-if="canRequest" :aria-busy="busy" @submit.prevent="submit">
-        <p class="panel-hint">Choose the booking period in Singapore time. Suitability checks use the event's timing; assess any different booking period separately. Submitting leaves the request pending and does not reserve the venue.</p>
+      <form v-if="canRequest" :aria-busy="busy" :aria-labelledby="`${id}-request-title`" @submit.prevent="submit">
+        <div class="request-intro">
+          <h3 :id="`${id}-request-title`" ref="requestHeading" class="request-heading" tabindex="-1"
+            :aria-describedby="`${id}-request-guidance`">{{ replacementSource ? 'Request a replacement venue' : 'Request a venue' }}</h3>
+          <div :id="`${id}-request-guidance`">
+            <p v-if="replacementSource" class="replacement-context"><strong>Replacing:</strong> {{ arrangementLabel(replacementSource) }}</p>
+            <p class="panel-hint">{{ replacementSource
+              ? 'Choose the replacement venue, dates and layout below, then select Request this venue.'
+              : 'Choose a venue and booking period in Singapore time, then select Request this venue.' }}</p>
+            <p class="panel-hint">Submitting leaves the request pending and does not reserve the venue. Check the saved arrangement's suitability using its own booking period.</p>
+          </div>
+        </div>
         <p v-if="venuesLoading" role="status">Loading venues…</p>
         <div v-else-if="venuesError" role="alert">
           <p class="panel-error">{{ venuesError }}</p>
@@ -382,11 +412,28 @@ onBeforeUnmount(() => { contextVersion++; abortPending(); });
         </div>
       </form>
     </template>
+    <div v-if="feedbackLocation === 'request' && (actionError || savedMessage)" ref="requestFeedback"
+      class="request-feedback" :class="actionError ? 'request-feedback-error' : 'request-feedback-success'"
+      :role="actionError ? 'alert' : 'status'" tabindex="-1">
+      <p>{{ actionError || savedMessage }}</p>
+      <button v-if="uncertainSave && !accessDenied" type="button" class="button button-secondary"
+        :disabled="busy || loading" @click="load">Review current bookings</button>
+    </div>
   </section>
 </template>
 
 <style src="./workflow-panel.css"></style>
 <style scoped>
+.request-intro { border-top: 1px solid var(--border); padding-top: 20px; }
+.request-heading { scroll-margin-top: 24px; }
+.workflow-panel .request-heading { margin: 0 0 12px; font-size: 18px; }
+.replacement-context { margin-bottom: 8px; font-size: 14px; line-height: 1.6; overflow-wrap: anywhere; }
+.request-intro .panel-hint + .panel-hint { margin-top: 6px; }
+.request-feedback { margin-top: 16px; padding: 12px 16px; border-left: 3px solid; border-radius: 4px; font-size: 14px; line-height: 1.6; overflow-wrap: anywhere; }
+.request-feedback-error { color: #8a332b; background: #fcf1ee; }
+.request-feedback-success { color: var(--green); background: #f0f5ee; }
+.request-feedback .button { margin-top: 12px; }
+.request-heading:focus, .request-feedback:focus { outline: 3px solid #90a950; outline-offset: 3px; }
 .tag-recovery { background: #fbeee6; color: #853e37; }
 .hold-note { color: #7a5212; }
 .cancel-confirm { border-left: 3px solid #853e37; padding-left: 0.75rem; margin-top: 0.5rem; }

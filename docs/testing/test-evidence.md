@@ -2352,3 +2352,24 @@ Shared `.panel` defaults now provide 24px padding (20px below 600px), safe wrapp
 **Case results:** TC-04-232 and TC-13-205 retain separate failed reproductions and passing retests. No other case-level Pass is inferred from the full suite or broad observations. Audit data, source inventory, screenshots, logs, source hashes and the temporary hook are retained under `ui-spacing-20261031/`.
 
 **Limits and manual follow-up:** CSS is not measured by JavaScript coverage; computed styles, layout assertions and screenshots provide its evidence. Browser fixtures use fallback fonts and substituted responses. The sample is not every transient state, browser or live account. Database integration was not rerun because no persistence/API/schema logic changed. Manual smoke TC-04-233 remains **Not executed** and acceptance of this patch **Not assessed**. R07 was subsequently reported passed with Harbour Hall and Rooftop Terrace approved; R08 remains in progress. These walkthrough reports do not establish manual verification of this later UI patch. No historical acceptance, estimate, story status or sprint credit changes.
+
+## AUTO-20261101-BOOKING-FEEDBACK — Replacement guidance and local submission feedback
+
+**1 November 2026; branch `fix/minor-ui-fixes`.** Tested base `be7d2b3` plus the source hashes in [S4-E26](../scrum/sprint-04/evidence/booking-feedback-20261101/summary.json). Windows, Node 24.21.0, Vitest 4.1.11 and Chromium. Named browser checks substitute authenticated API responses. No migration, backend change or shared database write. Documentation was added after verification.
+
+The replacement shortcut now selects the source, scrolls to and focuses a labelled request heading, and explains which arrangement is being replaced and what to enter next. Submission errors/success appear below the submit button and receive focus; uncertain saves expose a nearby **Review current bookings** action. Cancellation feedback retains its existing location. Deferred focus respects the current event/account context. The request hint now points to the saved arrangement's own suitability check.
+
+| Command / check | Observed result |
+| --- | --- |
+| Pre-fix desktop reproductions: `npx playwright test tests/e2e/venue-booking-submission.spec.ts --grep 'KAN-82.*1280px' --workers=2 --reporter=line` | Both failed: replacement form heading/focus missing; conflict alert outside the viewport. Each stopped at its first failed assertion. |
+| `npx playwright test tests/e2e/venue-booking-submission.spec.ts --workers=2 --reporter=line` | 11/11 passed, including desktop/mobile long-history guidance, conflict/success feedback, uncertain-save reconciliation and existing submission/role checks. |
+| `npm run check` | Typechecks, builds, 1,209 frontend tests / 59 files and 1,959 backend tests / 76 files passed. Existing Vite bundle-size warning remains. |
+| `npm run test:coverage` | Same totals passed. Frontend statements/branches/functions/lines: 95.67% / 92.38% / 97.57% / 98.29%; backend: 89.75% / 89.42% / 89.25% / 89.88%. |
+| `npx playwright test --workers=2 --reporter=line` | 248/248 passed without retries. |
+| Visual inspection | Four retained desktop/mobile replacement and conflict screenshots inspected: original context, next-step guidance and nearby feedback are visible and wrap within the panel. |
+
+**Failures and retests:** `before.txt` preserves both product reproductions. The first targeted component run passed 45/46; the new text assertion selected the nested **Replacing:** label rather than its containing paragraph. Correcting that selector produced a pass in the full check and coverage runs; no runtime change was needed for that assertion. `component-initial.txt` retains the failed attempt. Case-level Fail/Pass rows are appended for TC-12-21/22; no unrelated case results are inferred from suite totals.
+
+**Coverage limits:** `VenueBookingPanel.vue` has 95% statements / 92.95% branches / 95.83% functions / 98.38% lines. Uncovered lines 172, 390 and 393 are an existing submission guard continuation and template bindings. Defensive/template branches are not fully covered; native scrolling and viewport geometry are verified in Chromium, not jsdom coverage. Database integration was not rerun because persistence, API, conflict rules and schema are unchanged. Browser substitutes do not establish real-authentication E2E acceptance.
+
+**Manual follow-up:** TC-12-23 is **Not executed** and acceptance of this patch **Not assessed**. R01-R10 were reported passed; R11 is in progress and prompted these UI corrections. For the retained MAIN fixture, the deliberate buffered conflict is **16 November 2026 11:00-12:00**, followed by the valid 11:30-12:00 request. The reported 6 November input cannot establish a conflict with a 16 November booking; the actual server response for that user attempt was not captured. No historical acceptance, story status, estimate, sprint credit or manual-test date is changed.

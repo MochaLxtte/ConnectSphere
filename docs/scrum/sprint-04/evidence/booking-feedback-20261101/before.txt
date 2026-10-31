@@ -1,0 +1,86 @@
+
+Running 2 tests using 2 workers
+
+
+(node:2812) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+(node:33292) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/2] [chromium] › tests\e2e\venue-booking-submission.spec.ts:215:3 › KAN-82 request conflict and successful retry stay visible beside submit at 1280px
+[2/2] [chromium] › tests\e2e\venue-booking-submission.spec.ts:198:3 › KAN-82 replacement shortcut reveals and focuses the next step below long history at 1280px
+  1) [chromium] › tests\e2e\venue-booking-submission.spec.ts:198:3 › KAN-82 replacement shortcut reveals and focuses the next step below long history at 1280px
+
+    Error: expect(locator).toBeFocused() failed
+
+    Locator: getByRole('region', { name: 'Venue booking requests', exact: true }).getByRole('heading', { name: 'Request a replacement venue', exact: true })
+    Expected: focused
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeFocused" getByRole('region', { name: 'Venue booking requests', exact: true }).getByRole('heading', { name: 'Request a replacement venue', exact: true }) with timeout 5000ms
+      - waiting for getByRole('region', { name: 'Venue booking requests', exact: true }).getByRole('heading', { name: 'Request a replacement venue', exact: true })
+
+
+      203 |     await panel.getByRole('button', { name: 'Request replacement', exact: true }).first().click();
+      204 |     const heading = panel.getByRole('heading', { name: 'Request a replacement venue', exact: true });
+    > 205 |     await expect(heading).toBeFocused();
+          |                           ^
+      206 |     await expect(heading).toBeInViewport();
+      207 |     await expect(panel.getByText(/Replacing: Earlier Harbour arrangement 1,/)).toBeInViewport();
+      208 |     await expect(panel.getByText('Choose the replacement venue, dates and layout below, then select Request this venue.')).toBeInViewport();
+        at C:\Users\trist\Documents\School Stuff\Y3S1\IS212\ConnectSphere\tests\e2e\venue-booking-submission.spec.ts:205:27
+
+    Error Context: test-results\venue-booking-submission-K-cd111-elow-long-history-at-1280px-chromium\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\venue-booking-submission-K-cd111-elow-long-history-at-1280px-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\venue-booking-submission-K-cd111-elow-long-history-at-1280px-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  2) [chromium] › tests\e2e\venue-booking-submission.spec.ts:215:3 › KAN-82 request conflict and successful retry stay visible beside submit at 1280px
+
+    Error: expect(locator).toBeInViewport() failed
+
+    Locator:  getByRole('region', { name: 'Venue booking requests', exact: true }).getByRole('alert')
+    Expected: in viewport
+    Received: viewport ratio 0
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toBeInViewport" getByRole('region', { name: 'Venue booking requests', exact: true }).getByRole('alert') with timeout 5000ms
+      - waiting for getByRole('region', { name: 'Venue booking requests', exact: true }).getByRole('alert')
+        14 × locator resolved to <p role="alert" data-v-8d153d18="" class="panel-error">The venue already has an approved booking during …</p>
+           - unexpected value "viewport ratio 0"
+
+
+      223 |     const feedback = panel.getByRole('alert');
+      224 |     await expect(feedback).toContainText('already has an approved booking');
+    > 225 |     await expect(feedback).toBeInViewport();
+          |                            ^
+      226 |     await expect(feedback).toBeFocused();
+      227 |     const buttonBox = await panel.getByRole('button', { name: 'Request this venue', exact: true }).boundingBox();
+      228 |     const feedbackBox = await feedback.boundingBox();
+        at C:\Users\trist\Documents\School Stuff\Y3S1\IS212\ConnectSphere\tests\e2e\venue-booking-submission.spec.ts:225:28
+
+    Error Context: test-results\venue-booking-submission-K-ad1f1-ble-beside-submit-at-1280px-chromium\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\venue-booking-submission-K-ad1f1-ble-beside-submit-at-1280px-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\venue-booking-submission-K-ad1f1-ble-beside-submit-at-1280px-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  2 failed
+    [chromium] › tests\e2e\venue-booking-submission.spec.ts:198:3 › KAN-82 replacement shortcut reveals and focuses the next step below long history at 1280px
+    [chromium] › tests\e2e\venue-booking-submission.spec.ts:215:3 › KAN-82 request conflict and successful retry stay visible beside submit at 1280px

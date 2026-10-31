@@ -1,0 +1,53 @@
+{
+  "run_id": "AUTO-20261101-BOOKING-FEEDBACK",
+  "date": "2026-11-01",
+  "base_commit": "be7d2b33b71bb2387a353dc61daa15b9d88dd75f",
+  "branch": "fix/minor-ui-fixes",
+  "build": "Base plus source hashes; documentation added after verification",
+  "source_sha256_lf": {
+    "frontend/src/features/events/components/VenueBookingPanel.vue": "828367c02d5358378cd95485ef475afc08854979af09cc941b20e2ca64d6e36a",
+    "frontend/src/features/events/components/VenueBookingPanel.test.ts": "f373f2a9309e3414804624d6e8fdf48de25b82f468fe76aab5f0ced2d6001fbc",
+    "tests/e2e/venue-booking-submission.spec.ts": "cc5befd0d1eca84ccf1688a441297c36580b8dbdc2ca898249d1780cd2eb9b85"
+  },
+  "results": {
+    "check": "Pass",
+    "frontend_tests": 1209,
+    "backend_tests": 1959,
+    "focused_browser": 11,
+    "full_browser": 248,
+    "coverage": "Pass"
+  },
+  "coverage_percent": {
+    "frontend": {
+      "statements": 95.67,
+      "branches": 92.38,
+      "functions": 97.57,
+      "lines": 98.29
+    },
+    "backend": {
+      "statements": 89.75,
+      "branches": 89.42,
+      "functions": 89.25,
+      "lines": 89.88
+    },
+    "VenueBookingPanel.vue": {
+      "statements": 95.0,
+      "branches": 92.95,
+      "functions": 95.83,
+      "lines": 98.38,
+      "uncovered_lines": [
+        172,
+        390,
+        393
+      ]
+    }
+  },
+  "visual_review": [
+    "replacement-next-step-1280.png",
+    "replacement-next-step-390.png",
+    "request-conflict-1280.png",
+    "request-conflict-390.png"
+  ],
+  "limits": "Browser/API substitutes and synthetic users; no shared database writes. Manual smoke Not executed; patch acceptance Not assessed. Native scrolling is checked in Chromium, not JavaScript coverage.",
+  "log_normalization": "ANSI escape sequences and trailing whitespace removed; outcomes unchanged."
+}

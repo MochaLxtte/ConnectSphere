@@ -1,0 +1,19 @@
+{
+  "docs/testing/test-cases.csv": {
+    "historical_rows_retained": 601,
+    "appended_rows": 3,
+    "columns": 12
+  },
+  "docs/testing/test-executions.csv": {
+    "historical_rows_retained": 1057,
+    "appended_rows": 5,
+    "columns": 11
+  },
+  "docs/requirements/traceability.csv": {
+    "historical_rows_retained": 209,
+    "appended_rows": 1,
+    "columns": 8
+  },
+  "tested_source_hashes": "Unchanged",
+  "screenshots": 4
+}
