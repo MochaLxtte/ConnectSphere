@@ -108,7 +108,7 @@ onBeforeUnmount(() => {
 
   <p v-if="state.status === 'loading'" role="status">Loading the event request…</p>
 
-  <div v-else-if="state.status === 'error'" class="panel" role="alert">
+  <div v-else-if="state.status === 'error'" class="panel review-error" role="alert">
     <p v-if="feedback?.state === 'saved'">Your decision was recorded, but the latest request details could not be loaded.</p>
     <p>{{ state.code === 'EVENT_REQUEST_NOT_FOUND'
       ? 'This event request is unavailable or you do not have permission to review it.'
@@ -178,6 +178,7 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
+.review-error { display: grid; justify-items: start; gap: 12px; line-height: 1.6; }
 .event-detail { margin-bottom: 16px; padding: 24px; }
 .event-detail dl { display: grid; grid-template-columns: 200px 1fr; row-gap: 12px; column-gap: 16px; margin-top: 16px; }
 .event-detail dl > div { display: contents; }

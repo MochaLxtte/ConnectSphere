@@ -1,0 +1,1921 @@
+{
+  "vue_files_inspected": 59,
+  "files_with_panel_or_link": 55,
+  "lines_with_panel": 127,
+  "lines_with_link": 112,
+  "scope": "Static Vue template inventory reviewed with shared and scoped styles; source presence does not prove every rendered state. Counts are source lines, not unique rendered elements.",
+  "sites": [
+    {
+      "path": "frontend/src/components/AppShell.vue",
+      "line": 32,
+      "kind": [
+        "link"
+      ],
+      "source": "<a class=\"skip-link\" href=\"#main-content\">Skip to content</a>"
+    },
+    {
+      "path": "frontend/src/components/AppShell.vue",
+      "line": 34,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink to=\"/\" class=\"brand\" aria-label=\"ConnectSphere home\">"
+    },
+    {
+      "path": "frontend/src/components/AppShell.vue",
+      "line": 46,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink v-if=\"!authSession.loading && role === 'ATTENDEE'\" to=\"/registrations\" class=\"nav-link\"><AppIcon name=\"calendar\" />My registrations</RouterLink>"
+    },
+    {
+      "path": "frontend/src/components/AppShell.vue",
+      "line": 47,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink to=\"/\" exact-active-class=\"is-active\" class=\"nav-link\""
+    },
+    {
+      "path": "frontend/src/components/AppShell.vue",
+      "line": 52,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink to=\"/events\" exact-active-class=\"is-active\" class=\"nav-link\""
+    },
+    {
+      "path": "frontend/src/components/AppShell.vue",
+      "line": 55,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink to=\"/events/new\" exact-active-class=\"is-active\" class=\"nav-link\""
+    },
+    {
+      "path": "frontend/src/components/AppShell.vue",
+      "line": 61,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink to=\"/reviews\" exact-active-class=\"is-active\" class=\"nav-link\""
+    },
+    {
+      "path": "frontend/src/components/AppShell.vue",
+      "line": 64,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink to=\"/venues\" exact-active-class=\"is-active\" class=\"nav-link\""
+    },
+    {
+      "path": "frontend/src/components/AppShell.vue",
+      "line": 70,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink to=\"/equipment-requests\" exact-active-class=\"is-active\" class=\"nav-link\""
+    },
+    {
+      "path": "frontend/src/components/AppShell.vue",
+      "line": 75,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink to=\"/safety-reviews\" active-class=\"is-active\" class=\"nav-link\""
+    },
+    {
+      "path": "frontend/src/components/AppShell.vue",
+      "line": 80,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink to=\"/lead\" exact-active-class=\"is-active\" class=\"nav-link\""
+    },
+    {
+      "path": "frontend/src/components/AppShell.vue",
+      "line": 82,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink to=\"/lead/oversight\" exact-active-class=\"is-active\" class=\"nav-link\""
+    },
+    {
+      "path": "frontend/src/components/AppShell.vue",
+      "line": 87,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink to=\"/attend\" active-class=\"is-active\" class=\"nav-link\""
+    },
+    {
+      "path": "frontend/src/components/AppShell.vue",
+      "line": 92,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink to=\"/equipment/availability\" active-class=\"is-active\" class=\"nav-link\""
+    },
+    {
+      "path": "frontend/src/components/AppShell.vue",
+      "line": 94,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink to=\"/equipment/stock\" exact-active-class=\"is-active\" class=\"nav-link\""
+    },
+    {
+      "path": "frontend/src/components/AppShell.vue",
+      "line": 99,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink to=\"/venues/availability\" exact-active-class=\"is-active\" class=\"nav-link\""
+    },
+    {
+      "path": "frontend/src/components/AppShell.vue",
+      "line": 102,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink v-if=\"showVenueBookings\" to=\"/venue-bookings\" exact-active-class=\"is-active\" class=\"nav-link\""
+    },
+    {
+      "path": "frontend/src/components/AppShell.vue",
+      "line": 105,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink v-if=\"showVenueBlocks\" to=\"/venue-blocks\" exact-active-class=\"is-active\" class=\"nav-link\""
+    },
+    {
+      "path": "frontend/src/components/AppShell.vue",
+      "line": 108,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink v-if=\"showVenueCatalogue\" to=\"/venue-catalogue\" active-class=\"is-active\" class=\"nav-link\""
+    },
+    {
+      "path": "frontend/src/components/AppShell.vue",
+      "line": 135,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink v-else to=\"/login\" class=\"sign-in-link\""
+    },
+    {
+      "path": "frontend/src/components/FeaturePlaceholder.vue",
+      "line": 21,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section class=\"panel feature-placeholder\" aria-labelledby=\"feature-title\">"
+    },
+    {
+      "path": "frontend/src/components/FeaturePlaceholder.vue",
+      "line": 32,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink to=\"/\" class=\"text-link\""
+    },
+    {
+      "path": "frontend/src/components/NotFoundPage.vue",
+      "line": 2,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section class=\"panel not-found\">"
+    },
+    {
+      "path": "frontend/src/components/NotFoundPage.vue",
+      "line": 6,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink class=\"button button-primary\" to=\"/\">Back to overview</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/auth/pages/LoginPage.vue",
+      "line": 34,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section v-if=\"authSession.user\" class=\"panel account-panel\" aria-labelledby=\"signed-in-title\">"
+    },
+    {
+      "path": "frontend/src/features/auth/pages/LoginPage.vue",
+      "line": 38,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink class=\"button button-primary\" to=\"/\">Go to overview</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/auth/pages/LoginPage.vue",
+      "line": 40,
+      "kind": [
+        "panel"
+      ],
+      "source": "<form v-else class=\"panel login-form\" @submit.prevent=\"submit\">"
+    },
+    {
+      "path": "frontend/src/features/equipment/pages/EquipmentAccessPage.vue",
+      "line": 6,
+      "kind": [
+        "panel"
+      ],
+      "source": "<p v-if=\"authSession.loading\" class=\"panel equipment-access\" role=\"status\">Checking your session…</p>"
+    },
+    {
+      "path": "frontend/src/features/equipment/pages/EquipmentAccessPage.vue",
+      "line": 7,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section v-else-if=\"!authSession.user\" class=\"panel equipment-access\">"
+    },
+    {
+      "path": "frontend/src/features/equipment/pages/EquipmentAccessPage.vue",
+      "line": 10,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink to=\"/login\" class=\"button button-primary\">Sign in</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/equipment/pages/EquipmentAccessPage.vue",
+      "line": 12,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section v-else-if=\"authSession.user.role !== 'TECHNICAL_SUPPORT_STAFF'\" class=\"panel equipment-access\">"
+    },
+    {
+      "path": "frontend/src/features/equipment/pages/EquipmentAccessPage.vue",
+      "line": 15,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink to=\"/\" class=\"button button-primary\">Go to overview</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/equipment/pages/EquipmentAvailabilityPage.vue",
+      "line": 44,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section class=\"panel equipment-list\">"
+    },
+    {
+      "path": "frontend/src/features/equipment/pages/EquipmentAvailabilityPage.vue",
+      "line": 55,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink :to=\"`/equipment/availability/${event.id}`\">{{ event.name?.trim() || 'Untitled event' }}</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/equipment/pages/EquipmentReservationPanel.vue",
+      "line": 105,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section v-if=\"authorised\" class=\"panel reservation-panel\" aria-labelledby=\"reservation-title\">"
+    },
+    {
+      "path": "frontend/src/features/equipment/pages/EquipmentStockPage.vue",
+      "line": 173,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section class=\"panel stock-list-panel\" aria-labelledby=\"stock-list-title\">"
+    },
+    {
+      "path": "frontend/src/features/equipment/pages/EquipmentStockPage.vue",
+      "line": 207,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section v-if=\"selectedId\" class=\"panel stock-editor\" aria-labelledby=\"stock-editor-title\">"
+    },
+    {
+      "path": "frontend/src/features/equipment/pages/EventEquipmentAvailabilityPage.vue",
+      "line": 135,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink to=\"/equipment/availability\">Back to equipment events</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/equipment/pages/EventEquipmentAvailabilityPage.vue",
+      "line": 138,
+      "kind": [
+        "panel"
+      ],
+      "source": "<p v-if=\"notice\" class=\"panel equipment-panel\" role=\"alert\">{{ notice }}</p>"
+    },
+    {
+      "path": "frontend/src/features/equipment/pages/EventEquipmentAvailabilityPage.vue",
+      "line": 140,
+      "kind": [
+        "panel"
+      ],
+      "source": "<div v-else-if=\"state.status === 'error'\" class=\"panel equipment-panel\" role=\"alert\">"
+    },
+    {
+      "path": "frontend/src/features/equipment/pages/EventEquipmentAvailabilityPage.vue",
+      "line": 144,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section class=\"panel equipment-panel\" aria-labelledby=\"equipment-event-title\">"
+    },
+    {
+      "path": "frontend/src/features/equipment/pages/EventEquipmentAvailabilityPage.vue",
+      "line": 154,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section class=\"panel equipment-panel\" aria-labelledby=\"saved-equipment-title\">"
+    },
+    {
+      "path": "frontend/src/features/equipment/pages/EventEquipmentAvailabilityPage.vue",
+      "line": 166,
+      "kind": [
+        "panel"
+      ],
+      "source": "<form class=\"panel equipment-panel\" novalidate @submit.prevent=\"check\">"
+    },
+    {
+      "path": "frontend/src/features/equipment/pages/EventEquipmentAvailabilityPage.vue",
+      "line": 206,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section v-if=\"assessment\" class=\"panel equipment-panel\" aria-label=\"Equipment assessment\" aria-live=\"polite\">"
+    },
+    {
+      "path": "frontend/src/features/events/components/AssignmentPanel.vue",
+      "line": 169,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section class=\"panel workflow-panel\" :aria-labelledby=\"`${id}-title`\">"
+    },
+    {
+      "path": "frontend/src/features/events/components/ChangeRequestPanel.vue",
+      "line": 67,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section class=\"panel workflow-panel\" :aria-labelledby=\"`${id}-title`\">"
+    },
+    {
+      "path": "frontend/src/features/events/components/ChangeRequestPanel.vue",
+      "line": 151,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink :to=\"`/events/${eventRequestId}/change-request`\" class=\"button button-primary\">Request a change</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/events/components/ClarificationPanel.vue",
+      "line": 53,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section class=\"panel workflow-panel\" :aria-labelledby=\"`${id}-title`\">"
+    },
+    {
+      "path": "frontend/src/features/events/components/EquipmentRequestPanel.vue",
+      "line": 144,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section v-if=\"canRead\" class=\"panel arrangement-panel\" aria-labelledby=\"equipment-heading\">"
+    },
+    {
+      "path": "frontend/src/features/events/components/EventCancellationPanel.vue",
+      "line": 78,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section v-if=\"isManager\" class=\"panel arrangement-panel\" aria-labelledby=\"cancellation-heading\">"
+    },
+    {
+      "path": "frontend/src/features/events/components/EventCompletionPanel.vue",
+      "line": 70,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section v-if=\"visible\" class=\"panel completion-panel\" aria-labelledby=\"completion-heading\">"
+    },
+    {
+      "path": "frontend/src/features/events/components/EventConfirmationPanel.vue",
+      "line": 76,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section v-if=\"isManager && ['APPROVED', 'CONFIRMED'].includes(status)\" class=\"panel workflow-panel arrangement-panel\" aria-labelledby=\"confirmation-heading\">"
+    },
+    {
+      "path": "frontend/src/features/events/components/EventRequestForm.vue",
+      "line": 287,
+      "kind": [
+        "panel"
+      ],
+      "source": "<form class=\"panel request-form\" :aria-busy=\"busy !== null\" novalidate @submit.prevent=\"run('submitting')\">"
+    },
+    {
+      "path": "frontend/src/features/events/components/EventRequestForm.vue",
+      "line": 407,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink v-if=\"locked && requestId\" :to=\"`/events/${requestId}`\" class=\"button button-secondary\">View this request</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/events/components/SafetyReviewPanel.vue",
+      "line": 89,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section v-if=\"visible\" class=\"panel workflow-panel arrangement-panel\" aria-labelledby=\"safety-heading\">"
+    },
+    {
+      "path": "frontend/src/features/events/components/StatusHistoryPanel.vue",
+      "line": 16,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section class=\"panel workflow-panel\" :aria-labelledby=\"`${id}-title`\">"
+    },
+    {
+      "path": "frontend/src/features/events/components/VenueBookingPanel.vue",
+      "line": 255,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section v-if=\"isCoordinator\" class=\"panel workflow-panel\" :aria-labelledby=\"`${id}-title`\">"
+    },
+    {
+      "path": "frontend/src/features/events/components/VenueBookingPanel.vue",
+      "line": 303,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink :to=\"{ path: `/reviews/${eventRequestId}/venue-suitability`, query: { bookingId: item.id } }\""
+    },
+    {
+      "path": "frontend/src/features/events/pages/EquipmentQueuePage.vue",
+      "line": 72,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section v-for=\"line in items\" :key=\"line.id\" class=\"panel request-card\">"
+    },
+    {
+      "path": "frontend/src/features/events/pages/EquipmentQueuePage.vue",
+      "line": 78,
+      "kind": [
+        "link"
+      ],
+      "source": "<a :href=\"'/equipment/availability/' + encodeURIComponent(line.eventRequestId)\">Check availability and manage reservations</a>"
+    },
+    {
+      "path": "frontend/src/features/events/pages/EquipmentQueuePage.vue",
+      "line": 85,
+      "kind": [
+        "panel"
+      ],
+      "source": "<p v-if=\"ready && !loading && !error && items.length === 0\" class=\"panel empty-state\">No equipment requests are waiting.</p>"
+    },
+    {
+      "path": "frontend/src/features/events/pages/EventChangeRequestPage.vue",
+      "line": 205,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink :to=\"backLink\" class=\"back-link\">Back to the event</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/events/pages/EventChangeRequestPage.vue",
+      "line": 208,
+      "kind": [
+        "panel"
+      ],
+      "source": "<p v-if=\"state.status === 'loading'\" class=\"panel edit-panel\" role=\"status\">Loading the event…</p>"
+    },
+    {
+      "path": "frontend/src/features/events/pages/EventChangeRequestPage.vue",
+      "line": 210,
+      "kind": [
+        "panel"
+      ],
+      "source": "<div v-else-if=\"state.status === 'error'\" class=\"panel edit-panel\" role=\"alert\">"
+    },
+    {
+      "path": "frontend/src/features/events/pages/EventChangeRequestPage.vue",
+      "line": 212,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink v-if=\"state.signIn\" to=\"/login\" class=\"button button-primary\">Sign in</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/events/pages/EventChangeRequestPage.vue",
+      "line": 216,
+      "kind": [
+        "panel"
+      ],
+      "source": "<div v-else-if=\"state.status === 'not-allowed'\" class=\"panel edit-panel\" role=\"alert\">"
+    },
+    {
+      "path": "frontend/src/features/events/pages/EventChangeRequestPage.vue",
+      "line": 221,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink :to=\"backLink\" class=\"button button-secondary\">View event</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/events/pages/EventChangeRequestPage.vue",
+      "line": 224,
+      "kind": [
+        "panel"
+      ],
+      "source": "<form v-else class=\"panel edit-panel\" :aria-busy=\"saving\" novalidate @submit.prevent=\"save\">"
+    },
+    {
+      "path": "frontend/src/features/events/pages/EventChangeRequestPage.vue",
+      "line": 272,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink :to=\"backLink\" class=\"button button-secondary\">Cancel</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/events/pages/EventDetailsEditPage.vue",
+      "line": 257,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink :to=\"backLink\" class=\"back-link\">Back to the event request</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/events/pages/EventDetailsEditPage.vue",
+      "line": 263,
+      "kind": [
+        "panel"
+      ],
+      "source": "<p v-if=\"state.status === 'loading'\" class=\"panel edit-panel\" role=\"status\">Loading the event request…</p>"
+    },
+    {
+      "path": "frontend/src/features/events/pages/EventDetailsEditPage.vue",
+      "line": 265,
+      "kind": [
+        "panel"
+      ],
+      "source": "<div v-else-if=\"state.status === 'error'\" class=\"panel edit-panel\" role=\"alert\">"
+    },
+    {
+      "path": "frontend/src/features/events/pages/EventDetailsEditPage.vue",
+      "line": 267,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink v-if=\"state.signIn\" to=\"/login\" class=\"button button-primary\">Sign in</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/events/pages/EventDetailsEditPage.vue",
+      "line": 271,
+      "kind": [
+        "panel"
+      ],
+      "source": "<div v-else-if=\"state.status === 'not-editable'\" class=\"panel edit-panel\" role=\"alert\">"
+    },
+    {
+      "path": "frontend/src/features/events/pages/EventDetailsEditPage.vue",
+      "line": 276,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink v-if=\"state.request.actions.canEditDraft\" :to=\"`/events/${state.request.id}/edit`\" class=\"button button-secondary\">"
+    },
+    {
+      "path": "frontend/src/features/events/pages/EventDetailsEditPage.vue",
+      "line": 279,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink v-else :to=\"backLink\" class=\"button button-secondary\">View request</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/events/pages/EventDetailsEditPage.vue",
+      "line": 282,
+      "kind": [
+        "panel"
+      ],
+      "source": "<form v-else class=\"panel edit-panel\" :aria-busy=\"saving\" novalidate @submit.prevent=\"save\">"
+    },
+    {
+      "path": "frontend/src/features/events/pages/EventDetailsEditPage.vue",
+      "line": 338,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink :to=\"backLink\" class=\"button button-secondary\">Cancel</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/events/pages/EventDraftEditPage.vue",
+      "line": 77,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink to=\"/events\" class=\"back-link\">Back to event requests</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/events/pages/EventDraftEditPage.vue",
+      "line": 83,
+      "kind": [
+        "panel"
+      ],
+      "source": "<p v-if=\"state.status === 'loading'\" class=\"panel edit-panel\" role=\"status\">Loading your draft…</p>"
+    },
+    {
+      "path": "frontend/src/features/events/pages/EventDraftEditPage.vue",
+      "line": 85,
+      "kind": [
+        "panel"
+      ],
+      "source": "<div v-else-if=\"state.status === 'error'\" class=\"panel edit-panel edit-error\" role=\"alert\">"
+    },
+    {
+      "path": "frontend/src/features/events/pages/EventDraftEditPage.vue",
+      "line": 87,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink v-if=\"state.signIn\" to=\"/login\" class=\"button button-primary\">Sign in</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/events/pages/EventDraftEditPage.vue",
+      "line": 91,
+      "kind": [
+        "panel"
+      ],
+      "source": "<div v-else-if=\"state.status === 'not-editable'\" class=\"panel edit-panel\" role=\"alert\">"
+    },
+    {
+      "path": "frontend/src/features/events/pages/EventDraftEditPage.vue",
+      "line": 94,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink v-if=\"state.request.actions.canEditDetails\" :to=\"`/events/${state.request.id}/details`\""
+    },
+    {
+      "path": "frontend/src/features/events/pages/EventDraftEditPage.vue",
+      "line": 96,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink :to=\"`/events/${state.request.id}`\" class=\"button button-secondary\">View request</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/events/pages/EventRequestDetailPage.vue",
+      "line": 150,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink to=\"/events\" class=\"back-link\">Back to event requests</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/events/pages/EventRequestDetailPage.vue",
+      "line": 151,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink v-if=\"state.status === 'ready'\" :to=\"`/events/${state.request.id}/registrations`\" class=\"back-link\">View registrations</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/events/pages/EventRequestDetailPage.vue",
+      "line": 155,
+      "kind": [
+        "panel"
+      ],
+      "source": "<p v-if=\"state.status === 'loading'\" class=\"panel detail-panel\" role=\"status\">Loading the event request…</p>"
+    },
+    {
+      "path": "frontend/src/features/events/pages/EventRequestDetailPage.vue",
+      "line": 156,
+      "kind": [
+        "panel"
+      ],
+      "source": "<div v-else-if=\"state.status === 'error'\" class=\"panel detail-panel detail-error\" role=\"alert\">"
+    },
+    {
+      "path": "frontend/src/features/events/pages/EventRequestDetailPage.vue",
+      "line": 158,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink v-if=\"state.signIn\" to=\"/login\" class=\"button button-primary\">Sign in</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/events/pages/EventRequestDetailPage.vue",
+      "line": 163,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section class=\"panel detail-panel\" aria-labelledby=\"request-heading\">"
+    },
+    {
+      "path": "frontend/src/features/events/pages/EventRequestDetailPage.vue",
+      "line": 180,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink :to=\"`/events/${state.request.id}/edit`\" class=\"button button-secondary\">Edit draft</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/events/pages/EventRequestDetailPage.vue",
+      "line": 193,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink :to=\"`/events/${state.request.id}/details`\" class=\"button button-secondary\">Edit details</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/events/pages/EventRequestDetailPage.vue",
+      "line": 197,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section class=\"panel detail-panel outcome-panel\" aria-labelledby=\"review-outcome-heading\">"
+    },
+    {
+      "path": "frontend/src/features/events/pages/EventRequestsPage.vue",
+      "line": 67,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section class=\"panel requests-panel\" aria-labelledby=\"requests-title\">"
+    },
+    {
+      "path": "frontend/src/features/events/pages/EventRequestsPage.vue",
+      "line": 82,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink v-if=\"state.signIn\" to=\"/login\" class=\"button button-primary\">Sign in</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/events/pages/EventRequestsPage.vue",
+      "line": 96,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink :to=\"item.status === 'DRAFT' ? `/events/${item.id}/edit` : `/events/${item.id}`\">"
+    },
+    {
+      "path": "frontend/src/features/events/pages/NewEventPage.vue",
+      "line": 26,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink to=\"/events\" class=\"back-link\">Back to event requests</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/events/pages/NewEventPage.vue",
+      "line": 29,
+      "kind": [
+        "panel"
+      ],
+      "source": "<p v-if=\"authSession.loading\" class=\"panel form-message\" role=\"status\">Checking your session…</p>"
+    },
+    {
+      "path": "frontend/src/features/events/pages/NewEventPage.vue",
+      "line": 30,
+      "kind": [
+        "panel"
+      ],
+      "source": "<div v-else-if=\"sessionExpired || !authSession.user\" class=\"panel form-message\" role=\"alert\">"
+    },
+    {
+      "path": "frontend/src/features/events/pages/NewEventPage.vue",
+      "line": 33,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink to=\"/login\" class=\"button button-primary\">Sign in</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/events/pages/NewEventPage.vue",
+      "line": 35,
+      "kind": [
+        "panel"
+      ],
+      "source": "<p v-else-if=\"authSession.user.role !== 'EVENT_ORGANISER'\" class=\"panel form-message\" role=\"alert\">"
+    },
+    {
+      "path": "frontend/src/features/notifications/components/NotificationBell.vue",
+      "line": 45,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink to=\"/notifications\" class=\"notification-link\" :aria-label=\"label\">"
+    },
+    {
+      "path": "frontend/src/features/notifications/components/NotificationInbox.vue",
+      "line": 115,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section class=\"panel inbox-panel\" aria-labelledby=\"inbox-title\">"
+    },
+    {
+      "path": "frontend/src/features/notifications/components/NotificationInbox.vue",
+      "line": 164,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink v-if=\"item.link\" :to=\"item.link\" class=\"inbox-link\">{{ linkLabel(item) }}</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/notifications/pages/NotificationsPage.vue",
+      "line": 13,
+      "kind": [
+        "panel"
+      ],
+      "source": "<p v-if=\"authSession.loading\" class=\"panel access-panel\" role=\"status\">Checking your session…</p>"
+    },
+    {
+      "path": "frontend/src/features/notifications/pages/NotificationsPage.vue",
+      "line": 15,
+      "kind": [
+        "panel"
+      ],
+      "source": "<div v-else-if=\"!authSession.user\" class=\"panel access-panel\" role=\"alert\">"
+    },
+    {
+      "path": "frontend/src/features/notifications/pages/NotificationsPage.vue",
+      "line": 17,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink to=\"/login\" class=\"button button-primary\">Sign in</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/registrations/pages/AttendeeAccessPage.vue",
+      "line": 7,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section v-else-if=\"!authSession.user\" class=\"panel attendee-access\">"
+    },
+    {
+      "path": "frontend/src/features/registrations/pages/AttendeeAccessPage.vue",
+      "line": 10,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink to=\"/login\" class=\"button button-primary\">Sign in</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/registrations/pages/AttendeeAccessPage.vue",
+      "line": 12,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section v-else-if=\"authSession.user.role !== 'ATTENDEE'\" class=\"panel attendee-access\">"
+    },
+    {
+      "path": "frontend/src/features/registrations/pages/AttendeeAccessPage.vue",
+      "line": 15,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink to=\"/\" class=\"button button-primary\">Go to overview</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/registrations/pages/AttendeeEventPage.vue",
+      "line": 71,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink to=\"/attend\" class=\"back-link\">Back to events</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/registrations/pages/AttendeeEventPage.vue",
+      "line": 74,
+      "kind": [
+        "panel"
+      ],
+      "source": "<p v-if=\"state.status === 'loading'\" class=\"panel attendee-event\" role=\"status\">Loading the event…</p>"
+    },
+    {
+      "path": "frontend/src/features/registrations/pages/AttendeeEventPage.vue",
+      "line": 75,
+      "kind": [
+        "panel"
+      ],
+      "source": "<div v-else-if=\"state.status === 'error'\" class=\"panel attendee-event\" role=\"alert\">"
+    },
+    {
+      "path": "frontend/src/features/registrations/pages/AttendeeEventPage.vue",
+      "line": 81,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section class=\"panel attendee-event\" aria-labelledby=\"about-title\">"
+    },
+    {
+      "path": "frontend/src/features/registrations/pages/AttendeeEventPage.vue",
+      "line": 93,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section class=\"panel attendee-event\" aria-labelledby=\"registration-title\">"
+    },
+    {
+      "path": "frontend/src/features/registrations/pages/AttendeeEventsPage.vue",
+      "line": 46,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section class=\"panel attendee-panel\" aria-labelledby=\"open-events-title\">"
+    },
+    {
+      "path": "frontend/src/features/registrations/pages/AttendeeEventsPage.vue",
+      "line": 58,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink :to=\"`/attend/${event.id}`\">{{ event.name?.trim() || 'Untitled event' }}</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/registrations/pages/AttendeeEventsPage.vue",
+      "line": 69,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section v-if=\"state.status === 'ready'\" class=\"panel attendee-panel\" aria-labelledby=\"my-registrations-title\">"
+    },
+    {
+      "path": "frontend/src/features/registrations/pages/AttendeeEventsPage.vue",
+      "line": 74,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink :to=\"`/attend/${item.event.id}`\">{{ item.event.name?.trim() || 'Untitled event' }}</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/registrations/RegistrationsPage.vue",
+      "line": 74,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section class=\"panel registration-panel\" aria-labelledby=\"registration-heading\">"
+    },
+    {
+      "path": "frontend/src/features/registrations/RegistrationsPage.vue",
+      "line": 80,
+      "kind": [
+        "link"
+      ],
+      "source": "<p v-else-if=\"!authSession.user\">Sign in to view registrations. <RouterLink to=\"/login\">Sign in</RouterLink></p>"
+    },
+    {
+      "path": "frontend/src/features/reviews/components/ReviewDecisionPanel.vue",
+      "line": 96,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section class=\"panel decision-panel\" :aria-labelledby=\"`${id}-title`\">"
+    },
+    {
+      "path": "frontend/src/features/reviews/pages/LeadAccessPage.vue",
+      "line": 6,
+      "kind": [
+        "panel"
+      ],
+      "source": "<p v-if=\"authSession.loading\" class=\"panel lead-access\" role=\"status\">Checking your session…</p>"
+    },
+    {
+      "path": "frontend/src/features/reviews/pages/LeadAccessPage.vue",
+      "line": 7,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section v-else-if=\"!authSession.user\" class=\"panel lead-access\">"
+    },
+    {
+      "path": "frontend/src/features/reviews/pages/LeadAccessPage.vue",
+      "line": 10,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink to=\"/login\" class=\"button button-primary\">Sign in</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/reviews/pages/LeadAccessPage.vue",
+      "line": 12,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section v-else-if=\"authSession.user.role !== 'EVENT_COORDINATOR_LEAD'\" class=\"panel lead-access\">"
+    },
+    {
+      "path": "frontend/src/features/reviews/pages/LeadAccessPage.vue",
+      "line": 15,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink to=\"/\" class=\"button button-primary\">Go to overview</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/reviews/pages/LeadOversightPage.vue",
+      "line": 36,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section class=\"panel oversight-panel\">"
+    },
+    {
+      "path": "frontend/src/features/reviews/pages/LeadOversightPage.vue",
+      "line": 38,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink to=\"/lead\" class=\"text-link\">Back to assignment queue</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/reviews/pages/LeadOversightPage.vue",
+      "line": 49,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink :to=\"`/lead/oversight/${item.id}`\">{{ item.name ?? 'Untitled event request' }}</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/reviews/pages/LeadRequestPage.vue",
+      "line": 54,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink to=\"/lead/oversight\" class=\"text-link\">Back to event oversight</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/reviews/pages/LeadRequestPage.vue",
+      "line": 57,
+      "kind": [
+        "panel"
+      ],
+      "source": "<p v-if=\"state.status === 'loading'\" class=\"panel allocation-panel\" role=\"status\">Loading event allocation…</p>"
+    },
+    {
+      "path": "frontend/src/features/reviews/pages/LeadRequestPage.vue",
+      "line": 58,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section v-else-if=\"state.status === 'error'\" class=\"panel allocation-panel\" role=\"alert\">"
+    },
+    {
+      "path": "frontend/src/features/reviews/pages/LeadRequestPage.vue",
+      "line": 63,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section class=\"panel allocation-panel\">"
+    },
+    {
+      "path": "frontend/src/features/reviews/pages/ReviewAccessPage.vue",
+      "line": 6,
+      "kind": [
+        "panel"
+      ],
+      "source": "<p v-if=\"authSession.loading\" class=\"panel access-panel\" role=\"status\">Checking your session…</p>"
+    },
+    {
+      "path": "frontend/src/features/reviews/pages/ReviewAccessPage.vue",
+      "line": 8,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section v-else-if=\"!authSession.user\" class=\"panel access-panel\">"
+    },
+    {
+      "path": "frontend/src/features/reviews/pages/ReviewAccessPage.vue",
+      "line": 11,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink to=\"/login\" class=\"button button-primary\">Sign in</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/reviews/pages/ReviewAccessPage.vue",
+      "line": 14,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section v-else-if=\"authSession.user.role !== 'EVENT_COORDINATOR'\" class=\"panel access-panel\">"
+    },
+    {
+      "path": "frontend/src/features/reviews/pages/ReviewAccessPage.vue",
+      "line": 17,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink v-if=\"authSession.user.role === 'EVENT_ORGANISER'\" to=\"/events\" class=\"button button-primary\">"
+    },
+    {
+      "path": "frontend/src/features/reviews/pages/ReviewAccessPage.vue",
+      "line": 20,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink v-else to=\"/\" class=\"button button-primary\">Go to overview</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/reviews/pages/ReviewQueuePage.vue",
+      "line": 59,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section class=\"panel\" aria-labelledby=\"queue-title\">"
+    },
+    {
+      "path": "frontend/src/features/reviews/pages/ReviewQueuePage.vue",
+      "line": 77,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink :to=\"`/reviews/${item.id}`\" class=\"queue-item\">"
+    },
+    {
+      "path": "frontend/src/features/reviews/pages/ReviewQueuePage.vue",
+      "line": 86,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section class=\"panel decided-panel\" aria-labelledby=\"decided-title\">"
+    },
+    {
+      "path": "frontend/src/features/reviews/pages/ReviewQueuePage.vue",
+      "line": 104,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink :to=\"`/reviews/${item.id}`\" class=\"queue-item\">"
+    },
+    {
+      "path": "frontend/src/features/reviews/pages/ReviewRequestPage.vue",
+      "line": 111,
+      "kind": [
+        "panel"
+      ],
+      "source": "<div v-else-if=\"state.status === 'error'\" class=\"panel review-error\" role=\"alert\">"
+    },
+    {
+      "path": "frontend/src/features/reviews/pages/ReviewRequestPage.vue",
+      "line": 120,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section class=\"panel event-detail\" aria-labelledby=\"event-detail-title\">"
+    },
+    {
+      "path": "frontend/src/features/reviews/pages/ReviewRequestPage.vue",
+      "line": 142,
+      "kind": [
+        "link"
+      ],
+      "source": "<li v-if=\"state.detail.actions?.canEditDetails\"><RouterLink"
+    },
+    {
+      "path": "frontend/src/features/reviews/pages/ReviewRequestPage.vue",
+      "line": 145,
+      "kind": [
+        "link"
+      ],
+      "source": "<li><RouterLink :to=\"`/reviews/${state.detail.id}/venue-suitability`\">Check venue suitability</RouterLink></li>"
+    },
+    {
+      "path": "frontend/src/features/reviews/pages/ReviewRequestPage.vue",
+      "line": 146,
+      "kind": [
+        "link"
+      ],
+      "source": "<li><RouterLink :to=\"`/events/${state.detail.id}/registrations`\">View registrations</RouterLink></li>"
+    },
+    {
+      "path": "frontend/src/features/reviews/pages/ReviewRequestPage.vue",
+      "line": 148,
+      "kind": [
+        "link"
+      ],
+      "source": "<li v-if=\"state.detail.startsAt\"><RouterLink"
+    },
+    {
+      "path": "frontend/src/features/reviews/pages/ReviewRequestPage.vue",
+      "line": 151,
+      "kind": [
+        "link"
+      ],
+      "source": "<li><RouterLink"
+    },
+    {
+      "path": "frontend/src/features/reviews/pages/ReviewRequestPage.vue",
+      "line": 159,
+      "kind": [
+        "panel"
+      ],
+      "source": "class=\"panel\""
+    },
+    {
+      "path": "frontend/src/features/reviews/pages/UnassignedRequestsPage.vue",
+      "line": 103,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section class=\"panel unassigned-panel\" aria-labelledby=\"unassigned-title\">"
+    },
+    {
+      "path": "frontend/src/features/reviews/pages/UnassignedRequestsPage.vue",
+      "line": 104,
+      "kind": [
+        "link"
+      ],
+      "source": "<div class=\"queue-toolbar\"><RouterLink to=\"/lead/oversight\" class=\"text-link\">View all active events</RouterLink><button type=\"button\" class=\"button button-secondary\" :disabled=\"state.status === 'loading' || busyId !== null\" @click=\"load()\">Refresh</button></div>"
+    },
+    {
+      "path": "frontend/src/features/reviews/pages/UnassignedRequestsPage.vue",
+      "line": 110,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink :to=\"`/lead/oversight/${saved.id}`\" class=\"text-link\">Open allocation</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/reviews/pages/UnassignedRequestsPage.vue",
+      "line": 131,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink :to=\"`/lead/oversight/${item.id}`\" class=\"unassigned-name\">{{ item.name ?? 'Untitled event request' }}</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/safety/SafetyQueuePage.vue",
+      "line": 33,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section class=\"panel safety-page\" aria-labelledby=\"safety-queue-heading\">"
+    },
+    {
+      "path": "frontend/src/features/safety/SafetyQueuePage.vue",
+      "line": 39,
+      "kind": [
+        "link"
+      ],
+      "source": "<p v-else-if=\"!authSession.user\">Sign in to view safety reviews. <RouterLink to=\"/login\">Sign in</RouterLink></p>"
+    },
+    {
+      "path": "frontend/src/features/safety/SafetyQueuePage.vue",
+      "line": 46,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink :to=\"`/safety-reviews/${item.id}`\"><strong>{{ item.eventName || 'Untitled event' }}</strong> · round {{ item.round }}</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/safety/SafetyReviewPage.vue",
+      "line": 97,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section class=\"panel safety-page\" aria-labelledby=\"safety-review-heading\">"
+    },
+    {
+      "path": "frontend/src/features/safety/SafetyReviewPage.vue",
+      "line": 98,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink to=\"/safety-reviews\" class=\"back-link\">Back to safety reviews</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/safety/SafetyReviewPage.vue",
+      "line": 101,
+      "kind": [
+        "link"
+      ],
+      "source": "<p v-else-if=\"!authSession.user\">Sign in to view this safety review. <RouterLink to=\"/login\">Sign in</RouterLink></p>"
+    },
+    {
+      "path": "frontend/src/features/system/pages/DashboardPage.vue",
+      "line": 69,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink to=\"/events\" class=\"button button-light\""
+    },
+    {
+      "path": "frontend/src/features/system/pages/DashboardPage.vue",
+      "line": 92,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink v-if=\"!authSession.loading && authSession.user?.role === 'EVENT_COORDINATOR_LEAD'\" to=\"/lead\" class=\"workflow-card\">"
+    },
+    {
+      "path": "frontend/src/features/system/pages/DashboardPage.vue",
+      "line": 99,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink to=\"/events/new\" class=\"workflow-card\""
+    },
+    {
+      "path": "frontend/src/features/system/pages/DashboardPage.vue",
+      "line": 106,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink v-if=\"!authSession.loading && authSession.user?.role === 'EVENT_COORDINATOR'\" to=\"/reviews\" class=\"workflow-card\""
+    },
+    {
+      "path": "frontend/src/features/system/pages/DashboardPage.vue",
+      "line": 113,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink to=\"/events\" class=\"workflow-card\""
+    },
+    {
+      "path": "frontend/src/features/venues/components/VenueAvailabilityCalendar.vue",
+      "line": 95,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section class=\"panel calendar-toolbar\" aria-label=\"Choose a week\">"
+    },
+    {
+      "path": "frontend/src/features/venues/components/VenueAvailabilityCalendar.vue",
+      "line": 116,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section class=\"panel calendar-panel\" :aria-labelledby=\"`${id}-venue`\">"
+    },
+    {
+      "path": "frontend/src/features/venues/components/VenueWeekTimeline.vue",
+      "line": 89,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink :to=\"`/reviews/${item.period.event.id}`\">{{ item.period.event.name?.trim() || 'Untitled event request' }}</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueAvailabilityPage.vue",
+      "line": 19,
+      "kind": [
+        "panel"
+      ],
+      "source": "<p v-if=\"authSession.loading\" class=\"panel access-panel\" role=\"status\">Checking your session…</p>"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueAvailabilityPage.vue",
+      "line": 21,
+      "kind": [
+        "panel"
+      ],
+      "source": "<div v-else-if=\"!authSession.user\" class=\"panel access-panel\" role=\"alert\">"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueAvailabilityPage.vue",
+      "line": 23,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink to=\"/login\" class=\"button button-primary\">Sign in</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueAvailabilityPage.vue",
+      "line": 26,
+      "kind": [
+        "panel"
+      ],
+      "source": "<div v-else-if=\"!allowed\" class=\"panel access-panel\" role=\"alert\">"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueAvailabilityPage.vue",
+      "line": 28,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink v-if=\"authSession.user.role === 'EVENT_ORGANISER'\" to=\"/events\" class=\"button button-primary\">"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueAvailabilityPage.vue",
+      "line": 31,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink v-else to=\"/\" class=\"button button-primary\">Go to overview</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueBlocksPage.vue",
+      "line": 213,
+      "kind": [
+        "panel"
+      ],
+      "source": "<p v-if=\"authSession.loading\" class=\"panel blocks-panel\" role=\"status\">Checking your session…</p>"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueBlocksPage.vue",
+      "line": 214,
+      "kind": [
+        "panel"
+      ],
+      "source": "<div v-else-if=\"!authSession.user\" class=\"panel blocks-panel\" role=\"alert\">"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueBlocksPage.vue",
+      "line": 216,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink to=\"/login\" class=\"button button-primary\">Sign in</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueBlocksPage.vue",
+      "line": 218,
+      "kind": [
+        "panel"
+      ],
+      "source": "<p v-else-if=\"!isStaff\" class=\"panel blocks-panel\" role=\"alert\">Venue blocks are for venue staff.</p>"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueBlocksPage.vue",
+      "line": 221,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section class=\"panel blocks-panel\" aria-labelledby=\"blocks-heading\">"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueBlocksPage.vue",
+      "line": 287,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section class=\"panel blocks-panel recovery-panel\" aria-labelledby=\"recovery-heading\">"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueBookingDetailPage.vue",
+      "line": 205,
+      "kind": [
+        "panel"
+      ],
+      "source": "<p v-if=\"authSession.loading\" class=\"panel booking-panel\" role=\"status\">Checking your session…</p>"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueBookingDetailPage.vue",
+      "line": 206,
+      "kind": [
+        "panel"
+      ],
+      "source": "<div v-else-if=\"!authSession.user\" class=\"panel booking-panel\" role=\"alert\">"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueBookingDetailPage.vue",
+      "line": 208,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink to=\"/login\" class=\"button button-primary\">Sign in</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueBookingDetailPage.vue",
+      "line": 210,
+      "kind": [
+        "panel"
+      ],
+      "source": "<p v-else-if=\"!allowed\" class=\"panel booking-panel\" role=\"alert\">"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueBookingDetailPage.vue",
+      "line": 216,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink to=\"/venue-bookings\">Back to venue booking requests</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueBookingDetailPage.vue",
+      "line": 219,
+      "kind": [
+        "panel"
+      ],
+      "source": "<p v-if=\"feedback\" :role=\"feedback.kind === 'error' ? 'alert' : 'status'\" class=\"panel booking-feedback\" :class=\"{ 'booking-error': feedback.kind === 'error' }\">{{ feedback.message }}</p>"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueBookingDetailPage.vue",
+      "line": 221,
+      "kind": [
+        "panel"
+      ],
+      "source": "<div v-else-if=\"state.status === 'error'\" class=\"panel booking-panel\" role=\"alert\">"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueBookingDetailPage.vue",
+      "line": 228,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section class=\"panel booking-panel\" aria-labelledby=\"booking-title\">"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueBookingDetailPage.vue",
+      "line": 242,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink :to=\"`/venue-bookings/${state.booking.replacesBookingId}`\">The outage-affected booking</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueBookingDetailPage.vue",
+      "line": 245,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink :to=\"{ path: '/venues/availability', query: { venue: state.booking.venueId, week: singaporeDateKey(state.booking.startsAt) } }\" class=\"booking-link\">View venue availability</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueBookingDetailPage.vue",
+      "line": 248,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section v-if=\"state.booking.recovery.length > 0\" class=\"panel booking-panel recovery-panel\" aria-labelledby=\"recovery-title\">"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueBookingDetailPage.vue",
+      "line": 264,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section class=\"panel booking-panel\" aria-labelledby=\"event-requirements-title\">"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueBookingDetailPage.vue",
+      "line": 277,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink v-if=\"!staff\" :to=\"`/reviews/${state.booking.eventRequestId}`\" class=\"booking-link\">View event request</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueBookingDetailPage.vue",
+      "line": 281,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section class=\"panel booking-panel outcome-panel\" aria-labelledby=\"booking-outcome-title\">"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueBookingsPage.vue",
+      "line": 60,
+      "kind": [
+        "panel"
+      ],
+      "source": "<p v-if=\"authSession.loading\" class=\"panel bookings-panel\" role=\"status\">Checking your session…</p>"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueBookingsPage.vue",
+      "line": 61,
+      "kind": [
+        "panel"
+      ],
+      "source": "<div v-else-if=\"!authSession.user\" class=\"panel bookings-panel\" role=\"alert\">"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueBookingsPage.vue",
+      "line": 63,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink to=\"/login\" class=\"button button-primary\">Sign in</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueBookingsPage.vue",
+      "line": 65,
+      "kind": [
+        "panel"
+      ],
+      "source": "<p v-else-if=\"!allowed\" class=\"panel bookings-panel\" role=\"alert\">"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueBookingsPage.vue",
+      "line": 69,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section v-else class=\"panel bookings-panel\" aria-labelledby=\"bookings-title\">"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueBookingsPage.vue",
+      "line": 74,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink v-if=\"eventRequestId\" to=\"/venue-bookings\" class=\"bookings-all-link\">Show all venue booking requests</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueBookingsPage.vue",
+      "line": 91,
+      "kind": [
+        "link"
+      ],
+      "source": "<h3><RouterLink :to=\"`/venue-bookings/${booking.id}`\">{{ booking.eventName?.trim() || 'Untitled event request' }} · {{ booking.venueName }}</RouterLink></h3>"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueCatalogueEditPage.vue",
+      "line": 168,
+      "kind": [
+        "panel"
+      ],
+      "source": "<p v-if=\"authSession.loading\" class=\"panel edit-panel\" role=\"status\">Checking your session…</p>"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueCatalogueEditPage.vue",
+      "line": 169,
+      "kind": [
+        "panel"
+      ],
+      "source": "<div v-else-if=\"!authSession.user\" class=\"panel edit-panel\" role=\"alert\">"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueCatalogueEditPage.vue",
+      "line": 171,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink to=\"/login\" class=\"button button-primary\">Sign in</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueCatalogueEditPage.vue",
+      "line": 173,
+      "kind": [
+        "panel"
+      ],
+      "source": "<p v-else-if=\"!isStaff\" class=\"panel edit-panel\" role=\"alert\">The venue catalogue is for venue staff.</p>"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueCatalogueEditPage.vue",
+      "line": 176,
+      "kind": [
+        "panel"
+      ],
+      "source": "<p v-if=\"state.status === 'loading'\" class=\"panel edit-panel\" role=\"status\">Loading the venue…</p>"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueCatalogueEditPage.vue",
+      "line": 177,
+      "kind": [
+        "panel"
+      ],
+      "source": "<div v-else-if=\"state.status === 'error'\" class=\"panel edit-panel\" role=\"alert\">"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueCatalogueEditPage.vue",
+      "line": 180,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink to=\"/venue-catalogue\" class=\"button button-secondary\">Back to the catalogue</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueCatalogueEditPage.vue",
+      "line": 183,
+      "kind": [
+        "panel"
+      ],
+      "source": "<form v-else-if=\"state.status === 'ready' && venue\" class=\"panel edit-panel\" :aria-busy=\"busy\""
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueCatalogueEditPage.vue",
+      "line": 189,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink :to=\"`/venue-bookings/${booking.id}`\">Review {{ booking.eventName?.trim() || `booking ${booking.id}` }}</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueCatalogueEditPage.vue",
+      "line": 291,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink to=\"/venue-catalogue\" class=\"button button-secondary\">Back to the catalogue</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueCataloguePage.vue",
+      "line": 66,
+      "kind": [
+        "panel"
+      ],
+      "source": "<p v-if=\"authSession.loading\" class=\"panel catalogue-panel\" role=\"status\">Checking your session…</p>"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueCataloguePage.vue",
+      "line": 67,
+      "kind": [
+        "panel"
+      ],
+      "source": "<div v-else-if=\"!authSession.user\" class=\"panel catalogue-panel\" role=\"alert\">"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueCataloguePage.vue",
+      "line": 69,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink to=\"/login\" class=\"button button-primary\">Sign in</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueCataloguePage.vue",
+      "line": 71,
+      "kind": [
+        "panel"
+      ],
+      "source": "<p v-else-if=\"!isStaff\" class=\"panel catalogue-panel\" role=\"alert\">The venue catalogue is for venue staff.</p>"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueCataloguePage.vue",
+      "line": 73,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section v-else class=\"panel catalogue-panel\" aria-labelledby=\"catalogue-heading\">"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueCataloguePage.vue",
+      "line": 91,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink :to=\"`/venue-catalogue/${venue.id}`\" class=\"button button-secondary\""
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueSearchPage.vue",
+      "line": 149,
+      "kind": [
+        "panel"
+      ],
+      "source": "<div v-else-if=\"!authSession.user\" class=\"panel venue-notice\" role=\"alert\">"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueSearchPage.vue",
+      "line": 151,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink to=\"/login\" class=\"button button-primary\">Sign in</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueSearchPage.vue",
+      "line": 154,
+      "kind": [
+        "panel"
+      ],
+      "source": "<p v-else-if=\"!isCoordinator\" class=\"panel venue-notice\" role=\"alert\">"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueSearchPage.vue",
+      "line": 159,
+      "kind": [
+        "panel"
+      ],
+      "source": "<form class=\"panel venue-filters\" aria-label=\"Venue filters\" @submit.prevent=\"search\">"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueSearchPage.vue",
+      "line": 240,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section class=\"panel venue-results\" aria-labelledby=\"venue-results-title\">"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueSearchPage.vue",
+      "line": 252,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink v-if=\"state.signIn\" to=\"/login\" class=\"button button-primary\">Sign in</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueSuitabilityPage.vue",
+      "line": 187,
+      "kind": [
+        "panel"
+      ],
+      "source": "<p v-if=\"authSession.loading\" class=\"panel suitability-panel\" role=\"status\">Checking your session…</p>"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueSuitabilityPage.vue",
+      "line": 188,
+      "kind": [
+        "panel"
+      ],
+      "source": "<div v-else-if=\"!authSession.user\" class=\"panel suitability-panel\" role=\"alert\">"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueSuitabilityPage.vue",
+      "line": 190,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink to=\"/login\" class=\"button button-primary\">Sign in</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueSuitabilityPage.vue",
+      "line": 192,
+      "kind": [
+        "panel"
+      ],
+      "source": "<p v-else-if=\"!allowed\" class=\"panel suitability-panel\" role=\"alert\">Venue suitability is for the event's assigned coordinator.</p>"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueSuitabilityPage.vue",
+      "line": 196,
+      "kind": [
+        "link"
+      ],
+      "source": "<RouterLink :to=\"`/reviews/${eventId}`\">Back to event request</RouterLink>"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueSuitabilityPage.vue",
+      "line": 199,
+      "kind": [
+        "panel"
+      ],
+      "source": "<p v-if=\"notice\" class=\"panel suitability-notice\" role=\"alert\">{{ notice }}</p>"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueSuitabilityPage.vue",
+      "line": 201,
+      "kind": [
+        "panel"
+      ],
+      "source": "<div v-else-if=\"state.status === 'error'\" class=\"panel suitability-panel\" role=\"alert\">"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueSuitabilityPage.vue",
+      "line": 207,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section v-if=\"state.context.arrangement\" class=\"panel suitability-panel saved-arrangement\" aria-labelledby=\"suitability-arrangement-title\">"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueSuitabilityPage.vue",
+      "line": 220,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section class=\"panel suitability-panel\" aria-labelledby=\"suitability-event-title\">"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueSuitabilityPage.vue",
+      "line": 232,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section class=\"panel suitability-panel\" aria-labelledby=\"suitability-venue-title\">"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueSuitabilityPage.vue",
+      "line": 254,
+      "kind": [
+        "panel"
+      ],
+      "source": "<form v-if=\"selectedVenue\" class=\"panel suitability-panel interpretation-form\" aria-label=\"Interpret event requirements\" @submit.prevent=\"assess\">"
+    },
+    {
+      "path": "frontend/src/features/venues/pages/VenueSuitabilityPage.vue",
+      "line": 287,
+      "kind": [
+        "panel"
+      ],
+      "source": "<section v-if=\"assessment\" class=\"panel suitability-panel assessment-result\" aria-label=\"Suitability assessment\" aria-live=\"polite\">"
+    }
+  ]
+}

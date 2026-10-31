@@ -1,0 +1,26 @@
+{
+  "records": {
+    "docs/testing/test-cases.csv": {
+      "existing_rows_preserved": 598,
+      "new_rows": 3,
+      "column_count": 12
+    },
+    "docs/testing/test-executions.csv": {
+      "existing_rows_preserved": 1052,
+      "new_rows": 5,
+      "column_count": 11
+    },
+    "docs/requirements/traceability.csv": {
+      "existing_rows_preserved": 207,
+      "new_rows": 2,
+      "column_count": 8
+    }
+  },
+  "existing_markdown_preserved": true,
+  "new_case_links_valid": true,
+  "implementation_test_paths_exist": true,
+  "source_hashes_match": true,
+  "temporary_fixture_restored": true,
+  "manual_placeholder_metadata": "Not recorded",
+  "scope": "New records and append-only preservation; historical unrelated blanks are retained."
+}

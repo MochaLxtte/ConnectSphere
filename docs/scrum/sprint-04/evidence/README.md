@@ -125,3 +125,9 @@ KAN-26 is In Progress / Tristan (3 SP), with unestimated KAN-104–106 In Progre
 | ID | Artifact | Source / result | Limits |
 | --- | --- | --- | --- |
 | S4-E24 | [Logs, screenshots and source inventory](minor-ui-20261031/) (`check.txt`, `coverage.txt`, `browser.txt`, targeted and before-fix logs, `summary.json`, `date-input-inventory.json`, review desktop/mobile and equipment mobile images) | AUTO-20261031-MINOR-UI: 1,209 frontend + 1,959 backend tests, typechecks/builds/coverage and 234 Chromium tests pass. Search year and review underline failures/retests retained. Exact tested source identified by base commit and SHA256. | New browser tests use substituted authentication/API responses. Source inventory does not prove native keystrokes on every page/browser. Manual TC-10-212 Not executed; UI-patch acceptance Not assessed. No database writes or migration. |
+
+## Shared panel spacing and text links — 31 October 2026
+
+| ID | Artifact | Source / result | Limits |
+| --- | --- | --- | --- |
+| S4-E25 | [Logs, screenshots, audit observations and source hashes](ui-spacing-20261031/) (`before.txt`, `focused.txt`, `check.txt`, `coverage.txt`, `browser.txt`, `summary.json`, `layout-audit.json`, `source-inventory.json`, `layout-audit-harness.txt`; desktop/mobile queue and booking images) | AUTO-20261031-UI-SPACING: two product failures reproduced, 10 focused cases passed, check/coverage passed with 1,209 frontend + 1,959 backend tests, 244 browser tests passed. 229 inspected snapshots across 28 route patterns had no flagged inset/link/overflow issues. | Synthetic browser authentication/API responses and fallback fonts; sampled states, not every browser/state. CSS verified through geometry/style assertions and visual inspection. TC-04-233 Not executed; patch acceptance Not assessed. No shared database writes or migration. |

@@ -267,3 +267,30 @@ test('KAN-8 booking list and decision form fit a narrow screen without horizonta
   await page.screenshot({ path: testInfo.outputPath('mobile-venue-booking.png'), fullPage: true });
   expect(fixture.unexpected).toEqual([]);
 });
+
+for (const width of [1280, 390]) {
+  test(`KAN-8 booking list text links are discoverable and clear the event filter at ${width}px`, async ({ page }, testInfo) => {
+    await page.setViewportSize({ width, height: 900 });
+    const fixture = await bookingFixtures(page, 'EVENT_COORDINATOR', { bookings: [makeBooking(), makeBooking({
+      id: '80000000-0000-4000-8000-000000000005', eventRequestId: '80000000-0000-4000-8000-000000000006',
+      eventName: 'Another assigned event',
+    })] });
+    await page.goto(`/venue-bookings?eventRequestId=${eventId}`);
+    const list = page.getByRole('list', { name: 'Venue booking requests', exact: true });
+    await expect(list.getByRole('listitem')).toHaveCount(1);
+    const all = page.getByRole('link', { name: 'Show all venue booking requests' });
+    await page.locator('main').screenshot({ path: testInfo.outputPath(`booking-links-${width}.png`) });
+    await expect(all).toHaveCSS('text-decoration-line', 'underline');
+    await expect(list.getByRole('link')).toHaveCSS('text-decoration-line', 'underline');
+    await all.focus();
+    await expect(all).toHaveCSS('outline-style', 'solid');
+    await page.keyboard.press('Enter');
+    await expect(page).toHaveURL(/\/venue-bookings$/);
+    await expect(list.getByRole('listitem')).toHaveCount(2);
+    await expect(all).toHaveCount(0);
+    await expect(page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'Venue bookings', exact: true }))
+      .toHaveCSS('text-decoration-line', 'none');
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+    expect(fixture.unexpected).toEqual([]);
+  });
+}

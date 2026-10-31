@@ -186,3 +186,45 @@ test('KAN-25/KAN-33 review queue waits for a verified coordinator session', asyn
     .toEqual(['GET /api/events', 'GET /api/events?scope=history']);
   expect(fixture.unexpectedRequests).toEqual([]);
 });
+
+for (const width of [1280, 390]) {
+  for (const queueState of ['ready', 'empty', 'error', 'loading'] as const) {
+    test(`KAN-33 review queue panels keep readable insets in ${queueState} at ${width}px`, async ({ page }, testInfo) => {
+      await page.setViewportSize({ width, height: 900 });
+      const fixture = await reviewFixtures(page, coordinator);
+      let release!: () => void;
+      const gate = new Promise<void>((resolve) => { release = resolve; });
+      await page.route((url) => url.pathname === '/api/events', async (route) => {
+        if (queueState === 'loading') await gate;
+        const history = new URL(route.request().url()).searchParams.get('scope') === 'history';
+        await route.fulfill(queueState === 'error'
+          ? { status: 500, json: { error: { code: 'READ_FAILED', message: 'The queue could not be loaded.' } } }
+          : { json: { items: queueState === 'empty' ? [] : [{ ...detail,
+              name: 'Community workshop with a longer event name for narrow screens',
+              status: history ? 'APPROVED' : 'SUBMITTED' }] } });
+      });
+      try {
+        await page.goto('/reviews');
+        const panels = page.locator('main > .panel');
+        await expect(panels).toHaveCount(2);
+        if (queueState === 'ready') await expect(panels.first().getByRole('link')).toBeVisible();
+        if (queueState === 'empty') await expect(page.getByRole('heading', { name: 'No requests are awaiting review' })).toBeVisible();
+        if (queueState === 'error') await expect(panels.first().getByRole('alert')).toBeVisible();
+        if (queueState === 'loading') await expect(panels.first()).toContainText('Loading the review queue');
+        await page.locator('main').screenshot({ path: testInfo.outputPath(`queue-${queueState}-${width}.png`) });
+        for (const panel of await panels.all()) {
+          const inset = await panel.evaluate((el) => {
+            const s = getComputedStyle(el);
+            return Math.min(...[s.paddingTop, s.paddingRight, s.paddingBottom, s.paddingLeft].map(parseFloat));
+          });
+          expect(inset, 'Visible content needs space inside every side of the card').toBeGreaterThanOrEqual(16);
+        }
+        // The label remains in the accessibility tree, without an accidental visual heading.
+        await expect(page.locator('#queue-title')).toHaveCSS('position', 'absolute');
+        await expect(page.getByRole('region', { name: 'Submitted event requests awaiting review' })).toBeVisible();
+        expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+        expect(fixture.unexpectedRequests).toEqual([]);
+      } finally { release(); }
+    });
+  }
+}

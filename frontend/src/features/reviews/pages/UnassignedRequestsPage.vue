@@ -154,11 +154,6 @@ onBeforeUnmount(invalidate);
 </template>
 
 <style scoped>
-/* The global stylesheet has no .sr-only rule yet, so the page carries its own. */
-.sr-only {
-  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden;
-  clip-path: inset(50%); white-space: nowrap; border: 0;
-}
 .queue-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; gap: 16px; }
 .unassigned-panel { padding: 24px; }
 .unassigned-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
