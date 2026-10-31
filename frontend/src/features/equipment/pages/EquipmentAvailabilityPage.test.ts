@@ -140,7 +140,7 @@ describe('KAN-9 equipment checks and result lifecycle', () => {
     const data = context(); data.savedRequests = []; const fetch = fixtures(data, { ...result(), mode: 'what-if' });
     await open(); await fillWhatIf();
     expect(screen.getByRole('radio', { name: 'Saved equipment requests' })).toBeDisabled();
-    expect(screen.getByRole('textbox', { name: 'Check starts (Singapore time)' })).toHaveValue('2026-11-01T10:00:00.123456');
+    expect(screen.getByLabelText('Check starts (Singapore time)')).toHaveValue('2026-11-01T10:00:00.123');
     await fireEvent.click(screen.getByRole('button', { name: 'Check availability' }));
     await screen.findByRole('heading', { name: 'Fulfillable' });
     expect(JSON.parse(fetch.mock.calls[1]![1]!.body as string)).toEqual({ mode: 'what-if', requirementsVersion: 'v1',
@@ -155,6 +155,20 @@ describe('KAN-9 equipment checks and result lifecycle', () => {
     expect(await screen.findByRole('heading', { name: 'Shortfall / Unfulfillable' })).toHaveClass('outcome-shortfall');
     expect(screen.getByRole('row', { name: /Speaker \(inactive\).*Shortfall/ })).toHaveClass('shortfall-row');
     expect(screen.queryByRole('heading', { name: 'Fulfillable' })).not.toBeInTheDocument();
+  });
+  it('preserves an untouched sub-millisecond interval through native picker rendering', async () => {
+    const data = context(); data.savedRequests = [];
+    data.event.endsAt = '2026-11-01T02:00:00.123457Z';
+    const fetch = fixtures(data, { ...result(), mode: 'what-if' });
+    await open(); await fillWhatIf();
+    expect(screen.getByLabelText('Check starts (Singapore time)')).toHaveValue('2026-11-01T10:00:00.123');
+    expect(screen.getByLabelText('Check ends (Singapore time)')).toHaveValue('2026-11-01T10:00:00.123');
+    expect(screen.getByText('Exact end retained: 2026-11-01T10:00:00.123457 (Singapore time)')).toBeInTheDocument();
+    await checkSaved();
+    await screen.findByRole('heading', { name: 'Fulfillable' });
+    expect(JSON.parse(fetch.mock.calls[1]![1]!.body as string)).toMatchObject({
+      startsAt: '2026-11-01T10:00:00.123456+08:00', endsAt: '2026-11-01T10:00:00.123457+08:00',
+    });
   });
   it('never shows green for empty or contradictory assessment items', async () => {
     const assessed = result(); assessed.items[0]!.shortfallQuantity = 1;
@@ -173,13 +187,13 @@ describe('KAN-9 equipment checks and result lifecycle', () => {
   });
   it('validates impossible dates, range and quantities at the fields without sending a check', async () => {
     const fetch = fixtures(); await open(); await fillWhatIf();
-    await fireEvent.update(screen.getByRole('textbox', { name: 'Check starts (Singapore time)' }), '2026-02-30T10:00');
+    await fireEvent.update(screen.getByLabelText('Check starts (Singapore time)'), '2026-02-30T10:00');
     await fireEvent.update(screen.getByRole('textbox', { name: 'Quantity 1' }), '1.5');
     await checkSaved();
-    expect(screen.getByRole('textbox', { name: 'Check starts (Singapore time)' })).toHaveAttribute('aria-invalid', 'true');
+    expect(screen.getByLabelText('Check starts (Singapore time)')).toHaveAttribute('aria-invalid', 'true');
     expect(screen.getByText(/Enter a valid start/)).toBeInTheDocument(); expect(screen.getByText(/Enter a whole quantity/)).toBeInTheDocument();
     expect(fetch).toHaveBeenCalledTimes(1);
-    await fireEvent.update(screen.getByRole('textbox', { name: 'Check starts (Singapore time)' }), '2026-11-01T12:00:00.123456');
+    await fireEvent.update(screen.getByLabelText('Check starts (Singapore time)'), '2026-11-01T12:00:00.124');
     expect(screen.getByText('End must be after start.')).toBeInTheDocument();
     await fireEvent.click(screen.getByRole('button', { name: 'Remove equipment item 1' })); await checkSaved();
     expect(screen.getByRole('alert')).toHaveTextContent('Add at least one');
@@ -192,8 +206,8 @@ describe('KAN-9 equipment checks and result lifecycle', () => {
       if (field === 'mode') await fireEvent.click(screen.getByRole('radio', { name: 'Saved equipment requests' }));
       if (field === 'quantity') await fireEvent.update(screen.getByRole('textbox', { name: 'Quantity 1' }), '4');
       if (field === 'type') await fireEvent.update(screen.getByRole('combobox', { name: 'Equipment type 1' }), 's');
-      if (field === 'start') await fireEvent.update(screen.getByRole('textbox', { name: 'Check starts (Singapore time)' }), '2026-11-01T09:00');
-      if (field === 'end') await fireEvent.update(screen.getByRole('textbox', { name: 'Check ends (Singapore time)' }), '2026-11-01T13:00');
+      if (field === 'start') await fireEvent.update(screen.getByLabelText('Check starts (Singapore time)'), '2026-11-01T09:00');
+      if (field === 'end') await fireEvent.update(screen.getByLabelText('Check ends (Singapore time)'), '2026-11-01T13:00');
       if (field === 'add') await fireEvent.click(screen.getByRole('button', { name: 'Add equipment item' }));
       if (field === 'remove') await fireEvent.click(screen.getByRole('button', { name: 'Remove equipment item 1' }));
       expect(screen.queryByRole('region', { name: 'Equipment assessment' })).not.toBeInTheDocument();

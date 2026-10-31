@@ -347,11 +347,11 @@ onBeforeUnmount(() => { contextVersion++; abortPending(); });
         <div class="field-grid">
           <div>
             <label :for="`${id}-starts`">Starts (Singapore time)</label>
-            <input :id="`${id}-starts`" v-model="startsAt" type="datetime-local" :disabled="busy" />
+            <input :id="`${id}-starts`" v-model="startsAt" type="datetime-local" max="9999-12-31T23:59" :disabled="busy" />
           </div>
           <div>
             <label :for="`${id}-ends`">Ends (Singapore time)</label>
-            <input :id="`${id}-ends`" v-model="endsAt" type="datetime-local" :disabled="busy" />
+            <input :id="`${id}-ends`" v-model="endsAt" type="datetime-local" max="9999-12-31T23:59" :disabled="busy" />
           </div>
         </div>
         <p v-if="timeError" class="panel-error" role="alert">{{ timeError }}</p>

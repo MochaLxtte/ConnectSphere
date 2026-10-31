@@ -161,7 +161,7 @@ onBeforeUnmount(() => {
         <div class="field">
           <label for="venue-start">Event start (Singapore time)</label>
           <input
-            id="venue-start" v-model="filters.startsAt" type="datetime-local"
+            id="venue-start" v-model="filters.startsAt" type="datetime-local" max="9999-12-31T23:59"
             :aria-invalid="periodErrors.startsAt !== ''"
             :aria-describedby="periodErrors.startsAt ? 'venue-start-error' : undefined"
             @input="noteUnreadable('startsAt', $event)"
@@ -171,7 +171,7 @@ onBeforeUnmount(() => {
         <div class="field">
           <label for="venue-end">Event end (Singapore time)</label>
           <input
-            id="venue-end" v-model="filters.endsAt" type="datetime-local"
+            id="venue-end" v-model="filters.endsAt" type="datetime-local" max="9999-12-31T23:59"
             :aria-invalid="periodErrors.endsAt !== ''"
             :aria-describedby="periodErrors.endsAt ? 'venue-end-error' : undefined"
             @input="noteUnreadable('endsAt', $event)"

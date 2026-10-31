@@ -103,7 +103,7 @@ onBeforeUnmount(() => controller?.abort());
     </div>
     <div class="toolbar-end">
       <label :for="`${id}-date`" class="jump-label">Go to date</label>
-      <input :id="`${id}-date`" v-model="jumpDate" type="date" class="jump-input" @change="jumpToDate" />
+      <input :id="`${id}-date`" v-model="jumpDate" type="date" max="9999-12-31" class="jump-input" @change="jumpToDate" />
       <button type="button" class="button button-secondary" :disabled="state.status === 'loading'" @click="load">
         <AppIcon name="refresh" :size="16" />Refresh
       </button>

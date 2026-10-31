@@ -1,0 +1,127 @@
+Running 3 tests using 1 worker
+
+
+
+(node:24600) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[1/3] [chromium] › tests\e2e\review-decision.spec.ts:31:1 › KAN-67 review shortcuts are visibly linked, keyboard accessible and fit mobile
+  1) [chromium] › tests\e2e\review-decision.spec.ts:31:1 › KAN-67 review shortcuts are visibly linked, keyboard accessible and fit mobile
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('region', { name: 'Community workshop', exact: true }).getByRole('link', { name: 'Edit name or description', exact: true })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('region', { name: 'Community workshop', exact: true }).getByRole('link', { name: 'Edit name or description', exact: true }) with timeout 5000ms
+      - waiting for getByRole('region', { name: 'Community workshop', exact: true }).getByRole('link', { name: 'Edit name or description', exact: true })
+
+
+      52 |   for (const label of labels) {
+      53 |     const link = summary.getByRole('link', { name: label, exact: true });
+    > 54 |     await expect(link).toBeVisible();
+         |                        ^
+      55 |     await expect(link).toHaveCSS('text-decoration-line', 'underline');
+      56 |   }
+      57 |   await summary.getByRole('link', { name: labels[0], exact: true }).focus();
+        at C:\Users\trist\Documents\School Stuff\Y3S1\IS212\ConnectSphere\tests\e2e\review-decision.spec.ts:54:24
+
+    Error Context: test-results\review-decision-KAN-67-rev-9d7dc-d-accessible-and-fit-mobile-chromium\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\review-decision-KAN-67-rev-9d7dc-d-accessible-and-fit-mobile-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\review-decision-KAN-67-rev-9d7dc-d-accessible-and-fit-mobile-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:4592) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[2/3] [chromium] › tests\e2e\venue-search.spec.ts:63:3 › KAN-12 four-digit year advances to time in Event start (Singapore time)
+  2) [chromium] › tests\e2e\venue-search.spec.ts:63:3 › KAN-12 four-digit year advances to time in Event start (Singapore time)
+
+    Error: expect(locator).toHaveValue(expected) failed
+
+    Locator:  getByLabel('Event start (Singapore time)')
+    Expected: "2026-11-16T11:00"
+    Received: "202611-11-16T10:00"
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toHaveValue" getByLabel('Event start (Singapore time)') with timeout 5000ms
+      - waiting for getByLabel('Event start (Singapore time)')
+        14 × locator resolved to <input id="venue-start" data-v-1d49d7ef="" aria-invalid="true" type="datetime-local" aria-describedby="venue-start-error"/>
+           - unexpected value "202611-11-16T10:00"
+
+
+      74 |     await field.press('ArrowRight');
+      75 |     await field.pressSequentially('202611');
+    > 76 |     await expect(field).toHaveValue('2026-11-16T11:00');
+         |                         ^
+      77 |     expect(fixture.unexpected).toEqual([]);
+      78 |   });
+      79 | }
+        at C:\Users\trist\Documents\School Stuff\Y3S1\IS212\ConnectSphere\tests\e2e\venue-search.spec.ts:76:25
+
+    Error Context: test-results\venue-search-KAN-12-four-d-2dd9a-Event-start-Singapore-time--chromium\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\venue-search-KAN-12-four-d-2dd9a-Event-start-Singapore-time--chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\venue-search-KAN-12-four-d-2dd9a-Event-start-Singapore-time--chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+
+(node:48284) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[3/3] [chromium] › tests\e2e\venue-search.spec.ts:63:3 › KAN-12 four-digit year advances to time in Event end (Singapore time)
+  3) [chromium] › tests\e2e\venue-search.spec.ts:63:3 › KAN-12 four-digit year advances to time in Event end (Singapore time)
+
+    Error: expect(locator).toHaveValue(expected) failed
+
+    Locator:  getByLabel('Event end (Singapore time)')
+    Expected: "2026-11-16T11:00"
+    Received: "202611-11-16T10:00"
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toHaveValue" getByLabel('Event end (Singapore time)') with timeout 5000ms
+      - waiting for getByLabel('Event end (Singapore time)')
+        14 × locator resolved to <input id="venue-end" data-v-1d49d7ef="" aria-invalid="true" type="datetime-local" aria-describedby="venue-end-error"/>
+           - unexpected value "202611-11-16T10:00"
+
+
+      74 |     await field.press('ArrowRight');
+      75 |     await field.pressSequentially('202611');
+    > 76 |     await expect(field).toHaveValue('2026-11-16T11:00');
+         |                         ^
+      77 |     expect(fixture.unexpected).toEqual([]);
+      78 |   });
+      79 | }
+        at C:\Users\trist\Documents\School Stuff\Y3S1\IS212\ConnectSphere\tests\e2e\venue-search.spec.ts:76:25
+
+    Error Context: test-results\venue-search-KAN-12-four-d-47bdd-n-Event-end-Singapore-time--chromium\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\venue-search-KAN-12-four-d-47bdd-n-Event-end-Singapore-time--chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\venue-search-KAN-12-four-d-47bdd-n-Event-end-Singapore-time--chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  3 failed
+    [chromium] › tests\e2e\review-decision.spec.ts:31:1 › KAN-67 review shortcuts are visibly linked, keyboard accessible and fit mobile
+    [chromium] › tests\e2e\venue-search.spec.ts:63:3 › KAN-12 four-digit year advances to time in Event start (Singapore time)
+    [chromium] › tests\e2e\venue-search.spec.ts:63:3 › KAN-12 four-digit year advances to time in Event end (Singapore time)

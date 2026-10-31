@@ -1,0 +1,29 @@
+{
+  "row_counts": {
+    "docs/testing/test-cases.csv": {
+      "rows": 598,
+      "added": 5,
+      "historical_rows_unchanged": true
+    },
+    "docs/testing/test-executions.csv": {
+      "rows": 1052,
+      "added": 7,
+      "historical_rows_unchanged": true
+    },
+    "docs/requirements/traceability.csv": {
+      "rows": 207,
+      "added": 3,
+      "historical_rows_unchanged": true
+    }
+  },
+  "problems": [],
+  "existing_blank_traceability_fields": [
+    "docs/requirements/traceability.csv:16: existing blank field retained",
+    "docs/requirements/traceability.csv:17: existing blank field retained",
+    "docs/requirements/traceability.csv:18: existing blank field retained",
+    "docs/requirements/traceability.csv:19: existing blank field retained",
+    "docs/requirements/traceability.csv:20: existing blank field retained",
+    "docs/requirements/traceability.csv:21: existing blank field retained"
+  ],
+  "tested_source_hashes_match": true
+}

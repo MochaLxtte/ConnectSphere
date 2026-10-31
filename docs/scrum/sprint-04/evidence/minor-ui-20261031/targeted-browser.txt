@@ -1,0 +1,39 @@
+Running 28 tests using 2 workers
+
+
+
+(node:42632) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:5864) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/28] [chromium] › tests\e2e\equipment-availability.spec.ts:60:1 › KAN-9 technical support follows event list to saved quantities and a fresh shortage result
+[2/28] [chromium] › tests\e2e\equipment-availability.spec.ts:82:1 › KAN-9 unsaved checks retain microseconds, validate fields and clear results when edited
+[3/28] [chromium] › tests\e2e\equipment-availability.spec.ts:110:3 › KAN-9 four-digit year advances to time in Check starts (Singapore time)
+[4/28] [chromium] › tests\e2e\equipment-availability.spec.ts:110:3 › KAN-9 four-digit year advances to time in Check ends (Singapore time)
+[5/28] [chromium] › tests\e2e\equipment-availability.spec.ts:126:1 › KAN-9 changed saved requirements reload before another assessment
+[6/28] [chromium] › tests\e2e\equipment-availability.spec.ts:140:3 › KAN-9 direct equipment URL is protected for EVENT_ORGANISER
+[7/28] [chromium] › tests\e2e\equipment-availability.spec.ts:140:3 › KAN-9 direct equipment URL is protected for EVENT_COORDINATOR
+[8/28] [chromium] › tests\e2e\equipment-availability.spec.ts:140:3 › KAN-9 direct equipment URL is protected for EVENT_COORDINATOR_LEAD
+[9/28] [chromium] › tests\e2e\equipment-availability.spec.ts:140:3 › KAN-9 direct equipment URL is protected for VENUE_STAFF
+[10/28] [chromium] › tests\e2e\equipment-availability.spec.ts:140:3 › KAN-9 direct equipment URL is protected for ATTENDEE
+[11/28] [chromium] › tests\e2e\equipment-availability.spec.ts:140:3 › KAN-9 direct equipment URL is protected for signed-out visitor
+[12/28] [chromium] › tests\e2e\equipment-availability.spec.ts:149:1 › KAN-9 running API requires login on list, context and assessment
+[13/28] [chromium] › tests\e2e\review-decision.spec.ts:31:1 › KAN-67 review shortcuts are visibly linked, keyboard accessible and fit mobile
+[14/28] [chromium] › tests\e2e\review-decision.spec.ts:84:3 › KAN-36 SUBMITTED to approved outcome and reason survive a browser reload
+[15/28] [chromium] › tests\e2e\review-decision.spec.ts:84:3 › KAN-36 SUBMITTED to rejected outcome and reason survive a browser reload
+[16/28] [chromium] › tests\e2e\review-decision.spec.ts:84:3 › KAN-36 UNDER_REVIEW to approved outcome and reason survive a browser reload
+[17/28] [chromium] › tests\e2e\review-decision.spec.ts:84:3 › KAN-36 UNDER_REVIEW to rejected outcome and reason survive a browser reload
+[18/28] [chromium] › tests\e2e\review-decision.spec.ts:159:1 › KAN-36 a submitted request without the decision action has no decision controls
+[19/28] [chromium] › tests\e2e\review-decision.spec.ts:188:1 › KAN-60 a blank rejection reason is blocked in the browser; the corrected reason survives a reload
+[20/28] [chromium] › tests\e2e\venue-search.spec.ts:63:3 › KAN-12 four-digit year advances to time in Event start (Singapore time)
+[21/28] [chromium] › tests\e2e\venue-search.spec.ts:63:3 › KAN-12 four-digit year advances to time in Event end (Singapore time)
+[22/28] [chromium] › tests\e2e\venue-search.spec.ts:81:1 › KAN-12 running API requires login for venue search and filter lists
+[23/28] [chromium] › tests\e2e\venue-search.spec.ts:89:1 › KAN-12 coordinator sees every venue first, then narrows, changes and clears filters
+[24/28] [chromium] › tests\e2e\venue-search.spec.ts:126:1 › KAN-12 an end time before the start is refused before any request is sent
+[25/28] [chromium] › tests\e2e\venue-search.spec.ts:143:1 › KAN-12 a signed-out visitor is asked to sign in and no venue data is requested
+[26/28] [chromium] › tests\e2e\venue-search.spec.ts:153:3 › KAN-12 EVENT_ORGANISER cannot use venue search and no venue data is requested
+[27/28] [chromium] › tests\e2e\venue-search.spec.ts:153:3 › KAN-12 VENUE_STAFF cannot use venue search and no venue data is requested
+[28/28] [chromium] › tests\e2e\venue-search.spec.ts:164:1 › KAN-12 search page fits a phone screen without sideways scrolling
+  28 passed (22.3s)

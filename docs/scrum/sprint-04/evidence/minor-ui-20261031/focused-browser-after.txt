@@ -1,0 +1,10 @@
+Running 3 tests using 1 worker
+
+
+
+(node:29980) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[1/3] [chromium] › tests\e2e\review-decision.spec.ts:31:1 › KAN-67 review shortcuts are visibly linked, keyboard accessible and fit mobile
+[2/3] [chromium] › tests\e2e\venue-search.spec.ts:63:3 › KAN-12 four-digit year advances to time in Event start (Singapore time)
+[3/3] [chromium] › tests\e2e\venue-search.spec.ts:63:3 › KAN-12 four-digit year advances to time in Event end (Singapore time)
+  3 passed (3.8s)

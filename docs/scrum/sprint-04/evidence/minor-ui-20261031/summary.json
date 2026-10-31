@@ -1,0 +1,70 @@
+{
+  "run_id": "AUTO-20261031-MINOR-UI",
+  "date": "2026-10-31",
+  "branch": "fix/minor-ui-fixes",
+  "base_commit": "54910211b4af9920af087e65e2c2ff15b9591b27",
+  "build": "Base commit plus working tree source identified by SHA256 below; documentation added after tests.",
+  "check": {
+    "exit_code": 0,
+    "frontend_tests": 1209,
+    "backend_tests": 1959
+  },
+  "coverage": {
+    "exit_code": 0,
+    "frontend": {
+      "statements": 95.68,
+      "branches": 92.38,
+      "functions": 97.56,
+      "lines": 98.28
+    },
+    "backend": {
+      "statements": 89.75,
+      "branches": 89.42,
+      "functions": 89.25,
+      "lines": 89.88
+    },
+    "selected_whole_files": {
+      "EventEquipmentAvailabilityPage.vue": {
+        "Statements": "99.36%",
+        "Branches": "96.83%",
+        "Functions": "100%",
+        "Lines": "100%"
+      },
+      "ReviewRequestPage.vue": {
+        "Statements": "86.88%",
+        "Branches": "88.67%",
+        "Functions": "91.66%",
+        "Lines": "88.23%"
+      },
+      "VenueSearchPage.vue": {
+        "Statements": "90.9%",
+        "Branches": "85.62%",
+        "Functions": "96.87%",
+        "Lines": "92.92%"
+      }
+    }
+  },
+  "browser": {
+    "passed": 234,
+    "failed": 0,
+    "workers": 2,
+    "project": "Chromium",
+    "boundary": "New regressions substitute authentication and API responses; not connected manual E2E acceptance."
+  },
+  "source_sha256": {
+    "frontend/src/features/equipment/pages/EquipmentAvailabilityPage.test.ts": "0377409037f9db532c7243fb58eaa629ccb3c10960e7ef5cef89c7542555e8d9",
+    "frontend/src/features/equipment/pages/EventEquipmentAvailabilityPage.vue": "34d09d7001029a21ad2b47038df56747bb3763f59b9c3de38b8c596a6646cb26",
+    "frontend/src/features/events/components/VenueBookingPanel.vue": "8ddf2239ada53ed6f5fc4ca952795e55cf816fafb344fc4c1d35a0b389a33d90",
+    "frontend/src/features/events/pages/EventChangeRequestPage.vue": "2203646f18611df9253f5bf5c3041a21f9d65a01f1d7f73360652f18f5972ccf",
+    "frontend/src/features/events/pages/EventDetailsEditPage.vue": "9bc1efc4d49fdcb17fc6a26ae4fde52d2a9aef49ae1c93c1052003f611c1b942",
+    "frontend/src/features/reviews/pages/ReviewRequestPage.vue": "abb648126a63b1c057db34319f09f2fb88540d2243e6ed483bad56fcc46f83b4",
+    "frontend/src/features/venues/components/VenueAvailabilityCalendar.vue": "f1f116253d4da9d6da15b73d6656eec7dc1e6c2d76bf0ae80f349a8908dd4ad9",
+    "frontend/src/features/venues/pages/VenueBlocksPage.vue": "8a6774266333144ff6fb1b8b1554ca76ba7950042ee8165c5decfb3044f82297",
+    "frontend/src/features/venues/pages/VenueBookingDetailPage.vue": "6bcdf186ee28096f6162abb988b161453020f153601c0e934390ec18817f4201",
+    "frontend/src/features/venues/pages/VenueSearchPage.vue": "a600d3bc05d32c75e62566c2e30fe3a02c3374230eb8fe8d9ae65f6e804243e0",
+    "tests/e2e/equipment-availability.spec.ts": "99c6f80f31afe027be6ef2cf28f28476039aeaa8b6505b046da3a24caf874d40",
+    "tests/e2e/review-decision.spec.ts": "7cad14261db4a785dac3d17ce8bb3bdbe847d4ee4918de35f8cd0d03ddbc8f9d",
+    "tests/e2e/venue-search.spec.ts": "cf268d7607ed1004226eaf06f9f79187fc7dae56cd93d6b7d3e0aa3620bb9785"
+  },
+  "log_format": "ANSI escapes and trailing whitespace removed for committed text logs; results and messages retained."
+}

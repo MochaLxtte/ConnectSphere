@@ -17,6 +17,10 @@ const eventId = computed(() => route.matched.some((record) => record.path === '/
 const state = ref<State>({ status: 'idle' });
 const mode = ref<'saved' | 'what-if'>('saved');
 const startsAt = ref(''), endsAt = ref('');
+// Native pickers display milliseconds. Retain the exact source instant until that field is edited.
+const pickerTime = (value: string) => value.replace(/(\.\d{3})\d+$/, '$1');
+const startsPicker = computed({ get: () => pickerTime(startsAt.value), set: (value: string) => { startsAt.value = value; } });
+const endsPicker = computed({ get: () => pickerTime(endsAt.value), set: (value: string) => { endsAt.value = value; } });
 const rows = ref<EquipmentInputRow[]>([]);
 const submitted = ref(false);
 const assessing = ref(false);
@@ -168,13 +172,15 @@ onBeforeUnmount(() => { readController?.abort(); checkController?.abort(); });
       <p v-if="!state.context.equipmentTypes.length" role="status">No equipment types are available. Refresh after the catalogue is updated.</p>
       <template v-else-if="mode === 'what-if'">
         <p class="hint">This is a hypothetical check. It does not save requirements, change the event window or reserve equipment. The window starts with the event's current times. All existing reservations still count.</p>
-        <p id="equipment-time-help" class="hint">Singapore time: enter YYYY-MM-DDTHH:mm, for example 2026-11-01T10:00. Seconds and up to six fractional digits are also supported.</p>
+        <p id="equipment-time-help" class="hint">Choose dates and times in Singapore time. Existing precise times are kept until you edit them; the picker supports milliseconds.</p>
         <div class="time-fields">
           <div><label class="field-label" for="equipment-starts">Check starts (Singapore time)</label>
-            <input id="equipment-starts" v-model="startsAt" type="text" placeholder="2026-11-01T10:00" :aria-invalid="submitted && !!form.errors.startsAt" aria-describedby="equipment-time-help equipment-start-error" />
+            <input id="equipment-starts" v-model="startsPicker" type="datetime-local" max="9999-12-31T23:59:59.999" step="0.001" :aria-invalid="submitted && !!form.errors.startsAt" aria-describedby="equipment-time-help equipment-start-error" />
+            <p v-if="startsAt !== startsPicker" class="hint">Exact start retained: {{ startsAt }} (Singapore time)</p>
             <p id="equipment-start-error" class="field-error">{{ submitted ? form.errors.startsAt : '' }}</p></div>
           <div><label class="field-label" for="equipment-ends">Check ends (Singapore time)</label>
-            <input id="equipment-ends" v-model="endsAt" type="text" placeholder="2026-11-01T12:00" :aria-invalid="submitted && !!form.errors.endsAt" aria-describedby="equipment-time-help equipment-end-error" />
+            <input id="equipment-ends" v-model="endsPicker" type="datetime-local" max="9999-12-31T23:59:59.999" step="0.001" :aria-invalid="submitted && !!form.errors.endsAt" aria-describedby="equipment-time-help equipment-end-error" />
+            <p v-if="endsAt !== endsPicker" class="hint">Exact end retained: {{ endsAt }} (Singapore time)</p>
             <p id="equipment-end-error" class="field-error">{{ submitted ? form.errors.endsAt : '' }}</p></div>
         </div>
         <fieldset v-for="(item, index) in rows" :key="index" class="item-row">

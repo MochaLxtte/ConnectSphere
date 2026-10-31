@@ -251,6 +251,7 @@ onBeforeUnmount(() => controller?.abort());
             :aria-describedby="errors[field] ? `${uid}-${field}-error` : undefined" />
           <input v-else :id="`${uid}-${field}`" :value="textValue(field)" @input="setText(field, $event)"
             :type="changeFieldConfig[field].kind === 'datetime' ? 'datetime-local' : 'number'"
+            :max="changeFieldConfig[field].kind === 'datetime' ? '9999-12-31T23:59' : undefined"
             :min="changeFieldConfig[field].kind === 'count' ? 0 : undefined"
             :aria-invalid="errors[field] ? 'true' : undefined"
             :aria-describedby="errors[field] ? `${uid}-${field}-error` : undefined" />
