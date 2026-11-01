@@ -21,8 +21,10 @@ const state = ref<LoadState>({ status: 'loading' });
 const feedback = ref<ReviewFeedback | null>(null);
 let controller: AbortController | undefined;
 let viewVersion = 0;
+let refreshVersion = 0;
 
 async function load() {
+  refreshVersion += 1;
   controller?.abort();
   const current = new AbortController();
   controller = current;
@@ -48,12 +50,16 @@ async function load() {
 /** After a panel saves, update the status without unmounting the panels. */
 async function refreshQuietly() {
   const current = controller;
+  const version = ++refreshVersion;
   try {
     const detail = await fetchReviewRequestDetail(eventRequestId.value, current?.signal);
-    if (!current?.signal.aborted && state.value.status === 'ready') state.value = { status: 'ready', detail };
+    // An older panel refresh must not undo a later saved lifecycle outcome.
+    if (version === refreshVersion && !current?.signal.aborted && state.value.status === 'ready') {
+      state.value = { status: 'ready', detail };
+    }
   } catch {
     // Refresh failures may reflect expired access; show the current unavailable message.
-    if (!current?.signal.aborted) await load();
+    if (version === refreshVersion && !current?.signal.aborted) await load();
   }
 }
 
@@ -108,7 +114,7 @@ onBeforeUnmount(() => {
 
   <p v-if="state.status === 'loading'" role="status">Loading the event request…</p>
 
-  <div v-else-if="state.status === 'error'" class="panel" role="alert">
+  <div v-else-if="state.status === 'error'" class="panel review-error" role="alert">
     <p v-if="feedback?.state === 'saved'">Your decision was recorded, but the latest request details could not be loaded.</p>
     <p>{{ state.code === 'EVENT_REQUEST_NOT_FOUND'
       ? 'This event request is unavailable or you do not have permission to review it.'
@@ -136,26 +142,23 @@ onBeforeUnmount(() => {
             : state.detail.registrationRequired ? 'Yes' : 'No' }}</dd>
         </div>
       </dl>
-      <!-- KAN-66-AC102: the assigned coordinator's ordinary name/description edit. -->
-      <p v-if="state.detail.actions?.canEditDetails"><RouterLink
-        class="availability-link"
-        :to="`/events/${state.detail.id}/details`"
-      >Edit name or description</RouterLink></p>
-      <p><RouterLink
-        class="availability-link"
-        :to="`/reviews/${state.detail.id}/venue-suitability`"
-      >Check venue suitability</RouterLink></p>
-      <p><RouterLink :to="`/events/${state.detail.id}/registrations`">View registrations</RouterLink></p>
-      <!-- KAN-51: open the venue calendar at the week of the proposed start. -->
-      <RouterLink
-        v-if="state.detail.startsAt"
-        class="availability-link"
-        :to="{ path: '/venues/availability', query: { week: singaporeDateKey(state.detail.startsAt) } }"
-      >Check venue availability for this week</RouterLink>
-      <p><RouterLink
-        class="availability-link"
-        :to="{ path: '/venue-bookings', query: { eventRequestId: state.detail.id } }"
-      >View venue booking requests and decisions</RouterLink></p>
+      <nav class="review-links" aria-label="Event actions">
+        <ul>
+          <!-- KAN-66-AC102: the assigned coordinator's ordinary name/description edit. -->
+          <li v-if="state.detail.actions?.canEditDetails"><RouterLink
+            :to="`/events/${state.detail.id}/details`"
+          >Edit name or description</RouterLink></li>
+          <li><RouterLink :to="`/reviews/${state.detail.id}/venue-suitability`">Check venue suitability</RouterLink></li>
+          <li><RouterLink :to="`/events/${state.detail.id}/registrations`">View registrations</RouterLink></li>
+          <!-- KAN-51: open the venue calendar at the week of the proposed start. -->
+          <li v-if="state.detail.startsAt"><RouterLink
+            :to="{ path: '/venues/availability', query: { week: singaporeDateKey(state.detail.startsAt) } }"
+          >Check venue availability for this week</RouterLink></li>
+          <li><RouterLink
+            :to="{ path: '/venue-bookings', query: { eventRequestId: state.detail.id } }"
+          >View venue booking requests and decisions</RouterLink></li>
+        </ul>
+      </nav>
     </section>
 
     <ReviewDecisionPanel
@@ -181,14 +184,21 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
+.review-error { display: grid; justify-items: start; gap: 12px; line-height: 1.6; }
 .event-detail { margin-bottom: 16px; padding: 24px; }
 .event-detail dl { display: grid; grid-template-columns: 200px 1fr; row-gap: 12px; column-gap: 16px; margin-top: 16px; }
 .event-detail dl > div { display: contents; }
 .event-detail dt { font-weight: 600; font-size: 13px; color: #59685e; }
 .event-detail dd { margin: 0; overflow-wrap: anywhere; min-width: 0; }
-.availability-link {
-  display: inline-block; margin-top: 20px; color: var(--green); font-size: 14px;
+.review-links { margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border); }
+.review-links ul { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 24px; list-style: none; margin: 0; padding: 0; }
+.review-links a {
+  display: inline-block; padding: 8px 0; color: var(--green); font-size: 14px; line-height: 1.5;
   text-decoration: underline; text-underline-offset: 3px;
+}
+.review-links a:hover { text-decoration-thickness: 2px; }
+@media (max-width: 640px) {
+  .review-links ul { grid-template-columns: 1fr; }
 }
 @media (max-width: 520px) {
   .event-detail { padding: 20px; }

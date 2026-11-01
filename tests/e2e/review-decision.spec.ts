@@ -28,6 +28,51 @@ const user = {
   role: 'EVENT_COORDINATOR',
 };
 
+test('KAN-67 review shortcuts are visibly linked, keyboard accessible and fit mobile', async ({ page }, testInfo) => {
+  const unexpected: string[] = [];
+  await page.route((url) => url.pathname.startsWith('/api/'), async (route) => {
+    const request = route.request();
+    const path = new URL(request.url()).pathname;
+    if (request.method() === 'GET' && path === '/api/auth/me') {
+      await route.fulfill({ json: { user } });
+    } else if (request.method() === 'GET' && path === `/api/events/${requestId}`) {
+      await route.fulfill({ json: { ...detail, status: 'APPROVED', review: null,
+        actions: { canEditDraft: false, canEditDetails: true, canMakeInitialDecision: false } } });
+    } else if (request.method() === 'GET' && path === `/api/events/${requestId}/registrations`) {
+      await route.fulfill({ json: { eventId: requestId, eventName: detail.name, activeCount: 0, items: [] } });
+    } else if (!(await fulfilWorkspaceRead(route, request, { coordinatorBookingEventId: requestId }))) {
+      unexpected.push(`${request.method()} ${path}`);
+      await route.fulfill({ status: 501, json: { error: { code: 'UNEXPECTED_TEST_REQUEST', message: path } } });
+    }
+  });
+  await page.goto(`/reviews/${requestId}`);
+  const summary = page.getByRole('region', { name: detail.name, exact: true });
+  const labels = ['Edit name or description', 'Check venue suitability', 'View registrations',
+    'Check venue availability for this week', 'View venue booking requests and decisions'];
+  for (const label of labels) {
+    const link = summary.getByRole('link', { name: label, exact: true });
+    await expect(link).toBeVisible();
+    await expect(link).toHaveCSS('text-decoration-line', 'underline');
+  }
+  await summary.getByRole('link', { name: labels[0], exact: true }).focus();
+  for (const label of labels.slice(1)) {
+    await page.keyboard.press('Tab');
+    const link = summary.getByRole('link', { name: label, exact: true });
+    await expect(link).toBeFocused();
+    await expect(link).toHaveCSS('outline-style', 'solid');
+  }
+  await summary.screenshot({ path: testInfo.outputPath('review-links-desktop.png') });
+  await page.setViewportSize({ width: 390, height: 844 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  await summary.screenshot({ path: testInfo.outputPath('review-links-mobile.png') });
+  const registrations = summary.getByRole('link', { name: 'View registrations', exact: true });
+  await registrations.focus();
+  await page.keyboard.press('Enter');
+  await expect(page).toHaveURL(new RegExp(`/events/${requestId}/registrations$`));
+  await expect(page.getByRole('heading', { name: 'Event registrations', exact: true })).toBeVisible();
+  expect(unexpected).toEqual([]);
+});
+
 const decisions = [
   { decision: 'APPROVED', choice: 'Approve request', button: 'Record approval', outcome: 'Request approved' },
   { decision: 'REJECTED', choice: 'Reject request', button: 'Record rejection', outcome: 'Request rejected' },

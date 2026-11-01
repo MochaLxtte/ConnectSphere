@@ -1,0 +1,12 @@
+
+> connectsphere@0.1.0 test:integration
+> vitest run --config vitest.integration.config.ts
+
+
+ RUN  v4.1.11 C:/Users/trist/Documents/School Stuff/Y3S1/IS212/ConnectSphere
+
+
+ Test Files  43 passed (43)
+      Tests  831 passed (831)
+   Start at  19:08:38
+   Duration  331.92s (transform 6.39s, setup 0ms, import 24.25s, tests 293.86s, environment 5ms)

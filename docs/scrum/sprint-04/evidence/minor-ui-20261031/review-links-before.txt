@@ -1,0 +1,45 @@
+Running 1 test using 1 worker
+
+
+
+(node:50764) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[1/1] [chromium] › tests\e2e\review-decision.spec.ts:31:1 › KAN-67 review shortcuts are visibly linked, keyboard accessible and fit mobile
+  1) [chromium] › tests\e2e\review-decision.spec.ts:31:1 › KAN-67 review shortcuts are visibly linked, keyboard accessible and fit mobile
+
+    Error: expect(locator).toHaveCSS(expected) failed
+
+    Locator:  getByRole('region', { name: 'Community workshop', exact: true }).getByRole('link', { name: 'View registrations', exact: true })
+    Expected: "underline"
+    Received: "none"
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toHaveCSS" getByRole('region', { name: 'Community workshop', exact: true }).getByRole('link', { name: 'View registrations', exact: true }) with timeout 5000ms
+      - waiting for getByRole('region', { name: 'Community workshop', exact: true }).getByRole('link', { name: 'View registrations', exact: true })
+        14 × locator resolved to <a class="" data-v-a0b5c955="" href="/events/10000000-0000-4000-8000-000000000036/registrations">View registrations</a>
+           - unexpected value "none"
+
+
+      53 |     const link = summary.getByRole('link', { name: label, exact: true });
+      54 |     await expect(link).toBeVisible();
+    > 55 |     await expect(link).toHaveCSS('text-decoration-line', 'underline');
+         |                        ^
+      56 |   }
+      57 |   await summary.getByRole('link', { name: labels[0], exact: true }).focus();
+      58 |   for (const label of labels.slice(1)) {
+        at C:\Users\trist\Documents\School Stuff\Y3S1\IS212\ConnectSphere\tests\e2e\review-decision.spec.ts:55:24
+
+    Error Context: test-results\review-decision-KAN-67-rev-9d7dc-d-accessible-and-fit-mobile-chromium\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\review-decision-KAN-67-rev-9d7dc-d-accessible-and-fit-mobile-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\review-decision-KAN-67-rev-9d7dc-d-accessible-and-fit-mobile-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  1 failed
+    [chromium] › tests\e2e\review-decision.spec.ts:31:1 › KAN-67 review shortcuts are visibly linked, keyboard accessible and fit mobile

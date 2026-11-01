@@ -1,0 +1,1320 @@
+
+> @connectsphere/frontend@0.1.0 test
+> vitest run src/features/events/components/EquipmentRequestPanel.test.ts
+
+
+ RUN  v4.1.11 C:/Users/trist/Documents/School Stuff/Y3S1/IS212/ConnectSphere/frontend
+
+ ❯ src/features/events/components/EquipmentRequestPanel.test.ts (25 tests | 7 failed) 5481ms
+     × cancels a REQUESTED line and displays its saved release reason separately from the prior review 42ms
+     × cancels a REJECTED line and displays its saved release reason separately from the prior review 41ms
+     × shows the saved lifecycle release reason Event cancelled without inventing an earlier review 1006ms
+     × shows the saved lifecycle release reason Event completed without inventing an earlier review 1004ms
+     × does not substitute an old rejection when the release reason is undefined 1004ms
+     × does not substitute an old rejection when the release reason is null 1004ms
+     × does not substitute an old rejection when the release reason is  1004ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/events/components/EquipmentRequestPanel.test.ts > KAN-63/KAN-26 coordinator equipment request panel > cancels a REQUESTED line and displays its saved release reason separately from the prior review
+TestingLibraryElementError: Unable to find an element with the text: Release reason: No longer needed. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <section
+      aria-labelledby="equipment-heading"
+      class="panel arrangement-panel"
+      data-v-a08d0efa=""
+    >
+      <h2
+        data-v-a08d0efa=""
+        id="equipment-heading"
+      >
+        Equipment arrangements
+      </h2>
+      <button
+        class="button button-secondary"
+        data-v-a08d0efa=""
+        type="button"
+      >
+        Reload equipment
+      </button>
+      <p
+        data-v-a08d0efa=""
+        role="status"
+      >
+        Equipment line cancelled.
+      </p>
+
+      <p
+        data-v-a08d0efa=""
+      >
+        No active equipment request lines have been saved.
+      </p>
+      <ul
+        class="equipment-lines"
+        data-v-a08d0efa=""
+      >
+
+        <li
+          data-v-a08d0efa=""
+        >
+          <strong
+            data-v-a08d0efa=""
+          >
+            Projector
+          </strong>
+           — 2 · 01/01/2031, 9:00:00 am to 01/01/2031, 11:00:00 am
+          <span
+            data-v-a08d0efa=""
+          >
+             · HDMI
+          </span>
+          <span
+            class="line-status"
+            data-v-a08d0efa=""
+          >
+             — CANCELLED
+          </span>
+        </li>
+
+      </ul>
+      <form
+        data-v-a08d0efa=""
+      >
+        <fieldset
+          data-v-a08d0efa=""
+        >
+          <legend
+            data-v-a08d0efa=""
+          >
+            Request equipment
+          </legend>
+          <label
+            class="check-row"
+            data-v-a08d0efa=""
+          >
+            <input
+              data-v-a08d0efa=""
+              type="checkbox"
+            />
+             No equipment is required
+          </label>
+
+          <label
+            data-v-a08d0efa=""
+          >
+            Equipment type
+            <select
+              data-v-a08d0efa=""
+              required=""
+            >
+              <option
+                data-v-a08d0efa=""
+                disabled=""
+                value=""
+              >
+                Select equipment
+              </option>
+
+              <option
+                data-v-a08d0efa=""
+                value="projector"
+              >
+                Projector
+              </option>
+              <option
+                data-v-a08d0efa=""
+                value="speaker"
+              >
+                Speaker
+              </option>
+
+            </select>
+          </label>
+          <label
+            data-v-a08d0efa=""
+          >
+            Quantity
+            <input
+              data-v-a08d0efa=""
+              min="1"
+              required=""
+              step="1"
+              type="number"
+            />
+          </label>
+          <p
+            data-v-a08d0efa=""
+          >
+            Event period (Singapore time): 01/01/2031, 9:00:00 am – 01/01/2031, 11:00:00 am
+          </p>
+          <label
+            data-v-a08d0efa=""
+          >
+            Technical requirements
+            <textarea
+              data-v-a08d0efa=""
+              maxlength="2000"
+            />
+          </label>
+
+          <button
+            class="button button-primary"
+            data-v-a08d0efa=""
+            type="submit"
+          >
+            Save equipment request
+          </button>
+        </fieldset>
+      </form>
+
+    </section>
+  </div>
+</body>
+ ❯ Object.getElementError ../node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ ../node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ ../node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ ../node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/features/events/components/EquipmentRequestPanel.test.ts:120:19
+    118|     await fireEvent.click(screen.getByRole('button', { name: 'Confirm …
+    119|     expect(await screen.findByText(/CANCELLED/)).toBeInTheDocument();
+    120|     expect(screen.getByText('Release reason: No longer needed')).toBeI…
+       |                   ^
+    121|     if (decisionReason) {
+    122|       expect(screen.getByText('Previous review reason: No compatible s…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
+
+ FAIL  src/features/events/components/EquipmentRequestPanel.test.ts > KAN-63/KAN-26 coordinator equipment request panel > cancels a REJECTED line and displays its saved release reason separately from the prior review
+TestingLibraryElementError: Unable to find an element with the text: Release reason: No longer needed. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <section
+      aria-labelledby="equipment-heading"
+      class="panel arrangement-panel"
+      data-v-a08d0efa=""
+    >
+      <h2
+        data-v-a08d0efa=""
+        id="equipment-heading"
+      >
+        Equipment arrangements
+      </h2>
+      <button
+        class="button button-secondary"
+        data-v-a08d0efa=""
+        type="button"
+      >
+        Reload equipment
+      </button>
+      <p
+        data-v-a08d0efa=""
+        role="status"
+      >
+        Equipment line cancelled.
+      </p>
+
+      <p
+        data-v-a08d0efa=""
+      >
+        No active equipment request lines have been saved.
+      </p>
+      <ul
+        class="equipment-lines"
+        data-v-a08d0efa=""
+      >
+
+        <li
+          data-v-a08d0efa=""
+        >
+          <strong
+            data-v-a08d0efa=""
+          >
+            Projector
+          </strong>
+           — 2 · 01/01/2031, 9:00:00 am to 01/01/2031, 11:00:00 am
+          <span
+            data-v-a08d0efa=""
+          >
+             · HDMI
+          </span>
+          <span
+            class="line-status"
+            data-v-a08d0efa=""
+          >
+             — CANCELLED
+
+            : No compatible stock
+
+          </span>
+        </li>
+
+      </ul>
+      <form
+        data-v-a08d0efa=""
+      >
+        <fieldset
+          data-v-a08d0efa=""
+        >
+          <legend
+            data-v-a08d0efa=""
+          >
+            Request equipment
+          </legend>
+          <label
+            class="check-row"
+            data-v-a08d0efa=""
+          >
+            <input
+              data-v-a08d0efa=""
+              type="checkbox"
+            />
+             No equipment is required
+          </label>
+
+          <label
+            data-v-a08d0efa=""
+          >
+            Equipment type
+            <select
+              data-v-a08d0efa=""
+              required=""
+            >
+              <option
+                data-v-a08d0efa=""
+                disabled=""
+                value=""
+              >
+                Select equipment
+              </option>
+
+              <option
+                data-v-a08d0efa=""
+                value="projector"
+              >
+                Projector
+              </option>
+              <option
+                data-v-a08d0efa=""
+                value="speaker"
+              >
+                Speaker
+              </option>
+
+            </select>
+          </label>
+          <label
+            data-v-a08d0efa=""
+          >
+            Quantity
+            <input
+              data-v-a08d0efa=""
+              min="1"
+              required=""
+              step="1"
+              type="number"
+            />
+          </label>
+          <p
+            data-v-a08d0efa=""
+          >
+            Event period (Singapore time): 01/01/2031, 9:00:00 am – 01/01/2031, 11:00:00 am
+          </p>
+          <label
+            data-v-a08d0efa=""
+          >
+            Technical requirements
+            <textarea
+              data-v-a08d0efa=""
+              maxlength="2000"
+            />
+          </label>
+
+          <button
+            class="button button-primary"
+            data-v-a08d0efa=""
+            type="submit"
+          >
+            Save equipment request
+          </button>
+        </fieldset>
+      </form>
+
+    </section>
+  </div>
+</body>
+ ❯ Object.getElementError ../node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ ../node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ ../node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ ../node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/features/events/components/EquipmentRequestPanel.test.ts:120:19
+    118|     await fireEvent.click(screen.getByRole('button', { name: 'Confirm …
+    119|     expect(await screen.findByText(/CANCELLED/)).toBeInTheDocument();
+    120|     expect(screen.getByText('Release reason: No longer needed')).toBeI…
+       |                   ^
+    121|     if (decisionReason) {
+    122|       expect(screen.getByText('Previous review reason: No compatible s…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯
+
+ FAIL  src/features/events/components/EquipmentRequestPanel.test.ts > KAN-63/KAN-26 coordinator equipment request panel > shows the saved lifecycle release reason Event cancelled without inventing an earlier review
+TestingLibraryElementError: Unable to find an element with the text: Release reason: Event cancelled. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <section
+      aria-labelledby="equipment-heading"
+      class="panel arrangement-panel"
+      data-v-a08d0efa=""
+    >
+      <h2
+        data-v-a08d0efa=""
+        id="equipment-heading"
+      >
+        Equipment arrangements
+      </h2>
+      <button
+        class="button button-secondary"
+        data-v-a08d0efa=""
+        type="button"
+      >
+        Reload equipment
+      </button>
+
+      <p
+        data-v-a08d0efa=""
+      >
+        No active equipment request lines have been saved.
+      </p>
+      <ul
+        class="equipment-lines"
+        data-v-a08d0efa=""
+      >
+
+        <li
+          data-v-a08d0efa=""
+        >
+          <strong
+            data-v-a08d0efa=""
+          >
+            Projector
+          </strong>
+           — 2 · 01/01/2031, 9:00:00 am to 01/01/2031, 11:00:00 am
+          <span
+            data-v-a08d0efa=""
+          >
+             · HDMI
+          </span>
+          <span
+            class="line-status"
+            data-v-a08d0efa=""
+          >
+             — CANCELLED
+          </span>
+        </li>
+
+      </ul>
+      <form
+        data-v-a08d0efa=""
+      >
+        <fieldset
+          data-v-a08d0efa=""
+        >
+          <legend
+            data-v-a08d0efa=""
+          >
+            Request equipment
+          </legend>
+          <label
+            class="check-row"
+            data-v-a08d0efa=""
+          >
+            <input
+              data-v-a08d0efa=""
+              type="checkbox"
+            />
+             No equipment is required
+          </label>
+
+          <label
+            data-v-a08d0efa=""
+          >
+            Equipment type
+            <select
+              data-v-a08d0efa=""
+              required=""
+            >
+              <option
+                data-v-a08d0efa=""
+                disabled=""
+                value=""
+              >
+                Select equipment
+              </option>
+
+              <option
+                data-v-a08d0efa=""
+                value="projector"
+              >
+                Projector
+              </option>
+              <option
+                data-v-a08d0efa=""
+                value="speaker"
+              >
+                Speaker
+              </option>
+
+            </select>
+          </label>
+          <label
+            data-v-a08d0efa=""
+          >
+            Quantity
+            <input
+              data-v-a08d0efa=""
+              min="1"
+              required=""
+              step="1"
+              type="number"
+            />
+          </label>
+          <p
+            data-v-a08d0efa=""
+          >
+            Event period (Singapore time): 01/01/2031, 9:00:00 am – 01/01/2031, 11:00:00 am
+          </p>
+          <label
+            data-v-a08d0efa=""
+          >
+            Technical requirements
+            <textarea
+              data-v-a08d0efa=""
+              maxlength="2000"
+            />
+          </label>
+
+          <button
+            class="button button-primary"
+            data-v-a08d0efa=""
+            type="submit"
+          >
+            Save equipment request
+          </button>
+        </fieldset>
+      </form>
+
+    </section>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <section
+      aria-labelledby="equipment-heading"
+      class="panel arrangement-panel"
+      data-v-a08d0efa=""
+    >
+      <h2
+        data-v-a08d0efa=""
+        id="equipment-heading"
+      >
+        Equipment arrangements
+      </h2>
+      <button
+        class="button button-secondary"
+        data-v-a08d0efa=""
+        type="button"
+      >
+        Reload equipment
+      </button>
+
+      <p
+        data-v-a08d0efa=""
+      >
+        No active equipment request lines have been saved.
+      </p>
+      <ul
+        class="equipment-lines"
+        data-v-a08d0efa=""
+      >
+
+        <li
+          data-v-a08d0efa=""
+        >
+          <strong
+            data-v-a08d0efa=""
+          >
+            Projector
+          </strong>
+           — 2 · 01/01/2031, 9:00:00 am to 01/01/2031, 11:00:00 am
+          <span
+            data-v-a08d0efa=""
+          >
+             · HDMI
+          </span>
+          <span
+            class="line-status"
+            data-v-a08d0efa=""
+          >
+             — CANCELLED
+          </span>
+        </li>
+
+      </ul>
+      <form
+        data-v-a08d0efa=""
+      >
+        <fieldset
+          data-v-a08d0efa=""
+        >
+          <legend
+            data-v-a08d0efa=""
+          >
+            Request equipment
+          </legend>
+          <label
+            class="check-row"
+            data-v-a08d0efa=""
+          >
+            <input
+              data-v-a08d0efa=""
+              type="checkbox"
+            />
+             No equipment is required
+          </label>
+
+          <label
+            data-v-a08d0efa=""
+          >
+            Equipment type
+            <select
+              data-v-a08d0efa=""
+              required=""
+            >
+              <option
+                data-v-a08d0efa=""
+                disabled=""
+                value=""
+              >
+                Select equipment
+              </option>
+
+              <option
+                data-v-a08d0efa=""
+                value="projector"
+              >
+                Projector
+              </option>
+              <option
+                data-v-a08d0efa=""
+                value="speaker"
+              >
+                Speaker
+              </option>
+
+            </select>
+          </label>
+          <label
+            data-v-a08d0efa=""
+          >
+            Quantity
+            <input
+              data-v-a08d0efa=""
+              min="1"
+              required=""
+              step="1"
+              type="number"
+            />
+          </label>
+          <p
+            data-v-a08d0efa=""
+          >
+            Event period (Singapore time): 01/01/2031, 9:00:00 am – 01/01/2031, 11:00:00 am
+          </p>
+          <label
+            data-v-a08d0efa=""
+          >
+            Technical requirements
+            <textarea
+              data-v-a08d0efa=""
+              maxlength="2000"
+            />
+          </label>
+
+          <button
+            class="button button-primary"
+            data-v-a08d0efa=""
+            type="submit"
+          >
+            Save equipment request
+          </button>
+        </fieldset>
+      </form>
+
+    </section>
+  </div>
+</body>
+ ❯ waitForWrapper ../node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ ../node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/features/events/components/EquipmentRequestPanel.test.ts:147:25
+    145|     const api = setup(plan({ items: [line({ status: 'CANCELLED', relea…
+    146|     render(EquipmentRequestPanel, { props: { eventRequestId: eventId, …
+    147|     expect(await screen.findByText(`Release reason: ${releaseReason}`)…
+       |                         ^
+    148|     expect(screen.getByText('— CANCELLED')).toBeInTheDocument();
+    149|     expect(screen.queryByText(/Previous review reason:/)).not.toBeInTh…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯
+
+ FAIL  src/features/events/components/EquipmentRequestPanel.test.ts > KAN-63/KAN-26 coordinator equipment request panel > shows the saved lifecycle release reason Event completed without inventing an earlier review
+TestingLibraryElementError: Unable to find an element with the text: Release reason: Event completed. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <section
+      aria-labelledby="equipment-heading"
+      class="panel arrangement-panel"
+      data-v-a08d0efa=""
+    >
+      <h2
+        data-v-a08d0efa=""
+        id="equipment-heading"
+      >
+        Equipment arrangements
+      </h2>
+      <button
+        class="button button-secondary"
+        data-v-a08d0efa=""
+        type="button"
+      >
+        Reload equipment
+      </button>
+
+      <p
+        data-v-a08d0efa=""
+      >
+        No active equipment request lines have been saved.
+      </p>
+      <ul
+        class="equipment-lines"
+        data-v-a08d0efa=""
+      >
+
+        <li
+          data-v-a08d0efa=""
+        >
+          <strong
+            data-v-a08d0efa=""
+          >
+            Projector
+          </strong>
+           — 2 · 01/01/2031, 9:00:00 am to 01/01/2031, 11:00:00 am
+          <span
+            data-v-a08d0efa=""
+          >
+             · HDMI
+          </span>
+          <span
+            class="line-status"
+            data-v-a08d0efa=""
+          >
+             — CANCELLED
+          </span>
+        </li>
+
+      </ul>
+      <form
+        data-v-a08d0efa=""
+      >
+        <fieldset
+          data-v-a08d0efa=""
+        >
+          <legend
+            data-v-a08d0efa=""
+          >
+            Request equipment
+          </legend>
+          <label
+            class="check-row"
+            data-v-a08d0efa=""
+          >
+            <input
+              data-v-a08d0efa=""
+              type="checkbox"
+            />
+             No equipment is required
+          </label>
+
+          <label
+            data-v-a08d0efa=""
+          >
+            Equipment type
+            <select
+              data-v-a08d0efa=""
+              required=""
+            >
+              <option
+                data-v-a08d0efa=""
+                disabled=""
+                value=""
+              >
+                Select equipment
+              </option>
+
+              <option
+                data-v-a08d0efa=""
+                value="projector"
+              >
+                Projector
+              </option>
+              <option
+                data-v-a08d0efa=""
+                value="speaker"
+              >
+                Speaker
+              </option>
+
+            </select>
+          </label>
+          <label
+            data-v-a08d0efa=""
+          >
+            Quantity
+            <input
+              data-v-a08d0efa=""
+              min="1"
+              required=""
+              step="1"
+              type="number"
+            />
+          </label>
+          <p
+            data-v-a08d0efa=""
+          >
+            Event period (Singapore time): 01/01/2031, 9:00:00 am – 01/01/2031, 11:00:00 am
+          </p>
+          <label
+            data-v-a08d0efa=""
+          >
+            Technical requirements
+            <textarea
+              data-v-a08d0efa=""
+              maxlength="2000"
+            />
+          </label>
+
+          <button
+            class="button button-primary"
+            data-v-a08d0efa=""
+            type="submit"
+          >
+            Save equipment request
+          </button>
+        </fieldset>
+      </form>
+
+    </section>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <section
+      aria-labelledby="equipment-heading"
+      class="panel arrangement-panel"
+      data-v-a08d0efa=""
+    >
+      <h2
+        data-v-a08d0efa=""
+        id="equipment-heading"
+      >
+        Equipment arrangements
+      </h2>
+      <button
+        class="button button-secondary"
+        data-v-a08d0efa=""
+        type="button"
+      >
+        Reload equipment
+      </button>
+
+      <p
+        data-v-a08d0efa=""
+      >
+        No active equipment request lines have been saved.
+      </p>
+      <ul
+        class="equipment-lines"
+        data-v-a08d0efa=""
+      >
+
+        <li
+          data-v-a08d0efa=""
+        >
+          <strong
+            data-v-a08d0efa=""
+          >
+            Projector
+          </strong>
+           — 2 · 01/01/2031, 9:00:00 am to 01/01/2031, 11:00:00 am
+          <span
+            data-v-a08d0efa=""
+          >
+             · HDMI
+          </span>
+          <span
+            class="line-status"
+            data-v-a08d0efa=""
+          >
+             — CANCELLED
+          </span>
+        </li>
+
+      </ul>
+      <form
+        data-v-a08d0efa=""
+      >
+        <fieldset
+          data-v-a08d0efa=""
+        >
+          <legend
+            data-v-a08d0efa=""
+          >
+            Request equipment
+          </legend>
+          <label
+            class="check-row"
+            data-v-a08d0efa=""
+          >
+            <input
+              data-v-a08d0efa=""
+              type="checkbox"
+            />
+             No equipment is required
+          </label>
+
+          <label
+            data-v-a08d0efa=""
+          >
+            Equipment type
+            <select
+              data-v-a08d0efa=""
+              required=""
+            >
+              <option
+                data-v-a08d0efa=""
+                disabled=""
+                value=""
+              >
+                Select equipment
+              </option>
+
+              <option
+                data-v-a08d0efa=""
+                value="projector"
+              >
+                Projector
+              </option>
+              <option
+                data-v-a08d0efa=""
+                value="speaker"
+              >
+                Speaker
+              </option>
+
+            </select>
+          </label>
+          <label
+            data-v-a08d0efa=""
+          >
+            Quantity
+            <input
+              data-v-a08d0efa=""
+              min="1"
+              required=""
+              step="1"
+              type="number"
+            />
+          </label>
+          <p
+            data-v-a08d0efa=""
+          >
+            Event period (Singapore time): 01/01/2031, 9:00:00 am – 01/01/2031, 11:00:00 am
+          </p>
+          <label
+            data-v-a08d0efa=""
+          >
+            Technical requirements
+            <textarea
+              data-v-a08d0efa=""
+              maxlength="2000"
+            />
+          </label>
+
+          <button
+            class="button button-primary"
+            data-v-a08d0efa=""
+            type="submit"
+          >
+            Save equipment request
+          </button>
+        </fieldset>
+      </form>
+
+    </section>
+  </div>
+</body>
+ ❯ waitForWrapper ../node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ ../node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/features/events/components/EquipmentRequestPanel.test.ts:147:25
+    145|     const api = setup(plan({ items: [line({ status: 'CANCELLED', relea…
+    146|     render(EquipmentRequestPanel, { props: { eventRequestId: eventId, …
+    147|     expect(await screen.findByText(`Release reason: ${releaseReason}`)…
+       |                         ^
+    148|     expect(screen.getByText('— CANCELLED')).toBeInTheDocument();
+    149|     expect(screen.queryByText(/Previous review reason:/)).not.toBeInTh…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/7]⎯
+
+ FAIL  src/features/events/components/EquipmentRequestPanel.test.ts > KAN-63/KAN-26 coordinator equipment request panel > does not substitute an old rejection when the release reason is undefined
+ FAIL  src/features/events/components/EquipmentRequestPanel.test.ts > KAN-63/KAN-26 coordinator equipment request panel > does not substitute an old rejection when the release reason is null
+ FAIL  src/features/events/components/EquipmentRequestPanel.test.ts > KAN-63/KAN-26 coordinator equipment request panel > does not substitute an old rejection when the release reason is
+TestingLibraryElementError: Unable to find an element with the text: Release reason: Not recorded. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <section
+      aria-labelledby="equipment-heading"
+      class="panel arrangement-panel"
+      data-v-a08d0efa=""
+    >
+      <h2
+        data-v-a08d0efa=""
+        id="equipment-heading"
+      >
+        Equipment arrangements
+      </h2>
+      <button
+        class="button button-secondary"
+        data-v-a08d0efa=""
+        type="button"
+      >
+        Reload equipment
+      </button>
+
+      <p
+        data-v-a08d0efa=""
+      >
+        No active equipment request lines have been saved.
+      </p>
+      <ul
+        class="equipment-lines"
+        data-v-a08d0efa=""
+      >
+
+        <li
+          data-v-a08d0efa=""
+        >
+          <strong
+            data-v-a08d0efa=""
+          >
+            Projector
+          </strong>
+           — 2 · 01/01/2031, 9:00:00 am to 01/01/2031, 11:00:00 am
+          <span
+            data-v-a08d0efa=""
+          >
+             · HDMI
+          </span>
+          <span
+            class="line-status"
+            data-v-a08d0efa=""
+          >
+             — CANCELLED
+
+            : No compatible stock
+
+          </span>
+        </li>
+
+      </ul>
+      <form
+        data-v-a08d0efa=""
+      >
+        <fieldset
+          data-v-a08d0efa=""
+        >
+          <legend
+            data-v-a08d0efa=""
+          >
+            Request equipment
+          </legend>
+          <label
+            class="check-row"
+            data-v-a08d0efa=""
+          >
+            <input
+              data-v-a08d0efa=""
+              type="checkbox"
+            />
+             No equipment is required
+          </label>
+
+          <label
+            data-v-a08d0efa=""
+          >
+            Equipment type
+            <select
+              data-v-a08d0efa=""
+              required=""
+            >
+              <option
+                data-v-a08d0efa=""
+                disabled=""
+                value=""
+              >
+                Select equipment
+              </option>
+
+              <option
+                data-v-a08d0efa=""
+                value="projector"
+              >
+                Projector
+              </option>
+              <option
+                data-v-a08d0efa=""
+                value="speaker"
+              >
+                Speaker
+              </option>
+
+            </select>
+          </label>
+          <label
+            data-v-a08d0efa=""
+          >
+            Quantity
+            <input
+              data-v-a08d0efa=""
+              min="1"
+              required=""
+              step="1"
+              type="number"
+            />
+          </label>
+          <p
+            data-v-a08d0efa=""
+          >
+            Event period (Singapore time): 01/01/2031, 9:00:00 am – 01/01/2031, 11:00:00 am
+          </p>
+          <label
+            data-v-a08d0efa=""
+          >
+            Technical requirements
+            <textarea
+              data-v-a08d0efa=""
+              maxlength="2000"
+            />
+          </label>
+
+          <button
+            class="button button-primary"
+            data-v-a08d0efa=""
+            type="submit"
+          >
+            Save equipment request
+          </button>
+        </fieldset>
+      </form>
+
+    </section>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <section
+      aria-labelledby="equipment-heading"
+      class="panel arrangement-panel"
+      data-v-a08d0efa=""
+    >
+      <h2
+        data-v-a08d0efa=""
+        id="equipment-heading"
+      >
+        Equipment arrangements
+      </h2>
+      <button
+        class="button button-secondary"
+        data-v-a08d0efa=""
+        type="button"
+      >
+        Reload equipment
+      </button>
+
+      <p
+        data-v-a08d0efa=""
+      >
+        No active equipment request lines have been saved.
+      </p>
+      <ul
+        class="equipment-lines"
+        data-v-a08d0efa=""
+      >
+
+        <li
+          data-v-a08d0efa=""
+        >
+          <strong
+            data-v-a08d0efa=""
+          >
+            Projector
+          </strong>
+           — 2 · 01/01/2031, 9:00:00 am to 01/01/2031, 11:00:00 am
+          <span
+            data-v-a08d0efa=""
+          >
+             · HDMI
+          </span>
+          <span
+            class="line-status"
+            data-v-a08d0efa=""
+          >
+             — CANCELLED
+
+            : No compatible stock
+
+          </span>
+        </li>
+
+      </ul>
+      <form
+        data-v-a08d0efa=""
+      >
+        <fieldset
+          data-v-a08d0efa=""
+        >
+          <legend
+            data-v-a08d0efa=""
+          >
+            Request equipment
+          </legend>
+          <label
+            class="check-row"
+            data-v-a08d0efa=""
+          >
+            <input
+              data-v-a08d0efa=""
+              type="checkbox"
+            />
+             No equipment is required
+          </label>
+
+          <label
+            data-v-a08d0efa=""
+          >
+            Equipment type
+            <select
+              data-v-a08d0efa=""
+              required=""
+            >
+              <option
+                data-v-a08d0efa=""
+                disabled=""
+                value=""
+              >
+                Select equipment
+              </option>
+
+              <option
+                data-v-a08d0efa=""
+                value="projector"
+              >
+                Projector
+              </option>
+              <option
+                data-v-a08d0efa=""
+                value="speaker"
+              >
+                Speaker
+              </option>
+
+            </select>
+          </label>
+          <label
+            data-v-a08d0efa=""
+          >
+            Quantity
+            <input
+              data-v-a08d0efa=""
+              min="1"
+              required=""
+              step="1"
+              type="number"
+            />
+          </label>
+          <p
+            data-v-a08d0efa=""
+          >
+            Event period (Singapore time): 01/01/2031, 9:00:00 am – 01/01/2031, 11:00:00 am
+          </p>
+          <label
+            data-v-a08d0efa=""
+          >
+            Technical requirements
+            <textarea
+              data-v-a08d0efa=""
+              maxlength="2000"
+            />
+          </label>
+
+          <button
+            class="button button-primary"
+            data-v-a08d0efa=""
+            type="submit"
+          >
+            Save equipment request
+          </button>
+        </fieldset>
+      </form>
+
+    </section>
+  </div>
+</body>
+ ❯ waitForWrapper ../node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ ../node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/features/events/components/EquipmentRequestPanel.test.ts:156:25
+    154|     const api = setup(plan({ items: [line({ status: 'CANCELLED', decis…
+    155|     render(EquipmentRequestPanel, { props: { eventRequestId: eventId, …
+    156|     expect(await screen.findByText('Release reason: Not recorded')).to…
+       |                         ^
+    157|     expect(screen.getByText('Previous review reason: No compatible sto…
+    158|     expect(screen.queryByText(/CANCELLED: No compatible stock/)).not.t…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/7]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  7 failed | 18 passed (25)
+   Start at  18:59:57
+   Duration  43.20s (transform 339ms, setup 14.44s, import 394ms, tests 5.48s, environment 22.69s)
+
+npm error Lifecycle script `test` failed with error:
+npm error code 1
+npm error path C:\Users\trist\Documents\School Stuff\Y3S1\IS212\ConnectSphere\frontend
+npm error workspace @connectsphere/frontend@0.1.0
+npm error location C:\Users\trist\Documents\School Stuff\Y3S1\IS212\ConnectSphere\frontend
+npm error command failed
+npm error command C:\WINDOWS\system32\cmd.exe /d /s /c vitest run src/features/events/components/EquipmentRequestPanel.test.ts

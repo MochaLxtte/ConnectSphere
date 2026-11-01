@@ -1,0 +1,13 @@
+
+> @connectsphere/frontend@0.1.0 test
+> vitest run src/features/auth/session.test.ts src/features/auth/pages/LoginPage.test.ts src/features/auth/supabase-client.test.ts src/app/router.test.ts src/components/AppShell.test.ts --pool=threads --maxWorkers=2
+
+
+ RUN  v4.1.11 C:/Users/trist/Documents/School Stuff/Y3S1/IS212/ConnectSphere/frontend
+
+
+ Test Files  5 passed (5)
+      Tests  59 passed (59)
+   Start at  22:07:18
+   Duration  8.52s (transform 2.72s, setup 4.61s, import 3.73s, tests 1.82s, environment 4.88s)
+

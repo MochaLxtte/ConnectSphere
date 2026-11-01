@@ -1,5 +1,7 @@
 # Authentication and roles workstream
 
+**Current verification — 1 November 2026:** `backend/test/auth/supabase-verification.test.ts` exercises real signed ES256/HS256 verification, JWKS cache/rotation and failure classification with a loopback server. `backend/test/auth-router.test.ts` and real PostgreSQL authentication tests cover the API/profile boundaries separately. Frontend session/LoginPage/router/AppShell tests cover failure feedback, role navigation and superseded responses. Cookie writes are ordered within one tab; this does not add provider token revocation or cross-tab synchronization. See [test hardening evidence](../../../../docs/testing/test-evidence.md#auto-20261101-test-hardening--coverage-browser-isolation-and-documentation) and deferred connected smoke TC-01-213.
+
 Ryan owns this directory and the authentication workstream: profile mapping, login/logout, session verification, and role middleware. Coordinate public request/response contracts with the other feature owners before implementing them.
 
 Supabase Auth verifies email/password credentials. The backend verifies a Supabase access token and sets it directly as a HttpOnly session cookie, re-verifies that cookie on later requests, and resolves the Supabase user id through `app_users.supabase_user_id` to the application-owned profile and role. `POST /api/auth/login`, `GET /api/auth/me`, and `POST /api/auth/logout` are mounted by the normal server.
@@ -14,7 +16,7 @@ The browser SDK only performs the sign-in exchange; it does not persist a second
 
 `server.ts` starts `createRuntimeApp` from `backend/src/runtime-app.ts`, which supplies the same Supabase session verifier to authentication and event routes. The normal server mounts event listing, shared detail, draft editing, submission and approval/rejection. Organisers retain access to their own requests; only the currently assigned coordinator can access a request through the coordinator queue, detail or review workflow. Coordinators cannot view drafts, and initial decisions require `SUBMITTED` or `UNDER_REVIEW` status with no recorded decision.
 
-Assignment compares `event_requests.coordinator_id` with the verified `app_users.id`, not the Supabase UUID. Null or different assignments deny coordinator access. The decision write rechecks assignment against the locked event row. The [CR-5 customer change](../../../../docs/requirements/change-requests.md) replaces the earlier unassigned-triage policy with trusted Lead allocation. Replacing an existing coordinator is KAN-65 work and is unavailable in the current API/UI.
+Assignment compares `event_requests.coordinator_id` with the verified `app_users.id`, not the Supabase UUID. Null or different assignments deny coordinator access. The decision write rechecks assignment against the locked event row. The [CR-5 customer change](../../../../docs/requirements/change-requests.md) replaces the earlier unassigned-triage policy with trusted Lead allocation. KAN-65 implements versioned Lead reassignment with retained history and immediate access transfer; dated rollout notes below retain their original checkpoints.
 
 ## KAN-79 trusted Lead access — 19 October 2026
 

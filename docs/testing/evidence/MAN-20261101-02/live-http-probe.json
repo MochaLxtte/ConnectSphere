@@ -1,0 +1,76 @@
+{
+  "run_id": "MAN-20261101-02",
+  "date": "2026-11-01",
+  "timezone": "Asia/Singapore",
+  "method": "Direct live HTTP probe with separate real test-account sessions; not Chrome Network capture",
+  "base": "http://127.0.0.1:5173",
+  "missingId": "8d223776-d0fc-437e-ae3c-107ae75d110d",
+  "results": [
+    {
+      "actor": "assigned coordinator",
+      "path": "/api/events/f65feb52-085b-4910-8331-904e9c69469c/completion",
+      "status": 200,
+      "body": {
+        "completion": {
+          "eventRequestId": "f65feb52-085b-4910-8331-904e9c69469c",
+          "status": "COMPLETED",
+          "completedById": "51ae1004-e6af-4147-8909-de6c97a274d5",
+          "completedByName": "Event Coordinator",
+          "completedAt": "2026-11-01T09:20:16.544Z",
+          "releasedEquipmentRequests": 1
+        }
+      }
+    },
+    {
+      "actor": "assigned coordinator",
+      "path": "/api/events/55e58c4a-8ab1-42c8-a572-69810743c14d/equipment-requests",
+      "status": 200,
+      "body": {
+        "items": [
+          {
+            "id": "144fb6b8-9d99-44a7-a740-46b6d76c1138",
+            "status": "CANCELLED",
+            "decisionReason": "R13 rejection test",
+            "releaseReason": "R13 finished rejection probe",
+            "releasedAt": "2026-11-01T08:50:18.093734Z",
+            "releaseCause": "MANUAL_CANCELLATION"
+          }
+        ]
+      }
+    },
+    {
+      "actor": "unrelated organiser",
+      "path": "/api/events/f65feb52-085b-4910-8331-904e9c69469c/completion",
+      "status": 200,
+      "body": {
+        "completion": null
+      }
+    },
+    {
+      "actor": "unrelated organiser / invented valid UUID",
+      "path": "/api/events/8d223776-d0fc-437e-ae3c-107ae75d110d/completion",
+      "status": 200,
+      "body": {
+        "completion": null
+      }
+    },
+    {
+      "actor": "signed out",
+      "path": "/api/events/f65feb52-085b-4910-8331-904e9c69469c/completion",
+      "status": 401,
+      "body": {
+        "error": {
+          "code": "AUTHENTICATION_REQUIRED",
+          "message": "Sign in to view this event outcome."
+        }
+      }
+    }
+  ],
+  "expectedChecks": {
+    "authorisedCompletion": true,
+    "distinctSavedReasons": true,
+    "unrelatedNull": true,
+    "missingNull": true,
+    "signedOutDenied": true
+  }
+}

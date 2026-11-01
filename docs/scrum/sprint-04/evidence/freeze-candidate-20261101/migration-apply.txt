@@ -1,0 +1,5 @@
+
+> connectsphere@0.1.0 db:migrate
+> tsx database/migrate.ts
+
+Applied: 023_safety_approval_invalidation.sql

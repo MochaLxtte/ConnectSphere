@@ -1,0 +1,22 @@
+
+Running 10 tests using 2 workers
+
+
+
+(node:30004) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:42836) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/10] [chromium] › tests\e2e\review-access.spec.ts:192:5 › KAN-33 review queue panels keep readable insets in ready at 1280px
+[2/10] [chromium] › tests\e2e\review-access.spec.ts:192:5 › KAN-33 review queue panels keep readable insets in empty at 1280px
+[3/10] [chromium] › tests\e2e\review-access.spec.ts:192:5 › KAN-33 review queue panels keep readable insets in error at 1280px
+[4/10] [chromium] › tests\e2e\review-access.spec.ts:192:5 › KAN-33 review queue panels keep readable insets in loading at 1280px
+[5/10] [chromium] › tests\e2e\review-access.spec.ts:192:5 › KAN-33 review queue panels keep readable insets in ready at 390px
+[6/10] [chromium] › tests\e2e\review-access.spec.ts:192:5 › KAN-33 review queue panels keep readable insets in empty at 390px
+[7/10] [chromium] › tests\e2e\review-access.spec.ts:192:5 › KAN-33 review queue panels keep readable insets in error at 390px
+[8/10] [chromium] › tests\e2e\review-access.spec.ts:192:5 › KAN-33 review queue panels keep readable insets in loading at 390px
+[9/10] [chromium] › tests\e2e\venue-bookings.spec.ts:272:3 › KAN-8 booking list text links are discoverable and clear the event filter at 1280px
+[10/10] [chromium] › tests\e2e\venue-bookings.spec.ts:272:3 › KAN-8 booking list text links are discoverable and clear the event filter at 390px
+  10 passed (9.5s)

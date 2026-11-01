@@ -25,10 +25,23 @@ const venue = {
 };
 
 async function fixtures(page: Page, options: {
-  conflict?: 'VENUE_BOOKING_CONFLICT' | 'VENUE_UNAVAILABLE'; lostResponse?: boolean; role?: Role;
+  conflict?: 'VENUE_BOOKING_CONFLICT' | 'VENUE_UNAVAILABLE'; lostResponse?: boolean; role?: Role; historyCount?: number;
 } = {}) {
   let role: Role = options.role ?? 'EVENT_COORDINATOR';
   let booking: VenueBooking | undefined;
+  const history: VenueBooking[] = Array.from({ length: options.historyCount ?? 0 }, (_, index) => ({
+    id: `53000000-0000-4000-8000-${String(index + 100).padStart(12, '0')}`,
+    eventRequestId: eventId, eventName: event.name, eventStatus: 'APPROVED',
+    venueId, venueName: `Earlier Harbour arrangement ${index + 1}`, status: 'CANCELLED',
+    startsAt: event.startsAt, endsAt: event.endsAt, layout: 'Theatre', notes: 'Earlier planning attempt',
+    decidedBy: null, decidedAt: null, decisionReason: null,
+    createdAt: event.createdAt, updatedAt: event.updatedAt,
+    eventStartsAt: event.startsAt, eventEndsAt: event.endsAt, purpose: event.purpose, description: event.description,
+    expectedAttendance: event.expectedAttendance, venueRequirements: event.venueRequirements, accessibilityNeeds: event.accessibilityNeeds,
+    recovery: [], replacesBookingId: null, replacedByBookingIds: [],
+    holdExpiresAt: null, heldBy: null, heldAt: null, expiredAt: null,
+    cancelledBy: coordinatorId, cancelledAt: event.updatedAt, cancellationReason: 'Change of venue plan',
+  }));
   const submissions: Record<string, unknown>[] = [];
   const decisions: Record<string, unknown>[] = [];
   const unexpected: string[] = [];
@@ -49,11 +62,11 @@ async function fixtures(page: Page, options: {
       await route.fulfill({ json: { items: [venue] } });
     } else if (method === 'GET' && path === '/api/venue-bookings' && role !== 'EVENT_ORGANISER'
       && (!url.search || url.search === `?eventRequestId=${eventId}`)) {
-      await route.fulfill({ json: { items: booking && (role === 'EVENT_COORDINATOR' || booking.status === 'PENDING') ? [booking] : [] } });
+      await route.fulfill({ json: { items: [...(booking && (role === 'EVENT_COORDINATOR' || booking.status === 'PENDING') ? [booking] : []), ...(role === 'EVENT_COORDINATOR' ? history : [])] } });
     } else if (method === 'GET' && path === `/api/venue-bookings/${bookingId}` && role !== 'EVENT_ORGANISER' && booking) {
       await route.fulfill({ json: { booking } });
     } else if (method === 'POST' && path === `/api/events/${eventId}/venue-bookings` && role === 'EVENT_COORDINATOR') {
-      const input = request.postDataJSON() as { venueId: string; startsAt: string; endsAt: string; layout: string | null; notes: string | null };
+      const input = request.postDataJSON() as { venueId: string; startsAt: string; endsAt: string; layout: string | null; notes: string | null; replacesBookingId?: string };
       submissions.push(input);
       if (options.conflict) {
         await route.fulfill({ status: 409, json: error(options.conflict, options.conflict === 'VENUE_UNAVAILABLE'
@@ -67,7 +80,7 @@ async function fixtures(page: Page, options: {
         createdAt: '2026-10-05T00:00:00.000Z', updatedAt: '2026-10-05T00:00:00.000Z',
         eventStartsAt: event.startsAt, eventEndsAt: event.endsAt, purpose: event.purpose, description: event.description,
         expectedAttendance: event.expectedAttendance, venueRequirements: event.venueRequirements, accessibilityNeeds: event.accessibilityNeeds,
-        recovery: [], replacesBookingId: null, replacedByBookingIds: [],
+        recovery: [], replacesBookingId: input.replacesBookingId ?? null, replacedByBookingIds: [],
         holdExpiresAt: null, heldBy: null, heldAt: null, expiredAt: null,
         cancelledBy: null, cancelledAt: null, cancellationReason: null,
       };
@@ -160,12 +173,14 @@ for (const conflict of ['VENUE_BOOKING_CONFLICT', 'VENUE_UNAVAILABLE'] as const)
 }
 
 test('KAN-53 uncertain submission refreshes a saved pending request without another write', async ({ page }) => {
-  const fixture = await fixtures(page, { lostResponse: true });
+  const fixture = await fixtures(page, { lostResponse: true, historyCount: 12 });
   await page.goto(`/reviews/${eventId}`);
   const panel = await fillSubmission(page);
   await expect(panel.getByRole('alert')).toContainText('could not confirm whether the booking request was saved');
+  await expect(panel.getByRole('alert')).toBeInViewport();
+  await expect(panel.getByRole('alert')).toBeFocused();
   await expect(panel.getByRole('button', { name: 'Request this venue', exact: true })).toBeDisabled();
-  await panel.getByRole('button', { name: 'Refresh booking requests', exact: true }).click();
+  await panel.getByRole('button', { name: 'Review current bookings', exact: true }).click();
   await expect(panel.getByText('Pending', { exact: true })).toBeVisible();
   await expect(panel.getByRole('combobox', { name: 'Venue', exact: true })).toHaveValue('');
   expect(fixture.submissions).toHaveLength(1);
@@ -180,3 +195,52 @@ test('KAN-53 organiser detail does not mount the private booking panel or reques
   expect(fixture.submissions).toEqual([]);
   expect(fixture.unexpected).toEqual([]);
 });
+
+for (const width of [1280, 390]) {
+  test(`KAN-82 replacement shortcut reveals and focuses the next step below long history at ${width}px`, async ({ page }, testInfo) => {
+    const fixture = await fixtures(page, { historyCount: 12 });
+    await page.setViewportSize({ width, height: 850 });
+    await page.goto(`/reviews/${eventId}`);
+    const panel = page.getByRole('region', { name: 'Venue booking requests', exact: true });
+    await panel.getByRole('button', { name: 'Request replacement', exact: true }).first().click();
+    const heading = panel.getByRole('heading', { name: 'Request a replacement venue', exact: true });
+    await expect(heading).toBeFocused();
+    await expect(heading).toBeInViewport();
+    await expect(panel.getByText(/Replacing: Earlier Harbour arrangement 1,/)).toBeInViewport();
+    await expect(panel.getByText('Choose the replacement venue, dates and layout below, then select Request this venue.')).toBeInViewport();
+    await expect(panel.getByLabel('This request replaces')).toHaveValue('53000000-0000-4000-8000-000000000100');
+    expect(fixture.submissions).toEqual([]);
+    expect(fixture.unexpected).toEqual([]);
+    await page.screenshot({ path: testInfo.outputPath(`replacement-next-step-${width}.png`) });
+  });
+
+  test(`KAN-82 request conflict and successful retry stay visible beside submit at ${width}px`, async ({ page }, testInfo) => {
+    const options: Parameters<typeof fixtures>[1] = { historyCount: 12, conflict: 'VENUE_BOOKING_CONFLICT' };
+    const fixture = await fixtures(page, options);
+    await page.setViewportSize({ width, height: 850 });
+    await page.goto(`/reviews/${eventId}`);
+    const panel = page.getByRole('region', { name: 'Venue booking requests', exact: true });
+    await panel.getByLabel('This request replaces').selectOption('53000000-0000-4000-8000-000000000100');
+    await fillSubmission(page);
+    const feedback = panel.getByRole('alert');
+    await expect(feedback).toContainText('already has an approved booking');
+    await expect(feedback).toBeInViewport();
+    await expect(feedback).toBeFocused();
+    const buttonBox = await panel.getByRole('button', { name: 'Request this venue', exact: true }).boundingBox();
+    const feedbackBox = await feedback.boundingBox();
+    expect(feedbackBox!.y).toBeGreaterThan(buttonBox!.y);
+    expect(feedbackBox!.y - (buttonBox!.y + buttonBox!.height)).toBeLessThan(80);
+    await expect(panel.getByLabel('Starts (Singapore time)', { exact: true })).toHaveValue('2026-12-01T10:00');
+    await expect(panel.getByLabel('This request replaces')).toHaveValue('53000000-0000-4000-8000-000000000100');
+    await page.screenshot({ path: testInfo.outputPath(`request-conflict-${width}.png`) });
+    options.conflict = undefined;
+    await panel.getByRole('button', { name: 'Request this venue', exact: true }).click();
+    const success = panel.getByRole('status').filter({ hasText: 'was submitted for review' });
+    await expect(success).toBeFocused();
+    await expect(success).toBeInViewport();
+    await expect(panel.getByText('Pending', { exact: true })).toBeVisible();
+    expect(fixture.submissions).toHaveLength(2);
+    expect(fixture.submissions.every(input => input.replacesBookingId === '53000000-0000-4000-8000-000000000100')).toBe(true);
+    expect(fixture.unexpected).toEqual([]);
+  });
+}

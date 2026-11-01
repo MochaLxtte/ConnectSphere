@@ -1,0 +1,122 @@
+{
+  "run_id": "AUTO-20261101-RELEASE-REGRESSIONS",
+  "date": "2026-11-01",
+  "branch": "fix/release-regressions",
+  "base_commit": "034a631bdb05309d4ba0ef4ed1ff9ba032d9df50",
+  "build": "Uncommitted repair; source hashes below identify tested code",
+  "source_sha256_normalized_lf": {
+    "backend/src/modules/safety/service.ts": "9f933e6ff9764d6a9cc0641f69e6d1e85f456a16f0aa6580c589d60fd5f4f0f4",
+    "database/migrations/023_safety_approval_invalidation.sql": "d5a1b176b831b43009559153b45b03a7130539ad730fce98702096fd4facd70c",
+    "database/tests/database.integration.test.ts": "e63c19ecd4146a0489dd64c8a5b16d49411af20c26b9571daf887cc45e0b81c0",
+    "database/tests/safety/safety-invalidation.integration.test.ts": "8019c53bc461d92b8fc96c124fa90378ab0634256784bf06b7c70c6f482c495f",
+    "database/tests/safety/safety-upgrade.integration.test.ts": "c221ae48fd6e2aeb6d465c122c58a5d4afb099cc306c0a0ca02c74c6e4d77c9d",
+    "frontend/src/features/events/api/arrangements.ts": "d76d0969420aa716ceabd641c43d86428440aae4a4c7bf3808422e4e09abf929",
+    "frontend/src/features/events/components/EquipmentRequestPanel.test.ts": "98f2180ad3d0241b32b4aa664ddbd8170d53812f3265fba6cd53d33842376a33",
+    "frontend/src/features/events/components/EquipmentRequestPanel.vue": "392b7fcd138469805768a7e9915c9019484a1b7d0e366c4f23154c220669e8a4",
+    "frontend/src/features/events/components/EventConfirmationPanel.test.ts": "4a3d32eac39f34ecea5bb72432adccbf3d8147f9a0008daf61d78a1ce3206f7f",
+    "frontend/src/features/events/components/EventConfirmationPanel.vue": "c046a093f67f8ae7049b4dc8d1b453eb7d912cd1139f2bf1e8cd1fda1c82da39",
+    "frontend/src/features/events/components/EventPlanningPanels.test.ts": "d7de8417124c8d322e75af0b24dcac44c1522cf24281fdaf93d42205b542e943",
+    "frontend/src/features/events/components/EventPlanningPanels.vue": "f92acbf473c1b1d13a86c50d11800d4548ec118703c587ae780235479ad7674a",
+    "frontend/src/features/events/components/SafetyReviewPanel.test.ts": "948a83642c5e28bd8cb7757c4285f12909ac5681c863de13a4d3dd6903a55011",
+    "frontend/src/features/events/components/SafetyReviewPanel.vue": "56d4d2d55548d3eeee3ed6d970dd9a81a48c11407969aeb1bb4344e05b2e5d34",
+    "frontend/src/features/events/components/VenueBookingPanel.test.ts": "303dc3cb4c23a86d22f77d6243cf97964c9fb75831e0e2f586c5304433ed0058",
+    "frontend/src/features/events/components/VenueBookingPanel.vue": "212ecc53a934b950d08357a74157a9d93094791b77be0f86606d77c17c90e2e0",
+    "frontend/src/features/safety/SafetyPages.test.ts": "7001c54d8eb0f047146e9a3e95d6ffbbf08f6518b5158e10885357451cbdb59c",
+    "frontend/src/features/safety/SafetyReviewPage.vue": "42e33a7c7b641b620144c26e42e998754e5d268307a8f26e3b4eee891e04526d",
+    "frontend/src/features/safety/api.ts": "18389e3d32f7c9022d1ce761e2841d8120e55759797ed2e19cfdf89ba1122d2e",
+    "tests/e2e/equipment-release-reason.spec.ts": "64c37071e28b7d9ec5393a63c2984be4f4909737b6e711b712e30b18c2eb8b39",
+    "tests/e2e/event-confirmation.spec.ts": "9b7a7f5425e1674f06c460cea96791c28178993061c7d0a3c03c749071d42913"
+  },
+  "environment": {
+    "node": "24.21.0",
+    "vitest": "4.1.11",
+    "database": "Disposable PostgreSQL17, localhost55439; container removed after tests",
+    "browser": "Chromium; API/auth fixtures except explicit unauthenticated live API assertions"
+  },
+  "commands": {
+    "check": {
+      "command": "npm run check",
+      "result": "Pass",
+      "frontend_tests": 1246,
+      "backend_tests": 1959,
+      "log": "check-final.txt"
+    },
+    "coverage": {
+      "command": "npm run test:coverage --workspaces -- --pool=threads --maxWorkers=4",
+      "result": "Pass",
+      "frontend": {
+        "statements": 95.84,
+        "branches": 92.54,
+        "functions": 97.85,
+        "lines": 98.38
+      },
+      "backend": {
+        "statements": 89.75,
+        "branches": 89.14,
+        "functions": 89.25,
+        "lines": 89.88
+      },
+      "log": "coverage-verified.txt"
+    },
+    "database": {
+      "command": "npm run test:integration -- --pool=threads",
+      "result": "Pass",
+      "tests": 831,
+      "files": 43,
+      "log": "integration-verified.txt"
+    },
+    "browser_initial": {
+      "command": "npm run test:e2e -- --workers=4 --retries=0",
+      "result": "Fail",
+      "passed": 250,
+      "failed": 3,
+      "log": "browser.txt"
+    },
+    "browser_failing_files_retest": {
+      "result": "Pass",
+      "tests": 23,
+      "workers": 1,
+      "retries": 0,
+      "log": "browser-retest.txt"
+    },
+    "browser_parallel_repeat": {
+      "command": "npm run test:e2e -- --workers=4 --retries=0",
+      "result": "Fail",
+      "passed": 251,
+      "failed": 2,
+      "log": "browser-verified.txt"
+    },
+    "browser_serial": {
+      "command": "npm run test:e2e -- --workers=1 --retries=0",
+      "result": "Pass",
+      "passed": 253,
+      "failed": 0,
+      "log": "browser-serial.txt"
+    }
+  },
+  "limitations": [
+    "No shared migration023 applied",
+    "Connected post-repair E2E Not executed",
+    "Earlier failures and worker/navigation timeouts retained",
+    "Historical changes already restored before023 cannot be reconstructed",
+    "SQL integration coverage is not included in unit coverage percentages",
+    "Two parallel browser runs had different navigation timeouts; targeted retest and complete serial run passed. Root cause not established."
+  ],
+  "shared_data_changes": "None during repair; MAN-20261101-02 retained fixtures unchanged",
+  "database_cleanup": "Owned ephemeral container connectsphere-release-regressions-test removed after successful runs",
+  "committed": false,
+  "pushed": false,
+  "completed_at_utc": "2026-11-01T11:39:19.382137Z",
+  "walkthrough_qa": {
+    "method": "Bundled DOCX renderer could not find soffice.exe; Word COM PDF export and bundled PDFium page rendering used instead",
+    "pages": 19,
+    "inspection": "All19 pages visually inspected; no clipping/overlap; final form table has a readable continuation on page19",
+    "content": "Markdown and Word both updated for023, readiness/release-reason checks and no-read safety restoration"
+  },
+  "documentation_sha256": {
+    "docs/testing/release-e2e-walkthrough.md": "c72a5069738774ff9d94e3ee3049261bf809ea2681286689d0efad7bc6c4ac3e",
+    "docs/testing/release-e2e-walkthrough.docx": "727ed90b4e5111d459c841fa55b23cd5f161e1c7e1390686cd438481d24f66e2",
+    "docs/architecture/exports/seq-safety-review.png": "2cfc2cce79ed43918df795b2e0752b6ea3c8644320f9443e8bb0eae4a51d9a26",
+    "docs/architecture/exports/erd-safety-invalidation.png": "a67008690b0a0242eb93f95a23b231a00b3203d7d32141f463feec71c888f32e"
+  }
+}

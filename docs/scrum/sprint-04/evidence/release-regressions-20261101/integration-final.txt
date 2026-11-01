@@ -1,0 +1,9 @@
+
+> connectsphere@0.1.0 test:integration
+> vitest run --config vitest.integration.config.ts
+
+
+ RUN  v4.1.11 C:/Users/trist/Documents/School Stuff/Y3S1/IS212/ConnectSphere
+
+[vitest-pool]: Timeout terminating forks worker for test files C:/Users/trist/Documents/School Stuff/Y3S1/IS212/ConnectSphere/database/tests/equipment/stock.integration.test.ts.
+[vitest-pool]: Timeout terminating forks worker for test files C:/Users/trist/Documents/School Stuff/Y3S1/IS212/ConnectSphere/database/tests/venues/venue-holds.integration.test.ts.

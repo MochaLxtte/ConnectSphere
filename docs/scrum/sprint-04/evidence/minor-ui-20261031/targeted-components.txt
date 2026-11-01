@@ -1,0 +1,11 @@
+> @connectsphere/frontend@0.1.0 test
+> vitest run src/features/equipment/pages/EquipmentAvailabilityPage.test.ts src/features/venues/pages/VenueSearchPage.test.ts src/features/reviews/pages/ReviewRequestPage.test.ts
+
+
+ RUN  v4.1.11 C:/Users/trist/Documents/School Stuff/Y3S1/IS212/ConnectSphere/frontend
+
+
+ Test Files  3 passed (3)
+      Tests  135 passed (135)
+   Start at  19:00:09
+   Duration  41.17s (transform 4.90s, setup 38.29s, import 11.15s, tests 4.77s, environment 52.77s)

@@ -1,0 +1,72 @@
+{
+  "recorded_at": "2026-11-01T14:53:15.459162+00:00",
+  "base_commit": "034a631bdb05309d4ba0ef4ed1ff9ba032d9df50",
+  "build": "Base commit plus uncommitted release repairs, session cookie-ordering and safety queue fixes; exact scoped source hashes below",
+  "runs": [
+    {
+      "run": 1,
+      "command": "npm run test:e2e -- --reporter=list,json",
+      "exit_code": 0,
+      "result": "Pass",
+      "stats": {
+        "startTime": "2026-11-01T14:50:16.413Z",
+        "duration": 79782.04800000001,
+        "expected": 253,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "files": 31,
+      "workers": 2,
+      "retries": 0,
+      "report": "browser-final-1.json",
+      "log": "browser-final-1.txt"
+    },
+    {
+      "run": 2,
+      "command": "npm run test:e2e -- --reporter=list,json",
+      "exit_code": 0,
+      "result": "Pass",
+      "stats": {
+        "startTime": "2026-11-01T14:51:42.400Z",
+        "duration": 77952.24799999999,
+        "expected": 253,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "files": 31,
+      "workers": 2,
+      "retries": 0,
+      "report": "browser-final-2.json",
+      "log": "browser-final-2.txt"
+    }
+  ],
+  "source_sha256_normalized_lf": {
+    "playwright.config.ts": "99c9db4091c60f277164d58a97afe54377c8b7451363405276952a85058be8a4",
+    "tests/browser/environment.ts": "3243ab1bc1912c98e263d83be388f0081811ff7a8b04d41916bcdac86f45291e",
+    "tests/browser/environment.test.ts": "c4649328e77429d7535f78f8be2c40f8aae10a2de12a3b7f189b88fa90aeeb5a",
+    "tests/browser/start-api.ts": "a9caf01d69c482a4271a31f4b70037d04f1ca47ac5b616854771cbbee494183d",
+    "tests/browser/start-web.ts": "bac9f44f61a22dec5e513b6a08ba6f11e58bd2146c0992beaeaf7456f595fb71",
+    "frontend/src/features/auth/session.ts": "b8391692132f73ebc4020072cbe66b9c2cee62b50069d434c2620d401671cf32",
+    "frontend/src/features/auth/session.test.ts": "8c6363faec55dfcb72726cac218947d4bf9678a48a6f2551b29ecc1a75926efa",
+    "frontend/src/features/safety/SafetyQueuePage.vue": "0e47770815b08f106f3d9e3551d8f976b262bf7606bf1551dc53f3c4649abc1f",
+    "frontend/src/features/safety/SafetyPages.test.ts": "1b15262e4be9f6a436b65c491843bb716944ac6dc2f349f7528543391f93005a",
+    "tests/e2e/venue-bookings.spec.ts": "7e25c9bad52a64366dc9b686866fe1a3f1d86ee1908caa933002d34407666390",
+    "tests/e2e/browser-fixtures.ts": "9931320068ffcd53f7ff0112de3cf07616a707dab37bf9d7e860572e94ffd0e6"
+  },
+  "environment": {
+    "browser": "Chromium",
+    "node": "v24.21.0",
+    "api": "Normal server.ts on owned127.0.0.1:4311",
+    "frontend": "Static Vite preview on owned127.0.0.1:4173",
+    "database": "Owned PostgreSQL17 loopback55439/connectsphere_test; no shared Supabase access",
+    "authentication": "Synthetic local configuration; business browser tests use explicit API/auth substitutions"
+  },
+  "limitations": [
+    "Two successful final-source repeats are evidence of repeatability for this candidate, not a guarantee against future flakes or a remote CI result.",
+    "API-substituted browser cases are integration tests; they do not establish real-authentication connected acceptance.",
+    "Migration023 was applied only to the disposable test database; shared migration and manual retests remain deferred."
+  ],
+  "teardown": "Owned browser server listeners checked absent on ports4173/4311 after run2; database retained for parent cleanup."
+}

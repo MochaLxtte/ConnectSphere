@@ -1,0 +1,130 @@
+{
+  "recordedAt": "2026-11-01T19:29:59.271789+08:00",
+  "run": "Second full browser suite with four workers; 251 passed and two initial page.goto timeouts (parent-reported suite totals).",
+  "scope": "Sanitized metadata extracted from retained Playwright trace ZIPs. No headers, bodies, tokens, cookies or DOM snapshots retained.",
+  "assessment": "These failures affect different tests from the first concurrent run and occur during initial navigation. Metadata alone does not establish an application defect. Preserve both failed runs and perform a final full serial run; no unrelated code changes made.",
+  "failures": [
+    {
+      "traceDirectory": "attendee-registration-KAN--d88ce--for-EVENT-COORDINATOR-LEAD-chromium",
+      "sourceTraceSha256": "66a201d44d5229f1d16139394c8179c87e9c194a0a037df93544ab440a9bd794",
+      "zipEntries": 11,
+      "errors": [
+        {
+          "callId": "pw:api@32",
+          "method": "pw:api",
+          "startTime": 2947.939,
+          "endTime": 38151.86,
+          "durationMs": 35203.921,
+          "error": "Error: page.goto: net::ERR_ABORTED; maybe frame was detached?\nCall log:\n  - navigating to \"http://127.0.0.1:5173/attend\", waiting until \"load\"\n"
+        }
+      ],
+      "longestActions": [
+        {
+          "callId": "hook@71",
+          "method": "hook",
+          "startTime": 38258.779,
+          "endTime": 109245.251,
+          "durationMs": 70986.472
+        },
+        {
+          "callId": "fixture@76",
+          "method": "fixture",
+          "startTime": 38267.563,
+          "endTime": 109229.225,
+          "durationMs": 70961.662
+        },
+        {
+          "callId": "pw:api@32",
+          "method": "pw:api",
+          "startTime": 2947.939,
+          "endTime": 38151.86,
+          "durationMs": 35203.921,
+          "error": "Error: page.goto: net::ERR_ABORTED; maybe frame was detached?\nCall log:\n  - navigating to \"http://127.0.0.1:5173/attend\", waiting until \"load\"\n"
+        },
+        {
+          "callId": "hook@33",
+          "method": "hook",
+          "startTime": 32863.966,
+          "endTime": 38258.302,
+          "durationMs": 5394.336
+        },
+        {
+          "callId": "fixture@36",
+          "method": "fixture",
+          "startTime": 32871.976,
+          "endTime": 38164.267,
+          "durationMs": 5292.291
+        }
+      ],
+      "networkCount": 0,
+      "networkStatusCounts": {},
+      "slowestCompletedRequests": []
+    },
+    {
+      "traceDirectory": "venue-availability-KAN-51--d8f0e-ches-event-organiser-access-chromium",
+      "sourceTraceSha256": "b63fa6306c15619266df70d75f8065d874628fac060d6140737ddbd3fa1c3062",
+      "zipEntries": 11,
+      "errors": [
+        {
+          "callId": "pw:api@33",
+          "method": "pw:api",
+          "startTime": 148884.048,
+          "endTime": 184026.776,
+          "durationMs": 35142.728,
+          "error": "Error: page.goto: net::ERR_ABORTED; maybe frame was detached?\nCall log:\n  - navigating to \"http://127.0.0.1:5173/\", waiting until \"load\"\n"
+        }
+      ],
+      "longestActions": [
+        {
+          "callId": "pw:api@33",
+          "method": "pw:api",
+          "startTime": 148884.048,
+          "endTime": 184026.776,
+          "durationMs": 35142.728,
+          "error": "Error: page.goto: net::ERR_ABORTED; maybe frame was detached?\nCall log:\n  - navigating to \"http://127.0.0.1:5173/\", waiting until \"load\"\n"
+        },
+        {
+          "callId": "hook@73",
+          "method": "hook",
+          "startTime": 184101.354,
+          "endTime": 217320.831,
+          "durationMs": 33219.477
+        },
+        {
+          "callId": "fixture@78",
+          "method": "fixture",
+          "startTime": 184104.613,
+          "endTime": 217318.036,
+          "durationMs": 33213.423
+        },
+        {
+          "callId": "hook@35",
+          "method": "hook",
+          "startTime": 178649.509,
+          "endTime": 184099.557,
+          "durationMs": 5450.048
+        },
+        {
+          "callId": "fixture@38",
+          "method": "fixture",
+          "startTime": 178654.5,
+          "endTime": 184033.049,
+          "durationMs": 5378.549
+        }
+      ],
+      "networkCount": 1,
+      "networkStatusCounts": {
+        "-1": 1
+      },
+      "slowestCompletedRequests": [
+        {
+          "method": "GET",
+          "path": "/",
+          "status": -1,
+          "durationMs": -1,
+          "resourceType": "document"
+        }
+      ]
+    }
+  ]
+}

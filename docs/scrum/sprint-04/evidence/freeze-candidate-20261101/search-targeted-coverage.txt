@@ -1,0 +1,28 @@
+
+> @connectsphere/frontend@0.1.0 test:coverage
+> vitest run --coverage src/features/venues/pages/VenueSearchPage.test.ts --pool=threads --maxWorkers=2 --coverage.include=src/features/venues/pages/VenueSearchPage.vue --coverage.reportsDirectory=coverage-freeze-search --coverage.thresholds.statements=0 --coverage.thresholds.branches=0 --coverage.thresholds.functions=0 --coverage.thresholds.lines=0
+
+
+ RUN  v4.1.11 C:/Users/trist/Documents/School Stuff/Y3S1/IS212/ConnectSphere/frontend
+      Coverage enabled with v8
+
+
+ Test Files  1 passed (1)
+      Tests  68 passed (68)
+   Start at  23:25:32
+   Duration  3.09s (transform 198ms, setup 523ms, import 227ms, tests 1.41s, environment 573ms)
+
+ % Coverage report from v8
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-------------------|---------|----------|---------|---------|-------------------
+All files          |   94.54 |    91.25 |   96.87 |   95.95 |                   
+ ...SearchPage.vue |   94.54 |    91.25 |   96.87 |   95.95 | 105-107,252       
+-------------------|---------|----------|---------|---------|-------------------
+
+=============================== Coverage summary ===============================
+Statements   : 94.54% ( 104/110 )
+Branches     : 91.25% ( 146/160 )
+Functions    : 96.87% ( 31/32 )
+Lines        : 95.95% ( 95/99 )
+================================================================================

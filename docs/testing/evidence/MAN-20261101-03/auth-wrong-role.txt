@@ -1,0 +1,35 @@
+- link "Skip to content":
+  - /url: "#main-content"
+- complementary:
+  - link "ConnectSphere home":
+    - /url: /
+    - text: ConnectSphere
+    - generic: Event Services
+  - navigation "Main navigation":
+    - link "Overview":
+      - /url: /
+      - text: Overview
+    - link "Event requests":
+      - /url: /events
+      - text: Event requests
+    - link "New event request":
+      - /url: /events/new
+      - text: New event request
+- banner:
+  - text: Workspace
+  - generic: /
+  - strong: Review queue
+  - link "Notifications, 157 unread":
+    - /url: /notifications
+    - generic: 99+
+  - strong: Event Organiser
+  - generic: Event organiser
+  - button "Sign out"
+- main:
+  - heading "Coordinator access only" [level=1]
+  - paragraph: This page is for event coordinators.
+  - link "Go to your event requests":
+    - /url: /events
+- contentinfo:
+  - generic: ConnectSphere Event Services
+  - generic: Event planning workspace

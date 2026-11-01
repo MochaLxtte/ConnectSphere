@@ -1,0 +1,6727 @@
+{
+  "run_id": "AUTO-20261101-TEST-HARDENING",
+  "date": "2026-11-01",
+  "scope": "Frontend full owned source and backend combined isolated/HTTP/real-PostgreSQL instrumentation. See separate summary artifacts for exact denominators.",
+  "basis": [
+    "coverage-final.txt",
+    "backend-combined-gated.txt"
+  ],
+  "assessment": "Coverage floors prevent regression; the repository does not yet have 100% coverage on every metric. This inventory discloses remaining paths, not an approved blanket exemption from the course rubric. All gaps are not claimed impossible to test.",
+  "location_note": "Uncovered implicit else branches with empty locations use their enclosing branch location, marked parent_location_used. Locations come from V8/Istanbul source maps, not a claim every generated branch has independent business meaning.",
+  "excluded_runtime_source": [
+    {
+      "path": "backend/src/server.ts",
+      "reason": "Long-lived process entry, started by the isolated browser harness; its subprocess V8 data is not merged into workspace/combined coverage."
+    }
+  ],
+  "unmeasured_boundaries": [
+    "SQL/trigger statement coverage",
+    "External Supabase provider implementation",
+    "Live connected Supabase acceptance for this patch",
+    "Mutation score",
+    "Load/performance characteristics",
+    "Cross-tab or cross-device session ordering"
+  ],
+  "totals": {
+    "frontend": {
+      "lines": {
+        "total": 3717,
+        "covered": 3658,
+        "skipped": 0,
+        "pct": 98.41
+      },
+      "statements": {
+        "total": 4914,
+        "covered": 4721,
+        "skipped": 0,
+        "pct": 96.07
+      },
+      "functions": {
+        "total": 1172,
+        "covered": 1147,
+        "skipped": 0,
+        "pct": 97.86
+      },
+      "branches": {
+        "total": 6269,
+        "covered": 5835,
+        "skipped": 0,
+        "pct": 93.07
+      },
+      "branchesTrue": {
+        "total": 0,
+        "covered": 0,
+        "skipped": 0,
+        "pct": 100
+      }
+    },
+    "backend-isolated": {
+      "lines": {
+        "total": 2997,
+        "covered": 2720,
+        "skipped": 0,
+        "pct": 90.75
+      },
+      "statements": {
+        "total": 3446,
+        "covered": 3123,
+        "skipped": 0,
+        "pct": 90.62
+      },
+      "functions": {
+        "total": 735,
+        "covered": 669,
+        "skipped": 0,
+        "pct": 91.02
+      },
+      "branches": {
+        "total": 2505,
+        "covered": 2254,
+        "skipped": 0,
+        "pct": 89.98
+      },
+      "branchesTrue": {
+        "total": 0,
+        "covered": 0,
+        "skipped": 0,
+        "pct": 100
+      }
+    },
+    "backend-combined": {
+      "lines": {
+        "total": 2997,
+        "covered": 2981,
+        "skipped": 0,
+        "pct": 99.46
+      },
+      "statements": {
+        "total": 3446,
+        "covered": 3420,
+        "skipped": 0,
+        "pct": 99.24
+      },
+      "functions": {
+        "total": 735,
+        "covered": 733,
+        "skipped": 0,
+        "pct": 99.72
+      },
+      "branches": {
+        "total": 2505,
+        "covered": 2452,
+        "skipped": 0,
+        "pct": 97.88
+      },
+      "branchesTrue": {
+        "total": 0,
+        "covered": 0,
+        "skipped": 0,
+        "pct": 100
+      }
+    }
+  },
+  "zero_executable_entries": [
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/modules/equipment/availability-types.ts",
+      "reason": "Type-only source has zero executable statements/functions/branches/lines; zero percentages here are not uncovered runtime code."
+    },
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/modules/equipment/reservation-types.ts",
+      "reason": "Type-only source has zero executable statements/functions/branches/lines; zero percentages here are not uncovered runtime code."
+    },
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/modules/equipment/stock-types.ts",
+      "reason": "Type-only source has zero executable statements/functions/branches/lines; zero percentages here are not uncovered runtime code."
+    },
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/modules/registrations/registration-types.ts",
+      "reason": "Type-only source has zero executable statements/functions/branches/lines; zero percentages here are not uncovered runtime code."
+    }
+  ],
+  "files_with_gaps": [
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/main.ts",
+      "metrics": {
+        "statements": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      "uncovered_lines": [
+        6
+      ],
+      "uncovered_statement_start_lines": [
+        6
+      ],
+      "uncovered_functions": [],
+      "uncovered_branches": [],
+      "explanation": "Bootstrap/composition is reached by browser runs but browser V8 coverage is not merged into component coverage. Included at the measured value, not claimed fully tested by this report."
+    },
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/app/App.vue",
+      "metrics": {
+        "statements": {
+          "total": 2,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "lines": {
+          "total": 2,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      "uncovered_lines": [
+        6,
+        7
+      ],
+      "uncovered_statement_start_lines": [
+        6,
+        7
+      ],
+      "uncovered_functions": [
+        {
+          "name": "(anonymous_0)",
+          "line": 7
+        }
+      ],
+      "uncovered_branches": [],
+      "explanation": "Bootstrap/composition is reached by browser runs but browser V8 coverage is not merged into component coverage. Included at the measured value, not claimed fully tested by this report."
+    },
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/components/FeaturePlaceholder.vue",
+      "metrics": {
+        "statements": {
+          "total": 8,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 6,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 2,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "lines": {
+          "total": 8,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      },
+      "uncovered_lines": [
+        16,
+        17,
+        19,
+        23,
+        24,
+        26,
+        27,
+        33
+      ],
+      "uncovered_statement_start_lines": [
+        16,
+        17,
+        19,
+        23,
+        24,
+        26,
+        27,
+        33
+      ],
+      "uncovered_functions": [
+        {
+          "name": "(anonymous_0)",
+          "line": 27
+        },
+        {
+          "name": "(anonymous_1)",
+          "line": 33
+        }
+      ],
+      "uncovered_branches": [
+        {
+          "kind": "binary-expr",
+          "line": 22,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 22,
+          "column": 4,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 31,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 31,
+          "column": 4,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 33,
+          "column": 7,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 33,
+          "column": 7,
+          "arm": 1,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Unused placeholder remains in the source denominator; no test currently mounts it. This is disclosed missing coverage, not a proven impossible path."
+    },
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/features/equipment/pages/EquipmentAvailabilityPage.vue",
+      "metrics": {
+        "statements": {
+          "total": 31,
+          "covered": 31,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 36,
+          "covered": 35,
+          "skipped": 0,
+          "pct": 97.22
+        },
+        "functions": {
+          "total": 7,
+          "covered": 7,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 22,
+          "covered": 22,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "cond-expr",
+          "line": 30,
+          "column": 51,
+          "arm": 1,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining component/template, optional-value, forwarding or error paths were not exercised by this run. Exact uncovered locations are listed; they are not all demonstrated unreachable or impossible to test."
+    },
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/features/equipment/pages/EquipmentReservationPanel.vue",
+      "metrics": {
+        "statements": {
+          "total": 104,
+          "covered": 103,
+          "skipped": 0,
+          "pct": 99.03
+        },
+        "branches": {
+          "total": 155,
+          "covered": 151,
+          "skipped": 0,
+          "pct": 97.41
+        },
+        "functions": {
+          "total": 18,
+          "covered": 18,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 65,
+          "covered": 65,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [
+        24
+      ],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "if",
+          "line": 24,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 38,
+          "column": 49,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 93,
+          "column": 62,
+          "arm": 1,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining component/template, optional-value, forwarding or error paths were not exercised by this run. Exact uncovered locations are listed; they are not all demonstrated unreachable or impossible to test."
+    },
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/features/equipment/pages/EquipmentStockPage.vue",
+      "metrics": {
+        "statements": {
+          "total": 159,
+          "covered": 147,
+          "skipped": 0,
+          "pct": 92.45
+        },
+        "branches": {
+          "total": 194,
+          "covered": 179,
+          "skipped": 0,
+          "pct": 92.26
+        },
+        "functions": {
+          "total": 31,
+          "covered": 30,
+          "skipped": 0,
+          "pct": 96.77
+        },
+        "lines": {
+          "total": 112,
+          "covered": 111,
+          "skipped": 0,
+          "pct": 99.1
+        }
+      },
+      "uncovered_lines": [
+        223
+      ],
+      "uncovered_statement_start_lines": [
+        40,
+        42,
+        72,
+        98,
+        102,
+        103,
+        121,
+        140,
+        141,
+        223
+      ],
+      "uncovered_functions": [
+        {
+          "name": "(anonymous_25)",
+          "line": 223
+        }
+      ],
+      "uncovered_branches": [
+        {
+          "kind": "cond-expr",
+          "line": 28,
+          "column": 88,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 40,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 42,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 59,
+          "column": 67,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 72,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 98,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 102,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 103,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 121,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 133,
+          "column": 4,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "if",
+          "line": 140,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 141,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 146,
+          "column": 4,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "cond-expr",
+          "line": 224,
+          "column": 10,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 234,
+          "column": 10,
+          "arm": 0,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining component/template, optional-value, forwarding or error paths were not exercised by this run. Exact uncovered locations are listed; they are not all demonstrated unreachable or impossible to test."
+    },
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/features/equipment/pages/EventEquipmentAvailabilityPage.vue",
+      "metrics": {
+        "statements": {
+          "total": 157,
+          "covered": 156,
+          "skipped": 0,
+          "pct": 99.36
+        },
+        "branches": {
+          "total": 221,
+          "covered": 214,
+          "skipped": 0,
+          "pct": 96.83
+        },
+        "functions": {
+          "total": 37,
+          "covered": 37,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 101,
+          "covered": 101,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [
+        79
+      ],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "cond-expr",
+          "line": 33,
+          "column": 72,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 34,
+          "column": 77,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 50,
+          "column": 49,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 79,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 85,
+          "column": 58,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 116,
+          "column": 73,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 120,
+          "column": 148,
+          "arm": 1,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining component/template, optional-value, forwarding or error paths were not exercised by this run. Exact uncovered locations are listed; they are not all demonstrated unreachable or impossible to test."
+    },
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/features/events/change-request-fields.ts",
+      "metrics": {
+        "statements": {
+          "total": 12,
+          "covered": 10,
+          "skipped": 0,
+          "pct": 83.33
+        },
+        "branches": {
+          "total": 11,
+          "covered": 7,
+          "skipped": 0,
+          "pct": 63.63
+        },
+        "functions": {
+          "total": 3,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 8,
+          "covered": 8,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [
+        24,
+        27
+      ],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "if",
+          "line": 24,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 27,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 27,
+          "column": 49,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 27,
+          "column": 57,
+          "arm": 1,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining component/template, optional-value, forwarding or error paths were not exercised by this run. Exact uncovered locations are listed; they are not all demonstrated unreachable or impossible to test."
+    },
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/features/events/presentation.ts",
+      "metrics": {
+        "statements": {
+          "total": 24,
+          "covered": 23,
+          "skipped": 0,
+          "pct": 95.83
+        },
+        "branches": {
+          "total": 13,
+          "covered": 11,
+          "skipped": 0,
+          "pct": 84.61
+        },
+        "functions": {
+          "total": 5,
+          "covered": 5,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 19,
+          "covered": 19,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [
+        34
+      ],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "cond-expr",
+          "line": 23,
+          "column": 40,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 34,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining component/template, optional-value, forwarding or error paths were not exercised by this run. Exact uncovered locations are listed; they are not all demonstrated unreachable or impossible to test."
+    },
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/features/events/api/arrangements.ts",
+      "metrics": {
+        "statements": {
+          "total": 14,
+          "covered": 12,
+          "skipped": 0,
+          "pct": 85.71
+        },
+        "branches": {
+          "total": 2,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 13,
+          "covered": 12,
+          "skipped": 0,
+          "pct": 92.3
+        },
+        "lines": {
+          "total": 14,
+          "covered": 12,
+          "skipped": 0,
+          "pct": 85.71
+        }
+      },
+      "uncovered_lines": [
+        27,
+        28
+      ],
+      "uncovered_statement_start_lines": [
+        27,
+        28
+      ],
+      "uncovered_functions": [
+        {
+          "name": "fetchEquipmentRequests",
+          "line": 26
+        }
+      ],
+      "uncovered_branches": [],
+      "explanation": "Remaining component/template, optional-value, forwarding or error paths were not exercised by this run. Exact uncovered locations are listed; they are not all demonstrated unreachable or impossible to test."
+    },
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/features/events/api/event-requests.ts",
+      "metrics": {
+        "statements": {
+          "total": 43,
+          "covered": 40,
+          "skipped": 0,
+          "pct": 93.02
+        },
+        "branches": {
+          "total": 31,
+          "covered": 28,
+          "skipped": 0,
+          "pct": 90.32
+        },
+        "functions": {
+          "total": 12,
+          "covered": 12,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 40,
+          "covered": 39,
+          "skipped": 0,
+          "pct": 97.5
+        }
+      },
+      "uncovered_lines": [
+        137
+      ],
+      "uncovered_statement_start_lines": [
+        77,
+        97,
+        137
+      ],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "if",
+          "line": 77,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 97,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 114,
+          "column": 4,
+          "arm": 1,
+          "parent_location_used": true
+        }
+      ],
+      "explanation": "Remaining component/template, optional-value, forwarding or error paths were not exercised by this run. Exact uncovered locations are listed; they are not all demonstrated unreachable or impossible to test."
+    },
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/features/events/components/AssignmentPanel.vue",
+      "metrics": {
+        "statements": {
+          "total": 160,
+          "covered": 152,
+          "skipped": 0,
+          "pct": 95
+        },
+        "branches": {
+          "total": 205,
+          "covered": 198,
+          "skipped": 0,
+          "pct": 96.58
+        },
+        "functions": {
+          "total": 25,
+          "covered": 25,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 126,
+          "covered": 126,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [
+        75,
+        76,
+        81,
+        82,
+        104,
+        109
+      ],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "cond-expr",
+          "line": 55,
+          "column": 50,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 75,
+          "column": 8,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 76,
+          "column": 8,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 81,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 82,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 104,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 109,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining component/template, optional-value, forwarding or error paths were not exercised by this run. Exact uncovered locations are listed; they are not all demonstrated unreachable or impossible to test."
+    },
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/features/events/components/ChangeRequestPanel.vue",
+      "metrics": {
+        "statements": {
+          "total": 65,
+          "covered": 64,
+          "skipped": 0,
+          "pct": 98.46
+        },
+        "branches": {
+          "total": 113,
+          "covered": 106,
+          "skipped": 0,
+          "pct": 93.8
+        },
+        "functions": {
+          "total": 30,
+          "covered": 30,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 50,
+          "covered": 50,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [
+        56
+      ],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "binary-expr",
+          "line": 40,
+          "column": 102,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 56,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 57,
+          "column": 2,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "cond-expr",
+          "line": 88,
+          "column": 8,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 101,
+          "column": 74,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 130,
+          "column": 21,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 146,
+          "column": 10,
+          "arm": 1,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining component/template, optional-value, forwarding or error paths were not exercised by this run. Exact uncovered locations are listed; they are not all demonstrated unreachable or impossible to test."
+    },
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/features/events/components/ClarificationPanel.vue",
+      "metrics": {
+        "statements": {
+          "total": 46,
+          "covered": 43,
+          "skipped": 0,
+          "pct": 93.47
+        },
+        "branches": {
+          "total": 65,
+          "covered": 59,
+          "skipped": 0,
+          "pct": 90.76
+        },
+        "functions": {
+          "total": 17,
+          "covered": 16,
+          "skipped": 0,
+          "pct": 94.11
+        },
+        "lines": {
+          "total": 38,
+          "covered": 37,
+          "skipped": 0,
+          "pct": 97.36
+        }
+      },
+      "uncovered_lines": [
+        70
+      ],
+      "uncovered_statement_start_lines": [
+        29,
+        40,
+        70
+      ],
+      "uncovered_functions": [
+        {
+          "name": "(anonymous_12)",
+          "line": 70
+        }
+      ],
+      "uncovered_branches": [
+        {
+          "kind": "if",
+          "line": 29,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 30,
+          "column": 2,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "binary-expr",
+          "line": 39,
+          "column": 44,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 40,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 70,
+          "column": 68,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 70,
+          "column": 68,
+          "arm": 1,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining component/template, optional-value, forwarding or error paths were not exercised by this run. Exact uncovered locations are listed; they are not all demonstrated unreachable or impossible to test."
+    },
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/features/events/components/EquipmentRequestPanel.vue",
+      "metrics": {
+        "statements": {
+          "total": 187,
+          "covered": 169,
+          "skipped": 0,
+          "pct": 90.37
+        },
+        "branches": {
+          "total": 208,
+          "covered": 186,
+          "skipped": 0,
+          "pct": 89.42
+        },
+        "functions": {
+          "total": 39,
+          "covered": 38,
+          "skipped": 0,
+          "pct": 97.43
+        },
+        "lines": {
+          "total": 110,
+          "covered": 108,
+          "skipped": 0,
+          "pct": 98.18
+        }
+      },
+      "uncovered_lines": [
+        83,
+        183
+      ],
+      "uncovered_statement_start_lines": [
+        62,
+        68,
+        83,
+        90,
+        99,
+        104,
+        105,
+        114,
+        117,
+        118,
+        129,
+        138,
+        144,
+        146,
+        183
+      ],
+      "uncovered_functions": [
+        {
+          "name": "(anonymous_32)",
+          "line": 183
+        }
+      ],
+      "uncovered_branches": [
+        {
+          "kind": "if",
+          "line": 62,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 64,
+          "column": 64,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 68,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 81,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 87,
+          "column": 65,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 90,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 99,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 104,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 105,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 109,
+          "column": 64,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 114,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 117,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 118,
+          "column": 37,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 126,
+          "column": 92,
+          "arm": 2,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 129,
+          "column": 33,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 138,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 141,
+          "column": 62,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 141,
+          "column": 76,
+          "arm": 2,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 144,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 146,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 168,
+          "column": 110,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 194,
+          "column": 12,
+          "arm": 1,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining component/template, optional-value, forwarding or error paths were not exercised by this run. Exact uncovered locations are listed; they are not all demonstrated unreachable or impossible to test."
+    },
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/features/events/components/EventCancellationPanel.vue",
+      "metrics": {
+        "statements": {
+          "total": 94,
+          "covered": 91,
+          "skipped": 0,
+          "pct": 96.8
+        },
+        "branches": {
+          "total": 101,
+          "covered": 94,
+          "skipped": 0,
+          "pct": 93.06
+        },
+        "functions": {
+          "total": 11,
+          "covered": 11,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 55,
+          "covered": 55,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [
+        43,
+        58,
+        66
+      ],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "cond-expr",
+          "line": 34,
+          "column": 62,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 43,
+          "column": 6,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 58,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 66,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 101,
+          "column": 6,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 101,
+          "column": 44,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 101,
+          "column": 44,
+          "arm": 1,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining component/template, optional-value, forwarding or error paths were not exercised by this run. Exact uncovered locations are listed; they are not all demonstrated unreachable or impossible to test."
+    },
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/features/events/components/EventCompletionPanel.vue",
+      "metrics": {
+        "statements": {
+          "total": 75,
+          "covered": 72,
+          "skipped": 0,
+          "pct": 96
+        },
+        "branches": {
+          "total": 81,
+          "covered": 74,
+          "skipped": 0,
+          "pct": 91.35
+        },
+        "functions": {
+          "total": 12,
+          "covered": 12,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 42,
+          "covered": 42,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [
+        49,
+        54,
+        57
+      ],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "cond-expr",
+          "line": 35,
+          "column": 62,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 43,
+          "column": 4,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "if",
+          "line": 45,
+          "column": 4,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "if",
+          "line": 46,
+          "column": 14,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "if",
+          "line": 49,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 54,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 57,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining component/template, optional-value, forwarding or error paths were not exercised by this run. Exact uncovered locations are listed; they are not all demonstrated unreachable or impossible to test."
+    },
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/features/events/components/EventConfirmationPanel.vue",
+      "metrics": {
+        "statements": {
+          "total": 83,
+          "covered": 78,
+          "skipped": 0,
+          "pct": 93.97
+        },
+        "branches": {
+          "total": 94,
+          "covered": 84,
+          "skipped": 0,
+          "pct": 89.36
+        },
+        "functions": {
+          "total": 13,
+          "covered": 13,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 50,
+          "covered": 50,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [
+        27,
+        44,
+        49,
+        54
+      ],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "binary-expr",
+          "line": 18,
+          "column": 133,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 27,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 29,
+          "column": 62,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 40,
+          "column": 4,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "if",
+          "line": 44,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 49,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 50,
+          "column": 83,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 54,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 57,
+          "column": 4,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "binary-expr",
+          "line": 87,
+          "column": 78,
+          "arm": 1,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining component/template, optional-value, forwarding or error paths were not exercised by this run. Exact uncovered locations are listed; they are not all demonstrated unreachable or impossible to test."
+    },
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/features/events/components/EventPlanningPanels.vue",
+      "metrics": {
+        "statements": {
+          "total": 15,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 60
+        },
+        "branches": {
+          "total": 19,
+          "covered": 18,
+          "skipped": 0,
+          "pct": 94.73
+        },
+        "functions": {
+          "total": 8,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 25
+        },
+        "lines": {
+          "total": 13,
+          "covered": 7,
+          "skipped": 0,
+          "pct": 53.84
+        }
+      },
+      "uncovered_lines": [
+        44,
+        45,
+        53,
+        55,
+        57,
+        58
+      ],
+      "uncovered_statement_start_lines": [
+        44,
+        45,
+        53,
+        55,
+        57,
+        58
+      ],
+      "uncovered_functions": [
+        {
+          "name": "(anonymous_2)",
+          "line": 44
+        },
+        {
+          "name": "(anonymous_3)",
+          "line": 45
+        },
+        {
+          "name": "(anonymous_4)",
+          "line": 53
+        },
+        {
+          "name": "(anonymous_5)",
+          "line": 55
+        },
+        {
+          "name": "(anonymous_6)",
+          "line": 57
+        },
+        {
+          "name": "(anonymous_7)",
+          "line": 58
+        }
+      ],
+      "uncovered_branches": [
+        {
+          "kind": "binary-expr",
+          "line": 50,
+          "column": 88,
+          "arm": 1,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining component/template, optional-value, forwarding or error paths were not exercised by this run. Exact uncovered locations are listed; they are not all demonstrated unreachable or impossible to test."
+    },
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/features/events/components/EventRequestForm.vue",
+      "metrics": {
+        "statements": {
+          "total": 218,
+          "covered": 211,
+          "skipped": 0,
+          "pct": 96.78
+        },
+        "branches": {
+          "total": 307,
+          "covered": 276,
+          "skipped": 0,
+          "pct": 89.9
+        },
+        "functions": {
+          "total": 43,
+          "covered": 41,
+          "skipped": 0,
+          "pct": 95.34
+        },
+        "lines": {
+          "total": 184,
+          "covered": 178,
+          "skipped": 0,
+          "pct": 96.73
+        }
+      },
+      "uncovered_lines": [
+        172,
+        178,
+        235,
+        237,
+        351,
+        357
+      ],
+      "uncovered_statement_start_lines": [
+        45,
+        172,
+        178,
+        235,
+        237,
+        351,
+        357
+      ],
+      "uncovered_functions": [
+        {
+          "name": "(anonymous_34)",
+          "line": 351
+        },
+        {
+          "name": "(anonymous_35)",
+          "line": 357
+        }
+      ],
+      "uncovered_branches": [
+        {
+          "kind": "if",
+          "line": 45,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 52,
+          "column": 40,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 58,
+          "column": 83,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 165,
+          "column": 2,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "if",
+          "line": 171,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 177,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 210,
+          "column": 6,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "binary-expr",
+          "line": 212,
+          "column": 90,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 234,
+          "column": 9,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 236,
+          "column": 9,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 258,
+          "column": 6,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "if",
+          "line": 259,
+          "column": 11,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "if",
+          "line": 264,
+          "column": 4,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "if",
+          "line": 266,
+          "column": 4,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "cond-expr",
+          "line": 298,
+          "column": 36,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 299,
+          "column": 8,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 311,
+          "column": 43,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 312,
+          "column": 8,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 322,
+          "column": 42,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 323,
+          "column": 10,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 335,
+          "column": 50,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 336,
+          "column": 8,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 352,
+          "column": 50,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 353,
+          "column": 8,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 358,
+          "column": 53,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 359,
+          "column": 8,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 378,
+          "column": 8,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 384,
+          "column": 54,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 386,
+          "column": 10,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 392,
+          "column": 55,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 393,
+          "column": 12,
+          "arm": 0,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining component/template, optional-value, forwarding or error paths were not exercised by this run. Exact uncovered locations are listed; they are not all demonstrated unreachable or impossible to test."
+    },
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/features/events/components/SafetyReviewPanel.vue",
+      "metrics": {
+        "statements": {
+          "total": 105,
+          "covered": 101,
+          "skipped": 0,
+          "pct": 96.19
+        },
+        "branches": {
+          "total": 117,
+          "covered": 104,
+          "skipped": 0,
+          "pct": 88.88
+        },
+        "functions": {
+          "total": 26,
+          "covered": 26,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 65,
+          "covered": 65,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [
+        31,
+        47,
+        56
+      ],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "binary-expr",
+          "line": 22,
+          "column": 133,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 31,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 33,
+          "column": 62,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 43,
+          "column": 4,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "if",
+          "line": 47,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 56,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 73,
+          "column": 61,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 105,
+          "column": 6,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 111,
+          "column": 92,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 122,
+          "column": 160,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 127,
+          "column": 49,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 133,
+          "column": 69,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 136,
+          "column": 118,
+          "arm": 1,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining component/template, optional-value, forwarding or error paths were not exercised by this run. Exact uncovered locations are listed; they are not all demonstrated unreachable or impossible to test."
+    },
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/features/events/components/VenueBookingPanel.vue",
+      "metrics": {
+        "statements": {
+          "total": 290,
+          "covered": 277,
+          "skipped": 0,
+          "pct": 95.51
+        },
+        "branches": {
+          "total": 365,
+          "covered": 340,
+          "skipped": 0,
+          "pct": 93.15
+        },
+        "functions": {
+          "total": 49,
+          "covered": 47,
+          "skipped": 0,
+          "pct": 95.91
+        },
+        "lines": {
+          "total": 193,
+          "covered": 190,
+          "skipped": 0,
+          "pct": 98.44
+        }
+      },
+      "uncovered_lines": [
+        182,
+        403,
+        406
+      ],
+      "uncovered_statement_start_lines": [
+        84,
+        95,
+        112,
+        141,
+        170,
+        182,
+        185,
+        224,
+        230,
+        236,
+        257,
+        403,
+        406
+      ],
+      "uncovered_functions": [
+        {
+          "name": "(anonymous_45)",
+          "line": 403
+        },
+        {
+          "name": "(anonymous_46)",
+          "line": 406
+        }
+      ],
+      "uncovered_branches": [
+        {
+          "kind": "binary-expr",
+          "line": 67,
+          "column": 32,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 84,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 87,
+          "column": 60,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 87,
+          "column": 70,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 95,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 112,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 124,
+          "column": 52,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 134,
+          "column": 63,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 141,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 170,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 181,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 185,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 186,
+          "column": 81,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 202,
+          "column": 4,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "if",
+          "line": 211,
+          "column": 6,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "if",
+          "line": 224,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 230,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 236,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 257,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 319,
+          "column": 54,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 320,
+          "column": 51,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 321,
+          "column": 10,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 321,
+          "column": 44,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 322,
+          "column": 10,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 351,
+          "column": 31,
+          "arm": 1,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining component/template, optional-value, forwarding or error paths were not exercised by this run. Exact uncovered locations are listed; they are not all demonstrated unreachable or impossible to test."
+    },
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/features/events/pages/EquipmentQueuePage.vue",
+      "metrics": {
+        "statements": {
+          "total": 85,
+          "covered": 76,
+          "skipped": 0,
+          "pct": 89.41
+        },
+        "branches": {
+          "total": 96,
+          "covered": 80,
+          "skipped": 0,
+          "pct": 83.33
+        },
+        "functions": {
+          "total": 11,
+          "covered": 11,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 47,
+          "covered": 46,
+          "skipped": 0,
+          "pct": 97.87
+        }
+      },
+      "uncovered_lines": [
+        39
+      ],
+      "uncovered_statement_start_lines": [
+        32,
+        39,
+        46,
+        49,
+        50,
+        51
+      ],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "if",
+          "line": 32,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 34,
+          "column": 64,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 38,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 46,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 49,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 50,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 51,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 53,
+          "column": 64,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 64,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 73,
+          "column": 27,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 76,
+          "column": 76,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 76,
+          "column": 86,
+          "arm": 2,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 77,
+          "column": 49,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 77,
+          "column": 86,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 77,
+          "column": 86,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 85,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining component/template, optional-value, forwarding or error paths were not exercised by this run. Exact uncovered locations are listed; they are not all demonstrated unreachable or impossible to test."
+    },
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/features/events/pages/EventChangeRequestPage.vue",
+      "metrics": {
+        "statements": {
+          "total": 161,
+          "covered": 158,
+          "skipped": 0,
+          "pct": 98.13
+        },
+        "branches": {
+          "total": 186,
+          "covered": 170,
+          "skipped": 0,
+          "pct": 91.39
+        },
+        "functions": {
+          "total": 35,
+          "covered": 34,
+          "skipped": 0,
+          "pct": 97.14
+        },
+        "lines": {
+          "total": 127,
+          "covered": 127,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [
+        57,
+        117,
+        239
+      ],
+      "uncovered_functions": [
+        {
+          "name": "(anonymous_30)",
+          "line": 239
+        }
+      ],
+      "uncovered_branches": [
+        {
+          "kind": "binary-expr",
+          "line": 21,
+          "column": 59,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 33,
+          "column": 86,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 39,
+          "column": 69,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 40,
+          "column": 92,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 49,
+          "column": 58,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 50,
+          "column": 73,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 51,
+          "column": 45,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 57,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 91,
+          "column": 4,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "cond-expr",
+          "line": 98,
+          "column": 45,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 117,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 133,
+          "column": 94,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 176,
+          "column": 4,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "if",
+          "line": 178,
+          "column": 4,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "if",
+          "line": 180,
+          "column": 4,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "binary-expr",
+          "line": 225,
+          "column": 51,
+          "arm": 1,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining component/template, optional-value, forwarding or error paths were not exercised by this run. Exact uncovered locations are listed; they are not all demonstrated unreachable or impossible to test."
+    },
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/features/events/pages/EventDetailsEditPage.vue",
+      "metrics": {
+        "statements": {
+          "total": 186,
+          "covered": 184,
+          "skipped": 0,
+          "pct": 98.92
+        },
+        "branches": {
+          "total": 221,
+          "covered": 205,
+          "skipped": 0,
+          "pct": 92.76
+        },
+        "functions": {
+          "total": 40,
+          "covered": 39,
+          "skipped": 0,
+          "pct": 97.5
+        },
+        "lines": {
+          "total": 145,
+          "covered": 145,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [
+        149,
+        302
+      ],
+      "uncovered_functions": [
+        {
+          "name": "(anonymous_35)",
+          "line": 302
+        }
+      ],
+      "uncovered_branches": [
+        {
+          "kind": "binary-expr",
+          "line": 42,
+          "column": 59,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 55,
+          "column": 82,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 64,
+          "column": 69,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 75,
+          "column": 58,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 76,
+          "column": 73,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 77,
+          "column": 45,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 124,
+          "column": 2,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "cond-expr",
+          "line": 130,
+          "column": 45,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 149,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 163,
+          "column": 94,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 185,
+          "column": 8,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "binary-expr",
+          "line": 202,
+          "column": 76,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 220,
+          "column": 4,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "if",
+          "line": 222,
+          "column": 4,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "if",
+          "line": 224,
+          "column": 4,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "binary-expr",
+          "line": 283,
+          "column": 51,
+          "arm": 1,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining component/template, optional-value, forwarding or error paths were not exercised by this run. Exact uncovered locations are listed; they are not all demonstrated unreachable or impossible to test."
+    },
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/features/events/pages/EventDraftEditPage.vue",
+      "metrics": {
+        "statements": {
+          "total": 39,
+          "covered": 36,
+          "skipped": 0,
+          "pct": 92.3
+        },
+        "branches": {
+          "total": 43,
+          "covered": 38,
+          "skipped": 0,
+          "pct": 88.37
+        },
+        "functions": {
+          "total": 12,
+          "covered": 12,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 32,
+          "covered": 31,
+          "skipped": 0,
+          "pct": 96.87
+        }
+      },
+      "uncovered_lines": [
+        64
+      ],
+      "uncovered_statement_start_lines": [
+        37,
+        41,
+        64
+      ],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "binary-expr",
+          "line": 17,
+          "column": 59,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 37,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 41,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 47,
+          "column": 94,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 64,
+          "column": 7,
+          "arm": 1,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining component/template, optional-value, forwarding or error paths were not exercised by this run. Exact uncovered locations are listed; they are not all demonstrated unreachable or impossible to test."
+    },
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/features/events/pages/EventRequestDetailPage.vue",
+      "metrics": {
+        "statements": {
+          "total": 93,
+          "covered": 83,
+          "skipped": 0,
+          "pct": 89.24
+        },
+        "branches": {
+          "total": 156,
+          "covered": 135,
+          "skipped": 0,
+          "pct": 86.53
+        },
+        "functions": {
+          "total": 19,
+          "covered": 18,
+          "skipped": 0,
+          "pct": 94.73
+        },
+        "lines": {
+          "total": 77,
+          "covered": 71,
+          "skipped": 0,
+          "pct": 92.2
+        }
+      },
+      "uncovered_lines": [
+        82,
+        83,
+        84,
+        85,
+        87,
+        123
+      ],
+      "uncovered_statement_start_lines": [
+        64,
+        82,
+        83,
+        84,
+        85,
+        87,
+        102,
+        123
+      ],
+      "uncovered_functions": [
+        {
+          "name": "refreshQuietly",
+          "line": 81
+        }
+      ],
+      "uncovered_branches": [
+        {
+          "kind": "binary-expr",
+          "line": 19,
+          "column": 59,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 64,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 70,
+          "column": 94,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 85,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 85,
+          "column": 4,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "binary-expr",
+          "line": 85,
+          "column": 8,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 85,
+          "column": 36,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 87,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 87,
+          "column": 4,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "if",
+          "line": 100,
+          "column": 4,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "if",
+          "line": 102,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 108,
+          "column": 89,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 122,
+          "column": 11,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 169,
+          "column": 58,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 171,
+          "column": 150,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 172,
+          "column": 142,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 173,
+          "column": 75,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 174,
+          "column": 79,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 176,
+          "column": 87,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 177,
+          "column": 79,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 213,
+          "column": 40,
+          "arm": 1,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining component/template, optional-value, forwarding or error paths were not exercised by this run. Exact uncovered locations are listed; they are not all demonstrated unreachable or impossible to test."
+    },
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/features/events/pages/EventRequestsPage.vue",
+      "metrics": {
+        "statements": {
+          "total": 34,
+          "covered": 33,
+          "skipped": 0,
+          "pct": 97.05
+        },
+        "branches": {
+          "total": 43,
+          "covered": 41,
+          "skipped": 0,
+          "pct": 95.34
+        },
+        "functions": {
+          "total": 8,
+          "covered": 8,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 29,
+          "covered": 29,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [
+        35
+      ],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "if",
+          "line": 35,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 46,
+          "column": 53,
+          "arm": 1,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining component/template, optional-value, forwarding or error paths were not exercised by this run. Exact uncovered locations are listed; they are not all demonstrated unreachable or impossible to test."
+    },
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/features/notifications/components/NotificationBell.vue",
+      "metrics": {
+        "statements": {
+          "total": 31,
+          "covered": 31,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 16,
+          "covered": 14,
+          "skipped": 0,
+          "pct": 87.5
+        },
+        "functions": {
+          "total": 12,
+          "covered": 12,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 21,
+          "covered": 21,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "if",
+          "line": 31,
+          "column": 36,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "if",
+          "line": 40,
+          "column": 2,
+          "arm": 1,
+          "parent_location_used": true
+        }
+      ],
+      "explanation": "Remaining component/template, optional-value, forwarding or error paths were not exercised by this run. Exact uncovered locations are listed; they are not all demonstrated unreachable or impossible to test."
+    },
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/features/notifications/components/NotificationInbox.vue",
+      "metrics": {
+        "statements": {
+          "total": 88,
+          "covered": 83,
+          "skipped": 0,
+          "pct": 94.31
+        },
+        "branches": {
+          "total": 111,
+          "covered": 104,
+          "skipped": 0,
+          "pct": 93.69
+        },
+        "functions": {
+          "total": 17,
+          "covered": 17,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 71,
+          "covered": 71,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [
+        45,
+        57,
+        73,
+        77,
+        86
+      ],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "cond-expr",
+          "line": 29,
+          "column": 83,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 41,
+          "column": 50,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 45,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 57,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 73,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 77,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 86,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining component/template, optional-value, forwarding or error paths were not exercised by this run. Exact uncovered locations are listed; they are not all demonstrated unreachable or impossible to test."
+    },
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/features/registrations/RegistrationsPage.vue",
+      "metrics": {
+        "statements": {
+          "total": 100,
+          "covered": 95,
+          "skipped": 0,
+          "pct": 95
+        },
+        "branches": {
+          "total": 129,
+          "covered": 114,
+          "skipped": 0,
+          "pct": 88.37
+        },
+        "functions": {
+          "total": 18,
+          "covered": 18,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 64,
+          "covered": 64,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [
+        43,
+        52,
+        57,
+        61,
+        65
+      ],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "binary-expr",
+          "line": 24,
+          "column": 124,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 40,
+          "column": 6,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "if",
+          "line": 43,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 45,
+          "column": 59,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 52,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 57,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 59,
+          "column": 4,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "if",
+          "line": 61,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 65,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 66,
+          "column": 62,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 86,
+          "column": 31,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 100,
+          "column": 8,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 101,
+          "column": 8,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 103,
+          "column": 116,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 104,
+          "column": 12,
+          "arm": 0,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining component/template, optional-value, forwarding or error paths were not exercised by this run. Exact uncovered locations are listed; they are not all demonstrated unreachable or impossible to test."
+    },
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/features/registrations/pages/AttendeeEventPage.vue",
+      "metrics": {
+        "statements": {
+          "total": 68,
+          "covered": 64,
+          "skipped": 0,
+          "pct": 94.11
+        },
+        "branches": {
+          "total": 113,
+          "covered": 106,
+          "skipped": 0,
+          "pct": 93.8
+        },
+        "functions": {
+          "total": 11,
+          "covered": 11,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 42,
+          "covered": 42,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [
+        32,
+        33,
+        52
+      ],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "if",
+          "line": 30,
+          "column": 4,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "if",
+          "line": 32,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 33,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 36,
+          "column": 94,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 52,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 54,
+          "column": 88,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 58,
+          "column": 4,
+          "arm": 1,
+          "parent_location_used": true
+        }
+      ],
+      "explanation": "Remaining component/template, optional-value, forwarding or error paths were not exercised by this run. Exact uncovered locations are listed; they are not all demonstrated unreachable or impossible to test."
+    },
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/features/registrations/pages/AttendeeEventsPage.vue",
+      "metrics": {
+        "statements": {
+          "total": 31,
+          "covered": 30,
+          "skipped": 0,
+          "pct": 96.77
+        },
+        "branches": {
+          "total": 48,
+          "covered": 46,
+          "skipped": 0,
+          "pct": 95.83
+        },
+        "functions": {
+          "total": 9,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 21,
+          "covered": 21,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [
+        27
+      ],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "if",
+          "line": 27,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 32,
+          "column": 51,
+          "arm": 1,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining component/template, optional-value, forwarding or error paths were not exercised by this run. Exact uncovered locations are listed; they are not all demonstrated unreachable or impossible to test."
+    },
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/features/reviews/pages/LeadOversightPage.vue",
+      "metrics": {
+        "statements": {
+          "total": 27,
+          "covered": 27,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 30,
+          "covered": 28,
+          "skipped": 0,
+          "pct": 93.33
+        },
+        "functions": {
+          "total": 7,
+          "covered": 7,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 19,
+          "covered": 19,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "cond-expr",
+          "line": 23,
+          "column": 87,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 49,
+          "column": 67,
+          "arm": 1,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining component/template, optional-value, forwarding or error paths were not exercised by this run. Exact uncovered locations are listed; they are not all demonstrated unreachable or impossible to test."
+    },
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/features/reviews/pages/LeadRequestPage.vue",
+      "metrics": {
+        "statements": {
+          "total": 36,
+          "covered": 36,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 83,
+          "covered": 77,
+          "skipped": 0,
+          "pct": 92.77
+        },
+        "functions": {
+          "total": 7,
+          "covered": 7,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 25,
+          "covered": 25,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "cond-expr",
+          "line": 30,
+          "column": 49,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 38,
+          "column": 4,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "if",
+          "line": 40,
+          "column": 4,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "binary-expr",
+          "line": 64,
+          "column": 30,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 74,
+          "column": 74,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 78,
+          "column": 78,
+          "arm": 0,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining component/template, optional-value, forwarding or error paths were not exercised by this run. Exact uncovered locations are listed; they are not all demonstrated unreachable or impossible to test."
+    },
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/features/reviews/pages/ReviewQueuePage.vue",
+      "metrics": {
+        "statements": {
+          "total": 29,
+          "covered": 29,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 38,
+          "covered": 37,
+          "skipped": 0,
+          "pct": 97.36
+        },
+        "functions": {
+          "total": 7,
+          "covered": 7,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 23,
+          "covered": 23,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "cond-expr",
+          "line": 32,
+          "column": 88,
+          "arm": 1,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining component/template, optional-value, forwarding or error paths were not exercised by this run. Exact uncovered locations are listed; they are not all demonstrated unreachable or impossible to test."
+    },
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/features/reviews/pages/ReviewRequestPage.vue",
+      "metrics": {
+        "statements": {
+          "total": 61,
+          "covered": 53,
+          "skipped": 0,
+          "pct": 86.88
+        },
+        "branches": {
+          "total": 106,
+          "covered": 94,
+          "skipped": 0,
+          "pct": 88.67
+        },
+        "functions": {
+          "total": 12,
+          "covered": 11,
+          "skipped": 0,
+          "pct": 91.66
+        },
+        "lines": {
+          "total": 51,
+          "covered": 45,
+          "skipped": 0,
+          "pct": 88.23
+        }
+      },
+      "uncovered_lines": [
+        50,
+        51,
+        52,
+        53,
+        56,
+        62
+      ],
+      "uncovered_statement_start_lines": [
+        50,
+        51,
+        52,
+        53,
+        56,
+        62
+      ],
+      "uncovered_functions": [
+        {
+          "name": "refreshQuietly",
+          "line": 49
+        }
+      ],
+      "uncovered_branches": [
+        {
+          "kind": "cond-expr",
+          "line": 37,
+          "column": 52,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 43,
+          "column": 10,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 53,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 53,
+          "column": 4,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "binary-expr",
+          "line": 53,
+          "column": 8,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 53,
+          "column": 36,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 56,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 56,
+          "column": 4,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "if",
+          "line": 61,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 78,
+          "column": 52,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 121,
+          "column": 54,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 135,
+          "column": 50,
+          "arm": 0,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining component/template, optional-value, forwarding or error paths were not exercised by this run. Exact uncovered locations are listed; they are not all demonstrated unreachable or impossible to test."
+    },
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/features/reviews/pages/UnassignedRequestsPage.vue",
+      "metrics": {
+        "statements": {
+          "total": 91,
+          "covered": 87,
+          "skipped": 0,
+          "pct": 95.6
+        },
+        "branches": {
+          "total": 101,
+          "covered": 94,
+          "skipped": 0,
+          "pct": 93.06
+        },
+        "functions": {
+          "total": 16,
+          "covered": 16,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 71,
+          "covered": 71,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [
+        57,
+        60,
+        75
+      ],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "cond-expr",
+          "line": 53,
+          "column": 87,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 57,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 60,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 71,
+          "column": 52,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 75,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 78,
+          "column": 10,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 83,
+          "column": 86,
+          "arm": 1,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining component/template, optional-value, forwarding or error paths were not exercised by this run. Exact uncovered locations are listed; they are not all demonstrated unreachable or impossible to test."
+    },
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/features/safety/SafetyQueuePage.vue",
+      "metrics": {
+        "statements": {
+          "total": 35,
+          "covered": 34,
+          "skipped": 0,
+          "pct": 97.14
+        },
+        "branches": {
+          "total": 43,
+          "covered": 41,
+          "skipped": 0,
+          "pct": 95.34
+        },
+        "functions": {
+          "total": 8,
+          "covered": 8,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 22,
+          "covered": 22,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [
+        23
+      ],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "if",
+          "line": 23,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 25,
+          "column": 61,
+          "arm": 1,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining component/template, optional-value, forwarding or error paths were not exercised by this run. Exact uncovered locations are listed; they are not all demonstrated unreachable or impossible to test."
+    },
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/features/safety/SafetyReviewPage.vue",
+      "metrics": {
+        "statements": {
+          "total": 115,
+          "covered": 113,
+          "skipped": 0,
+          "pct": 98.26
+        },
+        "branches": {
+          "total": 202,
+          "covered": 182,
+          "skipped": 0,
+          "pct": 90.09
+        },
+        "functions": {
+          "total": 28,
+          "covered": 26,
+          "skipped": 0,
+          "pct": 92.85
+        },
+        "lines": {
+          "total": 75,
+          "covered": 74,
+          "skipped": 0,
+          "pct": 98.66
+        }
+      },
+      "uncovered_lines": [
+        153
+      ],
+      "uncovered_statement_start_lines": [
+        153
+      ],
+      "uncovered_functions": [
+        {
+          "name": "(anonymous_19)",
+          "line": 153
+        },
+        {
+          "name": "(anonymous_20)",
+          "line": 153
+        }
+      ],
+      "uncovered_branches": [
+        {
+          "kind": "cond-expr",
+          "line": 56,
+          "column": 61,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 69,
+          "column": 101,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 74,
+          "column": 60,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 80,
+          "column": 6,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "binary-expr",
+          "line": 107,
+          "column": 40,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 114,
+          "column": 79,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 115,
+          "column": 92,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 116,
+          "column": 68,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 117,
+          "column": 77,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 119,
+          "column": 83,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 119,
+          "column": 167,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 130,
+          "column": 6,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 134,
+          "column": 10,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 135,
+          "column": 49,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 137,
+          "column": 96,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 138,
+          "column": 63,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 139,
+          "column": 29,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 145,
+          "column": 6,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 152,
+          "column": 6,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 170,
+          "column": 86,
+          "arm": 1,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining component/template, optional-value, forwarding or error paths were not exercised by this run. Exact uncovered locations are listed; they are not all demonstrated unreachable or impossible to test."
+    },
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/features/system/pages/DashboardPage.vue",
+      "metrics": {
+        "statements": {
+          "total": 36,
+          "covered": 35,
+          "skipped": 0,
+          "pct": 97.22
+        },
+        "branches": {
+          "total": 76,
+          "covered": 64,
+          "skipped": 0,
+          "pct": 84.21
+        },
+        "functions": {
+          "total": 10,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 90
+        },
+        "lines": {
+          "total": 33,
+          "covered": 32,
+          "skipped": 0,
+          "pct": 96.96
+        }
+      },
+      "uncovered_lines": [
+        107
+      ],
+      "uncovered_statement_start_lines": [
+        107
+      ],
+      "uncovered_functions": [
+        {
+          "name": "(anonymous_8)",
+          "line": 107
+        }
+      ],
+      "uncovered_branches": [
+        {
+          "kind": "if",
+          "line": 30,
+          "column": 6,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "if",
+          "line": 32,
+          "column": 6,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "cond-expr",
+          "line": 38,
+          "column": 16,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 106,
+          "column": 6,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 107,
+          "column": 9,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 107,
+          "column": 9,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 109,
+          "column": 12,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 109,
+          "column": 12,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 110,
+          "column": 8,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 110,
+          "column": 8,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 111,
+          "column": 8,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 111,
+          "column": 8,
+          "arm": 1,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining component/template, optional-value, forwarding or error paths were not exercised by this run. Exact uncovered locations are listed; they are not all demonstrated unreachable or impossible to test."
+    },
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/features/venues/availability.ts",
+      "metrics": {
+        "statements": {
+          "total": 82,
+          "covered": 82,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 55,
+          "covered": 53,
+          "skipped": 0,
+          "pct": 96.36
+        },
+        "functions": {
+          "total": 29,
+          "covered": 29,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 68,
+          "covered": 68,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "binary-expr",
+          "line": 134,
+          "column": 54,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 192,
+          "column": 34,
+          "arm": 1,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining component/template, optional-value, forwarding or error paths were not exercised by this run. Exact uncovered locations are listed; they are not all demonstrated unreachable or impossible to test."
+    },
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/features/venues/api/venue-blocks.ts",
+      "metrics": {
+        "statements": {
+          "total": 7,
+          "covered": 7,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 2,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 50
+        },
+        "functions": {
+          "total": 5,
+          "covered": 5,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 6,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "cond-expr",
+          "line": 66,
+          "column": 67,
+          "arm": 1,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining component/template, optional-value, forwarding or error paths were not exercised by this run. Exact uncovered locations are listed; they are not all demonstrated unreachable or impossible to test."
+    },
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/features/venues/api/venues.ts",
+      "metrics": {
+        "statements": {
+          "total": 73,
+          "covered": 73,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 61,
+          "covered": 60,
+          "skipped": 0,
+          "pct": 98.36
+        },
+        "functions": {
+          "total": 14,
+          "covered": 14,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 55,
+          "covered": 55,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "binary-expr",
+          "line": 50,
+          "column": 25,
+          "arm": 1,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining component/template, optional-value, forwarding or error paths were not exercised by this run. Exact uncovered locations are listed; they are not all demonstrated unreachable or impossible to test."
+    },
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/features/venues/components/VenueAvailabilityCalendar.vue",
+      "metrics": {
+        "statements": {
+          "total": 65,
+          "covered": 64,
+          "skipped": 0,
+          "pct": 98.46
+        },
+        "branches": {
+          "total": 66,
+          "covered": 59,
+          "skipped": 0,
+          "pct": 89.39
+        },
+        "functions": {
+          "total": 17,
+          "covered": 17,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 57,
+          "covered": 57,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [
+        52
+      ],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "cond-expr",
+          "line": 30,
+          "column": 85,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 34,
+          "column": 40,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 52,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 60,
+          "column": 51,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 66,
+          "column": 44,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 66,
+          "column": 70,
+          "arm": 2,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 78,
+          "column": 2,
+          "arm": 1,
+          "parent_location_used": true
+        }
+      ],
+      "explanation": "Remaining component/template, optional-value, forwarding or error paths were not exercised by this run. Exact uncovered locations are listed; they are not all demonstrated unreachable or impossible to test."
+    },
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/features/venues/components/VenueWeekTimeline.vue",
+      "metrics": {
+        "statements": {
+          "total": 34,
+          "covered": 34,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 44,
+          "covered": 39,
+          "skipped": 0,
+          "pct": 88.63
+        },
+        "functions": {
+          "total": 15,
+          "covered": 15,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 26,
+          "covered": 26,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "binary-expr",
+          "line": 89,
+          "column": 100,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 95,
+          "column": 45,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 97,
+          "column": 14,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 100,
+          "column": 14,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 103,
+          "column": 14,
+          "arm": 0,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining component/template, optional-value, forwarding or error paths were not exercised by this run. Exact uncovered locations are listed; they are not all demonstrated unreachable or impossible to test."
+    },
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/features/venues/pages/VenueBlocksPage.vue",
+      "metrics": {
+        "statements": {
+          "total": 144,
+          "covered": 134,
+          "skipped": 0,
+          "pct": 93.05
+        },
+        "branches": {
+          "total": 156,
+          "covered": 140,
+          "skipped": 0,
+          "pct": 89.74
+        },
+        "functions": {
+          "total": 27,
+          "covered": 27,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 126,
+          "covered": 123,
+          "skipped": 0,
+          "pct": 97.61
+        }
+      },
+      "uncovered_lines": [
+        71,
+        90,
+        91
+      ],
+      "uncovered_statement_start_lines": [
+        58,
+        71,
+        88,
+        90,
+        91,
+        110,
+        135,
+        138,
+        159,
+        179
+      ],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "if",
+          "line": 58,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 86,
+          "column": 4,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "if",
+          "line": 88,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 89,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 95,
+          "column": 56,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 108,
+          "column": 4,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "if",
+          "line": 110,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 113,
+          "column": 56,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 130,
+          "column": 47,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 135,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 138,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 159,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 179,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 213,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 223,
+          "column": 6,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 301,
+          "column": 57,
+          "arm": 1,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining component/template, optional-value, forwarding or error paths were not exercised by this run. Exact uncovered locations are listed; they are not all demonstrated unreachable or impossible to test."
+    },
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/features/venues/pages/VenueBookingDetailPage.vue",
+      "metrics": {
+        "statements": {
+          "total": 150,
+          "covered": 147,
+          "skipped": 0,
+          "pct": 98
+        },
+        "branches": {
+          "total": 321,
+          "covered": 308,
+          "skipped": 0,
+          "pct": 95.95
+        },
+        "functions": {
+          "total": 40,
+          "covered": 40,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 122,
+          "covered": 122,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [
+        82,
+        118,
+        168
+      ],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "cond-expr",
+          "line": 44,
+          "column": 75,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 82,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 91,
+          "column": 51,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 118,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 168,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 229,
+          "column": 65,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 235,
+          "column": 12,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 235,
+          "column": 53,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 235,
+          "column": 53,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 236,
+          "column": 12,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 236,
+          "column": 55,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 236,
+          "column": 55,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 273,
+          "column": 84,
+          "arm": 1,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining component/template, optional-value, forwarding or error paths were not exercised by this run. Exact uncovered locations are listed; they are not all demonstrated unreachable or impossible to test."
+    },
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/features/venues/pages/VenueBookingsPage.vue",
+      "metrics": {
+        "statements": {
+          "total": 43,
+          "covered": 42,
+          "skipped": 0,
+          "pct": 97.67
+        },
+        "branches": {
+          "total": 69,
+          "covered": 65,
+          "skipped": 0,
+          "pct": 94.2
+        },
+        "functions": {
+          "total": 13,
+          "covered": 13,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 33,
+          "covered": 33,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [
+        32
+      ],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "if",
+          "line": 32,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 41,
+          "column": 51,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 91,
+          "column": 92,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 93,
+          "column": 12,
+          "arm": 0,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining component/template, optional-value, forwarding or error paths were not exercised by this run. Exact uncovered locations are listed; they are not all demonstrated unreachable or impossible to test."
+    },
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/features/venues/pages/VenueCatalogueEditPage.vue",
+      "metrics": {
+        "statements": {
+          "total": 126,
+          "covered": 124,
+          "skipped": 0,
+          "pct": 98.41
+        },
+        "branches": {
+          "total": 169,
+          "covered": 166,
+          "skipped": 0,
+          "pct": 98.22
+        },
+        "functions": {
+          "total": 31,
+          "covered": 31,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 113,
+          "covered": 113,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [
+        98,
+        134
+      ],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "cond-expr",
+          "line": 50,
+          "column": 79,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 98,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 134,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining component/template, optional-value, forwarding or error paths were not exercised by this run. Exact uncovered locations are listed; they are not all demonstrated unreachable or impossible to test."
+    },
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/features/venues/pages/VenueSearchPage.vue",
+      "metrics": {
+        "statements": {
+          "total": 110,
+          "covered": 100,
+          "skipped": 0,
+          "pct": 90.9
+        },
+        "branches": {
+          "total": 160,
+          "covered": 137,
+          "skipped": 0,
+          "pct": 85.62
+        },
+        "functions": {
+          "total": 32,
+          "covered": 31,
+          "skipped": 0,
+          "pct": 96.87
+        },
+        "lines": {
+          "total": 99,
+          "covered": 92,
+          "skipped": 0,
+          "pct": 92.92
+        }
+      },
+      "uncovered_lines": [
+        69,
+        70,
+        71,
+        105,
+        106,
+        107,
+        252
+      ],
+      "uncovered_statement_start_lines": [
+        69,
+        70,
+        71,
+        105,
+        106,
+        107,
+        114,
+        252
+      ],
+      "uncovered_functions": [
+        {
+          "name": "(anonymous_27)",
+          "line": 252
+        }
+      ],
+      "uncovered_branches": [
+        {
+          "kind": "if",
+          "line": 68,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 77,
+          "column": 10,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 77,
+          "column": 35,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 77,
+          "column": 51,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 89,
+          "column": 4,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "if",
+          "line": 92,
+          "column": 4,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "if",
+          "line": 104,
+          "column": 2,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "if",
+          "line": 105,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 105,
+          "column": 2,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "if",
+          "line": 106,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 106,
+          "column": 2,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "if",
+          "line": 114,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 147,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 252,
+          "column": 8,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 252,
+          "column": 89,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 252,
+          "column": 89,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 253,
+          "column": 8,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 278,
+          "column": 10,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 278,
+          "column": 45,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 279,
+          "column": 52,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 280,
+          "column": 84,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 295,
+          "column": 53,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 298,
+          "column": 89,
+          "arm": 1,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining component/template, optional-value, forwarding or error paths were not exercised by this run. Exact uncovered locations are listed; they are not all demonstrated unreachable or impossible to test."
+    },
+    {
+      "measurement": "frontend",
+      "path": "frontend/src/features/venues/pages/VenueSuitabilityPage.vue",
+      "metrics": {
+        "statements": {
+          "total": 149,
+          "covered": 146,
+          "skipped": 0,
+          "pct": 97.98
+        },
+        "branches": {
+          "total": 270,
+          "covered": 260,
+          "skipped": 0,
+          "pct": 96.29
+        },
+        "functions": {
+          "total": 36,
+          "covered": 36,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 121,
+          "covered": 121,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [
+        127,
+        134,
+        151
+      ],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "cond-expr",
+          "line": 40,
+          "column": 77,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 52,
+          "column": 88,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 97,
+          "column": 49,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 127,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 134,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 151,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 161,
+          "column": 71,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 221,
+          "column": 76,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 291,
+          "column": 8,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 291,
+          "column": 48,
+          "arm": 1,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining component/template, optional-value, forwarding or error paths were not exercised by this run. Exact uncovered locations are listed; they are not all demonstrated unreachable or impossible to test."
+    },
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/app.ts",
+      "metrics": {
+        "statements": {
+          "total": 63,
+          "covered": 61,
+          "skipped": 0,
+          "pct": 96.82
+        },
+        "branches": {
+          "total": 24,
+          "covered": 23,
+          "skipped": 0,
+          "pct": 95.83
+        },
+        "functions": {
+          "total": 6,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 59,
+          "covered": 57,
+          "skipped": 0,
+          "pct": 96.61
+        }
+      },
+      "uncovered_lines": [
+        135,
+        136
+      ],
+      "uncovered_statement_start_lines": [
+        135,
+        136
+      ],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "if",
+          "line": 134,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining backend guard, compatibility or failure paths were not exercised by the combined run. Exact uncovered locations are listed; this is a measured gap, not proof of impossibility."
+    },
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/config/env.ts",
+      "metrics": {
+        "statements": {
+          "total": 12,
+          "covered": 10,
+          "skipped": 0,
+          "pct": 83.33
+        },
+        "branches": {
+          "total": 17,
+          "covered": 17,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 2,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 50
+        },
+        "lines": {
+          "total": 12,
+          "covered": 10,
+          "skipped": 0,
+          "pct": 83.33
+        }
+      },
+      "uncovered_lines": [
+        14,
+        18
+      ],
+      "uncovered_statement_start_lines": [
+        14,
+        18
+      ],
+      "uncovered_functions": [
+        {
+          "name": "loadEnvironment",
+          "line": 13
+        }
+      ],
+      "uncovered_branches": [],
+      "explanation": "parseEnvironment is tested; dotenv-loading wrapper runs in the separate browser API process and is not included in this V8 run."
+    },
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/modules/auth/router.ts",
+      "metrics": {
+        "statements": {
+          "total": 64,
+          "covered": 63,
+          "skipped": 0,
+          "pct": 98.43
+        },
+        "branches": {
+          "total": 31,
+          "covered": 31,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 11,
+          "covered": 11,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 58,
+          "covered": 57,
+          "skipped": 0,
+          "pct": 98.27
+        }
+      },
+      "uncovered_lines": [
+        39
+      ],
+      "uncovered_statement_start_lines": [
+        39
+      ],
+      "uncovered_functions": [],
+      "uncovered_branches": [],
+      "explanation": "Remaining backend guard, compatibility or failure paths were not exercised by the combined run. Exact uncovered locations are listed; this is a measured gap, not proof of impossibility."
+    },
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/modules/equipment/stock-service.ts",
+      "metrics": {
+        "statements": {
+          "total": 94,
+          "covered": 94,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 48,
+          "covered": 46,
+          "skipped": 0,
+          "pct": 95.83
+        },
+        "functions": {
+          "total": 28,
+          "covered": 28,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 75,
+          "covered": 75,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "binary-expr",
+          "line": 85,
+          "column": 60,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 251,
+          "column": 100,
+          "arm": 1,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining backend guard, compatibility or failure paths were not exercised by the combined run. Exact uncovered locations are listed; this is a measured gap, not proof of impossibility."
+    },
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/modules/events/cancellation.ts",
+      "metrics": {
+        "statements": {
+          "total": 41,
+          "covered": 41,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 42,
+          "covered": 35,
+          "skipped": 0,
+          "pct": 83.33
+        },
+        "functions": {
+          "total": 6,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 38,
+          "covered": 38,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "binary-expr",
+          "line": 81,
+          "column": 58,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 82,
+          "column": 46,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 82,
+          "column": 76,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 96,
+          "column": 58,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 101,
+          "column": 52,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 101,
+          "column": 114,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 102,
+          "column": 49,
+          "arm": 1,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining backend guard, compatibility or failure paths were not exercised by the combined run. Exact uncovered locations are listed; this is a measured gap, not proof of impossibility."
+    },
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/modules/events/change-requests.ts",
+      "metrics": {
+        "statements": {
+          "total": 161,
+          "covered": 159,
+          "skipped": 0,
+          "pct": 98.75
+        },
+        "branches": {
+          "total": 85,
+          "covered": 80,
+          "skipped": 0,
+          "pct": 94.11
+        },
+        "functions": {
+          "total": 36,
+          "covered": 36,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 141,
+          "covered": 139,
+          "skipped": 0,
+          "pct": 98.58
+        }
+      },
+      "uncovered_lines": [
+        96,
+        107
+      ],
+      "uncovered_statement_start_lines": [
+        96,
+        107
+      ],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "if",
+          "line": 95,
+          "column": 4,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "if",
+          "line": 106,
+          "column": 4,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "binary-expr",
+          "line": 218,
+          "column": 29,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 317,
+          "column": 74,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 370,
+          "column": 29,
+          "arm": 1,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining backend guard, compatibility or failure paths were not exercised by the combined run. Exact uncovered locations are listed; this is a measured gap, not proof of impossibility."
+    },
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/modules/events/clarifications.ts",
+      "metrics": {
+        "statements": {
+          "total": 50,
+          "covered": 49,
+          "skipped": 0,
+          "pct": 98
+        },
+        "branches": {
+          "total": 18,
+          "covered": 17,
+          "skipped": 0,
+          "pct": 94.44
+        },
+        "functions": {
+          "total": 10,
+          "covered": 10,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 48,
+          "covered": 47,
+          "skipped": 0,
+          "pct": 97.91
+        }
+      },
+      "uncovered_lines": [
+        113
+      ],
+      "uncovered_statement_start_lines": [
+        113
+      ],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "if",
+          "line": 112,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining backend guard, compatibility or failure paths were not exercised by the combined run. Exact uncovered locations are listed; this is a measured gap, not proof of impossibility."
+    },
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/modules/events/completion.ts",
+      "metrics": {
+        "statements": {
+          "total": 36,
+          "covered": 36,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 37,
+          "covered": 36,
+          "skipped": 0,
+          "pct": 97.29
+        },
+        "functions": {
+          "total": 4,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 30,
+          "covered": 30,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "binary-expr",
+          "line": 78,
+          "column": 98,
+          "arm": 1,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining backend guard, compatibility or failure paths were not exercised by the combined run. Exact uncovered locations are listed; this is a measured gap, not proof of impossibility."
+    },
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/modules/events/confirmation.ts",
+      "metrics": {
+        "statements": {
+          "total": 74,
+          "covered": 73,
+          "skipped": 0,
+          "pct": 98.64
+        },
+        "branches": {
+          "total": 60,
+          "covered": 55,
+          "skipped": 0,
+          "pct": 91.66
+        },
+        "functions": {
+          "total": 17,
+          "covered": 17,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 68,
+          "covered": 68,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [
+        157
+      ],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "binary-expr",
+          "line": 51,
+          "column": 48,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 52,
+          "column": 71,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 84,
+          "column": 30,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 157,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 179,
+          "column": 27,
+          "arm": 1,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining backend guard, compatibility or failure paths were not exercised by the combined run. Exact uncovered locations are listed; this is a measured gap, not proof of impossibility."
+    },
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/modules/events/create-draft.ts",
+      "metrics": {
+        "statements": {
+          "total": 28,
+          "covered": 26,
+          "skipped": 0,
+          "pct": 92.85
+        },
+        "branches": {
+          "total": 8,
+          "covered": 5,
+          "skipped": 0,
+          "pct": 62.5
+        },
+        "functions": {
+          "total": 5,
+          "covered": 5,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 23,
+          "covered": 22,
+          "skipped": 0,
+          "pct": 95.65
+        }
+      },
+      "uncovered_lines": [
+        62
+      ],
+      "uncovered_statement_start_lines": [
+        53,
+        62
+      ],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "if",
+          "line": 53,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 62,
+          "column": 54,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 62,
+          "column": 70,
+          "arm": 1,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining backend guard, compatibility or failure paths were not exercised by the combined run. Exact uncovered locations are listed; this is a measured gap, not proof of impossibility."
+    },
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/modules/events/event-request-detail.ts",
+      "metrics": {
+        "statements": {
+          "total": 21,
+          "covered": 21,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 37,
+          "covered": 35,
+          "skipped": 0,
+          "pct": 94.59
+        },
+        "functions": {
+          "total": 3,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 18,
+          "covered": 18,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "cond-expr",
+          "line": 107,
+          "column": 69,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 108,
+          "column": 71,
+          "arm": 1,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining backend guard, compatibility or failure paths were not exercised by the combined run. Exact uncovered locations are listed; this is a measured gap, not proof of impossibility."
+    },
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/modules/events/review-decision.ts",
+      "metrics": {
+        "statements": {
+          "total": 32,
+          "covered": 29,
+          "skipped": 0,
+          "pct": 90.62
+        },
+        "branches": {
+          "total": 14,
+          "covered": 10,
+          "skipped": 0,
+          "pct": 71.42
+        },
+        "functions": {
+          "total": 2,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 29,
+          "covered": 28,
+          "skipped": 0,
+          "pct": 96.55
+        }
+      },
+      "uncovered_lines": [
+        118
+      ],
+      "uncovered_statement_start_lines": [
+        92,
+        97,
+        118
+      ],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "if",
+          "line": 92,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 97,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 118,
+          "column": 54,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 118,
+          "column": 70,
+          "arm": 1,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining backend guard, compatibility or failure paths were not exercised by the combined run. Exact uncovered locations are listed; this is a measured gap, not proof of impossibility."
+    },
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/modules/events/submitted-requests-router.ts",
+      "metrics": {
+        "statements": {
+          "total": 127,
+          "covered": 125,
+          "skipped": 0,
+          "pct": 98.42
+        },
+        "branches": {
+          "total": 85,
+          "covered": 83,
+          "skipped": 0,
+          "pct": 97.64
+        },
+        "functions": {
+          "total": 8,
+          "covered": 8,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 127,
+          "covered": 125,
+          "skipped": 0,
+          "pct": 98.42
+        }
+      },
+      "uncovered_lines": [
+        244,
+        291
+      ],
+      "uncovered_statement_start_lines": [
+        244,
+        291
+      ],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "if",
+          "line": 238,
+          "column": 6,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "if",
+          "line": 287,
+          "column": 6,
+          "arm": 1,
+          "parent_location_used": true
+        }
+      ],
+      "explanation": "Remaining backend guard, compatibility or failure paths were not exercised by the combined run. Exact uncovered locations are listed; this is a measured gap, not proof of impossibility."
+    },
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/modules/events/workflow-http.ts",
+      "metrics": {
+        "statements": {
+          "total": 25,
+          "covered": 24,
+          "skipped": 0,
+          "pct": 96
+        },
+        "branches": {
+          "total": 18,
+          "covered": 17,
+          "skipped": 0,
+          "pct": 94.44
+        },
+        "functions": {
+          "total": 3,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 24,
+          "covered": 24,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [
+        71
+      ],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "if",
+          "line": 71,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining backend guard, compatibility or failure paths were not exercised by the combined run. Exact uncovered locations are listed; this is a measured gap, not proof of impossibility."
+    },
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/modules/events/workflow-support.ts",
+      "metrics": {
+        "statements": {
+          "total": 86,
+          "covered": 80,
+          "skipped": 0,
+          "pct": 93.02
+        },
+        "branches": {
+          "total": 65,
+          "covered": 62,
+          "skipped": 0,
+          "pct": 95.38
+        },
+        "functions": {
+          "total": 18,
+          "covered": 17,
+          "skipped": 0,
+          "pct": 94.44
+        },
+        "lines": {
+          "total": 76,
+          "covered": 72,
+          "skipped": 0,
+          "pct": 94.73
+        }
+      },
+      "uncovered_lines": [
+        66,
+        70,
+        71,
+        72
+      ],
+      "uncovered_statement_start_lines": [
+        66,
+        70,
+        71,
+        72,
+        165
+      ],
+      "uncovered_functions": [
+        {
+          "name": "readEventRequest",
+          "line": 65
+        }
+      ],
+      "uncovered_branches": [
+        {
+          "kind": "if",
+          "line": 71,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 71,
+          "column": 2,
+          "arm": 1,
+          "parent_location_used": true
+        },
+        {
+          "kind": "if",
+          "line": 165,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Includes the currently unused readEventRequest helper. Remaining guard/optional-value paths are not covered by this run; no unreachable-code claim is made."
+    },
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/modules/notifications/change-request-notifications.ts",
+      "metrics": {
+        "statements": {
+          "total": 19,
+          "covered": 19,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 30,
+          "covered": 29,
+          "skipped": 0,
+          "pct": 96.66
+        },
+        "functions": {
+          "total": 6,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 18,
+          "covered": 18,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "if",
+          "line": 74,
+          "column": 2,
+          "arm": 1,
+          "parent_location_used": true
+        }
+      ],
+      "explanation": "Remaining backend guard, compatibility or failure paths were not exercised by the combined run. Exact uncovered locations are listed; this is a measured gap, not proof of impossibility."
+    },
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/modules/notifications/inbox.ts",
+      "metrics": {
+        "statements": {
+          "total": 32,
+          "covered": 32,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 77,
+          "covered": 76,
+          "skipped": 0,
+          "pct": 98.7
+        },
+        "functions": {
+          "total": 9,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 28,
+          "covered": 28,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "binary-expr",
+          "line": 122,
+          "column": 28,
+          "arm": 1,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining backend guard, compatibility or failure paths were not exercised by the combined run. Exact uncovered locations are listed; this is a measured gap, not proof of impossibility."
+    },
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/modules/notifications/notify.ts",
+      "metrics": {
+        "statements": {
+          "total": 23,
+          "covered": 23,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 24,
+          "covered": 23,
+          "skipped": 0,
+          "pct": 95.83
+        },
+        "functions": {
+          "total": 6,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 15,
+          "covered": 15,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "binary-expr",
+          "line": 41,
+          "column": 51,
+          "arm": 1,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining backend guard, compatibility or failure paths were not exercised by the combined run. Exact uncovered locations are listed; this is a measured gap, not proof of impossibility."
+    },
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/modules/registrations/registration-service.ts",
+      "metrics": {
+        "statements": {
+          "total": 61,
+          "covered": 61,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 39,
+          "covered": 38,
+          "skipped": 0,
+          "pct": 97.43
+        },
+        "functions": {
+          "total": 17,
+          "covered": 17,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 51,
+          "covered": 51,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "binary-expr",
+          "line": 148,
+          "column": 27,
+          "arm": 1,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining backend guard, compatibility or failure paths were not exercised by the combined run. Exact uncovered locations are listed; this is a measured gap, not proof of impossibility."
+    },
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/modules/safety/service.ts",
+      "metrics": {
+        "statements": {
+          "total": 194,
+          "covered": 193,
+          "skipped": 0,
+          "pct": 99.48
+        },
+        "branches": {
+          "total": 149,
+          "covered": 142,
+          "skipped": 0,
+          "pct": 95.3
+        },
+        "functions": {
+          "total": 37,
+          "covered": 37,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 164,
+          "covered": 164,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [
+        111
+      ],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "binary-expr",
+          "line": 80,
+          "column": 45,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "if",
+          "line": 111,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 187,
+          "column": 32,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 325,
+          "column": 32,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 333,
+          "column": 9,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 363,
+          "column": 27,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "cond-expr",
+          "line": 377,
+          "column": 10,
+          "arm": 1,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining backend guard, compatibility or failure paths were not exercised by the combined run. Exact uncovered locations are listed; this is a measured gap, not proof of impossibility."
+    },
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/modules/venues/booking-service.ts",
+      "metrics": {
+        "statements": {
+          "total": 215,
+          "covered": 214,
+          "skipped": 0,
+          "pct": 99.53
+        },
+        "branches": {
+          "total": 154,
+          "covered": 153,
+          "skipped": 0,
+          "pct": 99.35
+        },
+        "functions": {
+          "total": 33,
+          "covered": 33,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 192,
+          "covered": 192,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [
+        487
+      ],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "if",
+          "line": 487,
+          "column": 6,
+          "arm": 0,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining backend guard, compatibility or failure paths were not exercised by the combined run. Exact uncovered locations are listed; this is a measured gap, not proof of impossibility."
+    },
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/modules/venues/suitability-rules.ts",
+      "metrics": {
+        "statements": {
+          "total": 61,
+          "covered": 60,
+          "skipped": 0,
+          "pct": 98.36
+        },
+        "branches": {
+          "total": 131,
+          "covered": 128,
+          "skipped": 0,
+          "pct": 97.7
+        },
+        "functions": {
+          "total": 9,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 54,
+          "covered": 54,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [
+        58
+      ],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "if",
+          "line": 58,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 137,
+          "column": 67,
+          "arm": 1,
+          "parent_location_used": false
+        },
+        {
+          "kind": "binary-expr",
+          "line": 139,
+          "column": 70,
+          "arm": 1,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining backend guard, compatibility or failure paths were not exercised by the combined run. Exact uncovered locations are listed; this is a measured gap, not proof of impossibility."
+    },
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/modules/venues/venue-bookings-router.ts",
+      "metrics": {
+        "statements": {
+          "total": 20,
+          "covered": 20,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 2,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 50
+        },
+        "functions": {
+          "total": 9,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 20,
+          "covered": 20,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "cond-expr",
+          "line": 18,
+          "column": 50,
+          "arm": 0,
+          "parent_location_used": false
+        }
+      ],
+      "explanation": "Remaining backend guard, compatibility or failure paths were not exercised by the combined run. Exact uncovered locations are listed; this is a measured gap, not proof of impossibility."
+    }
+  ]
+}

@@ -1,0 +1,95 @@
+{
+  "method": "Source inspection of every Vue input declaration; dynamic datetime fields included. Native time-only catalogue fields have no year segment. This is not an executed keystroke test of every form.",
+  "inputs": [
+    {
+      "file": "frontend/src/features/equipment/pages/EventEquipmentAvailabilityPage.vue",
+      "line": 178,
+      "input": "<input id=\"equipment-starts\" v-model=\"startsPicker\" type=\"datetime-local\" max=\"9999-12-31T23:59:59.999\" step=\"0.001\" :aria-invalid=\"submitted && !!form.errors.startsAt\" aria-describedby=\"equipment-time-help equipment-start-error\" />"
+    },
+    {
+      "file": "frontend/src/features/equipment/pages/EventEquipmentAvailabilityPage.vue",
+      "line": 182,
+      "input": "<input id=\"equipment-ends\" v-model=\"endsPicker\" type=\"datetime-local\" max=\"9999-12-31T23:59:59.999\" step=\"0.001\" :aria-invalid=\"submitted && !!form.errors.endsAt\" aria-describedby=\"equipment-time-help equipment-end-error\" />"
+    },
+    {
+      "file": "frontend/src/features/events/components/EventRequestForm.vue",
+      "line": 321,
+      "input": "<input :id=\"`${uid}-startsAt`\" v-model=\"form.startsAt\" type=\"datetime-local\" max=\"9999-12-31T23:59\" :aria-invalid=\"errors.startsAt ? 'true' : undefined\" :aria-describedby=\"describedBy('startsAt')\" />"
+    },
+    {
+      "file": "frontend/src/features/events/components/EventRequestForm.vue",
+      "line": 327,
+      "input": "<input :id=\"`${uid}-endsAt`\" v-model=\"form.endsAt\" type=\"datetime-local\" max=\"9999-12-31T23:59\" :aria-invalid=\"errors.endsAt ? 'true' : undefined\" :aria-describedby=\"describedBy('endsAt')\" />"
+    },
+    {
+      "file": "frontend/src/features/events/components/EventRequestForm.vue",
+      "line": 391,
+      "input": "<input :id=\"`${uid}-registrationOpensAt`\" v-model=\"form.registrationOpensAt\" type=\"datetime-local\" max=\"9999-12-31T23:59\" :aria-invalid=\"errors.registrationOpensAt ? 'true' : undefined\" :aria-describedby=\"describedBy('registrationOpensAt')\" />"
+    },
+    {
+      "file": "frontend/src/features/events/components/EventRequestForm.vue",
+      "line": 397,
+      "input": "<input :id=\"`${uid}-registrationClosesAt`\" v-model=\"form.registrationClosesAt\" type=\"datetime-local\" max=\"9999-12-31T23:59\" :aria-invalid=\"errors.registrationClosesAt ? 'true' : undefined\" :aria-describedby=\"describedBy('registrationClosesAt')\" />"
+    },
+    {
+      "file": "frontend/src/features/events/components/VenueBookingPanel.vue",
+      "line": 350,
+      "input": "<input :id=\"`${id}-starts`\" v-model=\"startsAt\" type=\"datetime-local\" max=\"9999-12-31T23:59\" :disabled=\"busy\" />"
+    },
+    {
+      "file": "frontend/src/features/events/components/VenueBookingPanel.vue",
+      "line": 354,
+      "input": "<input :id=\"`${id}-ends`\" v-model=\"endsAt\" type=\"datetime-local\" max=\"9999-12-31T23:59\" :disabled=\"busy\" />"
+    },
+    {
+      "file": "frontend/src/features/events/pages/EventChangeRequestPage.vue",
+      "line": 252,
+      "input": "<input v-else :id=\"`${uid}-${field}`\" :value=\"textValue(field)\" @input=\"setText(field, $event)\" :type=\"changeFieldConfig[field].kind === 'datetime' ? 'datetime-local' : 'number'\" :max=\"changeFieldConfig[field].kind === 'datetime' ? '9999-12-31T23:59' : undefined\" :min=\"changeFieldConfig[field].kind === 'count' ? 0 : undefined\" :aria-invalid=\"errors[field] ? 'true' : undefined\" :aria-describedby=\"errors[field] ? `${uid}-${field}-error` : undefined\" />"
+    },
+    {
+      "file": "frontend/src/features/events/pages/EventDetailsEditPage.vue",
+      "line": 316,
+      "input": "<input v-else :id=\"`${uid}-${field}`\" :value=\"textValue(field)\" @input=\"setText(field, $event)\" :type=\"fieldConfig[field].kind === 'datetime' ? 'datetime-local' : fieldConfig[field].kind === 'count' ? 'number' : 'text'\" :max=\"fieldConfig[field].kind === 'datetime' ? '9999-12-31T23:59' : undefined\" :min=\"fieldConfig[field].kind === 'count' ? 0 : undefined\" :maxlength=\"field === 'name' ? 200 : undefined\" :aria-invalid=\"errors[field] ? 'true' : undefined\" :aria-describedby=\"errors[field] ? `${uid}-${field}-error` : undefined\" />"
+    },
+    {
+      "file": "frontend/src/features/venues/components/VenueAvailabilityCalendar.vue",
+      "line": 106,
+      "input": "<input :id=\"`${id}-date`\" v-model=\"jumpDate\" type=\"date\" max=\"9999-12-31\" class=\"jump-input\" @change=\"jumpToDate\" />"
+    },
+    {
+      "file": "frontend/src/features/venues/pages/VenueBlocksPage.vue",
+      "line": 237,
+      "input": "<input id=\"block-starts\" v-model=\"startsAt\" type=\"datetime-local\" max=\"9999-12-31T23:59\" :disabled=\"busy\" />"
+    },
+    {
+      "file": "frontend/src/features/venues/pages/VenueBlocksPage.vue",
+      "line": 241,
+      "input": "<input id=\"block-ends\" v-model=\"endsAt\" type=\"datetime-local\" max=\"9999-12-31T23:59\" :disabled=\"busy\" />"
+    },
+    {
+      "file": "frontend/src/features/venues/pages/VenueBookingDetailPage.vue",
+      "line": 339,
+      "input": "<input id=\"hold-deadline\" v-model=\"holdDeadline\" type=\"datetime-local\" max=\"9999-12-31T23:59\" required aria-describedby=\"hold-deadline-help hold-deadline-error\" />"
+    },
+    {
+      "file": "frontend/src/features/venues/pages/VenueCatalogueEditPage.vue",
+      "line": 250,
+      "input": "<input id=\"venue-opens\" v-model=\"form.opensAt\" type=\"time\" />"
+    },
+    {
+      "file": "frontend/src/features/venues/pages/VenueCatalogueEditPage.vue",
+      "line": 254,
+      "input": "<input id=\"venue-closes\" v-model=\"form.closesAt\" type=\"time\" :aria-invalid=\"!!errors.closesAt\" aria-describedby=\"venue-closes-error\" />"
+    },
+    {
+      "file": "frontend/src/features/venues/pages/VenueSearchPage.vue",
+      "line": 163,
+      "input": "<input id=\"venue-start\" v-model=\"filters.startsAt\" type=\"datetime-local\" max=\"9999-12-31T23:59\" :aria-invalid=\"periodErrors.startsAt !== ''\" :aria-describedby=\"periodErrors.startsAt ? 'venue-start-error' : undefined\" @input=\"noteUnreadable('startsAt', $event)\" />"
+    },
+    {
+      "file": "frontend/src/features/venues/pages/VenueSearchPage.vue",
+      "line": 173,
+      "input": "<input id=\"venue-end\" v-model=\"filters.endsAt\" type=\"datetime-local\" max=\"9999-12-31T23:59\" :aria-invalid=\"periodErrors.endsAt !== ''\" :aria-describedby=\"periodErrors.endsAt ? 'venue-end-error' : undefined\" @input=\"noteUnreadable('endsAt', $event)\" />"
+    }
+  ]
+}

@@ -12,7 +12,7 @@ let controller: AbortController | undefined;
 const permitted = computed(() => !authSession.loading && authSession.user?.role === 'SAFETY_OFFICER');
 
 async function load() {
-  controller?.abort(); items.value = []; error.value = '';
+  controller?.abort(); items.value = []; error.value = ''; loading.value = false;
   if (!permitted.value) return;
   const current = new AbortController(); controller = current;
   loading.value = true;

@@ -63,7 +63,12 @@ function field(label: string): HTMLElement {
   return definition as HTMLElement;
 }
 
-async function renderDetail(id = 'a') {
+const planningPanel = {
+  props: ['eventRequestId', 'status'], emits: ['changed'],
+  template: '<section><label>Planning notes<input /></label><span data-testid="planning-context">{{ eventRequestId }}: {{ status }}</span><button @click="$emit(\'changed\')">Saved planning change</button></section>',
+};
+
+async function renderDetail(id = 'a', withPlanning = false) {
   const router = createRouter({
     history: createMemoryHistory(),
     routes: [
@@ -73,7 +78,7 @@ async function renderDetail(id = 'a') {
   });
   await router.push(`/events/${id}`);
   await router.isReady();
-  return { ...render(EventRequestDetailPage, { global: { plugins: [router], stubs: { EventPlanningPanels: true } } }), router };
+  return { ...render(EventRequestDetailPage, { global: { plugins: [router], stubs: { EventPlanningPanels: withPlanning ? planningPanel : true } } }), router };
 }
 
 beforeEach(() => {
@@ -624,5 +629,105 @@ describe('KAN-16 organiser event request details', () => {
       expect(session.user).toBeNull();
       expect(screen.queryByRole('heading', { name: 'Career fair' })).not.toBeInTheDocument();
     });
+  });
+});
+
+
+describe('KAN-16 / KAN-61 / KAN-84 parent refresh after planning changes', () => {
+  it('shows the saved status without discarding an unrelated planning draft', async () => {
+    const pending = deferredResponse();
+    const fetchMock = vi.fn().mockResolvedValueOnce(jsonResponse(decidedDetail())).mockReturnValueOnce(pending.promise);
+    vi.stubGlobal('fetch', fetchMock);
+    await renderDetail('a', true);
+    await fireEvent.update(await screen.findByLabelText('Planning notes'), 'Keep these unsaved notes');
+    await fireEvent.click(screen.getByRole('button', { name: 'Saved planning change' }));
+    expect(screen.getByLabelText('Planning notes')).toHaveValue('Keep these unsaved notes');
+    await resolveResponse(pending, jsonResponse({ ...decidedDetail(), status: 'CONFIRMED', revision: 8 }));
+    expect(field('Status')).toHaveTextContent('Confirmed');
+    expect(screen.getByTestId('planning-context')).toHaveTextContent('a: CONFIRMED');
+    expect(screen.getByLabelText('Planning notes')).toHaveValue('Keep these unsaved notes');
+    expect(fetchMock.mock.calls.map(([path]) => path)).toEqual(['/api/events/a', '/api/events/a']);
+  });
+
+  it('keeps the newest saved outcome when two planning refreshes finish out of order', async () => {
+    const older = deferredResponse();
+    const fetchMock = vi.fn().mockResolvedValueOnce(jsonResponse(decidedDetail()))
+      .mockReturnValueOnce(older.promise)
+      .mockResolvedValueOnce(jsonResponse({ ...decidedDetail(), status: 'CANCELLED', revision: 9 }));
+    vi.stubGlobal('fetch', fetchMock);
+    await renderDetail('a', true);
+    await fireEvent.click(await screen.findByRole('button', { name: 'Saved planning change' }));
+    await fireEvent.click(screen.getByRole('button', { name: 'Saved planning change' }));
+    await waitFor(() => expect(field('Status')).toHaveTextContent('Cancelled'));
+    await resolveResponse(older, jsonResponse({ ...decidedDetail(), status: 'CONFIRMED', revision: 8 }));
+    expect(field('Status')).toHaveTextContent('Cancelled');
+    expect(screen.getByTestId('planning-context')).toHaveTextContent('a: CANCELLED');
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+  });
+
+  it('does not let an obsolete failed refresh discard the latest view or unsaved notes', async () => {
+    const older = deferredResponse();
+    const fetchMock = vi.fn().mockResolvedValueOnce(jsonResponse(decidedDetail()))
+      .mockReturnValueOnce(older.promise)
+      .mockResolvedValueOnce(jsonResponse({ ...decidedDetail(), status: 'CONFIRMED', revision: 8 }));
+    vi.stubGlobal('fetch', fetchMock);
+    await renderDetail('a', true);
+    await fireEvent.update(await screen.findByLabelText('Planning notes'), 'Keep latest notes');
+    await fireEvent.click(screen.getByRole('button', { name: 'Saved planning change' }));
+    await fireEvent.click(screen.getByRole('button', { name: 'Saved planning change' }));
+    await waitFor(() => expect(field('Status')).toHaveTextContent('Confirmed'));
+    await resolveResponse(older, jsonResponse({ error: { code: 'REQUEST_FAILED', message: 'Old read failed.' } }, 503));
+    expect(screen.getByLabelText('Planning notes')).toHaveValue('Keep latest notes');
+    expect(field('Status')).toHaveTextContent('Confirmed');
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+  });
+
+  it.each([401, 404])('removes private details when a planning refresh and reconciliation deny access with %s', async (status) => {
+    const denied = () => jsonResponse({ error: { code: status === 401 ? 'AUTHENTICATION_REQUIRED' : 'EVENT_REQUEST_NOT_FOUND', message: 'No longer accessible.' } }, status);
+    const fetchMock = vi.fn().mockResolvedValueOnce(jsonResponse(decidedDetail()))
+      .mockImplementation(() => Promise.resolve(denied()));
+    vi.stubGlobal('fetch', fetchMock);
+    await renderDetail('a', true);
+    await fireEvent.click(await screen.findByRole('button', { name: 'Saved planning change' }));
+    expect(await screen.findByRole('alert')).toHaveTextContent(status === 401 ? 'Sign in to view this event request.' : 'unavailable or you do not have permission');
+    expect(screen.queryByRole('heading', { name: 'Career fair' })).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Planning notes')).not.toBeInTheDocument();
+    if (status === 401) expect(session.user).toBeNull();
+    expect(fetchMock.mock.calls.every(([, init]) => (init as RequestInit).method !== 'POST')).toBe(true);
+  });
+
+  it.each([200, 503])('ignores an old quiet refresh returning %s after moving to another event', async (status) => {
+    const pending = deferredResponse();
+    const fetchMock = vi.fn().mockResolvedValueOnce(jsonResponse(decidedDetail()))
+      .mockReturnValueOnce(pending.promise)
+      .mockResolvedValueOnce(jsonResponse({ ...detail, id: 'b', name: 'Community lunch' }));
+    vi.stubGlobal('fetch', fetchMock);
+    const { router } = await renderDetail('a', true);
+    await fireEvent.click(await screen.findByRole('button', { name: 'Saved planning change' }));
+    const signal = (fetchMock.mock.calls[1]?.[1] as RequestInit).signal;
+    await router.push('/events/b');
+    await screen.findByRole('heading', { name: 'Community lunch' });
+    expect(signal?.aborted).toBe(true);
+    await resolveResponse(pending, status === 200 ? jsonResponse(decidedDetail())
+      : jsonResponse({ error: { code: 'REQUEST_FAILED', message: 'Old read failed.' } }, status));
+    expect(screen.getByTestId('planning-context')).toHaveTextContent('b: SUBMITTED');
+    expect(screen.queryByText('Suitable event.')).not.toBeInTheDocument();
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+  });
+
+  it('does not expose the old account after its quiet refresh completes', async () => {
+    const pending = deferredResponse();
+    const fetchMock = vi.fn().mockResolvedValueOnce(jsonResponse(decidedDetail()))
+      .mockReturnValueOnce(pending.promise)
+      .mockResolvedValueOnce(jsonResponse({ error: { code: 'EVENT_REQUEST_NOT_FOUND', message: 'Unavailable.' } }, 404));
+    vi.stubGlobal('fetch', fetchMock);
+    await renderDetail('a', true);
+    await fireEvent.click(await screen.findByRole('button', { name: 'Saved planning change' }));
+    session.user = organiser('organiser-2');
+    await screen.findByRole('alert');
+    await resolveResponse(pending, jsonResponse(decidedDetail()));
+    expect(screen.queryByRole('heading', { name: 'Career fair' })).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Planning notes')).not.toBeInTheDocument();
+    expect(screen.getByRole('alert')).toHaveTextContent('unavailable or you do not have permission');
   });
 });

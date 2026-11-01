@@ -1,4 +1,5 @@
-import { fireEvent, render, screen } from '@testing-library/vue';
+import { fireEvent, render, screen, waitFor } from '@testing-library/vue';
+import { flushPromises } from '@vue/test-utils';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { authSession, type SignedInUser } from '../../auth/session.js';
 import EventConfirmationPanel from './EventConfirmationPanel.vue';
@@ -28,6 +29,57 @@ const renderPanel = (status = 'APPROVED') => render(EventConfirmationPanel, { pr
 beforeEach(() => { session.user = { ...coordinator }; session.loading = false; });
 
 describe('KAN-61 event confirmation panel', () => {
+  it('keeps the newest checklist when overlapping planning refreshes resolve out of order', async () => {
+    let first!: (value: ReturnType<typeof approved>) => void;
+    let second!: (value: ReturnType<typeof approved>) => void;
+    const api = stubApi({ [READ]: approved() });
+    const panel = render(EventConfirmationPanel, { props: { eventRequestId: 'event-one', status: 'APPROVED', refreshVersion: 0 } });
+    await screen.findByRole('checkbox');
+    api.set(READ, () => new Promise(resolve => { first = resolve; }));
+    await panel.rerender({ eventRequestId: 'event-one', status: 'APPROVED', refreshVersion: 1 });
+    api.set(READ, () => new Promise(resolve => { second = resolve; }));
+    await panel.rerender({ eventRequestId: 'event-one', status: 'APPROVED', refreshVersion: 2 });
+    second(approved({ canConfirm: false, readiness: { ready: false, checks: checks(true) } }));
+    await screen.findByText(/Decide the pending change request/);
+    first(approved());
+    await flushPromises();
+    expect(screen.queryByRole('button', { name: 'Confirm event' })).not.toBeInTheDocument();
+    expect(screen.getByText(/Decide the pending change request/)).toBeInTheDocument();
+  });
+
+  it('discards stale readiness while a planning refresh loads or fails, then permits an explicit retry', async () => {
+    let finish!: (value: ReturnType<typeof apiError>) => void;
+    const api = stubApi({ [READ]: approved() });
+    const panel = render(EventConfirmationPanel, { props: { eventRequestId: 'event-one', status: 'APPROVED', refreshVersion: 0 } });
+    await fireEvent.click(await screen.findByRole('checkbox'));
+    api.set(READ, () => new Promise(resolve => { finish = resolve; }));
+    await panel.rerender({ eventRequestId: 'event-one', status: 'APPROVED', refreshVersion: 1 });
+    expect(await screen.findByText('Loading confirmation details…')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Confirm event' })).not.toBeInTheDocument();
+    finish(apiError(503, 'UNAVAILABLE', 'Readiness is temporarily unavailable.'));
+    expect(await screen.findByRole('alert')).toHaveTextContent('Readiness is temporarily unavailable.');
+    expect(screen.queryByText('Every live venue arrangement is approved.')).not.toBeInTheDocument();
+    api.set(READ, approved());
+    await fireEvent.click(screen.getByRole('button', { name: 'Reload confirmation details' }));
+    expect(await screen.findByRole('button', { name: 'Confirm event' })).toBeDisabled();
+    expect(screen.getByRole('checkbox')).not.toBeChecked();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('ignores an old readiness response after another event is opened', async () => {
+    let finish!: (value: ReturnType<typeof approved>) => void;
+    stubApi({ [READ]: () => new Promise(resolve => { finish = resolve; }),
+      'GET /api/events/event-two/confirmation': approved({ eventRequestId: 'event-two', canConfirm: false,
+        readiness: { ready: false, checks: checks(true) } }) });
+    const panel = renderPanel();
+    await panel.rerender({ eventRequestId: 'event-two', status: 'APPROVED' });
+    await screen.findByText(/Decide the pending change request/);
+    finish(approved());
+    await flushPromises();
+    await waitFor(() => expect(screen.queryByRole('button', { name: 'Confirm event' })).not.toBeInTheDocument());
+    expect(screen.getByText(/Decide the pending change request/)).toBeInTheDocument();
+  });
+
   it('KAN-61-AC3/AC4: shows the checklist, requires acknowledgement, then shows who confirmed and when', async () => {
     const api = stubApi({ [READ]: approved(), [WRITE]: { body: { confirmation: { status: 'CONFIRMED', changed: true, confirmation: null } } } });
     const view = renderPanel();

@@ -1,0 +1,15 @@
+
+> connectsphere@0.1.0 test:e2e
+> playwright test tests/e2e/equipment-release-reason.spec.ts --workers=4 --retries=0
+
+
+Running 2 tests using 2 workers
+
+(node:19040) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:58352) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 2 [chromium] › tests\e2e\equipment-release-reason.spec.ts:60:3 › KAN-63 API-substituted UI separates cancellation and review reasons at 390px (2.3s)
+  ok 1 [chromium] › tests\e2e\equipment-release-reason.spec.ts:60:3 › KAN-63 API-substituted UI separates cancellation and review reasons at 1280px (2.5s)
+
+  2 passed (3.5s)

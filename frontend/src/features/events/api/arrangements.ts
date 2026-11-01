@@ -5,6 +5,8 @@ export interface EquipmentLine {
   id: string; eventRequestId: string; eventName: string | null; equipmentTypeId: string;
   equipmentType: string; quantity: number; startsAt: string; endsAt: string;
   technicalRequirements: string | null; status: string; revision: string; decisionReason: string | null;
+  /** Independent cancellation/release audit reason; never infer it from the previous review. */
+  releaseReason?: string | null;
   eventStatus: string;
   notes?: string | null;
 }

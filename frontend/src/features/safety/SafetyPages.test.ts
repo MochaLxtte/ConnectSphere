@@ -28,10 +28,10 @@ const detail = (overrides: Record<string, unknown> = {}) => ({ body: {
   stale: false, canDecide: true,
   event: { id: 'e1', name: 'Graduation dinner', status: 'CONFIRMED', startsAt: '2035-01-01T10:00:00.000Z', endsAt: '2035-01-01T14:00:00.000Z',
     expectedAttendance: 120, venueRequirements: 'Ballroom', accessibilityNeeds: null, equipmentRequirements: 'Speakers', equipmentPlanStatus: 'REQUIRED' },
-  venues: [{ bookingId: 'b1', name: 'Grand Hall', location: 'L1', capacity: 150, layouts: ['Banquet'], accessibilityFeatures: ['Ramp'],
+  venues: [{ bookingId: 'b1', name: 'Grand Hall', location: 'L1', capacity: 150, layouts: ['Banquet'], facilities: ['First aid kit', 'PA system'], accessibilityFeatures: ['Ramp'],
     wheelchairAccessible: true, bookedLayout: 'Banquet', status: 'APPROVED', needsRecovery: false,
     opensAt: '09:00:00', closesAt: '23:00:00', setupMinutes: 15, turnaroundMinutes: 20 }],
-  equipment: [{ id: 'q1', name: 'Speaker', quantity: 2, status: 'RESERVED' }],
+  equipment: [{ id: 'q1', name: 'Speaker', quantity: 2, status: 'RESERVED', technicalRequirements: 'Secure cables away from exits.' }],
   readiness: { ready: true, checks: [] }, rounds: [{ id: 'r0', round: 1, status: 'CHANGES_REQUESTED', decisionNotes: 'Add exit plan.' }],
   ...overrides } });
 
@@ -74,6 +74,52 @@ describe('KAN-84 Safety Officer queue', () => {
     await open('/safety-reviews');
     expect(await screen.findByText('No safety reviews are waiting for a decision.')).toBeInTheDocument();
   });
+
+  it('KAN-84-AC1: waits for identity restoration and then prompts a signed-out visitor without requesting data', async () => {
+    session.user = null;
+    session.loading = true;
+    const api = stubApi({});
+    await open('/safety-reviews');
+    expect(screen.getByRole('status')).toHaveTextContent('Loading safety reviews');
+    session.loading = false;
+    expect(await screen.findByText(/Sign in to view safety reviews/)).toBeInTheDocument();
+    expect(api.calls).toEqual([]);
+  });
+
+  it('KAN-84-AC1/AC12: a failed queue read offers a retry and uses the refreshed result', async () => {
+    const api = stubApi({ 'GET /api/safety-reviews': apiError(503, 'UNAVAILABLE', 'Try again shortly.') });
+    await open('/safety-reviews');
+    expect(await screen.findByRole('alert')).toHaveTextContent('Try again shortly.');
+    api.set('GET /api/safety-reviews', { body: { items: [{ id: reviewId, round: 1, eventId: 'e1', eventName: null,
+      startsAt: '2035-01-01T02:00:00Z', submittedAt: '2034-12-01T02:00:00Z', stale: false }] } });
+    await fireEvent.click(screen.getByRole('button', { name: 'Refresh' }));
+    expect(await screen.findByRole('link', { name: /Untitled event/ })).toBeInTheDocument();
+    expect(screen.getByText(/event starts/)).toHaveTextContent('Singapore time');
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('KAN-84-AC1: an expired session clears the identity and shows the sign-in prompt', async () => {
+    stubApi({ 'GET /api/safety-reviews': apiError(401, 'AUTHENTICATION_REQUIRED', 'Session expired.') });
+    await open('/safety-reviews');
+    expect(await screen.findByText(/Sign in to view safety reviews/)).toBeInTheDocument();
+    expect(session.user).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Refresh' })).not.toBeInTheDocument();
+  });
+
+  it.each(['signout', 'role'] as const)('KAN-84-AC12: a pending queue cannot conceal a %s refusal or restore private results', async change => {
+    const pending = deferredReply();
+    stubApi({ 'GET /api/safety-reviews': () => pending.promise });
+    await open('/safety-reviews');
+    expect(screen.getByRole('status')).toHaveTextContent('Loading safety reviews');
+    session.user = change === 'signout' ? null : { ...officer, role: 'ATTENDEE' };
+    await flushPromises();
+    if (change === 'signout') expect(screen.getByText(/Sign in to view safety reviews/)).toBeInTheDocument();
+    else expect(screen.getByRole('alert')).toHaveTextContent('Only a Safety Officer');
+    pending.resolve({ body: { items: [{ id: reviewId, round: 1, eventName: 'Private old review', stale: false }] } });
+    await flushPromises();
+    expect(screen.queryByText(/Private old review/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Loading safety reviews/)).not.toBeInTheDocument();
+  });
 });
 
 describe('KAN-84 Safety Officer review decision', () => {
@@ -97,9 +143,24 @@ describe('KAN-84 Safety Officer review decision', () => {
     expect(screen.getByText('Grand Hall').closest('li')).toHaveTextContent('23:00:00');
     expect(screen.getByText('Grand Hall').closest('li')).toHaveTextContent('Setup buffer: 15 minutes');
     expect(screen.getByText('Grand Hall').closest('li')).toHaveTextContent('Turnaround buffer: 20 minutes');
+    expect(screen.getByText('Grand Hall').closest('li')).toHaveTextContent('Facilities: First aid kit, PA system');
     expect(screen.getByText('2 × Speaker · RESERVED')).toBeInTheDocument();
+    expect(screen.getByText('Technical requirements: Secure cables away from exits.')).toBeInTheDocument();
     expect(screen.getByText(/Advisory venue suitability is not a safety approval/)).toBeInTheDocument();
     expect(screen.getByText(/Round 1 · Changes requested · Add exit plan./)).toBeInTheDocument();
+  });
+
+  it.each(['empty', 'omitted'])('KAN-84-AC3: reports %s facilities and equipment requirements without inventing safety context', async variant => {
+    const base = detail().body;
+    const api = stubApi({ [READ]: detail({
+      venues: [{ ...base.venues[0], facilities: variant === 'empty' ? [] : undefined }],
+      equipment: [{ ...base.equipment[0], technicalRequirements: variant === 'empty' ? null : undefined }],
+    }) });
+    await open(`/safety-reviews/${reviewId}`);
+    expect(await screen.findByText('Facilities: None recorded')).toBeInTheDocument();
+    expect(screen.getByText('Technical requirements: Not recorded')).toBeInTheDocument();
+    expect(screen.queryByText('Technical requirements: Secure cables away from exits.')).not.toBeInTheDocument();
+    expect(api.writes()).toHaveLength(0);
   });
 
   it('KAN-84-AC6/AC10: request changes needs notes and an area, and sends the reviewed fingerprint', async () => {

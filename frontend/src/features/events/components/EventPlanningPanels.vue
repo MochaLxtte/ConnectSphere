@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import AssignmentPanel from './AssignmentPanel.vue';
 import ChangeRequestPanel from './ChangeRequestPanel.vue';
 import ClarificationPanel from './ClarificationPanel.vue';
@@ -24,6 +24,14 @@ const props = defineProps<{
   endsAt?: string | null;
 }>();
 const emit = defineEmits<{ changed: [] }>();
+const planningRefreshVersion = ref(0);
+
+function arrangementsChanged() {
+  // Arrangement writes do not necessarily advance the event revision. Refresh only
+  // their dependent summaries, keeping unrelated planning forms mounted.
+  planningRefreshVersion.value += 1;
+  emit('changed');
+}
 
 const shared = computed(() => ({
   eventRequestId: props.eventRequestId, status: props.status,
@@ -36,15 +44,15 @@ const shared = computed(() => ({
     <AssignmentPanel v-bind="shared" :current-coordinator-id="currentCoordinatorId" @changed="emit('changed')" />
     <ClarificationPanel v-bind="shared" :revision="revision" @changed="emit('changed')" />
     <!-- KAN-15: significant changes once approved; history stays visible after cancellation or completion. -->
-    <ChangeRequestPanel v-if="['APPROVED', 'CONFIRMED', 'CANCELLED', 'COMPLETED'].includes(status)" v-bind="shared" :revision="revision" @changed="emit('changed')" />
+    <ChangeRequestPanel v-if="['APPROVED', 'CONFIRMED', 'CANCELLED', 'COMPLETED'].includes(status)" v-bind="shared" :revision="revision" @changed="arrangementsChanged" />
     <!-- O-1 (28 October): an approved change request cancels pending bookings and advances the revision, so
          reload the booking list when the revision moves, as the equipment panel does. -->
-    <VenueBookingPanel v-if="viewerRole === 'EVENT_COORDINATOR'" :key="`venue-${revision ?? 0}`" v-bind="shared" @changed="emit('changed')" />
-    <EquipmentRequestPanel v-if="viewerRole === 'EVENT_COORDINATOR'" v-bind="shared" :revision="revision" @changed="emit('changed')" />
+    <VenueBookingPanel v-if="viewerRole === 'EVENT_COORDINATOR'" :key="`venue-${revision ?? 0}`" v-bind="shared" @changed="arrangementsChanged" @refresh="arrangementsChanged" />
+    <EquipmentRequestPanel v-if="viewerRole === 'EVENT_COORDINATOR'" v-bind="shared" :revision="revision" @changed="arrangementsChanged" @refresh="arrangementsChanged" />
     <!-- KAN-61: readiness checklist for the coordinator; the organiser sees the confirmation outcome. -->
-    <EventConfirmationPanel :event-request-id="eventRequestId" :status="status" :revision="revision" @changed="emit('changed')" />
+    <EventConfirmationPanel :event-request-id="eventRequestId" :status="status" :revision="revision" :refresh-version="planningRefreshVersion" @changed="emit('changed')" />
     <!-- KAN-84: safety review rounds and the preparation gate; the organiser sees the outcome only. -->
-    <SafetyReviewPanel :event-request-id="eventRequestId" :status="status" :revision="revision" @changed="emit('changed')" />
+    <SafetyReviewPanel :event-request-id="eventRequestId" :status="status" :revision="revision" :refresh-version="planningRefreshVersion" @changed="emit('changed')" />
     <StatusHistoryPanel :event-request-id="eventRequestId" :status="status" />
     <EventCompletionPanel :event-request-id="eventRequestId" :status="status" :ends-at="endsAt ?? null" :revision="revision" @changed="emit('changed')" />
     <EventCancellationPanel :event-request-id="eventRequestId" :status="status" :revision="revision" @changed="emit('changed')" />

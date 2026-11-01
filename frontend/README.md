@@ -1,5 +1,11 @@
 # ConnectSphere frontend
 
+**1 November 2026 test hardening:** coverage now includes all executable source under `src/`, including authentication, routing and shared components. Only test code, test setup and type declarations are excluded. Regression floors and selected 100% authentication/navigation gates are documented in the [testing guide](../docs/testing/README.md#coverage-gates-and-remaining-exceptions--1-november-2026).
+
+Session restoration ignores obsolete responses. Login/logout cookie writes are ordered within a tab; a superseded sign-in rejects instead of navigating as a success, and any already-sent obsolete login is cleaned up before later writes. Cleanup failures remain failures. This is not cross-tab synchronization or immediate revocation of captured tokens. The safety queue now leaves its loading state when access is lost during a pending read. Controlled regression tests pass; connected authentication smoke and shared migration/retests remain separate in [test evidence](../docs/testing/test-evidence.md#auto-20261101-test-hardening--coverage-browser-isolation-and-documentation).
+
+`npm run test:e2e` starts an isolated built frontend on 4173 and API on 4311, with two workers and no retries; it requires an explicit loopback `TEST_DATABASE_URL` ending in `_test`. It never reuses the developer app. Most browser scenarios use API/auth fixtures and establish frontend integration, while the manual release walkthrough uses the complete real-authentication application.
+
 **29 October 2026 registration update:** `/registrations` lets an authenticated attendee view their own saved registrations and confirm a withdrawal. `/events/:id/registrations` provides the current organiser/coordinator roster. The views clear data on identity or route changes and defer all authorization and eligibility decisions to the API. KAN-14 still owns event discovery and registration creation.
 
 Vue 3, TypeScript, Vue Router, and Vite. Run commands from the repository root after following the root README setup.
@@ -205,3 +211,35 @@ The server uses the selected arrangement's own period and layout, checks current
 For KAN-80, the organiser's significant-change submission already produces the coordinator's **Change request to review** action prompt and the organiser's submission acknowledgement. The coordinator notification links to `/reviews/:id?change=<changeId>`; the organiser link uses `/events/:id?change=<changeId>`. Notification visibility and destination access are rechecked against current ownership/assignment. This uses the existing submission workflow; no separate coordinator-to-organiser request-for-action transition is introduced.
 
 Connected manual acceptance for these focused changes is **Not executed**. Use TC-12-20, TC-06-445 and TC-20-431 in the [30 October local E2E acceptance section](../docs/testing/README.md#30-october-2026--focused-local-e2e-acceptance-for-kan-80-kan-82-and-kan-84). Automated component and API-fixture browser results do not establish these real-authentication/database journeys.
+
+## Date/time entry and review shortcuts — 31 October 2026
+
+Use native segmented `datetime-local` inputs with `max="9999-12-31T23:59"`, matching `EventRequestForm.vue`. This bounds the year to four digits and lets Chromium advance into the time segment after typing a complete year. The policy also covers venue search, bookings, operational blocks, hold deadlines and dynamic event edit/change fields. Date-only calendar entry uses `max="9999-12-31"`; venue opening/closing times already use native `time` controls. Keep existing validation and Singapore-time conversion; no custom key interception is needed. Native segment order/rendering follows the browser and locale.
+
+The equipment what-if checker uses `step="0.001"` and `max="9999-12-31T23:59:59.999"`. Native pickers show milliseconds, while the raw source retains all six fractional digits until that specific field is edited. The page shows an exact retained value when it differs from the picker. Editing one time never rounds the untouched other time. The backend's microsecond precision and positive-interval rules are unchanged.
+
+Coordinator review shortcuts use a labelled navigation list with consistent underlines, focus-visible links, two desktop columns and one mobile column. Existing destinations and permission conditions remain intact. Browser regressions in `venue-search.spec.ts`, `equipment-availability.spec.ts` and `review-decision.spec.ts`, plus the equipment component tests, are recorded in [AUTO-20261031-MINOR-UI](../docs/testing/test-evidence.md#auto-20261031-minor-ui--date-entry-consistency-and-review-links). Full local manual E2E acceptance remains separate.
+
+## Shared panel spacing and link affordances — 31 October 2026
+
+`src/app/styles.css` gives `.panel` a 24px inset, reduced to 20px below 600px, with `min-width: 0` and safe wrapping. Page-specific padding overrides this default rather than adding to it. Keep headings, feedback and retry controls inside an inset surface; use a nested container only when a deliberately edge-to-edge component needs different spacing.
+
+Plain anchors and router links are underlined by default, with a 3px underline offset and visible keyboard focus. Button, navigation, branding and whole-card/row links retain their existing recognizable control styles. Do not globally remove anchor underlines: a plain action such as **Show all venue booking requests** needs a visible link affordance. The shared `.sr-only` utility visually hides accessible labels/headings without removing them from the accessibility tree; avoid duplicating it per page.
+
+`tests/e2e/review-access.spec.ts` covers queue populated/empty/error/loading insets on desktop/mobile. `tests/e2e/venue-bookings.spec.ts` checks underlines, focus, keyboard activation and clearing the event filter. [AUTO-20261031-UI-SPACING](../docs/testing/test-evidence.md#auto-20261031-ui-spacing--shared-panel-insets-and-visible-text-links) retains broader source/layout observations and screenshots; these UI integration checks substitute APIs and do not replace connected manual E2E acceptance.
+
+## Venue replacement guidance and feedback — 1 November 2026
+
+`VenueBookingPanel.vue` treats **Request replacement** as form preparation: it selects the cancelled source, focuses and scrolls to **Request a replacement venue**, and identifies the original venue/period with next-step guidance. It does not submit a request. Changing event/account context invalidates delayed focus and responses.
+
+Submission feedback appears immediately below **Request this venue**, with focus and scrolling after rendering so long booking histories cannot hide conflicts or success. Entered fields and the source link survive a rejected submission. An uncertain save offers **Review current bookings** beside the message and blocks another write until reconciliation. Cancellation feedback remains in its existing panel location. Keep these messages distinct from creating/reserving a venue; saved arrangement suitability uses that arrangement's own interval.
+
+Component checks and desktop/mobile browser regressions in `tests/e2e/venue-booking-submission.spec.ts` are recorded in [AUTO-20261101-BOOKING-FEEDBACK](../docs/testing/test-evidence.md#auto-20261101-booking-feedback--replacement-guidance-and-local-submission-feedback). Browser APIs are substituted; connected manual smoke TC-12-23 remains Not executed.
+
+## 1 November 2026 — release regression UI corrections
+
+`EventPlanningPanels.vue` refreshes the confirmation and safety summaries after venue, equipment and significant-change mutations, manual booking/equipment reloads and uncertain/conflicting outcomes. Summary components clear stale eligibility while loading or after failure and offer explicit retry. Successful equipment writes invalidate siblings before waiting for the equipment readback. Venue access loss also clears sibling eligibility, while initial child reads stay silent to avoid refresh loops. Same-event safety-note drafts survive refresh; aborted responses cannot unlock actions or publish another context's result.
+
+`EquipmentRequestPanel.vue` renders cancelled lines with **Release reason** and, when present, **Previous review reason**. It does not relabel the historical rejection reason as cancellation. `SafetyReviewPage.vue` displays venue facilities and equipment technical requirements, with explicit empty-state text and wrapping for long notes.
+
+The accompanying API requires migration 023 before connected safety tests. Focused component and browser regressions are recorded under `AUTO-20261101-RELEASE-REGRESSIONS`; browser fixtures substitute API/authentication and do not establish connected acceptance.

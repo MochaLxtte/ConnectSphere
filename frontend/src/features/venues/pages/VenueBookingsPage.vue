@@ -71,7 +71,7 @@ onBeforeUnmount(() => controller?.abort());
       <div>
         <h2 id="bookings-title">{{ staff ? 'Pending requests and affected bookings' : 'Bookings for your assigned events' }}</h2>
         <p>All dates and times are in Singapore time.</p>
-        <RouterLink v-if="eventRequestId" to="/venue-bookings">Show all venue booking requests</RouterLink>
+        <RouterLink v-if="eventRequestId" to="/venue-bookings" class="bookings-all-link">Show all venue booking requests</RouterLink>
       </div>
       <button type="button" class="button button-secondary" :disabled="state.status === 'loading'" @click="load">Refresh</button>
     </header>
@@ -108,6 +108,7 @@ onBeforeUnmount(() => controller?.abort());
 .bookings-header h2 { font-size: 18px; }
 .bookings-header p, .booking-summary p, .bookings-empty p { font-size: 13px; line-height: 1.6; color: #59685e; margin-top: 6px; }
 .bookings-panel a { color: var(--green); text-underline-offset: 3px; }
+.bookings-all-link { display: inline-block; margin-top: 12px; font-size: 14px; line-height: 1.6; }
 .bookings-panel .button { flex-shrink: 0; }
 .bookings-panel > .button, [role='alert'] .button { margin-top: 12px; }
 .booking-list { list-style: none; padding: 0; display: grid; gap: 12px; }

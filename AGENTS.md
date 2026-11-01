@@ -321,7 +321,7 @@ rows. Use the detailed cases linked from traceability for execution and acceptan
 | `test_case_id` | `TC-10-03` (feature number, case number) |
 | `feature_id` | `CF-10` |
 | `scenario_outline` | Coordinator searches with an end date before the start date |
-| `planned_level` | integration (existing mixed labels are retained until their test boundaries are assessed) |
+| `planned_level` | integration (unit / integration / e2e describe boundaries; manual is a method) |
 | `acceptance_criterion_ids` | `KAN-12-AC14` |
 | `preconditions` | Signed in as coordinator; test venue exists |
 | `test_steps` | 1. Open /venues/search 2. Enter the dates in test_data 3. Search |
@@ -418,7 +418,9 @@ the actual automated test files through traceability.
   the component · Database integration: `database/tests/**/*.integration.test.ts` · Browser/E2E:
   `tests/e2e/*.spec.ts`.
 - `npm run check` (types + unit tests + builds) · `npm run test:coverage` ·
-  `npm run test:integration` (needs a test database) · `npm run test:e2e`.
+  `npm run test:integration` (needs a test database) · `npm run test:coverage:backend`
+  (combined backend + PostgreSQL coverage) · `npm run test:e2e` (explicit loopback `*_test` database;
+  owned ports 4173/4311, two workers, zero retries).
 - Validate input at the API boundary and enforce authorization on the server. Use transactions
   where related records change together.
 - If 100% coverage of new code is not possible, explain why in the PR and in `test-evidence.md`.

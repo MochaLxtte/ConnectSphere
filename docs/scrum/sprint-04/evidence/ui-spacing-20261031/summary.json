@@ -1,0 +1,53 @@
+{
+  "run_id": "AUTO-20261031-UI-SPACING",
+  "date": "2026-10-31",
+  "branch": "fix/minor-ui-fixes",
+  "base_commit": "8d48fda6a67fc429099c0db010bdbb3fd29c09ee",
+  "source_hash_method": "SHA256 after CRLF-to-LF normalization; product and committed regression sources unchanged after tests. Temporary audit fixture is retained separately and restored before commit.",
+  "source_sha256": {
+    "frontend/src/app/styles.css": "2c427fb49860745649c12feba4010e88e8455306906648bda4e972006a680042",
+    "frontend/src/features/reviews/pages/ReviewQueuePage.vue": "5d6bd726c8d1441cd4ec4c66c7792e63fc205a12da5debe3562647d2af45515a",
+    "frontend/src/features/reviews/pages/ReviewRequestPage.vue": "11c57daa764a51017ecf792928b8cffc06e40b942626d2b6f711e96af46b314d",
+    "frontend/src/features/reviews/pages/UnassignedRequestsPage.vue": "61d29a0d9de7f6afb066b161e1890e5a09edbb2633e9a97c13b9687e4b659006",
+    "frontend/src/features/venues/pages/VenueBookingsPage.vue": "ca808f65ea78ceaa26602167ab19258a508bbbd32f2217f64a8687a30734005f",
+    "tests/e2e/review-access.spec.ts": "fc9bc5a78fbe777a84e2c154828e64283b8a88760117ab30ef86d150f438d779",
+    "tests/e2e/venue-bookings.spec.ts": "11fdf589230e387634ee057c1a71c774a6d5882d760b07a1cc372d93c73c7e25"
+  },
+  "temporary_audit_fixture_sha256": "666d08fe37e79c9fa734849cbfdff1b577bd72a84dfe6350e9ef1ce2b5955d2e",
+  "environment": "Windows; Node 24.21.0; Vitest 4.1.11; Playwright Chromium; synthetic authentication/API responses for named UI cases; no shared database mutation.",
+  "results": {
+    "pre_fix_reproductions": "2 failed as expected",
+    "focused_browser": "10 passed",
+    "check": "Typechecks, 1209 frontend tests, 1959 backend tests and builds passed",
+    "coverage": {
+      "frontend": {
+        "statements": 95.68,
+        "branches": 92.38,
+        "functions": 97.56,
+        "lines": 98.28
+      },
+      "backend": {
+        "statements": 89.75,
+        "branches": 89.42,
+        "functions": 89.25,
+        "lines": 89.88
+      }
+    },
+    "full_browser": "244 passed; no retries",
+    "layout_audit": {
+      "snapshots": 229,
+      "route_patterns": 28,
+      "issues": 0
+    },
+    "manual_smoke": "Not executed",
+    "acceptance": "Not assessed"
+  },
+  "limits": [
+    "CSS geometry and decoration are verified by browser assertions/observations, not JS line coverage.",
+    "Database integration not rerun: no API, schema or persistence logic changed.",
+    "Post-test snapshots do not cover every transient state, browser or real account.",
+    "Optional remote fonts are disabled by the existing browser fixtures; production font rendering can differ.",
+    "Log ANSI formatting and trailing whitespace normalized; outcomes preserved.",
+    "No shared Supabase writes or cleanup performed."
+  ]
+}

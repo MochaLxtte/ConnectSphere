@@ -1,0 +1,55 @@
+{
+  "run_id": "MAN-20261101-02",
+  "date": "2026-11-01",
+  "timezone": "Asia/Singapore",
+  "candidate": "034a631bdb05309d4ba0ef4ed1ff9ba032d9df50",
+  "observations": [
+    {
+      "check": "OPS-7 baseline",
+      "observation": "Safety review\n\nSafety approved\n\nPreparation started by Event Coordinator 01/11/2026, 5:29:44 pm (Singapore time)\n\nReview rounds\n\nRound 3 · Safety approved · submitted 01/11/2026, 5:28:24 pm\n\nDecided by Safety Officer, 01/11/2026, 5:29:42 pm\n\nRound 2 · Rejected · submitted 01/11/2026, 5:27:16 pm\n\nDecided by Safety Officer, 01/11/2026, 5:27:32 pm\n\nVenue setup buffer changed after submission; resubmit current arrangements.\n\nRound 1 · Safety approved · submitted 01/11/2026, 5:25:47 pm\n\nDecided by Safety Officer, 01/11/2026, 5:25:53 pm"
+    },
+    {
+      "check": "OPS-7 venue baseline",
+      "observation": "FOR VENUE STAFF\n\nClassroom\n\nUpdate the information coordinators use to search for and assess this venue.\n\nSynthetic KAN-81 run-sheet venue. Do not use for other tests.\n\nLocation\nMaximum capacity\nFacilities\n\nOne facility per line, for example Projector.\n\nAccessibility features\n\nOne feature per line, for example Step-free entrance.\n\nWheelchair accessible\nSupported room layouts\n\nOne layout per line. A venue can support more than one.\n\nOperating hours (Singapore time)\nOpens\nCloses\n\nLeave a time blank for no restriction at that end of the day.\n\nSetup and turnaround time\nSetup before each booking (minutes)\nTurnaround after each booking (minutes)\n\nUse 0 for none. At most 1440 minutes (24 hours) each.\n\nSave changes\nDiscard changes\nBack to the catalogue\n\nThere are no changes to save."
+    },
+    {
+      "check": "OPS-7 buffer20",
+      "observation": "Safety review\n\nApproval out of date\n\nThe arrangements changed after safety approval. They need a new safety review before preparation.\n\nPreparation blocked until the event is confirmed, its arrangements are ready and its safety approval is current.\n\nSafety information for the Safety Officer\nEmergency access\nEquipment placement\nCrowd movement\n\nMissing information will be shown to the Safety Officer as missing: Emergency access, Equipment placement, Crowd movement.\n\nSubmit for safety review\nReview rounds\n\nRound 3 · Safety approved · submitted 01/11/2026, 5:28:24 pm\n\nDecided by Safety Officer, 01/11/2026, 5:29:42 pm\n\nRound 2 · Rejected · submitted 01/11/2026, 5:27:16 pm\n\nDecided by Safety Officer, 01/11/2026, 5:27:32 pm\n\nVenue setup buffer changed after submission; resubmit current arrangements.\n\nRound 1 · Safety approved · submitted 01/11/2026, 5:25:47 pm\n\nDecided by Safety Officer, 01/11/2026, 5:25:53 pm"
+    },
+    {
+      "check": "OPS-7 restore15 no new decision",
+      "observation": "Safety review\n\nSafety approved\n\nPreparation started by Event Coordinator 01/11/2026, 5:29:44 pm (Singapore time)\n\nReview rounds\n\nRound 3 · Safety approved · submitted 01/11/2026, 5:28:24 pm\n\nDecided by Safety Officer, 01/11/2026, 5:29:42 pm\n\nRound 2 · Rejected · submitted 01/11/2026, 5:27:16 pm\n\nDecided by Safety Officer, 01/11/2026, 5:27:32 pm\n\nVenue setup buffer changed after submission; resubmit current arrangements.\n\nRound 1 · Safety approved · submitted 01/11/2026, 5:25:47 pm\n\nDecided by Safety Officer, 01/11/2026, 5:25:53 pm"
+    },
+    {
+      "check": "OBS-6 persisted cancelled reason",
+      "observation": "Equipment arrangements\nReload equipment\n\nNo equipment is required for this event.\n\nWireless microphone — 1 · 16/11/2026, 10:00:00 am to 16/11/2026, 12:00:00 pm · R13 rejection test — CANCELLED: R13 rejection test\nWireless microphone — 2 · 16/11/2026, 10:00:00 am to 16/11/2026, 12:00:00 pm · R13 updated requirement two units — CANCELLED\nWireless microphone — 1 · 16/11/2026, 10:00:00 am to 16/11/2026, 12:00:00 pm · R13 stale requirement probe one unit — CANCELLED\nRequest equipment\nNo equipment is required\nSave equipment request"
+    },
+    {
+      "check": "D1 ready baseline",
+      "observation": "Event confirmation\n\nConfirming tells the organiser the event can proceed. It is separate from the initial approval.\n\nReady\nVenue arrangements: Every live venue arrangement is approved.\nReady\nEquipment: Equipment is recorded as Not Required.\nReady\nChange requests: No significant change is pending.\nI have checked the arrangements and want to confirm this event.\nConfirm event"
+    },
+    {
+      "check": "D1 pending booking but stale ready",
+      "venue": "VENUE\n\nVenue booking requests\n\nRequest a venue for this event. Venue Staff review and decide on each request separately.\n\nRefresh booking requests\nOrchid Seminar Room\nApproved\n\n16 Nov 2026, 10:00 am to 16 Nov 2026, 11:00 am\n\nLayout: CLASSROOM\n\nNotes: MAN-20261101-02 confirmation-readiness baseline; synthetic PROBE event.\n\nOccupied (including setup/turnaround): 16 Nov 2026, 10:00 am to 16 Nov 2026, 11:00 am\n\nDecision note: MAN-20261101-02 readiness baseline approved.\n\nCheck suitability\nCancel arrangement\nClassroom\nPending\n\n16 Nov 2026, 11:00 am to 16 Nov 2026, 12:00 pm\n\nLayout: CLASSROOM\n\nNotes: MAN-20261101-02 stale readiness probe; leave pending until tested.\n\nOccupied (including setup/turnaround): 16 Nov 2026, 10:45 am to 16 Nov 2026, 12:15 pm\n\nCheck suitability\nCancel arrangement\nRequest a venue\n\nChoose a venue and booking period in Singapore time, then select Request this venue.\n\nSubmitting leaves the request pending and does not reserve the venue. Check the saved arrangement's suitability using its own booking period.\n\nRefresh venue catalogue\nVenue\nChoose a venue\nClassroom\nHarbour Hall\nKAN81 Venue A\nKAN81 Venue B\nKAN81 Venue S\nOrchid Seminar Room\nRooftop Terrace\nStarts (Singapore time)\nEnds (Singapore time)\nRoom layout (optional)\nNotes for Venue Staff (optional)\nRequest this venue\n\nA venue booking request for Classroom was submitted for review.",
+      "confirmation": "Event confirmation\n\nConfirming tells the organiser the event can proceed. It is separate from the initial approval.\n\nReady\nVenue arrangements: Every live venue arrangement is approved.\nReady\nEquipment: Equipment is recorded as Not Required.\nReady\nChange requests: No significant change is pending.\nI have checked the arrangements and want to confirm this event.\nConfirm event"
+    },
+    {
+      "check": "D1 confirm stale request result",
+      "confirmation": "Event confirmation\n\nResolve 1 venue arrangement awaiting approval before confirming.\n\nConfirming tells the organiser the event can proceed. It is separate from the initial approval.\n\nNot ready\nVenue arrangements: Resolve 1 venue arrangement awaiting approval before confirming.\nReady\nEquipment: Equipment is recorded as Not Required.\nReady\nChange requests: No significant change is pending.",
+      "event": "REL-20261101-AGENT-PROBE\n\nAll dates and times are in Singapore time.\n\nStatus\nAPPROVED\nPurpose\nRelease equipment boundary and cancellation acceptance\nDescription\nIsolated R13 browser acceptance fixture\nProposed start\n16 Nov 2026, 10:00 am\nProposed end\n16 Nov 2026, 12:00 pm\nExpected attendance\n2\nVenue requirements\nNo venue arranged yet; equipment independence check\nAccessibility needs\nNot provided\nEquipment requirements\nWireless microphone probe\nRegistration required\nNo\nEdit name or description\nCheck venue suitability\nView registrations\nCheck venue availability for this week\nView venue booking requests and decisions"
+    },
+    {
+      "check": "OBS-12 pending baseline",
+      "observation": "Safety review\n\nRound 1 was sent to the Safety Officer.\n\nAwaiting Safety Officer\n\nReview rounds\n\nRound 1 · Awaiting Safety Officer · submitted 01/11/2026, 6:44:12 pm"
+    },
+    {
+      "check": "OBS-12 other-session decision and untouched coordinator",
+      "officer": "Back to safety reviews\nREL-20261101-AGENT-PROBE\n\nDecision saved: Safety approved.\n\nRound 1 · Safety approved · submitted by Event Coordinator 01/11/2026, 6:44:12 pm (Singapore time)\n\nAdvisory venue suitability is not a safety approval and is not shown here as one.\n\nEvent\nExpected attendance\n2\nTime\n16/11/2026, 10:00:00 am – 16/11/2026, 12:00:00 pm\nVenue requirements\nNo venue arranged yet; equipment independence check\nAccessibility needs\nNot recorded\nEquipment requirements\nNot required\nSafety information\nEmergency access\nMAN-20261101-02 synthetic review: keep both classroom exits clear.\nEquipment placement\nNo equipment required.\nCrowd movement\nTwo test attendees move between rooms using clear aisles.\nVenues\nClassroom · capacity 30 · APPROVED\n\nBooked layout: CLASSROOM · Available layouts: CLASSROOM\n\nAccessibility: None recorded\n\nOperating hours (Singapore time): 08:00:00 – 20:00:00.\n\nSetup buffer: 15 minutes · Turnaround buffer: 15 minutes.\n\nOrchid Seminar Room · capacity 40 · APPROVED\n\nBooked layout: CLASSROOM · Available layouts: CLASSROOM, BOARDROOM, U_SHAPE\n\nAccessibility: STEP_FREE_ACCESS · wheelchair accessible\n\nOperating hours (Singapore time): 08:00:00 – 20:00:00.\n\nSetup buffer: 0 minutes · Turnaround buffer: 0 minutes.\n\nEquipment\n\nNo active equipment lines.\n\nDecided by Safety Officer 01/11/2026, 6:44:51 pm. MAN-20261101-02 synthetic approval for navigation refresh verification.",
+      "coordinator": "Safety review\n\nRound 1 was sent to the Safety Officer.\n\nAwaiting Safety Officer\n\nReview rounds\n\nRound 1 · Awaiting Safety Officer · submitted 01/11/2026, 6:44:12 pm"
+    },
+    {
+      "check": "OBS-12 actual queue link return no reload",
+      "observation": "Safety review\n\nSafety approved\n\nConfirm the event before starting preparation.\n\nReview rounds\n\nRound 1 · Safety approved · submitted 01/11/2026, 6:44:12 pm\n\nDecided by Safety Officer, 01/11/2026, 6:44:51 pm\n\nMAN-20261101-02 synthetic approval for navigation refresh verification."
+    }
+  ]
+}

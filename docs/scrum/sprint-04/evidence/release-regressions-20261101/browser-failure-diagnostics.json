@@ -1,0 +1,308 @@
+{
+  "recordedAt": "2026-11-01T19:22:47.396121+08:00",
+  "scope": "Sanitized metadata extracted from three retained Playwright trace ZIPs after the initial full browser run. No headers, bodies, tokens, cookies or DOM snapshots retained.",
+  "assessment": "Concurrent browser/host contention is plausible given unrelated navigation/action stalls and very long browser teardown, but metadata does not establish the root cause. Retry the three complete spec files with one worker; preserve the original failed run. No unrelated application changes justified by these traces alone.",
+  "failures": [
+    {
+      "traceDirectory": "coordinator-reassignment-K-2e360-get-that-became-unavailable-chromium",
+      "sourceTraceSha256": "172e468b6f0b49da01afddbe4ed3da61494c116544ee4eb9521d732c2559d0bf",
+      "zipEntries": 11,
+      "errors": [
+        {
+          "callId": "pw:api@32",
+          "method": "pw:api",
+          "startTime": 38709.465,
+          "endTime": 73927.03,
+          "durationMs": 35217.565,
+          "error": "Error: page.goto: net::ERR_ABORTED; maybe frame was detached?\nCall log:\n  - navigating to \"http://127.0.0.1:5173/lead/oversight/10000000-0000-4000-8000-000000000065\", waiting until \"load\"\n"
+        }
+      ],
+      "longestActions": [
+        {
+          "callId": "hook@71",
+          "method": "hook",
+          "startTime": 74012.168,
+          "endTime": 178567.078,
+          "durationMs": 104554.91
+        },
+        {
+          "callId": "fixture@76",
+          "method": "fixture",
+          "startTime": 74020.733,
+          "endTime": 178555.913,
+          "durationMs": 104535.18
+        },
+        {
+          "callId": "pw:api@32",
+          "method": "pw:api",
+          "startTime": 38709.465,
+          "endTime": 73927.03,
+          "durationMs": 35217.565,
+          "error": "Error: page.goto: net::ERR_ABORTED; maybe frame was detached?\nCall log:\n  - navigating to \"http://127.0.0.1:5173/lead/oversight/10000000-0000-4000-8000-000000000065\", waiting until \"load\"\n"
+        },
+        {
+          "callId": "hook@33",
+          "method": "hook",
+          "startTime": 68284.605,
+          "endTime": 74011.889,
+          "durationMs": 5727.284
+        },
+        {
+          "callId": "fixture@36",
+          "method": "fixture",
+          "startTime": 68296.25,
+          "endTime": 73936.854,
+          "durationMs": 5640.604
+        }
+      ],
+      "networkCount": 0,
+      "networkStatusCounts": {},
+      "slowestCompletedRequests": [],
+      "observation": "Initial navigation never reached a recorded completed network response; goto ended ERR_ABORTED at test teardown. No assignment UI/action was exercised. Browser fixture teardown then took about 104 seconds."
+    },
+    {
+      "traceDirectory": "kan66-planning-edits-KAN-6-2626e-ption-for-an-approved-event-chromium",
+      "sourceTraceSha256": "7a59b34b077cbad4258272f4392993b8281ed054125de05e2a16c3803e21d3d5",
+      "zipEntries": 21,
+      "errors": [
+        {
+          "callId": "pw:api@197",
+          "method": "pw:api",
+          "startTime": 182871.909,
+          "endTime": 212006.792,
+          "durationMs": 29134.883,
+          "error": "Error: locator.click: Test timeout of 30000ms exceeded.\nCall log:\n  - waiting for getByRole('link', { name: 'Edit name or description' })\n    - locator resolved to <a class=\"\" data-v-a0b5c955=\"\" href=\"/events/30000000-0000-4000-8000-000000000066/details\">Edit name or description</a>\n  - attempting click action\n    - waiting for element to be visible, enabled and stable\n"
+        }
+      ],
+      "longestActions": [
+        {
+          "callId": "hook@246",
+          "method": "hook",
+          "startTime": 212080.253,
+          "endTime": 434097.831,
+          "durationMs": 222017.578
+        },
+        {
+          "callId": "fixture@251",
+          "method": "fixture",
+          "startTime": 212110.416,
+          "endTime": 434095.679,
+          "durationMs": 221985.263
+        },
+        {
+          "callId": "pw:api@197",
+          "method": "pw:api",
+          "startTime": 182871.909,
+          "endTime": 212006.792,
+          "durationMs": 29134.883,
+          "error": "Error: locator.click: Test timeout of 30000ms exceeded.\nCall log:\n  - waiting for getByRole('link', { name: 'Edit name or description' })\n    - locator resolved to <a class=\"\" data-v-a0b5c955=\"\" href=\"/events/30000000-0000-4000-8000-000000000066/details\">Edit name or description</a>\n  - attempting click action\n    - waiting for element to be visible, enabled and stable\n"
+        },
+        {
+          "callId": "pw:api@41",
+          "method": "pw:api",
+          "startTime": 181711.587,
+          "endTime": 182869.181,
+          "durationMs": 1157.594
+        },
+        {
+          "callId": "hook@208",
+          "method": "hook",
+          "startTime": 211536.53,
+          "endTime": 212077.943,
+          "durationMs": 541.413
+        }
+      ],
+      "networkCount": 166,
+      "networkStatusCounts": {
+        "200": 165,
+        "101": 1
+      },
+      "slowestCompletedRequests": [
+        {
+          "method": "GET",
+          "path": "/",
+          "status": 101,
+          "durationMs": 28366.007080078125,
+          "resourceType": "websocket"
+        },
+        {
+          "method": "GET",
+          "path": "/node_modules/.vite/deps/@supabase_supabase-js.js",
+          "status": 200,
+          "durationMs": 172.314,
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "path": "/src/features/events/components/use-workflow-panel.ts",
+          "status": 200,
+          "durationMs": 170.142,
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "path": "/src/features/events/api/status-history.ts",
+          "status": 200,
+          "durationMs": 169.856,
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "path": "/src/features/events/components/VenueBookingPanel.vue",
+          "status": 200,
+          "durationMs": 167.75,
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "path": "/src/features/events/components/ChangeRequestPanel.vue",
+          "status": 200,
+          "durationMs": 167.727,
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "path": "/src/features/events/api/clarifications.ts",
+          "status": 200,
+          "durationMs": 166.282,
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "path": "/src/features/events/pages/EventDetailsEditPage.vue",
+          "status": 200,
+          "durationMs": 141.463,
+          "resourceType": "script"
+        }
+      ],
+      "observation": "The edit link existed and resolved, but the click stalled waiting for visible/enabled/stable. Trace has no click completion or edit navigation. Browser fixture teardown then took about 222 seconds."
+    },
+    {
+      "traceDirectory": "review-decision-KAN-36-SUB-08e24-on-survive-a-browser-reload-chromium",
+      "sourceTraceSha256": "d91bfaadfc31c06c64a527a468360a428f75ebd9924ca27c16992eb492b71a81",
+      "zipEntries": 39,
+      "errors": [
+        {
+          "callId": "expect@200",
+          "method": "expect",
+          "startTime": 237435.153,
+          "endTime": 237437.71,
+          "durationMs": 2.557,
+          "error": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: 2\nReceived: 1"
+        },
+        {
+          "callId": "pw:api@219",
+          "method": "pw:api",
+          "startTime": 237597.659,
+          "endTime": 269266.077,
+          "durationMs": 31668.418,
+          "error": "Error: page.reload: Test timeout of 30000ms exceeded.\nCall log:\n  - waiting for navigation until \"load\"\n    - navigated to \"http://127.0.0.1:5173/reviews/10000000-0000-4000-8000-000000000036\"\n"
+        }
+      ],
+      "longestActions": [
+        {
+          "callId": "hook@409",
+          "method": "hook",
+          "startTime": 269311.052,
+          "endTime": 433500.873,
+          "durationMs": 164189.821
+        },
+        {
+          "callId": "fixture@414",
+          "method": "fixture",
+          "startTime": 269312.244,
+          "endTime": 433493.963,
+          "durationMs": 164181.719
+        },
+        {
+          "callId": "pw:api@219",
+          "method": "pw:api",
+          "startTime": 237597.659,
+          "endTime": 269266.077,
+          "durationMs": 31668.418,
+          "error": "Error: page.reload: Test timeout of 30000ms exceeded.\nCall log:\n  - waiting for navigation until \"load\"\n    - navigated to \"http://127.0.0.1:5173/reviews/10000000-0000-4000-8000-000000000036\"\n"
+        },
+        {
+          "callId": "hook@371",
+          "method": "hook",
+          "startTime": 265308.724,
+          "endTime": 269310.703,
+          "durationMs": 4001.979
+        },
+        {
+          "callId": "fixture@374",
+          "method": "fixture",
+          "startTime": 265311.805,
+          "endTime": 269275.854,
+          "durationMs": 3964.049
+        }
+      ],
+      "networkCount": 325,
+      "networkStatusCounts": {
+        "200": 312,
+        "201": 1,
+        "101": 2,
+        "-1": 10
+      },
+      "slowestCompletedRequests": [
+        {
+          "method": "GET",
+          "path": "/src/features/venues/pages/VenueSuitabilityPage.vue",
+          "status": 200,
+          "durationMs": 544.375,
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "path": "/src/features/venues/api/venue-suitability.ts",
+          "status": 200,
+          "durationMs": 542.871,
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "path": "/src/features/registrations/pages/AttendeeAccessPage.vue",
+          "status": 200,
+          "durationMs": 533.844,
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "path": "/src/features/equipment/pages/EquipmentAvailabilityPage.vue",
+          "status": 200,
+          "durationMs": 511.582,
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "path": "/src/features/registrations/pages/AttendeeEventPage.vue",
+          "status": 200,
+          "durationMs": 507.042,
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "path": "/src/features/registrations/RegistrationsPage.vue",
+          "status": 200,
+          "durationMs": 498.21500000000003,
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "path": "/src/features/registrations/api.ts",
+          "status": 200,
+          "durationMs": 497.853,
+          "resourceType": "script"
+        },
+        {
+          "method": "GET",
+          "path": "/src/features/safety/SafetyQueuePage.vue",
+          "status": 200,
+          "durationMs": 496.796,
+          "resourceType": "script"
+        }
+      ],
+      "observation": "Saved-outcome workflow progressed to page.reload; navigation reached the requested route but did not finish load before the test budget expired. An earlier expect.poll attempt saw one rather than two reads; this attempt was retried rather than the terminal failure. Browser fixture teardown then took about 164 seconds."
+    }
+  ]
+}

@@ -336,7 +336,7 @@ onBeforeUnmount(resetView);
               <p class="booking-caption">A hold reserves this period until the deadline while the booking is finalised. If it is not approved by then, it is released automatically.</p>
               <fieldset :disabled="saving" class="decision-fields">
                 <label for="hold-deadline" class="reason-label">Hold deadline (Singapore time)</label>
-                <input id="hold-deadline" v-model="holdDeadline" type="datetime-local" required aria-describedby="hold-deadline-help hold-deadline-error" />
+                <input id="hold-deadline" v-model="holdDeadline" type="datetime-local" max="9999-12-31T23:59" required aria-describedby="hold-deadline-help hold-deadline-error" />
                 <p id="hold-deadline-help" class="booking-caption">Must be in the future and no later than the occupied start, including setup time ({{ formatEventTime(holdLatestExpiry) }}).</p>
                 <p v-if="holdError" id="hold-deadline-error" role="alert" class="booking-error">{{ holdError }}</p>
               </fieldset>

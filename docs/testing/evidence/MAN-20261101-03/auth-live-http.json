@@ -1,0 +1,28 @@
+{
+  "date": "2026-11-01T15:43:20.090Z",
+  "boundary": "Independent real HTTP sessions; browser UI observations are separate",
+  "checks": [
+    {
+      "alias": "organiser",
+      "providerStatus": 200,
+      "loginStatus": 200,
+      "meStatus": 200,
+      "role": "EVENT_ORGANISER",
+      "logoutStatus": 204,
+      "cookieCleared": true,
+      "afterLogoutStatus": 401,
+      "afterLogoutCode": "AUTHENTICATION_REQUIRED"
+    },
+    {
+      "alias": "coordinator",
+      "providerStatus": 200,
+      "loginStatus": 200,
+      "meStatus": 200,
+      "role": "EVENT_COORDINATOR",
+      "logoutStatus": 204,
+      "cookieCleared": true,
+      "afterLogoutStatus": 401,
+      "afterLogoutCode": "AUTHENTICATION_REQUIRED"
+    }
+  ]
+}

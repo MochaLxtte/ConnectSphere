@@ -1,0 +1,31 @@
+{
+  "recorded_at": "2026-11-01T15:26:54.106Z",
+  "result": {
+    "reviews": 30,
+    "review_hash": "edcb9f50189a400a3e1e5b8fa4f6aaf2",
+    "preparations": 10,
+    "preparation_hash": "d7e40649971dd03efc244b8629045c35"
+  },
+  "immutableRecordsUnchanged": true,
+  "ledger": [
+    {
+      "name": "023_safety_approval_invalidation.sql",
+      "checksum": "d5a1b176b831b43009559153b45b03a7130539ad730fce98702096fd4facd70c",
+      "applied_at": "2026-11-01T15:26:05.971Z"
+    }
+  ],
+  "tables": [
+    {
+      "relname": "safety_approval_invalidations",
+      "relrowsecurity": true
+    },
+    {
+      "relname": "safety_review_context_baselines",
+      "relrowsecurity": true
+    }
+  ],
+  "baseline": {
+    "baselines": 30,
+    "invalidations": 1
+  }
+}

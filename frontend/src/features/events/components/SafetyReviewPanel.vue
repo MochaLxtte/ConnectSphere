@@ -8,7 +8,7 @@ import {
 } from '../../safety/api.js';
 
 /** KAN-84: the coordinator submits rounds and starts preparation; the organiser sees the outcome. */
-const props = defineProps<{ eventRequestId: string; status: string; revision?: number }>();
+const props = defineProps<{ eventRequestId: string; status: string; revision?: number; refreshVersion?: number }>();
 const emit = defineEmits<{ changed: [] }>();
 const state = ref<EventSafety | null>(null);
 const loading = ref(false);
@@ -35,7 +35,7 @@ function failure(caught: unknown, fallback: string) {
 async function load() {
   if (!visible.value) return;
   reader?.abort(); const current = new AbortController(); reader = current;
-  loading.value = true;
+  state.value = null; loading.value = true;
   try {
     const result = await fetchEventSafety(props.eventRequestId, current.signal);
     if (!current.signal.aborted) state.value = result;
@@ -44,7 +44,7 @@ async function load() {
   } finally { if (!current.signal.aborted) loading.value = false; }
 }
 async function write(action: (signal: AbortSignal) => Promise<string>, fallback: string) {
-  if (busy.value) return;
+  if (busy.value || loading.value || !state.value) return;
   const current = new AbortController(); writer = current;
   busy.value = true; error.value = ''; savedMessage.value = '';
   try {
@@ -65,7 +65,7 @@ async function write(action: (signal: AbortSignal) => Promise<string>, fallback:
 }
 const submit = () => write(async (signal) => {
   const { review } = await submitSafetyReview(props.eventRequestId, { ...notes }, signal);
-  for (const field of fields) notes[field] = '';
+  if (!signal.aborted) for (const field of fields) notes[field] = '';
   return `Round ${review.round} was sent to the Safety Officer.`;
 }, 'The safety review may not have been submitted. Check the rounds below before trying again.');
 const prepare = () => write(async (signal) => {
@@ -82,6 +82,10 @@ watch(() => [authSession.loading, authSession.user?.id, authSession.user?.role, 
     viewer = next;
     reset(); savedMessage.value = outcome; void load();
   }, { immediate: true, flush: 'sync' });
+watch(() => props.refreshVersion, () => {
+  // The same event's arrangement changed: discard eligibility, not the coordinator's draft notes.
+  writer?.abort(); busy.value = false; error.value = ''; savedMessage.value = ''; void load();
+}, { flush: 'sync' });
 onBeforeUnmount(reset);
 </script>
 
@@ -90,6 +94,8 @@ onBeforeUnmount(reset);
     <h2 id="safety-heading">Safety review</h2>
     <p v-if="loading && !state" role="status">Loading the safety review…</p>
     <p v-if="error" role="alert">{{ error }}</p>
+    <button v-if="error && !loading && !busy" class="button button-secondary" type="button"
+      @click="error = ''; load()">Reload safety review</button>
     <p v-if="savedMessage" role="status">{{ savedMessage }}</p>
     <template v-if="state">
       <p class="outcome"><span class="tag" :class="state.outcome === 'APPROVED' ? 'tag-positive'

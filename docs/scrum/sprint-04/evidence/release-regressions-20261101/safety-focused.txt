@@ -1,0 +1,8 @@
+
+ RUN  v4.1.11 C:/Users/trist/Documents/School Stuff/Y3S1/IS212/ConnectSphere
+
+
+ Test Files  4 passed (4)
+      Tests  52 passed (52)
+   Start at  19:08:53
+   Duration  147.57s (transform 2.63s, setup 0ms, import 5.43s, tests 140.01s, environment 1ms)

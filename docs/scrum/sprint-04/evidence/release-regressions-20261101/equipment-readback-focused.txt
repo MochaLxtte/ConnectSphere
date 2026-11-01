@@ -1,0 +1,12 @@
+
+> @connectsphere/frontend@0.1.0 test
+> vitest run src/features/events/components/EquipmentRequestPanel.test.ts
+
+
+ RUN  v4.1.11 C:/Users/trist/Documents/School Stuff/Y3S1/IS212/ConnectSphere/frontend
+
+
+ Test Files  1 passed (1)
+      Tests  35 passed (35)
+   Start at  19:11:20
+   Duration  9.02s (transform 1.96s, setup 900ms, import 2.17s, tests 4.46s, environment 1.06s)

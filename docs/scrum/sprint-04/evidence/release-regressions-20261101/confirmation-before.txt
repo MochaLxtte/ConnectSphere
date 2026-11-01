@@ -1,0 +1,706 @@
+
+> @connectsphere/frontend@0.1.0 test
+> vitest run src/features/events/components/EventPlanningPanels.test.ts src/features/events/components/EventConfirmationPanel.test.ts src/features/events/components/SafetyReviewPanel.test.ts
+
+
+ RUN  v4.1.11 C:/Users/trist/Documents/School Stuff/Y3S1/IS212/ConnectSphere/frontend
+
+ ❯ src/features/events/components/SafetyReviewPanel.test.ts (7 tests | 1 failed) 1180ms
+     × refreshes planning eligibility without losing unsaved safety notes and fails closed if refresh fails 1048ms
+ ❯ src/features/events/components/EventConfirmationPanel.test.ts (11 tests | 1 failed) 1219ms
+     × discards stale readiness while a planning refresh loads or fails, then permits an explicit retry 1090ms
+ ❯ src/features/events/components/EventPlanningPanels.test.ts (4 tests | 3 failed) 3237ms
+     × refreshes confirmation and safety after venue changes without remounting another form 1148ms
+     × refreshes confirmation and safety after equipment changes without remounting another form 1029ms
+     × refreshes confirmation and safety after change request changes without remounting another form 1018ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/events/components/EventConfirmationPanel.test.ts > KAN-61 event confirmation panel > discards stale readiness while a planning refresh loads or fails, then permits an explicit retry
+TestingLibraryElementError: Unable to find an element with the text: Loading confirmation details…. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <section
+      aria-labelledby="confirmation-heading"
+      class="panel workflow-panel arrangement-panel"
+      data-v-1ba16cb2=""
+      refreshversion="1"
+    >
+      <h2
+        data-v-1ba16cb2=""
+        id="confirmation-heading"
+      >
+        Event confirmation
+      </h2>
+
+
+      <p
+        data-v-1ba16cb2=""
+      >
+        Confirming tells the organiser the event can proceed. It is separate from the initial approval.
+      </p>
+      <ul
+        aria-label="Confirmation readiness"
+        class="checklist"
+        data-v-1ba16cb2=""
+      >
+
+        <li
+          class="is-ready"
+          data-v-1ba16cb2=""
+        >
+          <span
+            class="tag tag-positive"
+            data-v-1ba16cb2=""
+          >
+            Ready
+          </span>
+          <span
+            data-v-1ba16cb2=""
+          >
+            <strong
+              data-v-1ba16cb2=""
+            >
+              Venue arrangements:
+            </strong>
+             Every live venue arrangement is approved.
+          </span>
+        </li>
+        <li
+          class="is-ready"
+          data-v-1ba16cb2=""
+        >
+          <span
+            class="tag tag-positive"
+            data-v-1ba16cb2=""
+          >
+            Ready
+          </span>
+          <span
+            data-v-1ba16cb2=""
+          >
+            <strong
+              data-v-1ba16cb2=""
+            >
+              Equipment:
+            </strong>
+             Equipment is recorded as Not Required.
+          </span>
+        </li>
+        <li
+          class="is-ready"
+          data-v-1ba16cb2=""
+        >
+          <span
+            class="tag tag-positive"
+            data-v-1ba16cb2=""
+          >
+            Ready
+          </span>
+          <span
+            data-v-1ba16cb2=""
+          >
+            <strong
+              data-v-1ba16cb2=""
+            >
+              Change requests:
+            </strong>
+             No significant change is pending.
+          </span>
+        </li>
+
+      </ul>
+      <form
+        data-v-1ba16cb2=""
+      >
+        <fieldset
+          data-v-1ba16cb2=""
+        >
+          <label
+            class="confirm-row"
+            data-v-1ba16cb2=""
+          >
+            <input
+              data-v-1ba16cb2=""
+              type="checkbox"
+            />
+             I have checked the arrangements and want to confirm this event.
+          </label>
+          <button
+            class="button"
+            data-v-1ba16cb2=""
+            type="submit"
+          >
+            Confirm event
+          </button>
+        </fieldset>
+      </form>
+
+
+    </section>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <section
+      aria-labelledby="confirmation-heading"
+      class="panel workflow-panel arrangement-panel"
+      data-v-1ba16cb2=""
+      refreshversion="1"
+    >
+      <h2
+        data-v-1ba16cb2=""
+        id="confirmation-heading"
+      >
+        Event confirmation
+      </h2>
+
+
+      <p
+        data-v-1ba16cb2=""
+      >
+        Confirming tells the organiser the event can proceed. It is separate from the initial approval.
+      </p>
+      <ul
+        aria-label="Confirmation readiness"
+        class="checklist"
+        data-v-1ba16cb2=""
+      >
+
+        <li
+          class="is-ready"
+          data-v-1ba16cb2=""
+        >
+          <span
+            class="tag tag-positive"
+            data-v-1ba16cb2=""
+          >
+            Ready
+          </span>
+          <span
+            data-v-1ba16cb2=""
+          >
+            <strong
+              data-v-1ba16cb2=""
+            >
+              Venue arrangements:
+            </strong>
+             Every live venue arrangement is approved.
+          </span>
+        </li>
+        <li
+          class="is-ready"
+          data-v-1ba16cb2=""
+        >
+          <span
+            class="tag tag-positive"
+            data-v-1ba16cb2=""
+          >
+            Ready
+          </span>
+          <span
+            data-v-1ba16cb2=""
+          >
+            <strong
+              data-v-1ba16cb2=""
+            >
+              Equipment:
+            </strong>
+             Equipment is recorded as Not Required.
+          </span>
+        </li>
+        <li
+          class="is-ready"
+          data-v-1ba16cb2=""
+        >
+          <span
+            class="tag tag-positive"
+            data-v-1ba16cb2=""
+          >
+            Ready
+          </span>
+          <span
+            data-v-1ba16cb2=""
+          >
+            <strong
+              data-v-1ba16cb2=""
+            >
+              Change requests:
+            </strong>
+             No significant change is pending.
+          </span>
+        </li>
+
+      </ul>
+      <form
+        data-v-1ba16cb2=""
+      >
+        <fieldset
+          data-v-1ba16cb2=""
+        >
+          <label
+            class="confirm-row"
+            data-v-1ba16cb2=""
+          >
+            <input
+              data-v-1ba16cb2=""
+              type="checkbox"
+            />
+             I have checked the arrangements and want to confirm this event.
+          </label>
+          <button
+            class="button"
+            data-v-1ba16cb2=""
+            type="submit"
+          >
+            Confirm event
+          </button>
+        </fieldset>
+      </form>
+
+
+    </section>
+  </div>
+</body>
+ ❯ waitForWrapper ../node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ ../node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/features/events/components/EventConfirmationPanel.test.ts:38:25
+     36|     api.set(READ, () => new Promise(resolve => { finish = resolve; }));
+     37|     await panel.rerender({ eventRequestId: 'event-one', status: 'APPRO…
+     38|     expect(await screen.findByText('Loading confirmation details…')).t…
+       |                         ^
+     39|     expect(screen.queryByRole('button', { name: 'Confirm event' })).no…
+     40|     finish(apiError(503, 'UNAVAILABLE', 'Readiness is temporarily unav…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  src/features/events/components/EventPlanningPanels.test.ts > KAN-61 / KAN-84: readiness after a planning mutation > refreshes confirmation and safety after venue changes without remounting another form
+ FAIL  src/features/events/components/EventPlanningPanels.test.ts > KAN-61 / KAN-84: readiness after a planning mutation > refreshes confirmation and safety after equipment changes without remounting another form
+ FAIL  src/features/events/components/EventPlanningPanels.test.ts > KAN-61 / KAN-84: readiness after a planning mutation > refreshes confirmation and safety after change request changes without remounting another form
+AssertionError: expected [ { …(2) } ] to have a length of 2 but got 1
+
+Ignored nodes: comments, script, style
+<html>
+  <head />
+  <body>
+    <div>
+      <div
+        class="planning-panels"
+        data-v-3e6eab69=""
+      >
+        <assignment-panel-stub
+          canassigncoordinator="false"
+          canreassigncoordinator="false"
+          currentcoordinatorid="coordinator-a"
+          data-v-3e6eab69=""
+          eventrequestid="event-one"
+          isowner="false"
+          status="APPROVED"
+          viewerrole="EVENT_COORDINATOR"
+        />
+        <label
+          data-v-3e6eab69=""
+          eventrequestid="event-one"
+          isowner="false"
+          revision="8"
+          status="APPROVED"
+          viewerrole="EVENT_COORDINATOR"
+        >
+          Unrelated draft
+          <input />
+        </label>
+        <button
+          data-v-3e6eab69=""
+          eventrequestid="event-one"
+          isowner="false"
+          revision="8"
+          status="APPROVED"
+          viewerrole="EVENT_COORDINATOR"
+        >
+          Save change request
+        </button>
+        <button
+          data-v-3e6eab69=""
+          eventrequestid="event-one"
+          isowner="false"
+          status="APPROVED"
+          viewerrole="EVENT_COORDINATOR"
+        >
+          Save venue
+        </button>
+        <button
+          data-v-3e6eab69=""
+          eventrequestid="event-one"
+          isowner="false"
+          revision="8"
+          status="APPROVED"
+          viewerrole="EVENT_COORDINATOR"
+        >
+          Save equipment
+        </button>
+        <section
+          aria-labelledby="confirmation-heading"
+          class="panel workflow-panel arrangement-panel"
+          data-v-1ba16cb2=""
+          data-v-3e6eab69=""
+        >
+          <h2
+            data-v-1ba16cb2=""
+            id="confirmation-heading"
+          >
+            Event confirmation
+          </h2>
+
+
+          <p
+            data-v-1ba16cb2=""
+          >
+            Confirming tells the organiser the event can proceed. It is separate from the initial approval.
+          </p>
+          <ul
+            aria-label="Confirmation readiness"
+            class="checklist"
+            data-v-1ba16cb2=""
+          >
+
+            <li
+              class="is-ready"
+              data-v-1ba16cb2=""
+            >
+              <span
+                class="tag tag-positive"
+                data-v-1ba16cb2=""
+              >
+                Ready
+              </span>
+              <span
+                data-v-1ba16cb2=""
+              >
+                <strong
+                  data-v-1ba16cb2=""
+                >
+                  Venue arrangements:
+                </strong>
+                 All arrangements ready.
+              </span>
+            </li>
+
+          </ul>
+          <form
+            data-v-1ba16cb2=""
+          >
+            <fieldset
+              data-v-1ba16cb2=""
+            >
+              <label
+                class="confirm-row"
+                data-v-1ba16cb2=""
+              >
+                <input
+                  data-v-1ba16cb2=""
+                  type="checkbox"
+                />
+                 I have checked the arrangements and want to confirm this event.
+              </label>
+              <button
+                class="button"
+                data-v-1ba16cb2=""
+                type="submit"
+              >
+                Confirm event
+              </button>
+            </fieldset>
+          </form>
+
+
+        </section>
+        <section
+          aria-labelledby="safety-heading"
+          class="panel workflow-panel arrangement-panel"
+          data-v-3e6eab69=""
+          data-v-bb57d29d=""
+        >
+          <h2
+            data-v-bb57d29d=""
+            id="safety-heading"
+          >
+            Safety review
+          </h2>
+
+          <p
+            class="outcome"
+            data-v-bb57d29d=""
+          >
+            <span
+              class="tag tag-positive"
+              data-testid="safety-outcome"
+              data-v-bb57d29d=""
+            >
+              Safety approved
+            </span>
+          </p>
+          <p
+            data-v-bb57d29d=""
+          >
+            Confirm the event before starting preparation.
+          </p>
+
+        </section>
+        <status-history-panel-stub
+          data-v-3e6eab69=""
+          eventrequestid="event-one"
+          status="APPROVED"
+        />
+        <event-completion-panel-stub
+          data-v-3e6eab69=""
+          eventrequestid="event-one"
+          revision="8"
+          status="APPROVED"
+        />
+        <event-cancellation-panel-stub
+          data-v-3e6eab69=""
+          eventrequestid="event-one"
+          revision="8"
+          status="APPROVED"
+        />
+      </div>
+    </div>
+  </body>
+</html>
+
+- Expected
++ Received
+
+- 2
++ 1
+
+ ❯ src/features/events/components/EventPlanningPanels.test.ts:39:85
+     37|     api.set(safety, () => new Promise(resolve => { resolveSafety = res…
+     38|     await fireEvent.click(screen.getByRole('button', { name: `Save ${k…
+     39|     await waitFor(() => expect(api.calls.filter(call => call.key === c…
+       |                                                                                     ^
+     40|     expect(screen.queryByText('All arrangements ready.')).not.toBeInTh…
+     41|     expect(screen.queryByRole('button', { name: 'Confirm event' })).no…
+ ❯ runWithExpensiveErrorDiagnosticsDisabled ../node_modules/@testing-library/dom/dist/config.js:47:12
+ ❯ checkCallback ../node_modules/@testing-library/dom/dist/wait-for.js:124:77
+ ❯ Timeout.checkRealTimersCallback ../node_modules/@testing-library/dom/dist/wait-for.js:118:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  src/features/events/components/SafetyReviewPanel.test.ts > KAN-84 safety review panel > refreshes planning eligibility without losing unsaved safety notes and fails closed if refresh fails
+TestingLibraryElementError: Unable to find an element with the text: Loading the safety review…. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <section
+      aria-labelledby="safety-heading"
+      class="panel workflow-panel arrangement-panel"
+      data-v-bb57d29d=""
+      refreshversion="1"
+    >
+      <h2
+        data-v-bb57d29d=""
+        id="safety-heading"
+      >
+        Safety review
+      </h2>
+
+      <p
+        class="outcome"
+        data-v-bb57d29d=""
+      >
+        <span
+          class="tag tag-waiting"
+          data-testid="safety-outcome"
+          data-v-bb57d29d=""
+        >
+          Not submitted
+        </span>
+      </p>
+      <form
+        class="safety-form"
+        data-v-bb57d29d=""
+      >
+        <fieldset
+          data-v-bb57d29d=""
+        >
+          <legend
+            data-v-bb57d29d=""
+          >
+            Safety information for the Safety Officer
+          </legend>
+
+          <label
+            data-v-bb57d29d=""
+          >
+            Emergency access
+            <textarea
+              data-v-bb57d29d=""
+              maxlength="2000"
+            />
+          </label>
+          <label
+            data-v-bb57d29d=""
+          >
+            Equipment placement
+            <textarea
+              data-v-bb57d29d=""
+              maxlength="2000"
+            />
+          </label>
+          <label
+            data-v-bb57d29d=""
+          >
+            Crowd movement
+            <textarea
+              data-v-bb57d29d=""
+              maxlength="2000"
+            />
+          </label>
+
+          <p
+            data-v-bb57d29d=""
+          >
+            Missing information will be shown to the Safety Officer as missing: Equipment placement, Crowd movement.
+          </p>
+          <button
+            class="button"
+            data-v-bb57d29d=""
+            type="submit"
+          >
+            Submit for safety review
+          </button>
+        </fieldset>
+      </form>
+      <p
+        data-v-bb57d29d=""
+      >
+        No safety review has been submitted yet.
+      </p>
+
+    </section>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <section
+      aria-labelledby="safety-heading"
+      class="panel workflow-panel arrangement-panel"
+      data-v-bb57d29d=""
+      refreshversion="1"
+    >
+      <h2
+        data-v-bb57d29d=""
+        id="safety-heading"
+      >
+        Safety review
+      </h2>
+
+      <p
+        class="outcome"
+        data-v-bb57d29d=""
+      >
+        <span
+          class="tag tag-waiting"
+          data-testid="safety-outcome"
+          data-v-bb57d29d=""
+        >
+          Not submitted
+        </span>
+      </p>
+      <form
+        class="safety-form"
+        data-v-bb57d29d=""
+      >
+        <fieldset
+          data-v-bb57d29d=""
+        >
+          <legend
+            data-v-bb57d29d=""
+          >
+            Safety information for the Safety Officer
+          </legend>
+
+          <label
+            data-v-bb57d29d=""
+          >
+            Emergency access
+            <textarea
+              data-v-bb57d29d=""
+              maxlength="2000"
+            />
+          </label>
+          <label
+            data-v-bb57d29d=""
+          >
+            Equipment placement
+            <textarea
+              data-v-bb57d29d=""
+              maxlength="2000"
+            />
+          </label>
+          <label
+            data-v-bb57d29d=""
+          >
+            Crowd movement
+            <textarea
+              data-v-bb57d29d=""
+              maxlength="2000"
+            />
+          </label>
+
+          <p
+            data-v-bb57d29d=""
+          >
+            Missing information will be shown to the Safety Officer as missing: Equipment placement, Crowd movement.
+          </p>
+          <button
+            class="button"
+            data-v-bb57d29d=""
+            type="submit"
+          >
+            Submit for safety review
+          </button>
+        </fieldset>
+      </form>
+      <p
+        data-v-bb57d29d=""
+      >
+        No safety review has been submitted yet.
+      </p>
+
+    </section>
+  </div>
+</body>
+ ❯ waitForWrapper ../node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ ../node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/features/events/components/SafetyReviewPanel.test.ts:32:25
+     30|     api.set(READ, () => new Promise(resolve => { finish = resolve; }));
+     31|     await panel.rerender({ eventRequestId: 'event-one', status: 'APPRO…
+     32|     expect(await screen.findByText('Loading the safety review…')).toBe…
+       |                         ^
+     33|     expect(screen.queryByRole('button', { name: 'Submit for safety rev…
+     34|     finish(apiError(503, 'UNAVAILABLE', 'Safety details unavailable.')…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+
+ Test Files  3 failed (3)
+      Tests  5 failed | 17 passed (22)
+   Start at  19:00:24
+   Duration  15.96s (transform 3.60s, setup 28.49s, import 4.65s, tests 5.64s, environment 1.83s)
+
+npm error Lifecycle script `test` failed with error:
+npm error code 1
+npm error path C:\Users\trist\Documents\School Stuff\Y3S1\IS212\ConnectSphere\frontend
+npm error workspace @connectsphere/frontend@0.1.0
+npm error location C:\Users\trist\Documents\School Stuff\Y3S1\IS212\ConnectSphere\frontend
+npm error command failed
+npm error command C:\WINDOWS\system32\cmd.exe /d /s /c vitest run src/features/events/components/EventPlanningPanels.test.ts src/features/events/components/EventConfirmationPanel.test.ts src/features/events/components/SafetyReviewPanel.test.ts

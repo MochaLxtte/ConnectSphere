@@ -1,6 +1,6 @@
 # ConnectSphere release acceptance walkthrough
 
-Sprints 1 to 4 · Manual end-to-end acceptance and regression testing · Prepared 30 October 2026
+Sprints 1 to 4 · Manual end-to-end acceptance and regression testing · Prepared 30 October 2026 · Updated 1 November 2026
 
 Use this guide to test the complete application with real sign-in, the local frontend and API, the agreed Supabase development database and the real hold-expiry job. Follow the steps in order, switching to the stated role. Record what actually happens in a separate copy of the results form at the end. All checks in this newly prepared walkthrough are **Not executed**.
 
@@ -13,9 +13,9 @@ Please test the release candidate using the attached ConnectSphere walkthrough. 
 ## Before the team starts
 
 1. Agree who drives each role and who records results. Separate browser profiles are safest; two tabs in the same browser profile share a login. One person may switch roles sequentially. Nobody shares passwords or includes tokens, cookies or credentials in screenshots.
-2. Agree the exact candidate commit. This guide was prepared against main `6b26503` plus the uncommitted KAN-80/82/84 corrections on `fix/sprint-4-acceptance-gaps`. Those corrections must be included in the build being tested. Do not assume an older copy of main contains them. Record `git rev-parse HEAD` and `git status --short`; if files are uncommitted, retain the source manifest/diff identifier as well.
+2. Agree the exact candidate commit. The 1 November revision requires the KAN-61/63/84 release repairs on `fix/release-regressions` (base `034a631` plus its repair); do not assume an older build includes them. Record `git rev-parse HEAD` and `git status --short`; for uncommitted code retain the source manifest/diff identifier.
 3. Use Node 24, the project's existing development `.env`, `npm ci`, then `npm run dev` from the repository root. Open `http://127.0.0.1:5173` consistently. Confirm both API and frontend are running and the development database is the agreed project. Do not commit `.env` or replace teammates' configuration.
-4. Confirm migrations **001–022**, including 021 and 022, are recorded in the project's `public.schema_migrations`. Their application was reported; each run still records the actual database/build checked. No new migration is required for the three 30 October corrections. Do not rename, delete or rerun migration SQL manually to set up a test.
+4. Confirm migrations **001–023** in `public.schema_migrations` before starting the matching API. Shared 021/022 application was reported; **023 still requires coordinated application** using `npm run db:migrate`, followed by an API/frontend restart. See `database/README.md`. Each run records the actual database/build checked. Do not rename/delete ledger entries or edit old SQL.
 5. Confirm the hold-expiry scheduler is enabled and record its actual cadence. A disappearing hold in the calendar proves availability filtering, not that the background job persisted expiry and notifications. R09 checks both.
 6. Use only synthetic accounts and agreed test fixtures. Record original venue hours/buffers, equipment counters and assignments before changing them. Do not run `db:seed`, reset scripts, cleanup-based integration tests or fault-injection tests against shared Supabase. A local Git branch does not isolate the shared database.
 7. Keep the browser Network panel available for unexpected errors. A maintainer may use read-only Supabase views to corroborate IDs, status, decision/history rows and notifications. The browser journey must still work; do not use SQL updates to force event states or bypass a failed step.
@@ -183,7 +183,7 @@ For each successful mutation, refresh the relevant role's page and verify the sa
 
 ## R13 Request check and reserve equipment
 
-**Roles:** C1 and T1. **Cases:** TC-15-01–07, TC-16-06–17, TC-17-01–08; KAN-63/9/26. **Start:** E-MAIN Approved; EQ-MIC has 7 operational units.
+**Roles:** C1 and T1. **Cases:** TC-15-01–07, TC-15-108, TC-16-06–17, TC-17-01–08; KAN-63/9/26. **Start:** E-MAIN Approved; EQ-MIC has 7 operational units.
 
 1. On E-MAIN's **Equipment arrangements**, C1 selects EQ-MIC, quantity 3 and clear technical requirements, then **Save equipment request**. Refresh and compare the saved line/event/date/time. Invalid quantity or an empty required plan must not appear as a successful reservation.
 2. As T1 open `/equipment/availability`, select E-MAIN and check its requested window/lines. Expect the requested quantity and operational availability to reflect damaged, maintenance and overlapping reservations. The check can run before a venue is confirmed and does not itself reserve stock.
@@ -192,14 +192,14 @@ For each successful mutation, refresh the relevant role's page and verify the sa
 5. From a separate eligible probe event in the same interval, check 4 and 5 units. With only E-MAIN's 3 units reserved, expect 4 available and a one-unit deficit for 5. A non-overlapping interval should regain all 7. Checking E-MAIN's existing saved reservation must not count it twice.
 6. On a separate Approved equipment fixture, cancel a saved reservation with a reason and confirm its release/history. Repeated refresh/action must not release it twice. Do not cancel E-MAIN's needed equipment before confirmation.
 7. On a no-equipment branch event, C1 explicitly selects **No equipment is required** and saves. Verify the coordinator's persisted plan and confirmation/readiness outcome. An empty saved request alone is not the explicit Not Required decision.
-8. On a separate Approved equipment fixture, T1 opens **Equipment requests** and tries **Reject request** with no **Rejection reason**; expect refusal. Reject with a reason, then verify it on C1's event. A rejected required line does not consume stock but still blocks readiness. C1 uses **Cancel line**, supplies **Cancellation reason**, then **Confirm line cancellation**, and creates a valid replacement request if equipment is still needed.
+8. On a separate Approved equipment fixture, T1 opens **Equipment requests** and tries **Reject request** without a **Rejection reason**; expect refusal. Reject with a reason and verify it on C1's event. A rejected required line consumes no stock but blocks readiness. C1 uses **Cancel line** with a **different Cancellation reason**, then **Confirm line cancellation**. Immediately and after reload, verify **Release reason** shows the cancellation reason and **Previous review reason** retains the rejection reason. Create a valid replacement if still needed.
 9. Demonstrate independence using an Approved probe event with no approved venue: its equipment what-if check can still succeed. For a stale-source check, T1 leaves a reservation form open while C1 edits an unreserved requirement; an attempt using the old version must require refresh, not silently reserve obsolete requirements. Keep exact simultaneous stock races in the isolated automated tests.
 
 ## R14 Confirm the event
 
-**Role:** C1, then O1/A1. **Cases:** TC-06-01/02/03/04; KAN-61. **Fixture:** E-MAIN before its actual start.
+**Role:** C1, then O1/A1. **Cases:** TC-06-01/02/03/04/447; KAN-61. **Fixture:** E-MAIN before its actual start.
 
-1. Before arranging everything on a separate branch, inspect **Event confirmation** with a Pending/Held venue, unreserved equipment, pending significant change or unresolved outage. Expect each live blocker to prevent confirmation and be understandable; fix each through its owning workflow.
+1. On a separate branch event, inspect **Event confirmation** with a Pending/Held venue, unreserved equipment, pending significant change or unresolved outage. Each blocker must prevent confirmation. From a Ready state, save another Pending venue request without leaving the page: expect loading then Not ready, with no usable Confirm action. Explicit booking/equipment reloads must also refresh readiness; failed refreshes must not leave stale Ready/actions.
 2. For E-MAIN ensure all intended live venue arrangements are Approved, equipment is reserved, no significant change is Pending and no recovery remains. Select the acknowledgement **I have checked the arrangements and want to confirm this event**, then **Confirm event**.
 3. Refresh C1/O1. Expect CONFIRMED, persisted confirmation history and notices; repeated action must not produce another transition. Confirmed is different from event-review approval and from safety approval.
 4. An organiser, unrelated coordinator or Lead must not get C1's confirmation authority. An event whose start has already arrived cannot newly be confirmed. Record an actual refusal only on an appropriately prepared separate fixture; never move its date by SQL to make the result pass.
@@ -242,7 +242,7 @@ For each successful mutation, refresh the relevant role's page and verify the sa
 **Roles:** C1, S1 and O1. **Cases:** TC-06-20/21/22/23/27/30/31/445; KAN-84. **Start:** E-MAIN Confirmed and all live arrangements ready.
 
 1. As C1 inspect **Safety review**. Before approval, **Start preparation** must not be available. Fill **Emergency access** = “East and west exits clear”, **Equipment placement** = “Three microphones at the front, cables secured away from exits”, **Crowd movement** = “Separate entry and exit with clear aisle”. Select **Submit for safety review** and record the review ID/round.
-2. As S1 open `/safety-reviews`, then the event/round link. Verify event attendance, every venue's capacity/layout/accessibility/hours/buffers, equipment and all safety notes. Missing information must be visible; advisory venue suitability is not safety approval.
+2. As S1 open `/safety-reviews`, then the event/round link. Verify attendance, every venue's capacity/layout/facilities/accessibility/hours/buffers, equipment technical requirements and all safety notes. Missing information must be visible; advisory venue suitability is not safety approval.
 3. Approve using **Save decision**, refresh and verify officer, time and round outcome. C1 receives the outcome notice. O1 sees the appropriate safety outcome on the owned event, without officer decision rights. Another submission/decision must not overwrite a completed round.
 4. As C1 select **Start preparation**. Reload C1/O1 views; expect **Preparation started**, actor/time and the approved current review. It must not create repeated starts. If safety approval was obtained before final confirmation on a branch fixture, confirmation is still required before preparation.
 5. On two separate Pending rounds, S1 selects a decision/enters notes on A, returns to the queue and opens B. Expect B's details and an empty decision draft with no stale success/error from A. Sign out and reopen: no protected stale content. Controlled late-response ordering is covered by the automated regressions, not inferred from ordinary navigation.
@@ -261,10 +261,10 @@ For each successful mutation, refresh the relevant role's page and verify the sa
 
 ## R20 Recheck stale safety and uncertain saves
 
-**Roles:** C1, V1, S1 and O1. **Cases:** TC-06-28/29/436/437/445; KAN-84/82. **Fixture:** separate E-SAFETY-STALE, Confirmed, safety-approved and preparation started.
+**Roles:** C1, V1, S1 and O1. **Cases:** TC-06-28/29/436/437/445/446; KAN-84/82. **Fixture:** separate E-SAFETY-STALE, Confirmed, safety-approved and preparation started.
 
 1. O1 submits a purpose-only change and leaves it Pending. Expect preparation blocked by live readiness, even if the stored safety fingerprint remains current. Withdraw it and refresh; the same already-started preparation may become unblocked without a new Resume button.
-2. V1 changes this event's dedicated venue setup buffer from 15 to 20 minutes within otherwise free opening hours. Expect the prior safety approval to become out of date and preparation blocked. A name/description-only edit should not produce the same invalidation.
+2. After migration 023, V1 changes the dedicated venue setup buffer from 15 to 20 minutes within otherwise free opening hours, then restores 15 **without opening the event in between**. C1 reloads: the prior approval must stay out of date and preparation blocked until a fresh round is approved. Restoring values is not a new decision. A name/description-only edit must not invalidate approval.
 3. C1 submits a fresh ready round; before S1 decides, V1 changes the buffer again. S1 reloads: approval of the stale round must be unavailable. Select **Reject**, enter the reason, then **Save decision**. C1 submits a fresh round for the current arrangements and S1 approves it. Use Reject for this branch; Request changes would require additional changes after that decision, as in R19. Resume preparation only when current approval and readiness permit it.
 4. Independently cancel/replace one approved arrangement on an agreed branch event. Expect safety invalidation/readiness recalculation while the parent event and unrelated allocations remain. New arrangement approval does not itself renew safety approval.
 5. On another undecided round, briefly take only the test browser offline before Save. A failed response must not claim success. If reconciliation also fails, the old decision form stays unavailable and asks for reload. Restore connectivity, reload and inspect the actual saved round before retrying; a failed response does not prove the server did not commit.

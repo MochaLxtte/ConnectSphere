@@ -1,0 +1,42 @@
+
+> @connectsphere/frontend@0.1.0 test
+> vitest run src/features/events/components/VenueBookingPanel.test.ts
+
+
+ RUN  v4.1.11 C:/Users/trist/Documents/School Stuff/Y3S1/IS212/ConnectSphere/frontend
+
+ ❯ src/features/events/components/VenueBookingPanel.test.ts (46 tests | 1 failed) 1075ms
+     × KAN-82-AC5/AC6 offers a linked replacement for a cancelled arrangement and explains it stays cancelled 25ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/events/components/VenueBookingPanel.test.ts > KAN-82 managing one arrangement at a time > KAN-82-AC5/AC6 offers a linked replacement for a cancelled arrangement and explains it stays cancelled
+Error: expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  Main Hall
+Received:
+  Replacing:
+ ❯ src/features/events/components/VenueBookingPanel.test.ts:484:44
+    482|     expect(select.value).toBe('a1');
+    483|     await waitFor(() => expect(screen.getByRole('heading', { name: 'Re…
+    484|     expect(screen.getByText(/Replacing:/)).toHaveTextContent('Main Hal…
+       |                                            ^
+    485|     expect(select.selectedOptions[0]!.textContent).toContain('(cancell…
+    486|     expect(screen.getByText(/The cancelled arrangement stays cancelled…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 45 passed (46)
+   Start at  03:30:27
+   Duration  49.58s (transform 1.35s, setup 17.79s, import 1.53s, tests 1.07s, environment 27.73s)
+
+npm error Lifecycle script `test` failed with error:
+npm error code 1
+npm error path C:\Users\trist\Documents\School Stuff\Y3S1\IS212\ConnectSphere\frontend
+npm error workspace @connectsphere/frontend@0.1.0
+npm error location C:\Users\trist\Documents\School Stuff\Y3S1\IS212\ConnectSphere\frontend
+npm error command failed
+npm error command C:\WINDOWS\system32\cmd.exe /d /s /c vitest run src/features/events/components/VenueBookingPanel.test.ts

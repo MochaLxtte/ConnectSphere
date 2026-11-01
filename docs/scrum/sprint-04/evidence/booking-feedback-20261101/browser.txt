@@ -1,0 +1,260 @@
+
+Running 248 tests using 2 workers
+
+
+
+(node:9808) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:34772) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/248] [chromium] › tests\e2e\attendee-registration.spec.ts:46:1 › KAN-14 an attendee reads the event, registers once and sees the registration again after a reload
+[2/248] [chromium] › tests\e2e\attendee-registration.spec.ts:71:1 › KAN-14 a full event is explained and keeps the attendee from registering
+[3/248] [chromium] › tests\e2e\attendee-registration.spec.ts:83:3 › KAN-14 the attendee pages are protected for EVENT_ORGANISER
+[4/248] [chromium] › tests\e2e\attendee-registration.spec.ts:83:3 › KAN-14 the attendee pages are protected for EVENT_COORDINATOR
+[5/248] [chromium] › tests\e2e\attendee-registration.spec.ts:83:3 › KAN-14 the attendee pages are protected for EVENT_COORDINATOR_LEAD
+[6/248] [chromium] › tests\e2e\attendee-registration.spec.ts:83:3 › KAN-14 the attendee pages are protected for VENUE_STAFF
+[7/248] [chromium] › tests\e2e\attendee-registration.spec.ts:83:3 › KAN-14 the attendee pages are protected for TECHNICAL_SUPPORT_STAFF
+[8/248] [chromium] › tests\e2e\attendee-registration.spec.ts:83:3 › KAN-14 the attendee pages are protected for a signed-out visitor
+[9/248] [chromium] › tests\e2e\attendee-registration.spec.ts:94:1 › KAN-14 the event page fits a narrow screen without sideways scrolling
+[10/248] [chromium] › tests\e2e\attendee-registration.spec.ts:104:1 › KAN-14 the running API requires login to list, read or register
+[11/248] [chromium] › tests\e2e\coordinator-reassignment.spec.ts:93:5 › KAN-65 Lead reassignment browser workflow › hands over SUBMITTED with a required reason and preserves its existing history
+[12/248] [chromium] › tests\e2e\coordinator-reassignment.spec.ts:93:5 › KAN-65 Lead reassignment browser workflow › hands over UNDER_REVIEW with a required reason and preserves its existing history
+[13/248] [chromium] › tests\e2e\coordinator-reassignment.spec.ts:93:5 › KAN-65 Lead reassignment browser workflow › hands over CLARIFICATION_REQUESTED with a required reason and preserves its existing history
+[14/248] [chromium] › tests\e2e\coordinator-reassignment.spec.ts:93:5 › KAN-65 Lead reassignment browser workflow › hands over APPROVED with a required reason and preserves its existing history
+[15/248] [chromium] › tests\e2e\coordinator-reassignment.spec.ts:93:5 › KAN-65 Lead reassignment browser workflow › hands over CONFIRMED with a required reason and preserves its existing history
+[16/248] [chromium] › tests\e2e\coordinator-reassignment.spec.ts:117:3 › KAN-65 Lead reassignment browser workflow › reconciles a stale version and requires a fresh selection without announcing success
+[17/248] [chromium] › tests\e2e\coordinator-reassignment.spec.ts:127:3 › KAN-65 Lead reassignment browser workflow › blocks retries after an uncertain response until explicit refresh
+[18/248] [chromium] › tests\e2e\coordinator-reassignment.spec.ts:138:3 › KAN-65 Lead reassignment browser workflow › refreshes a target that became unavailable
+[19/248] [chromium] › tests\e2e\coordinator-reassignment.spec.ts:147:3 › KAN-65 Lead reassignment browser workflow › does not submit without an available replacement
+[20/248] [chromium] › tests\e2e\coordinator-reassignment.spec.ts:155:5 › KAN-65 Lead reassignment browser workflow › EVENT_ORGANISER cannot open the reassignment interface
+[21/248] [chromium] › tests\e2e\coordinator-reassignment.spec.ts:155:5 › KAN-65 Lead reassignment browser workflow › EVENT_COORDINATOR cannot open the reassignment interface
+[22/248] [chromium] › tests\e2e\coordinator-reassignment.spec.ts:155:5 › KAN-65 Lead reassignment browser workflow › VENUE_STAFF cannot open the reassignment interface
+[23/248] [chromium] › tests\e2e\coordinator-reassignment.spec.ts:162:3 › KAN-65 Lead reassignment browser workflow › discards late handover feedback after logout and prevents duplicate submits
+[24/248] [chromium] › tests\e2e\equipment-availability.spec.ts:60:1 › KAN-9 technical support follows event list to saved quantities and a fresh shortage result
+[25/248] [chromium] › tests\e2e\equipment-availability.spec.ts:82:1 › KAN-9 unsaved checks retain microseconds, validate fields and clear results when edited
+[26/248] [chromium] › tests\e2e\equipment-availability.spec.ts:110:3 › KAN-9 four-digit year advances to time in Check starts (Singapore time)
+[27/248] [chromium] › tests\e2e\equipment-availability.spec.ts:110:3 › KAN-9 four-digit year advances to time in Check ends (Singapore time)
+[28/248] [chromium] › tests\e2e\equipment-availability.spec.ts:126:1 › KAN-9 changed saved requirements reload before another assessment
+[29/248] [chromium] › tests\e2e\equipment-availability.spec.ts:140:3 › KAN-9 direct equipment URL is protected for EVENT_ORGANISER
+[30/248] [chromium] › tests\e2e\equipment-availability.spec.ts:140:3 › KAN-9 direct equipment URL is protected for EVENT_COORDINATOR
+[31/248] [chromium] › tests\e2e\equipment-availability.spec.ts:140:3 › KAN-9 direct equipment URL is protected for EVENT_COORDINATOR_LEAD
+[32/248] [chromium] › tests\e2e\equipment-availability.spec.ts:140:3 › KAN-9 direct equipment URL is protected for VENUE_STAFF
+[33/248] [chromium] › tests\e2e\equipment-availability.spec.ts:140:3 › KAN-9 direct equipment URL is protected for ATTENDEE
+[34/248] [chromium] › tests\e2e\equipment-availability.spec.ts:140:3 › KAN-9 direct equipment URL is protected for signed-out visitor
+[35/248] [chromium] › tests\e2e\equipment-availability.spec.ts:149:1 › KAN-9 running API requires login on list, context and assessment
+[36/248] [chromium] › tests\e2e\equipment-request-review.spec.ts:92:1 › KAN-63/KAN-26 coordinator request, Technical Support review and explicit reservation replacement
+[37/248] [chromium] › tests\e2e\equipment-request-review.spec.ts:124:1 › KAN-63 stale queue decisions require refresh and a deliberate retry with the new revision
+[38/248] [chromium] › tests\e2e\equipment-request-review.spec.ts:140:1 › KAN-62 a lost cancellation response is reconciled without cancelling twice
+[39/248] [chromium] › tests\e2e\equipment-request-review.spec.ts:158:1 › KAN-63 attendee direct navigation cannot see or review the equipment queue
+[40/248] [chromium] › tests\e2e\equipment-reservations.spec.ts:80:1 › KAN-26 technical support reserves all saved needs, refreshes the advisory and cancels with retained history
+[41/248] [chromium] › tests\e2e\equipment-reservations.spec.ts:122:1 › KAN-26 stock conflict refreshes readiness and does not report success
+[42/248] [chromium] › tests\e2e\equipment-reservations.spec.ts:134:1 › KAN-26 unsaved what-if inputs cannot become reservations and an empty context is never ready
+[43/248] [chromium] › tests\e2e\equipment-reservations.spec.ts:147:1 › KAN-26 confirmed equipment reservations are read-only
+[44/248] [chromium] › tests\e2e\equipment-reservations.spec.ts:156:3 › KAN-26 reservation interface excludes EVENT_ORGANISER
+[45/248] [chromium] › tests\e2e\equipment-reservations.spec.ts:156:3 › KAN-26 reservation interface excludes EVENT_COORDINATOR
+[46/248] [chromium] › tests\e2e\equipment-reservations.spec.ts:156:3 › KAN-26 reservation interface excludes EVENT_COORDINATOR_LEAD
+[47/248] [chromium] › tests\e2e\equipment-reservations.spec.ts:156:3 › KAN-26 reservation interface excludes VENUE_STAFF
+[48/248] [chromium] › tests\e2e\equipment-reservations.spec.ts:156:3 › KAN-26 reservation interface excludes ATTENDEE
+[49/248] [chromium] › tests\e2e\equipment-reservations.spec.ts:156:3 › KAN-26 reservation interface excludes signed-out visitor
+[50/248] [chromium] › tests\e2e\equipment-reservations.spec.ts:164:1 › KAN-26 running API requires a session for context and both mutations
+[51/248] [chromium] › tests\e2e\equipment-stock.spec.ts:72:1 › KAN-18 technical support marks equipment unavailable, sees the shortfall it causes and then restores it
+[52/248] [chromium] › tests\e2e\equipment-stock.spec.ts:108:1 › KAN-18 a stale form is refused and the current quantities are reloaded before saving again
+[53/248] [chromium] › tests\e2e\equipment-stock.spec.ts:128:1 › KAN-18 invalid quantities and a missing reason are explained and cannot be saved
+[54/248] [chromium] › tests\e2e\equipment-stock.spec.ts:148:3 › KAN-18 the stock URL is protected for EVENT_ORGANISER
+[55/248] [chromium] › tests\e2e\equipment-stock.spec.ts:148:3 › KAN-18 the stock URL is protected for EVENT_COORDINATOR
+[56/248] [chromium] › tests\e2e\equipment-stock.spec.ts:148:3 › KAN-18 the stock URL is protected for EVENT_COORDINATOR_LEAD
+[57/248] [chromium] › tests\e2e\equipment-stock.spec.ts:148:3 › KAN-18 the stock URL is protected for VENUE_STAFF
+[58/248] [chromium] › tests\e2e\equipment-stock.spec.ts:148:3 › KAN-18 the stock URL is protected for ATTENDEE
+[59/248] [chromium] › tests\e2e\equipment-stock.spec.ts:148:3 › KAN-18 the stock URL is protected for a signed-out visitor
+[60/248] [chromium] › tests\e2e\equipment-stock.spec.ts:157:1 › KAN-18 the stock list and editor fit a narrow screen without sideways scrolling
+[61/248] [chromium] › tests\e2e\equipment-stock.spec.ts:171:1 › KAN-18 the running API requires login for the stock list, detail and update
+[62/248] [chromium] › tests\e2e\event-completion.spec.ts:47:1 › KAN-10 the assigned coordinator is refused before the event ends, then completes it and sees the outcome
+[63/248] [chromium] › tests\e2e\event-completion.spec.ts:72:1 › KAN-10 the organiser sees the completed status and outcome but has no completion action
+[64/248] [chromium] › tests\e2e\event-completion.spec.ts:82:1 › KAN-10 the organiser has no completion action on a confirmed event
+[65/248] [chromium] › tests\e2e\event-completion.spec.ts:91:1 › KAN-10 an approved event offers no completion action to the coordinator
+[66/248] [chromium] › tests\e2e\event-completion.spec.ts:99:1 › KAN-10 the completion panel fits a narrow screen without sideways scrolling
+[67/248] [chromium] › tests\e2e\event-completion.spec.ts:111:1 › KAN-10 the running API requires login to complete or read a completion
+[68/248] [chromium] › tests\e2e\event-confirmation.spec.ts:40:1 › KAN-61-AC3/AC4 coordinator confirms a ready event and the outcome persists after reload
+[69/248] [chromium] › tests\e2e\event-confirmation.spec.ts:73:1 › KAN-61-AC105 an outage still needing recovery blocks confirmation with a reason
+[70/248] [chromium] › tests\e2e\event-confirmation.spec.ts:88:1 › KAN-61-AC4 the organiser sees who confirmed the event and when, on desktop and narrow screens
+[71/248] [chromium] › tests\e2e\event-request-detail.spec.ts:86:3 › KAN-16 organiser opens approved outcome from the list and reloads it
+[72/248] [chromium] › tests\e2e\event-request-detail.spec.ts:86:3 › KAN-16 organiser opens rejected outcome from the list and reloads it
+[73/248] [chromium] › tests\e2e\event-request-detail.spec.ts:125:1 › KAN-16 mobile detail wraps long names and displays a multiline reason as text
+[74/248] [chromium] › tests\e2e\event-request-detail.spec.ts:149:1 › KAN-16 denied detail access shows a generic message without request data
+[75/248] [chromium] › tests\e2e\event-request-detail.spec.ts:162:1 › KAN-6-AC101 saved-draft submission shows the server's field errors and keeps the draft
+[76/248] [chromium] › tests\e2e\event-requests.spec.ts:50:1 › KAN-16 organisers see all request statuses and refresh a changed outcome
+[77/248] [chromium] › tests\e2e\event-requests.spec.ts:84:1 › KAN-16 long request names and clarification status fit a narrow screen
+[78/248] [chromium] › tests\e2e\event-requests.spec.ts:102:1 › KAN-16 list failure can be retried and an empty result is explicit
+[79/248] [chromium] › tests\e2e\event-requests.spec.ts:120:1 › KAN-16 an expired session removes private requests and allows signing in again
+[80/248] [chromium] › tests\e2e\kan15-change-requests.spec.ts:52:1 › KAN-15-AC1/AC2 organiser requests a change and sees it pending while the event is unchanged
+[81/248] [chromium] › tests\e2e\kan15-change-requests.spec.ts:80:1 › KAN-15-AC3/AC4/AC6 coordinator compares values, sees affected arrangements and approves
+[82/248] [chromium] › tests\e2e\kan15-change-requests.spec.ts:106:1 › KAN-15-AC8/AC103 coordinator cannot approve a change that affects confirmed arrangements
+[83/248] [chromium] › tests\e2e\kan34-draft-edit.spec.ts:4:1 › KAN-34 registration toggles and cleared values survive save and reopening
+[84/248] [chromium] › tests\e2e\kan66-planning-edits.spec.ts:41:1 › KAN-66-AC101/AC3 organiser edits a submitted request and sees it after refresh
+[85/248] [chromium] › tests\e2e\kan66-planning-edits.spec.ts:72:1 › KAN-66-AC103 a stale save is refused and the latest details can be reloaded
+[86/248] [chromium] › tests\e2e\kan66-planning-edits.spec.ts:95:1 › KAN-66-AC102 coordinator sees only name and description for an approved event
+[87/248] [chromium] › tests\e2e\kan82-independent-arrangements.spec.ts:83:1 › KAN-82 running API requires login to cancel a venue arrangement
+[88/248] [chromium] › tests\e2e\kan82-independent-arrangements.spec.ts:89:1 › KAN-82 coordinator cancels one arrangement, keeps the other and requests a linked replacement
+[89/248] [chromium] › tests\e2e\lead-assignment.spec.ts:86:3 › KAN-79 Lead allocation browser workflow › assigns from the queue and keeps the allocation accessible in active-event oversight
+[90/248] [chromium] › tests\e2e\lead-assignment.spec.ts:112:3 › KAN-79 Lead allocation browser workflow › allows initial allocation of an active confirmed event through its oversight detail
+[91/248] [chromium] › tests\e2e\lead-assignment.spec.ts:126:3 › KAN-79 Lead allocation browser workflow › handles a stale assignment conflict by refreshing the queue without claiming success
+[92/248] [chromium] › tests\e2e\lead-assignment.spec.ts:151:3 › KAN-79 Lead allocation browser workflow › keeps a submitted request visible when no coordinator is available
+[93/248] [chromium] › tests\e2e\lead-assignment.spec.ts:161:3 › KAN-79 Lead allocation browser workflow › clears private allocation data on logout and ignores a late in-flight save result
+[94/248] [chromium] › tests\e2e\lead-assignment.spec.ts:189:7 › KAN-79 Lead allocation browser workflow › EVENT_ORGANISER cannot open /lead or load Lead data
+[95/248] [chromium] › tests\e2e\lead-assignment.spec.ts:189:7 › KAN-79 Lead allocation browser workflow › EVENT_ORGANISER cannot open /lead/oversight or load Lead data
+[96/248] [chromium] › tests\e2e\lead-assignment.spec.ts:189:7 › KAN-79 Lead allocation browser workflow › EVENT_ORGANISER cannot open /lead/oversight/10000000-0000-4000-8000-000000000079 or load Lead data
+[97/248] [chromium] › tests\e2e\lead-assignment.spec.ts:189:7 › KAN-79 Lead allocation browser workflow › EVENT_ORGANISER cannot open /reviews/unassigned or load Lead data
+[98/248] [chromium] › tests\e2e\lead-assignment.spec.ts:189:7 › KAN-79 Lead allocation browser workflow › EVENT_COORDINATOR cannot open /lead or load Lead data
+[99/248] [chromium] › tests\e2e\lead-assignment.spec.ts:189:7 › KAN-79 Lead allocation browser workflow › EVENT_COORDINATOR cannot open /lead/oversight or load Lead data
+[100/248] [chromium] › tests\e2e\lead-assignment.spec.ts:189:7 › KAN-79 Lead allocation browser workflow › EVENT_COORDINATOR cannot open /lead/oversight/10000000-0000-4000-8000-000000000079 or load Lead data
+[101/248] [chromium] › tests\e2e\lead-assignment.spec.ts:189:7 › KAN-79 Lead allocation browser workflow › EVENT_COORDINATOR cannot open /reviews/unassigned or load Lead data
+[102/248] [chromium] › tests\e2e\lead-assignment.spec.ts:189:7 › KAN-79 Lead allocation browser workflow › VENUE_STAFF cannot open /lead or load Lead data
+[103/248] [chromium] › tests\e2e\lead-assignment.spec.ts:189:7 › KAN-79 Lead allocation browser workflow › VENUE_STAFF cannot open /lead/oversight or load Lead data
+[104/248] [chromium] › tests\e2e\lead-assignment.spec.ts:189:7 › KAN-79 Lead allocation browser workflow › VENUE_STAFF cannot open /lead/oversight/10000000-0000-4000-8000-000000000079 or load Lead data
+[105/248] [chromium] › tests\e2e\lead-assignment.spec.ts:189:7 › KAN-79 Lead allocation browser workflow › VENUE_STAFF cannot open /reviews/unassigned or load Lead data
+[106/248] [chromium] › tests\e2e\lead-assignment.spec.ts:189:7 › KAN-79 Lead allocation browser workflow › TECHNICAL_SUPPORT_STAFF cannot open /lead or load Lead data
+[107/248] [chromium] › tests\e2e\lead-assignment.spec.ts:189:7 › KAN-79 Lead allocation browser workflow › TECHNICAL_SUPPORT_STAFF cannot open /lead/oversight or load Lead data
+[108/248] [chromium] › tests\e2e\lead-assignment.spec.ts:189:7 › KAN-79 Lead allocation browser workflow › TECHNICAL_SUPPORT_STAFF cannot open /lead/oversight/10000000-0000-4000-8000-000000000079 or load Lead data
+[109/248] [chromium] › tests\e2e\lead-assignment.spec.ts:189:7 › KAN-79 Lead allocation browser workflow › TECHNICAL_SUPPORT_STAFF cannot open /reviews/unassigned or load Lead data
+[110/248] [chromium] › tests\e2e\lead-assignment.spec.ts:189:7 › KAN-79 Lead allocation browser workflow › ATTENDEE cannot open /lead or load Lead data
+[111/248] [chromium] › tests\e2e\lead-assignment.spec.ts:189:7 › KAN-79 Lead allocation browser workflow › ATTENDEE cannot open /lead/oversight or load Lead data
+[112/248] [chromium] › tests\e2e\lead-assignment.spec.ts:189:7 › KAN-79 Lead allocation browser workflow › ATTENDEE cannot open /lead/oversight/10000000-0000-4000-8000-000000000079 or load Lead data
+[113/248] [chromium] › tests\e2e\lead-assignment.spec.ts:189:7 › KAN-79 Lead allocation browser workflow › ATTENDEE cannot open /reviews/unassigned or load Lead data
+[114/248] [chromium] › tests\e2e\lead-assignment.spec.ts:200:3 › KAN-79 Lead allocation browser workflow › does not load Lead data before a session has been verified
+[115/248] [chromium] › tests\e2e\lead-assignment.spec.ts:216:3 › KAN-79 Lead allocation browser workflow › requires sign-in on a direct oversight link
+[116/248] [chromium] › tests\e2e\notifications.spec.ts:81:1 › KAN-64 running server requires login for every notification route
+[117/248] [chromium] › tests\e2e\notifications.spec.ts:96:3 › KAN-64 EVENT_ORGANISER has a bell showing the unread count and an inbox
+[118/248] [chromium] › tests\e2e\notifications.spec.ts:96:3 › KAN-64 EVENT_COORDINATOR has a bell showing the unread count and an inbox
+[119/248] [chromium] › tests\e2e\notifications.spec.ts:96:3 › KAN-64 EVENT_COORDINATOR_LEAD has a bell showing the unread count and an inbox
+[120/248] [chromium] › tests\e2e\notifications.spec.ts:96:3 › KAN-64 VENUE_STAFF has a bell showing the unread count and an inbox
+[121/248] [chromium] › tests\e2e\notifications.spec.ts:96:3 › KAN-64 TECHNICAL_SUPPORT_STAFF has a bell showing the unread count and an inbox
+[122/248] [chromium] › tests\e2e\notifications.spec.ts:96:3 › KAN-64 ATTENDEE has a bell showing the unread count and an inbox
+[123/248] [chromium] › tests\e2e\notifications.spec.ts:108:1 › KAN-64 a signed-out visitor sees no bell and is asked to sign in without loading notifications
+[124/248] [chromium] › tests\e2e\notifications.spec.ts:118:1 › KAN-64 shows unread and read notices with their links, marks one read and updates the bell
+[125/248] [chromium] › tests\e2e\notifications.spec.ts:146:1 › KAN-64 marks every notification read and removes the badge
+[126/248] [chromium] › tests\e2e\notifications.spec.ts:158:1 › KAN-64 a failed load shows an error that can be retried
+[127/248] [chromium] › tests\e2e\notifications.spec.ts:166:1 › KAN-64 the inbox and bell fit a narrow screen without horizontal overflow
+[128/248] [chromium] › tests\e2e\registrations.spec.ts:29:1 › KAN-17 AC1–4/102 keyboard confirmation, cancel and persistent withdrawn status
+[129/248] [chromium] › tests\e2e\registrations.spec.ts:42:1 › KAN-67 AC1–3/7/101 roster is readable on desktop and narrow screens
+[130/248] [chromium] › tests\e2e\registrations.spec.ts:53:1 › KAN-80 TC-20-417 notification target distinguishes same-name registrations
+[131/248] [chromium] › tests\e2e\review-access.spec.ts:82:3 › KAN-25 dashboard review navigation matches organiser access
+[132/248] [chromium] › tests\e2e\review-access.spec.ts:82:3 › KAN-25 dashboard review navigation matches signed-out visitor access
+[133/248] [chromium] › tests\e2e\review-access.spec.ts:82:3 › KAN-25 dashboard review navigation matches coordinator access
+[134/248] [chromium] › tests\e2e\review-access.spec.ts:101:3 › KAN-25/KAN-33 organiser cannot open /reviews or load review data
+[135/248] [chromium] › tests\e2e\review-access.spec.ts:118:3 › KAN-25/KAN-33 signed-out visitor cannot open /reviews or load review data
+[136/248] [chromium] › tests\e2e\review-access.spec.ts:133:3 › KAN-25/KAN-33 coordinator sees /reviews and signing out clears its data
+[137/248] [chromium] › tests\e2e\review-access.spec.ts:101:3 › KAN-25/KAN-33 organiser cannot open /reviews/10000000-0000-4000-8000-000000000033 or load review data
+[138/248] [chromium] › tests\e2e\review-access.spec.ts:118:3 › KAN-25/KAN-33 signed-out visitor cannot open /reviews/10000000-0000-4000-8000-000000000033 or load review data
+[139/248] [chromium] › tests\e2e\review-access.spec.ts:133:3 › KAN-25/KAN-33 coordinator sees /reviews/10000000-0000-4000-8000-000000000033 and signing out clears its data
+[140/248] [chromium] › tests\e2e\review-access.spec.ts:166:1 › KAN-25/KAN-33 review queue waits for a verified coordinator session
+[141/248] [chromium] › tests\e2e\review-access.spec.ts:192:5 › KAN-33 review queue panels keep readable insets in ready at 1280px
+[142/248] [chromium] › tests\e2e\review-access.spec.ts:192:5 › KAN-33 review queue panels keep readable insets in empty at 1280px
+[143/248] [chromium] › tests\e2e\review-access.spec.ts:192:5 › KAN-33 review queue panels keep readable insets in error at 1280px
+[144/248] [chromium] › tests\e2e\review-access.spec.ts:192:5 › KAN-33 review queue panels keep readable insets in loading at 1280px
+[145/248] [chromium] › tests\e2e\review-access.spec.ts:192:5 › KAN-33 review queue panels keep readable insets in ready at 390px
+[146/248] [chromium] › tests\e2e\review-access.spec.ts:192:5 › KAN-33 review queue panels keep readable insets in empty at 390px
+[147/248] [chromium] › tests\e2e\review-access.spec.ts:192:5 › KAN-33 review queue panels keep readable insets in error at 390px
+[148/248] [chromium] › tests\e2e\review-access.spec.ts:192:5 › KAN-33 review queue panels keep readable insets in loading at 390px
+[149/248] [chromium] › tests\e2e\review-decision.spec.ts:31:1 › KAN-67 review shortcuts are visibly linked, keyboard accessible and fit mobile
+[150/248] [chromium] › tests\e2e\review-decision.spec.ts:84:3 › KAN-36 SUBMITTED to approved outcome and reason survive a browser reload
+[151/248] [chromium] › tests\e2e\review-decision.spec.ts:84:3 › KAN-36 SUBMITTED to rejected outcome and reason survive a browser reload
+[152/248] [chromium] › tests\e2e\review-decision.spec.ts:84:3 › KAN-36 UNDER_REVIEW to approved outcome and reason survive a browser reload
+[153/248] [chromium] › tests\e2e\review-decision.spec.ts:84:3 › KAN-36 UNDER_REVIEW to rejected outcome and reason survive a browser reload
+[154/248] [chromium] › tests\e2e\review-decision.spec.ts:159:1 › KAN-36 a submitted request without the decision action has no decision controls
+[155/248] [chromium] › tests\e2e\review-decision.spec.ts:188:1 › KAN-60 a blank rejection reason is blocked in the browser; the corrected reason survives a reload
+[156/248] [chromium] › tests\e2e\review-queue.spec.ts:3:1 › KAN-33 review queue shows a service error and retries successfully
+[157/248] [chromium] › tests\e2e\safety-review.spec.ts:43:1 › KAN-84-AC2/AC3 coordinator submits safety notes and sees the round awaiting the officer after reload
+[158/248] [chromium] › tests\e2e\safety-review.spec.ts:68:1 › KAN-84-AC1/AC4/AC6 Safety Officer opens the queue, sees missing information and requests technical changes
+[159/248] [chromium] › tests\e2e\safety-review.spec.ts:107:1 › KAN-84-AC8/AC9 preparation starts on current approval and the organiser sees it blocked after a change
+[160/248] [chromium] › tests\e2e\safety-review.spec.ts:141:1 › KAN-84-AC4/AC12 leaving a saving review keeps its late result out of the next review
+[161/248] [chromium] › tests\e2e\scaffold.spec.ts:3:1 › KAN-25/KAN-36/KAN-16 running server requires login for event routes
+[162/248] [chromium] › tests\e2e\scaffold.spec.ts:20:1 › SCF-E2E-01 browser reaches the API and migrated database through the Vite proxy
+[163/248] [chromium] › tests\e2e\scaffold.spec.ts:36:1 › SCF-E2E-02 navigation reaches organiser login guidance and the creation page
+[164/248] [chromium] › tests\e2e\scaffold.spec.ts:54:1 › SCF-E2E-03 database failure is visible and the check can recover
+[165/248] [chromium] › tests\e2e\scaffold.spec.ts:73:1 › SCF-E2E-04 narrow screen supports navigation without horizontal overflow
+[166/248] [chromium] › tests\e2e\venue-availability.spec.ts:64:1 › KAN-51 running server requires login for venue availability
+[167/248] [chromium] › tests\e2e\venue-availability.spec.ts:81:3 › KAN-51 venue availability navigation matches event coordinator access
+[168/248] [chromium] › tests\e2e\venue-availability.spec.ts:81:3 › KAN-51 venue availability navigation matches venue staff member access
+[169/248] [chromium] › tests\e2e\venue-availability.spec.ts:81:3 › KAN-51 venue availability navigation matches technical support staff member access
+[170/248] [chromium] › tests\e2e\venue-availability.spec.ts:81:3 › KAN-51 venue availability navigation matches event organiser access
+[171/248] [chromium] › tests\e2e\venue-availability.spec.ts:81:3 › KAN-51 venue availability navigation matches attendee access
+[172/248] [chromium] › tests\e2e\venue-availability.spec.ts:81:3 › KAN-51 venue availability navigation matches signed-out visitor access
+[173/248] [chromium] › tests\e2e\venue-availability.spec.ts:99:3 › KAN-51 event organiser cannot open the calendar or load venue data
+[174/248] [chromium] › tests\e2e\venue-availability.spec.ts:99:3 › KAN-51 attendee cannot open the calendar or load venue data
+[175/248] [chromium] › tests\e2e\venue-availability.spec.ts:113:1 › KAN-51 signed-out visitor is asked to sign in without loading venue data
+[176/248] [chromium] › tests\e2e\venue-availability.spec.ts:124:1 › KAN-51 venue staff distinguish periods per venue, change week and keep the view after reload
+[177/248] [chromium] › tests\e2e\venue-availability.spec.ts:158:1 › KAN-51 calendar fits a narrow screen without horizontal overflow
+[178/248] [chromium] › tests\e2e\venue-booking-submission.spec.ts:116:1 › KAN-53 running API requires login for venue booking submission
+[179/248] [chromium] › tests\e2e\venue-booking-submission.spec.ts:123:3 › KAN-53 submitted booking reaches venue staff and its approved outcome returns to the coordinator
+[180/248] [chromium] › tests\e2e\venue-booking-submission.spec.ts:123:3 › KAN-53 submitted booking reaches venue staff and its rejected outcome returns to the coordinator
+[181/248] [chromium] › tests\e2e\venue-booking-submission.spec.ts:161:3 › KAN-53 VENUE_BOOKING_CONFLICT keeps the entered request and displays useful feedback
+[182/248] [chromium] › tests\e2e\venue-booking-submission.spec.ts:161:3 › KAN-53 VENUE_UNAVAILABLE keeps the entered request and displays useful feedback
+[183/248] [chromium] › tests\e2e\venue-booking-submission.spec.ts:175:1 › KAN-53 uncertain submission refreshes a saved pending request without another write
+[184/248] [chromium] › tests\e2e\venue-booking-submission.spec.ts:190:1 › KAN-53 organiser detail does not mount the private booking panel or request its APIs
+[185/248] [chromium] › tests\e2e\venue-booking-submission.spec.ts:200:3 › KAN-82 replacement shortcut reveals and focuses the next step below long history at 1280px
+[186/248] [chromium] › tests\e2e\venue-booking-submission.spec.ts:217:3 › KAN-82 request conflict and successful retry stay visible beside submit at 1280px
+[187/248] [chromium] › tests\e2e\venue-booking-submission.spec.ts:200:3 › KAN-82 replacement shortcut reveals and focuses the next step below long history at 390px
+[188/248] [chromium] › tests\e2e\venue-booking-submission.spec.ts:217:3 › KAN-82 request conflict and successful retry stay visible beside submit at 390px
+[189/248] [chromium] › tests\e2e\venue-bookings.spec.ts:99:1 › KAN-78 staff can distinguish event and occupied times and see affected-booking warnings
+[190/248] [chromium] › tests\e2e\venue-bookings.spec.ts:111:1 › KAN-8 running backend requires login for booking list, detail and decision
+[191/248] [chromium] › tests\e2e\venue-bookings.spec.ts:123:1 › KAN-81 Venue Staff approve a confirmed event replacement and retain its confirmed event status
+[192/248] [chromium] › tests\e2e\venue-bookings.spec.ts:146:3 › KAN-8 staff approved decision survives reload and leaves the pending queue
+[193/248] [chromium] › tests\e2e\venue-bookings.spec.ts:146:3 › KAN-8 staff rejected decision survives reload and leaves the pending queue
+[194/248] [chromium] › tests\e2e\venue-bookings.spec.ts:179:1 › KAN-8 coordinator sees saved outcomes and rejection information without decision controls
+[195/248] [chromium] › tests\e2e\venue-bookings.spec.ts:198:1 › KAN-8 coordinator receives unavailable view for another coordinator booking
+[196/248] [chromium] › tests\e2e\venue-bookings.spec.ts:211:3 › KAN-8 EVENT_ORGANISER cannot load private booking data or see navigation
+[197/248] [chromium] › tests\e2e\venue-bookings.spec.ts:211:3 › KAN-8 TECHNICAL_SUPPORT_STAFF cannot load private booking data or see navigation
+[198/248] [chromium] › tests\e2e\venue-bookings.spec.ts:211:3 › KAN-8 ATTENDEE cannot load private booking data or see navigation
+[199/248] [chromium] › tests\e2e\venue-bookings.spec.ts:211:3 › KAN-8 signed-out visitor cannot load private booking data or see navigation
+[200/248] [chromium] › tests\e2e\venue-bookings.spec.ts:227:1 › KAN-8 stale decision refreshes the saved competing outcome without retrying the write
+[201/248] [chromium] › tests\e2e\venue-bookings.spec.ts:241:1 › KAN-8 uncertain save requires refresh and does not submit the decision again
+[202/248] [chromium] › tests\e2e\venue-bookings.spec.ts:255:1 › KAN-8 booking list and decision form fit a narrow screen without horizontal overflow
+[203/248] [chromium] › tests\e2e\venue-bookings.spec.ts:272:3 › KAN-8 booking list text links are discoverable and clear the event filter at 1280px
+[204/248] [chromium] › tests\e2e\venue-bookings.spec.ts:272:3 › KAN-8 booking list text links are discoverable and clear the event filter at 390px
+[205/248] [chromium] › tests\e2e\venue-catalogue.spec.ts:79:1 › KAN-50 running server requires login to read or change the venue catalogue
+[206/248] [chromium] › tests\e2e\venue-catalogue.spec.ts:98:3 › KAN-50 venue catalogue navigation matches venue staff member access
+[207/248] [chromium] › tests\e2e\venue-catalogue.spec.ts:98:3 › KAN-50 venue catalogue navigation matches event coordinator access
+[208/248] [chromium] › tests\e2e\venue-catalogue.spec.ts:98:3 › KAN-50 venue catalogue navigation matches technical support staff member access
+[209/248] [chromium] › tests\e2e\venue-catalogue.spec.ts:98:3 › KAN-50 venue catalogue navigation matches event organiser access
+[210/248] [chromium] › tests\e2e\venue-catalogue.spec.ts:98:3 › KAN-50 venue catalogue navigation matches attendee access
+[211/248] [chromium] › tests\e2e\venue-catalogue.spec.ts:98:3 › KAN-50 venue catalogue navigation matches signed-out visitor access
+[212/248] [chromium] › tests\e2e\venue-catalogue.spec.ts:117:3 › KAN-50 event coordinator cannot open the catalogue or load venue data
+[213/248] [chromium] › tests\e2e\venue-catalogue.spec.ts:117:3 › KAN-50 technical support staff member cannot open the catalogue or load venue data
+[214/248] [chromium] › tests\e2e\venue-catalogue.spec.ts:117:3 › KAN-50 event organiser cannot open the catalogue or load venue data
+[215/248] [chromium] › tests\e2e\venue-catalogue.spec.ts:117:3 › KAN-50 attendee cannot open the catalogue or load venue data
+[216/248] [chromium] › tests\e2e\venue-catalogue.spec.ts:129:1 › KAN-50 signed-out visitor is asked to sign in without loading venue data
+[217/248] [chromium] › tests\e2e\venue-catalogue.spec.ts:140:1 › KAN-50 venue staff view the catalogue, update a venue and see the saved values after reload
+[218/248] [chromium] › tests\e2e\venue-catalogue.spec.ts:184:1 › KAN-50 venue staff can fill in the location, several layouts and opening time of a sparse venue
+[219/248] [chromium] › tests\e2e\venue-catalogue.spec.ts:200:1 › KAN-50 invalid values are explained and cannot be saved
+[220/248] [chromium] › tests\e2e\venue-catalogue.spec.ts:216:1 › KAN-50 a server rejection is shown and the entered values are kept
+[221/248] [chromium] › tests\e2e\venue-catalogue.spec.ts:230:1 › KAN-50 a venue that is not in the active catalogue shows a clear message and a way back
+[222/248] [chromium] › tests\e2e\venue-catalogue.spec.ts:239:1 › KAN-77 venue staff set setup and turnaround minutes that persist after reload
+[223/248] [chromium] › tests\e2e\venue-catalogue.spec.ts:264:1 › KAN-77 a stale buffer edit is explained and offers a reload without losing the typed value
+[224/248] [chromium] › tests\e2e\venue-holds.spec.ts:71:1 › KAN-83 running backend requires login to place or cancel a hold
+[225/248] [chromium] › tests\e2e\venue-holds.spec.ts:81:1 › KAN-83 Venue Staff place a hold in Singapore time, see it survive a reload and approve it
+[226/248] [chromium] › tests\e2e\venue-holds.spec.ts:100:1 › KAN-83 buffered deadline blocks setup time and accepts the exact occupied start
+[227/248] [chromium] › tests\e2e\venue-holds.spec.ts:121:1 › KAN-83 Venue Staff cancel a hold with a required reason
+[228/248] [chromium] › tests\e2e\venue-holds.spec.ts:135:1 › KAN-83 a late approval shows the expiry refusal and the released outcome, with no retry
+[229/248] [chromium] › tests\e2e\venue-holds.spec.ts:147:1 › KAN-83 the assigned coordinator sees the hold deadline on the booking without staff controls
+[230/248] [chromium] › tests\e2e\venue-outage-recovery.spec.ts:62:1 › KAN-81 venue staff save an outage over an approved booking and see it needs recovery
+[231/248] [chromium] › tests\e2e\venue-search.spec.ts:63:3 › KAN-12 four-digit year advances to time in Event start (Singapore time)
+[232/248] [chromium] › tests\e2e\venue-search.spec.ts:63:3 › KAN-12 four-digit year advances to time in Event end (Singapore time)
+[233/248] [chromium] › tests\e2e\venue-search.spec.ts:81:1 › KAN-12 running API requires login for venue search and filter lists
+[234/248] [chromium] › tests\e2e\venue-search.spec.ts:89:1 › KAN-12 coordinator sees every venue first, then narrows, changes and clears filters
+[235/248] [chromium] › tests\e2e\venue-search.spec.ts:126:1 › KAN-12 an end time before the start is refused before any request is sent
+[236/248] [chromium] › tests\e2e\venue-search.spec.ts:143:1 › KAN-12 a signed-out visitor is asked to sign in and no venue data is requested
+[237/248] [chromium] › tests\e2e\venue-search.spec.ts:153:3 › KAN-12 EVENT_ORGANISER cannot use venue search and no venue data is requested
+[238/248] [chromium] › tests\e2e\venue-search.spec.ts:153:3 › KAN-12 VENUE_STAFF cannot use venue search and no venue data is requested
+[239/248] [chromium] › tests\e2e\venue-search.spec.ts:164:1 › KAN-12 search page fits a phone screen without sideways scrolling
+[240/248] [chromium] › tests\e2e\venue-suitability.spec.ts:123:1 › KAN-52 running API requires login for context and assessment
+[241/248] [chromium] › tests\e2e\venue-suitability.spec.ts:131:1 › KAN-52 review link opens event requirements and a recheck replaces the previous conclusion
+[242/248] [chromium] › tests\e2e\venue-suitability.spec.ts:154:1 › KAN-82 arrangement link checks the saved period and layout while keeping parent requirements and booking actions separate
+[243/248] [chromium] › tests\e2e\venue-suitability.spec.ts:187:1 › KAN-52 changed event requirements clear the old interpretation and require confirmation again
+[244/248] [chromium] › tests\e2e\venue-suitability.spec.ts:203:1 › KAN-52 unresolved requirements show Needs review and editing clears the conclusion
+[245/248] [chromium] › tests\e2e\venue-suitability.spec.ts:220:3 › KAN-52 EVENT_ORGANISER cannot open the assessment or read its data
+[246/248] [chromium] › tests\e2e\venue-suitability.spec.ts:220:3 › KAN-52 VENUE_STAFF cannot open the assessment or read its data
+[247/248] [chromium] › tests\e2e\venue-suitability.spec.ts:220:3 › KAN-52 signed-out visitor cannot open the assessment or read its data
+[248/248] [chromium] › tests\e2e\venue-suitability.spec.ts:231:1 › KAN-52 assessment works on a narrow screen without horizontal overflow
+  248 passed (3.1m)

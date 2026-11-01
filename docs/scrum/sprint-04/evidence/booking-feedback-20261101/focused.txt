@@ -1,0 +1,23 @@
+
+Running 11 tests using 2 workers
+
+
+
+(node:19464) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+(node:16592) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1/11] [chromium] › tests\e2e\venue-booking-submission.spec.ts:123:3 › KAN-53 submitted booking reaches venue staff and its approved outcome returns to the coordinator
+[2/11] [chromium] › tests\e2e\venue-booking-submission.spec.ts:116:1 › KAN-53 running API requires login for venue booking submission
+[3/11] [chromium] › tests\e2e\venue-booking-submission.spec.ts:123:3 › KAN-53 submitted booking reaches venue staff and its rejected outcome returns to the coordinator
+[4/11] [chromium] › tests\e2e\venue-booking-submission.spec.ts:161:3 › KAN-53 VENUE_BOOKING_CONFLICT keeps the entered request and displays useful feedback
+[5/11] [chromium] › tests\e2e\venue-booking-submission.spec.ts:161:3 › KAN-53 VENUE_UNAVAILABLE keeps the entered request and displays useful feedback
+[6/11] [chromium] › tests\e2e\venue-booking-submission.spec.ts:175:1 › KAN-53 uncertain submission refreshes a saved pending request without another write
+[7/11] [chromium] › tests\e2e\venue-booking-submission.spec.ts:190:1 › KAN-53 organiser detail does not mount the private booking panel or request its APIs
+[8/11] [chromium] › tests\e2e\venue-booking-submission.spec.ts:200:3 › KAN-82 replacement shortcut reveals and focuses the next step below long history at 1280px
+[9/11] [chromium] › tests\e2e\venue-booking-submission.spec.ts:217:3 › KAN-82 request conflict and successful retry stay visible beside submit at 1280px
+[10/11] [chromium] › tests\e2e\venue-booking-submission.spec.ts:200:3 › KAN-82 replacement shortcut reveals and focuses the next step below long history at 390px
+[11/11] [chromium] › tests\e2e\venue-booking-submission.spec.ts:217:3 › KAN-82 request conflict and successful retry stay visible beside submit at 390px
+  11 passed (13.0s)

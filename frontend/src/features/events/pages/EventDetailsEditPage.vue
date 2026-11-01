@@ -316,6 +316,7 @@ onBeforeUnmount(() => {
           <input v-else :id="`${uid}-${field}`" :value="textValue(field)"
             @input="setText(field, $event)"
             :type="fieldConfig[field].kind === 'datetime' ? 'datetime-local' : fieldConfig[field].kind === 'count' ? 'number' : 'text'"
+            :max="fieldConfig[field].kind === 'datetime' ? '9999-12-31T23:59' : undefined"
             :min="fieldConfig[field].kind === 'count' ? 0 : undefined"
             :maxlength="field === 'name' ? 200 : undefined"
             :aria-invalid="errors[field] ? 'true' : undefined"

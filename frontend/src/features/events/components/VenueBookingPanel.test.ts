@@ -121,6 +121,7 @@ describe('KAN-53 venue booking request panel', () => {
     const view = render(VenueBookingPanel, { global, props: coordinatorProps });
     await fillAndSubmit();
     expect(await screen.findByRole('alert')).toHaveTextContent('A venue booking cannot be requested for this event.');
+    await waitFor(() => expect(screen.getByRole('alert')).toHaveFocus());
     expect(view.emitted('changed')).toBeUndefined();
   });
 
@@ -219,12 +220,14 @@ describe('KAN-53 venue booking request panel', () => {
     const view = render(VenueBookingPanel, { global, props: coordinatorProps });
     await fillAndSubmit();
     expect(await screen.findByRole('alert')).toHaveTextContent('could not confirm whether the booking request was saved');
+    expect(view.emitted('refresh')).toHaveLength(1);
     expect(screen.getByRole('button', { name: 'Request this venue' })).toBeDisabled();
     api.set(`GET /api/venue-bookings?eventRequestId=${eventRequestId}`, { body: { items: [pending] } });
     await fireEvent.click(screen.getByRole('button', { name: 'Refresh booking requests' }));
     expect(await screen.findByText('Pending')).toBeInTheDocument();
     expect(screen.getByRole('combobox', { name: 'Venue' })).toHaveValue('');
     expect(view.emitted('changed')).toBeUndefined();
+    expect(view.emitted('refresh')).toHaveLength(2);
     expect(api.writes()).toHaveLength(1);
   });
 
@@ -277,12 +280,32 @@ describe('KAN-53 venue booking request panel', () => {
       'GET /api/venues/search-venues': venues,
       [`POST ${base}/venue-bookings`]: apiError(status, 'EVENT_REQUEST_NOT_FOUND', 'Unavailable'),
     });
-    render(VenueBookingPanel, { global, props: coordinatorProps });
+    const view = render(VenueBookingPanel, { global, props: coordinatorProps });
     await fillAndSubmit();
     await waitFor(() => expect(screen.queryByRole('combobox')).not.toBeInTheDocument());
     expect(screen.queryByText('Pending')).not.toBeInTheDocument();
     if (status === 401) expect(session.user).toBeNull();
     else expect(screen.getByRole('alert')).toHaveTextContent('no longer have access');
+    expect(view.emitted('changed')).toBeUndefined();
+    if (status === 401) expect(view.emitted('refresh')).toBeUndefined();
+    else expect(view.emitted('refresh')).toHaveLength(1);
+  });
+
+  it.each([
+    ['list', 403], ['list', 404], ['catalogue', 403], ['catalogue', 404],
+  ] as const)('does not create a parent refresh loop when the initial %s read returns %s', async (source, status) => {
+    const denied = apiError(status, 'EVENT_REQUEST_NOT_FOUND', 'Unavailable');
+    const api = stubApi({
+      [`GET /api/venue-bookings?eventRequestId=${eventRequestId}`]: source === 'list' ? denied : { body: { items: [pending] } },
+      'GET /api/venues/search-venues': source === 'catalogue' ? denied : venues,
+    });
+    const view = render(VenueBookingPanel, { global, props: coordinatorProps });
+    expect(await screen.findByText(/no longer have access to its venue bookings/)).toBeInTheDocument();
+    await view.rerender({ ...coordinatorProps });
+    expect(view.emitted('refresh')).toBeUndefined();
+    expect(view.emitted('changed')).toBeUndefined();
+    expect(api.calls).toHaveLength(2);
+    expect(api.writes()).toEqual([]);
   });
 });
 
@@ -479,6 +502,8 @@ describe('KAN-82 managing one arrangement at a time', () => {
     await fireEvent.click(screen.getByRole('button', { name: 'Request replacement' }));
     const select = screen.getByLabelText(/This request replaces/) as HTMLSelectElement;
     expect(select.value).toBe('a1');
+    await waitFor(() => expect(screen.getByRole('heading', { name: 'Request a replacement venue' })).toHaveFocus());
+    expect(screen.getByText(/Replacing:/).closest('p')).toHaveTextContent('Main Hall');
     expect(select.selectedOptions[0]!.textContent).toContain('(cancelled)');
     expect(screen.getByText(/The cancelled arrangement stays cancelled\./)).toBeInTheDocument();
     await fillAndSubmit();
@@ -539,18 +564,20 @@ describe('KAN-82 managing one arrangement at a time', () => {
     expect(api.writes()[0]!.body).not.toHaveProperty('replacesBookingId');
   });
 
-  it('KAN-82-AC10 a cancel refused because access was lost hides the panel content', async () => {
+  it.each([403, 404])('KAN-82-AC10 a cancel refused with %s hides private content and refreshes sibling eligibility', async (status) => {
     stubApi({
       [list]: { body: { items: [approved] } },
       'GET /api/venues/search-venues': venues,
-      'POST /api/venue-bookings/a1/cancel': apiError(404, 'VENUE_BOOKING_NOT_FOUND', 'The venue booking request was not found.'),
+      'POST /api/venue-bookings/a1/cancel': apiError(status, 'VENUE_BOOKING_NOT_FOUND', 'The venue booking request was not found.'),
     });
-    render(VenueBookingPanel, { global, props: coordinatorProps });
+    const view = render(VenueBookingPanel, { global, props: coordinatorProps });
     await fireEvent.click(await screen.findByRole('button', { name: 'Cancel arrangement' }));
     await fireEvent.update(screen.getByLabelText('Reason for cancelling'), 'Too small');
     await fireEvent.click(screen.getByRole('button', { name: 'Confirm cancellation' }));
     expect(await screen.findByText(/no longer have access to its venue bookings/)).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Cancel arrangement' })).not.toBeInTheDocument();
+    expect(view.emitted('refresh')).toHaveLength(1);
+    expect(view.emitted('changed')).toBeUndefined();
   });
 
   it.each(['SUBMITTED', 'CANCELLED'])('KAN-82-AC4 offers no per-arrangement actions for a %s event', async (status) => {

@@ -59,6 +59,25 @@ async function fixtures(page: Page, role: string | null = 'EVENT_COORDINATOR') {
 
 const results = (page: Page) => page.getByRole('list', { name: 'Matching venues' });
 
+for (const fieldName of ['Event start (Singapore time)', 'Event end (Singapore time)']) {
+  test(`KAN-12 four-digit year advances to time in ${fieldName}`, async ({ page }) => {
+    const fixture = await fixtures(page);
+    await page.goto('/venues');
+    await expect(page.getByText('2 venues found')).toBeVisible();
+    const field = page.getByLabel(fieldName);
+    await field.fill('2025-11-16T10:00');
+    await field.focus();
+    // Chromium's en-US native control: move to the first segment, then to the year.
+    // Real keystrokes are necessary; fill() bypasses native segment auto-advance.
+    for (let i = 0; i < 8; i += 1) await field.press('ArrowLeft');
+    await field.press('ArrowRight');
+    await field.press('ArrowRight');
+    await field.pressSequentially('202611');
+    await expect(field).toHaveValue('2026-11-16T11:00');
+    expect(fixture.unexpected).toEqual([]);
+  });
+}
+
 test('KAN-12 running API requires login for venue search and filter lists', async ({ request }) => {
   for (const path of ['/api/venues/search-venues', '/api/venues/filter-options']) {
     const response = await request.get(path);

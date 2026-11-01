@@ -28,10 +28,10 @@ export interface SafetyReviewDetail {
   event: { id: string; name: string | null; status: string; startsAt: string | null; endsAt: string | null;
     expectedAttendance: number | null; venueRequirements: string | null; accessibilityNeeds: string | null;
     equipmentRequirements: string | null; equipmentPlanStatus: string };
-  venues: { bookingId: string; name: string; location: string | null; capacity: number; layouts: string[];
+  venues: { bookingId: string; name: string; location: string | null; capacity: number; layouts: string[]; facilities: string[];
     accessibilityFeatures: string[]; wheelchairAccessible: boolean; bookedLayout: string | null; status: string; needsRecovery: boolean;
     opensAt: string | null; closesAt: string | null; setupMinutes: number; turnaroundMinutes: number }[];
-  equipment: { id: string; name: string; quantity: number; status: string }[];
+  equipment: { id: string; name: string; quantity: number; status: string; technicalRequirements: string | null }[];
   readiness: Readiness | null;
   rounds: SafetyRound[];
 }

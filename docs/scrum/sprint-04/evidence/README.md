@@ -119,3 +119,83 @@ KAN-26 is In Progress / Tristan (3 SP), with unestimated KAN-104–106 In Progre
 | ID | Artifact | Source / result | Limits |
 | --- | --- | --- | --- |
 | S4-E23 | [Run logs and source hashes](acceptance-fixes-20261030/) (`check-final.txt`, `coverage-final.txt`, `integration.txt`, `browser.txt`, `safety-browser-final.txt`, `summary.json`, `document-validation.json`, `workbook-validation.json`; initial `check.txt` / `coverage.txt` retained); [run narrative](../../../testing/test-evidence.md#auto-20261030-s4-ac-fixes--arrangement-suitability-safety-screen-and-notification-clarification) | AUTO-20261030-S4-AC-FIXES: final check/coverage 1,208 frontend + 1,959 backend; real PostgreSQL 814/814; Chromium 229/229, followed by 4/4 safety browser checks after the final safety-route UUID normalization. No retries. Targeted suitability-service integration coverage 100%; reusable specifications, case results and workbook aligned. | Latest main 6b26503 plus uncommitted fix/sprint-4-acceptance-gaps changes, identified by source hashes. Synthetic auth and browser API substitutes; connected manual acceptance Not executed, acceptance Not assessed. No new migration or shared database writes. |
+
+## Minor UI fixes — 31 October 2026
+
+| ID | Artifact | Source / result | Limits |
+| --- | --- | --- | --- |
+| S4-E24 | [Logs, screenshots and source inventory](minor-ui-20261031/) (`check.txt`, `coverage.txt`, `browser.txt`, targeted and before-fix logs, `summary.json`, `date-input-inventory.json`, review desktop/mobile and equipment mobile images) | AUTO-20261031-MINOR-UI: 1,209 frontend + 1,959 backend tests, typechecks/builds/coverage and 234 Chromium tests pass. Search year and review underline failures/retests retained. Exact tested source identified by base commit and SHA256. | New browser tests use substituted authentication/API responses. Source inventory does not prove native keystrokes on every page/browser. Manual TC-10-212 Not executed; UI-patch acceptance Not assessed. No database writes or migration. |
+
+## Shared panel spacing and text links — 31 October 2026
+
+| ID | Artifact | Source / result | Limits |
+| --- | --- | --- | --- |
+| S4-E25 | [Logs, screenshots, audit observations and source hashes](ui-spacing-20261031/) (`before.txt`, `focused.txt`, `check.txt`, `coverage.txt`, `browser.txt`, `summary.json`, `layout-audit.json`, `source-inventory.json`, `layout-audit-harness.txt`; desktop/mobile queue and booking images) | AUTO-20261031-UI-SPACING: two product failures reproduced, 10 focused cases passed, check/coverage passed with 1,209 frontend + 1,959 backend tests, 244 browser tests passed. 229 inspected snapshots across 28 route patterns had no flagged inset/link/overflow issues. | Synthetic browser authentication/API responses and fallback fonts; sampled states, not every browser/state. CSS verified through geometry/style assertions and visual inspection. TC-04-233 Not executed; patch acceptance Not assessed. No shared database writes or migration. |
+
+## Booking replacement and feedback — 1 November 2026
+
+| ID | Artifact | Source / result | Limits |
+| --- | --- | --- | --- |
+| S4-E26 | [Logs, source hashes and desktop/mobile screenshots](booking-feedback-20261101/) (`before.txt`, `component-initial.txt`, `focused.txt`, `check.txt`, `coverage.txt`, `browser.txt`, `summary.json`, `document-validation.json`) | AUTO-20261101-BOOKING-FEEDBACK: two product failures reproduced; 11 focused and 248 full browser cases pass. Check/coverage pass with 1,209 frontend + 1,959 backend tests. Four screenshots visually inspected. | Synthetic browser authentication/API responses; no shared data writes or migration. TC-12-23 Not executed; patch acceptance Not assessed. Source hashes identify the tested candidate before documentation. |
+
+## Connected release walkthrough — 1 November 2026
+
+| ID | Artifact | Source / result | Limits |
+| --- | --- | --- | --- |
+| S4-E27 | [MAN-20261101-01 narrative and retained-data ledger](../../../testing/test-evidence.md), [eight scoped case execution rows](../../../testing/test-executions.csv), [retained screenshots](../../../testing/evidence/MAN-20261101-01/) | 23/24 walkthrough groups Pass; R24's functional browser access/logout checks complete, release review remains open. R01–R12 and R13 Part A, plus earlier R21 notices, are user-reported; their original execution dates/builds are Not recorded. Later observations were executed by the Codex browser agent through real role sessions on local frontend/API with shared Supabase development data. | Local source HEAD `429397aef14be8e3773206eddc9583e56c1f05ad`; exact served build not exposed. No automatic per-case extrapolation from group outcomes. User confirmed signed-out `/api/auth/me` HTTP 401 in Chrome Network on 1 November 2026. Current candidate CI, independent review/merge, current migration/job verification and formal release acceptance are not established. Test data retained; no cleanup. |
+
+The screenshots below support the specific views described in the run narrative. They do not independently establish every step or persisted result. Prior user-reported passes have no retained screenshots in this run.
+
+| Scope | Retained images |
+| --- | --- |
+| Assigned fixtures | [Assigned test fixtures](../../../testing/evidence/MAN-20261101-01/test-fixtures-assigned.jpg) |
+| R13 availability | [Overlapping shortfall](../../../testing/evidence/MAN-20261101-01/r13-overlap-shortfall.jpg), [adjacent interval](../../../testing/evidence/MAN-20261101-01/r13-adjacent-availability.jpg) |
+| R14 confirmation | [Outage blocks confirmation](../../../testing/evidence/MAN-20261101-01/r14-outage-blocks-confirmation.jpg) |
+| R15 registration | [Empty roster](../../../testing/evidence/MAN-20261101-01/r15-empty-roster.jpg), [third attendee sees full](../../../testing/evidence/MAN-20261101-01/r15-third-attendee-full.jpg), [registration closed](../../../testing/evidence/MAN-20261101-01/r15-registration-closed.jpg), [withdrawal unavailable after start](../../../testing/evidence/MAN-20261101-01/r15-withdrawal-after-start.jpg) |
+| R17 change review | [Withdrawn change refused](../../../testing/evidence/MAN-20261101-01/r17-withdrawn-change-refused.jpg) |
+| R18 safety/preparation | [MAIN safety approval and preparation](../../../testing/evidence/MAN-20261101-01/r18-main-safety-preparation.jpg) |
+| R19 remediation | [Combined remediation approved](../../../testing/evidence/MAN-20261101-01/r19-remediation-approved.jpg), [Venue-only unresolved](../../../testing/evidence/MAN-20261101-01/r19-venue-only-still-unresolved.jpg), [Venue-only approved](../../../testing/evidence/MAN-20261101-01/r19-venue-only-approved.jpg), [Technical-only unresolved](../../../testing/evidence/MAN-20261101-01/r19-technical-only-still-unresolved.jpg), [Technical-only approved and preparation resumed](../../../testing/evidence/MAN-20261101-01/r19-technical-only-approved.jpg) |
+| R20 stale/offline review | [Changed arrangements disable approval](../../../testing/evidence/MAN-20261101-01/r20-stale-round-approval-disabled.jpg), [offline save requires reload](../../../testing/evidence/MAN-20261101-01/r20-offline-save-reload-required.jpg), [online reconciled approval](../../../testing/evidence/MAN-20261101-01/r20-online-reconciled-approved.jpg). [Earlier loading capture](../../../testing/evidence/MAN-20261101-01/r20-online-reconciled-decision.jpg) is retained but does **not** evidence approval. Offline test was stale-tab reconciliation of a decision saved separately, not proof of a committed write with a lost response. |
+| R21 notification | [Safety notice destination](../../../testing/evidence/MAN-20261101-01/r21-safety-notice-destination.jpg) |
+| R22 cancellation | [Event cancelled](../../../testing/evidence/MAN-20261101-01/r22-event-cancelled.jpg) |
+| R23 completion | [Event completed after actual end](../../../testing/evidence/MAN-20261101-01/r23-event-completed.jpg) |
+
+## Targeted release regressions — 1 November 2026
+
+| ID | Artifact | Result / evidence boundary |
+| --- | --- | --- |
+| S4-E28 | [MAN-20261101-02](../../../testing/test-evidence.md#man-20261101-02--targeted-release-follow-up-1-november-2026), [case executions](../../../testing/test-executions.csv), [browser observations](../../../testing/evidence/MAN-20261101-02/browser-observations.json), [live HTTP results](../../../testing/evidence/MAN-20261101-02/live-http-probe.json) | Five targeted checks on source `034a631bdb05309d4ba0ef4ed1ff9ba032d9df50`: two UI failures; restored safety approval reproduces an AC9/design inconsistency, recorded Fail against AC9; two scoped passes. Exact served build Not recorded. Real local frontend/API/Supabase sessions; the direct HTTP probe is distinct from browser observations and 22 passing mocked completion tests. Venue buffers restored 15/15; two new PROBE bookings and one safety round retained. No product repair or release acceptance. |
+
+| Check | Captures and limitations |
+| --- | --- |
+| OPS-7 | [Changed buffer blocks preparation](../../../testing/evidence/MAN-20261101-02/ops7-buffer-change-blocked.jpg); [restoring buffer revives original approval](../../../testing/evidence/MAN-20261101-02/ops7-restored-original-approval.jpg). Same Round 3/preparation time; no new decision. |
+| D-1/O-1 | [Stale Ready after pending request](../../../testing/evidence/MAN-20261101-02/d1-stale-ready-after-request.jpg); [server refusal and Not ready](../../../testing/evidence/MAN-20261101-02/d1-server-refuses-stale-confirmation.jpg). Event stayed APPROVED; exact mutation HTTP status Not recorded. |
+| OBS-6 | [Cancelled line shows rejection reason](../../../testing/evidence/MAN-20261101-02/obs6-cancelled-shows-rejection-reason.jpg). Separate live HTTP artifact proves the correct cancellation reason is preserved. |
+| OBS-12 | [Initial navigation loading screen](../../../testing/evidence/MAN-20261101-02/obs12-navigation-loading.jpg) is **not approval evidence**. The final actual-link navigation result is recorded in `browser-observations.json`, entry **OBS-12 actual queue link return no reload**. |
+
+## Release regression repairs — 1 November 2026
+
+| ID | Artifact | Result / evidence boundary |
+| --- | --- | --- |
+| S4-E29 | [AUTO-20261101-RELEASE-REGRESSIONS](../../../testing/test-evidence.md#auto-20261101-release-regressions--targeted-repairs-1-november-2026), [summary and source hashes](release-regressions-20261101/summary.json), [logs](release-regressions-20261101/) | Before-fix Fail and automated retest Pass for KAN-61/63/84. Final check: 1,246 frontend + 1,959 backend; coverage: 98.38/89.88% lines; database: 831. Browser:253/253 Pass with one worker/zero retries; two parallel attempts had different navigation timeouts and remain recorded. Worker-shutdown failures also retained. API-substituted browser tests and isolated PostgreSQL do not establish shared connected acceptance. Shared 023 and three connected retests Not executed. |
+
+Screenshots: [corrected equipment reasons, desktop](release-regressions-20261101/equipment-reasons-1280.png), [narrow](release-regressions-20261101/equipment-reasons-390.png), [pending venue makes confirmation Not ready](release-regressions-20261101/confirmation-pending-booking.png), [uncertain save reconciliation](release-regressions-20261101/confirmation-uncertain-save.png), [failed read offers retry](release-regressions-20261101/confirmation-read-retry.png). These captures use synthetic API/auth fixtures. Regenerated design exports: [safety sequence](../../../architecture/exports/seq-safety-review.png), [invalidation relationships](../../../architecture/exports/erd-safety-invalidation.png).
+
+## Coverage, browser isolation and documentation — 1 November 2026
+
+| ID | Artifact | Result / evidence boundary |
+| --- | --- | --- |
+| S4-E30 | [AUTO-20261101-TEST-HARDENING](../../../testing/test-evidence.md#auto-20261101-test-hardening--coverage-browser-isolation-and-documentation), [final candidate manifest](test-hardening-20261101/summary.json), [logs](test-hardening-20261101/), [coverage gaps](test-hardening-20261101/coverage-gaps.json), [level-classification audit](test-hardening-20261101/test-level-classification.json) | Final check and workspace coverage pass: 1,332 frontend + 2,032 backend tests, two harness guards, types and builds. Combined backend/database coverage passes 2,868 tests and 99/97/99/99 floors. Final browser runs both pass 253/253 with two workers and zero retries. Reproduced auth sequencing and queue-loading failures/retests are retained. No live Supabase acceptance, remote candidate CI, commit or push; shared 023 and four connected retests remain Not executed. |
+
+Coverage statements/branches/functions/lines: frontend **96.07/93.07/97.86/98.41%**, backend isolated **90.62/89.98/91.02/90.75%**, backend combined **99.24/97.88/99.72/99.46%**. Exact denominators and per-file values are retained in the three `*-coverage-summary.json` files. The gaps report states what remains untested; floors do not replace the rubric's 100% target or establish acceptance. SQL and external provider coverage are not measured.
+
+Native [browser run 1](test-hardening-20261101/browser-final-1.json), [run 2](test-hardening-20261101/browser-final-2.json) and their [summary/source hashes](test-hardening-20261101/browser-final-summary.json) cover the final session and safety-queue fixes. Earlier `browser-isolated-*` passes precede those final changes. [Confirmation screenshot](test-hardening-20261101/browser-confirmation-not-ready.png) shows a synthetic fixture, not a new manual result. Current design exports were regenerated and visually inspected: [C1](../../../architecture/exports/c1-context.png), [C2](../../../architecture/exports/c2-containers.png), [C3](../../../architecture/exports/c3-components.png), [class](../../../architecture/exports/class.png).
+
+## Final-candidate verification and shared rollout — 1 November 2026
+
+| ID | Artifact | Result / boundary |
+| --- | --- | --- |
+| S4-E31 | [AUTO-20261101-FREEZE-CANDIDATE](../../../testing/test-evidence.md#auto-20261101-freeze-candidate--final-local-verification-1-november-2026), [manifest](freeze-candidate-20261101/summary.json), [logs and exact coverage inventories](freeze-candidate-20261101/) | Check/coverage pass: 1,363 frontend + 2,032 backend, two harness guards, types/builds; combined backend/database 2,868. Browser 253/253 twice, two workers and zero retries. Four parent-refresh reproduction failures and passing retest retained. Migration 023 applied to shared development, checksums/preservation verified, repeat no-op. No actual teammate approval or remote CI is inferred. |
+| S4-E32 | [MAN-20261101-03](../../../testing/test-evidence.md#man-20261101-03--connected-repaired-candidate-acceptance-1-november-2026), [browser/API/database evidence](../../../testing/evidence/MAN-20261101-03/) | Four scoped connected Pass results: permanent safety invalidation/re-review, readiness refresh, cancellation-reason readback and real-auth smoke. Dedicated venue restored; temporary booking cancelled; new review/audit history retained. Formal release decision remains separate. |
+
+Connected captures: [baseline](../../../testing/evidence/MAN-20261101-03/probe-before.jpg), [pending venue removes Ready](../../../testing/evidence/MAN-20261101-03/pending-readiness.jpg), [restored venue still requires review](../../../testing/evidence/MAN-20261101-03/safety-restored-stale.jpg), [new review restores preparation](../../../testing/evidence/MAN-20261101-03/safety-recovered.jpg), [organiser denied coordinator page](../../../testing/evidence/MAN-20261101-03/auth-wrong-role.jpg). These use real role sessions and shared development persistence; no credentials are retained.

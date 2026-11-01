@@ -1,0 +1,37 @@
+import { writeFile } from 'node:fs/promises';
+import { test as base } from '@playwright/test';
+
+export { expect, type Page } from '@playwright/test';
+
+export const test = base.extend({
+  page: async ({ page }, use, testInfo) => {
+    // Optional remote typography must not hold page.goto's load event open.
+    // Use the application's fallback fonts while keeping API fixtures and live checks intact.
+    await page.route('https://fonts.googleapis.com/**', (route) =>
+      route.fulfill({ contentType: 'text/css', body: '' }));
+    await use(page);
+    if (!page.isClosed() && new URL(page.url()).origin === 'http://127.0.0.1:5173') {
+      const audit = await page.evaluate(() => {
+        const visible = (el: Element) => {
+          const box = el.getBoundingClientRect();
+          const css = getComputedStyle(el);
+          return box.width > 1 && box.height > 1 && css.visibility === 'visible' && css.display !== 'none';
+        };
+        const panels = [...document.querySelectorAll('main .panel')].filter(visible).map(el => {
+          const css = getComputedStyle(el);
+          return { classes: el.className, text: el.textContent?.trim().slice(0, 100),
+            padding: [css.paddingTop, css.paddingRight, css.paddingBottom, css.paddingLeft].map(parseFloat) };
+        });
+        const links = [...document.querySelectorAll('main a')].filter(visible).map(el => ({
+          classes: el.className, text: el.textContent?.trim().slice(0, 100),
+          href: el.getAttribute('href'), underline: getComputedStyle(el).textDecorationLine,
+          nonTextControl: el.matches('.button, .workflow-card, .queue-item, .notification-link, .nav-link, .brand, .sign-in-link, .skip-link'),
+        }));
+        return { url: location.pathname + location.search, width: innerWidth,
+          overflow: document.documentElement.scrollWidth - innerWidth, panels, links };
+      });
+      await writeFile(testInfo.outputPath('layout-audit.json'), JSON.stringify({ title: testInfo.title, ...audit }, null, 2));
+      await page.screenshot({ path: testInfo.outputPath('layout-audit.png'), fullPage: true });
+    }
+  },
+});

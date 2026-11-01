@@ -61,7 +61,7 @@ onBeforeUnmount(() => controller?.abort());
 
     <p v-if="state.status === 'loading'" role="status">Loading the review queue…</p>
 
-    <div v-else-if="state.status === 'error'" role="alert">
+    <div v-else-if="state.status === 'error'" class="queue-feedback" role="alert">
       <p>{{ state.message }}</p>
       <button type="button" class="button button-secondary" @click="load">Try again</button>
     </div>
@@ -92,7 +92,7 @@ onBeforeUnmount(() => controller?.abort());
 
     <p v-if="decided.status === 'loading'">Loading decided requests…</p>
 
-    <div v-else-if="decided.status === 'error'" role="alert">
+    <div v-else-if="decided.status === 'error'" class="queue-feedback" role="alert">
       <p>{{ decided.message }}</p>
       <button type="button" class="button button-secondary" @click="load">Try again</button>
     </div>
@@ -119,6 +119,9 @@ onBeforeUnmount(() => controller?.abort());
 }
 .queue-item-name { flex: 1; font-weight: 600; min-width: 0; overflow-wrap: anywhere; }
 .queue-item-status { font-size: 13px; color: #59685e; }
+.queue-item:hover { background: #f8faf4; border-color: #b4c6a3; }
+.queue-item:hover .queue-item-name, .queue-item:focus-visible .queue-item-name { text-decoration: underline; text-underline-offset: 3px; }
+.queue-feedback { display: grid; justify-items: start; gap: 12px; font-size: 14px; line-height: 1.6; }
 .decided-panel { margin-top: 20px; }
 .decided-panel h2 { font-size: 19px; }
 .decided-description { color: #59685e; font-size: 14px; line-height: 1.6; margin: 6px 0 16px; }

@@ -5,7 +5,7 @@ import { authSession, clearLocalSession } from '../../auth/session.js';
 import { confirmEvent, fetchConfirmation, type EventConfirmation } from '../api/arrangements';
 
 /** KAN-61: final confirmation, distinct from KAN-36 initial approval. */
-const props = defineProps<{ eventRequestId: string; status: string; revision?: number }>();
+const props = defineProps<{ eventRequestId: string; status: string; revision?: number; refreshVersion?: number }>();
 const emit = defineEmits<{ changed: [] }>();
 const state = ref<EventConfirmation | null>(null);
 const loading = ref(false);
@@ -31,7 +31,8 @@ function failure(caught: unknown, fallback: string) {
 async function load() {
   if (!isManager.value || !['APPROVED', 'CONFIRMED'].includes(props.status)) return;
   reader?.abort(); const current = new AbortController(); reader = current;
-  loading.value = true;
+  // Never leave an actionable Ready checklist behind during reconciliation or a failed read.
+  state.value = null; acknowledged.value = false; loading.value = true;
   try {
     const result = await fetchConfirmation(props.eventRequestId, current.signal);
     if (!current.signal.aborted) state.value = result;
@@ -40,7 +41,7 @@ async function load() {
   } finally { if (!current.signal.aborted) loading.value = false; }
 }
 async function submit() {
-  if (!state.value?.canConfirm || !acknowledged.value || busy.value) return;
+  if (!state.value?.canConfirm || !acknowledged.value || busy.value || loading.value) return;
   const current = new AbortController(); writer = current;
   busy.value = true; error.value = ''; savedMessage.value = '';
   try {
@@ -69,6 +70,7 @@ watch(() => [authSession.loading, authSession.user?.id, authSession.user?.role, 
     viewer = next;
     reset(); savedMessage.value = outcome; void load();
   }, { immediate: true, flush: 'sync' });
+watch(() => props.refreshVersion, () => { reset(); void load(); }, { flush: 'sync' });
 onBeforeUnmount(reset);
 </script>
 
@@ -77,6 +79,8 @@ onBeforeUnmount(reset);
     <h2 id="confirmation-heading">Event confirmation</h2>
     <p v-if="loading && !state" role="status">Loading confirmation details…</p>
     <p v-if="error" role="alert">{{ error }}</p>
+    <button v-if="error && !loading && !busy" class="button button-secondary" type="button"
+      @click="error = ''; load()">Reload confirmation details</button>
     <p v-if="savedMessage" role="status">{{ savedMessage }}</p>
     <template v-if="state">
       <div v-if="state.confirmation && state.status === 'CONFIRMED'" class="confirmed" data-testid="confirmation-record">

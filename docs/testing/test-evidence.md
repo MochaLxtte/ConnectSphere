@@ -2311,3 +2311,852 @@ Review findings (MochaLxtte): P1 venue hours/buffer changes did not invalidate s
 **Coverage limits:** the full coverage report gives `SafetyReviewPage.vue` 98.24% statements, 89.39% branches, 92.85% functions and 98.64% lines; the uncovered line 150 is existing readiness-list rendering, and remaining generated/template branches mean coverage is not 100%. The backend unit report covers only 7.69% of suitability-service lines because its SQL behavior is verified in the separate PostgreSQL run. Existing safety-service coverage is 20.12% lines in the backend unit report. Neither suite totals nor high coverage prove every acceptance criterion or real-login workflow.
 
 **Documentation and acceptance:** KAN-80-AC2 is clarified in Jira and the repository: submission is the request for coordinator review. KAN-82 and KAN-84 remain within their existing criteria; no migration, estimate or booking capacity-refusal policy was added. S4-T13/T14/T15 retain **Not executed** for integrated manual acceptance and **Not assessed** for story acceptance. The user reports shared migrations 021 and 022 applied; that setup report is separate from this isolated run. Test schemas were removed by their fixtures; synthetic browser-startup data existed only in the owned disposable local container, which was stopped and removed after verification. The focused [manual instructions](README.md#30-october-2026--focused-local-e2e-acceptance-for-kan-80-kan-82-and-kan-84) identify what remains before acceptance.
+
+## AUTO-20261031-MINOR-UI — Date entry consistency and review links
+
+**31 October 2026; branch `fix/minor-ui-fixes`.** Tested build: latest main `54910211b4af9920af087e65e2c2ff15b9591b27` plus the working-tree source identified by SHA256 in [S4-E24](../scrum/sprint-04/evidence/README.md#minor-ui-fixes--31-october-2026). Windows, Node 24.21.0, Vitest 4.1.11 and Chromium. Automated execution used synthetic users and API response fixtures for the new browser cases; no shared Supabase writes or migration. Documentation was added after the tests and does not change the tested source.
+
+All date-bearing input declarations, including dynamic event edit/change fields, now have the same four-digit-year bound as the existing event-request form. Equipment what-if controls now use native datetime pickers: untouched source instants retain microseconds, explicitly edited values support milliseconds, and exact retained times are shown when needed. Native time-only catalogue controls remain unchanged. Review shortcuts form a consistently underlined, keyboard-accessible action list, two columns on desktop and one on narrow screens. Destinations and permissions are unchanged.
+
+| Command / check | Actual result |
+| --- | --- |
+| `npm run test -w @connectsphere/frontend -- src/features/equipment/pages/EquipmentAvailabilityPage.test.ts src/features/venues/pages/VenueSearchPage.test.ts src/features/reviews/pages/ReviewRequestPage.test.ts` | 135 passed across 3 files. |
+| `npx playwright test tests/e2e/equipment-availability.spec.ts tests/e2e/venue-search.spec.ts tests/e2e/review-decision.spec.ts --workers=2 --reporter=line` | 28 passed. |
+| `npm run check` | Typechecks/builds passed; 1,209 frontend + 1,959 backend tests passed. Existing Vite large-chunk warning remains. |
+| `npm run test:coverage` | Passed with the same test totals. Frontend statements/branches/functions/lines: 95.68% / 92.38% / 97.56% / 98.28%; backend: 89.75% / 89.42% / 89.25% / 89.88%. |
+| `npx playwright test --workers=2 --reporter=line` | 234/234 passed without retries. |
+| Source inspection and visual inspection | All Vue input declarations checked, including dynamic types; inventory retained. Review shortcuts and equipment inputs inspected in retained desktop/mobile screenshots. This is not a keystroke run through every individual form. |
+
+**Failures and retests:** the initial search regression reproduced six-digit years in both fields. The initial review test also failed because its broad API glob intercepted a Vite source import; that fixture was corrected before identifying the product failure. The corrected reproduction then found `View registrations` had no underline. The initial logs and corrected reproduction are retained separately. The focused three browser cases passed after the fix, followed by the targeted and full runs above. Case-level failures/retests are appended for TC-10-211 and TC-18-432; TC-16-19/20 have supported post-change results. No suite-wide pass was converted into results for unrelated cases.
+
+**Coverage limits:** `EventEquipmentAvailabilityPage.vue` has 99.36% statements / 96.83% branches / 100% functions / 100% lines. Its new picker accessors are exercised, including the untouched positive one-microsecond interval. Whole-file `ReviewRequestPage.vue` is 88.23% lines / 88.67% branches and `VenueSearchPage.vue` is 92.92% lines / 85.62% branches; existing branches are not fully covered. Native segmentation and CSS are established by browser assertions, not line coverage. No 100% whole-project or every-browser claim is made. Real-database integration was not rerun because no API, persistence, transaction or migration source changed.
+
+**Manual boundary:** TC-10-212 is **Not executed**; connected acceptance of this UI patch is **Not assessed**. The ongoing release walkthrough's earlier R01–R06 reports do not establish manual acceptance of these later changes, and R07 is still in progress. No story status, estimate, historical acceptance, sprint credit or manual-test date is changed.
+
+## AUTO-20261031-UI-SPACING — Shared panel insets and visible text links
+
+**31 October 2026; branch `fix/minor-ui-fixes`.** Tested base `8d48fda` plus the source hashes in [S4-E25](../scrum/sprint-04/evidence/README.md#shared-panel-spacing-and-text-links--31-october-2026). Windows, Node 24.21.0, Vitest 4.1.11 and Chromium; named browser cases substitute authentication/API responses. No shared database writes, migration or backend behavior change. Documentation was added after testing.
+
+Shared `.panel` defaults now provide 24px padding (20px below 600px), safe wrapping and shrinkable grid content. Existing scoped padding continues to override the default. Plain text links are underlined; buttons, navigation and whole-card/row links retain their existing affordances. A shared `.sr-only` utility restores intended accessible-only headings/labels. Review queue and review-detail failure messages have space around retry controls; the booking filter shortcut has its own spacing.
+
+| Command / inspection | Observed result |
+| --- | --- |
+| Pre-fix focused desktop reproductions | Both failed: queue minimum inset 0px; Show all venue booking requests had no underline. Retained in `before.txt`; later assertions did not run after each failure. |
+| `npx playwright test tests/e2e/review-access.spec.ts tests/e2e/venue-bookings.spec.ts --grep "readable insets\|discoverable" --workers=2 --reporter=line` | 10/10 passed: queue populated/empty/error/loading at desktop/mobile; booking link underline, focus, Enter activation and filter clearing at both widths. |
+| `npm run check` | Typechecks, builds, 1,209 frontend tests and 1,959 backend tests passed. Existing Vite large-chunk warning remains. |
+| `npm run test:coverage` | Same test totals passed. Frontend statements/branches/functions/lines: 95.68% / 92.38% / 97.56% / 98.28%; backend: 89.75% / 89.42% / 89.25% / 89.88%. |
+| `npx playwright test --workers=2 --reporter=line` with the retained temporary observation hook | 244/244 passed without retries. The hook only captured computed styles, dimensions and screenshots after each browser case and was restored afterwards; the two permanent regression files remain. |
+| Broader source/layout inspection | 59 Vue files inspected; source inventory retained. 229 browser snapshots across 28 route patterns, widths 320/375/390/1280: 599 visible panel observations, 362 link observations including 213 plain links. No sampled panel below 12px inset, plain link missing an underline or document overflow above 1px. Targeted queue tests require at least 16px inset. |
+| Visual review | Retained desktop/mobile queue and filtered-booking screenshots inspected, alongside the full review-detail layout. Long names wrap, card contents are inset and text links are visible. |
+
+**Case results:** TC-04-232 and TC-13-205 retain separate failed reproductions and passing retests. No other case-level Pass is inferred from the full suite or broad observations. Audit data, source inventory, screenshots, logs, source hashes and the temporary hook are retained under `ui-spacing-20261031/`.
+
+**Limits and manual follow-up:** CSS is not measured by JavaScript coverage; computed styles, layout assertions and screenshots provide its evidence. Browser fixtures use fallback fonts and substituted responses. The sample is not every transient state, browser or live account. Database integration was not rerun because no persistence/API/schema logic changed. Manual smoke TC-04-233 remains **Not executed** and acceptance of this patch **Not assessed**. R07 was subsequently reported passed with Harbour Hall and Rooftop Terrace approved; R08 remains in progress. These walkthrough reports do not establish manual verification of this later UI patch. No historical acceptance, estimate, story status or sprint credit changes.
+
+## AUTO-20261101-BOOKING-FEEDBACK — Replacement guidance and local submission feedback
+
+**1 November 2026; branch `fix/minor-ui-fixes`.** Tested base `be7d2b3` plus the source hashes in [S4-E26](../scrum/sprint-04/evidence/booking-feedback-20261101/summary.json). Windows, Node 24.21.0, Vitest 4.1.11 and Chromium. Named browser checks substitute authenticated API responses. No migration, backend change or shared database write. Documentation was added after verification.
+
+The replacement shortcut now selects the source, scrolls to and focuses a labelled request heading, and explains which arrangement is being replaced and what to enter next. Submission errors/success appear below the submit button and receive focus; uncertain saves expose a nearby **Review current bookings** action. Cancellation feedback retains its existing location. Deferred focus respects the current event/account context. The request hint now points to the saved arrangement's own suitability check.
+
+| Command / check | Observed result |
+| --- | --- |
+| Pre-fix desktop reproductions: `npx playwright test tests/e2e/venue-booking-submission.spec.ts --grep 'KAN-82.*1280px' --workers=2 --reporter=line` | Both failed: replacement form heading/focus missing; conflict alert outside the viewport. Each stopped at its first failed assertion. |
+| `npx playwright test tests/e2e/venue-booking-submission.spec.ts --workers=2 --reporter=line` | 11/11 passed, including desktop/mobile long-history guidance, conflict/success feedback, uncertain-save reconciliation and existing submission/role checks. |
+| `npm run check` | Typechecks, builds, 1,209 frontend tests / 59 files and 1,959 backend tests / 76 files passed. Existing Vite bundle-size warning remains. |
+| `npm run test:coverage` | Same totals passed. Frontend statements/branches/functions/lines: 95.67% / 92.38% / 97.57% / 98.29%; backend: 89.75% / 89.42% / 89.25% / 89.88%. |
+| `npx playwright test --workers=2 --reporter=line` | 248/248 passed without retries. |
+| Visual inspection | Four retained desktop/mobile replacement and conflict screenshots inspected: original context, next-step guidance and nearby feedback are visible and wrap within the panel. |
+
+**Failures and retests:** `before.txt` preserves both product reproductions. The first targeted component run passed 45/46; the new text assertion selected the nested **Replacing:** label rather than its containing paragraph. Correcting that selector produced a pass in the full check and coverage runs; no runtime change was needed for that assertion. `component-initial.txt` retains the failed attempt. Case-level Fail/Pass rows are appended for TC-12-21/22; no unrelated case results are inferred from suite totals.
+
+**Coverage limits:** `VenueBookingPanel.vue` has 95% statements / 92.95% branches / 95.83% functions / 98.38% lines. Uncovered lines 172, 390 and 393 are an existing submission guard continuation and template bindings. Defensive/template branches are not fully covered; native scrolling and viewport geometry are verified in Chromium, not jsdom coverage. Database integration was not rerun because persistence, API, conflict rules and schema are unchanged. Browser substitutes do not establish real-authentication E2E acceptance.
+
+**Manual follow-up:** TC-12-23 is **Not executed** and acceptance of this patch **Not assessed**. R01-R10 were reported passed; R11 is in progress and prompted these UI corrections. For the retained MAIN fixture, the deliberate buffered conflict is **16 November 2026 11:00-12:00**, followed by the valid 11:30-12:00 request. The reported 6 November input cannot establish a conflict with a 16 November booking; the actual server response for that user attempt was not captured. No historical acceptance, story status, estimate, sprint credit or manual-test date is changed.
+
+## 1 November 2026 — Release walkthrough checkpoint
+
+**Source and scope:** checkpoint recorded from the current project conversation and the browser agent's initial live observations. The earlier user-reported walkthrough outcomes below are separate from the new observed run `MAN-20261101-01`. This documentation date is not assigned as the execution date of the earlier checks. The [walkthrough](release-e2e-walkthrough.md) remains the reusable guide; its R labels are not test-case IDs.
+
+| Earlier walkthrough scope | Reported result | Evidence and limits |
+| --- | --- | --- |
+| R01–R12 | Pass — user-reported | Source: the user's confirmations in the current project conversation. Actual execution dates, exact builds and individual role executors are **Not recorded** for these reports. No retained screenshots were supplied for these passes. No individual test-case Pass is inferred from the group reports. |
+| R13 Part A | Pass — user-reported | The user reported saving the three-unit equipment request, the seven/eight-unit availability boundary, reserving three units and exclusion of the event's own reservation from its saved-demand check. Actual execution date, exact build and individual role executors are **Not recorded**; source is the current conversation, with no retained screenshots supplied. R13 as a whole is not complete. |
+
+### MAN-20261101-01 — Live browser continuation, initial checkpoint
+
+**Run state:** in progress. **Execution date:** 1 November 2026, Asia/Singapore; exact observation times **Not recorded**. **Executor:** Codex browser agent using the real Chrome UI; this is distinct from the earlier user-reported execution. No credentials are retained in this record.
+
+| Run field | Recorded value |
+| --- | --- |
+| Frontend and environment | Chrome at `http://127.0.0.1:5173`, with the local API and agreed shared Supabase development environment. No substituted API responses are used for this continuation. |
+| Local checkout | `fix/minor-ui-fixes`, HEAD `429397aef14be8e3773206eddc9583e56c1f05ad`; working tree clean when the checkpoint was prepared. |
+| Runtime build | Exact served build is not exposed by the UI and is **Not recorded**. The checkout SHA identifies the local source; it is not independent proof of the running frontend/API build. |
+| Database identifier, migrations and hold-expiry cadence | **Not recorded** in this initial observed checkpoint; no fresh verification is claimed. |
+| Existing MAIN event | `a8e842bb-6581-4196-b0a8-641dc30adaa0`; displayed interval 16 November 2026, 10:00–12:00 Singapore time. |
+| Business-data writes and cleanup | No business-data writes are included in this initial observed scope. MAIN and its reservation already existed; their creation or prior mutation is not attributed to this run. No cleanup was performed. |
+
+| Initial live observation | Actual result |
+| --- | --- |
+| Technical Support access | The T1 login worked and the signed-in Technical Support view was accessible. This narrow observation does not re-execute all R01 role checks. |
+| Existing MAIN equipment context | MAIN was visible as Approved, with a Wireless microphone line showing quantity 3 and RESERVED. This corroborates the displayed current state only; the browser agent did not execute the earlier reservation action in this checkpoint. |
+
+| Remaining walkthrough scope | Status at this checkpoint | Actual result |
+| --- | --- | --- |
+| R13 Part B | Not executed | Not recorded |
+| R14–R24 | Not executed | Not recorded |
+
+**Evidence boundary and next recording:** the conversation is the source for the earlier reported passes and these initial browser observations; no screenshot artifact is registered by this checkpoint. Append subsequent observations with their actual identities, outcomes and evidence, retaining any failed attempt before a retest. Add case-level execution rows only where the observed scope supports the referenced specification; no such rows are created by this checkpoint. TC-06-32 is not passed by this partial walkthrough. Story acceptance and the release decision remain **Not assessed**; no Jira status, sprint closure, historical acceptance or sprint credit is changed.
+
+### MAN-20261101-01 continuation — R13 availability observations, 16:44–16:45 Singapore time
+
+**Executed:** 1 November 2026 by the Codex browser agent in the live Chrome session above. These were read-only availability checks; no business data was written. The displayed Wireless microphone stock remained total 10, damaged 2, maintenance 1, giving 7 operational units.
+
+| Mode and requested interval | Requested units | Observed peak reserved / available / shortfall | Observed result |
+| --- | --- | --- | --- |
+| MAIN saved-demand check; 16 November 10:00–12:00 | 3 | 0 / 7 / 0 | Fulfillable; the saved check excluded MAIN's own reservation. |
+| Unsaved check using MAIN's 16 November 10:00–12:00 window | 4 | 3 / 4 / 0 | Fulfillable; the existing three-unit reservation reduced free stock to four. |
+| Unsaved check using MAIN's 16 November 10:00–12:00 window | 5 | 3 / 4 / 1 | Unfulfillable with a one-unit shortfall. |
+| Unsaved check for the adjacent interval, 16 November 12:00–13:00 | 7 | 0 / 7 / 0 | Fulfillable; the non-overlapping interval regained all seven operational units. |
+
+The existing reservation `7dcc60ce-c098-4df0-893c-b358f718d646` remained RESERVED for 3 units. Its displayed recorded time was 1 November 2026, 04:31 Singapore time; that existing reservation timestamp is not the execution time of this continuation. MAIN displayed **Equipment ready — 1 of 1**.
+
+**Artifact:** [overlapping-window five-unit shortfall screenshot](evidence/MAN-20261101-01/r13-overlap-shortfall.jpg). The other numeric observations are recorded from the live browser session; this single screenshot is not presented as evidence of every row.
+
+**Scope still open:** these observations support the tested R13 availability calculations. The four/five-unit check used MAIN's unsaved mode, not a separately created eligible probe event. R13 Part B is therefore only partially observed; reservation cancellation/release, explicit Not Required, rejection/replacement, no-venue independence and stale-source handling remain **Not executed** in this continuation. R14–R24 remain **Not executed**. No complete R13 or case-wide Pass, acceptance decision or release approval is inferred.
+
+### MAN-20261101-01 continuation — Fixture preparation and R13 stale request/release checks, 16:46–16:49 Singapore time
+
+**Executed:** 1 November 2026 by the Codex browser agent through the real UI and the connected API/shared Supabase environment. The agent created the following synthetic fixtures as O1, submitted both at 16:46, assigned them through the Coordinator Lead to C1 at 16:47, and approved them as C1 at 16:47–16:48. These business-data writes occurred after the read-only observations above; all new data and history listed here are retained.
+
+| Fixture | Recorded details and state at this checkpoint |
+| --- | --- |
+| PROBE | `55e58c4a-8ab1-42c8-a572-69810743c14d`, named `REL-20261101-AGENT-PROBE`; 16 November 2026, 10:00–12:00 Singapore time; attendance 2; registration not required; no venue arrangement. Approved and assigned to C1. |
+| END | `f65feb52-085b-4910-8331-904e9c69469c`, named `REL-20261101-AGENT-END`; 1 November 2026, 17:15–17:20 Singapore time; attendance 2; registration capacity 2, recorded opening time 00:00 and closing time 17:10 Singapore time. Approved and assigned to C1. Orchid classroom booking `88e97699-cf00-44e6-9735-85dfdec0f64e` was Pending; one microphone was Requested. The equipment-line ID is **Not recorded** in this checkpoint. END was not yet Confirmed and no R23 completion was attempted. |
+
+**Assignment artifact:** [assigned test fixtures](evidence/MAN-20261101-01/test-fixtures-assigned.jpg). This screenshot supports the assignment observation, not every later equipment action.
+
+| R13 action | Actual observed result |
+| --- | --- |
+| Open a stale reservation confirmation | C1 used the `127.0.0.1` Chrome context and T1 used the separate `localhost` Chrome context against the same application/API and shared database. T1 left confirmation open for PROBE's one-microphone request `98a19263-21b8-4470-bd99-4ffac46ae501`. |
+| Change the saved source as C1 | C1 changed the requirement to two microphones, creating request `3af33c7e-d7ce-4f64-9a31-14464279a895`. The original one-unit request became CANCELLED with reason **Superseded by coordinator request**. |
+| Confirm from T1's old context | The old confirmation was refused with feedback that the event or saved equipment requirements had changed and the refreshed saved requests must be reviewed. The obsolete one-unit request was not reserved. Screenshot capture of this stale attempt timed out; no stale-attempt screenshot file is claimed. |
+| Reserve the fresh request, 16:49 | After refreshing the saved context, T1 reserved the full two-unit request. PROBE showed **Equipment ready — 1 of 1** despite having no venue arrangement. This directly observed reservation independence from venue approval. |
+| Submit cancellation without a reason | The UI required a reason of 1–2000 characters. The two-unit request remained RESERVED; the invalid submission did not cancel it. |
+| Cancel with a valid reason, 16:49 | With reason **R13 reservation-release test**, the two-unit reservation became CANCELLED and its history remained visible. T1 refreshed and C1 reloaded: both PROBE request rows remained cancelled, with no active equipment lines. Explicit **Not Required** had not yet been selected; empty active lines are not recorded as that decision. |
+
+**Retained data and limits:** PROBE and END, their submitted/assigned/review history, END's pending booking and requested microphone, and both cancelled PROBE equipment-request rows are retained. Notification IDs and a post-release stock/availability measurement are **Not recorded** in this checkpoint. No cleanup or deletion occurred. The stale refusal, fresh reservation and cancellation observations support only their performed scope; they do not establish an exact concurrency race, uncertain-response recovery, full role matrix or all TC-17-05/08 variations. R13 remains in progress, with explicit Not Required and rejection/replacement still **Not executed**; R14–R24 remain **Not executed**. No acceptance or closure state is changed.
+
+### MAN-20261101-01 continuation — R13 walkthrough completion, 16:51 Singapore time
+
+**Executed:** 1 November 2026 by the Codex browser agent, continuing with C1 and T1 in the real authenticated Chrome sessions. A new one-unit PROBE request was used for rejection; its request ID is **Not recorded** in this checkpoint.
+
+| Action | Actual observed result |
+| --- | --- |
+| Reject without a reason | In T1's Equipment requests queue, **Reject request** was disabled while the reason was blank. No HTTP status is claimed from this UI observation. |
+| Reject with a reason | T1 supplied **R13 rejection test**. The line became REJECTED; C1 reloaded and saw the same saved rejection reason. Equipment readiness was blocked with feedback that every active required line must be reserved. |
+| Close the rejected line | C1 used **Cancel line** with reason **R13 finished rejection probe**; the line became CANCELLED. |
+| Save an explicit equipment decision | C1 selected **No equipment is required**, saved and reloaded. Explicit **Not Required** persisted. Event confirmation showed Equipment ready / Not Required, while Venue remained not ready because PROBE had no approved venue. This is distinct from the preceding empty-active-lines state. |
+| Recheck stock from the independent PROBE event | For 16 November 10:00–12:00, quantity 4 showed operational 7, peak reserved 3, available 4 and shortfall 0; quantity 5 showed shortfall 1. For 12:00–13:00, quantity 7 showed peak reserved 0, available 7 and shortfall 0. MAIN's existing three-unit reservation remained represented in the overlapping availability. |
+
+**R13 walkthrough outcome:** Pass at 16:51 Singapore time, combining the user's earlier Part A report with the browser agent's observed Part B continuation. The checkpoint tally is **13 of 24 walkthrough groups complete, 11 remaining**. This tally does not establish a common tested build for the earlier reported groups, and it is not a Pass for every specification referenced by R13. R14–R24 remain **Not executed** at this checkpoint; TC-06-32 and story/release acceptance remain incomplete / **Not assessed** respectively.
+
+**Case-level recording:** `EX-15-02-MAN-20261101-01-A1` records the observed persisted reservation/rejection outcomes for TC-15-02. `EX-17-01-MAN-20261101-01-A1` records the full saved PROBE reservation without venue confirmation for TC-17-01; actual fixture variation was two units with no venue, rather than the specification's illustrative three units with a pending venue. No network status, direct database inspection or unperformed variation is inferred. Broader cards such as TC-17-05, TC-17-08 and TC-15-05 retain their separate requirements: overlong cancellation reason and Confirmed-state restrictions; uncertain-response/idempotent-retry branches; and attempting Not Required while a rejected active requirement remains were not established by this continuation.
+
+**Timed fixture update:** T1 reserved END's one-microphone request `a4e29f15-2b37-4586-8fa8-a7240e78f2db` at 16:50. V1 approved Orchid booking `88e97699-cf00-44e6-9735-85dfdec0f64e` at 16:51. END awaited C1's final confirmation; R23 completion was not yet performed. PROBE's cancelled request/rejection history and explicit Not Required decision, END's reservation and approved booking, and all prior fixture history are retained; no cleanup occurred.
+
+**R15 prerequisite:** the user supplied a third attendee account, resolving the previously missing-account prerequisite. Its sign-in and role verification are **Not recorded** at this checkpoint; no credentials are retained in the evidence.
+
+### MAN-20261101-01 continuation — R14 confirmation and R15 registration observations, 16:52–16:55 Singapore time
+
+**Executed:** 1 November 2026 by the Codex browser agent through C1, O1 and attendee A1/A2/A3 sessions. These observations continue the same live run and its recorded build limitations. R14 and R15 remain in progress; neither group is marked Pass by this checkpoint.
+
+| Confirmation or setup action | Actual observed result |
+| --- | --- |
+| END final confirmation, 16:52:08 | C1 confirmed END while all displayed readiness areas were ready. This was before END's actual 17:15 start. The earlier event-review approval and this final confirmation were separate actions. |
+| END safety submission, 16:52:15 | C1 submitted safety round 1 with notes **Both exits clear** / **One microphone cables secured** / **Two participants clear classroom aisles**. The round was awaiting the Safety Officer; the review ID is **Not recorded**. Submission is not safety approval or preparation start. |
+| MAIN final confirmation, 16:52:25 | C1 confirmed MAIN. Reload showed one Confirmed-from-Approved transition with C1 as actor. O1's detail view showed Confirmed and C1's confirmation timestamp, without a confirmation control. This UI observation does not establish all direct-API or unrelated-role denial checks. |
+
+**TC-06-02:** the initial approval followed by separate readiness-based confirmation is recorded as Pass in `EX-06-02-MAN-20261101-01-A1`. Confirmation role-denial variations and refusal once an event has started are still **Not executed** in this continuation; the full readiness-blocker matrix and unrelated-event audit comparison are not inferred from the two successful confirmations.
+
+MAIN's manager roster initially showed zero registrations; see [empty MAIN roster](evidence/MAN-20261101-01/r15-empty-roster.jpg). Attendee discovery/detail showed the expected public event information without internal decisions or other attendees' personal information, registration opening 30 October 2026 at 09:00, closing 15 November 2026 at 18:00, and capacity 2. This screenshot alone does not establish every empty-roster/payload variation in TC-18-424.
+
+| MAIN registration action | Actual observed result |
+| --- | --- |
+| A1 registers, 16:53:27 | Registration `10acf053-ebf3-4425-b33b-2abe679d2cdd` was created for A1. |
+| A2 registers, 16:54:08 | Registration `e11f0f65-c8b5-4e64-9e57-21ea845d89b5` was created for A2; the manager roster showed 2 active registrations. |
+| A3 opens the full event | The attendee view showed Full, with zero of two places available and no registration control. See [third attendee full-event view](evidence/MAN-20261101-01/r15-third-attendee-full.jpg). No attempted hidden/API registration or response status is claimed. |
+| A1 tries protected registration views | The manager roster showed **Your role cannot view this registration page**. A link to A2's registration showed **The linked registration is unavailable for this account**. These are observed UI denials, not evidence of all API mutation/impersonation variations. |
+| A1 chooses Keep registration | The withdrawal warning closed; the roster stayed at 2 active registrations. A comparison of every recipient's inbox after this cancelled action is **Not recorded**. |
+| A1 confirms withdrawal, 16:55:02 | MAIN's active count fell to 1. |
+| A1 re-enters, 16:55:19 | The active registration retained the original ID `10acf053-ebf3-4425-b33b-2abe679d2cdd` and showed the new registration timestamp; the roster returned to 2 active registrations. |
+| A1 withdraws again, 16:55:33 | A1's registration became withdrawn again. |
+| A3 registers, 16:55:43 | A3 took the freed place. MAIN then had A2 and A3 active, with A1 withdrawn, and active count 2. A3's registration ID is **Not recorded** in this checkpoint. |
+
+**Observed attendee notices:** A1's registration/withdrawal notices linked to A1's same MAIN registration ID. A2's MAIN confirmation notice linked to A2's correct registration ID, and an END notice was also visible. Notification IDs, all manager/unrelated-recipient comparisons and unchanged-action replay checks are **Not recorded** here; the full notification matrix is not passed from these observations.
+
+**Timed END registrations retained:** A1 registered during 16:53 as `18b6b4f0-ec65-4e5e-bb81-5632e52c61a6`; A2 registered during 16:54 as `99b1e9d9-578a-42fd-b553-80095253143d`. END was full at capacity 2. These active registrations are prepared for the real 17:10 registration-close and 17:15 event-start observations; those boundaries had not been reached at this checkpoint.
+
+**Remaining scope:** R15 timed-window observations, unrelated O2/C2 access checks and the other required registration fixtures remain **Not executed**. No R15 case-wide Pass is added from this partial matrix. All named events, registrations, safety round, history and notices are retained; no cleanup occurred. The walkthrough tally remains 13 complete groups with R14/R15 in progress. Story acceptance, release decision and sprint closure are unchanged.
+
+### MAN-20261101-01 continuation — R14/R15 access and boundary views, 16:56–16:57 Singapore time
+
+**Executed:** 1 November 2026 by the Codex browser agent. The existing STARTED and CAPZERO fixtures below were read only; this run did not create or mutate them. No HTTP status or refused server mutation is inferred from a missing UI control.
+
+| Role and observation | Actual result |
+| --- | --- |
+| A1 revisits MAIN after A3 takes the freed seat | A1 remained Withdrawn. MAIN showed zero of two places left and **This event is full**, with no Register button. A1 did not regain A3's place. This supports the full-event re-entry portion of TC-18-414; the complete warning-wording assertion and a direct registration attempt are not recorded here. |
+| C1 inspects existing `REL-1101 E-STARTED` | Event `bd60431a-f0b3-419b-80e8-d7a07df97d75` was APPROVED for 1 November 2026, 16:00–16:30 Singapore time. It had an approved Orchid arrangement, equipment Not Required and no pending change, with all displayed readiness areas ready. The UI stated **This event has already started, so it can no longer be confirmed** and provided no confirmation control. The event was not mutated. |
+| A1 inspects existing CAPZERO | Event `3ff656b8-a67d-49f0-9e63-533da7d1313c` was Confirmed for 1 November 2026, 18:30–19:00, with registration window 13:00–18:00 Singapore time. The attendee view showed zero of zero places, Full and no registration control. |
+| C2 opens MAIN review | The review was unavailable / permission denied. |
+| C2 opens MAIN roster | The page showed **Event request not found** without MAIN's roster. |
+| O2 opens MAIN roster | The page showed **Event request not found** without MAIN's roster. |
+| Coordinator Lead opens MAIN review | The route showed a Coordinator-access-only page; Lead access did not grant the assigned coordinator's review control. |
+
+**Scope at this checkpoint:** R14 remains in progress, including the pending-significant-change blocker to be observed during R17. R15 remains in progress, with real timed boundaries, not-yet-open and registration-disabled behavior outstanding. No whole role/API matrix, exact-time boundary specification or additional case-wide Pass is inferred from these UI observations. Existing fixtures and all data from prior checkpoints are retained; no cleanup or acceptance/closure update occurred.
+
+**Supplementary observed warning detail:** before A1 chose Keep registration during the 16:55 sequence, the browser agent read: **Your place will be released. You may register again only if registration is still open and capacity is available. A place will not be saved for you.** The same warning appeared when the dialog was reopened before confirmation. This supplies the warning observation omitted from the earlier checkpoint. Together with A3 taking the released place and A1's subsequent Full view with no Register control, it supports TC-18-414, recorded as `EX-18-414-MAN-20261101-01-A1`. Actual fixture variation was capacity 2 with A2's place retained, rather than the specification's illustrative capacity 1; A3 took the one place released by A1. The refusal is evidenced at the UI boundary only; no network response status or direct API attempt is claimed.
+
+### MAN-20261101-01 continuation — Branch fixtures and R16 ordinary edits, 16:58–17:00 Singapore time
+
+**Executed:** 1 November 2026 by the Codex browser agent. O1 created and submitted four further synthetic fixtures, and the Coordinator Lead assigned them to C1. All use the `REL-20261101-AGENT-` name prefix, expected attendance 20, venue requirements Classroom / projector / wheelchair access, and equipment-requirement text **Three wireless microphones if required**. They remained Submitted at this preparation checkpoint; assignment is not approval.
+
+| Fixture suffix | Event ID | Period, Singapore time | Registration |
+| --- | --- | --- | --- |
+| CHANGE | `7acbfe26-413c-41a0-9fa4-a82d138cfd1c` | 22 November 2026, 09:00–10:00 | Not required |
+| SAFETY-REJECT | `f5031e9b-99bb-4dde-9000-99f053a20f86` | 23 November 2026, 09:00–10:00 | Not required |
+| REMEDIATE | `42209235-16a8-4f82-8e06-9938f0fcb740` | 24 November 2026, 09:00–10:00 | Not required |
+| CANCEL | `74707e58-b63f-4751-8601-bb58eebddcb2` | 25 November 2026, 09:00–10:00 | Capacity 2; opens 1 November 2026 at 00:00, closes 24 November 2026 at 18:00 |
+
+| R16 action | Actual observed result |
+| --- | --- |
+| O1 ordinary edit before approval, 16:59 | On Submitted CHANGE, O1 changed Description from **Isolated release fixture** to **R16 current revision: organiser confirmed arrival instructions** and saved it. |
+| Save an older second-tab revision | The stale tab attempted **R16 stale revision that must not overwrite the latest saved value**. The page reported a newer version and that the changes were not saved. Reload retained **R16 current revision: organiser confirmed arrival instructions**. No screenshot of this stale error was retained at this checkpoint; the live observation is the evidence. No concurrent HTTP-response pair, response status or missing-revision probe is claimed. |
+| O2 opens CHANGE's details editor | Direct `/events/<CHANGE-id>/details` access was permission denied. |
+| C1 ordinary edit after confirmation | MAIN's editor exposed only name and description, with a notice that significant fields require reviewed changes. C1 saved Description **Arrival instructions: arrive 09:45**. |
+| Compare MAIN after the ordinary edit | The period remained 16 November 2026, 10:00–12:00; expected attendance stayed 20 and purpose was unchanged. Both approved Harbour arrangements retained their saved intervals, the three-microphone line stayed RESERVED, and the roster stayed at two active registrations for A2/A3 with A1 withdrawn. Safety remained Not submitted. There was no existing safety approval to compare, so preservation of an approved safety round was not exercised. |
+| O1 opens MAIN's details editor | The page stated **You cannot edit this confirmed request here.** |
+
+**R16 walkthrough outcome:** Pass for the observed ordinary-edit journey. The tally is **14 of 24 walkthrough groups complete, 10 remaining**; R14/R15 retain their outstanding branches. No complete TC-07-01–07 execution is inferred: those cards additionally specify invalid submissions/audit comparisons, unrelated-event comparisons, direct actor/field/API probes, exact competing writes, stale review actions or unchanged-save/database revision behavior. Their observed portions are retained above without adding case-wide Pass rows.
+
+**Retained changes:** the four new submitted fixtures and assignment histories, CHANGE's current description/edit history, and MAIN's current description/edit history remain. No cleanup occurred, and no story acceptance, release approval, Jira status or sprint closure changed.
+
+### MAN-20261101-01 continuation — R17 significant changes and R18 safety, 17:01–17:05 Singapore time
+
+**Executed:** 1 November 2026 by the Codex browser agent through O1, C1 and S1. R17 is partially observed; the safety walkthrough R18 reached its recorded Pass below. All change requests, decisions, safety rounds, preparation records and notices are retained.
+
+| MAIN significant-change branch | Actual observed result |
+| --- | --- |
+| Purpose proposal `06fed275-db12-4c15-8f78-60010ecf7014` | O1 submitted the purpose-only change. MAIN retained **Release acceptance workshop** before approval. C1 received **Change request to review** and its link opened this exact change ID; the preview said no existing arrangement was affected. C1 approved and applied it at 17:01, changing the purpose to **Workshop including a discussion session**. |
+| Rejected purpose proposal `d3ae6c9f-6226-4a41-ab92-92ea74945240` | C1 rejected it at 17:02 with reason **R17 keep approved workshop purpose**. |
+| Withdrawn proposal `ea95ab9b-1330-41ee-b450-b13328387120` | O1 withdrew it. C1's stale Approve action then reported that the proposal had already been decided or withdrawn; it was not applied. See [withdrawn-change refusal](evidence/MAN-20261101-01/r17-withdrawn-change-refused.jpg). |
+| Time proposal `5c7fb898-c416-497b-9c3e-30cd31480a3c` | The proposed period was 16 November 2026, 11:00–13:00. The impact preview blocked approval because of the Confirmed event, two approved Harbour arrangements, three reserved microphones and active attendees. Approve and apply was disabled. O1 withdrew the proposal. No direct API approval attempt or response code is claimed. |
+| Pending-change readiness | While a change was pending, the safety/readiness view was blocked with **Decide pending change before confirming** feedback. This records the displayed blocker; it does not claim a second confirmation attempt on the already Confirmed MAIN. |
+| O1 notifications | Separate submitted, approved and rejected outcomes were visible for their corresponding change IDs. Full recipient/duplicate-notice checks are still outstanding. |
+
+| Safety/preparation observation | Actual observed result |
+| --- | --- |
+| MAIN safety submission, 17:02:54 | Round 1 `4562f827-f75f-489f-b2c2-54ad0e21add0` was submitted after MAIN had no pending change. END's separate round ID was `f57b6d6d-d836-473f-a573-be5df874f033`. |
+| S1 changes review context | On END, S1 selected Reject and drafted **UNSAVED A draft must not appear on B** without saving. S1 returned through the queue to MAIN. MAIN showed empty optional notes, no selected decision, Save disabled and no stale END message. This observed state is distinct from a controlled loading/saving or delayed-response test. |
+| S1 inspects MAIN context | MAIN showed attendance 20; both Harbour arrangements with capacity 70, Theatre layout, opening hours 05:00–16:00, setup/turnaround 15/15 minutes and wheelchair access; three microphones; and the submitted safety notes. |
+| S1 approves MAIN, 17:04:14 | Approval persisted on MAIN's round. Reload showed the saved actor/time and no editable decision form for that completed round. |
+| C1 starts MAIN preparation, 17:04:27 | C1 started preparation. Reloaded C1 and O1 views agreed on Safety approved and the saved preparation actor/time. See [MAIN safety and preparation](evidence/MAN-20261101-01/r18-main-safety-preparation.jpg). The successful artifact is a viewport capture; an earlier full-page screenshot attempt timed out and is not claimed as an artifact. |
+| S1 signs out from END | Protected review information disappeared; the page required sign-in to view. |
+| END approval and preparation | END's safety approval was recorded at 17:04:29 and preparation started at 17:04:48. These are separate from MAIN's decision and preparation records. |
+| C1 tries early END completion, 17:04–17:05 | Mark completed was refused because END had not ended. The displayed end was `09:20Z`, equivalent to 17:20 Singapore time on 1 November 2026. END remained Confirmed. No completion or resource release is claimed from this refused attempt. |
+
+**R18 walkthrough outcome:** Pass; the tally is **15 of 24 walkthrough groups complete, 9 remaining**. R17's arrangement-impact branches and attendee/unrelated-recipient checks remain outstanding; R17 is not passed. The observed navigation and saved-round behavior supports portions of TC-06-445, but the loading/saving-disabled and controlled-response assertions are not inferred from an unselected Save control. TC-20-431 remains partial pending unrelated-account checks. No additional case-wide Pass row is added by this checkpoint. Formal acceptance, release approval and sprint closure remain unchanged.
+
+### MAN-20261101-01 continuation — Real registration close and CHANGE equipment, 17:09–17:10 Singapore time
+
+**Executed:** 1 November 2026 by the Codex browser agent. END's actual registration close was 17:10, with event start 17:15 and end 17:20; no clock modification is used or claimed.
+
+| Observation | Actual result |
+| --- | --- |
+| CHANGE equipment preparation, 17:09 | Equipment reservation `365205b4-b084-4f96-ad57-4d98acf078f3` for CHANGE `7acbfe26-413c-41a0-9fa4-a82d138cfd1c` showed one microphone RESERVED and Equipment ready — 1 of 1. This retained reservation prepares the R17 affected-venue/unaffected-equipment branch; that change decision had not yet been recorded. |
+| A1 withdraws after END registration closes | At or after 17:10:14, while still before the 17:15 event start, A1 proceeded through the warning and Confirm withdrawal for END. The attendee detail then showed **Your registration: Withdrawn**, one of two places left and **Registration for this event has closed**, with no Register action. A1's previously recorded END registration ID is `18b6b4f0-ec65-4e5e-bb81-5632e52c61a6`. |
+| A2 remains registered on END | A2's END registration `99b1e9d9-578a-42fd-b553-80095253143d` remained Active, reserved for the real after-start refusal check. No after-start attempt had occurred at this checkpoint. |
+
+**Artifact:** [END registration closed after withdrawal](evidence/MAN-20261101-01/r15-registration-closed.jpg). The free place and closed-registration UI demonstrate that availability alone did not enable re-entry. No direct re-registration API attempt or response status is claimed. The exact confirmation-warning wording for this closed-window attempt is **Not recorded** in this checkpoint, so TC-18-415 is not marked fully passed from these observations alone.
+
+**Remaining scope and retained data:** R15 remains in progress pending after-start withdrawal refusal and the not-yet-open/registration-disabled scenarios. The new CHANGE reservation and END's changed registration status/history are retained; A2 remains active on END. No cleanup, acceptance decision, release approval or sprint closure occurred.
+
+**Supplementary after-close warning observation:** the browser agent read the same conditional warning used before closing: **Your place will be released. You may register again only if registration is still open and capacity is available. A place will not be saved for you.** It did not promise re-entry, but did not explicitly state that the current window was already closed. The successful withdrawal and unavailable re-entry with a free place are directly observed. Whether this general conditional warning meets TC-18-415's additional expectation that the warning reflects the closed window is **Not assessed**; no full-case Pass or product failure is inferred solely from that wording.
+
+### MAN-20261101-01 continuation — R19 safety branches, R15 after-start view and R21 notice, 17:12–17:16 Singapore time
+
+**Executed:** 1 November 2026 by the Codex browser agent through C1, S1 and A2. R19 remains in progress; the replacement arrangement and technical remediation were not yet completed at this checkpoint.
+
+| SAFETY-REJECT branch | Actual observed result |
+| --- | --- |
+| Confirmation | C1 confirmed SAFETY-REJECT `f5031e9b-99bb-4dde-9000-99f053a20f86` at 17:12:11. It had no equipment and an approved Orchid booking; the observed booking ID prefix was `2e028`, with full ID **Not recorded** here. |
+| Round 1 missing information | S1 saw missing Crowd movement explicitly in round `98196cd6-c483-4980-9780-63cf3a6a8003`. With Reject selected and Notes blank, Save was disabled. |
+| Rejection, 17:12:53 | S1 saved **Crowd movement plan is missing; clarify west exit before review.** The rejection was retained on round 1. |
+| Corrected round 2 | C1 corrected all three safety notes and submitted a new round at 17:13:15; S1 approved it at 17:13:19. The earlier rejected round remained in history and the event/venue arrangement were unchanged. The new round ID and exact corrected notes are **Not recorded** in this checkpoint. |
+
+| REMEDIATE branch | Actual observed result |
+| --- | --- |
+| Ready fixture | REMEDIATE `42209235-16a8-4f82-8e06-9938f0fcb740` was Confirmed, with three microphones RESERVED at 17:10 and an Orchid booking approved at 17:11. The original booking ID prefix was `25e4`; its full ID and equipment request ID are **Not recorded** here. |
+| Round 1 | Safety round `57a6addc-f34c-49d6-96d3-aba5dee6e8c6` was submitted at 17:12:15. For Request changes with a reason but no selected area, Save remained disabled. |
+| Request changes, 17:13:06 | S1 selected Venue and Technical and saved instructions to replace the venue arrangement and reduce microphones from three to two. |
+| Description-only edit | C1's ordinary description edit persisted, but safety still required Venue and Technical updates. The view stated that notes alone could not complete the required changes and did not offer resubmission fields. The changed description text is **Not recorded** here. |
+| Begin venue remediation | C1 cancelled the original `25e4` booking with reason **Safety remediation** and created linked replacement `845a47cd-769b-4e64-b401-0eeb67e591a4` at the same Orchid venue for 24 November 2026, 09:00–10:00, with BOARDROOM layout. The replacement was Pending. Its approval, technical replacement and safety resubmission were still outstanding. |
+
+| Other walkthrough observation | Actual result |
+| --- | --- |
+| R15: A2 after END starts | At or after 17:15:09, A2's END registration remained Active. The page stated **Withdrawal is available only before event start**, with no Withdraw control for END. See [after-start withdrawal restriction](evidence/MAN-20261101-01/r15-withdrawal-after-start.jpg). No direct withdrawal request or HTTP refusal is claimed; the controlled-clock/API specification TC-18-407 is not marked passed from this UI gate alone. |
+| R15: registration-disabled event | A2's attendee view of Confirmed SAFETY-REJECT stated **This event does not take registrations**, with no Register action. The not-yet-open fixture remains outstanding before R15's walkthrough group can be completed. |
+| R21: A2 significant-change notice | A2 saw MAIN's **Event details changed** notice dated 1 November at 17:01. The link targeted `/registrations?registration=e11f0f65-c8b5-4e64-9e57-21ea845d89b5`. Mark as read persisted after reload; other observed notices were unchanged. Following the link opened A2's correct registration context. The notice ID is **Not recorded**; no all-type or cross-recipient read-state matrix is inferred. |
+
+**Retained data and scope:** the rejected and approved SAFETY-REJECT rounds, REMEDIATE's request-changes round, cancelled original booking, pending replacement, existing three-unit equipment reservation and changed description are retained. A2 remains active on END; A2's identified notice now remains read. R19 and R21 are partial, and R15 still lacks the not-yet-open observation. No new case-wide Pass, formal acceptance, release approval or closure is added by this checkpoint.
+
+### MAN-20261101-01 continuation — Combined remediation and attendance-change branch, 17:17–17:19 Singapore time
+
+**Executed:** 1 November 2026 by the Codex browser agent through the current fixture roles. The combined Venue/Technical remediation succeeded; the separate area-only branches remain unperformed.
+
+| REMEDIATE action | Actual observed result |
+| --- | --- |
+| Approve replacement venue, 17:17 | Orchid replacement booking `845a47cd-769b-4e64-b401-0eeb67e591a4`, with BOARDROOM layout, became Approved. |
+| Replace reserved equipment | The original three-microphone line became Cancelled, explicitly replaced by the coordinator. Its successor requested two microphones. Before Technical Support reserved the successor, safety/readiness was still blocked because every active required line had to be reserved. The original and successor equipment-line IDs are **Not recorded** here. |
+| Reserve the successor, 17:17 | T1 reserved the full two-unit successor. Only then did the safety notes/resubmission fields become available. |
+| Check area recipients | V1's **Safety changes requested** notice specified venue changes; T1's notice specified technical changes. Both identified the correct REMEDIATE event and change reason. Exact notification IDs are **Not recorded**. |
+| Submit and review round 2 | C1 submitted at 17:17:55. S1 saw BOARDROOM, two RESERVED microphones, corrected safety notes and the old round history, then approved at 17:18:09. The second round ID is **Not recorded** in this checkpoint. |
+| Start preparation, 17:18:11 | C1 started preparation after the new approval. See [approved remediation and preparation](evidence/MAN-20261101-01/r19-remediation-approved.jpg). |
+
+**TC-06-26:** `EX-06-26-MAN-20261101-01-A1` records Pass for the observed actual-remediation/new-round scenario, connecting these observations to the earlier description-only edit that left both requested areas unresolved. The descriptive-only edit is the actual variation of the specification's comment-only step. The evidence is live UI readiness, saved arrangements and retained round history; no direct API status or controlled concurrent-write behavior is claimed. R19 as a whole remains partial because Venue-only and Technical-only branches have not run, and the closed technical-remediation window after resubmission has not yet been rechecked.
+
+**R17 attendance branch, 17:18:** C1 approved CHANGE's requested attendance change from 20 to 22. The preview listed only its Pending Orchid booking for cancellation. After approval, attendance was 22, that venue booking was CANCELLED with an approved-change-request reason, and microphone reservation `365205b4-b084-4f96-ad57-4d98acf078f3` remained RESERVED for one unit. No SQL was used. The change-request ID and cancelled booking's full ID are **Not recorded** here. This is the observed affected-venue/unaffected-equipment branch, not the complete TC-19-08 date-change matrix.
+
+| New retained fixture | Recorded preparation |
+| --- | --- |
+| `REL-20261101-AGENT-STALE` | Event `84a2d6ea-6336-44fd-a7c8-d03b3b489fe3`; 26 November 2026, 09:00–10:00 Singapore time; registration capacity 2, opens 2 November at 09:00 and closes 25 November at 18:00. Created and assigned by the Lead to C1 at 17:19; subsequent approval/confirmation and not-yet-open observations are not claimed here. |
+| `REL-20261101-AGENT-CHANGE-EQ` | Event `88bb8a9e-e9f3-497d-ab8e-691f2d67312c`; 27 November 2026, 09:00–10:00 Singapore time; registration not required. Created and assigned by the Lead to C1 at 17:19; its significant-change branch is not yet recorded. |
+
+**Additional retained registration:** A2 registered for CANCEL during 17:16, leaving one of two places available. Its registration ID is **Not recorded** here. All fixtures, registrations, replaced arrangements, decisions and notices remain; no cleanup occurred. The walkthrough tally remains 15 complete groups, with R17/R19 and other outstanding branches still in progress. No acceptance, release or closure decision is added.
+
+### MAN-20261101-01 continuation — R15 complete, real END completion and further change checks, 17:20 onward
+
+**Executed:** 1 November 2026 by the Codex browser agent. Exact times are given only where observed below; other observations in this checkpoint have no separately recorded timestamp.
+
+| R15 / notification observation | Actual result |
+| --- | --- |
+| A3 opens not-yet-open STALE | STALE `84a2d6ea-6336-44fd-a7c8-d03b3b489fe3` was Confirmed, with registration opening 2 November at 09:00. A3 saw two of two places left and **Registration for this event has not opened yet**, with no Register action. |
+| Compare A3's MAIN notice with A2's read state | A3's MAIN **Event details changed** notice dated 1 November at 17:01 remained Unread after A2 marked A2's corresponding notice read. A3's own MAIN registration ID is `374e0621-8eca-4034-901a-b48ff57fd895`. This directly compares the two recipients' observed read states; it does not establish every notification type or foreign-ID mutation case. |
+
+**R15 walkthrough outcome:** Pass for the observed walkthrough scope. The tally is **16 of 24 walkthrough groups complete, 8 remaining**. The retained TC-18-415 warning qualification remains **Not assessed**: the closed-window behavior worked, while its generic conditional warning did not explicitly say the window was already closed. No exact-clock API matrix or broader case-wide Pass is inferred from the group result.
+
+| R23 END observation | Actual result |
+| --- | --- |
+| Complete after the actual end | After the clock was observed at 17:20:08, C1 completed END `f65feb52-085b-4910-8331-904e9c69469c`. Reload showed Completed, an audit time of 1 November at 17:20, and one equipment reservation released. The saved seconds of the completion audit are **Not recorded**. |
+| Preserve venue and lifecycle history | Orchid booking `88e97699-cf00-44e6-9735-85dfdec0f64e` remained Approved for 17:15–17:20. Status history contained one Completed-from-Confirmed transition. Completion was not represented as venue cancellation. |
+| Preserve registrations | C1's roster retained A1 Withdrawn with withdrawal time 17:10:24 and A2 Active, unchanged by completion. These historical statuses are not a claim that either attendee can take a new action on the completed event. |
+| Owner history | O1 saw Completed history without a completion action. See [END completed](evidence/MAN-20261101-01/r23-event-completed.jpg). |
+
+R23 remains in progress pending the independent resource-availability probe and remaining authority checks. Its observed successful completion does not establish the controlled exact-end or concurrent-completion specifications, nor all completed-event registration-action restrictions.
+
+**R17 equipment-only branch, 17:21:** CHANGE-EQ `88bb8a9e-e9f3-497d-ab8e-691f2d67312c` had an equipment-only change approved. Its requested one-microphone line became Cancelled and remained so on reload, while Pending Orchid booking `d919cf66-bdcf-41f5-88bc-c2b69792f903` was preserved. The equipment-line and change-request IDs are **Not recorded** here. This complements the earlier attendance-only venue cancellation; it does not execute TC-19-08's separate date-change branch.
+
+**R20 live readiness:** while a purpose change was pending on REMEDIATE, preparation became blocked even though safety remained Approved. O1 withdrew the change. Reload restored the existing Preparation started state and its original 17:18:11 timestamp without a new start. The pending/withdrawn change ID is **Not recorded** here. The venue-rule stale-approval branch is **Blocked** pending creation or identification of a dedicated isolated test venue; user input was requested. No shared venue rule was changed for that branch at this checkpoint.
+
+**Retained data and scope:** END's Completed transition and released equipment history, its unchanged venue and historical registrations, STALE's current Confirmed state, CHANGE-EQ's cancelled equipment line and preserved booking, and REMEDIATE's withdrawn change/history are retained. R17, R19, R20, R21, R22, R23 and R24 retain outstanding scope, alongside R14's remaining checks. No cleanup, case-wide Pass, formal acceptance, release approval or sprint closure is added by this checkpoint.
+
+### MAN-20261101-01 continuation — R23 complete and R22 cancellation, 17:23 checkpoint
+
+**Executed:** 1 November 2026 by the Codex browser agent. The cancellation audit time is exact as displayed below; the supplementary resource/access checks do not have separately recorded timestamps.
+
+| R23 closing observation | Actual result |
+| --- | --- |
+| Independent equipment probe | As T1 on PROBE `55e58c4a-8ab1-42c8-a572-69810743c14d`, an unsaved seven-microphone check for END's 1 November 17:15–17:20 interval showed total 10, damaged 2, maintenance 1, operational 7, peak reserved 0, available 7 and shortfall 0. |
+| Unrelated coordinator | C2's END review URL was unavailable / permission denied. O1's previously observed history exposed no completion action. |
+| Reload completed history | END retained a single Completed-from-Confirmed transition with no repeat-completion control. This is UI/reload evidence, not an executed repeated API completion request. |
+
+**R23 walkthrough outcome:** Pass for the observed completion journey. The tally is **17 of 24 walkthrough groups complete, 7 remaining**. The exact-end controlled-clock and competing-completion specifications remain distinct from this successful real-time completion.
+
+| R22 CANCEL action | Actual observed result |
+| --- | --- |
+| Validate cancellation inputs | Cancel remained disabled with a blank reason, with whitespace plus the acknowledgement selected, and with a nonblank reason but acknowledgement unselected. These UI guards are not recorded as HTTP rejection attempts. |
+| Cancel as C1, 17:23:01 | C1 cancelled CANCEL `74707e58-b63f-4751-8601-bb58eebddcb2` with reason **Release test cancellation**. The result persisted with one Cancelled-from-Confirmed history transition. The Orchid booking whose ID begins `db72` became Cancelled with the same reason; its full ID is **Not recorded** here. See [event cancelled](evidence/MAN-20261101-01/r22-event-cancelled.jpg). |
+| A2 cancellation outcome | A2's notice said the event had been cancelled and **Your registration is no longer active**, without the internal cancellation reason. The registration showed Event cancelled with time 17:23:01. The event detail was not open for registration, showed two of two places available, and retained the old registration as Cancelled with event. |
+| Attendee discovery | CANCEL and completed END were absent from active discovery. Their retained history was not represented as deleted. |
+| Technical Support outcome | T1's CANCEL notice stated it was cancelled and no longer open for planning. A separate probe for 25 November 09:00–10:00 requested seven microphones and showed peak reserved 0 and available 7. |
+| C2 access | C2 was denied access to CANCEL. O2, the Venue Staff calendar and owner-notice checks were still outstanding. |
+
+**Further R19 observation:** T1 reloaded REMEDIATE after safety resubmission/approval and saw the two-unit successor RESERVED, the original three-unit line CANCELLED and retained history. The view stated **This event is confirmed. Reservations are read-only**, with no Cancel buttons. This confirms the observed post-resubmission state; an immediate observation while the new round was still pending is not claimed. Separate Venue-only and Technical-only remediation branches remain unperformed.
+
+**Further R17/notification observation:** C2 was denied MAIN's review. A3's MAIN change notice linked to A3's own registration `374e0621-8eca-4034-901a-b48ff57fd895`, not A2's registration. No unobserved unrelated inbox comparison is inferred.
+
+**Remaining scope:** R22 remains in progress for its listed access/calendar/owner-notice checks; R14, R17, R19, R20, R21 and R24 retain outstanding work. All synthetic events, arrangements, released/cancelled histories, registrations and notices are retained. No additional full-case Pass is recorded: for example, TC-17-04 also requires repeated mutation requests and full release-audit/unrelated-event comparisons, not just successful terminal transitions. No cleanup, acceptance decision, release approval or sprint closure occurred.
+
+### MAN-20261101-01 continuation — Dedicated venue and stale safety approval, 17:25–17:27 Singapore time
+
+**Executed:** 1 November 2026 by the Codex browser agent through C1, V1 and S1. The user designated existing venue `d1ba6133-20fb-4efb-b1ad-7fcd5d31718c`, now displayed as Classroom, for the isolated R20 observations. This resolved the earlier missing-venue blocker without claiming that the venue was created by this run.
+
+**Recorded baseline:** capacity 30; CLASSROOM layout; opening hours 08:00–20:00 Singapore time; setup 15 minutes and turnaround 15 minutes; no listed accessibility features or equipment. Only the setup buffer was varied for this branch. Its final restored value is recorded below; no deletion or reset was performed.
+
+| Action | Actual observed result |
+| --- | --- |
+| Move STALE to the designated venue | C1 cancelled STALE's Orchid booking whose ID begins `ed49`, with reason **Use dedicated classroom R20**. Replacement `3eef65bc-b2af-41cc-8542-70b7beba90eb` at Classroom was approved by V1. The original booking's full ID is **Not recorded** here. |
+| Establish current safety/preparation | C1 submitted STALE round 1 at 17:25:47; S1 approved it at 17:25:53; preparation started at 17:26:12. The round ID is **Not recorded** in this checkpoint. |
+| Ordinary text comparison | A description-only edit preserved the current approval and preparation state. The exact changed description is **Not recorded** here. |
+| Change setup from 15 to 20 minutes | V1 saved the new buffer. C1 reloaded and saw Approval out of date with preparation blocked. |
+| Submit round 2, then change the reviewed arrangements | C1 submitted round 2 at 17:27:16. Before S1 decided, V1 changed setup from 20 to 25 minutes. S1's round view showed that arrangements had changed and could not be approved; the Approve radio was disabled and the displayed buffers were 25/15. See [stale round approval disabled](evidence/MAN-20261101-01/r20-stale-round-approval-disabled.jpg). The round ID is **Not recorded**. |
+| Reject the stale round, 17:27:32 | S1 rejected it with a reason identifying the setup-buffer change after submission and instructing resubmission of the current arrangements. |
+| Restore the baseline | V1 saved setup 15 minutes; turnaround remained 15 throughout. C1 still saw Rejected and preparation blocked. Restoring the buffer did not automatically re-approve the rejected round. |
+
+**Outstanding R20 observations:** submit and approve a fresh round for the restored arrangements and resume preparation only when permitted; independently cancel/replace an approved arrangement and compare unrelated allocations plus safety state; and observe an offline decision save/reconciliation on a separate undecided round. These steps remain **Not executed** at this checkpoint. The pending-purpose-change live-readiness observation and restoration of its original preparation timestamp remain recorded above.
+
+**Retained state:** Classroom's setup/turnaround are restored to 15/15; STALE retains its replacement booking, earlier approval/preparation and rejected stale round. The original cancelled Orchid booking and description-edit history remain. R20 is in progress rather than blocked by venue availability. No additional case-wide Pass, cleanup, formal acceptance, release approval or sprint closure is recorded.
+
+### MAN-20261101-01 continuation — R14 complete, fresh safety approval and cancellation follow-up
+
+**Executed:** 1 November 2026 by the Codex browser agent. Specific times are recorded where supplied below; the further confirmation-panel/calendar observations have no separately recorded timestamp.
+
+| Direct R14 confirmation-panel check | Actual observed result |
+| --- | --- |
+| Pending venue on Approved CHANGE | Classroom booking `765997fa-034d-4e28-bd3a-2b0cb28e2f02` was Pending. CHANGE's confirmation panel showed Venue not ready while its reserved microphone remained ready. |
+| Pending significant change on Approved CHANGE | O1 submitted a purpose change. The confirmation panel showed Change not ready and **Decide the pending change request before confirming**. O1 then withdrew the proposal. Its change ID and exact proposed text are **Not recorded** here. |
+| Unreserved equipment on Approved CHANGE-EQ | A new Portable projector request for one unit remained REQUESTED. Confirmation showed Equipment not ready because every active required line must be reserved; the Pending Orchid arrangement also remained not ready. The new projector request ID is **Not recorded**. |
+| Outage recovery and operational block | V1 approved CHANGE's Classroom booking `765997fa-034d-4e28-bd3a-2b0cb28e2f02`, then created an isolated block on 22 November 2026, 09:15–09:30, with reason **R14 isolated confirmation readiness test**. The UI identified one affected approved booking requiring recovery. CHANGE's confirmation panel required resolution of one booking still requiring outage recovery and one overlap; equipment and changes were ready, but there was no confirmation control. See [outage blocks confirmation](evidence/MAN-20261101-01/r14-outage-blocks-confirmation.jpg). The block ID was not shown and is **Not recorded**. |
+
+**R14 walkthrough outcome:** Pass for the direct UI readiness checks together with the earlier successful confirmation, role and started-event observations. The tally is **18 of 24 walkthrough groups complete, 6 remaining**. The specific exhaustive state/API matrix in TC-06-03 is not automatically passed from the walkthrough group, and no unobserved server response code is claimed.
+
+**R20 recovery after restoration:** with Classroom's buffers restored to 15/15, C1 submitted STALE round 3 at 17:28:24. S1 approved at 17:29:42 and C1 used Resume preparation at 17:29:44. The new round ID is **Not recorded**. An attempt to open DevTools using F12 through DOM automation did not open DevTools. Browser offline mode was not established, and no offline save/reconciliation test was performed: that branch remains **Not executed**, not a failed product test. Independent approved-arrangement invalidation/replacement also remains outstanding.
+
+| R22 / notification follow-up | Actual observed result |
+| --- | --- |
+| V1 venue calendar | In Orchid's week beginning 23 November, Wednesday 25 November was available 08:00–10:00, including CANCEL's released 09:00–10:00 interval. An unrelated 10:00–11:00 booking remained. REMEDIATE's Tuesday 24 November 09:00–10:00 booking also remained. These unaffected booking IDs are **Not recorded** here. |
+| Venue Staff notice | V1 saw CANCEL's cancellation notice. |
+| Owner notices | O1 saw CANCEL cancellation, confirmation and registration notices. O1 also saw END completion, registration and withdrawal notices. Exact notice IDs are **Not recorded** in this checkpoint; a complete duplicate/recipient matrix is not inferred. |
+
+**Retained data and remaining scope:** CHANGE's newly approved Classroom arrangement and isolated operational block remain, with outage recovery unresolved; the block is not silently removed. CHANGE-EQ's requested Portable projector, withdrawn purpose proposal history and STALE's new approval/resume records are retained. R22 still requires the current coordinator notice and O2 denial. R19's area-only branches and R17's withdrawn/unrelated-recipient absence checks remain outstanding, alongside the remaining R20, R21 and R24 scope. No cleanup, additional case-wide Pass, formal acceptance, release approval or sprint closure is added.
+
+### MAN-20261101-01 continuation — R17 and R22 walkthrough completion
+
+**Executed:** 1 November 2026 by the Codex browser agent using UI views only; no SQL or direct browser API calls were used for these observations. The new inbox/access checks have no separately recorded execution time.
+
+| Closing observation | Actual result |
+| --- | --- |
+| C1 lifecycle/registration notices | C1 saw CANCEL cancellation, registration acknowledgement, confirmation, venue approval and equipment reservation notices. END completion, withdrawal and safety notices were also visible. These complement the earlier O1, V1, T1 and attendee observations. |
+| MAIN change notification identity after refresh | For change `06fed275-db12-4c15-8f78-60010ecf7014`, C1 saw one **Change request to review** and one **Change request approved**, each with the correct change link. Refresh retained the same two distinct outcome titles/links; they were not treated as duplicate notices. Database notification IDs were not exposed and are **Not recorded**. |
+| Unrelated O2 | O2's CANCEL event URL was unavailable / permission denied. O2's inspected full inbox showed only O2's older test-event notices, with unread count 11 and no MAIN or `REL-20261101-AGENT-` notices. |
+| Withdrawn attendee A1 | A1's full inbox showed 16 notices, 15 unread, including the recorded MAIN withdrawal outcomes. There was no MAIN purpose-change **Event details changed** notice for 17:01. The earlier A2/A3 observations each showed the corresponding active-attendee notice with the recipient's own registration link. |
+| Reconfirm released venue interval and unrelated arrangements | V1's Orchid calendar showed 25 November 08:00–10:00 Available, including CANCEL's released interval, while the unrelated 10:00–11:00 booking remained Booked. REMEDIATE's 24 November 09:00–10:00 arrangement remained Booked. V1's cancellation notice and the owner/current-coordinator notices were observed. |
+
+**R17 and R22 walkthrough outcomes:** Pass for their observed walkthrough scope. The tally is **20 of 24 walkthrough groups complete, 4 remaining: R19, R20, R21 and R24**. `EX-20-431-MAN-20261101-01-A1` records the connected significant-change submission/review-prompt case using the initial O1/C1 link observations and the current unrelated-recipient/access observations. The actual permitted change was purpose-only on Confirmed MAIN; no separate request-for-action transition occurred. UI notice counts/links are not represented as database notification IDs or transaction/rollback evidence.
+
+**Remaining state:** STALE's round 3 approval at 17:29:42 and preparation resume at 17:29:44 remain recorded; Classroom setup/turnaround are restored to 15/15. R20 is still partial for independent-arrangement invalidation and offline save/reconciliation; the offline branch is **Not executed**. R19's combined branch is complete, but separate area-only branches remain **Not executed**. R21's wider action/recipient matrix and R24's final access/evidence/retained-data review remain open. All synthetic data and history are retained. No cleanup, formal acceptance, release approval or sprint closure is inferred from the group tally.
+
+### MAN-20261101-01 continuation — Independent arrangement invalidation and browser-session checkpoint
+
+**Source:** browser-agent observations from the preceding session segment, recorded when work resumed. These belong to the ongoing 1 November 2026 run; their exact observation times are **Not recorded**. The walkthrough tally remains **20 of 24 complete**.
+
+| R20 observation | Actual result |
+| --- | --- |
+| Cancel one approved arrangement | On Confirmed, safety-approved REMEDIATE with preparation already started and two microphones RESERVED, C1 cancelled BOARDROOM booking `845a47cd-769b-4e64-b401-0eeb67e591a4` with reason **R20 independent arrangement replacement**. The parent event remained CONFIRMED and the two-unit microphone reservation remained unchanged. Safety became Approval out of date; preparation was blocked and no approved venue remained. |
+| Approve the linked replacement | Linked Orchid booking `99e8ad8b-388a-4ba2-af3c-6e1580be0f78`, CLASSROOM layout for the same 24 November 09:00–10:00 interval, was approved by V1. Safety remained out of date. The replacement venue approval did not renew the event's safety approval. |
+| Submit a current round | C1 submitted REMEDIATE round 3 with current notes. S1 loaded `/safety-reviews/4d8a94f1-b826-468b-b3c8-5a222eaf257d` and selected Approve but did not save it before the browser-control session ended. The round is not recorded as approved by this checkpoint. |
+| Offline-test stopping point | A native automation safety check ended the browser-control session before offline mode was entered. No offline save or failed-response reconciliation was executed, and no product failure is claimed. |
+
+**Retained state and next scope:** the cancelled BOARDROOM arrangement, approved CLASSROOM replacement, unchanged two-unit equipment reservation and submitted round 3 remain. The pending decision must be re-read before any resumed action; selecting Approve alone is not a saved decision. Independent-arrangement safety invalidation is now observed; the R20 offline save/reconciliation branch remains **Not executed**. R19, R20, R21 and R24 remain open. No other file, case-wide Pass, cleanup, acceptance decision, release approval or commit is added by this checkpoint.
+
+### MAN-20261101-01 continuation — Resumed safety form and S1 notification checks
+
+**Executed:** resumed browser-agent segment of the 1 November 2026 run; exact new observation times are **Not recorded**. The browser tab remained controllable. Native Chrome accessibility was unavailable, and a screenshot requested through the bound Chrome surface instead showed the active Excel application. No native inputs were made against that mismatched surface. Offline mode was not entered: the R20 offline branch remains **Not executed** because of this UI-control obstacle, without a product failure claim.
+
+| Resumed observation | Actual result |
+| --- | --- |
+| Request Changes requires an explanation | On pending REMEDIATE round 3 `4d8a94f1-b826-468b-b3c8-5a222eaf257d`, S1 selected Request changes and Venue. Save remained disabled for empty Notes and for whitespace-only Notes. This observes the missing-explanation UI guard; it is not a saved Venue-only outcome or an HTTP refusal. |
+| Restore an unsaved approval draft | Notes were cleared and Approve was selected. Save was not performed. Round 3 is still not recorded as approved by this checkpoint. |
+| Inspect S1 safety-submission notices | S1's inbox showed the safety-submission notices for MAIN and the `REL-20261101-AGENT-` rounds. The specifically followed round 3 notice displayed 17:33 and linked to `/safety-reviews/4d8a94f1-b826-468b-b3c8-5a222eaf257d`. Other individual notice IDs are **Not recorded**. |
+| Persist S1's read state | S1 marked that round 3 notice read. Reload showed neither Unread nor a Mark as read button for it; the displayed header count fell from 25 to 24. The database notice ID is **Not recorded**. |
+| Follow the notice | Open event request led to the correct REMEDIATE round 3, still Pending, showing the two RESERVED microphones. See [safety notice destination](evidence/MAN-20261101-01/r21-safety-notice-destination.jpg). |
+
+**Scope and retained state:** the S1 notice's read state is retained; the round 3 approval remains unsaved. R19's blank/whitespace explanation guard is now observed, but separate Venue-only and Technical-only remediation journeys remain unperformed. R21 has this additional submission-recipient/link/read-state evidence but is not fully passed. The tally stays **20 of 24 complete**, with R19/R20/R21/R24 open; no additional case-wide Pass or release/acceptance decision is inferred.
+
+### MAN-20261101-01 continuation — Venue-only remediation branch and signed-out read
+
+**Executed:** 1 November 2026 by the Codex browser agent. R19's Venue-only branch is now in progress; it is not yet a completed group or case result.
+
+| Venue-only fixture action | Actual observed result |
+| --- | --- |
+| Prepare CHANGE-EQ | V1 approved Orchid booking `d919cf66-bdcf-41f5-88bc-c2b69792f903` at 17:42. T1 reserved one Portable projector under request `1bd20e55-ff84-4562-8334-3b746250a3b9` at 17:43. The event is CHANGE-EQ `88bb8a9e-e9f3-497d-ab8e-691f2d67312c`. |
+| Submit and request Venue-only changes | C1 submitted round 1 `ff5602f0-c480-4060-b1f3-3277a39a1dac` at 17:43:39. S1 requested Venue changes only at 17:44:00, with note **R19 Venue-only: replace the classroom layout with a safer boardroom arrangement. Equipment changes alone do not address this request.** |
+| Change only the unrequested technical area | C1 explicitly replaced the reserved projector with another one-unit request, changing its technical requirement to secure the cables along the east wall. The original became CANCELLED and the successor REQUESTED. Safety still explicitly required updating Venue arrangements before a new review; no resubmission fields were available. The unreserved successor also separately failed ordinary equipment readiness. |
+| Begin the requested venue change | C1 cancelled the original Orchid booking with an R19 Venue-only reason and submitted linked BOARDROOM replacement `f05ad395-fafd-4498-bda1-964555dff09c` for the same 27 November 09:00–10:00 interval. The replacement was Pending. Its approval, successor equipment reservation and next safety round were not yet recorded. |
+
+**Verified artifact:** [Venue-only requirement still unresolved after the technical change](evidence/MAN-20261101-01/r19-venue-only-still-unresolved.jpg). The image was visually inspected before linking: it shows the cancelled original projector, requested successor, separate equipment-readiness blocker and explicit instruction to update the requested Venue arrangements. It does not show the subsequent replacement approval or a completed remediation round.
+
+**R24 signed-out observations:** signed-out navigation to the localhost `/reviews` page required sign-in. Direct browser navigation to the same localhost application's `/api/auth/me` showed `AUTHENTICATION_REQUIRED` and **Sign in to continue**. The HTTP status was not observed and is **Not recorded**; this body is not recorded as proof of a 401 response.
+
+**Retained state:** the cancelled original venue/projector, requested projector successor, Pending BOARDROOM replacement and Venue-only request-changes round remain. The exact successor equipment ID and full cancellation-reason wording are **Not recorded** here. The tally stays **20 of 24 complete**; R19/R20/R21/R24 remain open, with no new case-wide Pass, cleanup or release/acceptance decision.
+
+### MAN-20261101-01 continuation — Area-specific safety remediation and additional recipient evidence, 17:44–17:49
+
+**Executed:** 1 November 2026 by the Codex browser agent. The two linked screenshots below were visually inspected and match the stated safety states. R19 is still in progress because REMEDIATE's latest round is pending.
+
+| Venue-only CHANGE-EQ continuation | Actual result |
+| --- | --- |
+| Approve required venue replacement | V1 approved BOARDROOM booking `f05ad395-fafd-4498-bda1-964555dff09c` at 17:46. |
+| Restore ordinary equipment readiness | T1 reserved the one-unit projector successor `bda1cbc2-091f-4dfd-ba41-e0b2e15902cc`. Its cancelled predecessor and earlier cancelled microphone line remained in history. |
+| New safety round and preparation | C1 submitted round 2 at 17:48:14; S1 approved at 17:48:42. The retained screenshot shows C1 final confirmation at 17:49:04 and preparation start at 17:49:09, with the earlier Venue-only round still Changes requested. See [Venue-only remediation approved](evidence/MAN-20261101-01/r19-venue-only-approved.jpg). |
+
+| Technical-only REMEDIATE branch | Actual result |
+| --- | --- |
+| Request Technical changes only, 17:45:18 | S1 decided REMEDIATE round 3 `4d8a94f1-b826-468b-b3c8-5a222eaf257d` as Request changes for Technical only: reduce microphones from two to one and secure cables; venue changes alone do not satisfy the request. This is a saved Request Changes decision, distinct from the earlier unsaved Approve selection. |
+| Change only the unrequested venue area | C1 cancelled CLASSROOM booking `99e8ad8b-388a-4ba2-af3c-6e1580be0f78` and created BOARDROOM replacement `3fae1b8a-8402-4d0c-b08c-d3a94fe20ada`. V1 approved it at 17:46. After C1 reloaded, safety still explicitly required updating the requested Technical arrangements; the two-unit microphone reservation was unchanged. See [Technical-only requirement still unresolved](evidence/MAN-20261101-01/r19-technical-only-still-unresolved.jpg). |
+| Perform the required technical change | C1 replaced the reserved two-unit line `117d2c4c-ef83-49e4-9579-7434d36bc7dd` with one-unit request `3a29ea17-cab9-4e3f-8db5-f317e2890b73`, with technical notes addressing clear aisles/cables. The previous two-unit and three-unit lines remained Cancelled in history. The remaining gate required all active lines to be reserved; T1 then reserved the one-unit successor. |
+| Submit current round 4, 17:48:26 | C1 submitted `4fd6f5fc-3227-45eb-94fe-bd63a8116e07`. It remained Pending with one microphone RESERVED, awaiting the planned offline observation and subsequent decision/resume. No approval or preparation resume is claimed yet. |
+
+| R21 newly observed recipient evidence | Actual result |
+| --- | --- |
+| V1 earlier venue rejections | V1 saw MAIN's 1 November 03:26 rejection notice linking booking `6bf96dc4-9915-42bf-8468-fff8893b5008`, reason **R11 rejection test**, and the original Orchid booking `5b14411d-d83b-40c3-b5fe-0b0c70ec8cf0` rejected on 31 October at 19:02, reason **Venue does not have Theatre layout**. These notice timestamps are not new execution times for those original decisions. |
+| Venue-only routing | V1 saw CHANGE-EQ's 17:44 safety request with the specific venue instructions and original booking `d919cf66-bdcf-41f5-88bc-c2b69792f903` link. T1's inspected list did not show that Venue-only safety notice. |
+| Technical-only routing | T1 saw REMEDIATE's 17:45 Technical-only safety request with the correct equipment link. V1's inspected filtered list did not show that Technical-only safety notice; V1 did receive the separate later venue replacement/cancellation/approval notices. These absences are limited to the inspected UI lists, not a database query. |
+| Equipment rejection | T1 and C1 saw PROBE's Equipment request rejected outcome with **R13 rejection test**; T1's notice displayed 16:50 and linked to the correct equipment context. |
+| Current coordinator safety/outage/allocation | C1 saw both area-specific safety instructions, STALE's 17:27 rejection and SAFETY-REJECT's 17:12 rejection with reasons. C1 also saw CHANGE's 17:30 venue-outage notice for 09:15–09:30 with the recorded reason and booking `765997fa-034d-4e28-bd3a-2b0cb28e2f02` link, plus allocation notices for all the `REL-20261101-AGENT-` fixtures. |
+| Current coordinator change withdrawals | C1 saw MAIN withdrawal notices for `ea95ab9b-1330-41ee-b450-b13328387120` and `5c7fb898-c416-497b-9c3e-30cd31480a3c` at 17:02; REMEDIATE change `4c9f37d7-bdf7-49ca-9044-ed3a0bf365e7` at 17:21; and CHANGE proposal `128312a8-4e13-4c18-a383-0921a3127b41` at 17:30. |
+
+**Inbox scope limitation:** C1's rendered inbox ended at 16:47 despite known older user fixtures, and showed no pagination controls. It is not recorded as the full historical inbox; no absence of older C1 notices is inferred. Business-entity IDs above identify linked bookings/changes/reviews, not unexposed database notification IDs.
+
+**Retained state:** CHANGE-EQ is confirmed, safety-approved and preparation-started with its approved BOARDROOM and reserved projector. REMEDIATE retains the approved new BOARDROOM, one reserved microphone, earlier cancelled lines/bookings and pending round 4. All decisions/notices remain. R19/R20/R21/R24 stay open and the tally remains **20 of 24 complete**; no new full-case Pass, cleanup or release/acceptance decision is added.
+
+### MAN-20261101-01 continuation — Offline stale-tab reconciliation and R19/R20 walkthrough completion
+
+**Executed:** 1 November 2026 by the Codex browser agent, with the user operating Chrome's network-throttling setting. Two visually identical tabs had different connectivity/context. The sequence below preserves that distinction and does not claim that an offline write committed or that a lost response concealed a successful save.
+
+| Attempt / observation | Actual result |
+| --- | --- |
+| Initial save on the original tab | The user reported setting Offline, but Save on original tab `1669297443` reached the server and approved REMEDIATE round 4 `4fd6f5fc-3227-45eb-94fe-bd63a8116e07` at 17:50:12. The user had opened a separate identical tab, `1669297472`, which still displayed Awaiting and was the offline tab. This first save is a successful separately recorded decision, not evidence of an offline mutation. |
+| Save on the bound offline stale tab | After binding the actual offline tab, S1 selected Approve and Save. The view showed **Unable to reach the API. Check that the backend is running, then try again. The review could not be reloaded. Reload this page before trying again.** The decision form and protected round details were removed, with no false success. See [offline save requires reload](evidence/MAN-20261101-01/r20-offline-save-reload-required.jpg). |
+| Restore connectivity and reconcile | The user restored No throttling. Reload on that tab showed the already-saved approval from 17:50:12 with no decision form or repeat Save action. See [reconciled approved round](evidence/MAN-20261101-01/r20-online-reconciled-approved.jpg). The earlier file [online reload loading state](evidence/MAN-20261101-01/r20-online-reconciled-decision.jpg) shows only **Loading the safety review**; it is retained as loading-state evidence and is not proof of the completed reconciliation. |
+
+The screenshots were visually inspected. The supported scenario is **offline stale-tab reconciliation of a decision saved separately in another tab**. It establishes failure/reload behavior and authoritative reconciliation in that scenario, not that a timed-out response committed the attempted write.
+
+**R20 walkthrough outcome:** Pass for the observed stale-safety, independent-arrangement, readiness and qualified offline/reconciliation scope; the tally reached **21 of 24**. Exact delayed-response orderings, transaction outcomes and concurrency assertions retain their separate controlled specifications.
+
+**R19 completion:** C1 resumed REMEDIATE preparation at 17:51:53 after round 4 was approved. One microphone remained RESERVED; prior cancelled two-/three-unit lines and round 3 Changes requested remained in history. See [Technical-only remediation approved and preparation resumed](evidence/MAN-20261101-01/r19-technical-only-approved.jpg), visually verified to show round 4 approved at 17:50:12 and preparation at 17:51:53. Alongside the completed Venue-only and combined branches, **R19 walkthrough outcome is Pass**. The tally is now **22 of 24 complete**, with R21 and R24 still open.
+
+| Further access/notification observation | Actual result |
+| --- | --- |
+| R21 new coordinator handover notice | C2's inbox contained the `REL-20261031-HANDOVER` reassignment notice dated 31 October at 17:40, linking `/reviews/acb06944-af6b-4088-b057-26d2df33cd8c`. Following it opened the correct Submitted event with coordinator decision controls. The notice date is the historical outcome's displayed timestamp, not the date of this observation. |
+| Former coordinator access | C1's same handover-event URL was now unavailable / permission denied. This supports current-permission enforcement; the older C1/owner handover notices remain separate observations. |
+| R24 C2 MAIN protected views | MAIN's suitability view was unavailable / not permitted to assess. MAIN's roster showed **The event request was not found** without protected data. |
+
+**Remaining evidence boundary:** R21's earlier notices that fall outside C1's rendered range are not classified as failed deliveries. The visible history/pagination limitation is an evidence-access obstacle. R24's remaining access, runtime/setup/CI/review and retained-data assessment is still open. No overall release acceptance, formal story acceptance or sprint closure is granted by the 22/24 tally; all synthetic records and decisions remain retained.
+
+### MAN-20261101-01 continuation — R21 mixed-source completion and final access observations
+
+**Earlier notification outcomes confirmed by the user:** the user explicitly confirmed Pass for the older R03/R04/R09/R12 notification checks, including O1/former-C1 handover notices, clarification/reply, hold/expiry and equipment-shortfall notices. These are user-reported earlier outcomes, not observations made by the browser agent in the new run. Their individual execution dates, tested builds, role executors and retained screenshots are **Not recorded**; source is the current project conversation. The current reporting date does not replace those missing execution dates. No per-case Pass is inferred from this group report.
+
+**Additional current browser observation:** O1's rendered inbox contained 100 rows, ending at 1 November 14:05, with no pagination controls. O1 saw the CHANGE-EQ and STALE initial-submission notices at 17:19, saying they awaited allocation, and the other `REL-20261101-AGENT-` submission notices at 16:46/16:58. SAFETY-REJECT's initial approval at 17:06 and allocation at 16:59 were visible, with the correct `/events/...` links. The 100-row view is not represented as the full historical inbox.
+
+**R21 walkthrough outcome:** Pass using the explicitly separated earlier user report and current browser observations. The tally is **23 of 24 walkthrough groups complete**. R24 remains open; the mixed-source tally does not establish a single tested build/date for all earlier groups or pass every notification transaction/concurrency specification.
+
+| R24 role / saved route | Actual browser observation |
+| --- | --- |
+| O2 on MAIN | Event detail unavailable; review and suitability limited to Coordinator access; roster not found; booking view limited to Venue Staff/coordinators; safety limited to Safety Officer. No protected event/roster content was shown. |
+| A3 | CANCEL's event detail was unavailable. MAIN review/suitability required Coordinator access; roster said the role could not view it; booking access was role-limited; safety required Safety Officer. |
+| Signed out on localhost | Saved event, review, suitability, booking, roster and safety pages required sign-in and showed no protected data. |
+| Signed out on 127.0.0.1 | Direct navigation to `/api/auth/me` showed an `AUTHENTICATION_REQUIRED` JSON response. The HTTP status remains **Not recorded** while the user checks the browser Network view; no 401 is inferred from the response body. |
+
+**Current candidate GitHub lookup:** read-only results for SHA `429397aef14be8e3773206eddc9583e56c1f05ad` returned an empty statuses list. The connector's PR-workflow-runs query returned an empty first page, and a `minor-ui` branch search returned no result. These limited queries do not establish a passing CI run or prove that no other run/PR exists. Current-candidate CI and independent review/merge remain pending evidence.
+
+### 1 November 2026 — TC-18-415 warning qualification resolved against current criteria
+
+A separate read-only review checked live [KAN-17](https://smu-g7-grp1.atlassian.net/browse/KAN-17) and the repository card. AC101 permits withdrawal after registration closes but before event start; AC102 requires explaining that re-entry depends on registration being open and capacity being available, without promising a saved place. AC2 requires the applicable re-registration restrictions to be disclosed. None requires a separate dynamic sentence saying that registration is already closed. The matching repository [AC101/AC102](../scrum/sprint-04/sprint-backlog.md) are at lines 638–639; the actual warning is in `frontend/src/features/registrations/RegistrationsPage.vue:117`, verified in this checkout.
+
+The observed warning satisfies those current criteria. TC-18-415's phrase that the warning reflects closed registration is ambiguous specification wording, not an additional acceptance criterion. The earlier **Not assessed** notes remain as the historical qualification; this review resolves that wording concern. No code failure or release blocker is raised solely because the warning is general and conditional. A future wording clarification may make the specification more precise; `test-cases.csv` is unchanged in this run.
+
+`EX-18-415-MAN-20261101-01-A1` records Pass for the observed UI scenario: A1 withdrew after END registration closed and before event start, the conditional warning did not promise re-entry, and the event showed a free place but closed registration with no Register action. No direct API re-entry attempt, HTTP response status or controlled exact-clock test is asserted.
+
+**Additional safety case mapping:** `EX-06-25-MAN-20261101-01-A1` records the completed manual targeted-routing scenario: Venue-only on CHANGE-EQ; combined and Technical-only in distinct retained REMEDIATE review rounds; correct coordinator/area-staff instructions, wrong-area changes leaving the requested area unresolved, and preserved unrelated arrangements/history. These are the actual fixture variations. TC-06-433/434 remain separately specified automated PostgreSQL regressions, with no new full execution claimed: the supplied UI observations do not include every repeated-pending-submission/pre-request-replacement/window-boundary assertion in those specifications. The prior TC-06-26 actual-remediation result remains valid.
+
+### MAN-20261101-01 — Consolidated retained-data ledger
+
+This ledger consolidates the latest observations above; it is not a fresh database inventory. No cleanup or deletion was performed. Unknown full IDs remain **Not recorded** rather than being reconstructed. Immutable decisions, cancellations, replacements, submissions, assignment and edit histories are retained. Any later removal or restoration requires the agreed shared-data procedure.
+
+| Event | ID | Latest observed state / retained outcome |
+| --- | --- | --- |
+| MAIN (pre-existing) | `a8e842bb-6581-4196-b0a8-641dc30adaa0` | Confirmed; current safety approval and preparation started 17:04:27. Purpose **Workshop including a discussion session**; description **Arrival instructions: arrive 09:45**. Two approved Harbour arrangements and three reserved microphones retained; A2/A3 active, A1 withdrawn. |
+| PROBE | `55e58c4a-8ab1-42c8-a572-69810743c14d` | Approved, explicit equipment Not Required, no venue; no registration. All tested equipment lines cancelled with retained history. |
+| END | `f65feb52-085b-4910-8331-904e9c69469c` | Completed after its real 1 November 17:20 end; one reservation released, venue retained Approved, historical registration states retained. |
+| CHANGE | `7acbfe26-413c-41a0-9fa4-a82d138cfd1c` | Approved; attendance 22; description **R16 current revision: organiser confirmed arrival instructions**. One microphone reserved. New approved Classroom booking remains affected by the retained R14 operational block and unresolved recovery. |
+| SAFETY-REJECT | `f5031e9b-99bb-4dde-9000-99f053a20f86` | Confirmed; rejected first safety round and approved second round retained; approved Orchid, no equipment noted, registration disabled. |
+| REMEDIATE | `42209235-16a8-4f82-8e06-9938f0fcb740` | Confirmed; round 4 approved, preparation resumed 17:51:53; latest BOARDROOM approved and one microphone reserved. Previous venues, equipment and round outcomes retained. |
+| CANCEL | `74707e58-b63f-4751-8601-bb58eebddcb2` | Cancelled 17:23:01 with **Release test cancellation**; venue/equipment released and A2 registration cancelled with event; history/notices retained. |
+| STALE | `84a2d6ea-6336-44fd-a7c8-d03b3b489fe3` | Confirmed; round 3 approved, preparation resumed 17:29:44; dedicated Classroom arrangement retained. Registration opens 2 November 09:00; no registration was created by the not-yet-open check. |
+| CHANGE-EQ | `88bb8a9e-e9f3-497d-ab8e-691f2d67312c` | Confirmed 17:49:04; round 2 approved, preparation started 17:49:09; approved BOARDROOM and one reserved projector. Registration disabled. |
+
+| Venue bookings / shared setting | Retained records and current observed status |
+| --- | --- |
+| MAIN | Two Harbour arrangements remain Approved; their full booking IDs are **Not recorded** in this continuation. Earlier rejected bookings referenced by V1 notices: `6bf96dc4-9915-42bf-8468-fff8893b5008` and `5b14411d-d83b-40c3-b5fe-0b0c70ec8cf0`. |
+| END | Orchid `88e97699-cf00-44e6-9735-85dfdec0f64e` remains Approved for 1 November 17:15–17:20. |
+| CHANGE | Earlier pending Orchid booking cancelled by the attendance change, full ID **Not recorded**. Classroom `765997fa-034d-4e28-bd3a-2b0cb28e2f02` is Approved, with recovery/overlap unresolved. |
+| SAFETY-REJECT | Approved Orchid, observed ID prefix `2e028`; full ID **Not recorded**. |
+| REMEDIATE | Original Orchid prefix `25e4` cancelled; full ID **Not recorded**. BOARDROOM `845a47cd-769b-4e64-b401-0eeb67e591a4` cancelled for R20. CLASSROOM `99e8ad8b-388a-4ba2-af3c-6e1580be0f78` cancelled in the Technical-only wrong-area check. Current BOARDROOM `3fae1b8a-8402-4d0c-b08c-d3a94fe20ada` Approved. All use 24 November 09:00–10:00. |
+| CANCEL | Orchid prefix `db72` Cancelled; full ID **Not recorded**. Released interval 25 November 09:00–10:00. |
+| STALE | Original Orchid prefix `ed49` cancelled; full ID **Not recorded**. Classroom `3eef65bc-b2af-41cc-8542-70b7beba90eb` Approved for 26 November 09:00–10:00. |
+| CHANGE-EQ | Orchid `d919cf66-bdcf-41f5-88bc-c2b69792f903` Cancelled; BOARDROOM replacement `f05ad395-fafd-4498-bda1-964555dff09c` Approved for 27 November 09:00–10:00. |
+| Dedicated Classroom baseline/restoration | Existing venue `d1ba6133-20fb-4efb-b1ad-7fcd5d31718c`: capacity 30, CLASSROOM, 08:00–20:00, no listed accessibility features/equipment. Setup was varied 15 → 20 → 25 → 15; turnaround stayed 15. Final buffers restored to 15/15. |
+| Retained operational block | Classroom, 22 November 09:15–09:30, **R14 isolated confirmation readiness test**; one affected approved CHANGE booking. Block ID not shown / **Not recorded**. This block was retained, not removed. |
+
+| Equipment context | Retained lines |
+| --- | --- |
+| MAIN | Wireless microphone `7dcc60ce-c098-4df0-893c-b358f718d646`, 3 RESERVED. |
+| PROBE | `98a19263-21b8-4470-bd99-4ffac46ae501`, 1 cancelled as superseded; `3af33c7e-d7ce-4f64-9a31-14464279a895`, 2 reserved then cancelled with **R13 reservation-release test**; separate 1-unit rejected then cancelled line, ID **Not recorded**. Explicit Not Required saved. |
+| END | `a4e29f15-2b37-4586-8fa8-a7240e78f2db`, 1 microphone released on completion. |
+| CHANGE | `365205b4-b084-4f96-ad57-4d98acf078f3`, 1 microphone RESERVED and preserved through attendance change. |
+| REMEDIATE | Original 3-unit microphone line cancelled, ID **Not recorded**; 2-unit `117d2c4c-ef83-49e4-9579-7434d36bc7dd` Cancelled; current 1-unit `3a29ea17-cab9-4e3f-8db5-f317e2890b73` RESERVED. |
+| CANCEL | Equipment release observed through cancellation and independent availability; line ID **Not recorded**. |
+| CHANGE-EQ | Original requested 1-unit microphone cancelled by equipment-only change, ID **Not recorded**. Projector predecessor `1bd20e55-ff84-4562-8334-3b746250a3b9` Cancelled; current 1-unit projector `bda1cbc2-091f-4dfd-ba41-e0b2e15902cc` RESERVED. |
+| Stock counters | Wireless microphone checks consistently used total 10, damaged 2, maintenance 1, operational 7. The browser-agent continuation did not change these catalogue counters. The earlier user R12 baseline/history is not reconstructed; other catalogue IDs/counters are **Not recorded**. |
+
+| Event safety rounds | Retained outcomes |
+| --- | --- |
+| MAIN | Round 1 `4562f827-f75f-489f-b2c2-54ad0e21add0` Approved 17:04:14. |
+| END | Round 1 `f57b6d6d-d836-473f-a573-be5df874f033` Approved 17:04:29. |
+| SAFETY-REJECT | Round 1 `98196cd6-c483-4980-9780-63cf3a6a8003` Rejected 17:12:53; round 2 Approved 17:13:19, ID **Not recorded**. |
+| REMEDIATE | Round 1 `57a6addc-f34c-49d6-96d3-aba5dee6e8c6` Changes requested, Venue + Technical. Round 2 Approved 17:18:09, ID **Not recorded**. Round 3 `4d8a94f1-b826-468b-b3c8-5a222eaf257d` Changes requested, Technical only, 17:45:18. Round 4 `4fd6f5fc-3227-45eb-94fe-bd63a8116e07` Approved 17:50:12. |
+| STALE | Round 1 Approved 17:25:53; round 2 Rejected 17:27:32; round 3 Approved 17:29:42. All three round IDs **Not recorded**. |
+| CHANGE-EQ | Round 1 `ff5602f0-c480-4060-b1f3-3277a39a1dac` Changes requested, Venue only, 17:44:00. Round 2 Approved 17:48:42, ID **Not recorded**. |
+
+| Registration / significant-change history | Retained records |
+| --- | --- |
+| MAIN registrations | A1 `10acf053-ebf3-4425-b33b-2abe679d2cdd` Withdrawn after same-ID re-entry; A2 `e11f0f65-c8b5-4e64-9e57-21ea845d89b5` Active; A3 `374e0621-8eca-4034-901a-b48ff57fd895` Active. |
+| END registrations | A1 `18b6b4f0-ec65-4e5e-bb81-5632e52c61a6` Withdrawn 17:10:24; A2 `99b1e9d9-578a-42fd-b553-80095253143d` retained Active historically after completion, with actions unavailable after start. |
+| CANCEL registration | A2 Cancelled with event at 17:23:01; registration ID **Not recorded**. |
+| MAIN changes | `06fed275-db12-4c15-8f78-60010ecf7014` Approved; `d3ae6c9f-6226-4a41-ab92-92ea74945240` Rejected; `ea95ab9b-1330-41ee-b450-b13328387120` and `5c7fb898-c416-497b-9c3e-30cd31480a3c` Withdrawn. |
+| Other changes | CHANGE attendance change Approved, ID **Not recorded**; its purpose proposal `128312a8-4e13-4c18-a383-0921a3127b41` Withdrawn. CHANGE-EQ equipment-only change Approved, ID **Not recorded**. REMEDIATE purpose proposal `4c9f37d7-bdf7-49ca-9044-ed3a0bf365e7` Withdrawn. |
+| Notifications / read state | Outcome notices remain. A2's MAIN change notice and S1's REMEDIATE round 3 submission notice were marked read and persisted. Database notification IDs are **Not recorded**. Current rendered-inbox limits and user-reported older checks remain as described above. |
+
+Existing STARTED `bd60431a-f0b3-419b-80e8-d7a07df97d75`, CAPZERO `3ff656b8-a67d-49f0-9e63-533da7d1313c`, and HANDOVER `acb06944-af6b-4088-b057-26d2df33cd8c` were inspected without business-data mutation by this continuation. Earlier user-created R01–R12 fixtures/settings outside this ledger are **Not recorded** here; their deletion/restoration is not implied.
+
+### MAN-20261101-01 — Remaining release gates at documentation checkpoint
+
+| Gate | Current evidence / remaining action |
+| --- | --- |
+| Walkthrough | 23/24 groups Pass with stated source/scope limits; R24 open. TC-06-32 is not passed by this partial overall walkthrough. |
+| Signed-out HTTP status | Protected-page sign-in gates and `AUTHENTICATION_REQUIRED` body observed. Actual HTTP 401 confirmation still **Not recorded** pending the user's Network observation. |
+| Candidate identity | Local HEAD `429397aef14be8e3773206eddc9583e56c1f05ad`; exact served frontend/API build not exposed and **Not recorded**. Product files unchanged during this documentation check. |
+| Automated evidence | S4-E26 records passing check/coverage (1,209 frontend + 1,959 backend) and 248 browser cases. Its three source/test hashes were rechecked and match this checkout. Browser API substitutes remain explicit. S4-E23 records 814 real disposable-PostgreSQL tests on the earlier candidate, not a new shared-database run. |
+| Current CI and independent review/merge | Not established for the three later UI commits on `fix/minor-ui-fixes`. Limited GitHub queries returned no statuses/PR-workflow result; this is not a CI Pass. Local main remains `5491021`; current candidate review/merge evidence remains pending. |
+| Shared migrations and job | Current full 001–022 ledger and job configuration not freshly verified in this run. Earlier 021/022 application was user-reported; OPS-20261025-HOLD-EXPIRY-01 records the every-minute job and successful ticks then. Older configuration evidence is not a current refresh. |
+| Warning qualification | TC-18-415 wording concern resolved against live KAN-17; no code defect/release blocker solely from the general conditional warning. Future specification wording clarification may be useful. |
+| Evidence and shared-data disposition | Run/screenshots registered as S4-E27; eight scoped case results appended. Ledger above records known retained data and restored 15/15 buffers. No cleanup/deletion; missing full IDs remain explicit. Documentation/screenshots are uncommitted. |
+| Formal decision | Story acceptance, release/code-freeze decision, participants and approval date remain **Not assessed / Not recorded**. No sprint closure or release approval is performed by this run record. |
+
+### MAN-20261101-01 — Signed-out HTTP status confirmed, 1 November 2026
+
+After selecting the `me` request in Chrome Network, the user confirmed **HTTP 401** for `http://127.0.0.1:5173/api/auth/me`. This is a user-observed network status, paired with the browser agent's previously observed `AUTHENTICATION_REQUIRED` response body after sign-out. No copied token was supplied. The earlier pending-status checkpoints remain above as history; the HTTP-status confirmation is now complete. Exact observation time and a Network screenshot are **Not recorded**.
+
+**Functional walkthrough progress:** no further functional browser checks remain in this walkthrough. R01–R23 are Pass with the source and scope qualifications recorded above, and R24's browser access/logout portion is complete. The group tally remains **23/24 complete, one release-review group open**: the final candidate's CI and independent review/merge, current migration/job verification, and the team's release/code-freeze decision still require evidence. This confirmation does not itself establish release approval or story acceptance.
+
+**Case-level scope:** TC-01-208 is the relevant logout specification, but no full case Pass is added from this observation alone. Its explicit cookie-clearing inspection and additional known protected API read returning 401 were not separately recorded; protected UI denials are not substituted for those API/cookie assertions. The eight scoped execution rows already supported by this run remain unchanged. This update records the actual 401 observation in the run narrative and S4-E27 without extending it to unperformed checks.
+
+## MAN-20261101-02 — Targeted release follow-up, 1 November 2026
+
+**Scope:** Five checks selected from OPS-7, D-1/O-1, OBS-12, OBS-6 and OBS-8 after the full release walkthrough. This is a new regression run, not a replacement for MAN-20261101-01 or a full release acceptance decision. Results: **two UI failures, one safety-rule/design inconsistency reproduced, and two scoped passes**. The safety restoration case is recorded Fail against the existing AC9 re-review wording, with the conflicting fingerprint design stated explicitly. Release/code-freeze acceptance remains **Not assessed**.
+
+**Executor and environment:** Codex browser agent using Chrome, real test-role authentication, local frontend/API at `http://127.0.0.1:5173` and `http://localhost:5173`, and the shared Supabase development database. Source checkout: `034a631bdb05309d4ba0ef4ed1ff9ba032d9df50` on `fix/minor-ui-fixes`; exact served frontend/API build is not exposed and **Not recorded**. All times below are 1 November 2026, Singapore time. No product code, migrations or Jira statuses were changed. Passwords, cookies and tokens are excluded from the evidence.
+
+**Methods:** Browser checks used actual UI actions and rendered-page observations, with separate coordinator, Venue Staff and Safety Officer sessions. OBS-8 and the OBS-6 stored-reason comparison used a separate direct live HTTP probe with real test-account sessions; its statuses are HTTP observations, not Chrome Network captures. No API responses were substituted in those connected checks. A separate narrow automated test run used mocked boundaries, as described below.
+
+### Targeted results and reproduction steps
+
+| Check / case | Steps and observed result | Assessment |
+| --- | --- | --- |
+| **OPS-7 / TC-06-446** — restored venue rules after an approved safety round | STALE already showed Round 3 Safety approved, decided 17:29:42, with preparation started 17:29:44. Venue Staff changed the dedicated Classroom setup buffer from 15 to 20 minutes; coordinator reload showed Approval out of date and preparation blocked. Venue Staff restored setup to 15; coordinator reload again showed Safety approved and the same old preparation timestamp, with the same three rounds and no new officer decision. Turnaround stayed 15 throughout. | **Fail against KAN-84-AC9's require-re-review wording; design inconsistency remains unresolved.** The current fingerprint compares values and becomes equal again after restoration. This is not evidence of a new review or a fresh preparation write. |
+| **D-1/O-1 / TC-06-447** — stale confirmation readiness | PROBE had one approved Orchid arrangement and equipment Not Required. Its confirmation panel was Ready. Without leaving the page, coordinator submitted a second Classroom request; the booking panel showed Pending but confirmation still claimed every live arrangement was approved. After checking the acknowledgement and selecting Confirm event, the server refused with “Resolve 1 venue arrangement awaiting approval before confirming.” The panel became Not ready and the event remained APPROVED. | **Fail for stale UI; server guard passed this attempt.** No erroneous confirmation was observed. The mutation's exact HTTP status was not captured. KAN-61-AC3/AC101/AC103 govern current prerequisites and refusal; automatic UI refresh is a derived usability regression expectation, not newly added Jira wording. |
+| **OBS-6 / TC-15-108** — cancellation displays the old rejection reason | Reloaded PROBE's previously rejected-then-cancelled microphone line. UI showed `CANCELLED: R13 rejection test`. Live GET returned `decisionReason: R13 rejection test` and the distinct `releaseReason: R13 finished rejection probe`, with `releaseCause: MANUAL_CANCELLATION`. | **Fail for the displayed cancellation reason; saved data is correct.** KAN-63-AC5 requires the latest saved outcome visible after refresh. The prior rejection may remain separately labelled history, but must not be presented as the cancellation reason. No equipment mutation was needed in this run. |
+| **OBS-12 / TC-06-448** — return through real links after officer decision | After both PROBE bookings were approved, coordinator submitted Round 1 at 18:44:12. Safety Officer approved at 18:44:51 in another session. The untouched coordinator tab still said Awaiting Safety Officer. Coordinator then clicked Review queue and the PROBE event link without a browser reload; the page loaded Safety approved with the saved round/time and said to confirm the event before preparation. | **Pass for actual link navigation under KAN-84-AC12.** No live-push/polling requirement is inferred for an untouched tab. The initially captured JPG contains a loading screen only; the final rendered observation in the JSON is the evidence of approval. |
+| **OBS-8 / TC-06-449** — completion read contract/privacy | Direct live GET for completed END returned 200 and its completion to the assigned coordinator. The same GET as unrelated Organiser 2 returned 200 with `completion: null`; an invented valid event UUID also returned 200/null. Signed-out GET returned 401 `AUTHENTICATION_REQUIRED`. | **Pass against the documented read contract.** The 200/null convention is intentional; no completion details were exposed to the unrelated caller. KAN-10's completion-action permissions do not specify a 404 for this read endpoint. Other roles, malformed IDs and a full authorization matrix were not tested by this probe. |
+
+**Safety expectation and implementation distinction:** Live KAN-84-AC9 says safety-relevant changes invalidate prior approval and require re-review before preparation starts or continues. Existing TC-06-28 carries that wording. The recorded D3/D9 design in [assumptions and questions](../requirements/assumptions-and-questions.md) instead uses the current arrangement fingerprint, including venue operating hours/buffers. `backend/src/modules/safety/service.ts` and migration 022 consequently allow the old approval to become current again when those values match. No explicit agreed exception for restoring values after an already-decided approval was found. TC-06-436 tests restoring values before a pending round's first decision; it does not settle this post-approval scenario. The restoration policy and any resulting code/AC correction are **To agree**; no new policy or customer decision is recorded by this test.
+
+**UI diagnosis:** `EquipmentRequestPanel.vue` renders `decisionReason` beside every status, while the frontend equipment-line type does not expose the separate release fields already returned by `equipment-service.ts`. For confirmation, the saved new booking updates its own panel without refreshing the Ready summary; the current-data server refusal remains effective. These are reproduced presentation defects, not evidence that cancelled equipment lost its audit data or that an unready event was confirmed.
+
+### Narrow automated contract check
+
+Command: `npm.cmd run test --workspace @connectsphere/backend -- test/events/completion.test.ts test/events/completion-router.test.ts`.
+
+**22 tests in 2 files passed.** These service/router tests use mocked database/authentication boundaries. They support the completion contract interpretation; they are separate from the connected HTTP probe and do not establish full-system acceptance. No coverage run, full suite or disposable-database integration suite was repeated for this documentation-only follow-up. Earlier automation remains in its original runs, not relabelled as today's result.
+
+### Retained data and restoration
+
+| Fixture / record | Final state and disposition |
+| --- | --- |
+| Dedicated Classroom `d1ba6133-20fb-4efb-b1ad-7fcd5d31718c` | Setup **15 → 20 → 15**, turnaround **15**; original 15/15 buffers restored through Venue Staff UI. No other catalogue fields intentionally changed. The pre-existing 22 November operational block remains. |
+| STALE `84a2d6ea-6336-44fd-a7c8-d03b3b489fe3` | Confirmed; the original Round 3 and preparation record remain. No new safety submission, decision or preparation action was performed for OPS-7. |
+| PROBE `55e58c4a-8ab1-42c8-a572-69810743c14d` | Still **APPROVED**, equipment Not Required, no registration; now has two approved synthetic venue arrangements and one approved safety round. No successful confirmation or preparation action. |
+| New PROBE Orchid booking `a63b30e1-112b-4264-8c8b-29b08caac2c0` | 16 November 2026 10:00–11:00, CLASSROOM, Approved. Note: **MAN-20261101-02 confirmation-readiness baseline; synthetic PROBE event.** Decision note: **MAN-20261101-02 readiness baseline approved.** Retained. |
+| New PROBE Classroom booking `cb026d3e-830c-43da-b576-63bf7377104a` | 16 November 2026 11:00–12:00, CLASSROOM, occupied 10:45–12:15 with buffers. Pending during D-1, then Approved for OBS-12. Note: **MAN-20261101-02 stale readiness probe; leave pending until tested.** Decision note: **MAN-20261101-02 prepare real-link safety refresh check.** Retained. |
+| New PROBE safety review `ae8ca119-1bbf-4200-aa66-64cc83c49dc4` | Round 1 submitted 18:44:12, Approved 18:44:51. Emergency access: **MAN-20261101-02 synthetic review: keep both classroom exits clear.** Equipment placement: **No equipment required.** Crowd movement: **Two test attendees move between rooms using clear aisles.** Decision: **MAN-20261101-02 synthetic approval for navigation refresh verification.** Retained. |
+| Existing PROBE equipment `144fb6b8-9d99-44a7-a740-46b6d76c1138` | Cancelled before this run. Both reasons above persisted; release time `2026-11-01T08:50:18.093734Z`. Read only in this run; its full ID supplements the earlier run's unknown-ID note. |
+| END `f65feb52-085b-4910-8331-904e9c69469c` | Read only. Completion remains `2026-11-01T09:20:16.544Z`, Event Coordinator, one released equipment request. |
+| Invented UUID `8d223776-d0fc-437e-ae3c-107ae75d110d` | Read probe only; no event created. |
+| Sessions / notices | Browser coordinator and officer sessions were signed out at the end; separate HTTP probe sessions were logged out. Workflow notices/history from the synthetic bookings/review remain; their IDs/counts were not inventoried. No shared test data was deleted. |
+
+New retained bookings occupy their respective test venues for the times above. Do not reuse those intervals for an unrelated acceptance fixture without accounting for them. Cleanup is separate and requires the team's agreed procedure.
+
+### Evidence and follow-up
+
+Registered as **S4-E28**. [Browser observations](evidence/MAN-20261101-02/browser-observations.json) retain the rendered states; [HTTP probe](evidence/MAN-20261101-02/live-http-probe.json) retains exact statuses and selected response fields. Six JPGs are registered in the Sprint 4 evidence index. The OBS-12 JPG is explicitly a loading-only capture, not approval proof. Five narrow specification/execution rows preserve the different outcomes without promoting broader historical cases to Pass.
+
+Resolve the two UI defects and reconcile the post-approval restoration rule before treating these targeted checks as release-ready. Owners' triage/reopening, implementation and retests remain pending; no Jira edit, release approval, sprint-velocity change, commit or push was performed by this run. Earlier MAN-20261101-01 results remain historical observations; these later failures qualify the current release candidate.
+
+## AUTO-20261101-RELEASE-REGRESSIONS — targeted repairs, 1 November 2026
+
+**Scope:** KAN-61 stale confirmation/readiness, KAN-63 cancellation-reason display and KAN-84 post-approval restoration. Current Jira criteria were read before repair. The earlier connected `MAN-20261101-02` failures remain unchanged; OBS-12 actual-link navigation and OBS-8 documented completion-read behavior required no code change. These are corrections within the existing criteria, not new customer scope or historical acceptance.
+
+**Build:** `fix/release-regressions`, base `034a631bdb05309d4ba0ef4ed1ff9ba032d9df50` plus the uncommitted repair. The branch was created from updated main `5491021` and retains the existing minor-UI/evidence commits. [summary.json](../scrum/sprint-04/evidence/release-regressions-20261101/summary.json) identifies repaired source using normalized-LF SHA-256 hashes. Reproduction logs ran against intermediate pre-repair working files; their exact snapshots are Not recorded. Executor: automated local runner. Environment: Windows, Node 24.21.0, Vitest 4.1.11, Playwright Chromium, disposable PostgreSQL 17 on loopback port 55439. No shared Supabase mutation, real login or new manual acceptance was performed by this repair.
+
+### Repair and focused evidence
+
+| Case | Before repair | After repair / boundary |
+| --- | --- | --- |
+| TC-06-450, KAN-84 | `safety-before.txt`: changing/restoring without a read revives old approval and unblocks preparation. | `safety-focused.txt`: 52 database tests in four files pass. Permanent invalidation, fresh-round recovery, pending restoration, rollback/no-op/unrelated changes, private immutable evidence, shared venues, buffered blocks, upgrade preservation and both venue/stock race orders are covered. |
+| TC-06-451, KAN-61/KAN-84 | `confirmation-before.txt`: five failed assertions reproduce stale summaries/actions. Access-loss and delayed equipment readback probes add separate before-fix failures. | `confirmation-access-focused.txt`: 78 tests in four component files pass. `equipment-readback-focused.txt`: 35 equipment tests pass. `confirmation-browser.txt`: six browser tests pass. Summary reads clear old eligibility; refresh/error/retry and context changes are covered without remounting unrelated forms. Browser/API substitutes are explicit. |
+| TC-06-452, KAN-84 | `safety-context-ui-before.txt`: three failed assertions show missing officer context. | `safety-context-ui-focused.txt`: 29 component tests pass. Facilities and equipment technical requirements are visible, including empty or omitted values. |
+| TC-15-109, KAN-63 | `equipment-before.txt`: seven failed display tests reproduce missing/mislabelled release detail. | `equipment-focused.txt`: 25 initial reason cases pass; final equipment suite is 35. `equipment-browser.txt`: desktop 1280px and narrow 390px cases pass, including persistence on reload and no horizontal overflow. |
+
+All logs and screenshots are in [release-regressions-20261101](../scrum/sprint-04/evidence/release-regressions-20261101/). Case execution rows retain Fail and Pass attempts separately. The two equipment screenshots and the pending-booking confirmation screenshot were visually inspected; the refreshed checklist shows Not ready and the cancelled line separates release and previous-review reasons.
+
+### Full checks and coverage
+
+| Command / attempt | Observed result |
+| --- | --- |
+| `npm run check`, final code | **Pass:** tools/frontend/backend typechecks, 1,246 frontend tests in 59 files, 1,959 backend tests in 76 files, both builds. `check-final.txt`. Vite retains its non-fatal >500kB bundle warning. |
+| `npm run test:coverage --workspaces -- --pool=threads --maxWorkers=4` | **Pass:** the same 1,246/1,959 tests. `coverage-verified.txt`. Frontend statements/branches/functions/lines: **95.84/92.54/97.85/98.38%**. Backend: **89.75/89.14/89.25/89.88%**. |
+| `TEST_DATABASE_URL=<isolated local database> npm run test:integration -- --pool=threads` | **Pass:** 831 tests in 43 files on the final source, `integration-verified.txt`. Disposable schemas only; no cleanup-based tests pointed at shared Supabase. |
+| Initial `npm run check` and database run | `check.txt` passed an earlier intermediate frontend count (1,239) plus 1,959 backend tests; `integration.txt` passed 831. These do not replace final-source runs above. |
+| Initial coverage attempts | `coverage.txt` failed seven frontend tests while additional regressions were being written/fixed, including one timeout; it is not a clean unchanged-source baseline. `coverage-final.txt` subsequently hit Windows fork-worker shutdown failures. Retained, not relabelled Pass. Thread-worker final run above passed. |
+| Intermediate final database attempt | `integration-final.txt` hit fork-worker shutdown errors and was stopped. The earlier complete run and final thread-worker run passed; no database deadlock was observed. |
+| Initial full browser run, four workers and zero retries | `browser.txt`: **250 passed, 3 failed**. KAN-65 initial navigation, KAN-66 click stability and KAN-36 reload timed out. Sanitized action/network timing metadata is preserved in `browser-failure-diagnostics.json`; no additional application defect was established. Host/browser contention is plausible, not proved. |
+| Retest of all three affected browser files, one worker and zero retries | `browser-retest.txt`: **23 passed**. The original failures remain recorded. The later parallel and serial attempts are recorded below. |
+
+**Coverage limits:** these are whole-workspace unit coverage values, not coverage of every SQL trigger or proof against all mutants. Confirmation and safety summary components have 100% line coverage in this run; equipment has 98.18%, venue-booking 98.44%, and the planning parent 53.84% (including existing forwarding/template handlers outside the focused cases). The new parent refresh behavior has component-integration regressions. Safety service unit instrumentation records 33/164 lines and 38/149 branches; its transaction/trigger behavior is exercised by the separate real-PostgreSQL tests, whose coverage is not combined into this percentage. SQL coverage percentage is Not recorded. No 100% new-code or full integrated-acceptance claim is made.
+
+### Migration, documentation and acceptance boundary
+
+Migration 023 keeps applied 001–022 unchanged and adds permanent invalidation plus supplemental facilities/technical context. Upgrade preserves review decisions, preparation and notifications; it captures detectable current invalidity. It cannot reconstruct changes already restored before upgrade, and older supplemental baselines are explicitly upgrade-time observations. Source locks and rollback behavior are covered in the database suite. The officer screen displays the newly versioned context.
+
+Contracts, safety/events module guides, frontend/database setup, current schema and safety sequence were updated. Mermaid schema/sequence PNGs were regenerated and visually checked. Earlier interpretation D3 remains historical, with a dated AC9 correction appended. No estimate, historical velocity, acceptance or Jira status is silently changed.
+
+**Still Not executed:** shared migration 023 and connected post-repair `TC-06-446`, `TC-06-447`, `TC-15-108`. Their planning rows have no invented run/date/executor/build. Follow the [three focused E2E retests](README.md#1-november-2026--release-regression-retests). This repair creates no shared test data; MAN-20261101-02's retained data remains as documented there. Release/code-freeze acceptance remains Not assessed. No commit, push or PR was performed in this repair.
+
+
+**Final browser reconciliation:** the second four-worker, zero-retry run (`browser-verified.txt`) passed 251/253; different initial-navigation timeouts occurred in attendee-role protection and organiser venue-availability navigation, before scenario actions. `browser-failure-diagnostics-2.json` preserves sanitized trace metadata. The complete **one-worker, zero-retry** run (`browser-serial.txt`) then passed **253/253**. No product code was changed between these browser attempts. Both parallel failures remain evidence of runner/browser instability with an unproven cause; the serial pass does not relabel those runs or establish CI stability. All newly added browser regressions passed in each complete run.
+
+**Final housekeeping:** the owned ephemeral PostgreSQL container was removed after the passing tests; shared Supabase was untouched. The reusable Markdown and Word walkthroughs now require 023 and include the readiness, release-reason and no-read restoration checks. The packaged renderer could not find LibreOffice, so Word COM exported a PDF and bundled PDFium rendered 19 pages for visual inspection. Every page was checked; no clipping/overlap was found, with readable table continuation in the final results form. QA PDFs/PNGs remain temporary, not submission artifacts. `summary.json` records source and walkthrough/export hashes. No commit or push was made.
+
+## AUTO-20261101-TEST-HARDENING — coverage, browser isolation and documentation
+
+**Date and scope:** 1 November 2026 release preparation. Expanded coverage measurement, regression gates, tests for previously omitted authentication/shared code, real-database safety guards, browser-run isolation and testing/design documentation. KAN-25's current authentication criteria were read; the session and queue fixes enforce existing access expectations, without adding token revocation or changing story scope. Existing KAN-61/63/84 repairs and migration 023 remain in this branch. Earlier failures, manual outcomes and sprint acceptance records are retained.
+
+**Candidate and environment:** `fix/release-regressions`, base `034a631bdb05309d4ba0ef4ed1ff9ba032d9df50` plus uncommitted changes identified by [summary.json](../scrum/sprint-04/evidence/test-hardening-20261101/summary.json). Executor: automated local runner, Windows, Node 24.21.0, Vitest 4.1.11 and Playwright Chromium. Database tests use the owned disposable PostgreSQL 17 instance on loopback port 55439, database `connectsphere_test`, with migrations 001–023 and synthetic fixtures. Browser servers own ports 4173/4311. Shared Supabase, the user's ordinary development servers and manual acceptance were not used. Exact intermediate pre-fix source hashes are **Not recorded**; final hashes must not be attributed to those reproductions.
+
+### Changes and case-specific verification
+
+| Cases / boundary | Change and evidence |
+| --- | --- |
+| TC-01-210 — isolated session state and cookie-call ordering | Generation checks discard obsolete identity responses. Login/logout writes are serialized; an already-sent stale login is cleared before a later write, session restoration waits for pending writes, and cleanup failures remain visible. `auth-races-before.txt` retains 7 failures/9 passes; `session-cookie-order-before.txt` retains 10 failures/14 passes plus one cascading mock error. Final `session-cookie-order-after.txt` passes 63 session/LoginPage/router/AppShell tests, including all 27 session cases. This is per-tab/module ordering, not cross-tab coordination or token revocation. |
+| TC-01-211 — verifier plus local key server | 28 cases use real ES256/HS256 signatures and loopback JWKS for claims, expiry, cache/rotation, malformed data and fail-closed retrieval. They replace hosted Supabase; no live-login acceptance is inferred. |
+| TC-01-212 — login, routing and shared navigation | 36 LoginPage/router/AppShell cases cover pending/error/retry, role navigation and denied deep links with controlled session/API boundaries. The actual router has no new global permission guard; existing page/server checks remain authoritative. |
+| TC-DB-207 — pool and browser environment | Six pool tests cover configuration/error handling without connecting; two Node tests reject unsafe database URLs and replace inherited database/auth configuration before imports. Full browser runs subsequently start the real API against the owned test database. |
+| TC-06-453 — real PostgreSQL safety guards | Five added cases cover ineligible/already-approved submission, missing/malformed reviews, obsolete fingerprint/closed event, pending readiness and preparation waiting for approval. They pass inside the combined 2,868-test run. |
+| TC-06-454 — queue loading/access feedback | A pending queue read followed by sign-out or role loss previously left Loading visible. `safety-queue-before.txt` retains 2 failures/32 passes. Resetting loading before the permission return makes sign-in/refusal feedback visible; `safety-queue-after.txt` passes all 34 tests, including five new queue scenarios. |
+| TC-15-110 and TC-10-213 — HTTP/parser integration | 20 equipment and 19 venue-search cases exercise real Express routing/middleware and parser boundaries with substituted identities/services. Roles, IDs, envelopes, error propagation, no-store and exact filter limits are asserted. Persistence is covered separately. |
+| Supporting shared helpers | 20 API-client and 11 workflow-panel cases cover read/write errors, cancellation, stale responses, duplicate-write prevention, retry and cleanup. They support existing cases; their suite pass does not independently pass every linked manual scenario. |
+
+The 73 new backend cases comprise 28 verifier, 6 pool, 20 equipment and 19 venue-search tests. The registers append nine reusable cases and twelve execution records: eight scoped Pass records, three failed attempts and one **Not executed** connected authentication smoke. These are case records, not a count of all individual executable assertions. All logs are retained in [test-hardening-20261101](../scrum/sprint-04/evidence/test-hardening-20261101/).
+
+### Final validation
+
+| Command | Final result / retained log |
+| --- | --- |
+| `npm run check` | **Pass:** typechecks, 1,332 frontend tests in 63 files, 2,032 backend tests in 80 files, two browser-environment guards and both builds. `check-final.txt`. The existing >500kB Vite bundle warning remains non-fatal. |
+| `npm run test:coverage` | **Pass:** all 1,332 frontend and 2,032 backend tests; all workspace and critical-file floors pass. `coverage-final.txt`. |
+| `TEST_DATABASE_URL=<owned loopback test database> npm run test:coverage:backend` | **Pass:** 2,868 tests in 123 files, comprising the 2,032 backend tests and 836 real-PostgreSQL tests in 43 files; all 99/97/99/99 floors pass. `backend-combined-gated.txt`, 201.93 seconds. Backend tests are included here again, not additional unique cases. |
+| `TEST_DATABASE_URL=<owned loopback test database> npm run test:e2e` — final run 1 | **Pass:** 253/253 across 31 spec files, two workers, zero retries/skips/flaky outcomes, exit 0, 79.782 seconds. `browser-final-1.txt` and native `browser-final-1.json`. |
+| Same full browser command — final run 2 | **Pass:** 253/253 on unchanged final source, two workers, zero retries/skips/flaky outcomes, exit 0, 77.952 seconds. `browser-final-2.txt` and native `browser-final-2.json`. This repeats the same cases; it is not 506 distinct cases. |
+
+Earlier passing `check.txt`, `coverage.txt`, `frontend-expanded-initial.txt`, `backend-combined-initial.txt`, `backend-combined-final.txt` and `browser-isolated-*` belong to intermediate versions. In particular, the two initial isolated-browser passes preceded the final session-write and queue-loading changes. The final-source runs above supersede them for this candidate, without deleting their evidence. `browser-final-summary.json` records source hashes and confirms owned server ports were released after teardown.
+
+### Measured coverage and remaining gaps
+
+Percentages below are **statements / branches / functions / lines**; they measure executable source, not AC acceptance.
+
+| Measurement | Result | Enforced global floor |
+| --- | --- | --- |
+| Frontend, all owned source | **96.07 / 93.07 / 97.86 / 98.41%** | 95 / 92 / 97 / 98% |
+| Backend isolated/HTTP suite | **90.62 / 89.98 / 91.02 / 90.75%** | 90 / 89 / 91 / 90% |
+| Backend combined with real PostgreSQL | **99.24 / 97.88 / 99.72 / 99.46%** | 99 / 97 / 99 / 99% |
+
+Session, Supabase client, LoginPage, router, AppShell, backend token verifier and pool each have **100% on all four metrics**, with per-file gates. API-client and workflow-panel helpers also measure 100%. Backend safety/remediation paths are measured through the combined database run: safety service has 100% lines/functions, 99.48% statements and 95.30% branches; remediation has 100% on all four. Low isolated-service coverage alone therefore does not describe the combined evidence. Router paths mounted through app-level tests count even when no separate test imports that router directly.
+
+Frontend auth, routing and shared components now remain in the denominator. Backend runtime constants are included; four pure type files contain zero executable statements, rather than uncovered runtime logic. Only backend process entry `server.ts` is excluded: browser tests start it as a subprocess, whose coverage is not merged. Frontend bootstrap/composition and an unused placeholder remain included at their actual values. The three normalized coverage-summary JSON files preserve every measured file. [coverage-gaps.json](../scrum/sprint-04/evidence/test-hardening-20261101/coverage-gaps.json) lists the remaining 75 files with any uncovered executable metric, exact source locations and measurement limitations.
+
+**The whole repository is not at 100%.** Floors prevent regression; they do not waive the course rubric. Remaining optional/error/legacy/template paths are disclosed, not all declared impossible or unreachable. SQL/trigger statement percentage, external provider coverage, mutation score, cross-tab session ordering and performance measurements are **Not recorded**. Meaningful rollback/race/authorization assertions support the measured code; percentages alone do not prove their completeness or protection against every mutant.
+
+### Browser stability, documentation and acceptance boundary
+
+The earlier parallel navigation failures remain in `AUTO-20261101-RELEASE-REGRESSIONS`. Their precise cause was not proved. The revised harness refuses inherited shared/non-loopback URLs, builds Vue once, starts its own API/static frontend, refuses existing servers and uses two workers with zero retries. No scenario expectation was weakened, timeout increased or retry added to hide a failure. Two unchanged final-source passes support improved repeatability, not a guarantee that a browser test can never flake. Most browser routes substitute API/auth data and are **frontend integration**, despite the `e2e` command name.
+
+CI now runs workspace floors plus combined PostgreSQL-backed coverage, includes the browser-environment guards in `check`, and uploads coverage/browser artifacts even on failure for 14 days. Its timeout is 25 minutes to accommodate the measured combined job. This was verified locally; a remote run of this uncommitted candidate, required-check enforcement and independent PR approval are **Not recorded**.
+
+The specification audit corrected 337 mixed level/method/purpose labels, preserving prior values and reasons in `test-level-classification.json`; IDs, scenarios and earlier outcomes remain intact. The current registers contain **622 specifications, 228 trace rows and 1,098 execution rows**. Historical aggregate cards/placeholders are retained and are not completed-case counts. Trace paths and AC references were checked. The README now gives a current release checkpoint without overwriting historical entries. Current C1/C2/C3/class views describe all seven roles, actual mounted services, database transactions, lifecycle/safety and design trade-offs; the four PNG exports were regenerated and visually checked. A second read-only review found no new implementation blocker and corrected two small authentication/role descriptions.
+
+**Deferred:** apply migration 023 to shared development Supabase, then run connected repair cases **TC-06-446, TC-06-447 and TC-15-108**, plus new real-authentication smoke **TC-01-213**. These remain **Not executed**. No new migration was introduced by coverage hardening; the existing 023 was exercised only on the disposable test database. No shared data was created or cleaned up. Release/code-freeze acceptance remains **Not assessed**. No commit, push or Jira status change was made.
+
+**Cleanup:** after validation, the owned `connectsphere-test-hardening` container was identified by its exact container ID and task label, then removed. Its disposable data was not retained. Browser ports 4173/4311 were released; ordinary development servers and shared Supabase were left unchanged. Evidence logs, normalized coverage summaries, source hashes and failed attempts remain in the repository artifact folder.
+
+## AUTO-20261101-FREEZE-CANDIDATE — final local verification, 1 November 2026
+
+**Scope and candidate:** follows the approved release-preparation work on `fix/release-regressions`, base `034a631bdb05309d4ba0ef4ed1ff9ba032d9df50` plus the source identified in [summary.json](../scrum/sprint-04/evidence/freeze-candidate-20261101/summary.json). Current KAN-16, KAN-12, KAN-61 and KAN-84 criteria were reread. No requirement, estimate or historical acceptance changed. Executor: automated local runner; Windows, Node 24.21.0, Vitest 4.1.11, Playwright Chromium and disposable PostgreSQL 17 on loopback port 55439. Browser tests used owned ports 4173/4311 and two workers with zero retries.
+
+The focused follow-up found a real overlapping-read race: an older parent refresh could overwrite a newer event status, or an older failure could trigger a full reload that discarded unrelated notes. Both organiser and coordinator detail pages now use a refresh generation as well as their abort controller. The shared planning-panel callbacks are exercised. Venue-search tests cover identity expiry, obsolete responses, retry and unmount without a product-code change.
+
+| Evidence | Actual outcome |
+| --- | --- |
+| Parent reproduction / TC-06-455 | Four failures and 72 passes in `parent-refresh-before.txt`; exact intermediate source snapshot Not recorded. The failures are retained, not replaced by the final source hashes. |
+| Parent retest / TC-06-455 | 88/88 across three files, including 22 added cases; frontend typecheck passes. Six planning callbacks, current/stale failures, route/account changes and preserved notes are covered. APIs and identities are substituted. |
+| Search follow-up / TC-10-214 | 68/68, including nine added cases. Current 401 clears protected state; obsolete responses cannot restore it; current failures offer retry; invalid-period filter clearing recovers. APIs and identities are substituted. |
+| `npm run check` | Pass: 1,363 frontend tests / 63 files, 2,032 backend tests / 80 files, two browser-environment guards, types and both builds. Existing >500kB frontend bundle warning remains non-fatal. |
+| `npm run test:coverage` | Pass: all workspace and critical-file floors. Frontend statements/branches/functions/lines **96.56/93.41/98.54/98.92%**; backend isolated/HTTP **90.62/89.98/91.02/90.75%**. |
+| `npm run test:coverage:backend` | Pass: **2,868 tests / 123 files**, including 836 real-PostgreSQL tests / 43 files; **99.24/97.88/99.72/99.46%** and all combined floors. The 2,032 backend cases are repeated, not additional unique cases. |
+| Full Playwright, run 1 and run 2 | **253/253 each**, two workers, zero retries, skips or flaky outcomes. Both native JSON reports and logs are retained. These repeat the same 253 cases. Most substitute API/auth responses and establish browser integration, not shared Supabase acceptance. |
+
+All logs are in [freeze-candidate-20261101](../scrum/sprint-04/evidence/freeze-candidate-20261101/). The initial focused typecheck failure was a test-stub typing issue and was corrected before the passing full checks. Search-only diagnostic coverage disabled global floors for that narrow selection; it is not the gated full-workspace result. Earlier browser failures in other run IDs remain unchanged.
+
+**Remaining measurement limits:** the [frontend inventory](../scrum/sprint-04/evidence/freeze-candidate-20261101/frontend-gaps.json) and [combined backend inventory](../scrum/sprint-04/evidence/freeze-candidate-20261101/backend-combined-gaps.json) retain exact locations and denominators. Frontend has 40 uncovered lines, 17 functions and 413 branch arms; combined backend has 16 lines, two functions and 53 branch arms. Planning-panel forwarding is now 100% function/line coverage. Auth/session/client/router/shell, verifier and pool retain their 100% gates. Remaining testable gaps include venue-block access/catalogue failures, draft uncertain-submit feedback, form validation/error branches, stale clarification status and unexpected error/rollback paths. Optional display, bootstrap and retained unused helper code are distinguished. One negative V8 branch hit count is flagged as an instrumentation anomaly and remains uncovered. These are disclosed coverage gaps, not reproduced defects or a claim that testing them is impossible. SQL statement coverage, mutation score, external-provider implementation coverage, cross-tab ordering and performance remain Not recorded. The floors do not waive the rubric's 100% target.
+
+A separate read-only review found no blocker in refresh generation, cookie-write ordering, permanent invalidation or dependent-panel wiring. This AI-assisted code review is not a teammate's GitHub approval. The connected run below is separate from these automated results. Remote CI and formal release disposition are recorded against the eventual pushed candidate; neither is inferred from local passes.
+
+**Cleanup:** the owned `connectsphere-freeze-candidate` PostgreSQL container was verified by exact ID and task label, then removed after validation. Its disposable database was not retained. Browser ports 4173/4311 were released; the ordinary frontend/API on 5173/3000 remain available. Shared test data and audit records are listed in MAN-20261101-03 below.
+
+## MAN-20261101-03 — connected repaired-candidate acceptance, 1 November 2026
+
+**Environment and method:** complete local frontend at `http://127.0.0.1:5173` and `http://localhost:5173`, running API on port 3000, real Supabase authentication and the agreed shared development database. Browser execution used the in-app browser through computer-use tools; supplied test-account login was explicitly authorised in this session. Executor: Codex-assisted browser operator. Independent normal HTTP requests and read-only database snapshots supplement the browser observations; they are labelled separately. No API responses were substituted. Build: the same uncommitted candidate/source manifest as AUTO-20261101-FREEZE-CANDIDATE, not a claim about earlier sprint builds.
+
+**Shared rollout:** only pending migration **023_safety_approval_invalidation.sql** was applied, at **2026-11-01T15:26:05.971Z** (23:26 Singapore). SHA-256: **d5a1b176b831b43009559153b45b03a7130539ad730fce98702096fd4facd70c**. Existing 001–022 checksums agreed before application; a second migration run applied nothing. All 30 original safety reviews and ten preparation records retained their pre-migration hashes; 30 supplemental baselines and one detectable existing invalidation were recorded. Both new tables have RLS enabled. The API watch process restarted and readiness reported its database connected. No seed or cleanup-based test was run against shared Supabase. Before/apply/after/repeat evidence is retained in the automated artifact folder.
+
+| Case | Observed result |
+| --- | --- |
+| **TC-06-446 — Pass** | STALE began Confirmed with approved Round 3 and preparation recorded. Venue Staff changed the dedicated Classroom setup buffer **15 → 20 → 15**, retaining turnaround 15, without opening the safety view between edits. After reload the coordinator saw **Approval out of date** and **Preparation blocked**. Read-only snapshots prove exact fingerprints were restored while a permanent invalidation remained; original review decisions and preparation timestamp were unchanged at this point. New Round 4 was then submitted, approved by the test Safety Officer and used to resume preparation successfully. This stronger no-intermediate-read variant supplements the specification's intermediate-read route. |
+| **TC-06-447 — Pass** | PROBE initially showed all readiness checks Ready. Submitting a new Orchid pending booking immediately cleared the confirmation controls while reloading, then displayed **Not ready / one arrangement awaiting approval**, without a page reload. No stale Confirm control remained to invoke. Cancelling only that new booking restored venue Ready; the event stayed APPROVED. The earlier server-refusal result remains in MAN-20261101-02; this run did not force a hidden API transition. |
+| **TC-15-108 — Pass** | The existing cancelled microphone line displays **Release reason: R13 finished rejection probe** and separately **Previous review reason: R13 rejection test**. An authenticated browser visit to the actual equipment-request GET returned matching saved fields. This is repaired readback, not another rejection/cancellation mutation. |
+| **TC-01-213 — Pass** | Organiser sign-in, permitted navigation, reload and server-returned identity agreed. Direct coordinator navigation was denied. Logout removed protected content and the browser's `/api/auth/me` returned AUTHENTICATION_REQUIRED. Subsequent coordinator sign-in/navigation/reload retained the coordinator identity. Invalid credentials showed a refusal and created no session; final reload remained signed out. Separate real HTTP sessions recorded login/me **200**, logout **204** with a clearing cookie and subsequent me **401** for both roles. HTTP status codes were measured in that independent probe, not inferred from browser text. Copied-token revocation and cross-tab race behavior are not claimed. |
+
+### Retained test data and restoration
+
+| Item | Final state |
+| --- | --- |
+| Dedicated venue `d1ba6133-20fb-4efb-b1ad-7fcd5d31718c` | Original catalogue settings restored, including setup/turnaround **15/15**. Its normal updated timestamp changed. Before/restoration/recovery snapshots cover three synthetic REL events using it; no unrelated venue edited. |
+| STALE `84a2d6ea-6336-44fd-a7c8-d03b3b489fe3` | Remains CONFIRMED. Old review `c53afc1a-2e88-4521-aa7b-e2511a80d235` retains its decision plus the new invalidation. New approved Round 4 `cd6ddd87-b408-4baf-9e0a-69a8b0f072ea` is retained; submission 23:39:08, decision 23:40:02, resumed preparation **23:40:41 Singapore time**. Preparation now references the new round. |
+| PROBE `55e58c4a-8ab1-42c8-a572-69810743c14d` | Remains APPROVED. New booking `a48d92b8-c68e-4db4-8787-142fa9367bbd`, Orchid 16 November 11:30–12:00 Singapore, is **CANCELLED** with reason **MAN-20261101-03 temporary readiness test completed**; it no longer occupies the venue. Original bookings remain approved. Its prior safety round is now correctly invalidated by the arrangement change; a future test needing approval must submit a new round. |
+| Existing equipment line `144fb6b8-9d99-44a7-a740-46b6d76c1138` | Read only; both saved reasons and cancellation state remain unchanged. |
+| Other state | Original reviews, baselines and invalidations remain unchanged; new audit/notification records from the synthetic workflow remain. No shared rows were deleted. Browser role sessions and independent HTTP sessions ended signed out. |
+
+Evidence under [MAN-20261101-03](evidence/MAN-20261101-03/) includes rendered UI observations, live equipment readback, independent HTTP status results, before/after read-only database comparisons and screenshots. Registered as **S4-E32**; automated verification and migration artifacts are **S4-E31**. Earlier failures and planning placeholders are preserved, and these four case results do not relabel every linked scenario or historic acceptance.
+
+**Release disposition:** connected repair acceptance is complete for these four cases. R24/TC-06-32 remains open for candidate integration, exact-commit CI, actual independent teammate review and the team's freeze decision. No new Scrum meeting, Done-point credit or collective release approval is recorded by this run.

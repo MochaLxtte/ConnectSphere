@@ -1,0 +1,17 @@
+
+> connectsphere@0.1.0 test:e2e
+> playwright test tests/e2e/event-confirmation.spec.ts --workers=1
+
+
+Running 6 tests using 1 worker
+
+(node:38632) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 [chromium] › tests\e2e\event-confirmation.spec.ts:41:3 › KAN-61 new venue request clears stale Ready with unchanged event revision: saved (2.2s)
+  ok 2 [chromium] › tests\e2e\event-confirmation.spec.ts:41:3 › KAN-61 new venue request clears stale Ready with unchanged event revision: read failure (1.8s)
+  ok 3 [chromium] › tests\e2e\event-confirmation.spec.ts:41:3 › KAN-61 new venue request clears stale Ready with unchanged event revision: uncertain save (1.7s)
+  ok 4 [chromium] › tests\e2e\event-confirmation.spec.ts:136:1 › KAN-61-AC3/AC4 coordinator confirms a ready event and the outcome persists after reload (2.0s)
+  ok 5 [chromium] › tests\e2e\event-confirmation.spec.ts:169:1 › KAN-61-AC105 an outage still needing recovery blocks confirmation with a reason (859ms)
+  ok 6 [chromium] › tests\e2e\event-confirmation.spec.ts:184:1 › KAN-61-AC4 the organiser sees who confirmed the event and when, on desktop and narrow screens (953ms)
+
+  6 passed (10.6s)

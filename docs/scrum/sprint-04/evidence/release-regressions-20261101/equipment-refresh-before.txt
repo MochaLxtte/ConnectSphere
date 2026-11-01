@@ -1,0 +1,58 @@
+
+> @connectsphere/frontend@0.1.0 test
+> vitest run src/features/events/components/EquipmentRequestPanel.test.ts
+
+
+ RUN  v4.1.11 C:/Users/trist/Documents/School Stuff/Y3S1/IS212/ConnectSphere/frontend
+
+ ❯ src/features/events/components/EquipmentRequestPanel.test.ts (33 tests | 6 failed) 683ms
+     × refreshes dependent summaries on an explicit equipment reload but never loops on initial reads 21ms
+     × reconciles dependent summaries after an uncertain or stale equipment save: 409 27ms
+     × reconciles dependent summaries after an uncertain or stale equipment save: 403 20ms
+     × reconciles dependent summaries after an uncertain or stale equipment save: 404 24ms
+     × reconciles dependent summaries after an uncertain or stale equipment save: 500 19ms
+     × reconciles dependent summaries after an uncertain or stale equipment save: network 19ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/events/components/EquipmentRequestPanel.test.ts > KAN-63/KAN-26 coordinator equipment request panel > refreshes dependent summaries on an explicit equipment reload but never loops on initial reads
+AssertionError: Target cannot be null or undefined.
+ ❯ src/features/events/components/EquipmentRequestPanel.test.ts:64:37
+     62|     await fireEvent.click(screen.getByRole('button', { name: 'Reload e…
+     63|     expect(await screen.findByText('No equipment is required for this …
+     64|     expect(view.emitted('refresh')).toHaveLength(1);
+       |                                     ^
+     65|     expect(view.emitted('changed')).toBeUndefined();
+     66|     expect(api.calls.filter(call => call.key === 'GET ' + planPath)).t…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  src/features/events/components/EquipmentRequestPanel.test.ts > KAN-63/KAN-26 coordinator equipment request panel > reconciles dependent summaries after an uncertain or stale equipment save: 409
+ FAIL  src/features/events/components/EquipmentRequestPanel.test.ts > KAN-63/KAN-26 coordinator equipment request panel > reconciles dependent summaries after an uncertain or stale equipment save: 403
+ FAIL  src/features/events/components/EquipmentRequestPanel.test.ts > KAN-63/KAN-26 coordinator equipment request panel > reconciles dependent summaries after an uncertain or stale equipment save: 404
+ FAIL  src/features/events/components/EquipmentRequestPanel.test.ts > KAN-63/KAN-26 coordinator equipment request panel > reconciles dependent summaries after an uncertain or stale equipment save: 500
+ FAIL  src/features/events/components/EquipmentRequestPanel.test.ts > KAN-63/KAN-26 coordinator equipment request panel > reconciles dependent summaries after an uncertain or stale equipment save: network
+AssertionError: Target cannot be null or undefined.
+ ❯ src/features/events/components/EquipmentRequestPanel.test.ts:81:37
+     79|     await fireEvent.click(screen.getByRole('button', { name: 'Save equ…
+     80|     await screen.findByRole('alert');
+     81|     expect(view.emitted('refresh')).toHaveLength(1);
+       |                                     ^
+     82|     expect(view.emitted('changed')).toBeUndefined();
+     83|     expect(api.writes()).toHaveLength(1);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  6 failed | 27 passed (33)
+   Start at  19:05:13
+   Duration  2.49s (transform 203ms, setup 501ms, import 314ms, tests 683ms, environment 704ms)
+
+npm error Lifecycle script `test` failed with error:
+npm error code 1
+npm error path C:\Users\trist\Documents\School Stuff\Y3S1\IS212\ConnectSphere\frontend
+npm error workspace @connectsphere/frontend@0.1.0
+npm error location C:\Users\trist\Documents\School Stuff\Y3S1\IS212\ConnectSphere\frontend
+npm error command failed
+npm error command C:\WINDOWS\system32\cmd.exe /d /s /c vitest run src/features/events/components/EquipmentRequestPanel.test.ts

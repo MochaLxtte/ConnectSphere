@@ -36,7 +36,7 @@ function optionalText(value: unknown, label: string): string | null {
 }
 
 interface RoundRow {
-  id: string; round: number; status: SafetyStatus; fingerprint: string;
+  id: string; round: number; status: SafetyStatus; fingerprint: string; invalidated: boolean; contextChanged: boolean;
   emergencyAccess: string | null; equipmentPlacement: string | null; crowdMovement: string | null;
   submittedByName: string | null; submittedAt: Date; decidedByName: string | null; decidedAt: Date | null;
   decisionNotes: string | null; requestedAreas: SafetyArea[] | null;
@@ -46,11 +46,14 @@ const roundColumns = `s.id, s.round, s.status, s.arrangement_fingerprint AS fing
   s.emergency_access AS "emergencyAccess", s.equipment_placement AS "equipmentPlacement",
   s.crowd_movement AS "crowdMovement", su.display_name AS "submittedByName", s.submitted_at AS "submittedAt",
   du.display_name AS "decidedByName", s.decided_at AS "decidedAt", s.decision_notes AS "decisionNotes",
-  s.requested_areas AS "requestedAreas"
+  s.requested_areas AS "requestedAreas",
+  EXISTS (SELECT 1 FROM safety_approval_invalidations i WHERE i.review_id = s.id) AS invalidated,
+  NOT EXISTS (SELECT 1 FROM safety_review_context_baselines c WHERE c.review_id = s.id
+    AND c.context_fingerprint = safety_context_fingerprint(s.event_request_id)) AS "contextChanged"
   FROM safety_reviews s JOIN app_users su ON su.id = s.submitted_by LEFT JOIN app_users du ON du.id = s.decided_by`;
 
 function toRound(row: RoundRow) {
-  const { fingerprint: _fingerprint, ...rest } = row;
+  const { fingerprint: _fingerprint, invalidated: _invalidated, contextChanged: _contextChanged, ...rest } = row;
   return { ...rest, submittedAt: iso(row.submittedAt), decidedAt: isoOrNull(row.decidedAt),
     missingNotes: NOTE_FIELDS.filter(field => row[field] === null) };
 }
@@ -67,7 +70,7 @@ async function fingerprint(client: Reader, eventRequestId: string): Promise<stri
 
 function outcomeOf(latest: RoundRow | undefined, current: string): SafetyOutcome {
   if (!latest) return 'NONE';
-  if (latest.status === 'APPROVED' && latest.fingerprint !== current) return 'STALE';
+  if (latest.status === 'APPROVED' && (latest.invalidated || latest.contextChanged || latest.fingerprint !== current)) return 'STALE';
   return latest.status;
 }
 
@@ -119,7 +122,7 @@ export async function getEventSafety(
     const unresolvedAreas = await unresolvedPlanningAreas(client, eventRequestId, latest);
     return {
       eventRequestId, eventStatus: event.status, outcome, readiness, unresolvedAreas,
-      pendingStale: latest?.status === 'PENDING' && latest.fingerprint !== current,
+      pendingStale: latest?.status === 'PENDING' && (latest.contextChanged || latest.fingerprint !== current),
       rounds: history.map(toRound),
       preparation: preparation.startedAt ? {
         startedAt: iso(preparation.startedAt), startedByName: preparation.startedByName,
@@ -196,7 +199,9 @@ export async function listSafetyQueue(pool: Pick<Pool, 'connect'>, actor: Workfl
     const found = await client.query<{ id: string; round: number; eventId: string; eventName: string | null;
       startsAt: Date | null; submittedAt: Date; stale: boolean }>(`SELECT s.id, s.round, e.id AS "eventId",
         e.name AS "eventName", e.starts_at AS "startsAt", s.submitted_at AS "submittedAt",
-        s.arrangement_fingerprint <> safety_arrangement_fingerprint(e.id) AS stale
+        (s.arrangement_fingerprint <> safety_arrangement_fingerprint(e.id) OR NOT EXISTS (
+          SELECT 1 FROM safety_review_context_baselines c WHERE c.review_id = s.id
+            AND c.context_fingerprint = safety_context_fingerprint(e.id))) AS stale
       FROM safety_reviews s JOIN event_requests e ON e.id = s.event_request_id
       WHERE s.status = 'PENDING' ORDER BY s.submitted_at, s.id`);
     return { items: found.rows.map(row => ({ ...row, startsAt: isoOrNull(row.startsAt), submittedAt: iso(row.submittedAt) })) };
@@ -221,14 +226,14 @@ export async function getSafetyReview(
       FROM event_requests WHERE id = $1 FOR SHARE`, [eventId])).rows[0] as Record<string, unknown> & {
       status: string; startsAt: Date | null; endsAt: Date | null };
     const venues = await client.query(`SELECT b.id AS "bookingId", v.name, v.location, v.capacity, v.layouts,
-        v.accessibility_features AS "accessibilityFeatures", v.wheelchair_accessible AS "wheelchairAccessible",
+        v.facilities, v.accessibility_features AS "accessibilityFeatures", v.wheelchair_accessible AS "wheelchairAccessible",
         v.opens_at::text AS "opensAt", v.closes_at::text AS "closesAt",
         v.setup_minutes AS "setupMinutes", v.turnaround_minutes AS "turnaroundMinutes",
         b.layout AS "bookedLayout", b.status, EXISTS (SELECT 1 FROM venue_outage_impacts i
           WHERE i.venue_booking_id = b.id AND i.status = 'RECOVERY_REQUIRED') AS "needsRecovery"
       FROM venue_bookings b JOIN venues v ON v.id = b.venue_id
       WHERE b.event_request_id = $1 AND b.status IN ('PENDING', 'HELD', 'APPROVED') ORDER BY v.name, b.id`, [eventId]);
-    const equipment = await client.query(`SELECT r.id, t.name, r.quantity, r.status
+    const equipment = await client.query(`SELECT r.id, t.name, r.quantity, r.status, r.technical_requirements AS "technicalRequirements"
       FROM equipment_requests r JOIN equipment_types t ON t.id = r.equipment_type_id
       WHERE r.event_request_id = $1 AND r.status <> 'CANCELLED' ORDER BY t.name, r.id`, [eventId]);
     const history = await rounds(client, eventId);
@@ -236,7 +241,7 @@ export async function getSafetyReview(
     const current = await fingerprint(client, eventId);
     return {
       review: { ...toRound(review), fingerprint: review.fingerprint },
-      stale: review.fingerprint !== current,
+      stale: review.invalidated || review.contextChanged || review.fingerprint !== current,
       canDecide: review.status === 'PENDING' && PLANNING.includes(event.status),
       event: { ...event, startsAt: isoOrNull(event.startsAt), endsAt: isoOrNull(event.endsAt) },
       venues: venues.rows, equipment: equipment.rows,
@@ -302,7 +307,7 @@ export async function decideSafetyReview(
       throw conflict('SAFETY_EVENT_CLOSED', 'This event is no longer in planning, so the review cannot be decided.');
     }
     if (decision.decision === 'APPROVED') {
-      if (await fingerprint(client, eventId) !== review.fingerprint) {
+      if (review.contextChanged || await fingerprint(client, eventId) !== review.fingerprint) {
         throw conflict('SAFETY_REVIEW_STALE',
           'The arrangements changed after this round was submitted. Reject it or request changes so the coordinator resubmits.');
       }

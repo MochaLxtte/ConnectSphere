@@ -83,19 +83,21 @@ test('KAN-9 unsaved checks retain microseconds, validate fields and clear result
   const fixture = await fixtures(page, { saved: false }); fixture.setResult({ ...result(), mode: 'what-if' });
   await page.goto(`${path}/${eventId}`);
   await expect(page.getByRole('radio', { name: 'Saved equipment requests', exact: true })).toBeDisabled();
-  await expect(page.getByLabel('Check starts (Singapore time)', { exact: true })).toHaveValue('2026-11-01T10:00:00.123456');
+  await expect(page.getByLabel('Check starts (Singapore time)', { exact: true })).toHaveValue('2026-11-01T10:00:00.123');
+  await expect(page.getByText('Exact start retained: 2026-11-01T10:00:00.123456 (Singapore time)')).toBeVisible();
   await page.getByRole('combobox', { name: 'Equipment type 1', exact: true }).selectOption(projectorId);
   await page.getByRole('textbox', { name: 'Quantity 1', exact: true }).fill('1.5');
-  await page.getByLabel('Check starts (Singapore time)', { exact: true }).fill('2026-02-30T10:00');
+  // An incomplete native date is empty; impossible-calendar parsing is also covered by unit/API tests.
+  await page.getByLabel('Check starts (Singapore time)', { exact: true }).fill('');
   await page.getByRole('button', { name: 'Check availability', exact: true }).click();
   await expect(page.getByText(/Enter a valid start date/)).toBeVisible();
   await expect(page.getByText(/Enter a whole quantity/)).toBeVisible(); expect(fixture.submissions).toEqual([]);
   await page.getByRole('textbox', { name: 'Quantity 1', exact: true }).fill('3');
-  await page.getByLabel('Check starts (Singapore time)', { exact: true }).fill('2026-11-01T10:00:00.123456');
+  await page.getByLabel('Check starts (Singapore time)', { exact: true }).fill('2026-11-01T10:00:00.123');
   await page.getByRole('button', { name: 'Check availability', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Fulfillable', exact: true })).toBeVisible();
   expect(fixture.submissions).toEqual([{ mode: 'what-if', requirementsVersion: 'a'.repeat(64),
-    startsAt: '2026-11-01T10:00:00.123456+08:00', endsAt: '2026-11-01T12:00:00.123456+08:00',
+    startsAt: '2026-11-01T10:00:00.123+08:00', endsAt: '2026-11-01T12:00:00.123456+08:00',
     items: [{ equipmentTypeId: projectorId, quantity: 3 }] }]);
   await page.getByRole('textbox', { name: 'Quantity 1', exact: true }).fill('4');
   await expect(page.getByRole('region', { name: 'Equipment assessment' })).toHaveCount(0);
@@ -103,6 +105,23 @@ test('KAN-9 unsaved checks retain microseconds, validate fields and clear result
   await page.screenshot({ path: testInfo.outputPath('equipment-what-if-mobile.png'), fullPage: true });
   expect(fixture.unexpected).toEqual([]);
 });
+
+for (const fieldName of ['Check starts (Singapore time)', 'Check ends (Singapore time)']) {
+  test(`KAN-9 four-digit year advances to time in ${fieldName}`, async ({ page }) => {
+    const fixture = await fixtures(page, { saved: false });
+    await page.goto(`${path}/${eventId}`);
+    const field = page.getByLabel(fieldName, { exact: true });
+    await field.fill('2025-11-16T10:00');
+    await field.focus();
+    for (let i = 0; i < 8; i += 1) await field.press('ArrowLeft');
+    await field.press('ArrowRight');
+    await field.press('ArrowRight');
+    await field.pressSequentially('202611');
+    await expect(field).toHaveValue('2026-11-16T11:00');
+    expect(fixture.submissions).toEqual([]);
+    expect(fixture.unexpected).toEqual([]);
+  });
+}
 
 test('KAN-9 changed saved requirements reload before another assessment', async ({ page }) => {
   const fixture = await fixtures(page, { conflict: true });

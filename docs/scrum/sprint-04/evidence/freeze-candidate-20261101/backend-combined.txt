@@ -1,0 +1,59 @@
+
+> connectsphere@0.1.0 test:coverage:backend
+> vitest run --coverage --config vitest.backend-coverage.config.ts
+
+
+ RUN  v4.1.11 C:/Users/trist/Documents/School Stuff/Y3S1/IS212/ConnectSphere
+      Coverage enabled with v8
+
+
+ Test Files  123 passed (123)
+      Tests  2868 passed (2868)
+   Start at  23:35:28
+   Duration  153.47s (transform 2.23s, setup 0ms, import 28.35s, tests 92.16s, environment 16ms)
+
+ % Coverage report from v8
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-------------------|---------|----------|---------|---------|-------------------
+All files          |   99.24 |    97.88 |   99.72 |   99.46 |                   
+ src               |   96.96 |    96.15 |     100 |   96.77 |                   
+  app.ts           |   96.82 |    95.83 |     100 |   96.61 | 135-136           
+ src/config        |   83.33 |      100 |      50 |   83.33 |                   
+  env.ts           |   83.33 |      100 |      50 |   83.33 | 14-18             
+ src/modules/auth  |   98.83 |      100 |     100 |   98.73 |                   
+  router.ts        |   98.43 |      100 |     100 |   98.27 | 39                
+ ...ules/equipment |     100 |    99.57 |     100 |     100 |                   
+  stock-service.ts |     100 |    95.83 |     100 |     100 | 85,251            
+ ...modules/events |   98.52 |    95.93 |   99.55 |      99 |                   
+  cancellation.ts  |     100 |    83.33 |     100 |     100 | 81-82,96-102      
+  ...e-requests.ts |   98.75 |    94.11 |     100 |   98.58 | 96,107            
+  ...ifications.ts |      98 |    94.44 |     100 |   97.91 | 113               
+  completion.ts    |     100 |    97.29 |     100 |     100 | 78                
+  confirmation.ts  |   98.64 |    91.66 |     100 |     100 | 51-52,84,157,179  
+  create-draft.ts  |   92.85 |     62.5 |     100 |   95.65 | 62                
+  ...est-detail.ts |     100 |    94.59 |     100 |     100 | 107-108           
+  ...w-decision.ts |   90.62 |    71.42 |     100 |   96.55 | 118               
+  ...sts-router.ts |   98.42 |    97.64 |     100 |   98.42 | 244,291           
+  workflow-http.ts |      96 |    94.44 |     100 |     100 | 71                
+  ...ow-support.ts |   93.02 |    95.38 |   94.44 |   94.73 | 66-72             
+ .../notifications |     100 |    98.38 |     100 |     100 |                   
+  ...ifications.ts |     100 |    96.66 |     100 |     100 | 74                
+  inbox.ts         |     100 |     98.7 |     100 |     100 | 122               
+  notify.ts        |     100 |    95.83 |     100 |     100 | 41                
+ .../registrations |     100 |    98.76 |     100 |     100 |                   
+  ...on-service.ts |     100 |    97.43 |     100 |     100 | 148               
+ ...modules/safety |   99.54 |    95.42 |     100 |     100 |                   
+  service.ts       |   99.48 |     95.3 |     100 |     100 | ...25-326,363,376 
+ ...modules/venues |   99.76 |    99.25 |     100 |     100 |                   
+  ...ng-service.ts |   99.53 |    99.35 |     100 |     100 | 487               
+  ...lity-rules.ts |   98.36 |     97.7 |     100 |     100 | 58,137,139        
+  ...ngs-router.ts |     100 |       50 |     100 |     100 | 18                
+-------------------|---------|----------|---------|---------|-------------------
+
+=============================== Coverage summary ===============================
+Statements   : 99.24% ( 3420/3446 )
+Branches     : 97.88% ( 2452/2505 )
+Functions    : 99.72% ( 733/735 )
+Lines        : 99.46% ( 2981/2997 )
+================================================================================

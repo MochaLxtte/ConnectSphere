@@ -234,11 +234,11 @@ onBeforeUnmount(() => {
           <div class="field-grid">
             <div class="field">
               <label for="block-starts">Starts (Singapore time)</label>
-              <input id="block-starts" v-model="startsAt" type="datetime-local" :disabled="busy" />
+              <input id="block-starts" v-model="startsAt" type="datetime-local" max="9999-12-31T23:59" :disabled="busy" />
             </div>
             <div class="field">
               <label for="block-ends">Ends (Singapore time)</label>
-              <input id="block-ends" v-model="endsAt" type="datetime-local" :disabled="busy" />
+              <input id="block-ends" v-model="endsAt" type="datetime-local" max="9999-12-31T23:59" :disabled="busy" />
             </div>
           </div>
           <p v-if="timeError" class="field-error" role="alert">{{ timeError }}</p>

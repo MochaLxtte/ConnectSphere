@@ -1,0 +1,81 @@
+
+Running 2 tests using 2 workers
+
+
+
+(node:45872) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+(node:24324) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1/2] [chromium] › tests\e2e\review-access.spec.ts:192:5 › KAN-33 review queue panels keep readable insets in ready at 1280px
+[2/2] [chromium] › tests\e2e\venue-bookings.spec.ts:272:3 › KAN-8 booking list text links are discoverable and clear the event filter at 1280px
+  1) [chromium] › tests\e2e\review-access.spec.ts:192:5 › KAN-33 review queue panels keep readable insets in ready at 1280px
+
+    Error: Visible content needs space inside every side of the card
+
+    expect(received).toBeGreaterThanOrEqual(expected)
+
+    Expected: >= 16
+    Received:    0
+
+      218 |             return Math.min(...[s.paddingTop, s.paddingRight, s.paddingBottom, s.paddingLeft].map(parseFloat));
+      219 |           });
+    > 220 |           expect(inset, 'Visible content needs space inside every side of the card').toBeGreaterThanOrEqual(16);
+          |                                                                                      ^
+      221 |         }
+      222 |         // The label remains in the accessibility tree, without an accidental visual heading.
+      223 |         await expect(page.locator('#queue-title')).toHaveCSS('position', 'absolute');
+        at C:\Users\trist\Documents\School Stuff\Y3S1\IS212\ConnectSphere\tests\e2e\review-access.spec.ts:220:86
+
+    Error Context: test-results\review-access-KAN-33-revie-5bec1-e-insets-in-ready-at-1280px-chromium\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\review-access-KAN-33-revie-5bec1-e-insets-in-ready-at-1280px-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\review-access-KAN-33-revie-5bec1-e-insets-in-ready-at-1280px-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  2) [chromium] › tests\e2e\venue-bookings.spec.ts:272:3 › KAN-8 booking list text links are discoverable and clear the event filter at 1280px
+
+    Error: expect(locator).toHaveCSS(expected) failed
+
+    Locator:  getByRole('link', { name: 'Show all venue booking requests' })
+    Expected: "underline"
+    Received: "none"
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toHaveCSS" getByRole('link', { name: 'Show all venue booking requests' }) with timeout 5000ms
+      - waiting for getByRole('link', { name: 'Show all venue booking requests' })
+        14 × locator resolved to <a data-v-9fd14800="" aria-current="page" href="/venue-bookings" class="router-link-active router-link-exact-active">Show all venue booking requests</a>
+           - unexpected value "none"
+
+
+      281 |     const all = page.getByRole('link', { name: 'Show all venue booking requests' });
+      282 |     await page.locator('main').screenshot({ path: testInfo.outputPath(`booking-links-${width}.png`) });
+    > 283 |     await expect(all).toHaveCSS('text-decoration-line', 'underline');
+          |                       ^
+      284 |     await expect(list.getByRole('link')).toHaveCSS('text-decoration-line', 'underline');
+      285 |     await all.focus();
+      286 |     await expect(all).toHaveCSS('outline-style', 'solid');
+        at C:\Users\trist\Documents\School Stuff\Y3S1\IS212\ConnectSphere\tests\e2e\venue-bookings.spec.ts:283:23
+
+    Error Context: test-results\venue-bookings-KAN-8-booki-25935--the-event-filter-at-1280px-chromium\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\venue-bookings-KAN-8-booki-25935--the-event-filter-at-1280px-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\venue-bookings-KAN-8-booki-25935--the-event-filter-at-1280px-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  2 failed
+    [chromium] › tests\e2e\review-access.spec.ts:192:5 › KAN-33 review queue panels keep readable insets in ready at 1280px
+    [chromium] › tests\e2e\venue-bookings.spec.ts:272:3 › KAN-8 booking list text links are discoverable and clear the event filter at 1280px
