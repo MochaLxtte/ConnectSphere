@@ -1,5 +1,7 @@
 # Submission checklist
 
+**Code-editing freeze:** after **1 November 2026, 23:59 Singapore time**, only documentation may change (constraint confirmed in chat on 2 November). The final code commit `55e2b61` predates the cutoff at 23:55:42 +08:00. Preserve application code, migrations, tests and configuration; report later findings without code changes. Review/CI evidence and submission documents may still be completed. This restriction is separate from acceptance/merge decisions.
+
 **2 November release handover:** [PR #80](https://github.com/MochaLxtte/ConnectSphere/pull/80) is pushed with connected repair evidence; [CI run 199](https://github.com/MochaLxtte/ConnectSphere/actions/runs/41323715692) passed on `0384a3c`. Its log and coverage reports are retained under Sprint 4 evidence. Check the PR's latest documentation-follow-up head for its own CI; independent teammate review, merge and the team's freeze decision remain outstanding. Submission artifacts below remain separate.
 
 ## Release-candidate checkpoint — 1 November 2026
