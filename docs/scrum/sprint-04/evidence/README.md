@@ -199,3 +199,10 @@ Native [browser run 1](test-hardening-20261101/browser-final-1.json), [run 2](te
 | S4-E32 | [MAN-20261101-03](../../../testing/test-evidence.md#man-20261101-03--connected-repaired-candidate-acceptance-1-november-2026), [browser/API/database evidence](../../../testing/evidence/MAN-20261101-03/) | Four scoped connected Pass results: permanent safety invalidation/re-review, readiness refresh, cancellation-reason readback and real-auth smoke. Dedicated venue restored; temporary booking cancelled; new review/audit history retained. Formal release decision remains separate. |
 
 Connected captures: [baseline](../../../testing/evidence/MAN-20261101-03/probe-before.jpg), [pending venue removes Ready](../../../testing/evidence/MAN-20261101-03/pending-readiness.jpg), [restored venue still requires review](../../../testing/evidence/MAN-20261101-03/safety-restored-stale.jpg), [new review restores preparation](../../../testing/evidence/MAN-20261101-03/safety-recovered.jpg), [organiser denied coordinator page](../../../testing/evidence/MAN-20261101-03/auth-wrong-role.jpg). These use real role sessions and shared development persistence; no credentials are retained.
+
+
+## Pushed-candidate CI — 2 November 2026
+
+| ID | Artifact | Result / boundary |
+| --- | --- | --- |
+| S4-E33 | [CI run 199](https://github.com/MochaLxtte/ConnectSphere/actions/runs/41323715692), [metadata](freeze-candidate-20261101/ci-199.json), [full log](freeze-candidate-20261101/ci-199.txt), [frontend coverage](freeze-candidate-20261101/ci-199-frontend-coverage.json), [backend unit coverage](freeze-candidate-20261101/ci-199-backend-unit-coverage.json), [combined coverage](freeze-candidate-20261101/ci-199-backend-combined-coverage.json) | Pass on PR #80 head `0384a3c`, test-merge `bb198fe`: all checks/coverage/database suites and 253 browser cases, zero retries. Archive digest verified. These results do not replace the connected run or establish teammate approval. Documentation-only follow-up CI is linked from the PR. |

@@ -1,5 +1,7 @@
 # Testing and evidence
 
+**2 November 2026 — PR handover:** [PR #80](https://github.com/MochaLxtte/ConnectSphere/pull/80) contains the repaired candidate. [CI run 199](https://github.com/MochaLxtte/ConnectSphere/actions/runs/41323715692) passed on head `0384a3c5edb2b992e52f112edf3b0513134b5b32` (GitHub test-merge `bb198fe37a42f0f6687902d26ee49e1e7634b943`), including 253 browser tests with zero retries. Its full log, metadata and per-file coverage summaries are retained in the repository. This documentation-only evidence follow-up does not change the 456 tested source hashes; check the PR's latest head/checks for the subsequent CI result. Arvin and Ryan are requested reviewers; independent approval, merge and the team's freeze decision remain pending. Earlier local/connected records retain their actual 1 November dates.
+
 ## Current release checkpoint — 1 November 2026
 
 [MAN-20261101-01](test-evidence.md) records the real local-app walkthrough: R01–R23 passed within their recorded scope; R24's browser checks completed, while the release/code-freeze gate remains open (**23 of 24 groups complete**). Later MAN-20261101-02 reproduced three defects; those failures and the automated repairs remain separate. The complete release case TC-06-32 is not a Pass merely because individual steps have observations. TC-20-431 has its own scoped Pass; that does not pass all KAN-80 scenarios.

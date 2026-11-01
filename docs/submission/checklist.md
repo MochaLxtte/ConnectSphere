@@ -1,5 +1,7 @@
 # Submission checklist
 
+**2 November release handover:** [PR #80](https://github.com/MochaLxtte/ConnectSphere/pull/80) is pushed with connected repair evidence; [CI run 199](https://github.com/MochaLxtte/ConnectSphere/actions/runs/41323715692) passed on `0384a3c`. Its log and coverage reports are retained under Sprint 4 evidence. Check the PR's latest documentation-follow-up head for its own CI; independent teammate review, merge and the team's freeze decision remain outstanding. Submission artifacts below remain separate.
+
 ## Release-candidate checkpoint — 1 November 2026
 
 Migration 023 is applied to shared development and the four focused connected repair/authentication checks pass in [MAN-20261101-03](../testing/test-evidence.md#man-20261101-03--connected-repaired-candidate-acceptance-1-november-2026). [AUTO-20261101-FREEZE-CANDIDATE](../testing/test-evidence.md#auto-20261101-freeze-candidate--final-local-verification-1-november-2026) records passing final local suites, exact source hashes, coverage floors/gaps and two complete browser runs. Testing records distinguish reusable specifications, execution attempts and substituted boundaries; current architecture views and exports describe the implemented lifecycle/safety flows.
