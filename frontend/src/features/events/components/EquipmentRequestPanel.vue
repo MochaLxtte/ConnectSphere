@@ -6,7 +6,7 @@ import { cancelEquipmentLine, fetchEquipmentPlan, fetchEquipmentTypes, replaceEq
   type EquipmentLine, type EquipmentLineInput, type EquipmentPlan, type EquipmentType } from '../api/arrangements';
 
 const props = defineProps<{ eventRequestId: string; status: string; revision?: number }>();
-const emit = defineEmits<{ changed: [] }>();
+const emit = defineEmits<{ changed: []; refresh: [] }>();
 const plan = ref<EquipmentPlan | null>(null);
 const types = ref<EquipmentType[]>([]);
 const selectedType = ref('');
@@ -64,6 +64,13 @@ async function load() {
     error.value = caught instanceof ApiError ? caught.message : 'Equipment requests could not be loaded.';
   } finally { if (!current.signal.aborted) loading.value = false; }
 }
+function reload() {
+  if (!canRead.value || loading.value || busy.value) return;
+  // Explicit reconciliation also refreshes dependent readiness, without claiming a write.
+  // Initial reads do not emit this event, so parent summary refreshes cannot loop.
+  emit('refresh');
+  void load();
+}
 watch(selectedType, value => {
   const existing = requested.value.find(line => line.equipmentTypeId === value);
   quantity.value = existing?.quantity ?? 1;
@@ -86,9 +93,13 @@ async function mutate(action: (signal: AbortSignal) => Promise<unknown>, message
   try {
     await action(current.signal);
     if (current.signal.aborted) return;
+    // Sibling readiness must stop using its old snapshot as soon as the write succeeds,
+    // even if this panel's follow-up read is delayed or fails.
+    emit('changed');
+    if (current.signal.aborted) return;
     await load();
     if (current.signal.aborted) return;
-    savedMessage.value = message; emit('changed');
+    savedMessage.value = message;
   } catch (caught) {
     if (current.signal.aborted) return;
     if (caught instanceof ApiError && caught.status === 401) { clearLocalSession(); return; }
@@ -96,6 +107,7 @@ async function mutate(action: (signal: AbortSignal) => Promise<unknown>, message
     // A conflict or lost response must be reconciled before another intentional write.
     stale.value = !(caught instanceof ApiError && [400, 422].includes(caught.status));
     error.value = caught instanceof ApiError ? caught.message : 'The equipment request could not be updated.';
+    if (stale.value) emit('refresh');
   } finally { if (!current.signal.aborted) busy.value = false; }
 }
 async function save() {
@@ -143,7 +155,7 @@ onBeforeUnmount(reset);
 <template>
   <section v-if="canRead" class="panel arrangement-panel" aria-labelledby="equipment-heading">
     <h2 id="equipment-heading">Equipment arrangements</h2>
-    <button class="button button-secondary" type="button" :disabled="loading || busy" @click="load">Reload equipment</button>
+    <button class="button button-secondary" type="button" :disabled="loading || busy" @click="reload">Reload equipment</button>
     <p v-if="loading" role="status">Loading equipment requests…</p>
     <p v-if="error" role="alert">{{ error }}</p>
     <p v-if="stale">Reload equipment before trying again. Check the saved outcome before repeating an action.</p>
@@ -154,7 +166,11 @@ onBeforeUnmount(reset);
         <li v-for="line in lines" :key="line.id">
           <strong>{{ line.equipmentType }}</strong> — {{ line.quantity }} · {{ formatTime(line.startsAt) }} to {{ formatTime(line.endsAt) }}
           <span v-if="line.technicalRequirements ?? line.notes"> · {{ line.technicalRequirements ?? line.notes }}</span>
-          <span class="line-status"> — {{ line.status }}<template v-if="line.decisionReason">: {{ line.decisionReason }}</template></span>
+          <span class="line-status"> — {{ line.status }}<template v-if="line.status !== 'CANCELLED' && line.decisionReason">: {{ line.decisionReason }}</template></span>
+          <template v-if="line.status === 'CANCELLED'">
+            <span class="line-history">Release reason: {{ line.releaseReason || 'Not recorded' }}</span>
+            <span v-if="line.decisionReason" class="line-history">Previous review reason: {{ line.decisionReason }}</span>
+          </template>
           <button v-if="canEdit && ['REQUESTED', 'REJECTED'].includes(line.status)" type="button" class="text-button" :disabled="!canAct" @click="cancelId = line.id; cancelReason = ''">Cancel line</button>
           <button v-if="canEdit && line.status === 'RESERVED'" type="button" class="text-button" :disabled="!canAct" @click="startReplacement(line)">Replace reserved line</button>
         </li>
@@ -200,5 +216,6 @@ textarea { min-height: 70px; }
 .check-row { display: flex; align-items: center; gap: 8px; }
 .equipment-lines { margin: 0; padding-left: 20px; display: grid; gap: 8px; }
 .line-status { color: #59685e; }
+.line-history { display: block; margin-top: 4px; color: #59685e; }
 .text-button { margin-left: 8px; border: 0; background: none; color: var(--green); text-decoration: underline; cursor: pointer; }
 </style>

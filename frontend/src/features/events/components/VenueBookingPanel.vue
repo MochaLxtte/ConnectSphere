@@ -12,7 +12,7 @@ import type { WorkflowPanelProps } from './use-workflow-panel';
 
 /** KAN-53: the coordinator assigned to this event requests a venue; Venue Staff decide separately (KAN-8). */
 const props = defineProps<WorkflowPanelProps>();
-const emit = defineEmits<{ changed: [] }>();
+const emit = defineEmits<{ changed: []; refresh: [] }>();
 
 const id = useId();
 const bookings = ref<VenueBooking[]>([]);
@@ -91,7 +91,7 @@ function abortPending() {
   listController?.abort(); venuesController?.abort(); submitController?.abort(); cancelController?.abort();
 }
 
-function loseAccess(error: unknown): boolean {
+function loseAccess(error: unknown, refreshDependents = false): boolean {
   if (!(error instanceof ApiError)) return false;
   if (error.status === 401) { clearLocalSession(); return true; }
   if (error.status !== 403 && !(error.status === 404 && error.code !== 'VENUE_NOT_FOUND')) return false;
@@ -102,6 +102,9 @@ function loseAccess(error: unknown): boolean {
   loading.value = false; busy.value = false; venuesLoading.value = false;
   savedMessage.value = null; actionError.value = null;
   loadError.value = 'This event request is unavailable or you no longer have access to its venue bookings.';
+  // A refused write can reveal reassignment without an event revision change. Initial
+  // reads stay silent; their parent/summary reads already check access independently.
+  if (refreshDependents) emit('refresh');
   return true;
 }
 
@@ -132,6 +135,13 @@ async function load() {
   } finally {
     if (!current.signal.aborted) loading.value = false;
   }
+}
+
+async function refreshBookings() {
+  if (!isCoordinator.value || accessDenied.value || busy.value) return;
+  // A staff decision may have changed readiness without advancing the event revision.
+  emit('refresh');
+  await load();
 }
 
 // KAN-52 suitability is separate. This picker shows the active catalogue, not a guaranteed match.
@@ -191,12 +201,14 @@ async function submit() {
     emit('changed');
     if (!current.signal.aborted && version === contextVersion) await load();
   } catch (error) {
-    if (current.signal.aborted || version !== contextVersion || loseAccess(error)) return;
+    if (current.signal.aborted || version !== contextVersion || loseAccess(error, true)) return;
     if (!(error instanceof ApiError) || error.status === 0 || error.status >= 500 || error.code === 'INVALID_RESPONSE') {
       uncertainSave.value = true;
+      emit('refresh');
       actionError.value = 'We could not confirm whether the booking request was saved. Refresh booking requests and check the list before submitting again.';
     } else {
       actionError.value = error.message;
+      if (error.status === 409) emit('refresh');
       // KAN-81-AC12: the original was resolved or its outage removed meanwhile; show current state.
       if (error.code === 'REPLACEMENT_NOT_NEEDED') { replacesBookingId.value = ''; await load(); }
     }
@@ -249,8 +261,9 @@ async function confirmCancel() {
       + 'Other arrangements are unchanged. To change it, request a replacement; a replacement is not guaranteed.';
     emit('changed');
   } catch (error) {
-    if (current.signal.aborted || version !== contextVersion || loseAccess(error)) return;
+    if (current.signal.aborted || version !== contextVersion || loseAccess(error, true)) return;
     needsRefresh.value = true;
+    emit('refresh');
     actionError.value = !(error instanceof ApiError) || error.status === 0 || error.status >= 500 || error.code === 'INVALID_RESPONSE'
       ? 'We could not confirm whether the arrangement was cancelled. Refresh booking requests to see its current state before trying again.'
       : `${error.message} Refresh booking requests to see the current state.`;
@@ -284,13 +297,13 @@ onBeforeUnmount(() => { contextVersion++; abortPending(); });
     <p v-if="savedMessage && feedbackLocation === 'panel'" class="panel-saved" role="status">{{ savedMessage }}</p>
     <p v-if="actionError && feedbackLocation === 'panel'" class="panel-error" role="alert">{{ actionError }}</p>
     <div v-if="!accessDenied" class="panel-actions">
-      <button type="button" class="button button-secondary" :disabled="busy || loading" @click="load">Refresh booking requests</button>
+      <button type="button" class="button button-secondary" :disabled="busy || loading" @click="refreshBookings">Refresh booking requests</button>
     </div>
 
     <p v-if="loading" role="status">Loading venue booking requests…</p>
     <div v-else-if="loadError" role="alert">
       <p class="panel-error">{{ loadError }}</p>
-      <button v-if="!accessDenied" type="button" class="button button-secondary" @click="load">Try again</button>
+      <button v-if="!accessDenied" type="button" class="button button-secondary" @click="refreshBookings">Try again</button>
     </div>
     <template v-else>
       <p v-if="bookings.length === 0" class="panel-notice">No venue has been requested for this event yet.</p>
@@ -417,7 +430,7 @@ onBeforeUnmount(() => { contextVersion++; abortPending(); });
       :role="actionError ? 'alert' : 'status'" tabindex="-1">
       <p>{{ actionError || savedMessage }}</p>
       <button v-if="uncertainSave && !accessDenied" type="button" class="button button-secondary"
-        :disabled="busy || loading" @click="load">Review current bookings</button>
+        :disabled="busy || loading" @click="refreshBookings">Review current bookings</button>
     </div>
   </section>
 </template>

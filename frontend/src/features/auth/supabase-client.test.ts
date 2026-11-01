@@ -48,4 +48,47 @@ describe('KAN-25 Supabase token handoff', () => {
     await expect(getSupabaseAccessToken('organiser@example.test', 'wrong-password')).rejects.toBe(error);
     expect(sdk.signOut).not.toHaveBeenCalled();
   });
+
+  it('refuses a provider response without a session even if no provider error was supplied', async () => {
+    sdk.signInWithPassword.mockResolvedValue({ data: { session: null }, error: null });
+    const { getSupabaseAccessToken } = await import('./supabase-client.js');
+    await expect(getSupabaseAccessToken('organiser@example.test', 'synthetic-password'))
+      .rejects.toThrow('Unable to sign in');
+    expect(sdk.signOut).not.toHaveBeenCalled();
+  });
+
+  it.each(['VITE_SUPABASE_URL', 'VITE_SUPABASE_ANON_KEY'])('refuses missing %s before attempting credential exchange', async (setting) => {
+    vi.stubEnv(setting, '');
+    const { getSupabaseAccessToken } = await import('./supabase-client.js');
+    await expect(getSupabaseAccessToken('organiser@example.test', 'synthetic-password'))
+      .rejects.toThrow('Supabase sign-in is not configured');
+    expect(sdk.createClient).not.toHaveBeenCalled();
+    expect(sdk.signInWithPassword).not.toHaveBeenCalled();
+  });
+
+  it('reuses the configured client but cleans each separate temporary session', async () => {
+    sdk.signInWithPassword
+      .mockResolvedValueOnce({ data: { session: { access_token: 'token-one' } }, error: null })
+      .mockResolvedValueOnce({ data: { session: { access_token: 'token-two' } }, error: null });
+    const { getSupabaseAccessToken } = await import('./supabase-client.js');
+    await expect(getSupabaseAccessToken('one@example.test', 'synthetic-password')).resolves.toBe('token-one');
+    await expect(getSupabaseAccessToken('two@example.test', 'synthetic-password')).resolves.toBe('token-two');
+    expect(sdk.createClient).toHaveBeenCalledTimes(1);
+    expect(sdk.signOut).toHaveBeenCalledTimes(2);
+  });
+
+  it('does not return a token while temporary SDK session cleanup is unresolved or rejects', async () => {
+    sdk.signInWithPassword.mockResolvedValue({ data: { session: { access_token: 'token-one' } }, error: null });
+    let rejectCleanup!: (error: Error) => void;
+    sdk.signOut.mockReturnValue(new Promise((_, reject) => { rejectCleanup = reject; }));
+    const { getSupabaseAccessToken } = await import('./supabase-client.js');
+    const received = vi.fn();
+    const attempt = getSupabaseAccessToken('one@example.test', 'synthetic-password');
+    const result = attempt.then(received, (error: Error) => error);
+    await vi.waitFor(() => expect(sdk.signOut).toHaveBeenCalled());
+    expect(received).not.toHaveBeenCalled();
+    rejectCleanup(new Error('Cleanup unavailable'));
+    await expect(result).resolves.toEqual(new Error('Cleanup unavailable'));
+    expect(received).not.toHaveBeenCalled();
+  });
 });

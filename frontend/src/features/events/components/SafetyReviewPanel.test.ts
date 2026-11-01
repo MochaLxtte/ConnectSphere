@@ -1,4 +1,5 @@
 import { fireEvent, render, screen } from '@testing-library/vue';
+import { flushPromises } from '@vue/test-utils';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { authSession, type SignedInUser } from '../../auth/session.js';
 import SafetyReviewPanel from './SafetyReviewPanel.vue';
@@ -22,6 +23,54 @@ const renderPanel = (status = 'APPROVED') => render(SafetyReviewPanel, { props: 
 beforeEach(() => { session.user = { ...coordinator }; session.loading = false; });
 
 describe('KAN-84 safety review panel', () => {
+  it('does not let an earlier submission clear another event\'s draft notes or publish its success', async () => {
+    let finish!: (value: { status: number; body: { review: ReturnType<typeof round> } }) => void;
+    stubApi({ [READ]: view(),
+      'POST /api/events/event-one/safety-reviews': () => new Promise(resolve => { finish = resolve; }),
+      'GET /api/events/event-two/safety': view({ eventRequestId: 'event-two' }) });
+    const panel = renderPanel();
+    await fireEvent.update(await screen.findByLabelText('Emergency access'), 'Old event notes');
+    await fireEvent.click(screen.getByRole('button', { name: 'Submit for safety review' }));
+    await panel.rerender({ eventRequestId: 'event-two', status: 'APPROVED' });
+    await fireEvent.update(await screen.findByLabelText('Emergency access'), 'New event notes');
+    finish({ status: 201, body: { review: round() } });
+    await flushPromises();
+    expect(screen.getByLabelText('Emergency access')).toHaveValue('New event notes');
+    expect(screen.queryByText('Round 1 was sent to the Safety Officer.')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Submit for safety review' })).toBeEnabled();
+  });
+
+  it('ignores an old safety eligibility response after a newer arrangement refresh', async () => {
+    let finish!: (value: ReturnType<typeof view>) => void;
+    const api = stubApi({ [READ]: () => new Promise(resolve => { finish = resolve; }) });
+    const panel = render(SafetyReviewPanel, { props: { eventRequestId: 'event-one', status: 'CONFIRMED', refreshVersion: 0 } });
+    api.set(READ, view({ eventStatus: 'CONFIRMED', outcome: 'STALE', canSubmit: false }));
+    await panel.rerender({ eventRequestId: 'event-one', status: 'CONFIRMED', refreshVersion: 1 });
+    expect(await screen.findByTestId('safety-outcome')).toHaveTextContent('Approval out of date');
+    finish(view({ eventStatus: 'CONFIRMED', outcome: 'APPROVED', canSubmit: false, canStartPreparation: true }));
+    await flushPromises();
+    expect(screen.getByTestId('safety-outcome')).toHaveTextContent('Approval out of date');
+    expect(screen.queryByRole('button', { name: 'Start preparation' })).not.toBeInTheDocument();
+  });
+
+  it('refreshes planning eligibility without losing unsaved safety notes and fails closed if refresh fails', async () => {
+    let finish!: (value: ReturnType<typeof apiError>) => void;
+    const api = stubApi({ [READ]: view() });
+    const panel = render(SafetyReviewPanel, { props: { eventRequestId: 'event-one', status: 'APPROVED', refreshVersion: 0 } });
+    await fireEvent.update(await screen.findByLabelText('Emergency access'), 'Keep the east exit clear');
+    api.set(READ, () => new Promise(resolve => { finish = resolve; }));
+    await panel.rerender({ eventRequestId: 'event-one', status: 'APPROVED', refreshVersion: 1 });
+    expect(await screen.findByText('Loading the safety review…')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Submit for safety review' })).not.toBeInTheDocument();
+    finish(apiError(503, 'UNAVAILABLE', 'Safety details unavailable.'));
+    expect(await screen.findByRole('alert')).toHaveTextContent('Safety details unavailable.');
+    expect(screen.queryByTestId('safety-outcome')).not.toBeInTheDocument();
+    api.set(READ, view());
+    await fireEvent.click(screen.getByRole('button', { name: 'Reload safety review' }));
+    expect(await screen.findByLabelText('Emergency access')).toHaveValue('Keep the east exit clear');
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
   it('KAN-84-AC7: explains outstanding arrangement changes and does not offer note-only resubmission', async () => {
     const api = stubApi({ [READ]: view({ outcome: 'CHANGES_REQUESTED', canSubmit: false, unresolvedAreas: ['VENUE', 'TECHNICAL'] }) });
     renderPanel();

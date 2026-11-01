@@ -21,8 +21,10 @@ const state = ref<LoadState>({ status: 'loading' });
 const feedback = ref<ReviewFeedback | null>(null);
 let controller: AbortController | undefined;
 let viewVersion = 0;
+let refreshVersion = 0;
 
 async function load() {
+  refreshVersion += 1;
   controller?.abort();
   const current = new AbortController();
   controller = current;
@@ -48,12 +50,16 @@ async function load() {
 /** After a panel saves, update the status without unmounting the panels. */
 async function refreshQuietly() {
   const current = controller;
+  const version = ++refreshVersion;
   try {
     const detail = await fetchReviewRequestDetail(eventRequestId.value, current?.signal);
-    if (!current?.signal.aborted && state.value.status === 'ready') state.value = { status: 'ready', detail };
+    // An older panel refresh must not undo a later saved lifecycle outcome.
+    if (version === refreshVersion && !current?.signal.aborted && state.value.status === 'ready') {
+      state.value = { status: 'ready', detail };
+    }
   } catch {
     // Refresh failures may reflect expired access; show the current unavailable message.
-    if (!current?.signal.aborted) await load();
+    if (version === refreshVersion && !current?.signal.aborted) await load();
   }
 }
 

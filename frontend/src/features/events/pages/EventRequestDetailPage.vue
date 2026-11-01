@@ -23,6 +23,7 @@ const submitError = ref('');
 /** KAN-6-AC101: the server's per-field messages, shown beside the summary. */
 const submitProblems = ref<{ field: string; label: string; message: string }[]>([]);
 let controller: AbortController | undefined;
+let refreshVersion = 0;
 
 const submitFieldLabels = new Map([
   ['name', 'Event name'], ['purpose', 'Purpose'], ['startsAt', 'Starts'], ['endsAt', 'Ends'],
@@ -49,6 +50,7 @@ function showSignIn() {
 }
 
 async function load() {
+  refreshVersion += 1;
   controller?.abort();
   const current = new AbortController();
   controller = current;
@@ -80,11 +82,15 @@ async function load() {
 /** After a panel saves, update the status and outcome without unmounting the panels. */
 async function refreshQuietly() {
   const current = controller;
+  const version = ++refreshVersion;
   try {
     const request = await fetchEventRequestDetail(requestId.value, current?.signal);
-    if (!current?.signal.aborted && state.value.status === 'ready') state.value = { status: 'ready', request };
+    // Several panels may save in succession; only the newest read may replace their shared detail.
+    if (version === refreshVersion && !current?.signal.aborted && state.value.status === 'ready') {
+      state.value = { status: 'ready', request };
+    }
   } catch {
-    if (!current?.signal.aborted) await load();
+    if (version === refreshVersion && !current?.signal.aborted) await load();
   }
 }
 

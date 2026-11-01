@@ -151,7 +151,7 @@ for (const scenario of [
     await expect(page.getByText('Step-free access', { exact: true })).toBeVisible();
     await expect(page.getByText('Projector and microphones required.', { exact: true })).toBeVisible();
     const calendarHref = await page.getByRole('link', { name: 'View venue availability', exact: true }).getAttribute('href');
-    const calendarUrl = new URL(calendarHref!, 'http://127.0.0.1:5173');
+    const calendarUrl = new URL(calendarHref!, page.url());
     expect(calendarUrl.searchParams.get('venue')).toBe(venueId);
     expect(calendarUrl.searchParams.get('week')).toBe('2026-12-01');
     await expect(page.getByRole('button', { name: 'Record decision' })).toBeDisabled();

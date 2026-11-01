@@ -29,9 +29,23 @@ export default defineConfig(({ mode }) => {
       restoreMocks: true,
       coverage: {
         provider: 'v8',
-        reporter: ['text', 'html'],
-        include: ['src/lib/**/*.ts', 'src/features/system/**/*.{ts,vue}', 'src/features/reviews/**/*.{ts,vue}', 'src/features/events/**/*.{ts,vue}', 'src/features/venues/**/*.{ts,vue}', 'src/features/notifications/**/*.{ts,vue}', 'src/features/equipment/**/*.{ts,vue}', 'src/features/registrations/**/*.{ts,vue}', 'src/features/safety/**/*.{ts,vue}'],
-        exclude: ['**/*.test.ts'],
+        reporter: ['text', 'html', 'json', 'json-summary', 'lcov'],
+        include: ['src/**/*.{ts,vue}'],
+        exclude: [
+          '**/*.test.ts', // Test assertions are not product code.
+          '**/*.d.ts', // Type declarations have no executable implementation.
+          'src/test/**', // Test setup/cleanup only.
+          'src/features/events/components/test-api.ts', // Shared fetch fixture, imported only by tests.
+        ],
+        // Regression floors against the full owned-source denominator, not a claim of 100% coverage.
+        thresholds: {
+          statements: 95, branches: 92, functions: 97, lines: 98,
+          'src/features/auth/session.ts': { statements: 100, branches: 100, functions: 100, lines: 100 },
+          'src/features/auth/supabase-client.ts': { statements: 100, branches: 100, functions: 100, lines: 100 },
+          'src/features/auth/pages/LoginPage.vue': { statements: 100, branches: 100, functions: 100, lines: 100 },
+          'src/app/router.ts': { statements: 100, branches: 100, functions: 100, lines: 100 },
+          'src/components/AppShell.vue': { statements: 100, branches: 100, functions: 100, lines: 100 },
+        },
       },
     },
   };

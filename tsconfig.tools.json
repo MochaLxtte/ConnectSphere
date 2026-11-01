@@ -14,6 +14,7 @@
     "database/**/*.ts",
     "tests/**/*.ts",
     "playwright.config.ts",
-    "vitest.integration.config.ts"
+    "vitest.integration.config.ts",
+    "vitest.backend-coverage.config.ts"
   ]
 }

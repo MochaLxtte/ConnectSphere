@@ -4,20 +4,23 @@ export default defineConfig({
   testDir: './tests/e2e',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 1 : 0,
+  // Keep resource use predictable on developer laptops and CI; retries must not hide flakes.
+  workers: 2,
+  retries: 0,
+  failOnFlakyTests: !!process.env.CI,
   reporter: [['list'], ['html', { open: 'never' }]],
-  use: { baseURL: 'http://127.0.0.1:5173', trace: 'retain-on-failure' },
+  use: { baseURL: 'http://127.0.0.1:4173', trace: 'retain-on-failure' },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
   webServer: [
     {
-      command: 'npm run dev -w @connectsphere/backend',
-      url: 'http://127.0.0.1:3000/api/health',
-      reuseExistingServer: !process.env.CI,
+      command: 'node --import tsx tests/browser/start-api.ts',
+      url: 'http://127.0.0.1:4311/api/health/ready',
+      reuseExistingServer: false,
     },
     {
-      command: 'npm run dev -w @connectsphere/frontend -- --host 127.0.0.1',
-      url: 'http://127.0.0.1:5173',
-      reuseExistingServer: !process.env.CI,
+      command: 'node --import tsx tests/browser/start-web.ts',
+      url: 'http://127.0.0.1:4173',
+      reuseExistingServer: false,
     },
   ],
 });

@@ -1,7 +1,8 @@
 import { fireEvent, render, screen } from '@testing-library/vue';
+import { flushPromises } from '@vue/test-utils';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ApiError, getJson } from '../../../lib/api-client';
-import { authSession } from '../../auth/session.js';
+import { authSession, clearLocalSession } from '../../auth/session.js';
 import {
   emptyFilters, END_NOT_AFTER_START, INCOMPLETE_DATE, isRealLocalDateTime, localToIso, MISSING_END,
   MISSING_START, NOT_A_REAL_DATE, searchVenues, validatePeriod, type VenueResult,
@@ -9,7 +10,7 @@ import {
 import VenueSearchPage from './VenueSearchPage.vue';
 
 /**
- * KAN-12 venue search: page and API-client tests. Full descriptions: docs/venue-search-test-cases.md
+ * KAN-12 venue search: page and API-client tests. Supporting cases: backend/test/venues/venue-search-test-cases.md
  * (the backend rules are tested in backend/test/venues/venue-search.test.ts).
  *
  * Test names read "TC-VS-nn [KAN-12-ACn, test type]". AC15 (stale results) and AC16 (missing lists,
@@ -32,7 +33,14 @@ vi.mock('../../../lib/api-client', () => {
 
 vi.mock('../../auth/session.js', async () => {
   const { reactive } = await import('vue');
-  return { authSession: reactive({ user: null, loading: false }), clearLocalSession: vi.fn() };
+  const authSession = reactive({ user: null, loading: false });
+  return {
+    authSession,
+    clearLocalSession: vi.fn(() => {
+      authSession.user = null;
+      authSession.loading = false;
+    }),
+  };
 });
 
 const getJsonMock = getJson as unknown as ReturnType<typeof vi.fn>;
@@ -398,6 +406,140 @@ describe('KAN-12-AC101: impossible dates on the page', () => {
     expect(searchUrls()).toHaveLength(sent);
     validity.badInput = false;
     await fireEvent.update(start, '2026-10-20T14:00');
+    expect(screen.queryByText(INCOMPLETE_DATE)).toBeNull();
+    expect(searchButton().disabled).toBe(false);
+  });
+});
+
+describe('KAN-12 release regression: access loss, retry and pending responses', () => {
+  it('KAN-12-AC13: an expired server session removes the search form and private results', async () => {
+    renderPage();
+    await ready();
+    route(() => { throw new ApiError('Session expired', 401, 'AUTHENTICATION_REQUIRED'); });
+    await search();
+
+    expect(await screen.findByText('Sign in to search venues.')).toBeTruthy();
+    expect(clearLocalSession).toHaveBeenCalledOnce();
+    expect(session.user).toBeNull();
+    expect(screen.queryByRole('form', { name: 'Venue filters' })).toBeNull();
+    expect(screen.queryByText('Harbourfront Hall')).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Try again' })).toBeNull();
+  });
+
+  it.each([
+    { title: 'a service error', error: new Error('Search temporarily unavailable'), message: 'Search temporarily unavailable' },
+    { title: 'an unexpected failure value', error: null, message: 'Venues could not be loaded. Please try again.' },
+  ])('KAN-12-AC8/AC11: retry after $title uses the visible filters and replaces the failure', async ({ error, message }) => {
+    renderPage();
+    await ready();
+    let attempts = 0;
+    route(() => {
+      if (attempts++ === 0) throw error;
+      return { items: [room] };
+    });
+    await fireEvent.update(field('Location'), 'Sengkang');
+    await search();
+    expect(await screen.findByText(message)).toBeTruthy();
+    expect(screen.queryByText('Harbourfront Hall')).toBeNull();
+
+    await fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
+    expect(await screen.findByText('Sengkang Community Room')).toBeTruthy();
+    expect(searchUrls()).toEqual([
+      '/api/venues/search-venues?location=Sengkang',
+      '/api/venues/search-venues?location=Sengkang',
+    ]);
+    expect(screen.queryByText(message)).toBeNull();
+  });
+
+  it.each([
+    { role: null, message: 'Sign in to search venues.' },
+    { role: 'EVENT_ORGANISER', message: 'This page is for event coordinators.' },
+  ])('KAN-12-AC13/AC15: a late venue response cannot repopulate results after access changes to $role', async ({ role, message }) => {
+    renderPage();
+    await ready();
+    const pending = deferred<{ items: VenueResult[] }>();
+    route(() => pending.promise);
+    await search();
+    const signal = getJsonMock.mock.calls.find(([url]) => String(url).startsWith('/api/venues/search-venues'))![1] as AbortSignal;
+    signInAs(role);
+
+    expect(await screen.findByText(message)).toBeTruthy();
+    expect(signal.aborted).toBe(true);
+    pending.resolve({ items: [room] });
+    await flushPromises();
+    expect(screen.queryByText('Sengkang Community Room')).toBeNull();
+    expect(screen.queryByRole('form', { name: 'Venue filters' })).toBeNull();
+    expect(screen.getByText(message)).toBeTruthy();
+  });
+
+  it('KAN-12-AC13/AC15: an obsolete 401 and option list cannot replace a new coordinator session', async () => {
+    const oldSearch = deferred<{ items: VenueResult[] }>();
+    const oldOptions = deferred<typeof OPTIONS>();
+    route(() => oldSearch.promise, () => oldOptions.promise);
+    renderPage();
+    const oldSignals = getJsonMock.mock.calls.map(([, signal]) => signal as AbortSignal);
+    route(() => ({ items: [room] }), () => ({ layouts: ['Classroom'], facilities: [], accessibility: [] }));
+    session.user = { id: 'coordinator-2', role: 'EVENT_COORDINATOR' };
+
+    expect(await screen.findByText('Sengkang Community Room')).toBeTruthy();
+    expect(screen.getByRole('option', { name: 'Classroom' })).toBeTruthy();
+    expect(oldSignals.every((signal) => signal.aborted)).toBe(true);
+    oldSearch.reject(new ApiError('Old session expired', 401, 'AUTHENTICATION_REQUIRED'));
+    oldOptions.resolve(OPTIONS);
+    await flushPromises();
+    expect(clearLocalSession).not.toHaveBeenCalled();
+    expect(session.user).toEqual({ id: 'coordinator-2', role: 'EVENT_COORDINATOR' });
+    expect(screen.getByText('Sengkang Community Room')).toBeTruthy();
+    expect(screen.queryByRole('option', { name: 'Theatre' })).toBeNull();
+  });
+
+  it('KAN-12-AC13: no venue requests start until identity restoration completes', async () => {
+    session.loading = true;
+    renderPage();
+    expect(screen.getByText('Checking your access…')).toBeTruthy();
+    expect(screen.queryByRole('form', { name: 'Venue filters' })).toBeNull();
+    expect(getJsonMock).not.toHaveBeenCalled();
+
+    session.loading = false;
+    await ready();
+    expect(searchUrls()).toHaveLength(1);
+  });
+
+  it('KAN-12-AC15/AC16: leaving the page aborts both reads and ignores their later failures', async () => {
+    const pendingSearch = deferred<{ items: VenueResult[] }>();
+    const pendingOptions = deferred<typeof OPTIONS>();
+    route(() => pendingSearch.promise, () => pendingOptions.promise);
+    const page = renderPage();
+    const signals = getJsonMock.mock.calls.map(([, signal]) => signal as AbortSignal);
+    expect(signals).toHaveLength(2);
+    page.unmount();
+
+    expect(signals.every((signal) => signal.aborted)).toBe(true);
+    pendingSearch.reject(new ApiError('Expired after leaving', 401, 'AUTHENTICATION_REQUIRED'));
+    pendingOptions.reject(new Error('Options failed after leaving'));
+    await flushPromises();
+    expect(clearLocalSession).not.toHaveBeenCalled();
+    expect(screen.queryByText('Expired after leaving')).toBeNull();
+    expect(screen.queryByText(/lists could not be loaded/)).toBeNull();
+  });
+
+  it('KAN-12-AC11/AC14/AC101: clearing an unreadable period restores a valid unfiltered search', async () => {
+    renderPage();
+    await ready();
+    const start = field(START);
+    Object.defineProperty(start, 'validity', { configurable: true, value: { badInput: true } });
+    await fireEvent.input(start);
+    await fireEvent.update(field(END), '2026-10-20T18:00');
+    expect(screen.getByText(INCOMPLETE_DATE)).toBeTruthy();
+    expect(searchButton().disabled).toBe(true);
+    const sent = searchUrls().length;
+
+    await fireEvent.click(screen.getByRole('button', { name: 'Clear filters' }));
+    await ready();
+    expect(searchUrls()).toHaveLength(sent + 1);
+    expect(lastSearchUrl()).toBe('/api/venues/search-venues');
+    expect(field(START).value).toBe('');
+    expect(field(END).value).toBe('');
     expect(screen.queryByText(INCOMPLETE_DATE)).toBeNull();
     expect(searchButton().disabled).toBe(false);
   });

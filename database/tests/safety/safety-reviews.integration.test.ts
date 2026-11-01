@@ -334,3 +334,67 @@ describe('KAN-84 review fixes on real PostgreSQL', () => {
     expect(await prepare(id)).toEqual({ eventRequestId: id, changed: true });
   });
 });
+
+describe('KAN-84 release guard boundaries on real PostgreSQL', () => {
+  it('refuses a closed event submission and an already-approved arrangement without adding rounds or notices', async () => {
+    const closed = await f.createEvent({ organiserId: owner.id, coordinatorId: coordinator.id, status: 'SUBMITTED' });
+    expect((await refusal(submit(closed))).code).toBe('SAFETY_NOT_SUBMITTABLE');
+    expect((await safety(closed)).rounds).toEqual([]);
+    const { id } = await readyEvent();
+    const round = (await submit(id)).review;
+    await decide(round.id, { decision: 'APPROVED' });
+    const notices = await f.notifications(id);
+    expect((await refusal(submit(id))).code).toBe('SAFETY_ALREADY_APPROVED');
+    expect((await safety(id)).rounds).toHaveLength(1);
+    expect(await f.notifications(id)).toEqual(notices);
+  });
+
+  it('refuses missing and malformed reviews without disclosing another event or changing the queue', async () => {
+    const before = await listSafetyQueue(f.pool, officer);
+    expect((await refusal(getSafetyReview(f.pool, { reviewId: randomUUID(), actor: officer }))).code)
+      .toBe('SAFETY_REVIEW_NOT_FOUND');
+    for (const reviewId of ['not-a-uuid', randomUUID()]) {
+      expect((await refusal(decideSafetyReview(f.pool, { reviewId, actor: officer,
+        input: { decision: 'APPROVED', fingerprint: 'a'.repeat(32) } }))).code).toBe('SAFETY_REVIEW_NOT_FOUND');
+    }
+    expect(await listSafetyQueue(f.pool, officer)).toEqual(before);
+  });
+
+  it('refuses an obsolete submitted fingerprint and a later closed lifecycle while keeping the pending round unchanged', async () => {
+    const { id } = await readyEvent();
+    const round = (await submit(id)).review;
+    const original = await fingerprintOf(round.id);
+    const obsolete = (original[0] === 'a' ? 'b' : 'a') + original.slice(1);
+    const notices = await f.notifications(id);
+    expect((await refusal(decideSafetyReview(f.pool, { reviewId: round.id, actor: officer,
+      input: { decision: 'APPROVED', fingerprint: obsolete } }))).code).toBe('SAFETY_REVIEW_STALE');
+    await f.pool.query("UPDATE event_requests SET status = 'CANCELLED' WHERE id = $1", [id]);
+    expect((await refusal(decide(round.id, { decision: 'REJECTED', notes: 'No longer planning' }))).code)
+      .toBe('SAFETY_EVENT_CLOSED');
+    expect((await safety(id)).rounds[0]?.status).toBe('PENDING');
+    expect(await f.notifications(id)).toEqual(notices);
+  });
+
+  it('blocks approval when readiness changes independently of the saved fingerprint', async () => {
+    const { id } = await readyEvent();
+    const round = (await submit(id)).review;
+    const original = await fingerprintOf(round.id);
+    const notices = await f.notifications(id);
+    await f.pool.query(`INSERT INTO event_change_requests(event_request_id, requested_by, proposed_changes, previous, base_revision)
+      VALUES ($1, $2, '{"purpose":"Changed purpose"}', '{"purpose":"Original purpose"}', 1)`, [id, owner.id]);
+    expect(await fingerprintOf(round.id)).toBe(original);
+    expect((await refusal(decide(round.id, { decision: 'APPROVED' }))).code).toBe('EVENT_NOT_READY');
+    expect((await safety(id)).rounds[0]?.status).toBe('PENDING');
+    expect(await f.notifications(id)).toEqual(notices);
+  });
+
+  it('explains pending approval and never starts preparation prematurely', async () => {
+    const { id } = await readyEvent();
+    await confirmEvent(f.pool, { eventRequestId: id, actor: coordinator, input: {} });
+    await submit(id);
+    const error = await refusal(startPreparation(f.pool, { eventRequestId: id, actor: coordinator, input: {} }));
+    expect(error.code).toBe('SAFETY_APPROVAL_REQUIRED');
+    expect(error.message).toContain('still waiting for a decision');
+    expect((await safety(id)).preparation).toBeNull();
+  });
+});

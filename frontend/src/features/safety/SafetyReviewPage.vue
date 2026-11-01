@@ -133,6 +133,7 @@ onBeforeUnmount(() => { mounted = false; generation += 1; controller?.abort(); }
           <strong>{{ venue.name }}</strong> · capacity {{ venue.capacity }} · {{ venue.status }}
           <span v-if="venue.needsRecovery" class="warning"> · needs outage recovery</span>
           <p>Booked layout: {{ venue.bookedLayout || 'Not recorded' }} · Available layouts: {{ list(venue.layouts) }}</p>
+          <p>Facilities: {{ list(venue.facilities ?? []) }}</p>
           <p>Accessibility: {{ list(venue.accessibilityFeatures) }}{{ venue.wheelchairAccessible ? ' · wheelchair accessible' : '' }}</p>
           <p>Operating hours (Singapore time): {{ venue.opensAt ?? 'No opening restriction' }} –
             {{ venue.closesAt ?? 'No closing restriction' }}.</p>
@@ -143,7 +144,9 @@ onBeforeUnmount(() => { mounted = false; generation += 1; controller?.abort(); }
       <h2>Equipment</h2>
       <p v-if="!detail.equipment.length">No active equipment lines.</p>
       <ul v-else class="cards">
-        <li v-for="line in detail.equipment" :key="line.id">{{ line.quantity }} × {{ line.name }} · {{ line.status }}</li>
+        <li v-for="line in detail.equipment" :key="line.id">{{ line.quantity }} × {{ line.name }} · {{ line.status }}
+          <p class="technical-requirements">Technical requirements: {{ line.technicalRequirements || 'Not recorded' }}</p>
+        </li>
       </ul>
 
       <ul v-if="detail.readiness && !detail.readiness.ready" class="cards" aria-label="Readiness problems">
@@ -188,7 +191,8 @@ dt { font-weight: 600; } dd { margin: 0; overflow-wrap: anywhere; }
 .note { font-size: 14px; color: #59685e; }
 .cards { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
 .cards li { border: 1px solid var(--border); border-radius: 8px; padding: 12px; }
-.cards p { margin: 4px 0 0; }
+.cards p { margin: 4px 0 0; overflow-wrap: anywhere; }
+.technical-requirements { white-space: pre-wrap; }
 .decision, fieldset { display: grid; gap: 10px; }
 fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
 legend { font-weight: 600; }

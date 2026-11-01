@@ -44,11 +44,110 @@ describe('KAN-63/KAN-26 coordinator equipment request panel', () => {
       api.setPlan(plan({ status: 'NOT_REQUIRED', revision: nextRevision }));
       return { status: 201, body: { request: { status: 'NOT_REQUIRED', lines: [] } } };
     });
-    render(EquipmentRequestPanel, { props: { eventRequestId: eventId, status: 'APPROVED' } });
+    const view = render(EquipmentRequestPanel, { props: { eventRequestId: eventId, status: 'APPROVED' } });
     await fireEvent.click(await screen.findByLabelText('No equipment is required'));
     await fireEvent.click(screen.getByRole('button', { name: 'Save equipment request' }));
     expect(await screen.findByText('No equipment is required for this event.')).toBeInTheDocument();
     expect(api.writes()).toEqual([{ key: 'POST ' + planPath, body: { lines: [], notRequired: true, revision } }]);
+    expect(view.emitted('changed')).toHaveLength(1);
+    expect(view.emitted('refresh')).toBeUndefined();
+  });
+
+  it('invalidates sibling readiness as soon as a save succeeds, before a delayed equipment readback', async () => {
+    const pending = deferred<{ body: { plan: EquipmentPlan } }>();
+    const api = setup();
+    api.set('POST ' + planPath, () => {
+      api.set('GET ' + planPath, () => pending.promise);
+      return { body: { request: { status: 'NOT_REQUIRED', lines: [] } } };
+    });
+    const view = render(EquipmentRequestPanel, { props: { eventRequestId: eventId, status: 'APPROVED' } });
+    await fireEvent.click(await screen.findByLabelText('No equipment is required'));
+    await fireEvent.click(screen.getByRole('button', { name: 'Save equipment request' }));
+    try {
+      expect(await screen.findByText('Loading equipment requests…')).toBeInTheDocument();
+      expect(view.emitted('changed')).toHaveLength(1);
+      expect(screen.queryByText('Equipment marked Not Required.')).not.toBeInTheDocument();
+      expect(api.writes()).toHaveLength(1);
+    } finally {
+      pending.resolve({ body: { plan: plan({ status: 'NOT_REQUIRED', revision: nextRevision }) } });
+    }
+    expect(await screen.findByText('Equipment marked Not Required.')).toBeInTheDocument();
+    expect(view.emitted('changed')).toHaveLength(1);
+  });
+
+  it('does not display the prior save outcome after an account change during readback', async () => {
+    const pending = deferred<{ body: { plan: EquipmentPlan } }>();
+    const api = setup();
+    api.set('POST ' + planPath, () => {
+      api.set('GET ' + planPath, () => pending.promise);
+      return { body: { request: { status: 'NOT_REQUIRED', lines: [] } } };
+    });
+    const view = render(EquipmentRequestPanel, { props: { eventRequestId: eventId, status: 'APPROVED' } });
+    await fireEvent.click(await screen.findByLabelText('No equipment is required'));
+    await fireEvent.click(screen.getByRole('button', { name: 'Save equipment request' }));
+    try {
+      await screen.findByText('Loading equipment requests…');
+      expect(view.emitted('changed')).toHaveLength(1);
+      api.set('GET ' + planPath, apiError(403, 'FORBIDDEN', 'Not assigned'));
+      session.user = { ...coordinator, id: 'different-coordinator' };
+      await nextTick();
+    } finally {
+      pending.resolve({ body: { plan: plan({ status: 'NOT_REQUIRED', revision: nextRevision }) } });
+    }
+    expect(await screen.findByRole('alert')).toHaveTextContent('Not assigned');
+    expect(screen.queryByText('Equipment marked Not Required.')).not.toBeInTheDocument();
+    expect(screen.queryByText('No equipment is required for this event.')).not.toBeInTheDocument();
+    expect(view.emitted('changed')).toHaveLength(1);
+  });
+
+  it('refreshes dependent summaries on an explicit equipment reload but never loops on initial reads', async () => {
+    const api = setup();
+    const view = render(EquipmentRequestPanel, { props: { eventRequestId: eventId, status: 'APPROVED' } });
+    await screen.findByLabelText('Equipment type');
+    expect(view.emitted('refresh')).toBeUndefined();
+    api.setPlan(plan({ status: 'NOT_REQUIRED', revision: nextRevision }));
+    await fireEvent.click(screen.getByRole('button', { name: 'Reload equipment' }));
+    expect(await screen.findByText('No equipment is required for this event.')).toBeInTheDocument();
+    expect(view.emitted('refresh')).toHaveLength(1);
+    expect(view.emitted('changed')).toBeUndefined();
+    expect(api.calls.filter(call => call.key === 'GET ' + planPath)).toHaveLength(2);
+    expect(api.writes()).toHaveLength(0);
+  });
+
+  it.each([409, 403, 404, 500, 'network'])('reconciles dependent summaries after an uncertain or stale equipment save: %s', async failure => {
+    const api = setup();
+    api.set('POST ' + planPath, typeof failure === 'number'
+      ? apiError(failure, 'SAVE_FAILED', 'Check current equipment before trying again.')
+      : () => { throw new TypeError('Connection lost'); });
+    const view = render(EquipmentRequestPanel, { props: { eventRequestId: eventId, status: 'APPROVED' } });
+    await fireEvent.update(await screen.findByLabelText('Equipment type'), 'projector');
+    await fireEvent.update(screen.getByLabelText('Quantity'), '3');
+    await fireEvent.update(screen.getByLabelText('Technical requirements'), 'Retain the draft');
+    await fireEvent.click(screen.getByRole('button', { name: 'Save equipment request' }));
+    await screen.findByRole('alert');
+    expect(view.emitted('refresh')).toHaveLength(1);
+    expect(view.emitted('changed')).toBeUndefined();
+    expect(api.writes()).toHaveLength(1);
+    if (failure !== 403 && failure !== 404) {
+      expect(screen.getByLabelText('Quantity')).toHaveValue(3);
+      expect(screen.getByLabelText('Technical requirements')).toHaveValue('Retain the draft');
+      expect(screen.getByRole('button', { name: 'Save equipment request' })).toBeDisabled();
+    }
+  });
+
+  it.each([400, 422])('retains editable input without refreshing unrelated summaries for validation HTTP %s', async status => {
+    const api = setup();
+    api.set('POST ' + planPath, apiError(status, 'INVALID_REQUEST', 'Correct this equipment request.'));
+    const view = render(EquipmentRequestPanel, { props: { eventRequestId: eventId, status: 'APPROVED' } });
+    await fireEvent.update(await screen.findByLabelText('Equipment type'), 'projector');
+    await fireEvent.update(screen.getByLabelText('Technical requirements'), 'Retain the draft');
+    await fireEvent.click(screen.getByRole('button', { name: 'Save equipment request' }));
+    await screen.findByRole('alert');
+    expect(view.emitted('refresh')).toBeUndefined();
+    expect(view.emitted('changed')).toBeUndefined();
+    expect(screen.getByLabelText('Technical requirements')).toHaveValue('Retain the draft');
+    expect(screen.getByRole('button', { name: 'Save equipment request' })).toBeEnabled();
+    expect(api.writes()).toHaveLength(1);
   });
 
   it('revises a requested type using the event period while preserving other requested lines', async () => {
@@ -103,11 +202,13 @@ describe('KAN-63/KAN-26 coordinator equipment request panel', () => {
       body: { revision, replacement: { equipmentTypeId: 'projector', quantity: 5, startsAt, endsAt, technicalRequirements: 'HDMI' } } });
   });
 
-  it('cancels an undecided line with an entered reason and its revision, retaining cancellation history', async () => {
-    const api = setup(plan({ items: [line()] }));
+  it.each(['REQUESTED', 'REJECTED'])('cancels a %s line and displays its saved release reason separately from the prior review', async status => {
+    const decisionReason = status === 'REJECTED' ? 'No compatible stock' : null;
+    const api = setup(plan({ items: [line({ status, decisionReason })] }));
     api.set('POST /api/equipment-requests/line-one/cancel', () => {
-      api.setPlan(plan({ items: [line({ status: 'CANCELLED' })], revision: nextRevision }));
-      return { body: { request: line({ status: 'CANCELLED' }) } };
+      const cancelled = line({ status: 'CANCELLED', decisionReason, releaseReason: 'No longer needed' });
+      api.setPlan(plan({ items: [cancelled], revision: nextRevision }));
+      return { body: { request: cancelled } };
     });
     render(EquipmentRequestPanel, { props: { eventRequestId: eventId, status: 'APPROVED' } });
     await fireEvent.click(await screen.findByRole('button', { name: 'Cancel line' }));
@@ -115,8 +216,46 @@ describe('KAN-63/KAN-26 coordinator equipment request panel', () => {
     await fireEvent.update(screen.getByLabelText('Cancellation reason'), '  No longer needed  ');
     await fireEvent.click(screen.getByRole('button', { name: 'Confirm line cancellation' }));
     expect(await screen.findByText(/CANCELLED/)).toBeInTheDocument();
+    expect(screen.getByText('Release reason: No longer needed')).toBeInTheDocument();
+    if (decisionReason) {
+      expect(screen.getByText('Previous review reason: No compatible stock')).toBeInTheDocument();
+      expect(screen.queryByText(/CANCELLED: No compatible stock/)).not.toBeInTheDocument();
+    } else {
+      expect(screen.queryByText(/Previous review reason:/)).not.toBeInTheDocument();
+    }
     expect(screen.getByText('Projector', { selector: 'strong' })).toBeInTheDocument();
     expect(api.writes()[0]?.body).toEqual({ reason: 'No longer needed', revision });
+    await fireEvent.click(screen.getByRole('button', { name: 'Reload equipment' }));
+    expect(await screen.findByText('Release reason: No longer needed')).toBeInTheDocument();
+    expect(api.writes()).toHaveLength(1);
+  });
+
+  it.each(['REQUESTED', 'RESERVED', 'REJECTED'])('keeps the current %s outcome distinct from release history', async status => {
+    const decisionReason = status === 'REJECTED' ? 'No compatible stock' : null;
+    const api = setup(plan({ items: [line({ status, decisionReason })] }));
+    render(EquipmentRequestPanel, { props: { eventRequestId: eventId, status: 'APPROVED' } });
+    expect(await screen.findByText(decisionReason ? `— ${status}: ${decisionReason}` : `— ${status}`)).toBeInTheDocument();
+    expect(screen.queryByText(/Release reason:/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Previous review reason:/)).not.toBeInTheDocument();
+    expect(api.writes()).toHaveLength(0);
+  });
+
+  it.each(['Event cancelled', 'Event completed'])('shows the saved lifecycle release reason %s without inventing an earlier review', async releaseReason => {
+    const api = setup(plan({ items: [line({ status: 'CANCELLED', releaseReason })] }));
+    render(EquipmentRequestPanel, { props: { eventRequestId: eventId, status: 'APPROVED' } });
+    expect(await screen.findByText(`Release reason: ${releaseReason}`)).toBeInTheDocument();
+    expect(screen.getByText('— CANCELLED')).toBeInTheDocument();
+    expect(screen.queryByText(/Previous review reason:/)).not.toBeInTheDocument();
+    expect(api.writes()).toHaveLength(0);
+  });
+
+  it.each([undefined, null, ''])('does not substitute an old rejection when the release reason is %s', async releaseReason => {
+    const api = setup(plan({ items: [line({ status: 'CANCELLED', decisionReason: 'No compatible stock', releaseReason })] }));
+    render(EquipmentRequestPanel, { props: { eventRequestId: eventId, status: 'APPROVED' } });
+    expect(await screen.findByText('Release reason: Not recorded')).toBeInTheDocument();
+    expect(screen.getByText('Previous review reason: No compatible stock')).toBeInTheDocument();
+    expect(screen.queryByText(/CANCELLED: No compatible stock/)).not.toBeInTheDocument();
+    expect(api.writes()).toHaveLength(0);
   });
 
   it('reloads a no-equipment plan when an approved KAN-15 change advances the event revision', async () => {

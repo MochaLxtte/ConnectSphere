@@ -6,10 +6,11 @@ import { migrate } from '../../migrate.js';
 
 const original021Checksum = '2603919c447b67d7d80192ba67a1ab14a8cac028b3082dc2ec8af931769e27b5';
 const migration022 = '022_safety_review_remediation.sql';
+const migration023 = '023_safety_approval_invalidation.sql';
 const start = '2035-03-01T02:00:00Z';
 const end = '2035-03-01T05:00:00Z';
 
-async function legacyFixture() {
+async function legacyFixture(cutoff = migration022) {
   const testUrl = process.env.TEST_DATABASE_URL;
   if (!testUrl) throw new Error('Set TEST_DATABASE_URL to a dedicated PostgreSQL test database.');
   const schema = `test_${randomUUID().replaceAll('-', '')}`;
@@ -28,7 +29,7 @@ async function legacyFixture() {
     await pool.query(`CREATE TABLE schema_migrations (
       name text PRIMARY KEY, checksum text NOT NULL, applied_at timestamptz NOT NULL DEFAULT now())`);
     const directory = new URL('../../migrations/', import.meta.url);
-    const files = (await readdir(directory)).filter(name => /^\d+_[a-z0-9_]+\.sql$/.test(name) && name < migration022).sort();
+    const files = (await readdir(directory)).filter(name => /^\d+_[a-z0-9_]+\.sql$/.test(name) && name < cutoff).sort();
     for (const name of files) {
       const sql = await readFile(new URL(name, directory), 'utf8');
       const checksum = createHash('sha256').update(sql.replace(/\r\n/g, '\n')).digest('hex');
@@ -93,10 +94,10 @@ describe('KAN-84 additive 021 to 022 safety remediation upgrade', () => {
     try {
       const before = await Promise.all(['schema_migrations', 'safety_reviews', 'event_requests', 'notifications', 'app_users']
         .map(table => f.pool.query(`SELECT * FROM ${table} ORDER BY ${table === 'schema_migrations' ? 'name' : 'id'}`)));
-      expect(await migrate(f.url)).toEqual([migration022]);
+      expect(await migrate(f.url)).toEqual([migration022, migration023]);
       expect(await migrate(f.url)).toEqual([]);
       const after = await Promise.all(['schema_migrations', 'safety_reviews', 'event_requests', 'notifications', 'app_users']
-        .map(table => f.pool.query(`SELECT * FROM ${table}${table === 'schema_migrations' ? " WHERE name <> '022_safety_review_remediation.sql'" : ''}
+        .map(table => f.pool.query(`SELECT * FROM ${table}${table === 'schema_migrations' ? " WHERE name NOT IN ('022_safety_review_remediation.sql', '023_safety_approval_invalidation.sql')" : ''}
           ORDER BY ${table === 'schema_migrations' ? 'name' : 'id'}`)));
       expect(after.map(result => result.rows)).toEqual(before.map(result => result.rows));
       const fingerprints = await f.fingerprints();
@@ -203,6 +204,48 @@ describe('KAN-84 additive 021 to 022 safety remediation upgrade', () => {
         expect((await f.pool.query("SELECT to_regclass('safety_review_change_baselines') AS baseline")).rows)
           .toEqual([{ baseline: null }]);
       }
+    } finally { await f.destroy(); }
+  });
+});
+
+
+describe('KAN-84 additive 022 to 023 permanent invalidation upgrade', () => {
+  it('preserves current approvals, latches detectable stale approvals, and preserves all recorded decisions and preparation', async () => {
+    for (const changed of [false, true]) {
+      const f = await legacyFixture(migration023);
+      try {
+        if (changed) await f.pool.query('UPDATE venues SET setup_minutes = 15 WHERE id = $1', [f.approved.venueId]);
+        const before = await Promise.all(['safety_reviews', 'event_requests', 'notifications']
+          .map(table => f.pool.query(`SELECT * FROM ${table} ORDER BY id`)));
+        expect(await migrate(f.url)).toEqual([migration023]);
+        expect(await migrate(f.url)).toEqual([]);
+        const after = await Promise.all(['safety_reviews', 'event_requests', 'notifications']
+          .map(table => f.pool.query(`SELECT * FROM ${table} ORDER BY id`)));
+        expect(after.map(result => result.rows)).toEqual(before.map(result => result.rows));
+        const invalidations = await f.pool.query('SELECT review_id, source FROM safety_approval_invalidations');
+        expect(invalidations.rows).toEqual(changed ? [{ review_id: f.approved.reviewId, source: 'migration_023_detected_mismatch' }] : []);
+        expect((await f.pool.query('SELECT review_id FROM safety_review_context_baselines')).rows).toHaveLength(2);
+        await f.pool.query('UPDATE venues SET setup_minutes = 0 WHERE id = $1', [f.approved.venueId]);
+        expect((await f.pool.query('SELECT review_id FROM safety_approval_invalidations WHERE review_id = $1',
+          [f.approved.reviewId])).rowCount).toBe(changed ? 1 : 0);
+        await expect(f.pool.query('DELETE FROM safety_review_context_baselines WHERE review_id = $1', [f.approved.reviewId]))
+          .rejects.toMatchObject({ code: '23514' });
+      } finally { await f.destroy(); }
+    }
+  });
+
+  it('latches a legacy operational block even when no outage impact exists and its original fingerprint still matches', async () => {
+    const f = await legacyFixture(migration023);
+    try {
+      const block = (await f.pool.query<{ id: string }>(`INSERT INTO venue_unavailability(venue_id, starts_at, ends_at, reason, created_by)
+        VALUES ($1, $2, $3, 'Legacy operational block', $4) RETURNING id`,
+        [f.approved.venueId, start, end, f.coordinator])).rows[0]!.id;
+      expect((await f.pool.query(`SELECT arrangement_fingerprint = safety_arrangement_fingerprint(event_request_id) AS matches
+        FROM safety_reviews WHERE id = $1`, [f.approved.reviewId])).rows[0]?.matches).toBe(true);
+      await migrate(f.url);
+      await f.pool.query('DELETE FROM venue_unavailability WHERE id = $1', [block]);
+      expect((await f.pool.query('SELECT review_id FROM safety_approval_invalidations')).rows)
+        .toEqual([{ review_id: f.approved.reviewId }]);
     } finally { await f.destroy(); }
   });
 });
