@@ -140,7 +140,7 @@ existing cancel-and-resubmit path. These repairs use migrations 015–018; no ex
 The KAN-66 migration mentioned as 014 in its historical 26 October entry is now
 `016_event_request_revisions.sql`; KAN-15 is implemented in migration 017 and its routes above.
 The current cancellation/request rules supersede the initial 27 October contract in the
-[API history](../../../../docs/architecture/api-contract.md#28-october-2026--kan-62kan-63-repaired-contract).
+[API history](../../../../docs/architecture/api-contract.md#kan-62--kan-63-review-corrections--28-october-2026).
 
 Cancellation unit/HTTP cases are in `backend/test/events/KAN-62-63-arrangements.test.ts` and
 `backend/test/events/cancellation-safety.test.ts`; real PostgreSQL coverage is in
@@ -153,3 +153,7 @@ the run outcomes and manual acceptance boundaries remain in [test evidence](../.
 ## KAN-10 event completion — 29 October 2026
 
 `completion.ts` and `completion-router.ts` let the currently assigned Event Coordinator mark a CONFIRMED event completed once its end instant has passed by the database clock (`POST /api/events/:id/complete`; `GET /api/events/:id/completion` reads the outcome for the organiser and the coordinator). One transaction takes the same locks as cancellation (venue bookings, event, equipment pools, equipment lines), sets the status so the history records actor and time, lets migration 015's trigger release the still-reserved equipment once, and writes one `EVENT_COMPLETED` notice to the organiser and the coordinator. Registrations and venue bookings are untouched. Early, repeated, stale, wrong-status and unauthorised calls change nothing. No migration. Rules are **To agree** (decision log, 29 October 2026); a CONFIRMED event cannot yet be produced in the application because KAN-61 is not built.
+
+## 1 November 2026 — release regression follow-up
+
+KAN-61's current-data confirmation refusal remains unchanged. Client planning panels now reconcile confirmation and safety after relevant writes/reloads and clear stale action state while reconciliation is pending or fails. KAN-63 cancellation records already preserve `releaseReason` separately from `decisionReason`; the client now displays both with distinct labels. These corrections change no event endpoint or event schema. KAN-84's independent migration 023 adds permanent safety invalidation; see the [safety module](../safety/README.md) and `AUTO-20261101-RELEASE-REGRESSIONS`.

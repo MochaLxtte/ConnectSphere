@@ -1,0 +1,13 @@
+
+> @connectsphere/frontend@0.1.0 test
+> vitest run src/features/auth/session.test.ts src/features/auth/pages/LoginPage.test.ts src/components/AppShell.test.ts src/app/router.test.ts --pool=threads --maxWorkers=1
+
+
+ RUN  v4.1.11 C:/Users/trist/Documents/School Stuff/Y3S1/IS212/ConnectSphere/frontend
+
+
+ Test Files  4 passed (4)
+      Tests  63 passed (63)
+   Start at  22:24:29
+   Duration  12.81s (transform 2.97s, setup 3.33s, import 3.70s, tests 1.38s, environment 3.37s)
+

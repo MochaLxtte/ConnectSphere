@@ -1,0 +1,12 @@
+
+> @connectsphere/frontend@0.1.0 test
+> vitest run src/features/safety/SafetyPages.test.ts
+
+
+ RUN  v4.1.11 C:/Users/trist/Documents/School Stuff/Y3S1/IS212/ConnectSphere/frontend
+
+
+ Test Files  1 passed (1)
+      Tests  29 passed (29)
+   Start at  19:09:02
+   Duration  11.29s (transform 1.93s, setup 694ms, import 2.06s, tests 7.39s, environment 802ms)

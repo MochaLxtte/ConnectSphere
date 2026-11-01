@@ -1,0 +1,54 @@
+
+> @connectsphere/frontend@0.1.0 test
+> vitest run src/features/events/components/VenueBookingPanel.test.ts
+
+
+ RUN  v4.1.11 C:/Users/trist/Documents/School Stuff/Y3S1/IS212/ConnectSphere/frontend
+
+ ❯ src/features/events/components/VenueBookingPanel.test.ts (51 tests | 4 failed) 8202ms
+     × clears private information when a submission returns 403 118ms
+     × clears private information when a submission returns 404 74ms
+     × KAN-82-AC10 a cancel refused with 403 hides private content and refreshes sibling eligibility 82ms
+     × KAN-82-AC10 a cancel refused with 404 hides private content and refreshes sibling eligibility 93ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/events/components/VenueBookingPanel.test.ts > KAN-53 venue booking request panel > clears private information when a submission returns 403
+ FAIL  src/features/events/components/VenueBookingPanel.test.ts > KAN-53 venue booking request panel > clears private information when a submission returns 404
+AssertionError: Target cannot be null or undefined.
+ ❯ src/features/events/components/VenueBookingPanel.test.ts:291:42
+    289|     expect(view.emitted('changed')).toBeUndefined();
+    290|     if (status === 401) expect(view.emitted('refresh')).toBeUndefined(…
+    291|     else expect(view.emitted('refresh')).toHaveLength(1);
+       |                                          ^
+    292|   });
+    293|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  src/features/events/components/VenueBookingPanel.test.ts > KAN-82 managing one arrangement at a time > KAN-82-AC10 a cancel refused with 403 hides private content and refreshes sibling eligibility
+ FAIL  src/features/events/components/VenueBookingPanel.test.ts > KAN-82 managing one arrangement at a time > KAN-82-AC10 a cancel refused with 404 hides private content and refreshes sibling eligibility
+AssertionError: Target cannot be null or undefined.
+ ❯ src/features/events/components/VenueBookingPanel.test.ts:579:37
+    577|     expect(await screen.findByText(/no longer have access to its venue…
+    578|     expect(screen.queryByRole('button', { name: 'Cancel arrangement' }…
+    579|     expect(view.emitted('refresh')).toHaveLength(1);
+       |                                     ^
+    580|     expect(view.emitted('changed')).toBeUndefined();
+    581|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed | 47 passed (51)
+   Start at  19:10:49
+   Duration  23.47s (transform 6.99s, setup 5.94s, import 7.07s, tests 8.20s, environment 1.81s)
+
+npm error Lifecycle script `test` failed with error:
+npm error code 1
+npm error path C:\Users\trist\Documents\School Stuff\Y3S1\IS212\ConnectSphere\frontend
+npm error workspace @connectsphere/frontend@0.1.0
+npm error location C:\Users\trist\Documents\School Stuff\Y3S1\IS212\ConnectSphere\frontend
+npm error command failed
+npm error command C:\WINDOWS\system32\cmd.exe /d /s /c vitest run src/features/events/components/VenueBookingPanel.test.ts

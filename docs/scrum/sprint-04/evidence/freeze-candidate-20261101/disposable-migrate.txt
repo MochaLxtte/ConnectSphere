@@ -1,0 +1,5 @@
+
+> connectsphere@0.1.0 db:migrate
+> tsx database/migrate.ts
+
+Applied: 001_initial_scaffold.sql, 002_restrict_data_api_access.sql, 003_add_supabase_user_id.sql, 004_core_feature_schema.sql, 005_equipment_peak_availability.sql, 006_automatic_coordinator_assignment.sql, 007_add_coordinator_lead.sql, 008_notification_inbox.sql, 009_venue_buffer_durations.sql, 010_venue_outage_impacts.sql, 011_venue_booking_replacements.sql, 012_venue_occupied_intervals.sql, 013_venue_holds.sql, 014_equipment_operational_quantities.sql, 015_equipment_reservations.sql, 016_event_request_revisions.sql, 017_event_change_requests.sql, 018_event_cancellation_equipment_workflows.sql, 019_registration_notification_outcomes.sql, 020_equipment_stock_changes.sql, 021_safety_reviews.sql, 022_safety_review_remediation.sql, 023_safety_approval_invalidation.sql

@@ -1,0 +1,25 @@
+{
+  "run_id": "MAN-20261101-03",
+  "comparison": "before to after UI restoration; before new review",
+  "before_capture": "2026-11-01T15:37:48.692Z",
+  "after_capture": "2026-11-01T15:38:33.654Z",
+  "venue_buffers_restored": true,
+  "reviews_unchanged": true,
+  "baselines_unchanged": true,
+  "bookings_unchanged": true,
+  "target": {
+    "id": "84a2d6ea-6336-44fd-a7c8-d03b3b489fe3",
+    "preparation_started_at_unchanged": true,
+    "preparation_review_id_unchanged": true,
+    "arrangement_fingerprint_restored": true,
+    "context_fingerprint_restored": true,
+    "preparation_review_id": "c53afc1a-2e88-4521-aa7b-e2511a80d235"
+  },
+  "new_invalidations": [
+    {
+      "review_id": "c53afc1a-2e88-4521-aa7b-e2511a80d235",
+      "invalidated_at": "2026-11-01T15:38:03.582Z",
+      "source": "venues"
+    }
+  ]
+}

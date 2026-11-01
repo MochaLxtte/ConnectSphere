@@ -1,0 +1,13 @@
+
+> @connectsphere/frontend@0.1.0 typecheck
+> vue-tsc --noEmit
+
+src/features/events/components/EventPlanningPanels.test.ts(128,62): error TS2322: Type 'Record<string, unknown>' is not assignable to type 'Stubs | undefined'.
+  Type 'Record<string, unknown>' is missing the following properties from type 'string[]': length, pop, push, concat, and 29 more.
+npm error Lifecycle script `typecheck` failed with error:
+npm error code 2
+npm error path C:\Users\trist\Documents\School Stuff\Y3S1\IS212\ConnectSphere\frontend
+npm error workspace @connectsphere/frontend@0.1.0
+npm error location C:\Users\trist\Documents\School Stuff\Y3S1\IS212\ConnectSphere\frontend
+npm error command failed
+npm error command C:\WINDOWS\system32\cmd.exe /d /s /c vue-tsc --noEmit

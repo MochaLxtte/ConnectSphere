@@ -1,0 +1,22 @@
+{
+  "run_id": "MAN-20261101-03",
+  "captured_at": "2026-11-01T15:41:36.702Z",
+  "read_only": "on",
+  "environment": "Shared Supabase development read-only persisted-outcome check",
+  "booking": {
+    "id": "a48d92b8-c68e-4db4-8787-142fa9367bbd",
+    "event_request_id": "55e58c4a-8ab1-42c8-a572-69810743c14d",
+    "event_name": "REL-20261101-AGENT-PROBE",
+    "event_status": "APPROVED",
+    "venue_id": "30000000-0000-4000-8000-000000000002",
+    "venue_name": "Orchid Seminar Room",
+    "status": "CANCELLED",
+    "starts_at": "2026-11-16T03:30:00.000Z",
+    "ends_at": "2026-11-16T04:00:00.000Z",
+    "created_at": "2026-11-01T15:34:44.940Z",
+    "updated_at": "2026-11-01T15:35:06.016Z"
+  },
+  "cancelled": true,
+  "event_still_approved": true,
+  "note": "Created/cancelled through the UI during this run before the safety snapshots. This read verifies its final persisted state; it does not create or modify data."
+}

@@ -1,0 +1,2024 @@
+{
+  "TC-06": {
+    "original_level": "unit and integration and browser",
+    "level": "unit; integration; e2e",
+    "reason": "Historical feature-level summary names isolated rules, cooperating API/database/component layers and complete role/UI workflows. Normalize only the level vocabulary; it remains a historical aggregate, not an independently executed runnable case.",
+    "source_line": 7
+  },
+  "TC-09": {
+    "original_level": "integration and browser",
+    "level": "integration; e2e",
+    "reason": "Historical feature-level summary combines cooperating API/database checks with multi-role user workflows. Browser is an execution surface; only the complete authenticated workflow is E2E. Summary outcomes remain historical aggregates.",
+    "source_line": 10
+  },
+  "TC-11": {
+    "original_level": "unit and HTTP and PostgreSQL integration and component and browser and hosted manual",
+    "level": "unit; integration; e2e",
+    "reason": "Historical feature-level summary names isolated rules, cooperating API/database/component layers and complete role/UI workflows. Normalize only the level vocabulary; it remains a historical aggregate, not an independently executed runnable case.",
+    "source_line": 12
+  },
+  "TC-13": {
+    "original_level": "unit and HTTP and PostgreSQL integration and component and browser and hosted manual",
+    "level": "unit; integration; e2e",
+    "reason": "Historical feature-level summary names isolated rules, cooperating API/database/component layers and complete role/UI workflows. Normalize only the level vocabulary; it remains a historical aggregate, not an independently executed runnable case.",
+    "source_line": 14
+  },
+  "TC-16": {
+    "original_level": "unit and integration",
+    "level": "unit; integration",
+    "reason": "Normalize the existing isolated-rule and collaborating-component levels; this historical feature summary does not create a runnable case or new execution result.",
+    "source_line": 17
+  },
+  "TC-18": {
+    "original_level": "integration and browser",
+    "level": "integration; e2e",
+    "reason": "Historical feature-level summary combines cooperating API/database checks with multi-role user workflows. Browser is an execution surface; only the complete authenticated workflow is E2E. Summary outcomes remain historical aggregates.",
+    "source_line": 19
+  },
+  "TC-19": {
+    "original_level": "integration and browser",
+    "level": "integration; e2e",
+    "reason": "Historical feature-level summary combines cooperating API/database checks with multi-role user workflows. Browser is an execution surface; only the complete authenticated workflow is E2E. Summary outcomes remain historical aggregates.",
+    "source_line": 20
+  },
+  "TC-08-01": {
+    "original_level": "regression",
+    "level": "unit",
+    "reason": "Controlled late PATCH responses exercise one venue edit component across route changes; the recorded permanent regression uses a mocked API in the component test. Regression is the test purpose.",
+    "source_line": 22
+  },
+  "TC-02-01": {
+    "original_level": "regression",
+    "level": "unit; integration",
+    "reason": "The regression is a component field-error assertion and a browser UI check with intercepted API responses in EventRequestDetailPage.test.ts/event-request-detail.spec.ts. These isolated component and frontend integration boundaries do not establish live E2E acceptance.",
+    "source_line": 23
+  },
+  "TC-10-01": {
+    "original_level": "regression",
+    "level": "unit; integration",
+    "reason": "The steps explicitly invoke parseVenueSearchQuery directly and request API regressions for valid/invalid periods. These are isolated parser rules plus API integration; regression describes their purpose.",
+    "source_line": 25
+  },
+  "TC-11-01": {
+    "original_level": "regression",
+    "level": "unit; integration",
+    "reason": "Zero-attendance regression is implemented as suitability-rules unit checks, a component check and isolated PostgreSQL suitability integration. Source notes identify all three; they do not identify a live browser acceptance run for this case.",
+    "source_line": 26
+  },
+  "TC-16-02": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. EQ-A total 10 has 2 damaged/1 maintenance; check and attempt to reserve 8 for E-A. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 29
+  },
+  "TC-16-05": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Reserve 7 EQ-A for E-A and 2 at disjoint E-B period; mark 4 of 10 units damaged; inspect arrangements/inboxes. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 32
+  },
+  "TC-16-06": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As T open /equipment/availability, select APPROVED E-A needing EQ-A 6 for 12Jan 2031 10:00-12:00+08:00 with venue Pending; check stock. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 33
+  },
+  "TC-16-07": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. EQ-A total 10/damaged 2/maintenance 1; reserve 4 at 10:00-11:00 and 3 at 11:00-12:00; check 10:00-12:00; compare non-reserving statuses. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 34
+  },
+  "TC-16-09": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Request EQ-A 4 when 3 available and EQ-B 1 when 5 available; then obtain a passing result, consume its last stock elsewhere and reserve. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 36
+  },
+  "TC-15-01": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As C1 request EQ-A 3/EQ-B 1 for E-A with note wireless microphones; as T reopen staff queue/request. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 38
+  },
+  "TC-15-02": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As T reserve one fulfilable Requested line and reject another with reason Type unavailable; reload as T/C1. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 39
+  },
+  "TC-15-04": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. E-A assigned C1/E-B assigned C2; as C2, O2, signed-out attempt E-A read/create/update/review through UI/API. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 41
+  },
+  "TC-15-05": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. For APPROVED E-A with no active lines choose Not Required while venue Pending; repeat with unresolved/rejected required line. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 42
+  },
+  "TC-15-06": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Try creation as C1 in Approved then Draft/Rejected; review as C1 then T; reserve 2 of requested 3 without revision. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 43
+  },
+  "TC-15-07": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Reserve EQ-A 3; open stale editor; explicitly cancel/replace with 4 after stock check; submit old editor. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 44
+  },
+  "TC-17-01": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Open Equipment availability and E-A as T; load saved reservations. 2. With venue still pending, reserve A3 and confirm. 3. Refresh UI and inspect persisted request, decision actor/time and unchanged event/venue state. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 45
+  },
+  "TC-17-03": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Reserve a fresh saved E-A line as T. 2. Inspect C1, C2 and T inboxes; reopen permitted links. 3. Refresh and repeat the unchanged action via the API. 4. Verify closed-event notice behaviour after lifecycle integration is available. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 47
+  },
+  "TC-17-04": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. After KAN-62/KAN-10 UI integration, reserve equipment on two eligible synthetic events. 2. Cancel one and complete the other through their authorised workflows; repeat each request. 3. Inspect release cause/time/actor, retained original  Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 48
+  },
+  "TC-17-05": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. On APPROVED E-A reserve A3. 2. Open Cancel reservation, try blank/overlong reason, then enter Fixture cancellation and confirm. 3. Refresh and compare original decision plus release metadata and availability. 4. Verify CONFIRMED is read- Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 49
+  },
+  "TC-17-06": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As signed-out caller and organiser/coordinator/Lead/Venue Staff/Attendee, open the equipment URL and call reservation GET/reserve/cancel endpoints. 2. Compare saved rows and notices. 3. Repeat with a valid Technical Support session. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 50
+  },
+  "TC-17-07": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Reserve only A3, then B1; refresh after each. 2. Use isolated/coordinated fixtures for empty, rejected, unresolved and operational-shortfall states. 3. Switch to unsaved what-if mode, run a check and compare persisted rows. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 51
+  },
+  "TC-02-02": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As O1 complete owned DRAFT E-A with optional None/Not Required; submit saved draft and reload owner detail/Lead queue. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 52
+  },
+  "TC-02-03": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Set end before start and reversed enabled registration window on equivalent drafts; submit form/detail; correct and retry. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 53
+  },
+  "TC-02-04": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As O2 submit O1 draft; as O1 submit Approved/Rejected event; inspect data/status/history. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 54
+  },
+  "TC-02-06": {
+    "original_level": "manual",
+    "level": "integration",
+    "reason": "Direct request/permission/input matrix crosses the API, authorization and persistence boundary; the primary specified observation is the response and unchanged/saved records, not a complete browser journey. Manual describes how requests may be issued.",
+    "source_line": 56
+  },
+  "TC-03-02": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As O1 select saved draft containing registrationfalse, attendance 0 and nullable optional text; compare persisted form/list. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 59
+  },
+  "TC-03-03": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Change name, omit purpose, clear optional description; registration No->Yes with values save/reopen; then Yes->No save/reopen. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 60
+  },
+  "TC-03-04": {
+    "original_level": "manual",
+    "level": "integration",
+    "reason": "Direct request/permission/input matrix crosses the API, authorization and persistence boundary; the primary specified observation is the response and unchanged/saved records, not a complete browser journey. Manual describes how requests may be issued.",
+    "source_line": 61
+  },
+  "TC-04-03": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Reject E-A with Requirements do not fit; refresh as O1; compare E-B and O2 access. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 64
+  },
+  "TC-04-04": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Approve a different reviewable request without reason and reload owner outcome. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 65
+  },
+  "TC-04-05": {
+    "original_level": "manual",
+    "level": "unit; integration; e2e",
+    "reason": "This combined specification explicitly calls for input, endpoint and UI checks plus saved-state comparison. Retain the rule/unit, API integration and complete UI acceptance levels; each execution must retain its actual boundary.",
+    "source_line": 66
+  },
+  "TC-04-06": {
+    "original_level": "manual",
+    "level": "static analysis",
+    "reason": "Inspects issue links, points and requirement/regression mapping. Manual is the review method; the tested artifact is documentation traceability, not runtime behavior.",
+    "source_line": 67
+  },
+  "TC-06-01": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. On readyApproved E-A try O1, C2 then assigned C1; compare denied writes. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 68
+  },
+  "TC-06-02": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Initially approve a request; inspect status/actions; finish arrangements then confirm. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 69
+  },
+  "TC-06-03": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Vary no venue, Approved+Pending venues, unresolved/rejected equipment, stock shortfall, fully ready, explicitNot Required, and an approved venue booking still flagged for outage recovery (KAN-61-AC105). Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 70
+  },
+  "TC-06-04": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. C1 confirms readyE-A; refresh as O1/C1; inspect history/E-B. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 71
+  },
+  "TC-06-05": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Load readyE-A; concurrently remove readiness or add Pending significant change then confirm; retry prior success. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 72
+  },
+  "TC-06-06": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Use ready venue/equipment without human staff schedule then confirm. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 73
+  },
+  "TC-06-07": {
+    "original_level": "manual",
+    "level": "integration",
+    "reason": "The scenario requires controlled clock boundaries and collaborating state/window/capacity rules. Treat controlled execution as integration; real authenticated UI acceptance is recorded separately where performed.",
+    "source_line": 74
+  },
+  "TC-06-08": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Owner/assigned coordinator cancel separate active-state fixtures; try blank reason, Draft, terminal, unrelatedowner. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 76
+  },
+  "TC-06-09": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Cancel E-A with reason Organiser no longer proceeding; reload organiser/coordinator/history. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 77
+  },
+  "TC-06-11": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Cancel with internal explanation; inspect owner/coordinator/affected staff/attendees/unrelated O2 inboxes. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 79
+  },
+  "TC-06-12": {
+    "original_level": "manual",
+    "level": "integration",
+    "reason": "The scenario races/repeats persisted operations or injects a database failure and verifies atomicity, records, capacity or notices. This needs the isolated collaborating API/database boundary rather than a browser-only or pure unit classification.",
+    "source_line": 80
+  },
+  "TC-06-13": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. For confirmed reserved event request changed date; follow cancellation/new request. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 81
+  },
+  "TC-06-14": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Try completed action as C2 then C1 on endedConfirmedE-A and ApprovedE-B. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 82
+  },
+  "TC-06-16": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. CompleteE-A; refresh owner/current coordinator and compareE-B. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 84
+  },
+  "TC-06-17": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Complete ended event with equipment, venuehistory, registrations; try registration/withdrawal. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 85
+  },
+  "TC-18-01": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. A 1 opens Confirmed registration-enabled E-A; inspect name/purpose/description/time/confirmed-venue details/conditions and submitted fields. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 87
+  },
+  "TC-18-02": {
+    "original_level": "manual",
+    "level": "integration",
+    "reason": "The scenario requires controlled clock boundaries and collaborating state/window/capacity rules. Treat controlled execution as integration; real authenticated UI acceptance is recorded separately where performed.",
+    "source_line": 88
+  },
+  "TC-18-03": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. A 1 registers for E-A then reopens/refreshes own status; compare A 2/E-B. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 89
+  },
+  "TC-18-06": {
+    "original_level": "manual",
+    "level": "integration",
+    "reason": "Direct request/permission/input matrix crosses the API, authorization and persistence boundary; the primary specified observation is the response and unchanged/saved records, not a complete browser journey. Manual describes how requests may be issued.",
+    "source_line": 92
+  },
+  "TC-18-07": {
+    "original_level": "manual",
+    "level": "integration",
+    "reason": "The scenario requires controlled clock boundaries and collaborating state/window/capacity rules. Treat controlled execution as integration; real authenticated UI acceptance is recorded separately where performed.",
+    "source_line": 93
+  },
+  "TC-18-08": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Choose Withdraw, inspect warning, cancel once, then confirm; another attendee takes place; attempt re-entry. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 94
+  },
+  "TC-18-09": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Confirm A 1 withdrawal on E-A then reopen/refresh; compare A 2/E-B. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 95
+  },
+  "TC-18-10": {
+    "original_level": "manual",
+    "level": "integration",
+    "reason": "The scenario races/repeats persisted operations or injects a database failure and verifies atomicity, records, capacity or notices. This needs the isolated collaborating API/database boundary rather than a browser-only or pure unit classification.",
+    "source_line": 96
+  },
+  "TC-18-11": {
+    "original_level": "manual",
+    "level": "integration",
+    "reason": "The scenario races/repeats persisted operations or injects a database failure and verifies atomicity, records, capacity or notices. This needs the isolated collaborating API/database boundary rather than a browser-only or pure unit classification.",
+    "source_line": 97
+  },
+  "TC-18-12": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Open E-A roster as O1/C1 then O2/C2/V/signed-out using UI/API. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 98
+  },
+  "TC-18-13": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. E-A contains 2 active, 1 withdrawn, 1 event-cancelled; E-B has 3 active; inspect E-A roster. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 99
+  },
+  "TC-18-14": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Keep manager roster open; A 1 registers elsewhere then refresh; A 1 withdraws then refresh. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 100
+  },
+  "TC-18-15": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Navigate populated E-A to empty E-B; delay E-A response until after E-B loads. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 101
+  },
+  "TC-18-16": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As O1/C1 inspect synthetic attendee roster UI/API fields. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 102
+  },
+  "TC-18-17": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. C1 opens roster; Lead reassigns to C2; C1 refreshes/API-calls; switch route/account during delayed response. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 103
+  },
+  "TC-07-01": {
+    "original_level": "manual",
+    "level": "integration; e2e",
+    "reason": "Preconditions explicitly allow isolated PostgreSQL automated execution and a local frontend/API with real sign-in for manual acceptance; the steps include the corresponding saved-state and user-facing workflow checks. Keep those distinct levels rather than the method label manual.",
+    "source_line": 104
+  },
+  "TC-07-02": {
+    "original_level": "manual",
+    "level": "integration; e2e",
+    "reason": "Preconditions explicitly allow isolated PostgreSQL automated execution and a local frontend/API with real sign-in for manual acceptance; the steps include the corresponding saved-state and user-facing workflow checks. Keep those distinct levels rather than the method label manual.",
+    "source_line": 105
+  },
+  "TC-07-03": {
+    "original_level": "manual",
+    "level": "integration",
+    "reason": "Direct request/permission/input matrix crosses the API, authorization and persistence boundary; the primary specified observation is the response and unchanged/saved records, not a complete browser journey. Manual describes how requests may be issued.",
+    "source_line": 106
+  },
+  "TC-07-04": {
+    "original_level": "manual",
+    "level": "integration; e2e",
+    "reason": "Preconditions explicitly allow isolated PostgreSQL automated execution and a local frontend/API with real sign-in for manual acceptance; the steps include the corresponding saved-state and user-facing workflow checks. Keep those distinct levels rather than the method label manual.",
+    "source_line": 107
+  },
+  "TC-08-02": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. V opens catalogue A/B then B detail and compares saved B fields. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 111
+  },
+  "TC-08-03": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. V changes A to Level 2/capacity 120; save/reopen and compare B. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 112
+  },
+  "TC-08-04": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Add STAGE/HEARING_LOOP to A relevant lists; save/reopen; remove one entry/reopen. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 113
+  },
+  "TC-08-05": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. A supports THEATRE+CLASSROOM, B BANQUET; save/reopen both. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 114
+  },
+  "TC-08-07": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Modify permitted A fields; save, navigate away/back and refresh. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 116
+  },
+  "TC-08-08": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. A has existing booking; change capacity/layout; refresh coordinator search/suitability and inspect booking. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 117
+  },
+  "TC-08-09": {
+    "original_level": "manual",
+    "level": "integration",
+    "reason": "Direct request/permission/input matrix crosses the API, authorization and persistence boundary; the primary specified observation is the response and unchanged/saved records, not a complete browser journey. Manual describes how requests may be issued.",
+    "source_line": 118
+  },
+  "TC-08-10": {
+    "original_level": "manual",
+    "level": "integration",
+    "reason": "Direct request/permission/input matrix crosses the API, authorization and persistence boundary; the primary specified observation is the response and unchanged/saved records, not a complete browser journey. Manual describes how requests may be issued.",
+    "source_line": 119
+  },
+  "TC-08-12": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. In isolated setup make opened A inactive/absent before save; separately use nonexistent ID. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 121
+  },
+  "TC-08-13": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Change location only; inspect payload; fail save, inspect entry then retry after recovery. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 122
+  },
+  "TC-08-14": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Delay A save; navigate B; resolve A success/error; edit/save B; repeat with account switch. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 123
+  },
+  "TC-10-02": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. A approved 10:00-12:00/B free; search overlap, adjacent and free periods. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 124
+  },
+  "TC-10-03": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. A capacity 100/B 50; filter attendance/capacity 50, 100, 101. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 125
+  },
+  "TC-10-04": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. A North/B South; search each then unknown location. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 126
+  },
+  "TC-10-05": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. A HEARING_LOOP+STEP_FREE_ACCESS/B STEP_FREE_ACCESS; filter separately and together. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 127
+  },
+  "TC-10-06": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. A THEATRE/STAGE, B CLASSROOM/PROJECTOR; apply individual then incompatible combinations. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 128
+  },
+  "TC-10-07": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. V changes A capacity/capabilities; C1 refreshes combined period/capacity/layout query. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 129
+  },
+  "TC-10-08": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Apply filters, change one, clear all; inspect result identifiers/links after each search. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 130
+  },
+  "TC-10-09": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. O1, A 1, signed-out open search/call search and filter-options; compare C1. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 131
+  },
+  "TC-10-11": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Delay queryA; launchB; resolveB thenA; inspect loading/results. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 133
+  },
+  "TC-10-12": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Fail facility/layout loading; use capacity filter; try 5000 capacity; compare empty catalogue fixture. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 134
+  },
+  "TC-11-02": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. C1 assesses E-A attendance 50/THEATRE/STAGE/STEP_FREE_ACCESS at free operating time against matching A and confirms interpretation. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 135
+  },
+  "TC-11-04": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. In separate fixtures omit required STAGE, STEP_FREE_ACCESS, THEATRE; assess confirmed requirements. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 137
+  },
+  "TC-11-05": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Assess A against overlapping approved booking, then operational block, then free period including relevant buffers. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 138
+  },
+  "TC-11-06": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Load context; change event attendance or venue capacity/availability elsewhere; assess old context then refresh/reconfirm. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 139
+  },
+  "TC-11-07": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. All other checks pass; assess confirmed attendance 0, then missing/unconfirmed, then real over-capacity. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 140
+  },
+  "TC-08-15": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. V saves A setup 30/turnaround 45; C1/O1 retry; compare B and direct API. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 141
+  },
+  "TC-08-18": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Save A 30/45; reload catalogue/detail and authorised planning/calendar inputs. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 144
+  },
+  "TC-08-19": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Two V sessions load A; first changes setup 30 then second sends old conflicting setup 45; separately race buffer update with unrelated location update. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 145
+  },
+  "TC-08-20": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Create adjacent future approved bookings; increase buffers to overlap; inspect warnings/bookings. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 146
+  },
+  "TC-14-01": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Event 10:00-12:00 with setup 30/turnaround 45; read calculated occupancy and advertised time. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 147
+  },
+  "TC-14-02": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Use same A/event in search/calendar/suitability/submission/approval with conflict only inside setup. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 148
+  },
+  "TC-14-03": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Compare Approved/Pending/Rejected/Cancelled rows; second occupied interval starts at first end then 1 min earlier. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 149
+  },
+  "TC-14-04": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. A hours 09:00-18:00, event 09:15, setup 30; block turnaround only; try unsupported cross-day window. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 150
+  },
+  "TC-14-06": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Increase buffers to conflict two future bookings/one operational block; include completed historical booking; inspect authorised warnings and attempt new overlap. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 152
+  },
+  "TC-14-07": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Set A 0/0 and compare original adjacency; check B unchanged; unauthorised users call warning/availability endpoints. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 153
+  },
+  "TC-05-01": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Through trusted setup provision L1 as EVENT_COORDINATOR_LEAD on the mapped app_users profile and sign in. 2. Open /lead and /lead/oversight. 3. As organiser O1 and ordinary coordinator C1 try the same URLs, role fields/headers and the Le Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 154
+  },
+  "TC-05-02": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. In an isolated project, or an agreed shared test window with original flags recorded, make all test coordinators unavailable. 2. O1 submits a complete E-new from /events/new or /events/:id/edit. 3. Reload as O1 and L1; inspect /lead, the Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 155
+  },
+  "TC-05-03": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Prepare separate Submitted/unassigned, assigned-active, Draft and closed fixtures. 2. As L1 then L2 open /lead, /lead/oversight and /lead/oversight/:id. 3. Attempt draft/closed detail URLs and shared review-detail, event-decision and pro Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 156
+  },
+  "TC-05-04": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. For separate unassigned fixtures in SUBMITTED, UNDER_REVIEW, CLARIFICATION_REQUESTED, APPROVED and CONFIRMED, use /lead/oversight/:id and explicitly select available C1. 2. Assign with an optional note, refresh, and inspect current coord Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 157
+  },
+  "TC-05-05": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Before and after L1 assigns E-new to C1, compare /reviews and /reviews/:id as C1 and unrelated C2. 2. As C2 open legacy /reviews/unassigned and attempt PUT /api/events/:id/coordinator on E-other. 3. As owner and C1 inspect the read-only  Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 158
+  },
+  "TC-05-07": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Record E-old current coordinator and AUTOMATIC assignment/history before the coordinated candidate deployment. 2. After migration 007 and the complete application deployment, read E-old as owner, assigned coordinator and Lead. 3. Submit  Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 160
+  },
+  "TC-05-08": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. L1 assigns C1 then reassigns to C2 through KAN-65. 2. Inspect owner/old/new/unrelated inboxes, current access and retained history. Do not treat initial-assignment automation as evidence for this case. Record the actual build, account al Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 161
+  },
+  "TC-05-09": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. On the same complete local candidate, apply migration 007 and make trusted Lead provisioning, submission policy, Lead pages and assignment API usable together. 2. O1 submits; L1 signs in and finds it at /lead, explicitly chooses C1 and a Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 162
+  },
+  "TC-05-10": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. L1 opens E-A assigned C1; choose available C2 with reason; save/refresh as owner/C2. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 163
+  },
+  "TC-05-11": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. C1 opens E-A; L1 hands to C2; C1 attempts read/write while C2 opens. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 164
+  },
+  "TC-05-12": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Reassign E-A with decisions/bookings; compare identity, data, history, assignments/notices. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 165
+  },
+  "TC-05-13": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Try handover as C1/C2/O1/L1; then L1 tries event approval. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 166
+  },
+  "TC-05-14": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. L1 reassigns each allowed active state to available C2; tries Draft/Rejected/Cancelled/Completed/unavailable/non-coordinator. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 167
+  },
+  "TC-05-16": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. L1 selects current assignee, retries prior handover; inspect owner/old/new inboxes/access. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 169
+  },
+  "TC-05-17": {
+    "original_level": "unit / integration",
+    "level": "unit; integration",
+    "reason": "Normalize the existing unit and integration levels; no change to specified boundaries or results.",
+    "source_line": 170
+  },
+  "TC-05-18": {
+    "original_level": "unit / integration",
+    "level": "unit; integration",
+    "reason": "Normalize the existing unit and integration levels; no change to specified boundaries or results.",
+    "source_line": 171
+  },
+  "TC-05-19": {
+    "original_level": "unit / integration / e2e",
+    "level": "unit; integration",
+    "reason": "The named automated rule/HTTP/database suites and Lead browser journey use isolated fixtures; lead-assignment.spec.ts intercepts all /api requests. Browser execution is frontend integration with substituted APIs, alongside unit and database integration, not live E2E.",
+    "source_line": 172
+  },
+  "TC-05-20": {
+    "original_level": "unit / integration",
+    "level": "unit; integration",
+    "reason": "Normalize the existing unit and integration levels; no change to specified boundaries or results.",
+    "source_line": 173
+  },
+  "TC-05-21": {
+    "original_level": "unit / integration / e2e",
+    "level": "unit; integration",
+    "reason": "The named automated rule/HTTP/database suites and Lead browser journey use isolated fixtures; lead-assignment.spec.ts intercepts all /api requests. Browser execution is frontend integration with substituted APIs, alongside unit and database integration, not live E2E.",
+    "source_line": 174
+  },
+  "TC-05-22": {
+    "original_level": "integration / e2e",
+    "level": "integration",
+    "reason": "The case combines an authenticated isolated database journey with a separate Lead browser fixture journey. lead-assignment.spec.ts substitutes /api responses, so neither separate run is a complete real-login browser-to-database E2E journey.",
+    "source_line": 175
+  },
+  "TC-05-25": {
+    "original_level": "e2e / integration",
+    "level": "integration",
+    "reason": "The case combines an authenticated isolated database journey with a separate Lead browser fixture journey. lead-assignment.spec.ts substitutes /api responses, so neither separate run is a complete real-login browser-to-database E2E journey.",
+    "source_line": 178
+  },
+  "TC-05-26": {
+    "original_level": "unit / e2e",
+    "level": "unit; integration",
+    "reason": "Deferred responses, synthetic sessions and injected 409/network outcomes exercise component tests and Lead browser/API fixtures. These are unit/component and frontend integration boundaries; no real provider/database journey is specified by the automated run.",
+    "source_line": 179
+  },
+  "TC-05-27": {
+    "original_level": "unit / e2e",
+    "level": "unit; integration",
+    "reason": "Deferred responses, synthetic sessions and injected 409/network outcomes exercise component tests and Lead browser/API fixtures. These are unit/component and frontend integration boundaries; no real provider/database journey is specified by the automated run.",
+    "source_line": 180
+  },
+  "TC-20-01": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. On separate fixtures submit, request clarification, reply, approve, reject; inspect recipients per S3-P07 and unrelated accounts. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 182
+  },
+  "TC-20-02": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Initially assign then reassign E-A; inspect owner/old/new/unrelated coordinator inboxes. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 183
+  },
+  "TC-20-03": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Record venue decisions, equipment reserve/shortfall, significant arrangement change; inspect relevant staff/coordinator. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 184
+  },
+  "TC-20-04": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Confirm ready E-A and cancel registered E-B; inspect owners/coordinators/attendees/affected staff. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 185
+  },
+  "TC-20-05": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. A 1 registers/withdraws; change permitted attendee-facing event data; inspect A 1, active attendees, managers. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 186
+  },
+  "TC-20-06": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Create similar-named E-A/E-B and their requests/registrations; generate notices then follow links. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 187
+  },
+  "TC-20-07": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. C1 reads own E-A notice; hand over to C2; C1 follows old protected link; C2 fetches C1 notification ID. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 188
+  },
+  "TC-20-09": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Recipient opens inbox, marks notice read, reloads; compare second user's inbox; email unconfigured. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 190
+  },
+  "TC-20-11": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. O1 submits and A 1 registers/withdraws; inspect acting-user inbox plus other recipients. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 192
+  },
+  "TC-19-01": {
+    "original_level": "manual",
+    "level": "integration; e2e",
+    "reason": "Preconditions explicitly allow isolated PostgreSQL automated execution and a local frontend/API with real sign-in for manual acceptance; the steps include the corresponding saved-state and user-facing workflow checks. Keep those distinct levels rather than the method label manual.",
+    "source_line": 193
+  },
+  "TC-19-02": {
+    "original_level": "manual",
+    "level": "integration; e2e",
+    "reason": "Preconditions explicitly allow isolated PostgreSQL automated execution and a local frontend/API with real sign-in for manual acceptance; the steps include the corresponding saved-state and user-facing workflow checks. Keep those distinct levels rather than the method label manual.",
+    "source_line": 194
+  },
+  "TC-19-03": {
+    "original_level": "manual",
+    "level": "integration; e2e",
+    "reason": "Preconditions explicitly allow isolated PostgreSQL automated execution and a local frontend/API with real sign-in for manual acceptance; the steps include the corresponding saved-state and user-facing workflow checks. Keep those distinct levels rather than the method label manual.",
+    "source_line": 195
+  },
+  "TC-19-04": {
+    "original_level": "manual",
+    "level": "integration; e2e",
+    "reason": "Preconditions explicitly allow isolated PostgreSQL automated execution and a local frontend/API with real sign-in for manual acceptance; the steps include the corresponding saved-state and user-facing workflow checks. Keep those distinct levels rather than the method label manual.",
+    "source_line": 196
+  },
+  "TC-19-05": {
+    "original_level": "manual",
+    "level": "integration",
+    "reason": "Direct request/permission/input matrix crosses the API, authorization and persistence boundary; the primary specified observation is the response and unchanged/saved records, not a complete browser journey. Manual describes how requests may be issued.",
+    "source_line": 197
+  },
+  "TC-19-06": {
+    "original_level": "manual",
+    "level": "integration; e2e",
+    "reason": "Preconditions explicitly allow isolated PostgreSQL automated execution and a local frontend/API with real sign-in for manual acceptance; the steps include the corresponding saved-state and user-facing workflow checks. Keep those distinct levels rather than the method label manual.",
+    "source_line": 198
+  },
+  "TC-19-07": {
+    "original_level": "manual",
+    "level": "integration",
+    "reason": "Direct request/permission/input matrix crosses the API, authorization and persistence boundary; the primary specified observation is the response and unchanged/saved records, not a complete browser journey. Manual describes how requests may be issued.",
+    "source_line": 199
+  },
+  "TC-06-19": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. User signs in to real mapped synthetic role accounts. 2. Organiser submits; Lead allocates; coordinator reviews/approves. 3. Assess buffered venue and equipment, request/approve/reserve arrangements, confirm. 4. Attendee registers/withdr Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 202
+  },
+  "TC-20-12": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. On distinct O1-owned requests submit, request clarification/amendment, approve and reject. Include an acknowledgement where O1 performs submission; inspect O1, Lead and assigned-coordinator inboxes as applicable. Repeat as O2 and attempt Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 203
+  },
+  "TC-20-13": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. L1 assigns an unassigned request to C1 then reassigns it to C2. Inspect O1/C1/C2 and an unrelated coordinator before and after refresh; retry the same unchanged assignment and follow C1 old event link. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 204
+  },
+  "TC-20-14": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. For E-A at venue A and E-B at venue B, approve one request and reject another as relevant Venue Staff. Inspect owner/current coordinator/relevant Venue Staff and unrelated users; submit a forbidden or already-decided outcome. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 205
+  },
+  "TC-20-15": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Open an empty inbox; generate two real outcomes; mark one notice read and refresh, then unread and refresh. Sign out, try the inbox API, and sign in as another account. Disable email configuration. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 206
+  },
+  "TC-20-16": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Use two similarly named events with separate request and venue-booking IDs; create outcomes and follow each notice. Include a deleted/unavailable or no-longer-authorised target and inspect the displayed outcome/action. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 207
+  },
+  "TC-20-20": {
+    "original_level": "regression",
+    "level": "static analysis",
+    "reason": "The primary specified task maps original notification clauses, dependent change stories and estimates. Regression is a purpose, not a level; runtime trigger checks referenced by this traceability audit keep their own case-level integration/E2E evidence.",
+    "source_line": 211
+  },
+  "TC-20-22": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. O1 submits a permitted significant change, coordinator requests action and records separate approve/reject outcomes. Use an attendee-relevant accepted change and unrelated/withdrawn attendee fixtures; refresh all inboxes. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 213
+  },
+  "TC-20-25": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Create similarly named E-A/E-B with different equipment, significant-change and registration IDs; generate each later-workflow notice and follow it. Include a stale or forbidden target. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 216
+  },
+  "TC-20-28": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Use each added trigger with email disabled. Open the same KAN-64 inbox, toggle read/unread and reload; make the actor an intended recipient and overlap recipient roles. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 219
+  },
+  "TC-20-29": {
+    "original_level": "regression",
+    "level": "static analysis; integration",
+    "reason": "Documentation mapping/estimate inspection plus the explicitly specified original notification trigger matrix against collaborating services/database. Regression is the purpose; no result is inferred from tracing the links.",
+    "source_line": 220
+  },
+  "TC-09-02": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Approve a venue A booking, then as V create an overlapping operational outage. Compare with an adjacent outage and attempt the overlapping write as O1; reload the event and calendar. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 222
+  },
+  "TC-09-07": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. For affected APPROVED and CONFIRMED fixtures, C1 searches and requests venue B replacement. Try unsuitable capacity, buffered conflict, outage and wrong coordinator before a valid request; reload. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 227
+  },
+  "TC-09-12": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Open unaffected, recovery-required and resolved arrangements. Submit a replacement while another tab changes state; simulate failed transport and an uncertain response after server commit, then use refresh. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 232
+  },
+  "TC-12-01": {
+    "original_level": "manual",
+    "level": "integration; e2e",
+    "reason": "Preconditions explicitly allow isolated PostgreSQL automated execution and a local frontend/API with real sign-in for manual acceptance; the steps include the corresponding saved-state and user-facing workflow checks. Keep those distinct levels rather than the method label manual.",
+    "source_line": 233
+  },
+  "TC-12-04": {
+    "original_level": "manual",
+    "level": "integration; e2e",
+    "reason": "Preconditions explicitly allow isolated PostgreSQL automated execution and a local frontend/API with real sign-in for manual acceptance; the steps include the corresponding saved-state and user-facing workflow checks. Keep those distinct levels rather than the method label manual.",
+    "source_line": 236
+  },
+  "TC-12-05": {
+    "original_level": "manual",
+    "level": "integration; e2e",
+    "reason": "Preconditions explicitly allow isolated PostgreSQL automated execution and a local frontend/API with real sign-in for manual acceptance; the steps include the corresponding saved-state and user-facing workflow checks. Keep those distinct levels rather than the method label manual.",
+    "source_line": 237
+  },
+  "TC-12-08": {
+    "original_level": "manual",
+    "level": "integration; e2e",
+    "reason": "Preconditions explicitly allow isolated PostgreSQL automated execution and a local frontend/API with real sign-in for manual acceptance; the steps include the corresponding saved-state and user-facing workflow checks. Keep those distinct levels rather than the method label manual.",
+    "source_line": 240
+  },
+  "TC-12-12": {
+    "original_level": "manual",
+    "level": "integration; e2e",
+    "reason": "Preconditions explicitly allow isolated PostgreSQL automated execution and a local frontend/API with real sign-in for manual acceptance; the steps include the corresponding saved-state and user-facing workflow checks. Keep those distinct levels rather than the method label manual.",
+    "source_line": 244
+  },
+  "TC-12-14": {
+    "original_level": "unit / e2e",
+    "level": "unit; e2e",
+    "reason": "The case expressly provides isolated component/API stubs for automated checks and a separate real-login local application acceptance path. Normalize the two levels without treating either variant as evidence for the other.",
+    "source_line": 246
+  },
+  "TC-14-09": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Create ordinary pending requests for A/B, hold only A and refresh. Inspect creator/time/event/venue/request linkage; compare approved and expired fixtures. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 248
+  },
+  "TC-14-14": {
+    "original_level": "manual",
+    "level": "integration; e2e",
+    "reason": "Combines a user-visible workflow/reload check with controlled expiry, clock advancement or rollback testing. Isolated collaborating-component/database checks are integration; real authenticated whole-application observations are E2E, with separate execution evidence.",
+    "source_line": 253
+  },
+  "TC-14-18": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. C1 views a live then expired hold, attempts local deadline extension/renewal, then creates a fresh request through normal checks. Compare original expired record and new request. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 257
+  },
+  "TC-14-19": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Use wrong-role and old/unassigned coordinator clients against detail/create/approve. Keep a countdown tab open across expiry; inject network failure/uncertain approval response and refresh. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 258
+  },
+  "TC-06-22": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Open a ready event with attendance, capacities/layouts, emergency access, accessibility, equipment placement, crowd movement and restrictions. Remove selected information and inspect advisory suitability vs safety outcome. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 261
+  },
+  "TC-06-24": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Approve a current round and inspect safety status; reject another event then inspect its bookings/equipment/registrations and submit a changed revision for a new round. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 263
+  },
+  "TC-06-25": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Request venue-only, technical-only and both changes on separate fixtures. Inspect coordinator and relevant staff tasks plus unrelated arrangements/history. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 264
+  },
+  "TC-06-30": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Submit review, then each outcome; inspect Safety Officer queue, current coordinator and venue/technical recipients for selected remedies. Reassign event before outcome and try owner decision API. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 269
+  },
+  "TC-06-31": {
+    "original_level": "manual",
+    "level": "integration; e2e",
+    "reason": "Combines a user-visible workflow/reload check with controlled expiry, clock advancement or rollback testing. Isolated collaborating-component/database checks are integration; real authenticated whole-application observations are E2E, with separate execution evidence.",
+    "source_line": 270
+  },
+  "TC-02-09": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As O1 prepare separate owned drafts with otherwise valid mandatory data and optional None/Not Required values. 2. Omit the event date, then expected attendance, separately in the new-request and saved-draft detail submission paths; submi Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 273
+  },
+  "TC-03-06": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As O1 open an owned saved draft from the request list and open a separate new-request form. 2. On each form change registration No to Yes; compare displayed capacity/date controls. 3. Enter a closing time not after the opening time and a Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 274
+  },
+  "TC-01-201": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Open /login; sign in with a provisioned organiser test account; open /api/auth/me in the same browser and then /events. Record the observed response/screenshot; restore any changed pre-existing fixture values and list new fixtures for ag Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 275
+  },
+  "TC-01-202": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Sign out; open /events and /reviews directly; send GET /api/events?scope=all and GET /api/events/<known-test-request-id> through the same origin. Record the observed response/screenshot; restore any changed pre-existing fixture values an Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 276
+  },
+  "TC-01-203": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Provision mapped synthetic accounts for Event Organiser, Event Coordinator, Venue Staff, Technical Support Staff and Attendee; sign in as each separately and GET /api/auth/me; compare each response with the authorised app_users role. Rec Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 277
+  },
+  "TC-01-204": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Sign in as O1 and open /events/new, then /reviews and /venue-catalogue; sign in as coordinator C1 and open /reviews, then try POST /api/events with name S1R Forbidden; inspect the returned status and created records. Record the observed  Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 278
+  },
+  "TC-01-205": {
+    "original_level": "manual",
+    "level": "integration",
+    "reason": "The substantive assertion is a direct GET/PATCH/POST authorization or state check followed by persisted-record inspection. Preparing a fixture or using browser developer tools to issue it does not make the API check E2E.",
+    "source_line": 279
+  },
+  "TC-01-206": {
+    "original_level": "manual",
+    "level": "integration",
+    "reason": "The substantive assertion is a direct GET/PATCH/POST authorization or state check followed by persisted-record inspection. Preparing a fixture or using browser developer tools to issue it does not make the API check E2E.",
+    "source_line": 280
+  },
+  "TC-01-207": {
+    "original_level": "manual",
+    "level": "integration",
+    "reason": "The substantive assertion is a direct GET/PATCH/POST authorization or state check followed by persisted-record inspection. Preparing a fixture or using browser developer tools to issue it does not make the API check E2E.",
+    "source_line": 281
+  },
+  "TC-02-201": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As O1 open /events/new; verify an editable blank request form is shown and begin entering a name. Record the observed response/screenshot; restore any changed pre-existing fixture values and list new fixtures for agreed cleanup. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 282
+  },
+  "TC-02-202": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As O1 open /events/new; enter S1R New Request in Event name; inspect the current form values and, when saving this test draft, the POST /api/events payload for name. Record the observed response/screenshot; restore any changed pre-existi Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 283
+  },
+  "TC-02-203": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As O1 open /events/new; enter Community workshop and Beginner session in Purpose and Description; inspect the current form values and, when saving this test draft, the POST /api/events payload for purpose and description. Record the obse Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 284
+  },
+  "TC-02-204": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As O1 open /events/new; enter 30 days ahead at 10:00 and 12:00 Singapore time in Starts and Ends; inspect the current form values and, when saving this test draft, the POST /api/events payload for startsAt and endsAt. Record the observed Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 285
+  },
+  "TC-02-205": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As O1 open /events/new; enter 50 in Expected attendance; inspect the current form values and, when saving this test draft, the POST /api/events payload for expectedAttendance. Record the observed response/screenshot; restore any changed  Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 286
+  },
+  "TC-02-206": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As O1 open /events/new; enter Seated room with projector in Venue requirements; inspect the current form values and, when saving this test draft, the POST /api/events payload for venueRequirements. Record the observed response/screenshot Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 287
+  },
+  "TC-02-207": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As O1 open /events/new; enter Step-free access in Accessibility needs; inspect the current form values and, when saving this test draft, the POST /api/events payload for accessibilityNeeds. Record the observed response/screenshot; restor Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 288
+  },
+  "TC-02-208": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As O1 open /events/new; enter Projector in Equipment requirements; inspect the current form values and, when saving this test draft, the POST /api/events payload for equipmentRequirements. Record the observed response/screenshot; restore Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 289
+  },
+  "TC-02-209": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As O1 open /events/new; enter Yes; capacity 50; opening 20 days ahead at 09:00 and closing 29 days ahead at 18:00 Singapore time in Registration required; inspect the current form values and, when saving this test draft, the POST /api/ev Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 290
+  },
+  "TC-02-210": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As O1 create and save S1R First and S1R Second through /events/new; record both returned IDs; open /events and each detail page. Record the observed response/screenshot; restore any changed pre-existing fixture values and list new fixtur Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 291
+  },
+  "TC-02-211": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As organiser O1, save a synthetic draft named S1R Workshop with purpose Community workshop, description Beginner session, attendance 50, venue requirements Seated room with projector, accessibility Step-free access, equipment Projector a Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 292
+  },
+  "TC-02-212": {
+    "original_level": "manual",
+    "level": "integration",
+    "reason": "The substantive assertion is a direct GET/PATCH/POST authorization or state check followed by persisted-record inspection. Preparing a fixture or using browser developer tools to issue it does not make the API check E2E.",
+    "source_line": 293
+  },
+  "TC-03-201": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As O1 open /events/new; enter only name S1R Incomplete, leaving purpose, dates, attendance and venue requirements empty; choose Save draft and note the returned ID. Record the observed response/screenshot; restore any changed pre-existin Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 294
+  },
+  "TC-03-202": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As organiser O1, save a synthetic draft named S1R Workshop with purpose Community workshop, description Beginner session, attendance 50, venue requirements Seated room with projector, accessibility Step-free access, equipment Projector a Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 295
+  },
+  "TC-03-203": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As organiser O1, save a synthetic draft named S1R Workshop with purpose Community workshop, description Beginner session, attendance 50, venue requirements Seated room with projector, accessibility Step-free access, equipment Projector a Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 296
+  },
+  "TC-03-204": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As organiser O1, save a synthetic draft named S1R Workshop with purpose Community workshop, description Beginner session, attendance 50, venue requirements Seated room with projector, accessibility Step-free access, equipment Projector a Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 297
+  },
+  "TC-03-205": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As organiser O1, save a synthetic draft named S1R Workshop with purpose Community workshop, description Beginner session, attendance 50, venue requirements Seated room with projector, accessibility Step-free access, equipment Projector a Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 298
+  },
+  "TC-03-206": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As organiser O1, save a synthetic draft named S1R Workshop with purpose Community workshop, description Beginner session, attendance 50, venue requirements Seated room with projector, accessibility Step-free access, equipment Projector a Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 299
+  },
+  "TC-03-207": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As organiser O1, save a synthetic draft named S1R Workshop with purpose Community workshop, description Beginner session, attendance 50, venue requirements Seated room with projector, accessibility Step-free access, equipment Projector a Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 300
+  },
+  "TC-03-208": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As organiser O1, save a synthetic draft named S1R Workshop with purpose Community workshop, description Beginner session, attendance 50, venue requirements Seated room with projector, accessibility Step-free access, equipment Projector a Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 301
+  },
+  "TC-03-209": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As organiser O1, save a synthetic draft named S1R Workshop with purpose Community workshop, description Beginner session, attendance 50, venue requirements Seated room with projector, accessibility Step-free access, equipment Projector a Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 302
+  },
+  "TC-03-210": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As organiser O1, save a synthetic draft named S1R Workshop with purpose Community workshop, description Beginner session, attendance 50, venue requirements Seated room with projector, accessibility Step-free access, equipment Projector a Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 303
+  },
+  "TC-03-211": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As organiser O1, save a synthetic draft named S1R Workshop with purpose Community workshop, description Beginner session, attendance 50, venue requirements Seated room with projector, accessibility Step-free access, equipment Projector a Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 304
+  },
+  "TC-03-212": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As organiser O1, save a synthetic draft named S1R Workshop with purpose Community workshop, description Beginner session, attendance 50, venue requirements Seated room with projector, accessibility Step-free access, equipment Projector a Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 305
+  },
+  "TC-03-213": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As organiser O1, save a synthetic draft named S1R Workshop with purpose Community workshop, description Beginner session, attendance 50, venue requirements Seated room with projector, accessibility Step-free access, equipment Projector a Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 306
+  },
+  "TC-03-214": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As organiser O1, save a synthetic draft named S1R Workshop with purpose Community workshop, description Beginner session, attendance 50, venue requirements Seated room with projector, accessibility Step-free access, equipment Projector a Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 307
+  },
+  "TC-03-215": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As organiser O1, save a synthetic draft named S1R Workshop with purpose Community workshop, description Beginner session, attendance 50, venue requirements Seated room with projector, accessibility Step-free access, equipment Projector a Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 308
+  },
+  "TC-03-216": {
+    "original_level": "manual",
+    "level": "integration",
+    "reason": "The substantive assertion is a direct GET/PATCH/POST authorization or state check followed by persisted-record inspection. Preparing a fixture or using browser developer tools to issue it does not make the API check E2E.",
+    "source_line": 309
+  },
+  "TC-02-213": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As organiser O1, save a synthetic draft named S1R Workshop with purpose Community workshop, description Beginner session, attendance 50, venue requirements Seated room with projector, accessibility Step-free access, equipment Projector a Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 310
+  },
+  "TC-02-214": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As organiser O1, save a synthetic draft named S1R Workshop with purpose Community workshop, description Beginner session, attendance 50, venue requirements Seated room with projector, accessibility Step-free access, equipment Projector a Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 311
+  },
+  "TC-02-215": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As O1 save S1R Invalid with no event date or expected attendance; submit it from the saved-draft UI and inspect the field messages and API response. Record the observed response/screenshot; restore any changed pre-existing fixture values Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 312
+  },
+  "TC-02-216": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As organiser O1, save a synthetic draft named S1R Workshop with purpose Community workshop, description Beginner session, attendance 50, venue requirements Seated room with projector, accessibility Step-free access, equipment Projector a Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 313
+  },
+  "TC-02-217": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As organiser O1, save a synthetic draft named S1R Workshop with purpose Community workshop, description Beginner session, attendance 50, venue requirements Seated room with projector, accessibility Step-free access, equipment Projector a Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 314
+  },
+  "TC-02-218": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As organiser O1, save a synthetic draft named S1R Workshop with purpose Community workshop, description Beginner session, attendance 50, venue requirements Seated room with projector, accessibility Step-free access, equipment Projector a Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 315
+  },
+  "TC-02-219": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As organiser O1, save a synthetic draft named S1R Workshop with purpose Community workshop, description Beginner session, attendance 50, venue requirements Seated room with projector, accessibility Step-free access, equipment Projector a Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 316
+  },
+  "TC-02-220": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As O1 save an incomplete draft missing date and attendance; record its status/data. POST /api/events/<id>/submit with {}; retrieve it and inspect the coordinator queue. Record the observed response/screenshot; restore any changed pre-exi Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 317
+  },
+  "TC-04-201": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Record its ID and saved values. Also have a Submitted request assigned to C2. As C1 open /reviews and inspect GET /api/events. Record the observed response/screenshot; restore any changed pre-existing fixture values and list new fixtures Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 318
+  },
+  "TC-04-202": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Record its ID and saved values. As C1 open /reviews and select the recorded request. Record the observed response/screenshot; restore any changed pre-existing fixture values and list new fixtures for agreed cleanup. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 319
+  },
+  "TC-04-203": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Record its ID and saved values. Populate all name, purpose, description, start/end, attendance, venue requirements, accessibility needs, equipment requirements and registration choice/settings with distinguishable synthetic values; as C1 Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 320
+  },
+  "TC-04-204": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Record its ID and saved values. Have a separate O1-owned Draft with a distinct ID; as C1 inspect /reviews and the submitted detail. Record the observed response/screenshot; restore any changed pre-existing fixture values and list new fix Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 321
+  },
+  "TC-04-205": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Record the observed response/screenshot; restore any changed pre-existing fixture values and list new fixtures for agreed cleanup. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 322
+  },
+  "TC-04-206": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Record its ID and saved values. Record the saved event fields; refresh /reviews/<id> as C1 and compare the response and displayed values against that record. Record the observed response/screenshot; restore any changed pre-existing fixtu Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 323
+  },
+  "TC-04-207": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Record its ID and saved values. As O2 and C2 separately GET /api/events/<id> and open /reviews/<id>; repeat signed out. Record the observed response/screenshot; restore any changed pre-existing fixture values and list new fixtures for ag Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 324
+  },
+  "TC-04-208": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Record its ID and saved values. As C1 open /reviews/<id>, select Approve and confirm; record the response. Record the observed response/screenshot; restore any changed pre-existing fixture values and list new fixtures for agreed cleanup. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 325
+  },
+  "TC-04-209": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Record its ID and saved values. As C1 open /reviews/<id>, enter reason S1R Requirements cannot be met, select Reject and confirm. Record the observed response/screenshot; restore any changed pre-existing fixture values and list new fixtu Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 326
+  },
+  "TC-04-210": {
+    "original_level": "manual",
+    "level": "integration",
+    "reason": "The substantive assertion is a direct GET/PATCH/POST authorization or state check followed by persisted-record inspection. Preparing a fixture or using browser developer tools to issue it does not make the API check E2E.",
+    "source_line": 327
+  },
+  "TC-04-211": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Record its ID and saved values. Have a second distinct submitted request; approve the first as C1, then inspect the authorised review data for both IDs. Record the observed response/screenshot; restore any changed pre-existing fixture va Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 328
+  },
+  "TC-04-212": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Record its ID and saved values. Approve as C1; refresh /reviews/<id> and GET /api/events/<id>. Record the observed response/screenshot; restore any changed pre-existing fixture values and list new fixtures for agreed cleanup. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 329
+  },
+  "TC-04-213": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Record its ID and saved values. Have a second distinct submitted request; reject the first as C1 with reason S1R Requirements cannot be met; inspect review data for both IDs. Record the observed response/screenshot; restore any changed p Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 330
+  },
+  "TC-04-214": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Record its ID and saved values. Reject as C1 with reason S1R Requirements cannot be met; refresh /reviews/<id> and GET /api/events/<id>. Record the observed response/screenshot; restore any changed pre-existing fixture values and list ne Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 331
+  },
+  "TC-04-215": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Record the observed response/screenshot; restore any changed pre-existing fixture values and list new fixtures for agreed cleanup. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 332
+  },
+  "TC-04-216": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Record the observed response/screenshot; restore any changed pre-existing fixture values and list new fixtures for agreed cleanup. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 333
+  },
+  "TC-04-217": {
+    "original_level": "manual",
+    "level": "integration",
+    "reason": "The substantive assertion is a direct GET/PATCH/POST authorization or state check followed by persisted-record inspection. Preparing a fixture or using browser developer tools to issue it does not make the API check E2E.",
+    "source_line": 334
+  },
+  "TC-06-201": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As organiser O1, save a synthetic draft named S1R Workshop with purpose Community workshop, description Beginner session, attendance 50, venue requirements Seated room with projector, accessibility Step-free access, equipment Projector a Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 335
+  },
+  "TC-06-202": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As organiser O1, save a synthetic draft named S1R Workshop with purpose Community workshop, description Beginner session, attendance 50, venue requirements Seated room with projector, accessibility Step-free access, equipment Projector a Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 336
+  },
+  "TC-06-203": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Record its ID and saved values. As O1 open the list and /events/<id> before any review action; refresh. Record the observed response/screenshot; restore any changed pre-existing fixture values and list new fixtures for agreed cleanup. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 337
+  },
+  "TC-06-204": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Record its ID and saved values. As C1 request clarification with message Please clarify accessible seating; as O1 open /events and /events/<id>, then refresh. Record the observed response/screenshot; restore any changed pre-existing fixt Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 338
+  },
+  "TC-06-205": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Record its ID and saved values. Approve as C1; as O1 open /events and /events/<id>, then refresh. Record the observed response/screenshot; restore any changed pre-existing fixture values and list new fixtures for agreed cleanup. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 339
+  },
+  "TC-06-206": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Record its ID and saved values. Reject as C1 with reason S1R Requirements cannot be met; as O1 open /events and /events/<id>, then refresh. Record the observed response/screenshot; restore any changed pre-existing fixture values and list Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 340
+  },
+  "TC-06-207": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As O1 open each detail and refresh. Record the observed response/screenshot; restore any changed pre-existing fixture values and list new fixtures for agreed cleanup. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 341
+  },
+  "TC-06-208": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Record its ID and saved values. Open the detail as O1; in a separate C1 session approve the request; return to O1 and use Refresh, then reload the page. Record the observed response/screenshot; restore any changed pre-existing fixture va Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 342
+  },
+  "TC-06-209": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As O2 inspect /events and GET /api/events/<O1-id>, then open /events/<O1-id>. Record the observed response/screenshot; restore any changed pre-existing fixture values and list new fixtures for agreed cleanup. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 343
+  },
+  "TC-04-218": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Record its ID and saved values. As C1 open /reviews/<id> and send Please clarify accessible seating through the clarification controls. Record the observed response/screenshot; restore any changed pre-existing fixture values and list new Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 344
+  },
+  "TC-04-219": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Record its ID and saved values. As C1 inspect the event details, then enter Please clarify accessible seating and identify that requirement in the clarification message. Record the observed response/screenshot; restore any changed pre-ex Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 345
+  },
+  "TC-04-220": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Record its ID and saved values. As C1 enter Please provide the number of wheelchair spaces required in the clarification control and send it. Record the observed response/screenshot; restore any changed pre-existing fixture values and li Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 346
+  },
+  "TC-04-221": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Record its ID and saved values. As C1 send the clarification form; inspect POST /api/events/<id>/clarifications and then GET the same clarification collection. Record the observed response/screenshot; restore any changed pre-existing fix Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 347
+  },
+  "TC-04-222": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Record its ID and saved values. As C1 open /reviews/<id>; enter Please clarify accessible seating in the clarification message field and send it. Have a second distinct submitted request; GET /api/events/<id>/clarifications for both even Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 348
+  },
+  "TC-04-223": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Record its ID and saved values. As C1 open /reviews/<id>; enter Please clarify accessible seating in the clarification message field and send it. As O1 open /events and /events/<id>, then refresh the detail. Record the observed response/ Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 349
+  },
+  "TC-04-224": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Record its ID and saved values. As C1 open /reviews/<id>; enter Please clarify accessible seating in the clarification message field and send it. As O1 open /events/<id> and its clarification panel, then refresh. Record the observed resp Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 350
+  },
+  "TC-04-225": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Record its ID and saved values. As C1 open /reviews/<id>; enter Please clarify accessible seating in the clarification message field and send it. As O1 and then C1 refresh the authorised detail and GET /api/events/<id>. Record the observ Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 351
+  },
+  "TC-04-226": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Record its ID and saved values. Record status and review count. As C1 request Please clarify accessible seating; inspect current status and saved review records. Record the observed response/screenshot; restore any changed pre-existing f Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 352
+  },
+  "TC-04-227": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Record its ID and saved values. Record status and review count. As C1 request Please clarify accessible seating; inspect current status and saved review records. Record the observed response/screenshot; restore any changed pre-existing f Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 353
+  },
+  "TC-DB-201": {
+    "original_level": "manual",
+    "level": "integration",
+    "reason": "Installs/migrates a database and starts the API to check readiness/connection: application-to-database setup integration, not a user browser journey.",
+    "source_line": 354
+  },
+  "TC-DB-203": {
+    "original_level": "manual",
+    "level": "static analysis",
+    "reason": "Inspects dashboard configuration/grants or compares schema/migration/diagram definitions. This is configuration/design inspection without executing a product workflow.",
+    "source_line": 356
+  },
+  "TC-DB-205": {
+    "original_level": "manual",
+    "level": "static analysis",
+    "reason": "Inspects dashboard configuration/grants or compares schema/migration/diagram definitions. This is configuration/design inspection without executing a product workflow.",
+    "source_line": 358
+  },
+  "TC-02-221": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As O1 enter S1R Retry and purpose Community workshop on /events/new; use browser request blocking or a controlled test server to make POST /api/events fail; choose Save draft; restore connectivity and retry. Record the observed response/ Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 360
+  },
+  "TC-03-217": {
+    "original_level": "manual",
+    "level": "integration",
+    "reason": "The substantive assertion is a direct GET/PATCH/POST authorization or state check followed by persisted-record inspection. Preparing a fixture or using browser developer tools to issue it does not make the API check E2E.",
+    "source_line": 361
+  },
+  "TC-02-222": {
+    "original_level": "manual",
+    "level": "integration",
+    "reason": "The substantive assertion is a direct GET/PATCH/POST authorization or state check followed by persisted-record inspection. Preparing a fixture or using browser developer tools to issue it does not make the API check E2E.",
+    "source_line": 362
+  },
+  "TC-02-223": {
+    "original_level": "manual",
+    "level": "integration",
+    "reason": "The scenario races/repeats persisted operations or injects a database failure and verifies atomicity, records, capacity or notices. This needs the isolated collaborating API/database boundary rather than a browser-only or pure unit classification.",
+    "source_line": 363
+  },
+  "TC-04-228": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Use an isolated coordinator fixture with no reviewable assigned requests; open /reviews and GET /api/events. Record the observed response/screenshot; restore any changed pre-existing fixture values and list new fixtures for agreed cleanu Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 364
+  },
+  "TC-04-229": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As C1 GET /api/events/not-a-uuid and open the matching review detail URL; inspect the API error. Record the observed response/screenshot; restore any changed pre-existing fixture values and list new fixtures for agreed cleanup. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 365
+  },
+  "TC-04-230": {
+    "original_level": "manual",
+    "level": "integration",
+    "reason": "The substantive assertion is a direct GET/PATCH/POST authorization or state check followed by persisted-record inspection. Preparing a fixture or using browser developer tools to issue it does not make the API check E2E.",
+    "source_line": 366
+  },
+  "TC-04-231": {
+    "original_level": "manual",
+    "level": "integration",
+    "reason": "The substantive assertion is a direct GET/PATCH/POST authorization or state check followed by persisted-record inspection. Preparing a fixture or using browser developer tools to issue it does not make the API check E2E.",
+    "source_line": 367
+  },
+  "TC-05-201": {
+    "original_level": "manual / integration",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Give C1 one active event and C2 two; both are available. Keep E2 unchanged as a control. 2. As O1 submit a complete draft E1. 3. Reload E1 and inspect its coordinator association, assignment records and review records. 4. In separate res Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 368
+  },
+  "TC-05-202": {
+    "original_level": "manual / integration",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Submit O1’s E1 and record the automatically chosen coordinator. 2. Sign in as that coordinator. 3. Find E1 in the review list, open it and reload the page. Restore the synthetic fixtures afterwards and record actual results separately; t Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 369
+  },
+  "TC-05-203": {
+    "original_level": "manual / integration",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Start with E1 assigned to C1. 2. Reload organiser and coordinator views, change an allowed non-assignment field and reload again. 3. Inspect E1’s coordinator ID and assignment records. Restore the synthetic fixtures afterwards and record Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 370
+  },
+  "TC-08-201": {
+    "original_level": "manual / integration",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Give A/B different names, locations, capacities, facilities, accessibility, layouts and operating hours. 2. As V1 open the catalogue and A’s details. 3. Open B and refresh. Restore the synthetic fixtures afterwards and record actual resu Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 371
+  },
+  "TC-08-202": {
+    "original_level": "manual / integration",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Record A and B. 2. As V1 change only A’s location to Level 2 and capacity to 120; save. 3. Leave the page, reopen A and refresh; inspect B. Restore the synthetic fixtures afterwards and record actual results separately; this specificatio Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 372
+  },
+  "TC-08-203": {
+    "original_level": "manual / integration",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As V1 set A facilities to STAGE/PROJECTOR, accessibility to STEP_FREE/HEARING_LOOP and layouts to THEATRE/CLASSROOM. Keep B’s values distinct. 2. Save, leave and reopen A/B. 3. Remove one value from each A list, save and reopen. Restore  Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 373
+  },
+  "TC-08-204": {
+    "original_level": "manual / integration",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. A opens 09:00 and closes 18:00. 2. As V1 change only close to 08:00, then 09:00; attempt each save. 3. Change close to 19:00 and save. 4. Clear one endpoint, save and reopen. Restore the synthetic fixtures afterwards and record actual re Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 374
+  },
+  "TC-08-205": {
+    "original_level": "manual / integration",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Give A an existing booking; record its event, venue, period, layout and status. 2. As V1 change A capacity from 100 to 50 and remove CLASSROOM. 3. As C1 perform a new search and suitability assessment requiring 80 attendees/CLASSROOM; in Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 375
+  },
+  "TC-08-206": {
+    "original_level": "manual / integration",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Record A. 2. As organiser, coordinator and signed-out user attempt a catalogue update through UI and API. 3. As V1 submit an empty update and updates containing name, description, active status or identifiers. Restore the synthetic fixtu Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 376
+  },
+  "TC-08-207": {
+    "original_level": "manual / integration",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As V1 save facilities/layout/accessibility values with outer spaces and case-only duplicates. 2. Test a 100-character and 101-character entry; 30 and 31 distinct entries. 3. Test capacity 1, 0 and 1.5 and reopen after each attempt. Resto Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 377
+  },
+  "TC-08-209": {
+    "original_level": "manual / integration",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. In an isolated fixture V1 opens A’s edit page. 2. Make A inactive, attempt save and inspect data. 3. Repeat with a missing A ID; leave B as a control. Restore the synthetic fixtures afterwards and record actual results separately; this s Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 379
+  },
+  "TC-08-210": {
+    "original_level": "manual / integration",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As V1 edit only A’s location and inspect the save payload. 2. In an isolated test make the save fail. 3. Inspect the form, correct the failure and retry. Restore the synthetic fixtures afterwards and record actual results separately; thi Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 380
+  },
+  "TC-09-201": {
+    "original_level": "manual / integration",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Give A a booking 10:00–12:00 and B a distinct free period. 2. As C1, V1 and T1 separately open availability, choose A/B and change date/time range. 3. Compare each view with its fixture records. Restore the synthetic fixtures afterwards  Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 381
+  },
+  "TC-09-202": {
+    "original_level": "manual / integration",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Give A an approved booking 10:00–12:00 and a maintenance block 14:00–15:00. 2. View A’s calendar as C1. 3. Inspect occupied periods and the otherwise free 12:00–14:00 period, then refresh. Restore the synthetic fixtures afterwards and re Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 382
+  },
+  "TC-09-203": {
+    "original_level": "manual / integration",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As O1 and a signed-out user attempt to open the calendar directly. 2. Call its availability API for A over 09:00–17:00. 3. Compare with an authorised C1 request. Restore the synthetic fixtures afterwards and record actual results separat Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 383
+  },
+  "TC-10-201": {
+    "original_level": "manual / integration",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Give A a confirmed booking 10:00–12:00, B a block 14:00–15:00 and otherwise matching catalogue values. 2. As C1 search 10:30–11:30, 14:00–15:00 and 12:00–14:00. 3. Inspect venue IDs in each result. Restore the synthetic fixtures afterwar Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 384
+  },
+  "TC-10-202": {
+    "original_level": "manual / integration",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Set A capacity 100 and B capacity 50 with other criteria matching. 2. As C1 search with attendance/capacity requirements of 50, 100 and 101. 3. Compare returned venue IDs. Restore the synthetic fixtures afterwards and record actual resul Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 385
+  },
+  "TC-10-203": {
+    "original_level": "manual / integration",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. A is North, STEP_FREE+HEARING_LOOP, THEATRE and STAGE; B is South, STEP_FREE, CLASSROOM and PROJECTOR. 2. As C1 apply each individual filter, then combine North+HEARING_LOOP+THEATRE+STAGE. 3. Select an incompatible combination. Restore t Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 386
+  },
+  "TC-10-204": {
+    "original_level": "manual / integration",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Search for capacity 100, THEATRE and STAGE when A matches. 2. As V1 reduce A capacity to 50 and remove STAGE. 3. As C1 run the same search again and compare catalogue data. Restore the synthetic fixtures afterwards and record actual resu Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 387
+  },
+  "TC-10-205": {
+    "original_level": "manual / integration",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As C1 search A’s location, then change to B’s location. 2. Clear filters and search again. 3. Open each result link and compare its ID/name/location with the result row. Restore the synthetic fixtures afterwards and record actual results Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 388
+  },
+  "TC-10-206": {
+    "original_level": "manual / integration",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As O1 and a signed-out user attempt the search page, search API and filter-option API. 2. Repeat as C1. Restore the synthetic fixtures afterwards and record actual results separately; this specification is not a completed run. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 389
+  },
+  "TC-10-207": {
+    "original_level": "manual / e2e",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As C1 open search with network inspection enabled. 2. Enter only start, only end, equal start/end, then reversed start/end; attempt Search each time. 3. Correct to 10:00–12:00 and retry. Restore the synthetic fixtures afterwards and reco Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 390
+  },
+  "TC-10-208": {
+    "original_level": "e2e",
+    "level": "integration",
+    "reason": "Steps explicitly delay and resolve responses in an isolated browser test; venue-search.spec.ts supplies API responses through page.route/route.fulfill. This exercises frontend integration under response ordering, not live E2E.",
+    "source_line": 391
+  },
+  "TC-10-209": {
+    "original_level": "manual / e2e",
+    "level": "unit; integration",
+    "reason": "The scenario injects filter-option loading failure and empty/no-match fixture data. Existing component/browser test paths use controlled API responses, so use unit/component and frontend integration; no live-service acceptance is established.",
+    "source_line": 392
+  },
+  "TC-10-210": {
+    "original_level": "manual / integration",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Record E1’s status and event-review records. 2. As its coordinator search with requirements no venue can meet. 3. Inspect feedback, reload E1 and compare its status/review records. Restore the synthetic fixtures afterwards and record act Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 393
+  },
+  "TC-11-201": {
+    "original_level": "manual / integration",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. E1 expects 50 people, THEATRE, STAGE and STEP_FREE at 10:00–12:00; A supports all with capacity 50 and is free. 2. As assigned C1 select E1/A, confirm the structured interpretation and assess. 3. Check the source event and each requireme Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 394
+  },
+  "TC-11-202": {
+    "original_level": "manual / integration",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Begin with matching E1/A fixtures. 2. In separate restored runs set attendance 51 against capacity 50, remove required STAGE, remove STEP_FREE, and remove THEATRE. 3. Reassess each time; restore all requirements and check capacity equali Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 395
+  },
+  "TC-11-203": {
+    "original_level": "manual / integration",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. E1 runs 10:00–12:00 and all non-time needs match A. 2. Assess with A booked 10:30–11:00, then with an operational block over that interval, then without either. 3. Compare availability checks. Restore the synthetic fixtures afterwards an Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 396
+  },
+  "TC-11-204": {
+    "original_level": "manual / integration",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Load E1/A assessment context. 2. Change event attendance/requirements, A capacity/capabilities and add a relevant block in separate restored runs. 3. Refresh context, reconfirm changed interpretation when required and reassess. Restore t Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 397
+  },
+  "TC-11-205": {
+    "original_level": "manual / integration",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Record E1’s status and review records. 2. As assigned C1 assess A with insufficient capacity, then a missing required facility. 3. Inspect the unsuitable result and reload E1. Restore the synthetic fixtures afterwards and record actual r Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 398
+  },
+  "TC-12-201": {
+    "original_level": "manual / integration",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. E1 is eligible for venue planning and assigned to C1; A is free 10:00–12:00. Record E2/B as controls. 2. As C1 select E1/A, enter the event period, THEATRE layout and required STAGE/STEP_FREE information; submit. 3. Reload the new bookin Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 399
+  },
+  "TC-12-202": {
+    "original_level": "manual / integration",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As C1 submit E1/A’s booking and record its ID. 2. As V1 open the booking review queue/details. 3. Compare the submitted request with separate approved/rejected fixtures and inspect its stored decision fields. Restore the synthetic fixtur Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 400
+  },
+  "TC-12-203": {
+    "original_level": "manual / integration",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. E1 is assigned to C1. 2. As unrelated C2, O1, V1 and signed-out user attempt E1’s booking through UI and direct API. 3. Inspect booking records before/after and compare with C1’s valid request. Restore the synthetic fixtures afterwards a Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 401
+  },
+  "TC-13-201": {
+    "original_level": "manual / integration",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Create pending E1/A and E2/B bookings with distinct periods, layouts and requirement notes. 2. As V1 open the pending list and each booking. 3. Refresh and compare against recorded fixtures. Restore the synthetic fixtures afterwards and  Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 402
+  },
+  "TC-13-202": {
+    "original_level": "manual / integration",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Give E1/A a pending booking at 10:00–12:00; keep E2/B as a control. 2. As V1 approve E1/A, then reload. 3. As assigned C1 view the decision and A’s calendar; inspect associations and E2/B. Restore the synthetic fixtures afterwards and re Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 403
+  },
+  "TC-13-203": {
+    "original_level": "manual / integration",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Give E1/A a pending booking in an otherwise free interval. 2. As V1 reject it with reason “Required layout unavailable”; reload staff and assigned coordinator views. 3. Inspect booking status and calendar/search availability. Restore the Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 404
+  },
+  "TC-13-204": {
+    "original_level": "manual / integration",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Record a pending booking. 2. As O1, C1, T1 and signed-out user attempt both approval and rejection through direct API and available UI. 3. Compare stored status/decision and repeat a valid action as V1. Restore the synthetic fixtures aft Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 405
+  },
+  "TC-14-201": {
+    "original_level": "manual / integration",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. A has an approved booking 10:00–12:00. 2. As C1 attempt A requests with equal, partial and contained overlapping intervals. 3. Inspect user feedback and request counts after each attempt. Restore the synthetic fixtures afterwards and rec Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 406
+  },
+  "TC-14-202": {
+    "original_level": "manual / integration",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. A has an approved booking 10:00–12:00; B is free. 2. Request B at 10:00–12:00. 3. Request A before 10:00 and from 12:00 onwards. 4. Assess/approve eligible requests separately. Restore the synthetic fixtures afterwards and record actual  Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 407
+  },
+  "TC-14-203": {
+    "original_level": "manual / integration",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Create an A operational block 10:00–12:00. 2. Attempt an overlapping booking submission. 3. Use a pre-existing pending fixture and try approval over the block; inspect all records. Restore the synthetic fixtures afterwards and record act Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 408
+  },
+  "TC-14-205": {
+    "original_level": "manual / integration",
+    "level": "integration",
+    "reason": "Uses isolated booking-state fixtures to assess conflicts and attempt repeated decisions, then checks unchanged decision state. The described primary boundary is the booking decision/availability service and persistence.",
+    "source_line": 410
+  },
+  "TC-14-207": {
+    "original_level": "manual / integration",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. As V1 choose A, date 12 January 2031, start 14:00 and end 15:00. 2. Save separate restored fixtures for maintenance, renovation, safety restriction, internal activity and another operational reason. 3. Reopen each and compare B. 4. Attem Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 412
+  },
+  "TC-14-208": {
+    "original_level": "manual / integration",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Save A’s block 14:00–15:00. 2. As C1 inspect A’s calendar, search an overlapping interval and assess A for E1 at that interval. 3. Refresh each view and compare B. Restore the synthetic fixtures afterwards and record actual results separ Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 413
+  },
+  "TC-14-209": {
+    "original_level": "manual / integration",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Create an eligible pending A booking at 14:00–15:00, then save a conflicting block in an isolated fixture. 2. As V1 try to approve the booking. 3. Inspect status and confirmed bookings. Restore the synthetic fixtures afterwards and recor Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 414
+  },
+  "TC-14-210": {
+    "original_level": "manual / integration",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. A has only a 14:00–15:00 block and unrestricted hours for the tested periods. 2. As C1 inspect calendar/search for 12:00–14:00 and 15:00–17:00. 3. Compare the blocked interval. Restore the synthetic fixtures afterwards and record actual  Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 415
+  },
+  "TC-14-211": {
+    "original_level": "manual / integration",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Record A’s blocks. 2. As C1, O1, T1 and signed-out user attempt to create a valid-reason block via UI and API. 3. Compare with a V1 request and inspect the saved records. Restore the synthetic fixtures afterwards and record actual result Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 416
+  },
+  "TC-05-29": {
+    "original_level": "e2e",
+    "level": "unit; integration",
+    "reason": "The specified automated commands run component coverage and coordinator-reassignment.spec.ts; the browser file uses page.route/route.fulfill for auth/event/assignment APIs. Keep unit/component and frontend integration, not live E2E.",
+    "source_line": 417
+  },
+  "TC-05-33": {
+    "original_level": "e2e",
+    "level": "integration",
+    "reason": "The automated handover browser journey substitutes API outcomes in coordinator-reassignment.spec.ts; separate isolated PostgreSQL integration checks persistence. Their combination is integration evidence, not one live browser-to-database E2E execution.",
+    "source_line": 421
+  },
+  "TC-05-43": {
+    "original_level": "e2e",
+    "level": "unit; integration",
+    "reason": "The specified automated commands run component coverage and coordinator-reassignment.spec.ts; the browser file uses page.route/route.fulfill for auth/event/assignment APIs. Keep unit/component and frontend integration, not live E2E.",
+    "source_line": 431
+  },
+  "TC-05-44": {
+    "original_level": "e2e",
+    "level": "unit; integration",
+    "reason": "The specified automated commands run component coverage and coordinator-reassignment.spec.ts; the browser file uses page.route/route.fulfill for auth/event/assignment APIs. Keep unit/component and frontend integration, not live E2E.",
+    "source_line": 432
+  },
+  "TC-13-01": {
+    "original_level": "unit / e2e",
+    "level": "unit; integration",
+    "reason": "Preconditions explicitly use component fetch mocks or intercepted browser API fixtures. Component behavior is unit; the browser/UI collaboration is frontend integration. No live persistence is exercised by these variants.",
+    "source_line": 434
+  },
+  "TC-03-302": {
+    "original_level": "integration / e2e",
+    "level": "unit; integration",
+    "reason": "The steps name isolated draft/form components and disposable PostgreSQL integration; browser variants use substituted API responses. Retain those bounded automated levels rather than E2E acceptance.",
+    "source_line": 465
+  },
+  "TC-14-307": {
+    "original_level": "integration / component",
+    "level": "unit; integration",
+    "reason": "Normalize explicit component and integration variants: isolated component mocks are unit checks, while HTTP/database collaboration is integration. A component is not an independent test level.",
+    "source_line": 472
+  },
+  "TC-01-209": {
+    "original_level": "manual / integration",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Open /login while signed out. 2. Enter the synthetic account identifier with an incorrect password and submit. 3. Inspect the feedback and signed-in state. 4. Open a protected page and request GET /api/auth/me through the same origin. 5. Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 474
+  },
+  "TC-09-25": {
+    "original_level": "e2e",
+    "level": "unit; integration",
+    "reason": "Preconditions/notes explicitly identify component mocks and browser API/session fixtures. Isolated components are unit checks; browser collaboration across the frontend is integration. Separate real PostgreSQL tests do not turn the fixture browser run into live E2E.",
+    "source_line": 476
+  },
+  "TC-14-309": {
+    "original_level": "e2e",
+    "level": "unit; integration",
+    "reason": "Preconditions/notes explicitly identify component mocks and browser API/session fixtures. Isolated components are unit checks; browser collaboration across the frontend is integration. Separate real PostgreSQL tests do not turn the fixture browser run into live E2E.",
+    "source_line": 478
+  },
+  "TC-14-311": {
+    "original_level": "manual / end-to-end",
+    "level": "e2e",
+    "reason": "The smoke uses the complete local application, real authentication, the shared development database and the configured expiry job to verify user-visible outcomes and notices. Manual is its execution method.",
+    "source_line": 481
+  },
+  "TC-16-16": {
+    "original_level": "E2E",
+    "level": "unit; integration",
+    "reason": "Preconditions/notes explicitly identify component mocks and browser API/session fixtures. Isolated components are unit checks; browser collaboration across the frontend is integration. Separate real PostgreSQL tests do not turn the fixture browser run into live E2E.",
+    "source_line": 487
+  },
+  "TC-17-08": {
+    "original_level": "manual",
+    "level": "e2e",
+    "reason": "The specification exercises a role-based application workflow through its UI and saved/reloaded state: 1. Open the same saved request in two Technical Support sessions. 2. Reserve in one and attempt from the old context; then change another saved line through an agreed fixture update and retry. 3. Observe refresh and deliberately retry only  Manual is the execution method. This planned level does not turn a substituted-API automated run into live E2E evidence.",
+    "source_line": 490
+  },
+  "TC-17-109": {
+    "original_level": "end-to-end",
+    "level": "unit; integration",
+    "reason": "Preconditions/notes explicitly identify component mocks and browser API/session fixtures. Isolated components are unit checks; browser collaboration across the frontend is integration. Separate real PostgreSQL tests do not turn the fixture browser run into live E2E.",
+    "source_line": 499
+  },
+  "TC-15-107": {
+    "original_level": "e2e",
+    "level": "integration",
+    "reason": "The named equipment-request-review.spec.ts browser test substitutes all relevant API/session responses with page.route/route.fulfill; this is frontend integration, not the complete real-authentication/backend/database workflow.",
+    "source_line": 507
+  },
+  "TC-06-105": {
+    "original_level": "e2e",
+    "level": "unit; integration",
+    "reason": "Preconditions/notes explicitly identify component mocks and browser API/session fixtures. Isolated components are unit checks; browser collaboration across the frontend is integration. Separate real PostgreSQL tests do not turn the fixture browser run into live E2E.",
+    "source_line": 512
+  },
+  "TC-18-429": {
+    "original_level": "e2e",
+    "level": "integration",
+    "reason": "The case specifically controls delayed responses in an isolated UI harness while switching accounts. It checks session/route/request collaboration with a substituted boundary, not a complete real-login persisted journey; generic real-app preparation text does not override that explicit harness.",
+    "source_line": 541
+  },
+  "TC-12-23": {
+    "original_level": "E2E",
+    "level": "e2e",
+    "reason": "Normalize E2E capitalization; the specific scenario describes the connected local application, real authenticated role actions and persisted/reloaded outcomes.",
+    "source_line": 605
+  },
+  "TC-06-446": {
+    "original_level": "E2E",
+    "level": "e2e",
+    "reason": "Normalize E2E capitalization; the specific scenario describes the connected local application, real authenticated role actions and persisted/reloaded outcomes.",
+    "source_line": 606
+  },
+  "TC-06-447": {
+    "original_level": "E2E",
+    "level": "e2e",
+    "reason": "Normalize E2E capitalization; the specific scenario describes the connected local application, real authenticated role actions and persisted/reloaded outcomes.",
+    "source_line": 607
+  },
+  "TC-15-108": {
+    "original_level": "E2E",
+    "level": "e2e",
+    "reason": "Normalize E2E capitalization; the specific scenario describes the connected local application, real authenticated role actions and persisted/reloaded outcomes.",
+    "source_line": 608
+  },
+  "TC-06-448": {
+    "original_level": "E2E",
+    "level": "e2e",
+    "reason": "Normalize E2E capitalization; the specific scenario describes the connected local application, real authenticated role actions and persisted/reloaded outcomes.",
+    "source_line": 609
+  }
+}

@@ -1,0 +1,22 @@
+[
+  {
+    "path": "frontend/src/features/events/pages/EventRequestDetailPage.test.ts",
+    "sha256": "F63486ADC4297A004816A6738D6A51A44AB71481ED9321D46C29D7D1CACD2060"
+  },
+  {
+    "path": "frontend/src/features/events/pages/EventRequestDetailPage.vue",
+    "sha256": "3D5D7327D60B338B9364A9B68AD3F8B802E6E2F75B781F82F129DBC93210D313"
+  },
+  {
+    "path": "frontend/src/features/reviews/pages/ReviewRequestPage.test.ts",
+    "sha256": "BA26976F67E77FFBB8DB06CC6D25B1497B28FA87672FFBC79863A476634B6236"
+  },
+  {
+    "path": "frontend/src/features/reviews/pages/ReviewRequestPage.vue",
+    "sha256": "0D73CB55F708259F1229D607D71CF0DF470B9417781CB757023FE147218AB9A7"
+  },
+  {
+    "path": "frontend/src/features/events/components/EventPlanningPanels.test.ts",
+    "sha256": "6B0AD8598249971736D6250006194CC5B6625ED485DCAD3812DC6401CA9489FF"
+  }
+]

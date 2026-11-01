@@ -1,0 +1,22 @@
+{
+  "counts": {
+    "specifications": 622,
+    "traceability_rows": 228,
+    "executions": 1098
+  },
+  "new_case_ids": [
+    "TC-01-210",
+    "TC-01-211",
+    "TC-01-212",
+    "TC-01-213",
+    "TC-06-453",
+    "TC-06-454",
+    "TC-10-213",
+    "TC-15-110",
+    "TC-DB-207"
+  ],
+  "csv_errors": [],
+  "local_markdown_link_errors": [],
+  "scope": "All spec/execution ID and shape checks; all TC trace references; AC/file validation for nine new cases; local links in edited Markdown. External links and historical acceptance not reverified.",
+  "browser_final_source_hash_check": "All eleven recorded browser source/config hashes match final source manifest"
+}

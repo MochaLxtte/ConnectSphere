@@ -1,0 +1,5 @@
+
+> connectsphere@0.1.0 db:seed
+> tsx database/seed.ts
+
+Development sample data added; existing records preserved. These accounts have no login credentials.

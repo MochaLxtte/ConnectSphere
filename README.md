@@ -112,7 +112,7 @@ npm run check
 npm run test:coverage
 ```
 
-`check` runs TypeScript checks (including database/tooling), workspace tests, and both builds. Coverage reports measure the included code; they do not establish completion or acceptance coverage of all 20 business features.
+`check` runs TypeScript checks (including database/tooling), workspace tests, browser-harness isolation checks, and both builds. Coverage has enforced regression floors, with 100% gates for selected authentication/navigation boundaries. It does not establish completion or acceptance of all 20 business features. See [coverage scope and exceptions](docs/testing/README.md#coverage-gates-and-remaining-exceptions--1-november-2026).
 
 For database integration tests, use a dedicated test database. The optional Docker Compose service provides PostgreSQL 17 locally without using the team's Supabase data. With Docker Desktop's Linux engine running:
 
@@ -136,14 +136,16 @@ TEST_DATABASE_URL=postgresql://connectsphere:connectsphere_local@127.0.0.1:5432/
 
 Adjust the local credentials if you changed the Compose settings. Integration tests require `TEST_DATABASE_URL`, create their own schema, and remove only that schema afterward. See [database setup](database/README.md) for test TLS settings and optional local development. `npm run db:down` stops the local service and retains its data volume.
 
-Browser smoke tests start the API/frontend automatically; first ensure the configured development database is reachable and migrated:
+For combined backend coverage, keep the dedicated `TEST_DATABASE_URL` above and run `npm run test:coverage:backend`. This instruments backend source across unit/HTTP **and** real PostgreSQL tests in one run, including all database integration tests. The isolated and combined percentages are reported separately.
+
+Browser tests also require that explicit loopback `TEST_DATABASE_URL`, with a database name ending in `_test`. They migrate/seed that test database automatically and start their own API on 4311 and static frontend on 4173; both ports must be free. They never reuse the developer's 3000/5173 servers or fall back to a shared `DATABASE_URL`.
 
 ```sh
 npx playwright install chromium
 npm run test:e2e
 ```
 
-The browser suite covers infrastructure, navigation, queue recovery, organiser request lists/details and coordinator decisions using API response fixtures. PostgreSQL integration tests exercise persistence and access rules in an isolated database. GitHub Actions repeats the checks with its own PostgreSQL service and uploads coverage/browser evidence. See [testing guidance](docs/testing/README.md) and [test evidence](docs/testing/test-evidence.md) for the distinction between automated checks and hosted acceptance testing.
+The browser suite uses two Chromium workers and zero retries. It covers infrastructure and browser workflows; most domain scenarios substitute API/auth responses and therefore establish frontend integration, not full connected E2E acceptance. PostgreSQL tests separately exercise persistence, authorization, rollback and concurrency. GitHub Actions runs checks, both coverage measurements and the browser suite with its own PostgreSQL service, uploading evidence for 14 days. Preserve the release report in the repository before artifact expiry. See [testing guidance](docs/testing/README.md) and [test evidence](docs/testing/test-evidence.md) for the separate real-authentication manual E2E results.
 
 Hosted approval and rejection checks passed, including the saved review row, outcome after reload and removal from the pending queue. See the [test evidence](docs/testing/test-evidence.md) for the dated results and remaining organiser-workflow checks. KAN-16's `/events` page uses `GET /api/events?scope=all` to show owned request names, readable statuses and Singapore-time updates. Draft titles open `/events/:id/edit`; other titles open `/events/:id`, which reads the shared detail API and displays status, saved outcome, reason and recorded time alongside the available planning actions. The organiser approval/rejection display and refresh checks passed in MAN-20260917-01. Reopening a request URL after sign-out also passed: the page showed a sign-in prompt without request details or the review reason (MAN-20260917-02). Draft and submitted detail pages also showed the expected statuses and review messages (MAN-20260917-03). A second organiser could not view the first organiser's request details or see their requests in the list (MAN-20260917-04). Opening `/events` directly after signing out showed a sign-in prompt without request names or statuses (MAN-20260917-05). The request list showed matching Draft, Submitted, Rejected and Approved labels, and Draft/Submitted detail statuses and review messages remained correct after refresh (MAN-20260917-06). The submission-to-status path remains to be checked in the test evidence.
 

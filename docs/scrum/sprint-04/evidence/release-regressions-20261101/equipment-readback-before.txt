@@ -1,0 +1,50 @@
+
+> @connectsphere/frontend@0.1.0 test
+> vitest run src/features/events/components/EquipmentRequestPanel.test.ts
+
+
+ RUN  v4.1.11 C:/Users/trist/Documents/School Stuff/Y3S1/IS212/ConnectSphere/frontend
+
+ ❯ src/features/events/components/EquipmentRequestPanel.test.ts (35 tests | 2 failed) 10534ms
+     × invalidates sibling readiness as soon as a save succeeds, before a delayed equipment readback 531ms
+     × does not display the prior save outcome after an account change during readback 375ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/events/components/EquipmentRequestPanel.test.ts > KAN-63/KAN-26 coordinator equipment request panel > invalidates sibling readiness as soon as a save succeeds, before a delayed equipment readback
+AssertionError: Target cannot be null or undefined.
+ ❯ src/features/events/components/EquipmentRequestPanel.test.ts:68:39
+     66|     try {
+     67|       expect(await screen.findByText('Loading equipment requests…')).t…
+     68|       expect(view.emitted('changed')).toHaveLength(1);
+       |                                       ^
+     69|       expect(screen.queryByText('Equipment marked Not Required.')).not…
+     70|       expect(api.writes()).toHaveLength(1);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/features/events/components/EquipmentRequestPanel.test.ts > KAN-63/KAN-26 coordinator equipment request panel > does not display the prior save outcome after an account change during readback
+AssertionError: Target cannot be null or undefined.
+ ❯ src/features/events/components/EquipmentRequestPanel.test.ts:90:39
+     88|     try {
+     89|       await screen.findByText('Loading equipment requests…');
+     90|       expect(view.emitted('changed')).toHaveLength(1);
+       |                                       ^
+     91|       api.set('GET ' + planPath, apiError(403, 'FORBIDDEN', 'Not assig…
+     92|       session.user = { ...coordinator, id: 'different-coordinator' };
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 33 passed (35)
+   Start at  19:10:53
+   Duration  16.33s (transform 3.22s, setup 1.09s, import 3.03s, tests 10.53s, environment 1.04s)
+
+npm error Lifecycle script `test` failed with error:
+npm error code 1
+npm error path C:\Users\trist\Documents\School Stuff\Y3S1\IS212\ConnectSphere\frontend
+npm error workspace @connectsphere/frontend@0.1.0
+npm error location C:\Users\trist\Documents\School Stuff\Y3S1\IS212\ConnectSphere\frontend
+npm error command failed
+npm error command C:\WINDOWS\system32\cmd.exe /d /s /c vitest run src/features/events/components/EquipmentRequestPanel.test.ts

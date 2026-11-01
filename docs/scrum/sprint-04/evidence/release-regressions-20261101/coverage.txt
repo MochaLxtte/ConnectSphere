@@ -1,0 +1,182 @@
+
+> connectsphere@0.1.0 test:coverage
+> npm run test:coverage --workspaces
+
+
+> @connectsphere/frontend@0.1.0 test:coverage
+> vitest run --coverage
+
+
+ RUN  v4.1.11 C:/Users/trist/Documents/School Stuff/Y3S1/IS212/ConnectSphere/frontend
+      Coverage enabled with v8
+
+stderr | src/features/reviews/pages/ReviewRequestPage.test.ts > KAN-33 review request detail page > KAN-65 removes stale detail after reassignment denies a review write
+[Vue Router warn]: No match found for location with path "/reviews/a/venue-suitability"
+[Vue Router warn]: No match found for location with path "/events/a/registrations"
+[Vue Router warn]: No match found for location with path "/venues/availability"
+[Vue Router warn]: No match found for location with path "/venue-bookings"
+
+stderr | src/features/reviews/pages/ReviewRequestPage.test.ts > KAN-33 review request detail page > KAN-65 removes stale detail after reassignment denies a review write
+[Vue Router warn]: No match found for location with path "/venues/availability"
+[Vue Router warn]: No match found for location with path "/venue-bookings"
+
+ ❯ src/features/reviews/pages/ReviewRequestPage.test.ts (23 tests | 1 failed) 26577ms
+     × KAN-65 removes stale detail after reassignment denies a review write 5367ms
+ ❯ src/features/events/components/VenueBookingPanel.test.ts (51 tests | 4 failed) 25855ms
+     × clears private information when a submission returns 403 593ms
+     × clears private information when a submission returns 404 547ms
+     × KAN-82-AC10 a cancel refused with 403 hides private content and refreshes sibling eligibility 262ms
+     × KAN-82-AC10 a cancel refused with 404 hides private content and refreshes sibling eligibility 267ms
+ ❯ src/features/events/components/EquipmentRequestPanel.test.ts (35 tests | 2 failed) 13142ms
+     × invalidates sibling readiness as soon as a save succeeds, before a delayed equipment readback 654ms
+     × does not display the prior save outcome after an account change during readback 665ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/events/components/EquipmentRequestPanel.test.ts > KAN-63/KAN-26 coordinator equipment request panel > invalidates sibling readiness as soon as a save succeeds, before a delayed equipment readback
+AssertionError: Target cannot be null or undefined.
+ ❯ src/features/events/components/EquipmentRequestPanel.test.ts:68:39
+     66|     try {
+     67|       expect(await screen.findByText('Loading equipment requests…')).t…
+     68|       expect(view.emitted('changed')).toHaveLength(1);
+       |                                       ^
+     69|       expect(screen.queryByText('Equipment marked Not Required.')).not…
+     70|       expect(api.writes()).toHaveLength(1);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
+
+ FAIL  src/features/events/components/EquipmentRequestPanel.test.ts > KAN-63/KAN-26 coordinator equipment request panel > does not display the prior save outcome after an account change during readback
+AssertionError: Target cannot be null or undefined.
+ ❯ src/features/events/components/EquipmentRequestPanel.test.ts:90:39
+     88|     try {
+     89|       await screen.findByText('Loading equipment requests…');
+     90|       expect(view.emitted('changed')).toHaveLength(1);
+       |                                       ^
+     91|       api.set('GET ' + planPath, apiError(403, 'FORBIDDEN', 'Not assig…
+     92|       session.user = { ...coordinator, id: 'different-coordinator' };
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯
+
+ FAIL  src/features/events/components/VenueBookingPanel.test.ts > KAN-53 venue booking request panel > clears private information when a submission returns 403
+ FAIL  src/features/events/components/VenueBookingPanel.test.ts > KAN-53 venue booking request panel > clears private information when a submission returns 404
+AssertionError: Target cannot be null or undefined.
+ ❯ src/features/events/components/VenueBookingPanel.test.ts:291:42
+    289|     expect(view.emitted('changed')).toBeUndefined();
+    290|     if (status === 401) expect(view.emitted('refresh')).toBeUndefined(…
+    291|     else expect(view.emitted('refresh')).toHaveLength(1);
+       |                                          ^
+    292|   });
+    293|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯
+
+ FAIL  src/features/events/components/VenueBookingPanel.test.ts > KAN-82 managing one arrangement at a time > KAN-82-AC10 a cancel refused with 403 hides private content and refreshes sibling eligibility
+ FAIL  src/features/events/components/VenueBookingPanel.test.ts > KAN-82 managing one arrangement at a time > KAN-82-AC10 a cancel refused with 404 hides private content and refreshes sibling eligibility
+AssertionError: Target cannot be null or undefined.
+ ❯ src/features/events/components/VenueBookingPanel.test.ts:579:37
+    577|     expect(await screen.findByText(/no longer have access to its venue…
+    578|     expect(screen.queryByRole('button', { name: 'Cancel arrangement' }…
+    579|     expect(view.emitted('refresh')).toHaveLength(1);
+       |                                     ^
+    580|     expect(view.emitted('changed')).toBeUndefined();
+    581|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/7]⎯
+
+ FAIL  src/features/reviews/pages/ReviewRequestPage.test.ts > KAN-33 review request detail page > KAN-65 removes stale detail after reassignment denies a review write
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/features/reviews/pages/ReviewRequestPage.test.ts:63:3
+     61|
+     62| describe('KAN-33 review request detail page', () => {
+     63|   it('KAN-65 removes stale detail after reassignment denies a review w…
+       |   ^
+     64|     const denied = { error: { code: 'EVENT_REQUEST_NOT_FOUND', message…
+     65|     const fetch = vi.fn().mockResolvedValueOnce(jsonResponse(detail))
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/7]⎯
+
+
+ Test Files  3 failed | 56 passed (59)
+      Tests  7 failed | 1239 passed (1246)
+   Start at  19:09:34
+   Duration  99.13s (transform 271.43s, setup 405.42s, import 350.40s, tests 673.75s, environment 209.09s)
+
+npm error Lifecycle script `test:coverage` failed with error:
+npm error code 1
+npm error path C:\Users\trist\Documents\School Stuff\Y3S1\IS212\ConnectSphere\frontend
+npm error workspace @connectsphere/frontend@0.1.0
+npm error location C:\Users\trist\Documents\School Stuff\Y3S1\IS212\ConnectSphere\frontend
+npm error command failed
+npm error command C:\WINDOWS\system32\cmd.exe /d /s /c vitest run --coverage
+
+
+> @connectsphere/backend@0.1.0 test:coverage
+> vitest run --coverage
+
+
+ RUN  v4.1.11 C:/Users/trist/Documents/School Stuff/Y3S1/IS212/ConnectSphere/backend
+      Coverage enabled with v8
+
+
+ Test Files  76 passed (76)
+      Tests  1959 passed (1959)
+   Start at  19:11:14
+   Duration  15.40s (transform 45.72s, setup 0ms, import 113.46s, tests 39.46s, environment 14ms)
+
+ % Coverage report from v8
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s
+-------------------|---------|----------|---------|---------|-------------------
+All files          |   89.75 |    89.14 |   89.25 |   89.88 |
+ src               |   92.42 |    88.46 |      75 |   91.93 |
+  app.ts           |   96.82 |    95.83 |     100 |   96.61 | 135-136
+  runtime-app.ts   |       0 |        0 |       0 |       0 | 19-26
+ src/config        |   83.33 |      100 |      50 |   83.33 |
+  env.ts           |   83.33 |      100 |      50 |   83.33 | 14-18
+ src/db            |   78.94 |      100 |   33.33 |   78.94 |
+  pool.ts          |       0 |      100 |       0 |       0 | 15-29
+ src/modules/auth  |   82.35 |    76.92 |   81.25 |   80.76 |
+  router.ts        |   95.31 |      100 |    90.9 |   94.82 | 19-20,39
+  supabase.ts      |      20 |    29.41 |   33.33 |      20 | 29-49
+ ...ules/equipment |   98.81 |    98.72 |   95.75 |   98.51 |
+  ...ent-router.ts |   52.94 |        0 |    12.5 |   52.94 | ...24-25,30,35,40
+  stock-service.ts |     100 |    95.83 |     100 |     100 | 85,251
+ ...modules/events |   91.86 |    91.98 |      92 |   92.07 |
+  cancellation.ts  |   97.56 |    80.95 |     100 |     100 | 81-82,96-102
+  ...est-router.ts |   66.66 |      100 |      20 |   66.66 | 16,23,30,38
+  ...e-requests.ts |   96.89 |    90.58 |   97.22 |   97.16 | 96,107,312-314
+  ...ion-router.ts |   63.63 |      100 |      20 |   63.63 | 17,24,31,42
+  ...ifications.ts |      12 |        0 |      30 |   10.41 | 37-129
+  completion.ts    |     100 |    97.29 |     100 |     100 | 78
+  confirmation.ts  |   98.64 |    91.66 |     100 |     100 | 51-52,84,157,179
+  create-draft.ts  |   92.85 |     62.5 |     100 |   95.65 | 62
+  ...est-detail.ts |     100 |    89.18 |     100 |     100 | 105-108
+  ...w-decision.ts |    9.37 |        0 |      50 |   10.34 | 52-122
+  ...sts-router.ts |   98.42 |    97.64 |     100 |   98.42 | 244,291
+  workflow-http.ts |      96 |    94.44 |     100 |     100 | 71
+  ...ow-support.ts |   93.02 |    95.38 |   94.44 |   94.73 | 66-72
+ .../notifications |   99.33 |    95.69 |     100 |     100 |
+  ...ifications.ts |     100 |    96.66 |     100 |     100 | 74
+  inbox.ts         |     100 |     96.1 |     100 |     100 | 107,122
+  notify.ts        |   95.65 |    83.33 |     100 |     100 | 41-47
+ .../registrations |     100 |    98.76 |     100 |     100 |
+  ...on-service.ts |     100 |    97.43 |     100 |     100 | 148
+ ...modules/safety |   29.22 |    27.45 |    32.6 |   29.56 |
+  service.ts       |    20.1 |     25.5 |   16.21 |   20.12 | ...54-249,287-386
+ ...modules/venues |   92.44 |    90.46 |   91.47 |   93.21 |
+  availability.ts  |     100 |     91.3 |     100 |     100 | 169-170
+  ...ng-service.ts |   93.95 |    91.55 |    90.9 |   94.79 | ...53,273,283,412
+  ...lity-rules.ts |   98.36 |     97.7 |     100 |     100 | 58,137,139
+  ...ty-service.ts |    6.66 |        0 |       0 |    7.69 | 56-166
+  ...ngs-router.ts |      95 |       50 |   88.88 |      95 | 22
+  venue-router.ts  |      75 |      100 |   33.33 |      75 | 20,25
+  venue-search.ts  |   94.04 |    93.42 |     100 |   98.55 | 150
+-------------------|---------|----------|---------|---------|-------------------
+
+=============================== Coverage summary ===============================
+Statements   : 89.75% ( 3091/3444 )
+Branches     : 89.14% ( 2233/2505 )
+Functions    : 89.25% ( 656/735 )
+Lines        : 89.88% ( 2692/2995 )
+================================================================================

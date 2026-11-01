@@ -1,0 +1,13 @@
+
+> @connectsphere/frontend@0.1.0 test
+> vitest run src/features/events/pages/EventRequestDetailPage.test.ts src/features/reviews/pages/ReviewRequestPage.test.ts src/features/events/components/EventPlanningPanels.test.ts --pool=threads --maxWorkers=2
+
+
+ RUN  v4.1.11 C:/Users/trist/Documents/School Stuff/Y3S1/IS212/ConnectSphere/frontend
+
+
+ Test Files  3 passed (3)
+      Tests  88 passed (88)
+   Start at  23:27:09
+   Duration  5.99s (transform 1.85s, setup 1.77s, import 2.13s, tests 3.18s, environment 2.18s)
+

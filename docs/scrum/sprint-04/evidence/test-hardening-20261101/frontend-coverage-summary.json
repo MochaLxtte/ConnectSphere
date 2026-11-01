@@ -1,0 +1,2478 @@
+{
+  "total": {
+    "lines": {
+      "total": 3717,
+      "covered": 3658,
+      "skipped": 0,
+      "pct": 98.41
+    },
+    "statements": {
+      "total": 4914,
+      "covered": 4721,
+      "skipped": 0,
+      "pct": 96.07
+    },
+    "functions": {
+      "total": 1172,
+      "covered": 1147,
+      "skipped": 0,
+      "pct": 97.86
+    },
+    "branches": {
+      "total": 6269,
+      "covered": 5835,
+      "skipped": 0,
+      "pct": 93.07
+    },
+    "branchesTrue": {
+      "total": 0,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "frontend/src/main.ts": {
+    "lines": {
+      "total": 1,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 0
+    },
+    "functions": {
+      "total": 0,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 1,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 0
+    },
+    "branches": {
+      "total": 0,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "frontend/src/app/App.vue": {
+    "lines": {
+      "total": 2,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 0
+    },
+    "functions": {
+      "total": 1,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 0
+    },
+    "statements": {
+      "total": 2,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 0
+    },
+    "branches": {
+      "total": 0,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "frontend/src/app/router.ts": {
+    "lines": {
+      "total": 4,
+      "covered": 4,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 2,
+      "covered": 2,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 4,
+      "covered": 4,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 2,
+      "covered": 2,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "frontend/src/components/AppIcon.vue": {
+    "lines": {
+      "total": 2,
+      "covered": 2,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 0,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 2,
+      "covered": 2,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 0,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "frontend/src/components/AppShell.vue": {
+    "lines": {
+      "total": 40,
+      "covered": 40,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 34,
+      "covered": 34,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 56,
+      "covered": 56,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 117,
+      "covered": 117,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "frontend/src/components/FeaturePlaceholder.vue": {
+    "lines": {
+      "total": 8,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 0
+    },
+    "functions": {
+      "total": 2,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 0
+    },
+    "statements": {
+      "total": 8,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 0
+    },
+    "branches": {
+      "total": 6,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 0
+    }
+  },
+  "frontend/src/components/NotFoundPage.vue": {
+    "lines": {
+      "total": 2,
+      "covered": 2,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 1,
+      "covered": 1,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 3,
+      "covered": 3,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 8,
+      "covered": 8,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "frontend/src/features/auth/session.ts": {
+    "lines": {
+      "total": 50,
+      "covered": 50,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 12,
+      "covered": 12,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 60,
+      "covered": 60,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 24,
+      "covered": 24,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "frontend/src/features/auth/supabase-client.ts": {
+    "lines": {
+      "total": 16,
+      "covered": 16,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 3,
+      "covered": 3,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 16,
+      "covered": 16,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 12,
+      "covered": 12,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "frontend/src/features/auth/pages/LoginPage.vue": {
+    "lines": {
+      "total": 16,
+      "covered": 16,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 4,
+      "covered": 4,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 16,
+      "covered": 16,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 24,
+      "covered": 24,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "frontend/src/features/equipment/availability-form.ts": {
+    "lines": {
+      "total": 39,
+      "covered": 39,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 7,
+      "covered": 7,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 54,
+      "covered": 54,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 57,
+      "covered": 57,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "frontend/src/features/equipment/api/equipment-availability.ts": {
+    "lines": {
+      "total": 4,
+      "covered": 4,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 3,
+      "covered": 3,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 4,
+      "covered": 4,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 0,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "frontend/src/features/equipment/api/equipment-reservations.ts": {
+    "lines": {
+      "total": 4,
+      "covered": 4,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 3,
+      "covered": 3,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 4,
+      "covered": 4,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 0,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "frontend/src/features/equipment/api/equipment-stock.ts": {
+    "lines": {
+      "total": 4,
+      "covered": 4,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 3,
+      "covered": 3,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 4,
+      "covered": 4,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 0,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "frontend/src/features/equipment/pages/EquipmentAccessPage.vue": {
+    "lines": {
+      "total": 3,
+      "covered": 3,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 2,
+      "covered": 2,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 3,
+      "covered": 3,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 18,
+      "covered": 18,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "frontend/src/features/equipment/pages/EquipmentAvailabilityPage.vue": {
+    "lines": {
+      "total": 22,
+      "covered": 22,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 7,
+      "covered": 7,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 31,
+      "covered": 31,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 36,
+      "covered": 35,
+      "skipped": 0,
+      "pct": 97.22
+    }
+  },
+  "frontend/src/features/equipment/pages/EquipmentReservationPanel.vue": {
+    "lines": {
+      "total": 65,
+      "covered": 65,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 18,
+      "covered": 18,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 104,
+      "covered": 103,
+      "skipped": 0,
+      "pct": 99.03
+    },
+    "branches": {
+      "total": 155,
+      "covered": 151,
+      "skipped": 0,
+      "pct": 97.41
+    }
+  },
+  "frontend/src/features/equipment/pages/EquipmentStockPage.vue": {
+    "lines": {
+      "total": 112,
+      "covered": 111,
+      "skipped": 0,
+      "pct": 99.1
+    },
+    "functions": {
+      "total": 31,
+      "covered": 30,
+      "skipped": 0,
+      "pct": 96.77
+    },
+    "statements": {
+      "total": 159,
+      "covered": 147,
+      "skipped": 0,
+      "pct": 92.45
+    },
+    "branches": {
+      "total": 194,
+      "covered": 179,
+      "skipped": 0,
+      "pct": 92.26
+    }
+  },
+  "frontend/src/features/equipment/pages/EventEquipmentAvailabilityPage.vue": {
+    "lines": {
+      "total": 101,
+      "covered": 101,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 37,
+      "covered": 37,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 157,
+      "covered": 156,
+      "skipped": 0,
+      "pct": 99.36
+    },
+    "branches": {
+      "total": 221,
+      "covered": 214,
+      "skipped": 0,
+      "pct": 96.83
+    }
+  },
+  "frontend/src/features/events/change-request-fields.ts": {
+    "lines": {
+      "total": 8,
+      "covered": 8,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 3,
+      "covered": 3,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 12,
+      "covered": 10,
+      "skipped": 0,
+      "pct": 83.33
+    },
+    "branches": {
+      "total": 11,
+      "covered": 7,
+      "skipped": 0,
+      "pct": 63.63
+    }
+  },
+  "frontend/src/features/events/presentation.ts": {
+    "lines": {
+      "total": 19,
+      "covered": 19,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 5,
+      "covered": 5,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 24,
+      "covered": 23,
+      "skipped": 0,
+      "pct": 95.83
+    },
+    "branches": {
+      "total": 13,
+      "covered": 11,
+      "skipped": 0,
+      "pct": 84.61
+    }
+  },
+  "frontend/src/features/events/api/arrangements.ts": {
+    "lines": {
+      "total": 14,
+      "covered": 12,
+      "skipped": 0,
+      "pct": 85.71
+    },
+    "functions": {
+      "total": 13,
+      "covered": 12,
+      "skipped": 0,
+      "pct": 92.3
+    },
+    "statements": {
+      "total": 14,
+      "covered": 12,
+      "skipped": 0,
+      "pct": 85.71
+    },
+    "branches": {
+      "total": 2,
+      "covered": 2,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "frontend/src/features/events/api/assignments.ts": {
+    "lines": {
+      "total": 24,
+      "covered": 24,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 9,
+      "covered": 9,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 26,
+      "covered": 26,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 22,
+      "covered": 22,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "frontend/src/features/events/api/change-requests.ts": {
+    "lines": {
+      "total": 9,
+      "covered": 9,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 6,
+      "covered": 6,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 9,
+      "covered": 9,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 0,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "frontend/src/features/events/api/clarifications.ts": {
+    "lines": {
+      "total": 6,
+      "covered": 6,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 6,
+      "covered": 6,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 8,
+      "covered": 8,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 2,
+      "covered": 2,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "frontend/src/features/events/api/event-requests.ts": {
+    "lines": {
+      "total": 40,
+      "covered": 39,
+      "skipped": 0,
+      "pct": 97.5
+    },
+    "functions": {
+      "total": 12,
+      "covered": 12,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 43,
+      "covered": 40,
+      "skipped": 0,
+      "pct": 93.02
+    },
+    "branches": {
+      "total": 31,
+      "covered": 28,
+      "skipped": 0,
+      "pct": 90.32
+    }
+  },
+  "frontend/src/features/events/api/status-history.ts": {
+    "lines": {
+      "total": 2,
+      "covered": 2,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 2,
+      "covered": 2,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 3,
+      "covered": 3,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 0,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "frontend/src/features/events/components/AssignmentPanel.vue": {
+    "lines": {
+      "total": 126,
+      "covered": 126,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 25,
+      "covered": 25,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 160,
+      "covered": 152,
+      "skipped": 0,
+      "pct": 95
+    },
+    "branches": {
+      "total": 205,
+      "covered": 198,
+      "skipped": 0,
+      "pct": 96.58
+    }
+  },
+  "frontend/src/features/events/components/ChangeRequestPanel.vue": {
+    "lines": {
+      "total": 50,
+      "covered": 50,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 30,
+      "covered": 30,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 65,
+      "covered": 64,
+      "skipped": 0,
+      "pct": 98.46
+    },
+    "branches": {
+      "total": 113,
+      "covered": 106,
+      "skipped": 0,
+      "pct": 93.8
+    }
+  },
+  "frontend/src/features/events/components/ClarificationPanel.vue": {
+    "lines": {
+      "total": 38,
+      "covered": 37,
+      "skipped": 0,
+      "pct": 97.36
+    },
+    "functions": {
+      "total": 17,
+      "covered": 16,
+      "skipped": 0,
+      "pct": 94.11
+    },
+    "statements": {
+      "total": 46,
+      "covered": 43,
+      "skipped": 0,
+      "pct": 93.47
+    },
+    "branches": {
+      "total": 65,
+      "covered": 59,
+      "skipped": 0,
+      "pct": 90.76
+    }
+  },
+  "frontend/src/features/events/components/EquipmentRequestPanel.vue": {
+    "lines": {
+      "total": 110,
+      "covered": 108,
+      "skipped": 0,
+      "pct": 98.18
+    },
+    "functions": {
+      "total": 39,
+      "covered": 38,
+      "skipped": 0,
+      "pct": 97.43
+    },
+    "statements": {
+      "total": 187,
+      "covered": 169,
+      "skipped": 0,
+      "pct": 90.37
+    },
+    "branches": {
+      "total": 208,
+      "covered": 186,
+      "skipped": 0,
+      "pct": 89.42
+    }
+  },
+  "frontend/src/features/events/components/EventCancellationPanel.vue": {
+    "lines": {
+      "total": 55,
+      "covered": 55,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 11,
+      "covered": 11,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 94,
+      "covered": 91,
+      "skipped": 0,
+      "pct": 96.8
+    },
+    "branches": {
+      "total": 101,
+      "covered": 94,
+      "skipped": 0,
+      "pct": 93.06
+    }
+  },
+  "frontend/src/features/events/components/EventCompletionPanel.vue": {
+    "lines": {
+      "total": 42,
+      "covered": 42,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 12,
+      "covered": 12,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 75,
+      "covered": 72,
+      "skipped": 0,
+      "pct": 96
+    },
+    "branches": {
+      "total": 81,
+      "covered": 74,
+      "skipped": 0,
+      "pct": 91.35
+    }
+  },
+  "frontend/src/features/events/components/EventConfirmationPanel.vue": {
+    "lines": {
+      "total": 50,
+      "covered": 50,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 13,
+      "covered": 13,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 83,
+      "covered": 78,
+      "skipped": 0,
+      "pct": 93.97
+    },
+    "branches": {
+      "total": 94,
+      "covered": 84,
+      "skipped": 0,
+      "pct": 89.36
+    }
+  },
+  "frontend/src/features/events/components/EventPlanningPanels.vue": {
+    "lines": {
+      "total": 13,
+      "covered": 7,
+      "skipped": 0,
+      "pct": 53.84
+    },
+    "functions": {
+      "total": 8,
+      "covered": 2,
+      "skipped": 0,
+      "pct": 25
+    },
+    "statements": {
+      "total": 15,
+      "covered": 9,
+      "skipped": 0,
+      "pct": 60
+    },
+    "branches": {
+      "total": 19,
+      "covered": 18,
+      "skipped": 0,
+      "pct": 94.73
+    }
+  },
+  "frontend/src/features/events/components/EventRequestForm.vue": {
+    "lines": {
+      "total": 184,
+      "covered": 178,
+      "skipped": 0,
+      "pct": 96.73
+    },
+    "functions": {
+      "total": 43,
+      "covered": 41,
+      "skipped": 0,
+      "pct": 95.34
+    },
+    "statements": {
+      "total": 218,
+      "covered": 211,
+      "skipped": 0,
+      "pct": 96.78
+    },
+    "branches": {
+      "total": 307,
+      "covered": 276,
+      "skipped": 0,
+      "pct": 89.9
+    }
+  },
+  "frontend/src/features/events/components/SafetyReviewPanel.vue": {
+    "lines": {
+      "total": 65,
+      "covered": 65,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 26,
+      "covered": 26,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 105,
+      "covered": 101,
+      "skipped": 0,
+      "pct": 96.19
+    },
+    "branches": {
+      "total": 117,
+      "covered": 104,
+      "skipped": 0,
+      "pct": 88.88
+    }
+  },
+  "frontend/src/features/events/components/StatusHistoryPanel.vue": {
+    "lines": {
+      "total": 11,
+      "covered": 11,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 5,
+      "covered": 5,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 14,
+      "covered": 14,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 19,
+      "covered": 19,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "frontend/src/features/events/components/VenueBookingPanel.vue": {
+    "lines": {
+      "total": 193,
+      "covered": 190,
+      "skipped": 0,
+      "pct": 98.44
+    },
+    "functions": {
+      "total": 49,
+      "covered": 47,
+      "skipped": 0,
+      "pct": 95.91
+    },
+    "statements": {
+      "total": 290,
+      "covered": 277,
+      "skipped": 0,
+      "pct": 95.51
+    },
+    "branches": {
+      "total": 365,
+      "covered": 340,
+      "skipped": 0,
+      "pct": 93.15
+    }
+  },
+  "frontend/src/features/events/components/use-workflow-panel.ts": {
+    "lines": {
+      "total": 44,
+      "covered": 44,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 8,
+      "covered": 8,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 55,
+      "covered": 55,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 14,
+      "covered": 14,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "frontend/src/features/events/pages/EquipmentQueuePage.vue": {
+    "lines": {
+      "total": 47,
+      "covered": 46,
+      "skipped": 0,
+      "pct": 97.87
+    },
+    "functions": {
+      "total": 11,
+      "covered": 11,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 85,
+      "covered": 76,
+      "skipped": 0,
+      "pct": 89.41
+    },
+    "branches": {
+      "total": 96,
+      "covered": 80,
+      "skipped": 0,
+      "pct": 83.33
+    }
+  },
+  "frontend/src/features/events/pages/EventChangeRequestPage.vue": {
+    "lines": {
+      "total": 127,
+      "covered": 127,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 35,
+      "covered": 34,
+      "skipped": 0,
+      "pct": 97.14
+    },
+    "statements": {
+      "total": 161,
+      "covered": 158,
+      "skipped": 0,
+      "pct": 98.13
+    },
+    "branches": {
+      "total": 186,
+      "covered": 170,
+      "skipped": 0,
+      "pct": 91.39
+    }
+  },
+  "frontend/src/features/events/pages/EventDetailsEditPage.vue": {
+    "lines": {
+      "total": 145,
+      "covered": 145,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 40,
+      "covered": 39,
+      "skipped": 0,
+      "pct": 97.5
+    },
+    "statements": {
+      "total": 186,
+      "covered": 184,
+      "skipped": 0,
+      "pct": 98.92
+    },
+    "branches": {
+      "total": 221,
+      "covered": 205,
+      "skipped": 0,
+      "pct": 92.76
+    }
+  },
+  "frontend/src/features/events/pages/EventDraftEditPage.vue": {
+    "lines": {
+      "total": 32,
+      "covered": 31,
+      "skipped": 0,
+      "pct": 96.87
+    },
+    "functions": {
+      "total": 12,
+      "covered": 12,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 39,
+      "covered": 36,
+      "skipped": 0,
+      "pct": 92.3
+    },
+    "branches": {
+      "total": 43,
+      "covered": 38,
+      "skipped": 0,
+      "pct": 88.37
+    }
+  },
+  "frontend/src/features/events/pages/EventRequestDetailPage.vue": {
+    "lines": {
+      "total": 77,
+      "covered": 71,
+      "skipped": 0,
+      "pct": 92.2
+    },
+    "functions": {
+      "total": 19,
+      "covered": 18,
+      "skipped": 0,
+      "pct": 94.73
+    },
+    "statements": {
+      "total": 93,
+      "covered": 83,
+      "skipped": 0,
+      "pct": 89.24
+    },
+    "branches": {
+      "total": 156,
+      "covered": 135,
+      "skipped": 0,
+      "pct": 86.53
+    }
+  },
+  "frontend/src/features/events/pages/EventRequestsPage.vue": {
+    "lines": {
+      "total": 29,
+      "covered": 29,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 8,
+      "covered": 8,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 34,
+      "covered": 33,
+      "skipped": 0,
+      "pct": 97.05
+    },
+    "branches": {
+      "total": 43,
+      "covered": 41,
+      "skipped": 0,
+      "pct": 95.34
+    }
+  },
+  "frontend/src/features/events/pages/NewEventPage.vue": {
+    "lines": {
+      "total": 11,
+      "covered": 11,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 6,
+      "covered": 6,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 13,
+      "covered": 13,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 22,
+      "covered": 22,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "frontend/src/features/notifications/state.ts": {
+    "lines": {
+      "total": 13,
+      "covered": 13,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 3,
+      "covered": 3,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 14,
+      "covered": 14,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 11,
+      "covered": 11,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "frontend/src/features/notifications/api/notifications.ts": {
+    "lines": {
+      "total": 4,
+      "covered": 4,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 4,
+      "covered": 4,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 4,
+      "covered": 4,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 0,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "frontend/src/features/notifications/components/NotificationBell.vue": {
+    "lines": {
+      "total": 21,
+      "covered": 21,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 12,
+      "covered": 12,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 31,
+      "covered": 31,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 16,
+      "covered": 14,
+      "skipped": 0,
+      "pct": 87.5
+    }
+  },
+  "frontend/src/features/notifications/components/NotificationInbox.vue": {
+    "lines": {
+      "total": 71,
+      "covered": 71,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 17,
+      "covered": 17,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 88,
+      "covered": 83,
+      "skipped": 0,
+      "pct": 94.31
+    },
+    "branches": {
+      "total": 111,
+      "covered": 104,
+      "skipped": 0,
+      "pct": 93.69
+    }
+  },
+  "frontend/src/features/notifications/pages/NotificationsPage.vue": {
+    "lines": {
+      "total": 1,
+      "covered": 1,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 1,
+      "covered": 1,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 1,
+      "covered": 1,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 10,
+      "covered": 10,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "frontend/src/features/registrations/RegistrationsPage.vue": {
+    "lines": {
+      "total": 64,
+      "covered": 64,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 18,
+      "covered": 18,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 100,
+      "covered": 95,
+      "skipped": 0,
+      "pct": 95
+    },
+    "branches": {
+      "total": 129,
+      "covered": 114,
+      "skipped": 0,
+      "pct": 88.37
+    }
+  },
+  "frontend/src/features/registrations/api.ts": {
+    "lines": {
+      "total": 3,
+      "covered": 3,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 3,
+      "covered": 3,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 6,
+      "covered": 6,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 0,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "frontend/src/features/registrations/api/attendee-events.ts": {
+    "lines": {
+      "total": 5,
+      "covered": 5,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 4,
+      "covered": 4,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 5,
+      "covered": 5,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 0,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "frontend/src/features/registrations/pages/AttendeeAccessPage.vue": {
+    "lines": {
+      "total": 3,
+      "covered": 3,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 2,
+      "covered": 2,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 3,
+      "covered": 3,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 18,
+      "covered": 18,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "frontend/src/features/registrations/pages/AttendeeEventPage.vue": {
+    "lines": {
+      "total": 42,
+      "covered": 42,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 11,
+      "covered": 11,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 68,
+      "covered": 64,
+      "skipped": 0,
+      "pct": 94.11
+    },
+    "branches": {
+      "total": 113,
+      "covered": 106,
+      "skipped": 0,
+      "pct": 93.8
+    }
+  },
+  "frontend/src/features/registrations/pages/AttendeeEventsPage.vue": {
+    "lines": {
+      "total": 21,
+      "covered": 21,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 9,
+      "covered": 9,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 31,
+      "covered": 30,
+      "skipped": 0,
+      "pct": 96.77
+    },
+    "branches": {
+      "total": 48,
+      "covered": 46,
+      "skipped": 0,
+      "pct": 95.83
+    }
+  },
+  "frontend/src/features/reviews/types.ts": {
+    "lines": {
+      "total": 1,
+      "covered": 1,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 0,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 1,
+      "covered": 1,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 0,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "frontend/src/features/reviews/api/submitted-requests.ts": {
+    "lines": {
+      "total": 6,
+      "covered": 6,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 4,
+      "covered": 4,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 6,
+      "covered": 6,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 0,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "frontend/src/features/reviews/components/ReviewDecisionPanel.vue": {
+    "lines": {
+      "total": 60,
+      "covered": 60,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 22,
+      "covered": 22,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 75,
+      "covered": 75,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 117,
+      "covered": 117,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "frontend/src/features/reviews/pages/LeadAccessPage.vue": {
+    "lines": {
+      "total": 3,
+      "covered": 3,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 2,
+      "covered": 2,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 3,
+      "covered": 3,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 18,
+      "covered": 18,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "frontend/src/features/reviews/pages/LeadOversightPage.vue": {
+    "lines": {
+      "total": 19,
+      "covered": 19,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 7,
+      "covered": 7,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 27,
+      "covered": 27,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 30,
+      "covered": 28,
+      "skipped": 0,
+      "pct": 93.33
+    }
+  },
+  "frontend/src/features/reviews/pages/LeadRequestPage.vue": {
+    "lines": {
+      "total": 25,
+      "covered": 25,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 7,
+      "covered": 7,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 36,
+      "covered": 36,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 83,
+      "covered": 77,
+      "skipped": 0,
+      "pct": 92.77
+    }
+  },
+  "frontend/src/features/reviews/pages/ReviewAccessPage.vue": {
+    "lines": {
+      "total": 4,
+      "covered": 4,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 3,
+      "covered": 3,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 4,
+      "covered": 4,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 22,
+      "covered": 22,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "frontend/src/features/reviews/pages/ReviewQueuePage.vue": {
+    "lines": {
+      "total": 23,
+      "covered": 23,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 7,
+      "covered": 7,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 29,
+      "covered": 29,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 38,
+      "covered": 37,
+      "skipped": 0,
+      "pct": 97.36
+    }
+  },
+  "frontend/src/features/reviews/pages/ReviewRequestPage.vue": {
+    "lines": {
+      "total": 51,
+      "covered": 45,
+      "skipped": 0,
+      "pct": 88.23
+    },
+    "functions": {
+      "total": 12,
+      "covered": 11,
+      "skipped": 0,
+      "pct": 91.66
+    },
+    "statements": {
+      "total": 61,
+      "covered": 53,
+      "skipped": 0,
+      "pct": 86.88
+    },
+    "branches": {
+      "total": 106,
+      "covered": 94,
+      "skipped": 0,
+      "pct": 88.67
+    }
+  },
+  "frontend/src/features/reviews/pages/UnassignedRequestsPage.vue": {
+    "lines": {
+      "total": 71,
+      "covered": 71,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 16,
+      "covered": 16,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 91,
+      "covered": 87,
+      "skipped": 0,
+      "pct": 95.6
+    },
+    "branches": {
+      "total": 101,
+      "covered": 94,
+      "skipped": 0,
+      "pct": 93.06
+    }
+  },
+  "frontend/src/features/safety/SafetyQueuePage.vue": {
+    "lines": {
+      "total": 22,
+      "covered": 22,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 8,
+      "covered": 8,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 35,
+      "covered": 34,
+      "skipped": 0,
+      "pct": 97.14
+    },
+    "branches": {
+      "total": 43,
+      "covered": 41,
+      "skipped": 0,
+      "pct": 95.34
+    }
+  },
+  "frontend/src/features/safety/SafetyReviewPage.vue": {
+    "lines": {
+      "total": 75,
+      "covered": 74,
+      "skipped": 0,
+      "pct": 98.66
+    },
+    "functions": {
+      "total": 28,
+      "covered": 26,
+      "skipped": 0,
+      "pct": 92.85
+    },
+    "statements": {
+      "total": 115,
+      "covered": 113,
+      "skipped": 0,
+      "pct": 98.26
+    },
+    "branches": {
+      "total": 202,
+      "covered": 182,
+      "skipped": 0,
+      "pct": 90.09
+    }
+  },
+  "frontend/src/features/safety/api.ts": {
+    "lines": {
+      "total": 15,
+      "covered": 15,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 9,
+      "covered": 9,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 21,
+      "covered": 21,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 0,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "frontend/src/features/system/api/health.ts": {
+    "lines": {
+      "total": 8,
+      "covered": 8,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 2,
+      "covered": 2,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 8,
+      "covered": 8,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 8,
+      "covered": 8,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "frontend/src/features/system/components/HealthCheckCard.vue": {
+    "lines": {
+      "total": 4,
+      "covered": 4,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 0,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 4,
+      "covered": 4,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 8,
+      "covered": 8,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "frontend/src/features/system/pages/DashboardPage.vue": {
+    "lines": {
+      "total": 33,
+      "covered": 32,
+      "skipped": 0,
+      "pct": 96.96
+    },
+    "functions": {
+      "total": 10,
+      "covered": 9,
+      "skipped": 0,
+      "pct": 90
+    },
+    "statements": {
+      "total": 36,
+      "covered": 35,
+      "skipped": 0,
+      "pct": 97.22
+    },
+    "branches": {
+      "total": 76,
+      "covered": 64,
+      "skipped": 0,
+      "pct": 84.21
+    }
+  },
+  "frontend/src/features/venues/access.ts": {
+    "lines": {
+      "total": 2,
+      "covered": 2,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 1,
+      "covered": 1,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 2,
+      "covered": 2,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 2,
+      "covered": 2,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "frontend/src/features/venues/availability.ts": {
+    "lines": {
+      "total": 68,
+      "covered": 68,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 29,
+      "covered": 29,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 82,
+      "covered": 82,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 55,
+      "covered": 53,
+      "skipped": 0,
+      "pct": 96.36
+    }
+  },
+  "frontend/src/features/venues/catalogue-form.ts": {
+    "lines": {
+      "total": 63,
+      "covered": 63,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 10,
+      "covered": 10,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 77,
+      "covered": 77,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 58,
+      "covered": 58,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "frontend/src/features/venues/api/availability.ts": {
+    "lines": {
+      "total": 2,
+      "covered": 2,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 1,
+      "covered": 1,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 2,
+      "covered": 2,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 0,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "frontend/src/features/venues/api/venue-blocks.ts": {
+    "lines": {
+      "total": 6,
+      "covered": 6,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 5,
+      "covered": 5,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 7,
+      "covered": 7,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 2,
+      "covered": 1,
+      "skipped": 0,
+      "pct": 50
+    }
+  },
+  "frontend/src/features/venues/api/venue-bookings.ts": {
+    "lines": {
+      "total": 13,
+      "covered": 13,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 11,
+      "covered": 11,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 14,
+      "covered": 14,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 4,
+      "covered": 4,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "frontend/src/features/venues/api/venue-catalogue.ts": {
+    "lines": {
+      "total": 5,
+      "covered": 5,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 4,
+      "covered": 4,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 6,
+      "covered": 6,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 0,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "frontend/src/features/venues/api/venue-suitability.ts": {
+    "lines": {
+      "total": 3,
+      "covered": 3,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 2,
+      "covered": 2,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 3,
+      "covered": 3,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 2,
+      "covered": 2,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "frontend/src/features/venues/api/venues.ts": {
+    "lines": {
+      "total": 55,
+      "covered": 55,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 14,
+      "covered": 14,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 73,
+      "covered": 73,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 61,
+      "covered": 60,
+      "skipped": 0,
+      "pct": 98.36
+    }
+  },
+  "frontend/src/features/venues/components/VenueAvailabilityCalendar.vue": {
+    "lines": {
+      "total": 57,
+      "covered": 57,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 17,
+      "covered": 17,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 65,
+      "covered": 64,
+      "skipped": 0,
+      "pct": 98.46
+    },
+    "branches": {
+      "total": 66,
+      "covered": 59,
+      "skipped": 0,
+      "pct": 89.39
+    }
+  },
+  "frontend/src/features/venues/components/VenueWeekTimeline.vue": {
+    "lines": {
+      "total": 26,
+      "covered": 26,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 15,
+      "covered": 15,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 34,
+      "covered": 34,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 44,
+      "covered": 39,
+      "skipped": 0,
+      "pct": 88.63
+    }
+  },
+  "frontend/src/features/venues/pages/VenueAvailabilityPage.vue": {
+    "lines": {
+      "total": 4,
+      "covered": 4,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 4,
+      "covered": 4,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 5,
+      "covered": 5,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 20,
+      "covered": 20,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "frontend/src/features/venues/pages/VenueBlocksPage.vue": {
+    "lines": {
+      "total": 126,
+      "covered": 123,
+      "skipped": 0,
+      "pct": 97.61
+    },
+    "functions": {
+      "total": 27,
+      "covered": 27,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 144,
+      "covered": 134,
+      "skipped": 0,
+      "pct": 93.05
+    },
+    "branches": {
+      "total": 156,
+      "covered": 140,
+      "skipped": 0,
+      "pct": 89.74
+    }
+  },
+  "frontend/src/features/venues/pages/VenueBookingDetailPage.vue": {
+    "lines": {
+      "total": 122,
+      "covered": 122,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 40,
+      "covered": 40,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 150,
+      "covered": 147,
+      "skipped": 0,
+      "pct": 98
+    },
+    "branches": {
+      "total": 321,
+      "covered": 308,
+      "skipped": 0,
+      "pct": 95.95
+    }
+  },
+  "frontend/src/features/venues/pages/VenueBookingsPage.vue": {
+    "lines": {
+      "total": 33,
+      "covered": 33,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 13,
+      "covered": 13,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 43,
+      "covered": 42,
+      "skipped": 0,
+      "pct": 97.67
+    },
+    "branches": {
+      "total": 69,
+      "covered": 65,
+      "skipped": 0,
+      "pct": 94.2
+    }
+  },
+  "frontend/src/features/venues/pages/VenueCatalogueEditPage.vue": {
+    "lines": {
+      "total": 113,
+      "covered": 113,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 31,
+      "covered": 31,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 126,
+      "covered": 124,
+      "skipped": 0,
+      "pct": 98.41
+    },
+    "branches": {
+      "total": 169,
+      "covered": 166,
+      "skipped": 0,
+      "pct": 98.22
+    }
+  },
+  "frontend/src/features/venues/pages/VenueCataloguePage.vue": {
+    "lines": {
+      "total": 31,
+      "covered": 31,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 9,
+      "covered": 9,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 37,
+      "covered": 37,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 45,
+      "covered": 45,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "frontend/src/features/venues/pages/VenueSearchPage.vue": {
+    "lines": {
+      "total": 99,
+      "covered": 92,
+      "skipped": 0,
+      "pct": 92.92
+    },
+    "functions": {
+      "total": 32,
+      "covered": 31,
+      "skipped": 0,
+      "pct": 96.87
+    },
+    "statements": {
+      "total": 110,
+      "covered": 100,
+      "skipped": 0,
+      "pct": 90.9
+    },
+    "branches": {
+      "total": 160,
+      "covered": 137,
+      "skipped": 0,
+      "pct": 85.62
+    }
+  },
+  "frontend/src/features/venues/pages/VenueSuitabilityPage.vue": {
+    "lines": {
+      "total": 121,
+      "covered": 121,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 36,
+      "covered": 36,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 149,
+      "covered": 146,
+      "skipped": 0,
+      "pct": 97.98
+    },
+    "branches": {
+      "total": 270,
+      "covered": 260,
+      "skipped": 0,
+      "pct": 96.29
+    }
+  },
+  "frontend/src/lib/api-client.ts": {
+    "lines": {
+      "total": 34,
+      "covered": 34,
+      "skipped": 0,
+      "pct": 100
+    },
+    "functions": {
+      "total": 7,
+      "covered": 7,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 37,
+      "covered": 37,
+      "skipped": 0,
+      "pct": 100
+    },
+    "branches": {
+      "total": 27,
+      "covered": 27,
+      "skipped": 0,
+      "pct": 100
+    }
+  }
+}

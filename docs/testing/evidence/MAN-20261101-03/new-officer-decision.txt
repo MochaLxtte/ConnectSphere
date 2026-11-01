@@ -1,0 +1,81 @@
+- link "Skip to content":
+  - /url: "#main-content"
+- complementary:
+  - link "ConnectSphere home":
+    - /url: /
+    - text: ConnectSphere
+    - generic: Event Services
+  - generic: CS
+  - text: Event Services
+  - generic: Development workspace
+  - navigation "Main navigation":
+    - paragraph: Workspace
+    - link "Overview":
+      - /url: /
+      - text: Overview
+    - paragraph: Safety
+    - link "Safety reviews":
+      - /url: /safety-reviews
+      - text: Safety reviews
+  - paragraph: Event planning workspace
+  - generic: For organisers and coordinators.
+  - text: Development scaffold
+  - generic: v0.1
+- banner:
+  - text: Workspace
+  - generic: /
+  - strong: Safety review
+  - link "Notifications, 30 unread":
+    - /url: /notifications
+    - generic: "30"
+  - strong: Safety Officer
+  - generic: Safety Officer
+  - button "Sign out"
+- main:
+  - region "REL-20261101-AGENT-STALE":
+    - link "Back to safety reviews":
+      - /url: /safety-reviews
+    - heading "REL-20261101-AGENT-STALE" [level=1]
+    - status: "Decision saved: Safety approved."
+    - paragraph:
+      - strong: Round 4
+      - text: · Safety approved · submitted by Event Coordinator 01/11/2026, 11:39:08 pm (Singapore time)
+    - paragraph: Advisory venue suitability is not a safety approval and is not shown here as one.
+    - heading "Event" [level=2]
+    - term: Expected attendance
+    - definition: "20"
+    - term: Time
+    - definition: 26/11/2026, 9:00:00 am – 26/11/2026, 10:00:00 am
+    - term: Venue requirements
+    - definition: Classroom layout and projector
+    - term: Accessibility needs
+    - definition: Wheelchair access
+    - term: Equipment requirements
+    - definition: Not required
+    - heading "Safety information" [level=2]
+    - term: Emergency access
+    - definition: "MAN-20261101-03: dedicated classroom exits remain clear after buffer restoration."
+    - term: Equipment placement
+    - definition: No equipment required.
+    - term: Crowd movement
+    - definition: Two synthetic attendees use clear classroom aisles.
+    - heading "Venues" [level=2]
+    - list:
+      - strong: Classroom
+      - text: · capacity 30 · APPROVED
+      - paragraph: "Booked layout: CLASSROOM · Available layouts: CLASSROOM"
+      - paragraph: "Facilities: None recorded"
+      - paragraph: "Accessibility: None recorded"
+      - paragraph: "Operating hours (Singapore time): 08:00:00 – 20:00:00."
+      - paragraph: "Setup buffer: 15 minutes · Turnaround buffer: 15 minutes."
+    - heading "Equipment" [level=2]
+    - paragraph: No active equipment lines.
+    - paragraph: Decided by Safety Officer 01/11/2026, 11:40:02 pm. MAN-20261101-03 synthetic recovery approval after venue-buffer restoration; old round remains invalidated.
+    - heading "Earlier rounds" [level=2]
+    - list:
+      - listitem: Round 3 · Safety approved
+      - listitem: Round 2 · Rejected · Venue setup buffer changed after submission; resubmit current arrangements.
+      - listitem: Round 1 · Safety approved
+- contentinfo:
+  - generic: ConnectSphere Event Services
+  - generic: Event planning workspace

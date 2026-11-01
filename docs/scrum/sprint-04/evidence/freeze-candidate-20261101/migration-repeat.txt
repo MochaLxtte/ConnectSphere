@@ -1,0 +1,5 @@
+
+> connectsphere@0.1.0 db:migrate
+> tsx database/migrate.ts
+
+Database is up to date.

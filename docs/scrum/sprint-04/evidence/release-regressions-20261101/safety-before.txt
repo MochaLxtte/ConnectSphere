@@ -1,0 +1,46 @@
+
+ RUN  v4.1.11 C:/Users/trist/Documents/School Stuff/Y3S1/IS212/ConnectSphere
+
+ ❯ database/tests/safety/safety-invalidation.integration.test.ts (1 test | 1 failed) 696ms
+     × does not revive a decided approval after a change and exact restoration without an intervening read 186ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  database/tests/safety/safety-invalidation.integration.test.ts > KAN-84-AC9 permanent safety approval invalidation > does not revive a decided approval after a change and exact restoration without an intervening read
+AssertionError: expected { …(10) } to match object { outcome: 'STALE', …(4) }
+(9 matching properties omitted from actual)
+
+- Expected
++ Received
+
+@@ -1,11 +1,11 @@
+  {
+    "canStartPreparation": false,
+-   "canSubmit": true,
+-   "outcome": "STALE",
++   "canSubmit": false,
++   "outcome": "APPROVED",
+    "preparation": {
+-     "blocked": true,
++     "blocked": false,
+    },
+    "rounds": [
+      {
+        "id": "dbbcb14c-be36-4775-82dc-99a236953ea2",
+        "status": "APPROVED",
+
+ ❯ database/tests/safety/safety-invalidation.integration.test.ts:73:30
+     71|     await f.pool.query('UPDATE venues SET setup_minutes = 15 WHERE id …
+     72|     await f.pool.query('UPDATE venues SET setup_minutes = 0 WHERE id =…
+     73|     expect(await safety(id)).toMatchObject({ outcome: 'STALE', canSubm…
+       |                              ^
+     74|       preparation: { blocked: true }, rounds: [{ id: review.id, status…
+     75|     expect((await refusal(startPreparation(f.pool, { eventRequestId: i…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  19:03:33
+   Duration  2.69s (transform 340ms, setup 0ms, import 1.79s, tests 696ms, environment 0ms)

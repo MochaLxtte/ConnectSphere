@@ -1,0 +1,11 @@
+{
+  "source": "browser-isolated-1.txt (parsed list reporter, not a native Playwright JSON report)",
+  "command": "npm run test:e2e",
+  "result": "Pass",
+  "passed": 253,
+  "failed": 0,
+  "workers": 2,
+  "retries": 0,
+  "duration_display": "1.6m",
+  "exit_code": 0
+}

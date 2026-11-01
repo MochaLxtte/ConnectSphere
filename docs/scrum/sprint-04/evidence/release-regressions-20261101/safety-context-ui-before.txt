@@ -1,0 +1,1360 @@
+
+> @connectsphere/frontend@0.1.0 test
+> vitest run src/features/safety/SafetyPages.test.ts
+
+
+ RUN  v4.1.11 C:/Users/trist/Documents/School Stuff/Y3S1/IS212/ConnectSphere/frontend
+
+ ❯ src/features/safety/SafetyPages.test.ts (29 tests | 3 failed) 4288ms
+     × KAN-84-AC3: shows event, venues, equipment, missing notes and that suitability is not approval 29ms
+     × KAN-84-AC3: reports empty facilities and equipment requirements without inventing safety context 1017ms
+     × KAN-84-AC3: reports omitted facilities and equipment requirements without inventing safety context 1028ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/safety/SafetyPages.test.ts > KAN-84 Safety Officer review decision > KAN-84-AC3: shows event, venues, equipment, missing notes and that suitability is not approval
+Error: expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  Facilities: First aid kit, PA system
+Received:
+  Grand Hall · capacity 150 · APPROVED Booked layout: Banquet · Available layouts: BanquetAccessibility: Ramp · wheelchair accessibleOperating hours (Singapore time): 09:00:00 – 23:00:00.Setup buffer: 15 minutes · Turnaround buffer: 20 minutes.
+ ❯ src/features/safety/SafetyPages.test.ts:100:58
+     98|     expect(screen.getByText('Grand Hall').closest('li')).toHaveTextCon…
+     99|     expect(screen.getByText('Grand Hall').closest('li')).toHaveTextCon…
+    100|     expect(screen.getByText('Grand Hall').closest('li')).toHaveTextCon…
+       |                                                          ^
+    101|     expect(screen.getByText('2 × Speaker · RESERVED')).toBeInTheDocume…
+    102|     expect(screen.getByText('Technical requirements: Secure cables awa…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  src/features/safety/SafetyPages.test.ts > KAN-84 Safety Officer review decision > KAN-84-AC3: reports empty facilities and equipment requirements without inventing safety context
+TestingLibraryElementError: Unable to find an element with the text: Facilities: None recorded. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <section
+      aria-labelledby="safety-review-heading"
+      class="panel safety-page"
+      data-v-0219e6f3=""
+    >
+      <a
+        class="back-link"
+        data-v-0219e6f3=""
+        href="/safety-reviews"
+      >
+        Back to safety reviews
+      </a>
+      <h1
+        data-v-0219e6f3=""
+        id="safety-review-heading"
+      >
+        Graduation dinner
+      </h1>
+
+      <p
+        data-v-0219e6f3=""
+      >
+        <strong
+          data-v-0219e6f3=""
+        >
+          Round 2
+        </strong>
+         · Awaiting Safety Officer · submitted by Casey 01/12/2034, 10:00:00 am (Singapore time)
+      </p>
+      <p
+        class="note"
+        data-v-0219e6f3=""
+      >
+        Advisory venue suitability is not a safety approval and is not shown here as one.
+      </p>
+      <h2
+        data-v-0219e6f3=""
+      >
+        Event
+      </h2>
+      <dl
+        class="facts"
+        data-v-0219e6f3=""
+      >
+        <div
+          data-v-0219e6f3=""
+        >
+          <dt
+            data-v-0219e6f3=""
+          >
+            Expected attendance
+          </dt>
+          <dd
+            data-v-0219e6f3=""
+          >
+            120
+          </dd>
+        </div>
+        <div
+          data-v-0219e6f3=""
+        >
+          <dt
+            data-v-0219e6f3=""
+          >
+            Time
+          </dt>
+          <dd
+            data-v-0219e6f3=""
+          >
+            01/01/2035, 6:00:00 pm – 01/01/2035, 10:00:00 pm
+          </dd>
+        </div>
+        <div
+          data-v-0219e6f3=""
+        >
+          <dt
+            data-v-0219e6f3=""
+          >
+            Venue requirements
+          </dt>
+          <dd
+            data-v-0219e6f3=""
+          >
+            Ballroom
+          </dd>
+        </div>
+        <div
+          data-v-0219e6f3=""
+        >
+          <dt
+            data-v-0219e6f3=""
+          >
+            Accessibility needs
+          </dt>
+          <dd
+            data-v-0219e6f3=""
+          >
+            Not recorded
+          </dd>
+        </div>
+        <div
+          data-v-0219e6f3=""
+        >
+          <dt
+            data-v-0219e6f3=""
+          >
+            Equipment requirements
+          </dt>
+          <dd
+            data-v-0219e6f3=""
+          >
+            Speakers
+          </dd>
+        </div>
+      </dl>
+      <h2
+        data-v-0219e6f3=""
+      >
+        Safety information
+      </h2>
+      <dl
+        class="facts"
+        data-v-0219e6f3=""
+      >
+
+        <div
+          data-v-0219e6f3=""
+        >
+          <dt
+            data-v-0219e6f3=""
+          >
+            Emergency access
+          </dt>
+          <dd
+            class=""
+            data-v-0219e6f3=""
+          >
+            East exits
+          </dd>
+        </div>
+        <div
+          data-v-0219e6f3=""
+        >
+          <dt
+            data-v-0219e6f3=""
+          >
+            Equipment placement
+          </dt>
+          <dd
+            class="missing"
+            data-v-0219e6f3=""
+          >
+            Missing — not provided by the coordinator
+          </dd>
+        </div>
+        <div
+          data-v-0219e6f3=""
+        >
+          <dt
+            data-v-0219e6f3=""
+          >
+            Crowd movement
+          </dt>
+          <dd
+            class=""
+            data-v-0219e6f3=""
+          >
+            Foyer flow
+          </dd>
+        </div>
+
+      </dl>
+      <h2
+        data-v-0219e6f3=""
+      >
+        Venues
+      </h2>
+      <ul
+        class="cards"
+        data-v-0219e6f3=""
+      >
+
+        <li
+          data-v-0219e6f3=""
+        >
+          <strong
+            data-v-0219e6f3=""
+          >
+            Grand Hall
+          </strong>
+           · capacity 150 · APPROVED
+          <p
+            data-v-0219e6f3=""
+          >
+            Booked layout: Banquet · Available layouts: Banquet
+          </p>
+          <p
+            data-v-0219e6f3=""
+          >
+            Accessibility: Ramp · wheelchair accessible
+          </p>
+          <p
+            data-v-0219e6f3=""
+          >
+            Operating hours (Singapore time): 09:00:00 – 23:00:00.
+          </p>
+          <p
+            data-v-0219e6f3=""
+          >
+            Setup buffer: 15 minutes · Turnaround buffer: 20 minutes.
+          </p>
+        </li>
+
+      </ul>
+      <h2
+        data-v-0219e6f3=""
+      >
+        Equipment
+      </h2>
+      <ul
+        class="cards"
+        data-v-0219e6f3=""
+      >
+
+        <li
+          data-v-0219e6f3=""
+        >
+          2 × Speaker · RESERVED
+        </li>
+
+      </ul>
+      <form
+        class="decision"
+        data-v-0219e6f3=""
+      >
+        <fieldset
+          data-v-0219e6f3=""
+        >
+          <legend
+            data-v-0219e6f3=""
+          >
+            Decision
+          </legend>
+          <label
+            data-v-0219e6f3=""
+          >
+            <input
+              data-v-0219e6f3=""
+              type="radio"
+              value="APPROVED"
+            />
+             Approve
+          </label>
+          <label
+            data-v-0219e6f3=""
+          >
+            <input
+              data-v-0219e6f3=""
+              type="radio"
+              value="CHANGES_REQUESTED"
+            />
+             Request changes
+          </label>
+          <label
+            data-v-0219e6f3=""
+          >
+            <input
+              data-v-0219e6f3=""
+              type="radio"
+              value="REJECTED"
+            />
+             Reject
+          </label>
+          <label
+            data-v-0219e6f3=""
+          >
+            Notes (optional)
+            <textarea
+              data-v-0219e6f3=""
+              maxlength="2000"
+            />
+          </label>
+          <button
+            class="button"
+            data-v-0219e6f3=""
+            disabled=""
+            type="submit"
+          >
+            Save decision
+          </button>
+        </fieldset>
+      </form>
+
+      <h2
+        data-v-0219e6f3=""
+      >
+        Earlier rounds
+      </h2>
+      <ul
+        class="cards"
+        data-v-0219e6f3=""
+      >
+
+        <li
+          data-v-0219e6f3=""
+        >
+          Round 1 · Changes requested
+
+           · Add exit plan.
+
+        </li>
+
+      </ul>
+
+
+    </section>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <section
+      aria-labelledby="safety-review-heading"
+      class="panel safety-page"
+      data-v-0219e6f3=""
+    >
+      <a
+        class="back-link"
+        data-v-0219e6f3=""
+        href="/safety-reviews"
+      >
+        Back to safety reviews
+      </a>
+      <h1
+        data-v-0219e6f3=""
+        id="safety-review-heading"
+      >
+        Graduation dinner
+      </h1>
+
+      <p
+        data-v-0219e6f3=""
+      >
+        <strong
+          data-v-0219e6f3=""
+        >
+          Round 2
+        </strong>
+         · Awaiting Safety Officer · submitted by Casey 01/12/2034, 10:00:00 am (Singapore time)
+      </p>
+      <p
+        class="note"
+        data-v-0219e6f3=""
+      >
+        Advisory venue suitability is not a safety approval and is not shown here as one.
+      </p>
+      <h2
+        data-v-0219e6f3=""
+      >
+        Event
+      </h2>
+      <dl
+        class="facts"
+        data-v-0219e6f3=""
+      >
+        <div
+          data-v-0219e6f3=""
+        >
+          <dt
+            data-v-0219e6f3=""
+          >
+            Expected attendance
+          </dt>
+          <dd
+            data-v-0219e6f3=""
+          >
+            120
+          </dd>
+        </div>
+        <div
+          data-v-0219e6f3=""
+        >
+          <dt
+            data-v-0219e6f3=""
+          >
+            Time
+          </dt>
+          <dd
+            data-v-0219e6f3=""
+          >
+            01/01/2035, 6:00:00 pm – 01/01/2035, 10:00:00 pm
+          </dd>
+        </div>
+        <div
+          data-v-0219e6f3=""
+        >
+          <dt
+            data-v-0219e6f3=""
+          >
+            Venue requirements
+          </dt>
+          <dd
+            data-v-0219e6f3=""
+          >
+            Ballroom
+          </dd>
+        </div>
+        <div
+          data-v-0219e6f3=""
+        >
+          <dt
+            data-v-0219e6f3=""
+          >
+            Accessibility needs
+          </dt>
+          <dd
+            data-v-0219e6f3=""
+          >
+            Not recorded
+          </dd>
+        </div>
+        <div
+          data-v-0219e6f3=""
+        >
+          <dt
+            data-v-0219e6f3=""
+          >
+            Equipment requirements
+          </dt>
+          <dd
+            data-v-0219e6f3=""
+          >
+            Speakers
+          </dd>
+        </div>
+      </dl>
+      <h2
+        data-v-0219e6f3=""
+      >
+        Safety information
+      </h2>
+      <dl
+        class="facts"
+        data-v-0219e6f3=""
+      >
+
+        <div
+          data-v-0219e6f3=""
+        >
+          <dt
+            data-v-0219e6f3=""
+          >
+            Emergency access
+          </dt>
+          <dd
+            class=""
+            data-v-0219e6f3=""
+          >
+            East exits
+          </dd>
+        </div>
+        <div
+          data-v-0219e6f3=""
+        >
+          <dt
+            data-v-0219e6f3=""
+          >
+            Equipment placement
+          </dt>
+          <dd
+            class="missing"
+            data-v-0219e6f3=""
+          >
+            Missing — not provided by the coordinator
+          </dd>
+        </div>
+        <div
+          data-v-0219e6f3=""
+        >
+          <dt
+            data-v-0219e6f3=""
+          >
+            Crowd movement
+          </dt>
+          <dd
+            class=""
+            data-v-0219e6f3=""
+          >
+            Foyer flow
+          </dd>
+        </div>
+
+      </dl>
+      <h2
+        data-v-0219e6f3=""
+      >
+        Venues
+      </h2>
+      <ul
+        class="cards"
+        data-v-0219e6f3=""
+      >
+
+        <li
+          data-v-0219e6f3=""
+        >
+          <strong
+            data-v-0219e6f3=""
+          >
+            Grand Hall
+          </strong>
+           · capacity 150 · APPROVED
+          <p
+            data-v-0219e6f3=""
+          >
+            Booked layout: Banquet · Available layouts: Banquet
+          </p>
+          <p
+            data-v-0219e6f3=""
+          >
+            Accessibility: Ramp · wheelchair accessible
+          </p>
+          <p
+            data-v-0219e6f3=""
+          >
+            Operating hours (Singapore time): 09:00:00 – 23:00:00.
+          </p>
+          <p
+            data-v-0219e6f3=""
+          >
+            Setup buffer: 15 minutes · Turnaround buffer: 20 minutes.
+          </p>
+        </li>
+
+      </ul>
+      <h2
+        data-v-0219e6f3=""
+      >
+        Equipment
+      </h2>
+      <ul
+        class="cards"
+        data-v-0219e6f3=""
+      >
+
+        <li
+          data-v-0219e6f3=""
+        >
+          2 × Speaker · RESERVED
+        </li>
+
+      </ul>
+      <form
+        class="decision"
+        data-v-0219e6f3=""
+      >
+        <fieldset
+          data-v-0219e6f3=""
+        >
+          <legend
+            data-v-0219e6f3=""
+          >
+            Decision
+          </legend>
+          <label
+            data-v-0219e6f3=""
+          >
+            <input
+              data-v-0219e6f3=""
+              type="radio"
+              value="APPROVED"
+            />
+             Approve
+          </label>
+          <label
+            data-v-0219e6f3=""
+          >
+            <input
+              data-v-0219e6f3=""
+              type="radio"
+              value="CHANGES_REQUESTED"
+            />
+             Request changes
+          </label>
+          <label
+            data-v-0219e6f3=""
+          >
+            <input
+              data-v-0219e6f3=""
+              type="radio"
+              value="REJECTED"
+            />
+             Reject
+          </label>
+          <label
+            data-v-0219e6f3=""
+          >
+            Notes (optional)
+            <textarea
+              data-v-0219e6f3=""
+              maxlength="2000"
+            />
+          </label>
+          <button
+            class="button"
+            data-v-0219e6f3=""
+            disabled=""
+            type="submit"
+          >
+            Save decision
+          </button>
+        </fieldset>
+      </form>
+
+      <h2
+        data-v-0219e6f3=""
+      >
+        Earlier rounds
+      </h2>
+      <ul
+        class="cards"
+        data-v-0219e6f3=""
+      >
+
+        <li
+          data-v-0219e6f3=""
+        >
+          Round 1 · Changes requested
+
+           · Add exit plan.
+
+        </li>
+
+      </ul>
+
+
+    </section>
+  </div>
+</body>
+ ❯ waitForWrapper ../node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ ../node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/features/safety/SafetyPages.test.ts:114:25
+    112|     }) });
+    113|     await open(`/safety-reviews/${reviewId}`);
+    114|     expect(await screen.findByText('Facilities: None recorded')).toBeI…
+       |                         ^
+    115|     expect(screen.getByText('Technical requirements: Not recorded')).t…
+    116|     expect(screen.queryByText('Technical requirements: Secure cables a…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  src/features/safety/SafetyPages.test.ts > KAN-84 Safety Officer review decision > KAN-84-AC3: reports omitted facilities and equipment requirements without inventing safety context
+TestingLibraryElementError: Unable to find an element with the text: Facilities: None recorded. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <section
+      aria-labelledby="safety-review-heading"
+      class="panel safety-page"
+      data-v-0219e6f3=""
+    >
+      <a
+        class="back-link"
+        data-v-0219e6f3=""
+        href="/safety-reviews"
+      >
+        Back to safety reviews
+      </a>
+      <h1
+        data-v-0219e6f3=""
+        id="safety-review-heading"
+      >
+        Graduation dinner
+      </h1>
+
+      <p
+        data-v-0219e6f3=""
+      >
+        <strong
+          data-v-0219e6f3=""
+        >
+          Round 2
+        </strong>
+         · Awaiting Safety Officer · submitted by Casey 01/12/2034, 10:00:00 am (Singapore time)
+      </p>
+      <p
+        class="note"
+        data-v-0219e6f3=""
+      >
+        Advisory venue suitability is not a safety approval and is not shown here as one.
+      </p>
+      <h2
+        data-v-0219e6f3=""
+      >
+        Event
+      </h2>
+      <dl
+        class="facts"
+        data-v-0219e6f3=""
+      >
+        <div
+          data-v-0219e6f3=""
+        >
+          <dt
+            data-v-0219e6f3=""
+          >
+            Expected attendance
+          </dt>
+          <dd
+            data-v-0219e6f3=""
+          >
+            120
+          </dd>
+        </div>
+        <div
+          data-v-0219e6f3=""
+        >
+          <dt
+            data-v-0219e6f3=""
+          >
+            Time
+          </dt>
+          <dd
+            data-v-0219e6f3=""
+          >
+            01/01/2035, 6:00:00 pm – 01/01/2035, 10:00:00 pm
+          </dd>
+        </div>
+        <div
+          data-v-0219e6f3=""
+        >
+          <dt
+            data-v-0219e6f3=""
+          >
+            Venue requirements
+          </dt>
+          <dd
+            data-v-0219e6f3=""
+          >
+            Ballroom
+          </dd>
+        </div>
+        <div
+          data-v-0219e6f3=""
+        >
+          <dt
+            data-v-0219e6f3=""
+          >
+            Accessibility needs
+          </dt>
+          <dd
+            data-v-0219e6f3=""
+          >
+            Not recorded
+          </dd>
+        </div>
+        <div
+          data-v-0219e6f3=""
+        >
+          <dt
+            data-v-0219e6f3=""
+          >
+            Equipment requirements
+          </dt>
+          <dd
+            data-v-0219e6f3=""
+          >
+            Speakers
+          </dd>
+        </div>
+      </dl>
+      <h2
+        data-v-0219e6f3=""
+      >
+        Safety information
+      </h2>
+      <dl
+        class="facts"
+        data-v-0219e6f3=""
+      >
+
+        <div
+          data-v-0219e6f3=""
+        >
+          <dt
+            data-v-0219e6f3=""
+          >
+            Emergency access
+          </dt>
+          <dd
+            class=""
+            data-v-0219e6f3=""
+          >
+            East exits
+          </dd>
+        </div>
+        <div
+          data-v-0219e6f3=""
+        >
+          <dt
+            data-v-0219e6f3=""
+          >
+            Equipment placement
+          </dt>
+          <dd
+            class="missing"
+            data-v-0219e6f3=""
+          >
+            Missing — not provided by the coordinator
+          </dd>
+        </div>
+        <div
+          data-v-0219e6f3=""
+        >
+          <dt
+            data-v-0219e6f3=""
+          >
+            Crowd movement
+          </dt>
+          <dd
+            class=""
+            data-v-0219e6f3=""
+          >
+            Foyer flow
+          </dd>
+        </div>
+
+      </dl>
+      <h2
+        data-v-0219e6f3=""
+      >
+        Venues
+      </h2>
+      <ul
+        class="cards"
+        data-v-0219e6f3=""
+      >
+
+        <li
+          data-v-0219e6f3=""
+        >
+          <strong
+            data-v-0219e6f3=""
+          >
+            Grand Hall
+          </strong>
+           · capacity 150 · APPROVED
+          <p
+            data-v-0219e6f3=""
+          >
+            Booked layout: Banquet · Available layouts: Banquet
+          </p>
+          <p
+            data-v-0219e6f3=""
+          >
+            Accessibility: Ramp · wheelchair accessible
+          </p>
+          <p
+            data-v-0219e6f3=""
+          >
+            Operating hours (Singapore time): 09:00:00 – 23:00:00.
+          </p>
+          <p
+            data-v-0219e6f3=""
+          >
+            Setup buffer: 15 minutes · Turnaround buffer: 20 minutes.
+          </p>
+        </li>
+
+      </ul>
+      <h2
+        data-v-0219e6f3=""
+      >
+        Equipment
+      </h2>
+      <ul
+        class="cards"
+        data-v-0219e6f3=""
+      >
+
+        <li
+          data-v-0219e6f3=""
+        >
+          2 × Speaker · RESERVED
+        </li>
+
+      </ul>
+      <form
+        class="decision"
+        data-v-0219e6f3=""
+      >
+        <fieldset
+          data-v-0219e6f3=""
+        >
+          <legend
+            data-v-0219e6f3=""
+          >
+            Decision
+          </legend>
+          <label
+            data-v-0219e6f3=""
+          >
+            <input
+              data-v-0219e6f3=""
+              type="radio"
+              value="APPROVED"
+            />
+             Approve
+          </label>
+          <label
+            data-v-0219e6f3=""
+          >
+            <input
+              data-v-0219e6f3=""
+              type="radio"
+              value="CHANGES_REQUESTED"
+            />
+             Request changes
+          </label>
+          <label
+            data-v-0219e6f3=""
+          >
+            <input
+              data-v-0219e6f3=""
+              type="radio"
+              value="REJECTED"
+            />
+             Reject
+          </label>
+          <label
+            data-v-0219e6f3=""
+          >
+            Notes (optional)
+            <textarea
+              data-v-0219e6f3=""
+              maxlength="2000"
+            />
+          </label>
+          <button
+            class="button"
+            data-v-0219e6f3=""
+            disabled=""
+            type="submit"
+          >
+            Save decision
+          </button>
+        </fieldset>
+      </form>
+
+      <h2
+        data-v-0219e6f3=""
+      >
+        Earlier rounds
+      </h2>
+      <ul
+        class="cards"
+        data-v-0219e6f3=""
+      >
+
+        <li
+          data-v-0219e6f3=""
+        >
+          Round 1 · Changes requested
+
+           · Add exit plan.
+
+        </li>
+
+      </ul>
+
+
+    </section>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <section
+      aria-labelledby="safety-review-heading"
+      class="panel safety-page"
+      data-v-0219e6f3=""
+    >
+      <a
+        class="back-link"
+        data-v-0219e6f3=""
+        href="/safety-reviews"
+      >
+        Back to safety reviews
+      </a>
+      <h1
+        data-v-0219e6f3=""
+        id="safety-review-heading"
+      >
+        Graduation dinner
+      </h1>
+
+      <p
+        data-v-0219e6f3=""
+      >
+        <strong
+          data-v-0219e6f3=""
+        >
+          Round 2
+        </strong>
+         · Awaiting Safety Officer · submitted by Casey 01/12/2034, 10:00:00 am (Singapore time)
+      </p>
+      <p
+        class="note"
+        data-v-0219e6f3=""
+      >
+        Advisory venue suitability is not a safety approval and is not shown here as one.
+      </p>
+      <h2
+        data-v-0219e6f3=""
+      >
+        Event
+      </h2>
+      <dl
+        class="facts"
+        data-v-0219e6f3=""
+      >
+        <div
+          data-v-0219e6f3=""
+        >
+          <dt
+            data-v-0219e6f3=""
+          >
+            Expected attendance
+          </dt>
+          <dd
+            data-v-0219e6f3=""
+          >
+            120
+          </dd>
+        </div>
+        <div
+          data-v-0219e6f3=""
+        >
+          <dt
+            data-v-0219e6f3=""
+          >
+            Time
+          </dt>
+          <dd
+            data-v-0219e6f3=""
+          >
+            01/01/2035, 6:00:00 pm – 01/01/2035, 10:00:00 pm
+          </dd>
+        </div>
+        <div
+          data-v-0219e6f3=""
+        >
+          <dt
+            data-v-0219e6f3=""
+          >
+            Venue requirements
+          </dt>
+          <dd
+            data-v-0219e6f3=""
+          >
+            Ballroom
+          </dd>
+        </div>
+        <div
+          data-v-0219e6f3=""
+        >
+          <dt
+            data-v-0219e6f3=""
+          >
+            Accessibility needs
+          </dt>
+          <dd
+            data-v-0219e6f3=""
+          >
+            Not recorded
+          </dd>
+        </div>
+        <div
+          data-v-0219e6f3=""
+        >
+          <dt
+            data-v-0219e6f3=""
+          >
+            Equipment requirements
+          </dt>
+          <dd
+            data-v-0219e6f3=""
+          >
+            Speakers
+          </dd>
+        </div>
+      </dl>
+      <h2
+        data-v-0219e6f3=""
+      >
+        Safety information
+      </h2>
+      <dl
+        class="facts"
+        data-v-0219e6f3=""
+      >
+
+        <div
+          data-v-0219e6f3=""
+        >
+          <dt
+            data-v-0219e6f3=""
+          >
+            Emergency access
+          </dt>
+          <dd
+            class=""
+            data-v-0219e6f3=""
+          >
+            East exits
+          </dd>
+        </div>
+        <div
+          data-v-0219e6f3=""
+        >
+          <dt
+            data-v-0219e6f3=""
+          >
+            Equipment placement
+          </dt>
+          <dd
+            class="missing"
+            data-v-0219e6f3=""
+          >
+            Missing — not provided by the coordinator
+          </dd>
+        </div>
+        <div
+          data-v-0219e6f3=""
+        >
+          <dt
+            data-v-0219e6f3=""
+          >
+            Crowd movement
+          </dt>
+          <dd
+            class=""
+            data-v-0219e6f3=""
+          >
+            Foyer flow
+          </dd>
+        </div>
+
+      </dl>
+      <h2
+        data-v-0219e6f3=""
+      >
+        Venues
+      </h2>
+      <ul
+        class="cards"
+        data-v-0219e6f3=""
+      >
+
+        <li
+          data-v-0219e6f3=""
+        >
+          <strong
+            data-v-0219e6f3=""
+          >
+            Grand Hall
+          </strong>
+           · capacity 150 · APPROVED
+          <p
+            data-v-0219e6f3=""
+          >
+            Booked layout: Banquet · Available layouts: Banquet
+          </p>
+          <p
+            data-v-0219e6f3=""
+          >
+            Accessibility: Ramp · wheelchair accessible
+          </p>
+          <p
+            data-v-0219e6f3=""
+          >
+            Operating hours (Singapore time): 09:00:00 – 23:00:00.
+          </p>
+          <p
+            data-v-0219e6f3=""
+          >
+            Setup buffer: 15 minutes · Turnaround buffer: 20 minutes.
+          </p>
+        </li>
+
+      </ul>
+      <h2
+        data-v-0219e6f3=""
+      >
+        Equipment
+      </h2>
+      <ul
+        class="cards"
+        data-v-0219e6f3=""
+      >
+
+        <li
+          data-v-0219e6f3=""
+        >
+          2 × Speaker · RESERVED
+        </li>
+
+      </ul>
+      <form
+        class="decision"
+        data-v-0219e6f3=""
+      >
+        <fieldset
+          data-v-0219e6f3=""
+        >
+          <legend
+            data-v-0219e6f3=""
+          >
+            Decision
+          </legend>
+          <label
+            data-v-0219e6f3=""
+          >
+            <input
+              data-v-0219e6f3=""
+              type="radio"
+              value="APPROVED"
+            />
+             Approve
+          </label>
+          <label
+            data-v-0219e6f3=""
+          >
+            <input
+              data-v-0219e6f3=""
+              type="radio"
+              value="CHANGES_REQUESTED"
+            />
+             Request changes
+          </label>
+          <label
+            data-v-0219e6f3=""
+          >
+            <input
+              data-v-0219e6f3=""
+              type="radio"
+              value="REJECTED"
+            />
+             Reject
+          </label>
+          <label
+            data-v-0219e6f3=""
+          >
+            Notes (optional)
+            <textarea
+              data-v-0219e6f3=""
+              maxlength="2000"
+            />
+          </label>
+          <button
+            class="button"
+            data-v-0219e6f3=""
+            disabled=""
+            type="submit"
+          >
+            Save decision
+          </button>
+        </fieldset>
+      </form>
+
+      <h2
+        data-v-0219e6f3=""
+      >
+        Earlier rounds
+      </h2>
+      <ul
+        class="cards"
+        data-v-0219e6f3=""
+      >
+
+        <li
+          data-v-0219e6f3=""
+        >
+          Round 1 · Changes requested
+
+           · Add exit plan.
+
+        </li>
+
+      </ul>
+
+
+    </section>
+  </div>
+</body>
+ ❯ waitForWrapper ../node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ ../node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/features/safety/SafetyPages.test.ts:114:25
+    112|     }) });
+    113|     await open(`/safety-reviews/${reviewId}`);
+    114|     expect(await screen.findByText('Facilities: None recorded')).toBeI…
+       |                         ^
+    115|     expect(screen.getByText('Technical requirements: Not recorded')).t…
+    116|     expect(screen.queryByText('Technical requirements: Secure cables a…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 26 passed (29)
+   Start at  19:08:35
+   Duration  6.71s (transform 364ms, setup 757ms, import 663ms, tests 4.29s, environment 717ms)
+
+npm error Lifecycle script `test` failed with error:
+npm error code 1
+npm error path C:\Users\trist\Documents\School Stuff\Y3S1\IS212\ConnectSphere\frontend
+npm error workspace @connectsphere/frontend@0.1.0
+npm error location C:\Users\trist\Documents\School Stuff\Y3S1\IS212\ConnectSphere\frontend
+npm error command failed
+npm error command C:\WINDOWS\system32\cmd.exe /d /s /c vitest run src/features/safety/SafetyPages.test.ts

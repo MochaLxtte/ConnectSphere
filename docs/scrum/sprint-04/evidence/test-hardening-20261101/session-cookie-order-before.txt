@@ -1,0 +1,243 @@
+
+> @connectsphere/frontend@0.1.0 test
+> vitest run src/features/auth/session.test.ts --pool=threads --maxWorkers=1
+
+
+ RUN  v4.1.11 C:/Users/trist/Documents/School Stuff/Y3S1/IS212/ConnectSphere/frontend
+
+stderr | src/features/auth/session.test.ts > KAN-25 browser identity lifecycle > orders an in-flight login cleanup before the later requested logout
+Promise returned by `expect(actual).rejects.toMatchObject(expected)` was not awaited. Vitest currently auto-awaits hanging assertions at the end of the test, but this will cause the test to fail in the next Vitest major. Please remember to await the assertion.
+    at C:/Users/trist/Documents/School Stuff/Y3S1/IS212/ConnectSphere/frontend/src/features/auth/session.test.ts:199:34
+
+stderr | src/features/auth/session.test.ts > KAN-25 browser identity lifecycle > a failed preceding logout does not block the next explicit login
+Promise returned by `expect(actual).rejects.toMatchObject(expected)` was not awaited. Vitest currently auto-awaits hanging assertions at the end of the test, but this will cause the test to fail in the next Vitest major. Please remember to await the assertion.
+    at C:/Users/trist/Documents/School Stuff/Y3S1/IS212/ConnectSphere/frontend/src/features/auth/session.test.ts:215:41
+
+ ❯ src/features/auth/session.test.ts (24 tests | 10 failed) 1216ms
+     × clears an already-sent login cookie after local invalidation instead of reporting sign-in success 58ms
+     × waits for a delayed logout cookie before sending a newer login 2ms
+     × does not hand a provider token to the API after clear supersedes sign-in 2ms
+     × does not hand a provider token to the API after logout supersedes sign-in 1ms
+     × orders an in-flight login cleanup before the later requested logout 52ms
+     × a failed preceding logout does not block the next explicit login 2ms
+     × skips an obsolete login queued behind another session write 1ms
+     × does not restore a cookie until an in-flight logout has completed 1001ms
+     × a local clear also cancels a restore waiting for a session write 1ms
+     × reports failed cleanup of a superseded login and permits a later explicit retry 52ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 10 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/auth/session.test.ts > KAN-25 browser identity lifecycle > clears an already-sent login cookie after local invalidation instead of reporting sign-in success
+AssertionError: promise resolved "{ id: 'organiser-one', …(3) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "displayName": "Organiser",
++   "email": "organiser@example.test",
++   "id": "organiser-one",
++   "role": "EVENT_ORGANISER",
+  }
+
+ ❯ src/features/auth/session.test.ts:157:34
+    155|       .mockImplementationOnce(async () => { cookieIdentity = null; ret…
+    156|     const login = session.signIn('organiser@example.test', 'synthetic-…
+    157|     const outcome = expect(login).rejects.toMatchObject({ code: 'SESSI…
+       |                                  ^
+    158|     await vi.waitFor(() => expect(request).toHaveBeenCalled());
+    159|     session.clearLocalSession();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/10]⎯
+
+ FAIL  src/features/auth/session.test.ts > KAN-25 browser identity lifecycle > waits for a delayed logout cookie before sending a newer login
+AssertionError: expected [ '/api/auth/logout', …(1) ] to deeply equal [ '/api/auth/logout' ]
+
+- Expected
++ Received
+
+  [
+    "/api/auth/logout",
++   "/api/auth/login",
+  ]
+
+ ❯ src/features/auth/session.test.ts:173:54
+    171|     const login = session.signIn('coordinator@example.test', 'syntheti…
+    172|     await vi.waitFor(() => expect(token).toHaveBeenCalled());
+    173|     expect(request.mock.calls.map(([path]) => path)).toEqual(['/api/au…
+       |                                                      ^
+    174|     pending.resolve(new Response(null, { status: 204 }));
+    175|     await logout;
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/10]⎯
+
+ FAIL  src/features/auth/session.test.ts > KAN-25 browser identity lifecycle > does not hand a provider token to the API after clear supersedes sign-in
+ FAIL  src/features/auth/session.test.ts > KAN-25 browser identity lifecycle > does not hand a provider token to the API after logout supersedes sign-in
+AssertionError: expected ApiError: The API returned an unreadable … { …(2) } to match object { code: 'SESSION_CHANGED' }
+(2 matching properties omitted from actual)
+
+- Expected
++ Received
+
+- {
+-   "code": "SESSION_CHANGED",
++ ApiError {
++   "code": "INVALID_RESPONSE",
+  }
+
+ ❯ src/features/auth/session.test.ts:185:34
+    183|     request.mockResolvedValue(new Response(null, { status: 204 }));
+    184|     const login = session.signIn('organiser@example.test', 'synthetic-…
+    185|     const outcome = expect(login).rejects.toMatchObject({ code: 'SESSI…
+       |                                  ^
+    186|     if (action === 'clear') session.clearLocalSession();
+    187|     else await session.signOut();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/10]⎯
+
+ FAIL  src/features/auth/session.test.ts > KAN-25 browser identity lifecycle > orders an in-flight login cleanup before the later requested logout
+AssertionError: expected [ '/api/auth/login', …(1) ] to deeply equal [ '/api/auth/login' ]
+
+- Expected
++ Received
+
+  [
+    "/api/auth/login",
++   "/api/auth/logout",
+  ]
+
+ ❯ src/features/auth/session.test.ts:202:54
+    200|     await vi.waitFor(() => expect(request).toHaveBeenCalledOnce());
+    201|     const logout = session.signOut();
+    202|     expect(request.mock.calls.map(([path]) => path)).toEqual(['/api/au…
+       |                                                      ^
+    203|     pending.resolve(reply({ user }));
+    204|     await outcome;
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/10]⎯
+
+ FAIL  src/features/auth/session.test.ts > KAN-25 browser identity lifecycle > a failed preceding logout does not block the next explicit login
+AssertionError: expected "vi.fn()" to be called once, but got 2 times
+ ❯ src/features/auth/session.test.ts:218:21
+    216|     const login = session.signIn('coordinator@example.test', 'syntheti…
+    217|     await vi.waitFor(() => expect(token).toHaveBeenCalled());
+    218|     expect(request).toHaveBeenCalledOnce();
+       |                     ^
+    219|     pending.resolve(reply({}, 503));
+    220|     await logoutOutcome;
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/10]⎯
+
+ FAIL  src/features/auth/session.test.ts > KAN-25 browser identity lifecycle > skips an obsolete login queued behind another session write
+AssertionError: promise resolved "{ id: 'coordinator-two', …(3) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "displayName": "Organiser",
++   "email": "organiser@example.test",
++   "id": "coordinator-two",
++   "role": "EVENT_COORDINATOR",
+  }
+
+ ❯ src/features/auth/session.test.ts:230:39
+    228|     const logout = session.signOut();
+    229|     const first = session.signIn('organiser@example.test', 'synthetic-…
+    230|     const firstOutcome = expect(first).rejects.toMatchObject({ code: '…
+       |                                       ^
+    231|     await vi.waitFor(() => expect(token).toHaveBeenCalledTimes(1));
+    232|     const second = session.signIn('coordinator@example.test', 'synthet…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/10]⎯
+
+ FAIL  src/features/auth/session.test.ts > KAN-25 browser identity lifecycle > does not restore a cookie until an in-flight logout has completed
+AssertionError: expected "vi.fn()" to be called once, but got 2 times
+ ❯ src/features/auth/session.test.ts:248:44
+    246|     const logout = session.signOut();
+    247|     const restore = session.restoreSession();
+    248|     await vi.waitFor(() => expect(request).toHaveBeenCalledOnce());
+       |                                            ^
+    249|     expect(request.mock.calls[0]?.[0]).toBe('/api/auth/logout');
+    250|     pending.resolve(new Response(null, { status: 204 }));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/10]⎯
+
+ FAIL  src/features/auth/session.test.ts > KAN-25 browser identity lifecycle > a local clear also cancels a restore waiting for a session write
+TypeError: Cannot read properties of undefined (reading 'status')
+ ❯ getJson src/lib/api-client.ts:45:16
+     43|     throw new ApiError(
+     44|       'The API returned an unreadable response. Check the backend and …
+     45|       response.status,
+       |                ^
+     46|       'INVALID_RESPONSE',
+     47|     );
+ ❯ Module.restoreSession src/features/auth/session.ts:49:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/10]⎯
+
+ FAIL  src/features/auth/session.test.ts > KAN-25 browser identity lifecycle > reports failed cleanup of a superseded login and permits a later explicit retry
+AssertionError: promise resolved "{ id: 'organiser-one', …(3) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "displayName": "Organiser",
++   "email": "organiser@example.test",
++   "id": "organiser-one",
++   "role": "EVENT_ORGANISER",
+  }
+
+ ❯ src/features/auth/session.test.ts:275:34
+    273|       .mockResolvedValueOnce(new Response(null, { status: 204 }));
+    274|     const login = session.signIn('organiser@example.test', 'synthetic-…
+    275|     const outcome = expect(login).rejects.toMatchObject({ code: 'REQUE…
+       |                                  ^
+    276|     await vi.waitFor(() => expect(request).toHaveBeenCalledOnce());
+    277|     session.clearLocalSession();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/10]⎯
+
+⎯⎯⎯⎯⎯⎯ Unhandled Errors ⎯⎯⎯⎯⎯⎯
+
+Vitest caught 1 unhandled error during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+TypeError: Cannot read properties of undefined (reading 'status')
+ ❯ sendJson src/lib/api-client.ts:108:16
+    106|     throw new ApiError(
+    107|       'The API returned an unreadable response. Check the backend and …
+    108|       response.status,
+       |                ^
+    109|       'INVALID_RESPONSE',
+    110|     );
+ ❯ Module.signIn src/features/auth/session.ts:66:19
+
+This error originated in "src/features/auth/session.test.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "does not restore a cookie until an in-flight logout has completed". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+
+
+ Test Files  1 failed (1)
+      Tests  10 failed | 14 passed (24)
+     Errors  1 error
+   Start at  22:21:34
+   Duration  2.49s (transform 65ms, setup 513ms, import 36ms, tests 1.22s, environment 540ms)
+
+npm error Lifecycle script `test` failed with error:
+npm error code 1
+npm error path C:\Users\trist\Documents\School Stuff\Y3S1\IS212\ConnectSphere\frontend
+npm error workspace @connectsphere/frontend@0.1.0
+npm error location C:\Users\trist\Documents\School Stuff\Y3S1\IS212\ConnectSphere\frontend
+npm error command failed
+npm error command C:\WINDOWS\system32\cmd.exe /d /s /c vitest run src/features/auth/session.test.ts --pool=threads --maxWorkers=1

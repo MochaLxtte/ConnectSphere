@@ -1,5 +1,11 @@
 # ConnectSphere frontend
 
+**1 November 2026 test hardening:** coverage now includes all executable source under `src/`, including authentication, routing and shared components. Only test code, test setup and type declarations are excluded. Regression floors and selected 100% authentication/navigation gates are documented in the [testing guide](../docs/testing/README.md#coverage-gates-and-remaining-exceptions--1-november-2026).
+
+Session restoration ignores obsolete responses. Login/logout cookie writes are ordered within a tab; a superseded sign-in rejects instead of navigating as a success, and any already-sent obsolete login is cleaned up before later writes. Cleanup failures remain failures. This is not cross-tab synchronization or immediate revocation of captured tokens. The safety queue now leaves its loading state when access is lost during a pending read. Controlled regression tests pass; connected authentication smoke and shared migration/retests remain separate in [test evidence](../docs/testing/test-evidence.md#auto-20261101-test-hardening--coverage-browser-isolation-and-documentation).
+
+`npm run test:e2e` starts an isolated built frontend on 4173 and API on 4311, with two workers and no retries; it requires an explicit loopback `TEST_DATABASE_URL` ending in `_test`. It never reuses the developer app. Most browser scenarios use API/auth fixtures and establish frontend integration, while the manual release walkthrough uses the complete real-authentication application.
+
 **29 October 2026 registration update:** `/registrations` lets an authenticated attendee view their own saved registrations and confirm a withdrawal. `/events/:id/registrations` provides the current organiser/coordinator roster. The views clear data on identity or route changes and defer all authorization and eligibility decisions to the API. KAN-14 still owns event discovery and registration creation.
 
 Vue 3, TypeScript, Vue Router, and Vite. Run commands from the repository root after following the root README setup.
@@ -229,3 +235,11 @@ Plain anchors and router links are underlined by default, with a 3px underline o
 Submission feedback appears immediately below **Request this venue**, with focus and scrolling after rendering so long booking histories cannot hide conflicts or success. Entered fields and the source link survive a rejected submission. An uncertain save offers **Review current bookings** beside the message and blocks another write until reconciliation. Cancellation feedback remains in its existing panel location. Keep these messages distinct from creating/reserving a venue; saved arrangement suitability uses that arrangement's own interval.
 
 Component checks and desktop/mobile browser regressions in `tests/e2e/venue-booking-submission.spec.ts` are recorded in [AUTO-20261101-BOOKING-FEEDBACK](../docs/testing/test-evidence.md#auto-20261101-booking-feedback--replacement-guidance-and-local-submission-feedback). Browser APIs are substituted; connected manual smoke TC-12-23 remains Not executed.
+
+## 1 November 2026 — release regression UI corrections
+
+`EventPlanningPanels.vue` refreshes the confirmation and safety summaries after venue, equipment and significant-change mutations, manual booking/equipment reloads and uncertain/conflicting outcomes. Summary components clear stale eligibility while loading or after failure and offer explicit retry. Successful equipment writes invalidate siblings before waiting for the equipment readback. Venue access loss also clears sibling eligibility, while initial child reads stay silent to avoid refresh loops. Same-event safety-note drafts survive refresh; aborted responses cannot unlock actions or publish another context's result.
+
+`EquipmentRequestPanel.vue` renders cancelled lines with **Release reason** and, when present, **Previous review reason**. It does not relabel the historical rejection reason as cancellation. `SafetyReviewPage.vue` displays venue facilities and equipment technical requirements, with explicit empty-state text and wrapping for long notes.
+
+The accompanying API requires migration 023 before connected safety tests. Focused component and browser regressions are recorded under `AUTO-20261101-RELEASE-REGRESSIONS`; browser fixtures substitute API/authentication and do not establish connected acceptance.

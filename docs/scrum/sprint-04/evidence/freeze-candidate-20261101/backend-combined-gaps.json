@@ -1,0 +1,1434 @@
+{
+  "run_id": "AUTO-20261101-FREEZE-CANDIDATE",
+  "generated_at": "2026-11-01T23:40:44.232219+08:00",
+  "scope": "Backend isolated unit/HTTP and real disposable-PostgreSQL coverage combined; no shared development data used by these cleanup-based tests.",
+  "basis": [
+    "backend-combined.txt",
+    "backend-combined-coverage-summary.json"
+  ],
+  "assessment": "Coverage floors prevent regression; the repository does not yet have 100% coverage on every metric. This inventory discloses remaining paths, not an approved blanket exemption from the course rubric. All gaps are not claimed impossible to test.",
+  "location_note": "Uncovered implicit else branches with empty locations use their enclosing branch location, marked parent_location_used. Locations come from V8/Istanbul source maps, not a claim every generated branch has independent business meaning.",
+  "unmeasured_boundaries": [
+    "SQL/trigger statement coverage",
+    "External Supabase provider implementation",
+    "Live connected Supabase acceptance for this patch",
+    "Mutation score",
+    "Load/performance characteristics",
+    "Cross-tab or cross-device session ordering"
+  ],
+  "totals": {
+    "backend-combined": {
+      "lines": {
+        "total": 2997,
+        "covered": 2981,
+        "skipped": 0,
+        "pct": 99.46
+      },
+      "statements": {
+        "total": 3446,
+        "covered": 3420,
+        "skipped": 0,
+        "pct": 99.24
+      },
+      "functions": {
+        "total": 735,
+        "covered": 733,
+        "skipped": 0,
+        "pct": 99.72
+      },
+      "branches": {
+        "total": 2505,
+        "covered": 2452,
+        "skipped": 0,
+        "pct": 97.88
+      },
+      "branchesTrue": {
+        "total": 0,
+        "covered": 0,
+        "skipped": 0,
+        "pct": 100
+      }
+    }
+  },
+  "excluded_runtime_source": [
+    {
+      "path": "backend/src/server.ts",
+      "reason": "Long-lived process entry, started by the isolated browser harness; its subprocess V8 data is not merged into workspace/combined coverage."
+    }
+  ],
+  "zero_executable_entries": [
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/modules/equipment/availability-types.ts",
+      "reason": "Type-only source has zero executable statements/functions/branches/lines; zero percentages here are not uncovered runtime code."
+    },
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/modules/equipment/reservation-types.ts",
+      "reason": "Type-only source has zero executable statements/functions/branches/lines; zero percentages here are not uncovered runtime code."
+    },
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/modules/equipment/stock-types.ts",
+      "reason": "Type-only source has zero executable statements/functions/branches/lines; zero percentages here are not uncovered runtime code."
+    },
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/modules/registrations/registration-types.ts",
+      "reason": "Type-only source has zero executable statements/functions/branches/lines; zero percentages here are not uncovered runtime code."
+    }
+  ],
+  "inventory_counts": {
+    "files_with_any_gap": 23,
+    "uncovered_lines": 16,
+    "uncovered_statements": 26,
+    "uncovered_functions": 2,
+    "uncovered_branch_arms": 53
+  },
+  "instrumentation_notes": [],
+  "source_artifact_sha256": {
+    "backend/coverage-combined/coverage-summary.json": "fb4e8da35bc5ee9498e31b77c0b4e7cce1a1ba8fc028eb9b47baf909b0524ccf",
+    "backend/coverage-combined/coverage-final.json": "82fa9d79946da9ab35e761a3fcf26b3bae6b42fe4a8c4b0dc19b454e5acd4504",
+    "backend/coverage-combined/lcov.info": "780b9c6908816a1858343d1919d48bda7b835e596e2a12fb6a68bc6b0285fb07"
+  },
+  "files_with_gaps": [
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/app.ts",
+      "metrics": {
+        "statements": {
+          "total": 63,
+          "covered": 61,
+          "skipped": 0,
+          "pct": 96.82
+        },
+        "branches": {
+          "total": 24,
+          "covered": 23,
+          "skipped": 0,
+          "pct": 95.83
+        },
+        "functions": {
+          "total": 6,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 59,
+          "covered": 57,
+          "skipped": 0,
+          "pct": 96.61
+        }
+      },
+      "uncovered_lines": [
+        135,
+        136
+      ],
+      "uncovered_statement_start_lines": [
+        135,
+        136
+      ],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "if",
+          "line": 134,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false,
+          "recorded_count": 0
+        }
+      ],
+      "explanation": "The error-middleware headersSent forwarding path remains unhit. Normal malformed-input/error responses are covered elsewhere; a response-already-started failure is a separate testable scenario."
+    },
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/config/env.ts",
+      "metrics": {
+        "statements": {
+          "total": 12,
+          "covered": 10,
+          "skipped": 0,
+          "pct": 83.33
+        },
+        "branches": {
+          "total": 17,
+          "covered": 17,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 2,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 50
+        },
+        "lines": {
+          "total": 12,
+          "covered": 10,
+          "skipped": 0,
+          "pct": 83.33
+        }
+      },
+      "uncovered_lines": [
+        14,
+        18
+      ],
+      "uncovered_statement_start_lines": [
+        14,
+        18
+      ],
+      "uncovered_functions": [
+        {
+          "name": "loadEnvironment",
+          "line": 13
+        }
+      ],
+      "uncovered_branches": [],
+      "explanation": "parseEnvironment is tested; dotenv-loading wrapper runs in the separate browser API process and is not included in this V8 run."
+    },
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/modules/auth/router.ts",
+      "metrics": {
+        "statements": {
+          "total": 64,
+          "covered": 63,
+          "skipped": 0,
+          "pct": 98.43
+        },
+        "branches": {
+          "total": 31,
+          "covered": 31,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 11,
+          "covered": 11,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 58,
+          "covered": 57,
+          "skipped": 0,
+          "pct": 98.27
+        }
+      },
+      "uncovered_lines": [
+        39
+      ],
+      "uncovered_statement_start_lines": [
+        39
+      ],
+      "uncovered_functions": [],
+      "uncovered_branches": [],
+      "explanation": "readCookie returns null after a cookie header contains no matching well-formed ConnectSphere cookie; this final fall-through is unhit. It is a small testable malformed/unrelated-cookie boundary, not evidence of a session vulnerability."
+    },
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/modules/equipment/stock-service.ts",
+      "metrics": {
+        "statements": {
+          "total": 94,
+          "covered": 94,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 48,
+          "covered": 46,
+          "skipped": 0,
+          "pct": 95.83
+        },
+        "functions": {
+          "total": 28,
+          "covered": 28,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 75,
+          "covered": 75,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "binary-expr",
+          "line": 85,
+          "column": 60,
+          "arm": 1,
+          "parent_location_used": false,
+          "recorded_count": 0
+        },
+        {
+          "kind": "binary-expr",
+          "line": 251,
+          "column": 100,
+          "arm": 1,
+          "parent_location_used": false,
+          "recorded_count": 0
+        }
+      ],
+      "explanation": "Remaining backend guard, compatibility or failure paths were not exercised by the combined run. Exact uncovered locations are listed; this is a measured gap, not proof of impossibility."
+    },
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/modules/events/cancellation.ts",
+      "metrics": {
+        "statements": {
+          "total": 41,
+          "covered": 41,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 42,
+          "covered": 35,
+          "skipped": 0,
+          "pct": 83.33
+        },
+        "functions": {
+          "total": 6,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 38,
+          "covered": 38,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "binary-expr",
+          "line": 81,
+          "column": 58,
+          "arm": 1,
+          "parent_location_used": false,
+          "recorded_count": 0
+        },
+        {
+          "kind": "binary-expr",
+          "line": 82,
+          "column": 46,
+          "arm": 1,
+          "parent_location_used": false,
+          "recorded_count": 0
+        },
+        {
+          "kind": "binary-expr",
+          "line": 82,
+          "column": 76,
+          "arm": 1,
+          "parent_location_used": false,
+          "recorded_count": 0
+        },
+        {
+          "kind": "binary-expr",
+          "line": 96,
+          "column": 58,
+          "arm": 1,
+          "parent_location_used": false,
+          "recorded_count": 0
+        },
+        {
+          "kind": "binary-expr",
+          "line": 101,
+          "column": 52,
+          "arm": 1,
+          "parent_location_used": false,
+          "recorded_count": 0
+        },
+        {
+          "kind": "binary-expr",
+          "line": 101,
+          "column": 114,
+          "arm": 1,
+          "parent_location_used": false,
+          "recorded_count": 0
+        },
+        {
+          "kind": "binary-expr",
+          "line": 102,
+          "column": 49,
+          "arm": 1,
+          "parent_location_used": false,
+          "recorded_count": 0
+        }
+      ],
+      "explanation": "Remaining backend guard, compatibility or failure paths were not exercised by the combined run. Exact uncovered locations are listed; this is a measured gap, not proof of impossibility."
+    },
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/modules/events/change-requests.ts",
+      "metrics": {
+        "statements": {
+          "total": 161,
+          "covered": 159,
+          "skipped": 0,
+          "pct": 98.75
+        },
+        "branches": {
+          "total": 85,
+          "covered": 80,
+          "skipped": 0,
+          "pct": 94.11
+        },
+        "functions": {
+          "total": 36,
+          "covered": 36,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 141,
+          "covered": 139,
+          "skipped": 0,
+          "pct": 98.58
+        }
+      },
+      "uncovered_lines": [
+        96,
+        107
+      ],
+      "uncovered_statement_start_lines": [
+        96,
+        107
+      ],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "if",
+          "line": 95,
+          "column": 4,
+          "arm": 1,
+          "parent_location_used": true,
+          "recorded_count": 0
+        },
+        {
+          "kind": "if",
+          "line": 106,
+          "column": 4,
+          "arm": 1,
+          "parent_location_used": true,
+          "recorded_count": 0
+        },
+        {
+          "kind": "binary-expr",
+          "line": 218,
+          "column": 29,
+          "arm": 1,
+          "parent_location_used": false,
+          "recorded_count": 0
+        },
+        {
+          "kind": "binary-expr",
+          "line": 317,
+          "column": 74,
+          "arm": 1,
+          "parent_location_used": false,
+          "recorded_count": 0
+        },
+        {
+          "kind": "binary-expr",
+          "line": 370,
+          "column": 29,
+          "arm": 1,
+          "parent_location_used": false,
+          "recorded_count": 0
+        }
+      ],
+      "explanation": "Unexpected non-domain errors thrown by the draft parser or completeness validator are rethrown; those two catch fallbacks remain unhit. Expected validation failures have separate coverage."
+    },
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/modules/events/clarifications.ts",
+      "metrics": {
+        "statements": {
+          "total": 50,
+          "covered": 49,
+          "skipped": 0,
+          "pct": 98
+        },
+        "branches": {
+          "total": 18,
+          "covered": 17,
+          "skipped": 0,
+          "pct": 94.44
+        },
+        "functions": {
+          "total": 10,
+          "covered": 10,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 48,
+          "covered": 47,
+          "skipped": 0,
+          "pct": 97.91
+        }
+      },
+      "uncovered_lines": [
+        113
+      ],
+      "uncovered_statement_start_lines": [
+        113
+      ],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "if",
+          "line": 112,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false,
+          "recorded_count": 0
+        }
+      ],
+      "explanation": "The conflict response for an unanswered clarification on an event no longer in CLARIFICATION_REQUESTED remains unhit. This is a meaningful stale-workflow fixture to add if extending coverage."
+    },
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/modules/events/completion.ts",
+      "metrics": {
+        "statements": {
+          "total": 36,
+          "covered": 36,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 37,
+          "covered": 36,
+          "skipped": 0,
+          "pct": 97.29
+        },
+        "functions": {
+          "total": 4,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 30,
+          "covered": 30,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "binary-expr",
+          "line": 78,
+          "column": 98,
+          "arm": 1,
+          "parent_location_used": false,
+          "recorded_count": 0
+        }
+      ],
+      "explanation": "Remaining backend guard, compatibility or failure paths were not exercised by the combined run. Exact uncovered locations are listed; this is a measured gap, not proof of impossibility."
+    },
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/modules/events/confirmation.ts",
+      "metrics": {
+        "statements": {
+          "total": 74,
+          "covered": 73,
+          "skipped": 0,
+          "pct": 98.64
+        },
+        "branches": {
+          "total": 60,
+          "covered": 55,
+          "skipped": 0,
+          "pct": 91.66
+        },
+        "functions": {
+          "total": 17,
+          "covered": 17,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 68,
+          "covered": 68,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [
+        157
+      ],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "binary-expr",
+          "line": 51,
+          "column": 48,
+          "arm": 1,
+          "parent_location_used": false,
+          "recorded_count": 0
+        },
+        {
+          "kind": "binary-expr",
+          "line": 52,
+          "column": 71,
+          "arm": 1,
+          "parent_location_used": false,
+          "recorded_count": 0
+        },
+        {
+          "kind": "binary-expr",
+          "line": 84,
+          "column": 30,
+          "arm": 1,
+          "parent_location_used": false,
+          "recorded_count": 0
+        },
+        {
+          "kind": "if",
+          "line": 157,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false,
+          "recorded_count": 0
+        },
+        {
+          "kind": "binary-expr",
+          "line": 179,
+          "column": 27,
+          "arm": 1,
+          "parent_location_used": false,
+          "recorded_count": 0
+        }
+      ],
+      "explanation": "Remaining backend guard, compatibility or failure paths were not exercised by the combined run. Exact uncovered locations are listed; this is a measured gap, not proof of impossibility."
+    },
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/modules/events/create-draft.ts",
+      "metrics": {
+        "statements": {
+          "total": 28,
+          "covered": 26,
+          "skipped": 0,
+          "pct": 92.85
+        },
+        "branches": {
+          "total": 8,
+          "covered": 5,
+          "skipped": 0,
+          "pct": 62.5
+        },
+        "functions": {
+          "total": 5,
+          "covered": 5,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 23,
+          "covered": 22,
+          "skipped": 0,
+          "pct": 95.65
+        }
+      },
+      "uncovered_lines": [
+        62
+      ],
+      "uncovered_statement_start_lines": [
+        53,
+        62
+      ],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "if",
+          "line": 53,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false,
+          "recorded_count": 0
+        },
+        {
+          "kind": "cond-expr",
+          "line": 62,
+          "column": 54,
+          "arm": 0,
+          "parent_location_used": false,
+          "recorded_count": 0
+        },
+        {
+          "kind": "cond-expr",
+          "line": 62,
+          "column": 70,
+          "arm": 1,
+          "parent_location_used": false,
+          "recorded_count": 0
+        }
+      ],
+      "explanation": "A rollback failure after a failed draft transaction remains unhit. This fault-injection path affects connection release handling; normal transaction behaviour is separately exercised."
+    },
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/modules/events/event-request-detail.ts",
+      "metrics": {
+        "statements": {
+          "total": 21,
+          "covered": 21,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 37,
+          "covered": 35,
+          "skipped": 0,
+          "pct": 94.59
+        },
+        "functions": {
+          "total": 3,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 18,
+          "covered": 18,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "cond-expr",
+          "line": 107,
+          "column": 69,
+          "arm": 1,
+          "parent_location_used": false,
+          "recorded_count": 0
+        },
+        {
+          "kind": "cond-expr",
+          "line": 108,
+          "column": 71,
+          "arm": 1,
+          "parent_location_used": false,
+          "recorded_count": 0
+        }
+      ],
+      "explanation": "Remaining backend guard, compatibility or failure paths were not exercised by the combined run. Exact uncovered locations are listed; this is a measured gap, not proof of impossibility."
+    },
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/modules/events/review-decision.ts",
+      "metrics": {
+        "statements": {
+          "total": 32,
+          "covered": 29,
+          "skipped": 0,
+          "pct": 90.62
+        },
+        "branches": {
+          "total": 14,
+          "covered": 10,
+          "skipped": 0,
+          "pct": 71.42
+        },
+        "functions": {
+          "total": 2,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 29,
+          "covered": 28,
+          "skipped": 0,
+          "pct": 96.55
+        }
+      },
+      "uncovered_lines": [
+        118
+      ],
+      "uncovered_statement_start_lines": [
+        92,
+        97,
+        118
+      ],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "if",
+          "line": 92,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false,
+          "recorded_count": 0
+        },
+        {
+          "kind": "if",
+          "line": 97,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false,
+          "recorded_count": 0
+        },
+        {
+          "kind": "cond-expr",
+          "line": 118,
+          "column": 54,
+          "arm": 0,
+          "parent_location_used": false,
+          "recorded_count": 0
+        },
+        {
+          "kind": "cond-expr",
+          "line": 118,
+          "column": 70,
+          "arm": 1,
+          "parent_location_used": false,
+          "recorded_count": 0
+        }
+      ],
+      "explanation": "A rollback failure after a failed review transaction remains unhit. It is a testable infrastructure-failure branch, not established impossible."
+    },
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/modules/events/submitted-requests-router.ts",
+      "metrics": {
+        "statements": {
+          "total": 127,
+          "covered": 125,
+          "skipped": 0,
+          "pct": 98.42
+        },
+        "branches": {
+          "total": 85,
+          "covered": 83,
+          "skipped": 0,
+          "pct": 97.64
+        },
+        "functions": {
+          "total": 8,
+          "covered": 8,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 127,
+          "covered": 125,
+          "skipped": 0,
+          "pct": 98.42
+        }
+      },
+      "uncovered_lines": [
+        244,
+        291
+      ],
+      "uncovered_statement_start_lines": [
+        244,
+        291
+      ],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "if",
+          "line": 238,
+          "column": 6,
+          "arm": 1,
+          "parent_location_used": true,
+          "recorded_count": 0
+        },
+        {
+          "kind": "if",
+          "line": 287,
+          "column": 6,
+          "arm": 1,
+          "parent_location_used": true,
+          "recorded_count": 0
+        }
+      ],
+      "explanation": "Unexpected draft-update/submission failures forwarded to Express next(error) remain unhit. Domain validation/access responses are separately tested."
+    },
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/modules/events/workflow-http.ts",
+      "metrics": {
+        "statements": {
+          "total": 25,
+          "covered": 24,
+          "skipped": 0,
+          "pct": 96
+        },
+        "branches": {
+          "total": 18,
+          "covered": 17,
+          "skipped": 0,
+          "pct": 94.44
+        },
+        "functions": {
+          "total": 3,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 24,
+          "covered": 24,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [
+        71
+      ],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "if",
+          "line": 71,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false,
+          "recorded_count": 0
+        }
+      ],
+      "explanation": "Remaining backend guard, compatibility or failure paths were not exercised by the combined run. Exact uncovered locations are listed; this is a measured gap, not proof of impossibility."
+    },
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/modules/events/workflow-support.ts",
+      "metrics": {
+        "statements": {
+          "total": 86,
+          "covered": 80,
+          "skipped": 0,
+          "pct": 93.02
+        },
+        "branches": {
+          "total": 65,
+          "covered": 62,
+          "skipped": 0,
+          "pct": 95.38
+        },
+        "functions": {
+          "total": 18,
+          "covered": 17,
+          "skipped": 0,
+          "pct": 94.44
+        },
+        "lines": {
+          "total": 76,
+          "covered": 72,
+          "skipped": 0,
+          "pct": 94.73
+        }
+      },
+      "uncovered_lines": [
+        66,
+        70,
+        71,
+        72
+      ],
+      "uncovered_statement_start_lines": [
+        66,
+        70,
+        71,
+        72,
+        165
+      ],
+      "uncovered_functions": [
+        {
+          "name": "readEventRequest",
+          "line": 65
+        }
+      ],
+      "uncovered_branches": [
+        {
+          "kind": "if",
+          "line": 71,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false,
+          "recorded_count": 0
+        },
+        {
+          "kind": "if",
+          "line": 71,
+          "column": 2,
+          "arm": 1,
+          "parent_location_used": true,
+          "recorded_count": 0
+        },
+        {
+          "kind": "if",
+          "line": 165,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false,
+          "recorded_count": 0
+        }
+      ],
+      "explanation": "Retained readEventRequest helper has no caller found in backend/src, backend/test or database/tests. Its query/not-found/result lines remain measured as uncovered; no exclusion/removal was made."
+    },
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/modules/notifications/change-request-notifications.ts",
+      "metrics": {
+        "statements": {
+          "total": 19,
+          "covered": 19,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 30,
+          "covered": 29,
+          "skipped": 0,
+          "pct": 96.66
+        },
+        "functions": {
+          "total": 6,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 18,
+          "covered": 18,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "if",
+          "line": 74,
+          "column": 2,
+          "arm": 1,
+          "parent_location_used": true,
+          "recorded_count": 0
+        }
+      ],
+      "explanation": "Remaining backend guard, compatibility or failure paths were not exercised by the combined run. Exact uncovered locations are listed; this is a measured gap, not proof of impossibility."
+    },
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/modules/notifications/inbox.ts",
+      "metrics": {
+        "statements": {
+          "total": 32,
+          "covered": 32,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 77,
+          "covered": 76,
+          "skipped": 0,
+          "pct": 98.7
+        },
+        "functions": {
+          "total": 9,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 28,
+          "covered": 28,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "binary-expr",
+          "line": 122,
+          "column": 28,
+          "arm": 1,
+          "parent_location_used": false,
+          "recorded_count": 0
+        }
+      ],
+      "explanation": "Remaining backend guard, compatibility or failure paths were not exercised by the combined run. Exact uncovered locations are listed; this is a measured gap, not proof of impossibility."
+    },
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/modules/notifications/notify.ts",
+      "metrics": {
+        "statements": {
+          "total": 23,
+          "covered": 23,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 24,
+          "covered": 23,
+          "skipped": 0,
+          "pct": 95.83
+        },
+        "functions": {
+          "total": 6,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 15,
+          "covered": 15,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "binary-expr",
+          "line": 41,
+          "column": 51,
+          "arm": 1,
+          "parent_location_used": false,
+          "recorded_count": 0
+        }
+      ],
+      "explanation": "Remaining backend guard, compatibility or failure paths were not exercised by the combined run. Exact uncovered locations are listed; this is a measured gap, not proof of impossibility."
+    },
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/modules/registrations/registration-service.ts",
+      "metrics": {
+        "statements": {
+          "total": 61,
+          "covered": 61,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 39,
+          "covered": 38,
+          "skipped": 0,
+          "pct": 97.43
+        },
+        "functions": {
+          "total": 17,
+          "covered": 17,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 51,
+          "covered": 51,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "binary-expr",
+          "line": 148,
+          "column": 27,
+          "arm": 1,
+          "parent_location_used": false,
+          "recorded_count": 0
+        }
+      ],
+      "explanation": "Remaining backend guard, compatibility or failure paths were not exercised by the combined run. Exact uncovered locations are listed; this is a measured gap, not proof of impossibility."
+    },
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/modules/safety/service.ts",
+      "metrics": {
+        "statements": {
+          "total": 194,
+          "covered": 193,
+          "skipped": 0,
+          "pct": 99.48
+        },
+        "branches": {
+          "total": 149,
+          "covered": 142,
+          "skipped": 0,
+          "pct": 95.3
+        },
+        "functions": {
+          "total": 37,
+          "covered": 37,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 164,
+          "covered": 164,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [
+        111
+      ],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "binary-expr",
+          "line": 80,
+          "column": 45,
+          "arm": 1,
+          "parent_location_used": false,
+          "recorded_count": 0
+        },
+        {
+          "kind": "if",
+          "line": 111,
+          "column": 4,
+          "arm": 0,
+          "parent_location_used": false,
+          "recorded_count": 0
+        },
+        {
+          "kind": "binary-expr",
+          "line": 187,
+          "column": 32,
+          "arm": 1,
+          "parent_location_used": false,
+          "recorded_count": 0
+        },
+        {
+          "kind": "binary-expr",
+          "line": 325,
+          "column": 32,
+          "arm": 1,
+          "parent_location_used": false,
+          "recorded_count": 0
+        },
+        {
+          "kind": "cond-expr",
+          "line": 333,
+          "column": 9,
+          "arm": 1,
+          "parent_location_used": false,
+          "recorded_count": 0
+        },
+        {
+          "kind": "binary-expr",
+          "line": 363,
+          "column": 27,
+          "arm": 1,
+          "parent_location_used": false,
+          "recorded_count": 0
+        },
+        {
+          "kind": "cond-expr",
+          "line": 377,
+          "column": 10,
+          "arm": 1,
+          "parent_location_used": false,
+          "recorded_count": 0
+        }
+      ],
+      "explanation": "Remaining backend guard, compatibility or failure paths were not exercised by the combined run. Exact uncovered locations are listed; this is a measured gap, not proof of impossibility."
+    },
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/modules/venues/booking-service.ts",
+      "metrics": {
+        "statements": {
+          "total": 215,
+          "covered": 214,
+          "skipped": 0,
+          "pct": 99.53
+        },
+        "branches": {
+          "total": 154,
+          "covered": 153,
+          "skipped": 0,
+          "pct": 99.35
+        },
+        "functions": {
+          "total": 33,
+          "covered": 33,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 192,
+          "covered": 192,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [
+        487
+      ],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "if",
+          "line": 487,
+          "column": 6,
+          "arm": 0,
+          "parent_location_used": false,
+          "recorded_count": 0
+        }
+      ],
+      "explanation": "Remaining backend guard, compatibility or failure paths were not exercised by the combined run. Exact uncovered locations are listed; this is a measured gap, not proof of impossibility."
+    },
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/modules/venues/suitability-rules.ts",
+      "metrics": {
+        "statements": {
+          "total": 61,
+          "covered": 60,
+          "skipped": 0,
+          "pct": 98.36
+        },
+        "branches": {
+          "total": 131,
+          "covered": 128,
+          "skipped": 0,
+          "pct": 97.7
+        },
+        "functions": {
+          "total": 9,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 54,
+          "covered": 54,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [
+        58
+      ],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "if",
+          "line": 58,
+          "column": 2,
+          "arm": 0,
+          "parent_location_used": false,
+          "recorded_count": 0
+        },
+        {
+          "kind": "binary-expr",
+          "line": 137,
+          "column": 67,
+          "arm": 1,
+          "parent_location_used": false,
+          "recorded_count": 0
+        },
+        {
+          "kind": "binary-expr",
+          "line": 139,
+          "column": 70,
+          "arm": 1,
+          "parent_location_used": false,
+          "recorded_count": 0
+        }
+      ],
+      "explanation": "Remaining backend guard, compatibility or failure paths were not exercised by the combined run. Exact uncovered locations are listed; this is a measured gap, not proof of impossibility."
+    },
+    {
+      "measurement": "backend-combined",
+      "path": "backend/src/modules/venues/venue-bookings-router.ts",
+      "metrics": {
+        "statements": {
+          "total": 20,
+          "covered": 20,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 2,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 50
+        },
+        "functions": {
+          "total": 9,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 100
+        },
+        "lines": {
+          "total": 20,
+          "covered": 20,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "uncovered_lines": [],
+      "uncovered_statement_start_lines": [],
+      "uncovered_functions": [],
+      "uncovered_branches": [
+        {
+          "kind": "cond-expr",
+          "line": 18,
+          "column": 50,
+          "arm": 0,
+          "parent_location_used": false,
+          "recorded_count": 0
+        }
+      ],
+      "explanation": "Remaining backend guard, compatibility or failure paths were not exercised by the combined run. Exact uncovered locations are listed; this is a measured gap, not proof of impossibility."
+    }
+  ],
+  "remaining_gap_assessment": [
+    {
+      "priority": "practical failure/conflict follow-up",
+      "item": "Unanswered clarification after event status changed; unexpected draft update/submission errors; rollback failure; malformed or unrelated cookie header. These are exact unhit cases, not observed failures."
+    },
+    {
+      "priority": "lower-priority instrumentation boundary",
+      "item": "dotenv-loading wrapper executes in the separately launched API; readEventRequest has no current caller. Source server.ts remains intentionally excluded from this combined instrumentation and listed explicitly."
+    },
+    {
+      "priority": "measurement limitation",
+      "item": "Combined TypeScript coverage does not instrument SQL/trigger statements or establish the external Supabase provider or shared connected acceptance."
+    }
+  ]
+}

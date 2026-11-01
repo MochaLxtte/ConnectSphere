@@ -1,0 +1,301 @@
+
+> @connectsphere/frontend@0.1.0 test
+> vitest run src/features/events/pages/EventRequestDetailPage.test.ts src/features/reviews/pages/ReviewRequestPage.test.ts --pool=threads --maxWorkers=2
+
+
+ RUN  v4.1.11 C:/Users/trist/Documents/School Stuff/Y3S1/IS212/ConnectSphere/frontend
+
+stderr | src/features/reviews/pages/ReviewRequestPage.test.ts > KAN-33 / KAN-61 / KAN-84 coordinator parent planning refresh > keeps the newest status after overlapping planning refreshes resolve out of order
+[Vue Router warn]: No match found for location with path "/reviews/a/venue-suitability"
+[Vue Router warn]: No match found for location with path "/events/a/registrations"
+[Vue Router warn]: No match found for location with path "/venues/availability"
+[Vue Router warn]: No match found for location with path "/venue-bookings"
+
+stderr | src/features/reviews/pages/ReviewRequestPage.test.ts > KAN-33 / KAN-61 / KAN-84 coordinator parent planning refresh > keeps the newest status after overlapping planning refreshes resolve out of order
+[Vue Router warn]: No match found for location with path "/venues/availability"
+[Vue Router warn]: No match found for location with path "/venue-bookings"
+
+stderr | src/features/reviews/pages/ReviewRequestPage.test.ts > KAN-33 / KAN-61 / KAN-84 coordinator parent planning refresh > keeps the newest status after overlapping planning refreshes resolve out of order
+[Vue Router warn]: No match found for location with path "/venues/availability"
+[Vue Router warn]: No match found for location with path "/venue-bookings"
+
+stderr | src/features/reviews/pages/ReviewRequestPage.test.ts > KAN-33 / KAN-61 / KAN-84 coordinator parent planning refresh > ignores an older refresh failure instead of hiding the newest status and form
+[Vue Router warn]: No match found for location with path "/reviews/a/venue-suitability"
+[Vue Router warn]: No match found for location with path "/events/a/registrations"
+[Vue Router warn]: No match found for location with path "/venues/availability"
+[Vue Router warn]: No match found for location with path "/venue-bookings"
+
+stderr | src/features/reviews/pages/ReviewRequestPage.test.ts > KAN-33 / KAN-61 / KAN-84 coordinator parent planning refresh > ignores an older refresh failure instead of hiding the newest status and form
+[Vue Router warn]: No match found for location with path "/venues/availability"
+[Vue Router warn]: No match found for location with path "/venue-bookings"
+
+ ❯ src/features/events/pages/EventRequestDetailPage.test.ts (45 tests | 2 failed) 975ms
+     × keeps the newest saved outcome when two planning refreshes finish out of order 24ms
+     × does not let an obsolete failed refresh discard the latest view or unsaved notes 17ms
+ ❯ src/features/reviews/pages/ReviewRequestPage.test.ts (31 tests | 2 failed) 977ms
+     × keeps the newest status after overlapping planning refreshes resolve out of order 18ms
+     × ignores an older refresh failure instead of hiding the newest status and form 14ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/events/pages/EventRequestDetailPage.test.ts > KAN-16 / KAN-61 / KAN-84 parent refresh after planning changes > keeps the newest saved outcome when two planning refreshes finish out of order
+Error: expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  Cancelled
+Received:
+  Confirmed
+ ❯ src/features/events/pages/EventRequestDetailPage.test.ts:663:29
+    661|     await waitFor(() => expect(field('Status')).toHaveTextContent('Can…
+    662|     await resolveResponse(older, jsonResponse({ ...decidedDetail(), st…
+    663|     expect(field('Status')).toHaveTextContent('Cancelled');
+       |                             ^
+    664|     expect(screen.getByTestId('planning-context')).toHaveTextContent('…
+    665|     expect(fetchMock).toHaveBeenCalledTimes(3);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  src/features/events/pages/EventRequestDetailPage.test.ts > KAN-16 / KAN-61 / KAN-84 parent refresh after planning changes > does not let an obsolete failed refresh discard the latest view or unsaved notes
+TestingLibraryElementError: Unable to find a label with the text of: Planning notes
+
+Ignored nodes: comments, script, style
+<body>
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div>
+    
+    <section
+      class="page-heading"
+      data-v-ae970196=""
+    >
+      <p
+        class="eyebrow"
+        data-v-ae970196=""
+      >
+        For organisers
+      </p>
+      <h1
+        data-v-ae970196=""
+      >
+        Event request
+      </h1>
+      <p
+        class="page-description"
+        data-v-ae970196=""
+      >
+        View your request and its latest review outcome.
+      </p>
+    </section>
+    <div
+      class="detail-toolbar"
+      data-v-ae970196=""
+    >
+      <a
+        class="back-link"
+        data-v-ae970196=""
+        href="/events"
+      >
+        Back to event requests
+      </a>
+      <button
+        class="button button-secondary"
+        data-v-ae970196=""
+        type="button"
+      >
+        Refresh
+      </button>
+    </div>
+    <div
+      class="panel detail-panel detail-error"
+      data-v-ae970196=""
+      role="alert"
+    >
+      <p
+        data-v-ae970196=""
+      >
+        This event request could not be loaded. Please try again.
+      </p>
+      <button
+        class="button button-secondary"
+        data-v-ae970196=""
+        type="button"
+      >
+        Try again
+      </button>
+    </div>
+    
+  </div>
+</body>
+ ❯ Object.getElementError ../node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ getAllByLabelText ../node_modules/@testing-library/dom/dist/queries/label-text.js:111:38
+ ❯ ../node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ ../node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/features/events/pages/EventRequestDetailPage.test.ts:680:19
+    678|     await waitFor(() => expect(field('Status')).toHaveTextContent('Con…
+    679|     await resolveResponse(older, jsonResponse({ error: { code: 'REQUES…
+    680|     expect(screen.getByLabelText('Planning notes')).toHaveValue('Keep …
+       |                   ^
+    681|     expect(field('Status')).toHaveTextContent('Confirmed');
+    682|     expect(fetchMock).toHaveBeenCalledTimes(3);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  src/features/reviews/pages/ReviewRequestPage.test.ts > KAN-33 / KAN-61 / KAN-84 coordinator parent planning refresh > keeps the newest status after overlapping planning refreshes resolve out of order
+Error: expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  COMPLETED
+Received:
+  CONFIRMED
+ ❯ src/features/reviews/pages/ReviewRequestPage.test.ts:372:59
+    370|     await waitFor(() => expect(screen.getByTestId('planning-context'))…
+    371|     await resolveResponse(older, jsonResponse({ ...decidedDetail(), st…
+    372|     expect(screen.getByText('Status').nextElementSibling).toHaveTextCo…
+       |                                                           ^
+    373|     expect(screen.getByTestId('planning-context')).toHaveTextContent('…
+    374|     expect(fetchMock).toHaveBeenCalledTimes(3);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  src/features/reviews/pages/ReviewRequestPage.test.ts > KAN-33 / KAN-61 / KAN-84 coordinator parent planning refresh > ignores an older refresh failure instead of hiding the newest status and form
+TestingLibraryElementError: Unable to find a label with the text of: Planning notes
+
+Ignored nodes: comments, script, style
+<body>
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div />
+  <div>
+    
+    <section
+      class="page-heading"
+      data-v-a0b5c955=""
+    >
+      <p
+        class="eyebrow"
+        data-v-a0b5c955=""
+      >
+        For coordinators
+      </p>
+      <h1
+        data-v-a0b5c955=""
+      >
+        Event request review
+      </h1>
+      <p
+        class="page-description"
+        data-v-a0b5c955=""
+      >
+        Review the organiser's submitted details and record an outcome.
+      </p>
+    </section>
+    <div
+      class="panel review-error"
+      data-v-a0b5c955=""
+      role="alert"
+    >
+      <p
+        data-v-a0b5c955=""
+      >
+        Cannot read properties of undefined (reading 'status')
+      </p>
+      <button
+        class="button button-secondary"
+        data-v-a0b5c955=""
+        type="button"
+      >
+        Try again
+      </button>
+    </div>
+    
+  </div>
+</body>
+ ❯ Object.getElementError ../node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ getAllByLabelText ../node_modules/@testing-library/dom/dist/queries/label-text.js:111:38
+ ❯ ../node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ ../node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/features/reviews/pages/ReviewRequestPage.test.ts:389:19
+    387|     await waitFor(() => expect(screen.getByTestId('planning-context'))…
+    388|     await resolveResponse(older, jsonResponse({ error: { code: 'REQUES…
+    389|     expect(screen.getByLabelText('Planning notes')).toHaveValue('Keep …
+       |                   ^
+    390|     expect(screen.getByText('Status').nextElementSibling).toHaveTextCo…
+    391|     expect(fetchMock).toHaveBeenCalledTimes(3);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  4 failed | 72 passed (76)
+   Start at  23:25:54
+   Duration  3.13s (transform 1.29s, setup 1.06s, import 1.51s, tests 1.95s, environment 1.30s)
+
+npm error Lifecycle script `test` failed with error:
+npm error code 1
+npm error path C:\Users\trist\Documents\School Stuff\Y3S1\IS212\ConnectSphere\frontend
+npm error workspace @connectsphere/frontend@0.1.0
+npm error location C:\Users\trist\Documents\School Stuff\Y3S1\IS212\ConnectSphere\frontend
+npm error command failed
+npm error command C:\WINDOWS\system32\cmd.exe /d /s /c vitest run src/features/events/pages/EventRequestDetailPage.test.ts src/features/reviews/pages/ReviewRequestPage.test.ts --pool=threads --maxWorkers=2

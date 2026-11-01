@@ -1,0 +1,165 @@
+
+ RUN  v4.1.11 C:/Users/trist/Documents/School Stuff/Y3S1/IS212/ConnectSphere/frontend
+
+ ❯ src/features/safety/SafetyPages.test.ts (34 tests | 2 failed) 959ms
+     × KAN-84-AC12: a pending queue cannot conceal a signout refusal or restore private results 9ms
+     × KAN-84-AC12: a pending queue cannot conceal a role refusal or restore private results 27ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/safety/SafetyPages.test.ts > KAN-84 Safety Officer queue > KAN-84-AC12: a pending queue cannot conceal a signout refusal or restore private results
+TestingLibraryElementError: Unable to find an element with the text: /Sign in to view safety reviews/. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <section
+      aria-labelledby="safety-queue-heading"
+      class="panel safety-page"
+      data-v-20839675=""
+    >
+      <header
+        class="page-heading"
+        data-v-20839675=""
+      >
+        <div
+          data-v-20839675=""
+        >
+          <p
+            class="eyebrow"
+            data-v-20839675=""
+          >
+            Safety
+          </p>
+          <h1
+            data-v-20839675=""
+            id="safety-queue-heading"
+          >
+            Safety reviews
+          </h1>
+        </div>
+      </header>
+      <p
+        data-v-20839675=""
+        role="status"
+      >
+        Loading safety reviews…
+      </p>
+    </section>
+  </div>
+</body>
+ ❯ Object.getElementError ../node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ ../node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ ../node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ ../node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/features/safety/SafetyPages.test.ts:116:45
+    114|     session.user = change === 'signout' ? null : { ...officer, role: '…
+    115|     await flushPromises();
+    116|     if (change === 'signout') expect(screen.getByText(/Sign in to view…
+       |                                             ^
+    117|     else expect(screen.getByRole('alert')).toHaveTextContent('Only a S…
+    118|     pending.resolve({ body: { items: [{ id: reviewId, round: 1, eventN…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/features/safety/SafetyPages.test.ts > KAN-84 Safety Officer queue > KAN-84-AC12: a pending queue cannot conceal a role refusal or restore private results
+TestingLibraryElementError: Unable to find an accessible element with the role "alert"
+
+Here are the accessible roles:
+
+  region:
+
+  Name "Safety reviews":
+  <section
+    aria-labelledby="safety-queue-heading"
+    class="panel safety-page"
+    data-v-20839675=""
+  />
+
+  --------------------------------------------------
+  banner:
+
+  Name "":
+  <header
+    class="page-heading"
+    data-v-20839675=""
+  />
+
+  --------------------------------------------------
+  heading:
+
+  Name "Safety reviews":
+  <h1
+    data-v-20839675=""
+    id="safety-queue-heading"
+  />
+
+  --------------------------------------------------
+  status:
+
+  Name "":
+  <p
+    data-v-20839675=""
+    role="status"
+  />
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <section
+      aria-labelledby="safety-queue-heading"
+      class="panel safety-page"
+      data-v-20839675=""
+    >
+      <header
+        class="page-heading"
+        data-v-20839675=""
+      >
+        <div
+          data-v-20839675=""
+        >
+          <p
+            class="eyebrow"
+            data-v-20839675=""
+          >
+            Safety
+          </p>
+          <h1
+            data-v-20839675=""
+            id="safety-queue-heading"
+          >
+            Safety reviews
+          </h1>
+        </div>
+      </header>
+      <p
+        data-v-20839675=""
+        role="status"
+      >
+        Loading safety reviews…
+      </p>
+    </section>
+  </div>
+</body>
+ ❯ Object.getElementError ../node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ ../node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ ../node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ ../node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/features/safety/SafetyPages.test.ts:117:24
+    115|     await flushPromises();
+    116|     if (change === 'signout') expect(screen.getByText(/Sign in to view…
+    117|     else expect(screen.getByRole('alert')).toHaveTextContent('Only a S…
+       |                        ^
+    118|     pending.resolve({ body: { items: [{ id: reviewId, round: 1, eventN…
+    119|     await flushPromises();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 32 passed (34)
+   Start at  22:18:52
+   Duration  2.73s (transform 239ms, setup 587ms, import 267ms, tests 959ms, environment 699ms)
+

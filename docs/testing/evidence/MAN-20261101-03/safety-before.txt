@@ -1,0 +1,212 @@
+- link "Skip to content":
+  - /url: "#main-content"
+- complementary:
+  - link "ConnectSphere home":
+    - /url: /
+    - text: ConnectSphere
+    - generic: Event Services
+  - navigation "Main navigation":
+    - link "Overview":
+      - /url: /
+      - text: Overview
+    - link "Review queue":
+      - /url: /reviews
+      - text: Review queue
+    - link "Search Venues":
+      - /url: /venues
+      - text: Search Venues
+    - link "Venue availability":
+      - /url: /venues/availability
+      - text: Venue availability
+    - link "Venue bookings":
+      - /url: /venue-bookings
+      - text: Venue bookings
+- banner:
+  - text: Workspace
+  - generic: /
+  - strong: Event request review
+  - link "Notifications, 202 unread":
+    - /url: /notifications
+    - generic: 99+
+  - strong: Event Coordinator
+  - generic: Event coordinator
+  - button "Sign out"
+- main:
+  - paragraph: For coordinators
+  - heading "Event request review" [level=1]
+  - paragraph: Review the organiser's submitted details and record an outcome.
+  - region "REL-20261101-AGENT-STALE":
+    - heading "REL-20261101-AGENT-STALE" [level=2]
+    - paragraph: All dates and times are in Singapore time.
+    - term: Status
+    - definition: CONFIRMED
+    - term: Purpose
+    - definition: "Release acceptance: REL-20261101-AGENT-STALE"
+    - term: Description
+    - definition: R20 ordinary description edit preserves safety baseline
+    - term: Proposed start
+    - definition: 26 Nov 2026, 9:00 am
+    - term: Proposed end
+    - definition: 26 Nov 2026, 10:00 am
+    - term: Expected attendance
+    - definition: "20"
+    - term: Venue requirements
+    - definition: Classroom layout and projector
+    - term: Accessibility needs
+    - definition: Wheelchair access
+    - term: Equipment requirements
+    - definition: Three wireless microphones if required
+    - term: Registration required
+    - definition: "Yes"
+    - navigation "Event actions":
+      - list:
+        - link "Edit name or description":
+          - /url: /events/84a2d6ea-6336-44fd-a7c8-d03b3b489fe3/details
+        - link "Check venue suitability":
+          - /url: /reviews/84a2d6ea-6336-44fd-a7c8-d03b3b489fe3/venue-suitability
+        - link "View registrations":
+          - /url: /events/84a2d6ea-6336-44fd-a7c8-d03b3b489fe3/registrations
+        - link "Check venue availability for this week":
+          - /url: /venues/availability?week=2026-11-26
+        - link "View venue booking requests and decisions":
+          - /url: /venue-bookings?eventRequestId=84a2d6ea-6336-44fd-a7c8-d03b3b489fe3
+  - region "Review outcome":
+    - paragraph: Initial review
+    - heading "Review outcome" [level=2]
+    - status:
+      - strong: Request approved
+      - paragraph: The decision has been recorded. Another initial decision cannot be submitted.
+      - paragraph: "Reason: No reason provided."
+  - region "Assignment":
+    - paragraph: Coordinator
+    - heading "Assignment" [level=2]
+    - paragraph:
+      - strong: Event Coordinator
+      - text: is coordinating this request (since 1 Nov 2026, 5:19 pm).
+    - heading "Assignment history" [level=3]
+    - list:
+      - generic: Event Coordinator
+      - generic: Current
+      - paragraph: Assigned by Coordinator Lead on 1 Nov 2026, 5:19 pm
+  - region "Clarifications":
+    - paragraph: Review
+    - heading "Clarifications" [level=2]
+    - paragraph: Ask the organiser for missing information before you decide.
+    - paragraph: No clarification has been requested.
+  - region "Change requests":
+    - paragraph: Planning
+    - heading "Change requests" [level=2]
+    - paragraph: Review significant changes the organiser asks for, and the arrangements they would affect.
+    - paragraph: No change has been requested.
+  - region "Venue booking requests":
+    - paragraph: Venue
+    - heading "Venue booking requests" [level=2]
+    - paragraph: Request a venue for this event. Venue Staff review and decide on each request separately.
+    - button "Refresh booking requests"
+    - list:
+      - generic: Orchid Seminar Room
+      - generic: Cancelled
+      - paragraph: 26 Nov 2026, 9:00 am to 26 Nov 2026, 10:00 am
+      - paragraph: "Layout: CLASSROOM"
+      - paragraph: "Occupied (including setup/turnaround): 26 Nov 2026, 9:00 am to 26 Nov 2026, 10:00 am"
+      - paragraph: Replaced by Classroom, 26 Nov 2026, 9:00 am to 26 Nov 2026, 10:00 am (Approved).
+      - paragraph: "Cancellation reason: Use dedicated classroom for R20 buffer test"
+      - generic: Classroom
+      - generic: Approved
+      - paragraph: 26 Nov 2026, 9:00 am to 26 Nov 2026, 10:00 am
+      - paragraph: "Layout: CLASSROOM"
+      - paragraph: "Occupied (including setup/turnaround): 26 Nov 2026, 8:45 am to 26 Nov 2026, 10:15 am"
+      - paragraph: Replaces the cancelled arrangement Orchid Seminar Room, 26 Nov 2026, 9:00 am to 26 Nov 2026, 10:00 am.
+      - link "Check suitability":
+        - /url: /reviews/84a2d6ea-6336-44fd-a7c8-d03b3b489fe3/venue-suitability?bookingId=3eef65bc-b2af-41cc-8542-70b7beba90eb
+      - button "Cancel arrangement"
+    - form "Request a venue":
+      - heading "Request a venue" [level=3]
+      - paragraph: Choose a venue and booking period in Singapore time, then select Request this venue.
+      - paragraph: Submitting leaves the request pending and does not reserve the venue. Check the saved arrangement's suitability using its own booking period.
+      - button "Refresh venue catalogue"
+      - generic: Venue
+      - combobox "Venue":
+        - option "Choose a venue" [disabled] [selected]
+        - option "Classroom"
+        - option "Harbour Hall"
+        - option "KAN81 Venue A"
+        - option "KAN81 Venue B"
+        - option "KAN81 Venue S"
+        - option "Orchid Seminar Room"
+        - option "Rooftop Terrace"
+      - generic: Starts (Singapore time)
+      - textbox "Starts (Singapore time)"
+      - generic: Ends (Singapore time)
+      - textbox "Ends (Singapore time)"
+      - generic: Room layout (optional)
+      - textbox "Room layout (optional)"
+      - generic: Notes for Venue Staff (optional)
+      - textbox "Notes for Venue Staff (optional)"
+      - button "Request this venue" [disabled]
+  - region "Equipment arrangements":
+    - heading "Equipment arrangements" [level=2]
+    - button "Reload equipment"
+    - paragraph: No equipment is required for this event.
+  - region "Event confirmation":
+    - heading "Event confirmation" [level=2]
+    - paragraph:
+      - strong: Confirmed
+      - text: by Event Coordinator
+    - time: 01/11/2026, 5:22:15 pm (Singapore time)
+  - region "Safety review":
+    - heading "Safety review" [level=2]
+    - paragraph:
+      - generic: Safety approved
+    - paragraph:
+      - strong: Preparation started
+      - text: by Event Coordinator
+      - time: 01/11/2026, 5:29:44 pm
+      - text: (Singapore time)
+    - heading "Review rounds" [level=3]
+    - list:
+      - paragraph:
+        - strong: Round 3
+        - text: · Safety approved · submitted 01/11/2026, 5:28:24 pm
+      - paragraph: Decided by Safety Officer, 01/11/2026, 5:29:42 pm
+      - paragraph:
+        - strong: Round 2
+        - text: · Rejected · submitted 01/11/2026, 5:27:16 pm
+      - paragraph: Decided by Safety Officer, 01/11/2026, 5:27:32 pm
+      - paragraph: Venue setup buffer changed after submission; resubmit current arrangements.
+      - paragraph:
+        - strong: Round 1
+        - text: · Safety approved · submitted 01/11/2026, 5:25:47 pm
+      - paragraph: Decided by Safety Officer, 01/11/2026, 5:25:53 pm
+  - region "Event status":
+    - paragraph: Request progress
+    - heading "Event status" [level=2]
+    - paragraph:
+      - text: "Current status:"
+      - strong: Confirmed
+    - heading "Status history" [level=3]
+    - list "Status history":
+      - text: Draft
+      - generic: 1 Nov 2026, 5:19 pm · Event Organiser
+      - text: Submitted from Draft
+      - generic: 1 Nov 2026, 5:19 pm · Event Organiser
+      - text: Approved from Submitted
+      - generic: 1 Nov 2026, 5:20 pm
+      - text: Confirmed from Approved
+      - generic: 1 Nov 2026, 5:22 pm · Event Coordinator
+  - region "Event completion":
+    - heading "Event completion" [level=2]
+    - paragraph: Mark this event completed once it has ended. It ends at 26 Nov 2026, 10:00 am (Singapore time). The server checks the time when you confirm.
+    - checkbox "I understand this closes registration and releases the event’s reserved equipment. It cannot be undone."
+    - text: I understand this closes registration and releases the event’s reserved equipment. It cannot be undone.
+    - button "Mark event as completed" [disabled]
+  - region "Event cancellation":
+    - heading "Event cancellation" [level=2]
+    - text: Reason
+    - textbox "Reason"
+    - checkbox "I understand this releases the event’s active arrangements and registrations."
+    - text: I understand this releases the event’s active arrangements and registrations.
+    - button "Cancel event" [disabled]
+- contentinfo:
+  - generic: ConnectSphere Event Services
+  - generic: Event planning workspace

@@ -1,0 +1,1 @@
+- generic: "{\"user\":{\"id\":\"3612336e-49bc-44d7-af51-4022aad5b56e\",\"email\":\"event_organiser@connectsphere.com\",\"displayName\":\"Event Organiser\",\"role\":\"EVENT_ORGANISER\"}}"

@@ -1,5 +1,7 @@
 # ConnectSphere Database Diagram
 
+**Current additive schema:** migrations 001–023. The dated sections retain their rollout checkpoints; [migration 023](#1-november-2026--migration-023-permanent-safety-invalidation) adds persistent invalidation and supplemental context. Shared 023 application and its focused connected retests were verified on 1 November 2026; see the [current rollout checkpoint](../database/README.md#1-november-2026--shared-023-rollout-and-connected-retests).
+
 ## 29 October 2026 — registration and notification outcomes (migration 019)
 
 `event_registrations.outcome_version` is a positive integer, initialized to 1 and incremented on a status transition. The existing unique `(event_request_id, attendee_id)` row, `registered_at`, `withdrawn_at`, and `cancellation_outcome_at` remain the history and capacity inputs; only `REGISTERED` contributes to capacity. `notifications.registration_id` optionally references `event_registrations.id`, and `notifications.change_request_id` optionally references `event_change_requests.id`. The existing recipient/outcome unique index remains the deduplication boundary. Migration 019 adds actor-transaction triggers for registration status outcomes, final confirmation/cancellation and affected equipment shortfalls; their inserted notifications roll back with their source transaction. The KAN-15 service inserts accepted attendee-change notices through the same writer.
@@ -461,7 +463,7 @@ erDiagram
   }
 ```
 
-`app_users.role` gains `SAFETY_OFFICER` (trusted provisioning only). `event_requests` gains `preparation_started_at`, `preparation_started_by` and `preparation_safety_review_id` (all set or all null). `notifications` gains `safety_review_id`. A partial unique index allows one PENDING round per event; a trigger makes decided rounds immutable. `safety_arrangement_fingerprint(event_id)` derives the digest an approval depends on; nothing about invalidation is stored.
+`app_users.role` gains `SAFETY_OFFICER` (trusted provisioning only). `event_requests` gains `preparation_started_at`, `preparation_started_by` and `preparation_safety_review_id` (all set or all null). `notifications` gains `safety_review_id`. A partial unique index allows one PENDING round per event; a trigger makes decided rounds immutable. `safety_arrangement_fingerprint(event_id)` derives the digest an approval depends on; the original 021 snapshot stores no invalidation record. Migration 023 below supersedes that part of the design.
 
 ## 29 October 2026 — Migration 022 safety remediation baselines (KAN-84)
 
@@ -481,3 +483,32 @@ erDiagram
 `safety_planning_area_fingerprint(event_id, area)` computes the current `VENUE` or `TECHNICAL` digest. The API requires a change in every requested area plus valid current readiness before resubmission; notes and unrelated-area edits do not satisfy this condition. A missing baseline fails closed. The migration backfills existing `CHANGES_REQUESTED` rounds using **upgrade-time current data**, not an invented historical snapshot. The baseline's capture time records that distinction; the decided round and its original arrangement digest remain immutable.
 
 Migration 022 also strengthens the full arrangement digest with venue operating hours and buffers, and permits equipment reservation on confirmed events only during the latest `TECHNICAL` change-request decision. Original approvals may become stale under the stronger digest; no approval is rewritten to appear current. Helpers have pinned search paths and restricted execution privileges. See the [forward-upgrade procedure](../database/README.md#kan-84-forward-upgrade--migration-022-29-october-2026). Shared application of 022 is **Not executed** in the PR review run.
+
+
+## 1 November 2026 — migration 023 permanent safety invalidation
+
+```mermaid
+erDiagram
+    SAFETY_REVIEWS ||--o| SAFETY_APPROVAL_INVALIDATIONS : "permanent invalidation"
+    SAFETY_REVIEWS ||--|| SAFETY_REVIEW_CONTEXT_BASELINES : "supplemental context"
+    SAFETY_APPROVAL_INVALIDATIONS {
+      uuid review_id PK,FK
+      timestamptz invalidated_at
+      text source
+    }
+    SAFETY_REVIEW_CONTEXT_BASELINES {
+      uuid review_id PK,FK
+      text context_fingerprint
+      timestamptz captured_at
+    }
+```
+
+![Safety invalidation relationships](architecture/exports/erd-safety-invalidation.png)
+
+`review_id` is the primary and foreign key of both new tables. Every round captures one immutable supplemental baseline; a relevant post-approval change inserts at most one immutable invalidation with a source label and timestamp. Source changes roll back with their evidence. Updates/deletes of either evidence table are refused; RLS and revoked direct Data API grants keep them private. No historical decision, preparation or notification is rewritten.
+
+`safety_context_fingerprint(uuid)` covers live booked-venue facilities and active equipment-line technical requirements. The original arrangement fingerprint remains unchanged. Event/booking/venue/equipment/outage triggers latch changed approved rounds. Operational unavailability uses actual buffered intervals and ignores adjacent/unrelated blocks. Stored invalidation, either fingerprint mismatch or failed current readiness blocks preparation. A fresh approved round is needed after invalidation; restoring values is insufficient.
+
+Existing-round supplemental baselines start at upgrade time. Backfill records detectable original-fingerprint mismatches and current buffered operational-block overlaps, including blocks without outage-impact rows. Changes already restored before 023 cannot be inferred. The initial automated repair changed only disposable schemas; the subsequent shared application is recorded below. Use the [023 procedure](../database/README.md#kan-84-persistent-invalidation--migration-023-1-november-2026) for databases not yet upgraded before running the matching safety service.
+
+**1 November 2026 — shared schema verification:** 023 was applied at 23:26:05 Singapore time; the repeat runner applied nothing. Read-only snapshots confirmed unchanged hashes for 30 existing review rows and 10 preparation records, 30 new supplemental baselines, one detectable invalidation and RLS on both new tables. [Migration evidence](scrum/sprint-04/evidence/freeze-candidate-20261101/migration-after.json). The subsequent connected `MAN-20261101-03` test verified that exact buffer restoration retains invalidation and that a fresh approved round permits preparation to resume; [database comparisons](testing/evidence/MAN-20261101-03/safety-db-recovery-comparison.json) preserve the original history and new round separately. The diagram structure is unchanged by this rollout checkpoint.

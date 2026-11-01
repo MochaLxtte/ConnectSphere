@@ -1,0 +1,59 @@
+{
+  "recorded_at": "2026-11-01T14:15:00.641661+00:00",
+  "base_commit": "034a631bdb05309d4ba0ef4ed1ff9ba032d9df50",
+  "build": "Uncommitted harness and prior release repairs; hashes below identify unchanged harness across both runs",
+  "run1": {
+    "source": "browser-isolated-1.txt (parsed list reporter, not a native Playwright JSON report)",
+    "command": "npm run test:e2e",
+    "result": "Pass",
+    "passed": 253,
+    "failed": 0,
+    "workers": 2,
+    "retries": 0,
+    "duration_display": "1.6m",
+    "exit_code": 0
+  },
+  "run2": {
+    "command": "npm run test:e2e -- --reporter=list,json",
+    "result": "Pass",
+    "stats": {
+      "startTime": "2026-11-01T14:12:13.446Z",
+      "duration": 115398.724,
+      "expected": 253,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "files": 31,
+    "workers": 2,
+    "retries": 0,
+    "exit_code": 0,
+    "report": "browser-isolated-2.json",
+    "log": "browser-isolated-2.txt"
+  },
+  "source_sha256_normalized_lf": {
+    "playwright.config.ts": "99c9db4091c60f277164d58a97afe54377c8b7451363405276952a85058be8a4",
+    "tests/browser/environment.ts": "3243ab1bc1912c98e263d83be388f0081811ff7a8b04d41916bcdac86f45291e",
+    "tests/browser/environment.test.ts": "c4649328e77429d7535f78f8be2c40f8aae10a2de12a3b7f189b88fa90aeeb5a",
+    "tests/browser/start-api.ts": "a9caf01d69c482a4271a31f4b70037d04f1ca47ac5b616854771cbbee494183d",
+    "tests/browser/start-web.ts": "bac9f44f61a22dec5e513b6a08ba6f11e58bd2146c0992beaeaf7456f595fb71",
+    "tests/e2e/venue-bookings.spec.ts": "7e25c9bad52a64366dc9b686866fe1a3f1d86ee1908caa933002d34407666390",
+    "tests/e2e/browser-fixtures.ts": "9931320068ffcd53f7ff0112de3cf07616a707dab37bf9d7e860572e94ffd0e6"
+  },
+  "environment": {
+    "browser": "Chromium",
+    "node": "24.21.0",
+    "playwright": "1.63.0",
+    "api": "Normal server.ts on owned127.0.0.1:4311",
+    "frontend": "Static Vite preview on owned127.0.0.1:4173",
+    "database": "Owned PostgreSQL17 loopback55439/connectsphere_test; no shared Supabase access",
+    "auth": "Synthetic local configuration; business browser tests use explicit API/auth substitutions"
+  },
+  "visual_check": "browser-confirmation-not-ready.png inspected; readable panel, pending venue shows Not ready and Confirm is absent",
+  "teardown": "No listeners on4173/4311 after run2; owned database container remains under root coordination",
+  "limitations": [
+    "Two successful local repeats do not prove no future flakes or remote CI status",
+    "Earlier parallel failures remain recorded; their exact underlying cause was not established",
+    "Connected real-authentication acceptance remains separate from these browser/API-substituted tests"
+  ]
+}

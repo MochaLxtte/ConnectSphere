@@ -1,0 +1,92 @@
+- link "Skip to content":
+  - /url: "#main-content"
+- complementary:
+  - link "ConnectSphere home":
+    - /url: /
+    - text: ConnectSphere
+    - generic: Event Services
+  - generic: CS
+  - text: Event Services
+  - generic: Development workspace
+  - navigation "Main navigation":
+    - paragraph: Workspace
+    - link "Overview":
+      - /url: /
+      - text: Overview
+    - paragraph: Venue planning
+    - link "Venue availability":
+      - /url: /venues/availability
+      - text: Venue availability
+    - link "Venue bookings":
+      - /url: /venue-bookings
+      - text: Venue bookings
+    - link "Venue blocks":
+      - /url: /venue-blocks
+      - text: Venue blocks
+    - link "Venue catalogue":
+      - /url: /venue-catalogue
+      - text: Venue catalogue
+  - paragraph: Event planning workspace
+  - generic: For organisers and coordinators.
+  - text: Development scaffold
+  - generic: v0.1
+- banner:
+  - text: Workspace
+  - generic: /
+  - strong: Edit venue
+  - link "Notifications, 107 unread":
+    - /url: /notifications
+    - generic: 99+
+  - strong: Venue Staff User 1
+  - generic: Venue staff
+  - button "Sign out"
+- main:
+  - paragraph: For venue staff
+  - heading "Classroom" [level=1]
+  - paragraph: Update the information coordinators use to search for and assess this venue.
+  - paragraph: Synthetic KAN-81 run-sheet venue. Do not use for other tests.
+  - status "Affected bookings":
+    - heading "Bookings need review" [level=2]
+    - list:
+      - link "Review REL-20261101-AGENT-CHANGE":
+        - /url: /venue-bookings/765997fa-034d-4e28-bd3a-2b0cb28e2f02
+      - paragraph: 22 Nov 2026, 9:00 am – 22 Nov 2026, 10:00 am (Singapore time)
+      - list:
+        - listitem: Overlaps a period of venue unavailability.
+  - status: Venue information saved.
+  - generic: Location
+  - textbox "Location": Test Only
+  - generic: Maximum capacity
+  - spinbutton "Maximum capacity": "30"
+  - generic: Facilities
+  - textbox "Facilities"
+  - paragraph: One facility per line, for example Projector.
+  - generic: Accessibility features
+  - textbox "Accessibility features"
+  - paragraph: One feature per line, for example Step-free entrance.
+  - checkbox "Wheelchair accessible"
+  - text: Wheelchair accessible
+  - generic: Supported room layouts
+  - textbox "Supported room layouts": CLASSROOM
+  - paragraph: One layout per line. A venue can support more than one.
+  - group "Operating hours (Singapore time)":
+    - generic: Operating hours (Singapore time)
+    - generic: Opens
+    - textbox "Opens": 08:00
+    - generic: Closes
+    - textbox "Closes": 20:00
+    - paragraph: Leave a time blank for no restriction at that end of the day.
+  - group "Setup and turnaround time":
+    - generic: Setup and turnaround time
+    - generic: Setup before each booking (minutes)
+    - spinbutton "Setup before each booking (minutes)": "20"
+    - generic: Turnaround after each booking (minutes)
+    - spinbutton "Turnaround after each booking (minutes)": "15"
+    - paragraph: Use 0 for none. At most 1440 minutes (24 hours) each.
+  - button "Save changes" [disabled]
+  - button "Discard changes" [disabled]
+  - link "Back to the catalogue":
+    - /url: /venue-catalogue
+- contentinfo:
+  - generic: ConnectSphere Event Services
+  - generic: Event planning workspace

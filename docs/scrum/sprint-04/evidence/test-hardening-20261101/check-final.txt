@@ -1,0 +1,87 @@
+
+> connectsphere@0.1.0 check
+> npm run typecheck && npm test && npm run test:browser-harness && npm run build
+
+
+> connectsphere@0.1.0 typecheck
+> tsc -p tsconfig.tools.json && npm run typecheck --workspaces
+
+
+> @connectsphere/frontend@0.1.0 typecheck
+> vue-tsc --noEmit
+
+
+> @connectsphere/backend@0.1.0 typecheck
+> tsc --noEmit
+
+
+> connectsphere@0.1.0 test
+> npm run test --workspaces
+
+
+> @connectsphere/frontend@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.11 C:/Users/trist/Documents/School Stuff/Y3S1/IS212/ConnectSphere/frontend
+
+
+ Test Files  63 passed (63)
+      Tests  1332 passed (1332)
+   Start at  22:25:42
+   Duration  32.49s (transform 37.51s, setup 190.62s, import 73.20s, tests 154.49s, environment 135.54s)
+
+
+> @connectsphere/backend@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.11 C:/Users/trist/Documents/School Stuff/Y3S1/IS212/ConnectSphere/backend
+
+
+ Test Files  80 passed (80)
+      Tests  2032 passed (2032)
+   Start at  22:26:15
+   Duration  8.32s (transform 26.47s, setup 0ms, import 81.17s, tests 22.89s, environment 16ms)
+
+
+> connectsphere@0.1.0 test:browser-harness
+> node --import tsx --test tests/browser/environment.test.ts
+
+✔ browser harness only accepts explicitly dedicated local test databases (1.4248ms)
+✔ browser API replaces inherited production database and auth configuration before imports (0.4314ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 189.2833
+
+> connectsphere@0.1.0 build
+> npm run build --workspaces
+
+
+> @connectsphere/frontend@0.1.0 build
+> vue-tsc --noEmit && vite build
+
+vite v8.2.2 building client environment for production...
+transforming...
+✓ 267 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.68 kB │ gzip:   0.39 kB
+dist/assets/index-BA3MMcjb.css   84.82 kB │ gzip:  14.85 kB
+dist/assets/index-CbPnQDmi.js   651.50 kB │ gzip: 173.61 kB
+
+✓ built in 819ms
+[plugin builtin:vite-reporter] 
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+
+> @connectsphere/backend@0.1.0 build
+> tsc -p tsconfig.build.json
+
