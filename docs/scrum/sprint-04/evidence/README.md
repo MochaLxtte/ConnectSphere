@@ -137,3 +137,25 @@ KAN-26 is In Progress / Tristan (3 SP), with unestimated KAN-104–106 In Progre
 | ID | Artifact | Source / result | Limits |
 | --- | --- | --- | --- |
 | S4-E26 | [Logs, source hashes and desktop/mobile screenshots](booking-feedback-20261101/) (`before.txt`, `component-initial.txt`, `focused.txt`, `check.txt`, `coverage.txt`, `browser.txt`, `summary.json`, `document-validation.json`) | AUTO-20261101-BOOKING-FEEDBACK: two product failures reproduced; 11 focused and 248 full browser cases pass. Check/coverage pass with 1,209 frontend + 1,959 backend tests. Four screenshots visually inspected. | Synthetic browser authentication/API responses; no shared data writes or migration. TC-12-23 Not executed; patch acceptance Not assessed. Source hashes identify the tested candidate before documentation. |
+
+## Connected release walkthrough — 1 November 2026
+
+| ID | Artifact | Source / result | Limits |
+| --- | --- | --- | --- |
+| S4-E27 | [MAN-20261101-01 narrative and retained-data ledger](../../../testing/test-evidence.md), [eight scoped case execution rows](../../../testing/test-executions.csv), [retained screenshots](../../../testing/evidence/MAN-20261101-01/) | 23/24 walkthrough groups Pass; R24's functional browser access/logout checks complete, release review remains open. R01–R12 and R13 Part A, plus earlier R21 notices, are user-reported; their original execution dates/builds are Not recorded. Later observations were executed by the Codex browser agent through real role sessions on local frontend/API with shared Supabase development data. | Local source HEAD `429397aef14be8e3773206eddc9583e56c1f05ad`; exact served build not exposed. No automatic per-case extrapolation from group outcomes. User confirmed signed-out `/api/auth/me` HTTP 401 in Chrome Network on 1 November 2026. Current candidate CI, independent review/merge, current migration/job verification and formal release acceptance are not established. Test data retained; no cleanup. |
+
+The screenshots below support the specific views described in the run narrative. They do not independently establish every step or persisted result. Prior user-reported passes have no retained screenshots in this run.
+
+| Scope | Retained images |
+| --- | --- |
+| Assigned fixtures | [Assigned test fixtures](../../../testing/evidence/MAN-20261101-01/test-fixtures-assigned.jpg) |
+| R13 availability | [Overlapping shortfall](../../../testing/evidence/MAN-20261101-01/r13-overlap-shortfall.jpg), [adjacent interval](../../../testing/evidence/MAN-20261101-01/r13-adjacent-availability.jpg) |
+| R14 confirmation | [Outage blocks confirmation](../../../testing/evidence/MAN-20261101-01/r14-outage-blocks-confirmation.jpg) |
+| R15 registration | [Empty roster](../../../testing/evidence/MAN-20261101-01/r15-empty-roster.jpg), [third attendee sees full](../../../testing/evidence/MAN-20261101-01/r15-third-attendee-full.jpg), [registration closed](../../../testing/evidence/MAN-20261101-01/r15-registration-closed.jpg), [withdrawal unavailable after start](../../../testing/evidence/MAN-20261101-01/r15-withdrawal-after-start.jpg) |
+| R17 change review | [Withdrawn change refused](../../../testing/evidence/MAN-20261101-01/r17-withdrawn-change-refused.jpg) |
+| R18 safety/preparation | [MAIN safety approval and preparation](../../../testing/evidence/MAN-20261101-01/r18-main-safety-preparation.jpg) |
+| R19 remediation | [Combined remediation approved](../../../testing/evidence/MAN-20261101-01/r19-remediation-approved.jpg), [Venue-only unresolved](../../../testing/evidence/MAN-20261101-01/r19-venue-only-still-unresolved.jpg), [Venue-only approved](../../../testing/evidence/MAN-20261101-01/r19-venue-only-approved.jpg), [Technical-only unresolved](../../../testing/evidence/MAN-20261101-01/r19-technical-only-still-unresolved.jpg), [Technical-only approved and preparation resumed](../../../testing/evidence/MAN-20261101-01/r19-technical-only-approved.jpg) |
+| R20 stale/offline review | [Changed arrangements disable approval](../../../testing/evidence/MAN-20261101-01/r20-stale-round-approval-disabled.jpg), [offline save requires reload](../../../testing/evidence/MAN-20261101-01/r20-offline-save-reload-required.jpg), [online reconciled approval](../../../testing/evidence/MAN-20261101-01/r20-online-reconciled-approved.jpg). [Earlier loading capture](../../../testing/evidence/MAN-20261101-01/r20-online-reconciled-decision.jpg) is retained but does **not** evidence approval. Offline test was stale-tab reconciliation of a decision saved separately, not proof of a committed write with a lost response. |
+| R21 notification | [Safety notice destination](../../../testing/evidence/MAN-20261101-01/r21-safety-notice-destination.jpg) |
+| R22 cancellation | [Event cancelled](../../../testing/evidence/MAN-20261101-01/r22-event-cancelled.jpg) |
+| R23 completion | [Event completed after actual end](../../../testing/evidence/MAN-20261101-01/r23-event-completed.jpg) |
