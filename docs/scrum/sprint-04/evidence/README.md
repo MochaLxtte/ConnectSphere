@@ -206,3 +206,10 @@ Connected captures: [baseline](../../../testing/evidence/MAN-20261101-03/probe-b
 | ID | Artifact | Result / boundary |
 | --- | --- | --- |
 | S4-E33 | [CI run 199](https://github.com/MochaLxtte/ConnectSphere/actions/runs/41323715692), [metadata](freeze-candidate-20261101/ci-199.json), [full log](freeze-candidate-20261101/ci-199.txt), [frontend coverage](freeze-candidate-20261101/ci-199-frontend-coverage.json), [backend unit coverage](freeze-candidate-20261101/ci-199-backend-unit-coverage.json), [combined coverage](freeze-candidate-20261101/ci-199-backend-combined-coverage.json) | Pass on PR #80 head `0384a3c`, test-merge `bb198fe`: all checks/coverage/database suites and 253 browser cases, zero retries. Archive digest verified. These results do not replace the connected run or establish teammate approval. Documentation-only follow-up CI is linked from the PR. |
+
+
+## Main verification and documentation-only handover — 2 November 2026
+
+| ID | Artifact | Result / boundary |
+| --- | --- | --- |
+| S4-E34 | [Main CI](https://github.com/MochaLxtte/ConnectSphere/actions/runs/41323940034), [metadata](freeze-candidate-20261101/main-ci.json), [full log](freeze-candidate-20261101/main-ci.txt) | Pass on main `fb6d8d9`, following PR #80 author-merge at 23:58:58 on 1 November. No submitted independent review was present. Subsequent changes are documentation only on `docs/release-freeze-evidence`; no new PR requested yet. Formal release acceptance remains separate. |

@@ -179,3 +179,8 @@ Applied shared migration 023 only, verified existing review/preparation preserva
 ### 2 November 2026 — release candidate pushed for independent review
 
 Committed the release repairs/test gates as `55e2b61` and reconciled evidence/design records as `0384a3c`. [PR #80](https://github.com/MochaLxtte/ConnectSphere/pull/80) targets main; Arvin and Ryan were requested as independent reviewers. CI run 199 passed the exact candidate, including all coverage floors, PostgreSQL integration and 253 browser tests. S4-E33 retains its full log, metadata and per-file coverage reports. This follow-up is documentation only; the 456 source hashes remain unchanged. Its own final-head CI is checked separately on the PR. Teammate approval, merge and formal freeze remain pending; no historical sprint credit or ceremony is added.
+
+
+### 2 November 2026 — merge readback and documentation-only restriction
+
+GitHub readback shows PR #80 had already been author-merged at 1 November 23:58:58, before the code-editing cutoff, into main `fb6d8d9`. No independent review was submitted. Both candidate CI and the exact main commit's CI passed; S4-E34 retains main evidence. This corrects the earlier pending-merge assumption above. From after 1 November 23:59, only documentation changes are permitted. Later evidence/cutoff commits are carried on `docs/release-freeze-evidence`, based on latest main. No new PR is requested while documentation work continues, and no application source, SQL, tests or configuration changed after the cutoff. Formal release acceptance is not inferred.

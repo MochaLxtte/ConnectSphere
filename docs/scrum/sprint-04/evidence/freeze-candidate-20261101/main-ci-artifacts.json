@@ -1,0 +1,23 @@
+{
+  "artifacts": [
+    {
+      "id": 13090409200,
+      "name": "test-evidence",
+      "size_in_bytes": 10253742,
+      "url": "https://api.github.com/repos/MochaLxtte/ConnectSphere/actions/artifacts/13090409200",
+      "archive_download_url": "https://api.github.com/repos/MochaLxtte/ConnectSphere/actions/artifacts/13090409200/zip",
+      "expired": false,
+      "created_at": "2026-11-01T16:08:50Z",
+      "expires_at": "2026-11-15T16:08:48Z",
+      "updated_at": "2026-11-01T16:08:50Z",
+      "digest": "sha256:eaff827970919f531f5937e8aee64e60aaf9702dcbde3050d7243fe3f3d59d6a",
+      "workflow_run": {
+        "id": 41323940034,
+        "repository_id": 1359433727,
+        "head_repository_id": 1359433727,
+        "head_branch": "main",
+        "head_sha": "fb6d8d93f721b114accc9857a05d62e859987e23"
+      }
+    }
+  ]
+}
