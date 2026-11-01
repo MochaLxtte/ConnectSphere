@@ -1,5 +1,7 @@
 # Testing and evidence
 
+**Code-editing freeze — effective after 1 November 2026, 23:59 Singapore time:** only documentation changes are permitted, as confirmed in chat on 2 November. Application source, SQL migrations, tests and configuration remain frozen. Last code commit: `55e2b61`, recorded at **1 November 23:55:42 +08:00**. Subsequent commits contain documentation/evidence only. CI may verify the frozen candidate; any newly discovered code defect must be reported without editing code. This cutoff does not imply independent PR approval, merge or a completed release acceptance decision.
+
 **2 November 2026 — PR handover:** [PR #80](https://github.com/MochaLxtte/ConnectSphere/pull/80) contains the repaired candidate. [CI run 199](https://github.com/MochaLxtte/ConnectSphere/actions/runs/41323715692) passed on head `0384a3c5edb2b992e52f112edf3b0513134b5b32` (GitHub test-merge `bb198fe37a42f0f6687902d26ee49e1e7634b943`), including 253 browser tests with zero retries. Its full log, metadata and per-file coverage summaries are retained in the repository. This documentation-only evidence follow-up does not change the 456 tested source hashes; check the PR's latest head/checks for the subsequent CI result. Arvin and Ryan are requested reviewers; independent approval, merge and the team's freeze decision remain pending. Earlier local/connected records retain their actual 1 November dates.
 
 ## Current release checkpoint — 1 November 2026
