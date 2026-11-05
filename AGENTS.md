@@ -447,6 +447,8 @@ the team and records their name (§2).
 | `CONTRIBUTING.md` | Pointer to this guide | Never |
 | `.github/pull_request_template.md` | PR checklist matching §4 | When §4 changes |
 | `README.md` | Project overview, setup, run and check commands | Setup or commands change |
+| `docs/README.md` | Team documentation home, six editor/reviewer workstreams, exact editing files and submission reading order | Documentation handover or navigation changes |
+| `docs/archive/2026-11-05/root-README.md` | Pre-cleanup setup/development narrative with original dates | Historical reference; do not rewrite |
 | `backend/README.md`, `frontend/README.md`, `database/README.md` | Workspace setup, structure, database configuration | Setup, structure or schema changes (§4 step 14) |
 | `backend/src/modules/*/README.md` | Module responsibilities and files (owner names there are historical) | The module changes (§4 step 14) |
 | `backend/src/modules/registrations/README.md` | KAN-17/67 registration APIs, transaction rules and verification | Registration module changes (§4 step 14) |
@@ -466,7 +468,7 @@ the team and records their name (§2).
 
 | Document | Holds | Who |
 | --- | --- | --- |
-| `docs/architecture/README.md` + `exports/` | C1, C2, C3, class and sequence diagrams, image exports | If (§5.17) |
+| `docs/architecture/README.md` + `exports/` | Current design report, C1–C3, class/sequence/data views, trade-offs and image exports | If (§5.17) |
 | `docs/architecture/api-contract.md` | Endpoint shapes and errors | If |
 | `docs/database-diagram.md` | Tables and relationships | If |
 
@@ -479,7 +481,7 @@ the team and records their name (§2).
 | `docs/requirements/traceability.csv` | Feature → story → AC → test case → test file | Required |
 | `docs/testing/test-evidence.md` | Run narratives, suite results, source limitations and coverage gaps | Required |
 | `docs/testing/archive/test-cases-2026-10-21.csv` | Unchanged pre-standardisation register retained as historical source evidence | Never edit; current records live in the separate registers |
-| `docs/testing/README.md` | Register workflow, test levels, environments and integrated check scripts | If (testing workflow or integrated check changes) |
+| `docs/testing/README.md` | Current testing report, levels/environments, coherent results/coverage, trace examples and register editing guide | When verification or its supported summary changes |
 | `docs/testing/release-e2e-walkthrough.md` + matching `.docx` | Shareable Sprints 1–4 manual E2E release guide, coverage map and separate blank results form; execution evidence remains in the registers | If (release workflow changes); keep source and Word export aligned |
 | `docs/testing/coverage-reports/` | Coverage summary per sprint | Any one member, sprint close |
 
@@ -501,12 +503,24 @@ the team and records their name (§2).
 | `sprint-0N/retrospective.md` | Feedback per member, actions | Everyone + any one member |
 | `sprint-0N/evidence/README.md` + files | Index of screenshots, exports, CI runs, transcripts | If |
 | `docs/scrum/sprint-01/*`, `sprint-02/*` | Closed sprints (same eight records) | Factual corrections and backfilled records only, marked with the date they were added |
-| `docs/scrum/sprint-03/*`, `sprint-04/*` | Current and final planned sprint records, customer-change allocation and evidence | Current sprint updates; future sprint planning records do not claim meetings already occurred |
+| `docs/scrum/sprint-03/*`, `sprint-04/*` | Customer-change planning, final-sprint records and evidence with explicit acceptance/closure qualifications | Supported record reconciliation; preparation does not establish a meeting or acceptance |
 
 ### 8.6 Submission (folders 5–7)
 
 | Document | Holds | Who |
 | --- | --- | --- |
-| `docs/submission/checklist.md` | Folders 1–7 and final checks | Any one member (§5.18) |
-| `docs/submission/5/README.md` | Slide deck status and PDF | Any one member |
-| `docs/submission/7/README.md` | Repository link and instructor access check | Any one member |
+| `docs/submission/checklist.md` | Single workstream evidence/action tracker, confirmed unavailable inputs and seven-folder package checks | Workstream editors and submission integrator (§5.18) |
+| `docs/submission/5/README.md` | Eight-rubric content brief, course-template/PDF record and deck review fields | Submission integrator, checked by each workstream |
+| `docs/submission/7/README.md` | Repository/instructor access, frozen code versus documentation identity, independent review and formal release decision | Submission integrator with actual team/reviewer inputs |
+
+### 8.7 Preserved narrative history
+
+| Document | Holds | Who |
+| --- | --- | --- |
+| `docs/requirements/archive/2026-11-05/*.md` | Pre-cleanup requirements, backlog, customer-change and question records | Historical reference; current guides link to these snapshots |
+| `docs/architecture/archive/2026-11-05/README.md` | Pre-cleanup design narrative, dated checkpoints and Mermaid sources | Historical reference; current design report is the reading entry point |
+| `docs/testing/archive/2026-11-05/README.md` | Pre-cleanup testing guide and dated verification checkpoints | Historical reference; test registers and run ledger stay at their original paths |
+| `docs/scrum/archive/2026-11-05/*.md`, `docs/scrum/sprint-0N/archive/2026-11-05/*.md` | Original Scrum summaries, plans, estimates, reviews, retrospectives and progress records moved out of the editing path | Historical reference; preserve original wording, dates and source limits |
+| `docs/submission/archive/2026-11-05/checklist.md`, `docs/submission/1/archive/2026-11-05/README.md`, `docs/submission/5/archive/2026-11-05/README.md`, `docs/submission/7/archive/2026-11-05/README.md` | Earlier submission/export/deck/access checkpoints | Historical reference; active tasks live in the shared checklist |
+
+The 5 November editorial cleanup preserves dated records in these appendices and retains compatibility links from the original files. Archives are supporting evidence, not current instructions. Fill current source records through `docs/README.md`; the shared checklist is the single missing-input tracker. This reorganisation does not change the Definition of Done, acceptance, recorded execution outcomes or the code freeze.

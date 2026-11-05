@@ -1,5 +1,9 @@
 # Sprint 4 evidence register
 
+## Team input needed
+
+Workstream 5: register supplied artifacts here with their source and capture dates. Use the [shared evidence checklist](../../../submission/checklist.md#ws5-sprint-3-and-4) for the missing-input list. Existing entries below retain their original dates and evidence limits.
+
 **16 October 2026 update.** Final development sprint, planned 18–31 October. Jira id 68 is Future, not started; current selection is 15 parent items / 63 SP. No meeting or product acceptance is recorded by this preparation.
 
 | ID | What | Captured date | File or link | Purpose / limits |
@@ -41,6 +45,8 @@ Current story ownership is unassigned for team selection; reviewers and integrat
 | S4-E08 | [Current ownership snapshot](../../sprint-03/evidence/jira-ownership-state-2026-10-16.json) | Live Jira read on 16 October: all 28 unfinished parents are unassigned; Sprint 4 remains Future with 15 parents / 63 SP. Historical Done subtasks KAN-57/KAN-58 also have unassigned metadata. | Assignment metadata only; no sprint start, implementation, acceptance or estimate change. Earlier named allocation is history. |
 | S4-E09 | [Handover validation](../../sprint-03/evidence/handover-validation-2026-10-16.json) | Course-format Jira/export/card/case checks 17/17; 28 active cards, 299 criteria, 256 cases and 76 traceability rows. Workbook source refresh, saved readback, formulas, preserved formatting and changed views passed. Final link/whitespace results are in the artifact. | Planning artifacts only; future product tests and acceptance remain unexecuted/unassessed. |
 
+<a id="kan-9-equipment-availability--26-october-2026"></a>
+
 ## KAN-9 implementation verification — 26 October 2026
 
 | ID | Artifact | Source / result | Limits |
@@ -78,9 +84,9 @@ KAN-26 is In Progress / Tristan (3 SP), with unestimated KAN-104–106 In Progre
 | ID | Artifact | Source / result | Limits |
 | --- | --- | --- | --- |
 | S4-E16 | [Summary/source hashes](pr63-20261028/summary.json), [check](pr63-20261028/check.txt), [coverage](pr63-20261028/coverage.txt), [database](pr63-20261028/integration.txt), [browser](pr63-20261028/browser.txt), [initial browser](pr63-20261028/browser-initial.txt), [workbook validation](pr63-20261028/workbook-validation.json), [document validation](pr63-20261028/document-validation.json) | AUTO-20261028-PR63-01: 1,034 frontend / 1,691 backend; 616 isolated PostgreSQL; 189 browser tests Pass. Earlier failed attempts and focused retests retained in the same folder. | Synthetic sessions and browser API substitutes; no shared migration or manual acceptance. Review repair for KAN-62/KAN-63 with KAN-15/KAN-26 regression protection. |
-| S4-E18 | [Check](kan10-20261029/check.txt), [coverage](kan10-20261029/coverage.txt), [integration](kan10-20261029/integration.txt), [browser](kan10-20261029/browser.txt); [AUTO-20261029-KAN10-01](../../../testing/test-evidence.md#29-october-2026--kan-10-mark-event-as-completed) | KAN-10 local automated results, 29 October 2026, Node 24.21.0 and PostgreSQL 17.11. Not a hosted run; acceptance Not assessed. |
-| S4-E19 | [Check](kan14-20261029/check.txt), [coverage](kan14-20261029/coverage.txt), [integration](kan14-20261029/integration.txt), [browser](kan14-20261029/browser.txt); [AUTO-20261029-KAN14-02](../../../testing/test-evidence.md#29-october-2026--kan-14-register-for-an-event) | KAN-14 rerun on the tree merged with main (migrations 001–019, KAN-17/67/80, KAN-10), 29 October 2026, Node 24.21.0 and PostgreSQL 17.11. These files replace the isolated-branch outputs of AUTO-20261029-KAN14-01, which remain in commit 3940f92. Not a hosted run; acceptance Not assessed. |
-| S4-E20 | [Check](kan18-20261029/check.txt), [backend coverage](kan18-20261029/backend-coverage.txt), [frontend coverage](kan18-20261029/frontend-coverage.txt), [integration](kan18-20261029/integration.txt), [browser](kan18-20261029/browser.txt); [AUTO-20261029-KAN18-02](../../../testing/test-evidence.md#29-october-2026--kan-18-equipment-stock-and-operational-status) | KAN-18 rerun on the tree merged with main (migrations 001–020), 29 October 2026, Node 24.21.0 and PostgreSQL 17.11. S4-E17 is KAN-82's; these files replace the isolated-branch outputs of AUTO-20261029-KAN18-01, which remain in commit b0ba1ce. Not a hosted run; acceptance Not assessed. |
+| S4-E18 | [Check](kan10-20261029/check.txt), [coverage](kan10-20261029/coverage.txt), [integration](kan10-20261029/integration.txt), [browser](kan10-20261029/browser.txt); [AUTO-20261029-KAN10-01](../../../testing/test-evidence.md#29-october-2026--kan-10-mark-event-as-completed) | KAN-10 local automated results, 29 October 2026, Node 24.21.0 and PostgreSQL 17.11. Not a hosted run; acceptance Not assessed. | |
+| S4-E19 | [Check](kan14-20261029/check.txt), [coverage](kan14-20261029/coverage.txt), [integration](kan14-20261029/integration.txt), [browser](kan14-20261029/browser.txt); [AUTO-20261029-KAN14-02](../../../testing/test-evidence.md#29-october-2026--kan-14-register-for-an-event) | KAN-14 rerun on the tree merged with main (migrations 001–019, KAN-17/67/80, KAN-10), 29 October 2026, Node 24.21.0 and PostgreSQL 17.11. These files replace the isolated-branch outputs of AUTO-20261029-KAN14-01, which remain in commit 3940f92. Not a hosted run; acceptance Not assessed. | |
+| S4-E20 | [Check](kan18-20261029/check.txt), [backend coverage](kan18-20261029/backend-coverage.txt), [frontend coverage](kan18-20261029/frontend-coverage.txt), [integration](kan18-20261029/integration.txt), [browser](kan18-20261029/browser.txt); [AUTO-20261029-KAN18-02](../../../testing/test-evidence.md#29-october-2026--kan-18-equipment-stock-and-operational-status) | KAN-18 rerun on the tree merged with main (migrations 001–020), 29 October 2026, Node 24.21.0 and PostgreSQL 17.11. S4-E17 is KAN-82's; these files replace the isolated-branch outputs of AUTO-20261029-KAN18-01, which remain in commit b0ba1ce. Not a hosted run; acceptance Not assessed. | |
 
 
 ## KAN-82 automated verification — 28 October 2026

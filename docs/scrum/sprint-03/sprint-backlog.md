@@ -1,40 +1,17 @@
 # Sprint 3 backlog and acceptance test plan
 
-**Acceptance reconciliation — 26 October 2026:** the [current review decision register](review.md#current-acceptance-and-closure--26-october-2026) records the team's collective acceptance of all 13 stories / 63 SP at the 17 October review and no carry-over, confirmed on 26 October. This supplies the review decision separately from historical build-level verification, which remains Not assessed where evidence conflicts. Earlier case outcomes, failures, pending placeholders and dated fixes remain unchanged; whole-story acceptance does not convert unperformed cases into Pass.
+**Scope:** 13 stories / 63 SP. This is the stable story/criterion reference for the sprint; current outcomes are summarised in [review](review.md).
 
-**25 October 2026 reconciliation:** The [new supplied report](#25-october-2026--team-meeting-and-manual-result-reconciliation) records meeting attendance and/or manual results separately from earlier dated evidence. It does not backdate new fixes or infer acceptance.
+## Team input needed
 
-## 25 October 2026 — Arvin KAN-78 and KAN-34 documentation reconciliation
+Workstream 5: edit only supported acceptance/evidence references; story and criterion identifiers remain stable. Use the [shared evidence checklist](../../submission/checklist.md#ws5-sprint-3-and-4) for missing sources and completion conditions. Preserve **Not recorded**, **To agree**, **Not executed** or **Not assessed** until a source supports a replacement.
 
-This scoped readback covers Arvin's **KAN-78 (8 SP)** and **KAN-34 (3 SP)** only, against `main` `96a0d10`. [PR #48](https://github.com/MochaLxtte/ConnectSphere/pull/48) was integrated through [PR #54](https://github.com/MochaLxtte/ConnectSphere/pull/54) on **22 October, 17:08 Singapore time**. Leo Kai Jie requested changes; Irfan subsequently approved the integration resolutions. Leo's post-integration re-review is **Not recorded**. The last recorded Jira state for both stories is **In Review** (21 October); this update does not claim a fresh Jira read or change Jira.
+## How to use this record
 
-The current schema is shared duration columns in migration **009**, occupied intervals and approval snapshots in **012**, and the later live-hold extension in **013**. The 22 October integration preserves KAN-81 outages over approved bookings and uses buffered intervals for recovery. Older dated 008/010 and pending-integration statements below are historical checkpoints, superseded for these two stories by this readback.
-
-[AUTO-20261025-ARVIN-01](../../testing/test-evidence.md#25-october-2026--arvin-kan-78-and-kan-34-documentation-reconciliation) imports the existing green main CI, including the two owned PostgreSQL suites and fixture-browser draft regression; it is not a new local or hosted run. Reusable cases `TC-03-301/302` and `TC-14-301`–`TC-14-307` link the automated evidence. The full hosted groups and formal acceptance remain **Not executed** / **Not assessed**. No original criterion, estimate, sprint date, Done date or velocity is changed. Missing review/retrospective records remain **Not recorded**; work after 17 October is not backdated into the configured sprint window.
-
-**Ryan verification update — 25 October 2026.** [REPORT-20261025-RYAN-S3](../../testing/test-evidence.md#25-october-2026--ryan-story-verification-records) records Tristan's report that Ryan passed revised KAN-12 cases TC-10-02–12/TC-10-210 and the KAN-50 AC101 case TC-08-14 on **17 October 2026**. Run `MAN-20261017-02` has 13 reported case results; tested build, environment, fixtures and captures are **Not recorded**. [S3-E22](evidence/README.md#25-october-2026--ryan-story-verification-records) preserves later PR/CI dates separately. This updates current ownership and S3-T15/S3-T16 evidence without replacing old failures, proving every KAN-50 criterion or changing acceptance/velocity.
-
-**KAN-79 / KAN-65 manual-test report — 25 October 2026.** The manual scenarios for these two stories are reported **Pass on localhost** by Tristan, with a reported execution date of **17 October 2026** using local work before it was pushed; see [REPORT-20261025-TRISTAN-S3](../../testing/test-evidence.md#25-october-2026--reported-manual-results-for-original-stories) and S3-E23. Tested builds are **Not recorded**. This updates S3-T20/S3-T21's manual-test evidence, not the complete S3-T27 journey, deployed-site verification, story acceptance or sprint velocity. Prior dated results and failures remain preserved.
-
-**Combined-branch verification — 21 October 2026.** `feat/sprint-3-integration`
-includes PRs #37/#38/#40–45 and the KAN-79 reliability/test-documentation work.
-Check/coverage, 380 database tests and 147 browser tests pass; [S3-E19](evidence/README.md)
-retains exact builds and limits. KAN-64 transactions/inbox are now integrated with KAN-79/KAN-65;
-manual/hosted acceptance remains Not executed and the recipient matrix remains To agree.
-KAN-77 settings use migration 009; AC6 and interval application still depend on KAN-78.
-This later verification does not change historical acceptance, estimates, owners or velocity.
-
-**KAN-65 follow-up — 19 October 2026.** KAN-65 and subtasks KAN-88/89/90 are In Progress / Tristan; the estimate remains 3 SP. Branch `feat/KAN-65-coordinator-reassignment` includes KAN-79 and implements Lead-only reassignment with a required reason, assignment-version checks, atomic audit history and current-assignment permissions. `AUTO-20261019-02` records local verification. KAN-64 notifications, manual/hosted workflow checks, independent review and acceptance remain pending. The earlier KAN-79 dependency notes below describe that earlier implementation stage. This targeted update does not change sprint scope, historical evidence or velocity.
-
-**KAN-79 implementation update — 19 October 2026.** KAN-79 is assigned to Tristan and In Progress in Jira, with subtasks KAN-85/86/87 In Progress. Its 8 SP and Sprint 3 membership are unchanged. The branch implements trusted Lead access, unassigned submission, oversight and initial allocation; automated verification is recorded as `AUTO-20261019-01`. KAN-65/KAN-64 integration, hosted checks, independent review and acceptance remain outstanding. Other stories retain their last dated snapshot; this is a targeted update, not a fresh project-wide export. Sprint 3 remains administratively Active despite its configured 17 October end; this work is recorded on its actual 19 October date and is not counted as delivery by 17 October.
-
-**16 October 2026 update.** Selected scope: **13 parents / 63 SP**. Sprint window: **4–17 October 2026**. Jira: **Active (ID 67)**. All selected parents are To Do; tests **Not executed** and acceptance **Not assessed**.
-
-This rebalanced allocation replaces the earlier 97/29 split with **63/63**, without dropping criteria or increasing the 126 remaining release points. Customer changes were received **2 October**, as confirmed on 16 October; Sprint 2 is assessed against its original scope. The five selected carried stories retain **19 SP**; their current unfinished disposition does not invent historical acceptance or reduce Jira estimates to zero.
-
-[Planning](planning.md) and [estimation](estimation-and-capacity.md) record the allocation and recorded decisions. Active criteria below retain the Jira wording. Expandable source descriptions are preserved snapshots from before the self-selection update; old administrative owner/reviewer labels in those snapshots are historical. Notification work is an explicit **KAN-64 5 + KAN-80 3** split, not hidden unpointed preparation. S3 delivers all of its narrowed inbox and trigger scope; S4 adds the separately tracked remaining triggers.
-
-**16 October ownership update:** stories are unassigned for team members to choose, targeting roughly **10–11 SP each per sprint / 21 SP across both**. Keep whole estimates and dependencies; choose another member to review. The integration lead is **To agree**. See the [selection rules](planning.md#selected-backlog).
+- Read the selected/committed table, then the relevant story card and acceptance-test group.
+- Criterion wording and historical test checkpoints below retain their source versions. A dated "Not executed" or pending dependency is not automatically the latest release result.
+- Read the [current testing report](../../testing/README.md) and [execution register](../../testing/test-executions.csv) for later runs. An automated pass or a broad walkthrough does not establish every linked criterion passed.
+- Record formal sprint decisions in [review](review.md); do not infer them from Jira or CI. Detailed development and superseded allocation history is linked at the end.
 
 ## Selected backlog
 
@@ -1178,345 +1155,95 @@ Old test identifiers are preserved as history; their current location is explici
 
 S3-T25/T26 are new customer-change groups; S3-T27 is the current integrated Sprint 3 journey. S4-T14/T15 cover CR-3/CR-6. No test-group identifier from the previous selected plan is reassigned to another story.
 
-## Superseded 97-SP selected-scope snapshot
+## Historical records
 
-The earlier same-day allocation is retained for traceability. **It is not the current sprint commitment.** Its story cards now live under the selected Sprint 3 or Sprint 4 locations above; criteria and old functional case IDs were retained unless explicitly split by the notification mapping. All acceptance rows below were Not executed.
-
-<details>
-<summary>Earlier 23-item / 97-SP allocation and acceptance groups</summary>
-
-
-| Jira | Story | SP | Owner | Independent reviewer | Origin | Test |
-| --- | --- | ---: | --- | --- | --- | --- |
-| [KAN-18](https://smu-g7-grp1.atlassian.net/browse/KAN-18) | Update Equipment Availability Status | 3 | Arvin | Kai Jie | Existing future backlog | S3-T01 |
-| [KAN-9](https://smu-g7-grp1.atlassian.net/browse/KAN-9) | Check Equipment Availability for an Event | 8 | Arvin | Kai Jie | Existing future backlog | S3-T02 |
-| [KAN-63](https://smu-g7-grp1.atlassian.net/browse/KAN-63) | Submit and Review Event Equipment Requests | 5 | Arvin | Kai Jie | Existing future backlog | S3-T03 |
-| [KAN-26](https://smu-g7-grp1.atlassian.net/browse/KAN-26) | Reserve Equipment | 3 | Arvin | Kai Jie | Existing future backlog | S3-T04 |
-| [KAN-6](https://smu-g7-grp1.atlassian.net/browse/KAN-6) | Submit an Event Request | 3 | Kai Jie | Tristan | Sprint 2 carry-over: full original points | S3-T05 |
-| [KAN-34](https://smu-g7-grp1.atlassian.net/browse/KAN-34) | Resume/Edit Draft Event Request | 3 | Kai Jie | Tristan | Sprint 2 carry-over: full original points | S3-T06 |
-| [KAN-60](https://smu-g7-grp1.atlassian.net/browse/KAN-60) | Require a reason when rejecting an event request | 2 | Kai Jie | Tristan | Existing future backlog | S3-T07 |
-| [KAN-61](https://smu-g7-grp1.atlassian.net/browse/KAN-61) | Confirm Event After Planning Arrangements | 3 | Kai Jie | Tristan | Existing future backlog | S3-T08 |
-| [KAN-62](https://smu-g7-grp1.atlassian.net/browse/KAN-62) | Cancel Event and Release Its Arrangements | 5 | Kai Jie | Tristan | Existing future backlog | S3-T09 |
-| [KAN-10](https://smu-g7-grp1.atlassian.net/browse/KAN-10) | Mark Event as Completed | 3 | Kai Jie | Tristan | Existing future backlog | S3-T10 |
-| [KAN-14](https://smu-g7-grp1.atlassian.net/browse/KAN-14) | Register for an Event | 5 | Ernest | Ryan | Existing future backlog | S3-T11 |
-| [KAN-17](https://smu-g7-grp1.atlassian.net/browse/KAN-17) | Withdraw Attendee Registration | 2 | Ernest | Ryan | Existing future backlog | S3-T12 |
-| [KAN-67](https://smu-g7-grp1.atlassian.net/browse/KAN-67) | View Event Registrations | 2 | Ernest | Ryan | Existing future backlog | S3-T13 |
-| [KAN-66](https://smu-g7-grp1.atlassian.net/browse/KAN-66) | Update Event Information During Planning | 3 | Ernest | Ryan | Existing future backlog | S3-T14 |
-| [KAN-50](https://smu-g7-grp1.atlassian.net/browse/KAN-50) | Maintain Venue Catalog | 5 | Tristan | Irfan | Sprint 2 carry-over: full original points | S3-T15 |
-| [KAN-12](https://smu-g7-grp1.atlassian.net/browse/KAN-12) | Search and Filter Venues | 5 | Tristan | Irfan | Sprint 2 carry-over: full original points | S3-T16 |
-| [KAN-52](https://smu-g7-grp1.atlassian.net/browse/KAN-52) | Check Venue Suitability | 3 | Tristan | Irfan | Sprint 2 carry-over: full original points | S3-T17 |
-| [KAN-77](https://smu-g7-grp1.atlassian.net/browse/KAN-77) | Configure Venue Setup and Turnaround Durations | 2 | Tristan | Irfan | New CR-1 story | S3-T18 |
-| [KAN-78](https://smu-g7-grp1.atlassian.net/browse/KAN-78) | Apply Venue Buffers to Availability and Booking Conflicts | 8 | Tristan | Irfan | New CR-1 story | S3-T19 |
-| [KAN-79](https://smu-g7-grp1.atlassian.net/browse/KAN-79) | Assign Submitted Events Through a Coordinator Lead Queue | 8 | Ryan | Arvin | New CR-5 replacement | S3-T20 |
-| [KAN-65](https://smu-g7-grp1.atlassian.net/browse/KAN-65) | Reassign Event Coordinator | 3 | Ryan | Arvin | Existing future backlog | S3-T21 |
-| [KAN-64](https://smu-g7-grp1.atlassian.net/browse/KAN-64) | Notify Relevant Users About Event Workflow Updates | 8 | Irfan | Ernest | Existing future backlog | S3-T22 |
-| [KAN-15](https://smu-g7-grp1.atlassian.net/browse/KAN-15) | Submit and Review Event Change Requests | 5 | Irfan | Ernest | Existing future backlog | S3-T23 |
-| **Total** | **23 parents** | **97** | | | **19 carried + 78 other selected work** | |
-
-
-
-Each row groups the complete criterion-specific cases for one parent. Normal, boundary, conflict and failure scenarios are explicit in the CSV; row completion requires all applicable linked criteria and the Definition of Done, not merely a happy-path screenshot.
-
-| Test | Story / full criterion set | Functional cases | Verification scope | Result / evidence |
-| --- | --- | --- | --- | --- |
-| S3-T01 | KAN-18: AC1, AC2, AC3, AC4, AC5, AC6, AC101, AC102, AC103 | TC-16-01, TC-16-02, TC-16-03, TC-16-04, TC-16-05 | Operational stock, damaged/maintenance exclusions, restoration, permissions and stale updates | **Not executed** / Not recorded |
-| S3-T02 | KAN-9: AC1, AC2, AC3, AC4, AC5, AC101, AC102, AC103 | TC-16-06, TC-16-07, TC-16-08, TC-16-09, TC-16-10 | Requested quantities, peak overlaps, shortages, invalid inputs and advisory-result recheck | **Not executed** / Not recorded |
-| S3-T03 | KAN-63: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC101, AC102, AC103, AC104 | TC-15-01, TC-15-02, TC-15-03, TC-15-04, TC-15-05, TC-15-06, TC-15-07 | Coordinator requests, staff review, association, whole-line reservation and explicit Not Required | **Not executed** / Not recorded |
-| S3-T04 | KAN-26: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC101, AC102, AC103, AC104 | TC-17-01, TC-17-02, TC-17-03, TC-17-04, TC-17-05, TC-17-06, TC-17-07 | Atomic reservation, concurrent demand, notifications and once-only lifecycle release | **Not executed** / Not recorded |
-| S3-T05 | KAN-6: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC101 | TC-02-02, TC-02-03, TC-02-04, TC-02-05, TC-02-06, TC-02-07, TC-02-08 | Both submission paths, field errors, ownership, state, required data and repeat/race behavior, TC-02-09 | **Partly executed**: AC101 (TC-02-01) and the integration cases TC-02-05, -07, -08 passed 21 October, AUTO-20261021-KAN6-02; the manual cases (TC-02-02, -03, -04, -06, -09) are **Not executed** / Not recorded |
-| S3-T06 | KAN-34: AC1, AC2, AC3, AC101 | TC-03-02, TC-03-03, TC-03-04, TC-03-05 | Reopen/edit persistence, registration toggles, ownership/state and real calendar dates, TC-03-06 | Local automated Pass — AUTO-20261021-90; hosted acceptance Not executed |
-| S3-T07 | KAN-60: AC1, AC2, AC3, AC4, AC5, AC101, AC102, AC103 | TC-04-02, TC-04-03, TC-04-04, TC-04-05, TC-04-06 | Mandatory rejection reason, limits, owner outcome and unchanged initial-decision guards | **Not executed** / Not recorded |
-| S3-T08 | KAN-61: AC1, AC2, AC3, AC4, AC5, AC6, AC101, AC102, AC103, AC104 | TC-06-01, TC-06-02, TC-06-03, TC-06-04, TC-06-05, TC-06-06, TC-06-07 | Complete current readiness, authorised confirmation, audit, races and registration independence | **Not executed** / Not recorded |
-| S3-T09 | KAN-62: AC1, AC2, AC3, AC4, AC5, AC6, AC101, AC102, AC103, AC104 | TC-06-08, TC-06-09, TC-06-10, TC-06-11, TC-06-12, TC-06-13 | Cancellation authority/reason, atomic resource effects, notifications and retries | **Not executed** / Not recorded |
-| S3-T10 | KAN-10: AC1, AC2, AC3, AC4, AC5, AC101, AC102, AC103 | TC-06-14, TC-06-15, TC-06-16, TC-06-17, TC-06-18 | End-time completion, rights, history and once-only release | **Not executed** / Not recorded |
-| S3-T11 | KAN-14: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC101, AC102, AC103, AC104 | TC-18-01, TC-18-02, TC-18-03, TC-18-04, TC-18-05, TC-18-06 | Event eligibility, timing/capacity, own status, duplicates, last-place races and privacy | **Not executed** / Not recorded |
-| S3-T12 | KAN-17: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC101, AC102, AC103 | TC-18-07, TC-18-08, TC-18-09, TC-18-10, TC-18-11 | Confirmation, cutoffs, re-entry warning, persistent withdrawal and capacity once | **Not executed** / Not recorded |
-| S3-T13 | KAN-67: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC101, AC102, AC103 | TC-18-12, TC-18-13, TC-18-14, TC-18-15, TC-18-16, TC-18-17 | Event-specific rosters/counts, limited fields, refresh, reassignment and stale-session protection | **Not executed** / Not recorded |
-| S3-T14 | KAN-66: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC101, AC102, AC103 | TC-07-01, TC-07-02, TC-07-03, TC-07-04, TC-07-05 | Role/state/field edit matrix, ordinary/significant boundary and concurrency | **Not executed** / Not recorded |
-| S3-T15 | KAN-50: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12, AC13, AC14, AC15, AC16, AC17, AC18, AC19, AC20, AC21, AC101 | TC-08-02, TC-08-03, TC-08-04, TC-08-05, TC-08-06, TC-08-07, TC-08-08, TC-08-09, TC-08-10, TC-08-11, TC-08-12, TC-08-13, TC-08-14 | All catalogue fields, persistence/propagation, access, data validation and stale-save regression | **Not executed** / Not recorded |
-| S3-T16 | KAN-12: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12, AC13, AC14, AC15, AC16, AC101, AC102 | TC-10-02, TC-10-03, TC-10-04, TC-10-05, TC-10-06, TC-10-07, TC-10-08, TC-10-09, TC-10-10, TC-10-11, TC-10-12, TC-10-210 | All filters, current results, access, invalid dates, stale response and failed options | **Not executed** / Not recorded |
-| S3-T17 | KAN-52: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC101, AC102 | TC-11-02, TC-11-03, TC-11-04, TC-11-05, TC-11-06, TC-11-07, TC-11-205 | Applicable suitability requirements, current context, capacity/capabilities, availability and explicit zero | **Partly executed**: explicit zero (AC101) automated layers passed 21 October, AUTO-20261021-KAN52-01; the other cases and the manual run are **Not executed** / Not recorded |
-| S3-T18 | KAN-77: AC1, AC2, AC3, AC4, AC5, AC6 | TC-08-15, TC-08-16, TC-08-17, TC-08-18, TC-08-19, TC-08-20 | Authorised bounded durations, additive migration, propagation and field-aware conflicts | **Not executed** / Not recorded |
-| S3-T19 | KAN-78: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8 | TC-14-01, TC-14-02, TC-14-03, TC-14-04, TC-14-05, TC-14-06, TC-14-07 | Effective intervals across consumers, boundaries/blocks, existing flags and concurrent writes | **Not executed** / Not recorded |
-| S3-T20 | KAN-79: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10 | TC-05-01, TC-05-02, TC-05-03, TC-05-04, TC-05-05, TC-05-06, TC-05-07, TC-05-08, TC-05-09, TC-05-17–28 | Trusted Lead role, unassigned queue, allocation/oversight, preservation and integrated rollout | Automated AC1–8/local AC10 pass: AUTO-20261019-01; AC9 and hosted checks **Not executed**; acceptance **Not assessed** |
-| S3-T21 | KAN-65: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC101, AC102, AC103, AC104 | TC-05-10, TC-05-11, TC-05-12, TC-05-13, TC-05-14, TC-05-15, TC-05-16 | Lead handover, eligible targets/states, current permissions, audit, no-op and races | **Not executed** / Not recorded |
-| S3-T22 | KAN-64: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC101, AC102, AC103, AC104, AC105, AC106 | TC-20-01, TC-20-02, TC-20-03, TC-20-04, TC-20-05, TC-20-06, TC-20-07, TC-20-08, TC-20-09, TC-20-10, TC-20-11 | Complete original trigger/recipient matrix, inbox/read state, privacy, rollback and deduplication | **Not executed** / Not recorded |
-| S3-T23 | KAN-15: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC101, AC102, AC103, AC104, AC105 | TC-19-01, TC-19-02, TC-19-03, TC-19-04, TC-19-05, TC-19-06, TC-19-07, TC-19-08, TC-19-09 | Owned pending request, review/impact, atomic outcomes, significant fields and cancellation/new-request boundary | **Not executed** / Not recorded |
-| S3-T24 | Integrated journey; linked cases in TC-06-19 | TC-06-19 | Real mapped accounts, Lead allocation through planning/registration/change/lifecycle and notifications; unrelated access and refresh | **Not executed** / Not recorded |
-
-
-</details>
+[Preserved pre-cleanup record](archive/2026-11-05/sprint-backlog.md) contains the original dated updates, earlier preparations and source limitations.
 
 <details>
-<summary>Original combined KAN-64 8-SP card and Jira wording, superseded by the explicit split</summary>
+<summary>Earlier section links</summary>
 
-### KAN-64 — Notify Relevant Users About Event Workflow Updates
+<a id="25-october-2026--arvin-kan-78-and-kan-34-documentation-reconciliation"></a>
 
-**Owner:** Unassigned — team member to choose · **Independent reviewer:** To agree after owner chosen · **Estimate:** 8 SP · **Jira status:** To Do · **Acceptance:** Not assessed · **Test group:** S3-T22
+[25 October 2026 — Arvin KAN-78 and KAN-34 documentation reconciliation](archive/2026-11-05/sprint-backlog.md#25-october-2026--arvin-kan-78-and-kan-34-documentation-reconciliation)
 
-**User story:** As a relevant organiser, internal staff member or attendee, I want to receive notifications about significant workflow updates that affect me so that I can understand what happened and take any required action.
+<a id="superseded-97-sp-selected-scope-snapshot"></a>
 
-| Stable criterion | Requirement | Functional case |
-| --- | --- | --- |
-| **KAN-64-AC1** | The relevant organiser is notified when an event request is successfully submitted, clarification or amendment is requested, or the request is approved or rejected. | TC-20-01 |
-| **KAN-64-AC2** | Relevant users are notified when a coordinator is assigned or reassigned to their event. | TC-20-02 |
-| **KAN-64-AC3** | Relevant internal users receive notifications for venue booking decisions, significant changes affecting arrangements, and equipment confirmation or unavailability. | TC-20-03 |
-| **KAN-64-AC4** | Relevant users receive notifications for final event confirmation or cancellation. | TC-20-04 |
-| **KAN-64-AC5** | Relevant attendees and authorised event managers receive significant registration or withdrawal updates as appropriate. Registered attendees are notified of event changes that affect them. | TC-20-05 |
-| **KAN-64-AC6** | Each notification identifies the correct event, and the correct request or registration where applicable, with enough information to understand the change and any action required. | TC-20-06 |
-| **KAN-64-AC7** | Only relevant authorised recipients can access a notification and its protected details. Unrelated events or users do not receive it. | TC-20-07 |
-| **KAN-64-AC8** | A notification reflects a successfully recorded business outcome. Failed or rolled-back operations do not produce success notifications. | TC-20-08 |
-| **KAN-64-AC9** | The notification channel is a release implementation choice; email is not mandatory. | TC-20-09 |
-| **KAN-64-AC101** | Provide an authenticated in-app inbox with read/unread state; email, push and external delivery workers are not required. | TC-20-09 |
-| **KAN-64-AC102** | Persist notifications in the business transaction with unique outcome/recipient identifiers; failed outcomes produce none and retried successful outcomes do not duplicate. | TC-20-08 |
-| **KAN-64-AC103** | Cover all original trigger groups: request submission/clarification/decision, assignment/reassignment, venue/equipment outcomes, significant changes, final confirmation/cancellation, registration and withdrawal. | TC-20-10 |
-| **KAN-64-AC104** | Use the documented trigger/recipient matrix and include requester acknowledgements even where the actor is a recipient; do not apply a blanket actor-exclusion rule. | TC-20-11 |
-| **KAN-64-AC105** | Recipients may read only their own notifications; linked protected details require current event permissions, including after reassignment. Retain minimal reassignment notices without leaking the newly assigned event's protected information. | TC-20-07 |
-| **KAN-64-AC106** | CR-2/CR-4/CR-6 add their new recovery/expiry/safety triggers in their own stories and do not duplicate this story's infrastructure estimate. | TC-20-10 |
+[Superseded 97-SP selected-scope snapshot](archive/2026-11-05/sprint-backlog.md#superseded-97-sp-selected-scope-snapshot)
 
-**Implementation location:** Not recorded. **Automated test files:** Not recorded. Record real files when implemented; historical schema or removed code is not feature completion.
+<a id="kan-64--notify-relevant-users-about-event-workflow-updates"></a>
 
-<details>
-<summary>Full current Jira description, including retained earlier wording</summary>
+[KAN-64 — Notify Relevant Users About Event Workflow Updates](archive/2026-11-05/sprint-backlog.md#kan-64--notify-relevant-users-about-event-workflow-updates)
 
-### User Story
+<a id="user-story-9"></a>
 
-As a relevant organiser, internal staff member or attendee, I want to receive notifications about significant workflow updates that affect me so that I can understand what happened and take any required action.
+[User Story](archive/2026-11-05/sprint-backlog.md#user-story-9)
 
-### Acceptance Criteria
+<a id="acceptance-criteria-9"></a>
 
-1. The relevant organiser is notified when an event request is successfully submitted, clarification or amendment is requested, or the request is approved or rejected.
-2. Relevant users are notified when a coordinator is assigned or reassigned to their event.
-3. Relevant internal users receive notifications for venue booking decisions, significant changes affecting arrangements, and equipment confirmation or unavailability.
-4. Relevant users receive notifications for final event confirmation or cancellation.
-5. Relevant attendees and authorised event managers receive significant registration or withdrawal updates as appropriate. Registered attendees are notified of event changes that affect them.
-6. Each notification identifies the correct event, and the correct request or registration where applicable, with enough information to understand the change and any action required.
-7. Only relevant authorised recipients can access a notification and its protected details. Unrelated events or users do not receive it.
-8. A notification reflects a successfully recorded business outcome. Failed or rolled-back operations do not produce success notifications.
-9. The notification channel is a release implementation choice; email is not mandatory.
+[Acceptance Criteria](archive/2026-11-05/sprint-backlog.md#acceptance-criteria-9)
 
-### Delivery tasks and refinement
+<a id="delivery-tasks-and-refinement-1"></a>
 
-Break implementation and tests into event-request updates, internal planning updates and registration updates. These are three trigger groups within this story, not three additional pointed stories. Reuse notification behaviour required by KAN-15, KAN-26 and other workflow stories.
+[Delivery tasks and refinement](archive/2026-11-05/sprint-backlog.md#delivery-tasks-and-refinement-1)
 
-Before estimation, agree a trigger/recipient/channel matrix, delivery and retry behaviour, duplicate handling, retention and read-state needs. Inspect existing in-app notifications and test actual coverage rather than assuming completion from code presence. Changes in recipient assignment must not leak protected event information.
+<a id="sprint-3-selected-scope-and-verification-8"></a>
 
-Refined 21 September 2026. Unestimated future backlog outside Sprint 2’s 43-point commitment.
+[Sprint 3 selected scope and verification](archive/2026-11-05/sprint-backlog.md#sprint-3-selected-scope-and-verification-8)
 
-### Sprint 3 selected scope and verification
+<a id="superseded-initial-proposal-retained-for-history"></a>
 
-Owner: Irfan. Independent reviewer: Ernest. Selected estimate: 8 SP. Decision method: Codex selection under Tristan's explicit delegated authority; no team voting session is asserted.
-Additional verification criteria (stable IDs in the 101+ range; original wording and IDs above are preserved):
+[Superseded initial proposal retained for history](archive/2026-11-05/sprint-backlog.md#superseded-initial-proposal-retained-for-history)
 
-* **KAN-64-AC101:** Provide an authenticated in-app inbox with read/unread state; email, push and external delivery workers are not required.
-* **KAN-64-AC102:** Persist notifications in the business transaction with unique outcome/recipient identifiers; failed outcomes produce none and retried successful outcomes do not duplicate.
-* **KAN-64-AC103:** Cover all original trigger groups: request submission/clarification/decision, assignment/reassignment, venue/equipment outcomes, significant changes, final confirmation/cancellation, registration and withdrawal.
-* **KAN-64-AC104:** Use the documented trigger/recipient matrix and include requester acknowledgements even where the actor is a recipient; do not apply a blanket actor-exclusion rule.
-* **KAN-64-AC105:** Recipients may read only their own notifications; linked protected details require current event permissions, including after reassignment. Retain minimal reassignment notices without leaking the newly assigned event's protected information.
-* **KAN-64-AC106:** CR-2/CR-4/CR-6 add their new recovery/expiry/safety triggers in their own stories and do not duplicate this story's infrastructure estimate.
+<a id="proposed-existing-backlog--16-october"></a>
 
-Implementation defaults: docs/scrum/sprint-03/planning.md and docs/requirements/assumptions-and-questions.md. These are implementation defaults, not customer quotations. Complete API/UI integration, negative/boundary/concurrency checks, hosted verification, independent review and related documentation before Done.
+[Proposed existing backlog — 16 October](archive/2026-11-05/sprint-backlog.md#proposed-existing-backlog--16-october)
 
-</details>
+<a id="proposed-repairs-to-existing-stories"></a>
 
-</details>
+[Proposed repairs to existing stories](archive/2026-11-05/sprint-backlog.md#proposed-repairs-to-existing-stories)
 
-## Superseded initial proposal retained for history
+<a id="proposed-new-stories--16-october"></a>
 
+[Proposed new stories — 16 October](archive/2026-11-05/sprint-backlog.md#proposed-new-stories--16-october)
 
-The following 84-SP proposal preceded the selected full-point carry-over decision. Its To agree wording and proposal labels are historical and do not override the current 63-SP selected cards above (the intervening 97-SP snapshot is also superseded). Its never-executed workflow-group labels are displayed as **S3-PROP-T01–T10** here to distinguish them from the selected per-story S3-T01–T23 plan. No executed evidence relied on those proposal IDs.
+<a id="cr1-a--maintain-venue-setup-and-turnaround-durations--proposed-2-sp"></a>
 
-<details>
-<summary>Initial scope and candidate cards</summary>
+[CR1-A — Maintain venue setup and turnaround durations — proposed 2 SP](archive/2026-11-05/sprint-backlog.md#cr1-a--maintain-venue-setup-and-turnaround-durations--proposed-2-sp)
 
-One card per committed story. Jira is the source of truth for wording; keep this copy in sync. New edge cases found while building become new ACs here **and** on the Jira card.
+<a id="cr1-b--apply-buffered-venue-availability-and-conflict-checks--proposed-8-sp"></a>
 
-**Commitment: To agree.** Confirmed on 16 October that the 4 October planning did not finalise scope and requested the broad proposal below. It was prepared on **16 October 2026**, not a reconstructed 4 October selection; preparation method is recorded centrally. Owners, reviewers, estimates and classification remain **To agree**. Existing Jira story wording was read on 16 October; concise summaries here do not replace the live criteria or the retained [portable descriptions](../../submission/1/jira-backlog-2026-10-15.csv). Copy agreed numbered ACs into committed cards once selection and changes are confirmed.
+[CR1-B — Apply buffered venue availability and conflict checks — proposed 8 SP](archive/2026-11-05/sprint-backlog.md#cr1-b--apply-buffered-venue-availability-and-conflict-checks--proposed-8-sp)
 
-## Proposed existing backlog — 16 October
+<a id="cr5-a--lead-controlled-assignment-queue-and-initial-allocation--proposed-8-sp"></a>
 
-| Jira | Existing user story, summarised for selection | Proposed SP |
-| --- | --- | ---: |
-| [KAN-18](https://smu-g7-grp1.atlassian.net/browse/KAN-18) | As Technical Support Staff, I want to record equipment's operational availability so unavailable equipment is excluded from use. | 3 |
-| [KAN-9](https://smu-g7-grp1.atlassian.net/browse/KAN-9) | As Technical Support Staff, I want to check equipment type and quantity against the event period so I can identify fulfilment or specific shortfalls. | 8 |
-| [KAN-63](https://smu-g7-grp1.atlassian.net/browse/KAN-63) | As a coordinator, I want to submit equipment needs for staff review so suitable arrangements can be made for my event. | 5 |
-| [KAN-26](https://smu-g7-grp1.atlassian.net/browse/KAN-26) | As Technical Support Staff, I want to reserve equipment for an event so quantities are secured without over-allocation. | 3 |
-| [KAN-61](https://smu-g7-grp1.atlassian.net/browse/KAN-61) | As a coordinator, I want to confirm an event once required arrangements are ready so the organiser knows it can proceed. | 3 |
-| [KAN-62](https://smu-g7-grp1.atlassian.net/browse/KAN-62) | As an authorised event manager, I want to cancel an eligible event and release arrangements so obsolete commitments do not remain. | 5 |
-| [KAN-10](https://smu-g7-grp1.atlassian.net/browse/KAN-10) | As a coordinator, I want to complete an eligible event so its final state is recorded and reserved equipment released. | 3 |
-| [KAN-14](https://smu-g7-grp1.atlassian.net/browse/KAN-14) | As an attendee, I want to register for an eligible event so I can secure a place and see my registration status. | 5 |
-| [KAN-17](https://smu-g7-grp1.atlassian.net/browse/KAN-17) | As an attendee, I want to withdraw my registration so the place becomes available again. | 2 |
-| [KAN-67](https://smu-g7-grp1.atlassian.net/browse/KAN-67) | As an organiser or coordinator, I want to view permitted registrations for my event so I can understand current attendance registrations. | 2 |
-| [KAN-66](https://smu-g7-grp1.atlassian.net/browse/KAN-66) | As an authorised user, I want to update permitted event information during planning so the record stays accurate without bypassing arrangement controls. | 3 |
-| [KAN-15](https://smu-g7-grp1.atlassian.net/browse/KAN-15) | As an organiser, I want to request changes and receive my coordinator's decision so event information and arrangements remain consistent. | 5, proposed from current 2 |
-| [KAN-64](https://smu-g7-grp1.atlassian.net/browse/KAN-64) | As a relevant user, I want notifications of saved workflow updates affecting me so I know what happened and what action to take. | 8 |
-| [KAN-65](https://smu-g7-grp1.atlassian.net/browse/KAN-65) | As an authorised internal user, I want to reassign an event so responsibility can change. Proposed CR-5 refinement: the authorised user is the Coordinator Lead. | 3 |
-| [KAN-60](https://smu-g7-grp1.atlassian.net/browse/KAN-60) / KAN-36 repair | Existing corrective task: require and retain a rejection explanation for the relevant organiser, while approval may omit a reason. Reconcile one tracking path before implementation. | 2 |
+[CR5-A — Lead-controlled assignment queue and initial allocation — proposed 8 SP](archive/2026-11-05/sprint-backlog.md#cr5-a--lead-controlled-assignment-queue-and-initial-allocation--proposed-8-sp)
 
-**Subtotal: 60 proposed SP across 14 stories and one corrective task.** Proposed estimates and scope refinements have not been written to Jira. KAN-64 must deliver all its original trigger groups before it is Done; a shared inbox/service alone is insufficient. KAN-26 includes automatic release on cancellation/completion and the coordinator notification, so its acceptance depends on working integration with KAN-62/KAN-10/KAN-64. KAN-63's accepted arrangements integrate with real reservations rather than a stubbed success.
+<a id="acceptance-test-plan-1"></a>
 
-## Proposed repairs to existing stories
+[Acceptance test plan](archive/2026-11-05/sprint-backlog.md#acceptance-test-plan-1)
 
-| Original story | Repair outcome | Proposed repair SP | Existing audit case |
-| --- | --- | ---: | --- |
-| KAN-50 | A delayed response for venue A cannot replace venue B's editor or redirect its next save | 2 | TC-08-01 |
-| KAN-6 | Both submission entry points show useful field feedback and preserve invalid drafts | 1 | TC-02-01 |
-| KAN-34 | Impossible calendar dates produce input errors rather than database failures, preserving the draft | 1 | TC-03-01 |
-| KAN-12 | Impossible search dates are refused rather than normalised to another day | 1 | TC-10-01 |
-| KAN-52 | Zero attendance is assessed consistently with the accepted submission rule, separately from missing attendance | 1 | TC-11-01 |
+<a id="kan-81-phase-1-review-follow-up--21-october-2026"></a>
 
-**Subtotal: 6 proposed repair SP.** Preserve original estimates and history. Reopen accepted stories under the team's defect workflow after confirming the original criterion and disposition. KAN-60/KAN-36 is already included in the preceding table and is not counted again here. Existing failed runs remain failed records until a new, separately dated run verifies a fix.
+[KAN-81 phase-1 review follow-up — 21 October 2026](archive/2026-11-05/sprint-backlog.md#kan-81-phase-1-review-follow-up--21-october-2026)
 
-## Proposed new stories — 16 October
+<a id="25-october-2026--arvin-contribution-reconciliation-sprints-13"></a>
 
-The three labels below identify proposals only; Jira keys, owners and reviewers are **To agree**. Classification as linked new/replacement requirements requires team confirmation. Source: [Week 7 change register](../../requirements/change-requests.md), CR-1 and CR-5. Candidate ACs are not represented as already-agreed Jira criteria.
+[25 October 2026 — Arvin contribution reconciliation (Sprints 1–3)](archive/2026-11-05/sprint-backlog.md#25-october-2026--arvin-contribution-reconciliation-sprints-13)
 
-### CR1-A — Maintain venue setup and turnaround durations — proposed 2 SP
+<a id="25-october-2026--team-meeting-and-manual-result-reconciliation"></a>
 
-**User story:** As Venue Staff, I want to configure the setup and turnaround time for a venue so that its occupied time reflects preparation and reset needs.
+[25 October 2026 — Team meeting and manual-result reconciliation](archive/2026-11-05/sprint-backlog.md#25-october-2026--team-meeting-and-manual-result-reconciliation)
 
-**Candidate acceptance criteria:**
+<a id="current-sprint-3-ownership-and-status-snapshot--25-october-2026"></a>
 
-1. Authorised Venue Staff can view and edit both durations for the correct venue through the catalogue interface.
-2. Valid changes persist and remain visible after refresh; they do not change another venue or the event's advertised start/end.
-3. Invalid duration input is refused with field feedback and no partial save. Proposed format: nonnegative whole minutes; maximum values remain To agree.
-4. Unauthorised users cannot change durations through the UI or direct API calls.
-5. Existing venues migrate using an agreed default (proposed zero); existing bookings and their history are retained.
-6. The values are consumed by CR1-B; configuration alone is not evidence that the complete buffered-booking requirement is delivered.
+[Current Sprint 3 ownership and status snapshot — 25 October 2026](archive/2026-11-05/sprint-backlog.md#current-sprint-3-ownership-and-status-snapshot--25-october-2026)
 
-**Dependencies/design:** new numbered migration and catalogue/API/diagram updates; coordinate with the KAN-50 stale-save repair. Acceptance includes validation, permissions, persistence and cross-venue isolation.
+<a id="25-october-2026--current-closeout-verification"></a>
 
-### CR1-B — Apply buffered venue availability and conflict checks — proposed 8 SP
+[25 October 2026 — Current closeout verification](archive/2026-11-05/sprint-backlog.md#25-october-2026--current-closeout-verification)
 
-**User story:** As an Event Coordinator or Venue Staff member, I want venue availability and booking checks to include setup and turnaround time so that event arrangements do not overlap during preparation or reset.
+<a id="25-october-2026--reported-closeout-repair-pass"></a>
 
-**Candidate acceptance criteria:**
-
-1. Occupied time is event/booking start minus setup through end plus turnaround; 10:00–12:00 with 30/45-minute buffers occupies 09:30–12:45.
-2. Calendar, search, suitability, booking submission and approval use the same effective interval; operational unavailability is considered consistently. Actual event times remain unchanged.
-3. An overlapping confirmed commitment or operational block is not offered/approved as freely available; current data is rechecked during the relevant write transaction.
-4. Boundary rules are agreed and tested. Proposed half-open intervals allow exact adjacency after buffers are applied, not adjacency of the unbuffered event times.
-5. Updating buffer configuration identifies existing bookings that now conflict, preserving their records and flagging the affected arrangements without silent cancellation.
-6. Concurrent submissions/approvals and buffer edits cannot bypass the agreed conflict rules; failures leave saved records consistent.
-7. Existing permissions, event/venue associations and unrelated bookings remain protected.
-
-**Dependencies/design:** CR1-A, one shared effective-interval policy, protected existing-booking impact view and cross-workflow regressions. Agree whether existing bookings use current or snapshotted buffer values and the operational-hours rule before implementation. CR-4's expiring holds are later work, not claimed here.
-
-### CR5-A — Lead-controlled assignment queue and initial allocation — proposed 8 SP
-
-**User story:** As an Event Coordinator Lead, I want to review an unassigned event queue and allocate requests to coordinators so that internal responsibility is deliberately assigned and can be supervised.
-
-**Candidate acceptance criteria:**
-
-1. The new Lead role has protected navigation and server-enforced permissions; other roles cannot perform Lead-only allocation.
-2. Valid new submission records the request as submitted and unassigned, with organiser data preserved. It does not apply KAN-29's superseded automatic initial allocation rule.
-3. The Lead can inspect the queue's basic event information and assign an eligible coordinator; the correct event has exactly one current coordinator.
-4. The assigned coordinator gains the appropriate event access, while unrelated coordinators cannot manage it. Initial allocation does not approve/reject the event.
-5. The Lead can oversee assignments and active events within an agreed scope; assignment actor/time are recorded and survive refresh.
-6. Initial allocation notifies the relevant users through KAN-64. Failed or conflicting allocation does not publish a false success; concurrent allocation cannot silently replace a newer assignment.
-7. Existing assignments are handled by an agreed migration policy (proposed preservation). Submission is not switched to an unassigned queue until the complete Lead allocation path is usable.
-8. Reassignment is delivered once through KAN-65 with the new Lead authority; previous assignment-derived permissions are revoked and event data, decisions and arrangements are retained.
-
-**Dependencies/design:** role provisioning, submission/authentication changes, queue/oversight UI, assignment auditing, KAN-65 and KAN-64. Preserve historical KAN-29 evidence. The new story estimates initial allocation/role/queue/oversight; reassignment and shared notification infrastructure are already estimated in their existing stories.
-
-**Proposed Sprint 3 total: 60 + 6 + 2 + 8 + 8 = 84 SP.** See [planning](planning.md#proposed-scope-and-release-split--16-october) for workstreams and [estimation](estimation-and-capacity.md#story-estimates-and-rationale) for proposed versus current values. No selection or points are final until the team agrees.
-
-## Acceptance test plan
-
-The rows below are proposed workflow groups, all **Not executed** for this scope. Expand into AC-linked functional test cases and concrete test files during story implementation. Historical checks do not prove the replacement Lead policy or buffered intervals.
-
-| Test | Story / ACs | Scenario (normal / boundary / conflict / failure) | Level | Status | Evidence |
-| --- | --- | --- | --- | --- | --- |
-| S3-PROP-T01 | KAN-50, KAN-6, KAN-34, KAN-12, KAN-52 repairs | Reproduce each failure, fix it and check unchanged/invalid/racing paths | component/API/integration/e2e | Not executed | New run required; retain AUTO-20261015-01 failures |
-| S3-PROP-T02 | KAN-60 / KAN-36 repair | Blank rejection reasons refused; valid rejection persists; approval remains optional; permissions intact | unit/API/component/e2e | Not executed | Not recorded |
-| S3-PROP-T03 | CR1-A / CR1-B | Buffer persistence, zero/invalid values, effective boundaries, operational blocks, existing-booking flags and concurrent writes | unit/integration/component/e2e | Not executed | Not recorded |
-| S3-PROP-T04 | KAN-18, KAN-9, KAN-63, KAN-26 | Unavailable/overlapping stock, shortfalls, review/reserve flow, concurrent reservations and correct event association | unit/integration/e2e | Not executed | Not recorded |
-| S3-PROP-T05 | KAN-61, KAN-62, KAN-10 | Readiness, authorised transitions and exactly-once arrangement release after cancellation/completion | API/integration/e2e | Not executed | Not recorded |
-| S3-PROP-T06 | KAN-14, KAN-17, KAN-67 | Registration eligibility/capacity, duplicate/racing requests, withdrawal and protected manager views | API/integration/e2e | Not executed | Not recorded |
-| S3-PROP-T07 | KAN-15, KAN-66 | Ordinary edits versus reviewed changes; invalid/unauthorised actions and affected-arrangement handling | API/integration/e2e | Not executed | Not recorded |
-| S3-PROP-T08 | CR5-A, KAN-65 | Unassigned submission, Lead allocation/reassignment, race handling, access revocation and preserved event data | API/integration/e2e | Not executed | Not recorded |
-| S3-PROP-T09 | KAN-64 and all trigger-owning stories | Original trigger matrix, correct recipients, no unrelated-user access or false notification after rollback | unit/integration/e2e | Not executed | Not recorded |
-| S3-PROP-T10 | Combined release journey | Hosted login → submit → Lead assignment → review → venue/equipment planning → confirm → register/change/withdraw → complete/cancel | manual hosted/e2e | Not executed | Actual accounts, build and outcomes required |
+[25 October 2026 — Reported closeout repair pass](archive/2026-11-05/sprint-backlog.md#25-october-2026--reported-closeout-repair-pass)
 
 </details>
-
-
-### KAN-81 phase-1 review follow-up — 21 October 2026
-
-S3-T25 remains **Not executed as a complete group; acceptance Not assessed**. TC-09-13–16 pass their scoped phase-1 PostgreSQL cases in `AUTO-20261021-KAN81-CI-01`; TC-09-17 retains the failed review reproduction and passes the corrected 21-case page suite in `AUTO-20261021-KAN81-FIX-01`. See S3-E20 and the appended case executions. The staff UI now refreshes blocks/recovery after stale 404/409 refusals without retrying and preserves input/server error messages. Check and coverage pass (690 frontend, 1,205 backend). Original TC-09-01–12 and all incomplete coordinator/notification/replacement/buffer/hold/readiness/hosted criteria remain unaccepted. Jira is now In Progress, Kai Jie, 8 SP; no velocity credit. Earlier “await CI” notes remain dated local history; the verified original-head CI is recorded in the follow-up narrative.
-
-## 25 October 2026 — Arvin contribution reconciliation (Sprints 1–3)
-
-This is a dated evidence backfill prepared with Codex on 25 October, not a new ceremony, Jira transition, test execution or acceptance decision. Historical entries, other members’ ownership and agreed estimates are preserved.
-
-**Supporting contributions, separate from owned KAN-34 (3 SP) and KAN-78 (8 SP):**
-
-- **12 October preparation:** Arvin’s consultation action list, C4 preparation record and submission runbook are retained as TXT source snapshots in this sprint’s evidence folder. They prepared Sprint 2 closure, Sprint 3 planning, capacity inputs, C4 exports and packaging; they do not establish that meetings occurred, votes were cast, artifacts were independently reviewed or instructor access was delivered. The original worktree remains untouched. Current committed design supersedes those historical C4 snapshots.
-- **21 October 02:26:27 Singapore time — shared migrations 008/009:** Arvin authorized the reviewed rollout; Codex executed it from `cf65c05e5d7b91675d74f7281439d0e9c2b1a766`. The retained JSON records both ledger checksums, four columns, two indexes and zero venues with nonzero initial buffers. This is deployment verification, not KAN-64/KAN-77 authorship, hosted functional acceptance or a new team-wide decision. No fixture, booking or cleanup writes were part of that run.
-- **21 October — KAN-81 PR #47 review and corrections:** Arvin requested changes, implemented stale 404/409 refresh corrections in `18ac27d`/`30da68a`, updated tests/evidence and then approved the phase-one work while disclosing his own fixes. His follow-up approval is not a second independent review of his corrections. Kai Jie remains KAN-81’s owner at 8 SP. Existing **S3-E20**, the KAN-81 review JSON and 21 October test narrative retain the scope and CI results.
-
-Owned KAN-34/KAN-78 merge, CI and acceptance limits remain in the preceding 25 October reconciliation. Supporting work adds no story points and does not convert other members’ stories to Done.
-
-## 25 October 2026 — Team meeting and manual-result reconciliation
-
-[REPORT-20261025-TEAM-S3](../../testing/test-evidence.md#25-october-2026--team-manual-result-reports) appends **41 reported Pass** manual case results for the owners below. Reported execution date: **17 October 2026**. Tested build, environment, exact observations and captures are **Not recorded**. Existing Tristan/Ryan reports and all earlier outcomes remain separate. Current fixes require new retests; no acceptance or Done-SP change is inferred. Burndown artifacts remain for the team to supply. The 4 October planning attendance confirmation does not change the earlier report that scope was not finalised then or the later 16 October selection record.
-
-| Acceptance-plan references | Story / reported executor | Current evidence interpretation |
-| --- | --- | --- |
-| S3-T05; S3-T17; S3-T22 | KAN-6 / KAN-52 / KAN-64 / Ernest | Manual scenarios linked in REPORT-20261025-TEAM-S3: reported Pass. Unrun automated-only checks and hosted/build-specific acceptance remain separate. |
-| S3-T06; S3-T19 | KAN-34 / KAN-78 / Arvin | Manual scenarios linked in REPORT-20261025-TEAM-S3: reported Pass. Unrun automated-only checks and hosted/build-specific acceptance remain separate. |
-| S3-T18; S3-T25 | KAN-77 / KAN-81 / Kai Jie | Manual scenarios linked in REPORT-20261025-TEAM-S3: reported Pass. Unrun automated-only checks and hosted/build-specific acceptance remain separate. |
-| S3-T07; S3-T26 | KAN-60 / KAN-83 / Irfan | Manual scenarios linked in REPORT-20261025-TEAM-S3: reported Pass. Unrun automated-only checks and hosted/build-specific acceptance remain separate. |
-| S3-T27 | Integrated Sprint 3 journey / Team (reported) | Manual scenarios linked in REPORT-20261025-TEAM-S3: reported Pass. Unrun automated-only checks and hosted/build-specific acceptance remain separate. |
-
-Use the explicit case IDs in [REPORT-20261025-TEAM-S3](../../testing/test-evidence.md#25-october-2026--team-manual-result-reports) and their appended execution rows. This is not a blanket pass of every subcase in an S3-T plan or a formal acceptance decision. Historical failed and unperformed rows remain evidence; automated-only scenarios are not changed by the reported manual results.
-
-### Current Sprint 3 ownership and status snapshot — 25 October 2026
-
-| Story | Current owner | Jira status in inspected 25 October snapshot |
-| --- | --- | --- |
-| KAN-6 | Ernest | Done |
-| KAN-12 | Ryan | Done |
-| KAN-34 | Arvin | In Review |
-| KAN-50 | Ryan | In Progress |
-| KAN-52 | Ernest | Done |
-| KAN-60 | Irfan | In Review |
-| KAN-64 | Ernest | Done |
-| KAN-65 | Tristan | In Progress |
-| KAN-77 | Kai Jie | To Do |
-| KAN-78 | Arvin | In Review |
-| KAN-79 | Tristan | In Progress |
-| KAN-81 | Kai Jie | In Progress |
-| KAN-83 | Irfan | In Review |
-
-These are current tracker labels, not reconstructed 17 October acceptance or completion dates. Historical owner rows retain their original scope and dates. In particular, original Sprint 2 KAN-52 remains Tristan’s implementation record; the Sprint 3 revision belongs to Ernest. The audit and current-fix evidence determine remaining work independently of Jira labels.
-
-## 25 October 2026 — Current closeout verification
-
-| Acceptance group | New supported evidence | Remaining boundary |
-| --- | --- | --- |
-| S3-T06 / KAN-34 | TC-03-303 PostgreSQL date bounds, AUTO-20261025-CLOSEOUT-01 | Current-build manual repair retest |
-| S3-T07 / KAN-60 | TC-04-303 Singapore review/clarification display | Current-build display retest; historical report retained |
-| S3-T17 / KAN-52 | TC-11-03 exact capacity/equality/over-capacity assessment, AUTO-20261025-CLOSEOUT-02 | Formal review acceptance remains separate |
-| S3-T19 / KAN-78 | TC-14-307 named/readable affected-booking warnings, AUTO-20261025-CLOSEOUT-01 | Current-build staff UI retest |
-| S3-T22 / KAN-64 | TC-20-18/19 real concurrent dedupe, post-insert rollback and overlapping recipients; TC-20-20 ownership trace | Later KAN-80/82/84 trigger groups remain their Sprint 4 scope |
-| S3-T25 / KAN-81 | TC-09-25 confirmed-event replacement controls; TC-14-308 deterministic outage/hold mutation orders | Current-build replacement retest; AC9 final-confirmation/safety consumer integration remains Sprint 4 |
-| S3-T26 / KAN-83 | TC-14-309 buffered hint; TC-14-10/16 boundary and three-way contention; TC-14-310 actual shared cron execution | Current-build held-booking expiry/inbox journey; configured job execution is separately verified |
-| S3-T27 / integrated journey | Historical team report retained as REPORT-20261025-TEAM-S3 | Does not retest today's changes or unimplemented Sprint 4 consumers |
-
-All local suites pass, including the final 510-test isolated database run. Current source and limitations are in S3-E25. No new story points, automatic Jira transitions, formal acceptance decisions or historical velocity are inferred. Test specifications, executions and dated run records remain separate.
-
-## 25 October 2026 — Reported closeout repair pass
-
-The later report `REPORT-20261025-CLOSEOUT-RETEST` supersedes the preceding table's manual repair follow-ups. The fixes are complete locally and the following smoke scopes are **reported Pass**:
-
-| Acceptance group | Completed repair smoke |
-| --- | --- |
-| S3-T06 / KAN-34 | TC-03-303 date-bound validation |
-| S3-T07 / KAN-60 | TC-04-303 Singapore timestamp display |
-| S3-T19 / KAN-78 | TC-14-307 readable affected-booking warnings |
-| S3-T25 / KAN-81 | TC-09-25 confirmed replacement controls; TC-14-311 outage release |
-| S3-T26 / KAN-83 | TC-14-309 buffered deadline; TC-14-311 scheduled expiry/inbox |
-| S3-T27 / connected repair flow | The above local smoke scopes; future Sprint 4 consumers are outside this report |
-
-Source and missing execution metadata are retained in [S3-E26](evidence/README.md#s3-e26--local-acceptance-and-repair-retest-confirmation). Controlled races remain automated TC-14-308, not inferred manual barrier runs. The [current DoD](../definition-of-done.md#local-acceptance-policy--25-october-2026) accepts the complete local frontend/API with real authentication and the shared development database; no public app/API URL is required. KAN-79-AC10 retains its coordinated policy/Lead/queue requirement on that same local candidate. No AC is removed, and no Jira status or historical velocity is changed by this report.

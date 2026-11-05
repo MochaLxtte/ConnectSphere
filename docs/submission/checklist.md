@@ -1,125 +1,167 @@
-# Submission checklist
+# Submission checklist and team inputs
 
-**Code-editing freeze:** after **1 November 2026, 23:59 Singapore time**, only documentation may change (constraint confirmed in chat on 2 November). The final code commit `55e2b61` predates the cutoff at 23:55:42 +08:00. Preserve application code, migrations, tests and configuration; report later findings without code changes. Review/CI evidence and submission documents may still be completed. This restriction is separate from acceptance/merge decisions.
+This is the single tracker for documentation completion. Choose workstream editors/reviewers in the [team home](../README.md#choose-your-workstream), then fill the destination records linked below. A checked item means its stated completion condition was verified; it does not automatically accept a story.
 
-**2 November release handover:** [PR #80](https://github.com/MochaLxtte/ConnectSphere/pull/80) was author-merged before the cutoff into main `fb6d8d9`; [main CI](https://github.com/MochaLxtte/ConnectSphere/actions/runs/41323940034) passed. No submitted independent GitHub review was present. Later documentation/evidence remains on `docs/release-freeze-evidence`; no new PR is requested yet. Formal release acceptance and submission artifacts below remain separate from the code-editing freeze.
+**Deadline:** Friday **6 November 2026, 23:59 SGT**. **Code boundary:** frozen after 1 November, 23:59 SGT. Current work is documentation only. No PR, commit or push is authorised by this checklist.
 
-## Release-candidate checkpoint — 1 November 2026
+## Available evidence and known limits
 
-Migration 023 is applied to shared development and the four focused connected repair/authentication checks pass in [MAN-20261101-03](../testing/test-evidence.md#man-20261101-03--connected-repaired-candidate-acceptance-1-november-2026). [AUTO-20261101-FREEZE-CANDIDATE](../testing/test-evidence.md#auto-20261101-freeze-candidate--final-local-verification-1-november-2026) records passing final local suites, exact source hashes, coverage floors/gaps and two complete browser runs. Testing records distinguish reusable specifications, execution attempts and substituted boundaries; current architecture views and exports describe the implemented lifecycle/safety flows.
-
-Before freezing folder 6, integrate the reviewed candidate, verify CI on its exact commit and record the team's release decision. Source hashes identify the tested code; they do not manufacture missing historical sprint builds. Folder 3 must retain both earlier failures and these passing retests. The final backlog export, Scrum/recording artifacts, deck, instructor access and numbered-folder ZIP still need their own checks below; a code-freeze candidate is not a completed submission package.
-
-**Closure records — 26 October 2026:** collective acceptance decisions for Sprints 1–3 are now recorded, with the historical review dates distinguished from today's confirmation. See the [current closure checklist](../scrum/README.md#acceptance-and-closure-inputs--26-october-2026). The team will supply closing-board artifacts, review feedback/actions and burndown charts/source data. Reviewed builds remain Not recorded because none were retained. Later reproduced failures and repairs remain separately dated; the Sprint 3 acceptance report does not independently verify the unknown historical build. Jira administration and final submission packaging are not completed by this update.
-
-**Current closeout — 25 October 2026.** Sprints 1–3 include all-team reported manual results, current Sprint 3 owner/status reconciliation and full-attendance reports. The latest repair smoke checks are reported **Pass** in [REPORT-20261025-CLOSEOUT-RETEST](../testing/test-evidence.md#25-october-2026--closeout-retest-confirmation), supplied on 25 October; actual execution date, tested build, individual executor, captures and cleanup details are **Not recorded**. Current code fixes also pass local check/coverage/database/browser suites, and configured Supabase hold-expiry jobs have succeeded. Folder 3 retains separate specifications, executions and coverage. Remaining: explicit story review/closure, team burndown artifacts, agreed retrospective actions, Sprint 4 consumers and final submission deliverables. Historical outcomes and velocity remain unchanged.
-
-**Acceptance environment clarified — 25 October 2026.** Public app/API deployment is outside the release plan. The [Definition of Done](../scrum/definition-of-done.md) permits integrated local frontend/API acceptance with real mapped authentication and the shared development database. A reproducible local software release, coherent end-to-end workflows and operational Supabase setup remain required. Earlier dated hosted/deployed wording below is retained as history, not a requirement to supply a public application URL.
-
-**Scoped Arvin documentation update — 25 October 2026.** KAN-34/KAN-78 records now distinguish integrated source, independent review history, current-main CI and remaining hosted acceptance; see [S3-E21](../scrum/sprint-03/evidence/README.md#arvin-delivery-reconciliation--25-october-2026). Folders 1–4 must use the updated master rows, current design exports, separate case/execution records and dated Sprint 3 evidence. Existing CSV/workbook exports retain their labelled source dates; this is not a new full Jira export or completed submission. No story acceptance, sprint closure, instructor access or other story delivery is asserted.
-
-**Test-document structure — 21 October 2026.** Folder 3 uses separate [test specifications](../testing/test-cases.csv) and [case execution records](../testing/test-executions.csv), linked through stable case IDs to the [traceability matrix](../requirements/traceability.csv) and [run narratives](../testing/test-evidence.md). This follows the Week 4 template: a specification is maintained once and an execution record is retained for each run/attempt. Maintain the source records during development; final presentation and numbered-folder packaging can wait until submission. Existing outcomes are retained with their source limitations; unperformed cases remain **Not executed**. The [original combined register](../testing/archive/test-cases-2026-10-21.csv) is an archive, not the current editable source.
-
-**Documentation reconciliation — 17 October 2026.** The submitted [master backlog](1/README.md) distinguishes the verbatim Jira snapshot, repository corrections and documented before/after customer requirements. Sprint 1/2 criterion crosswalks and detailed functional specifications close mapping gaps; they do not establish new test results or historical acceptance. Finish the actual evidence and deliverables in the checklist below before calling the final submission complete. Scope and sprint-point totals are unchanged.
-
-**Planning update — 16 October 2026, after reconstruction/rebalance:** the master register now covers all six customer changes and **42 parent items / 174 SP**. The remaining plan is **Sprint 3: 13 items / 63 SP; Sprint 4: 15 items / 63 SP**. Current exports contain all **68 Jira issues** including 26 unpointed subtasks. Customer receipt on **2 October** and the later scope/estimate/sprint changes are traced in the [change register](../requirements/change-requests.md). The earlier 97/29 plan is retained as history. These are planning records; actual implementation, tests, hosted acceptance, historical meeting/DoD evidence, final-sprint recordings and submission deliverables remain outstanding.
-
-Submit **one ZIP containing numbered subfolders 1–7**. The table below maps each required deliverable to the project records and identifies what remains to complete.
-
-The release and evidence ZIP is due **Friday 6 November 2026 at 23:59, Singapore time**, and the final sprint must end by that day. The 16 October chat confirmed that Week 12 is 2–8 November; the Friday date follows from that week and the course's specified deadline. Other milestones are the Week 7 process consultation, Week 13 interactive Q&A and peer review due Friday Week 14 at 23:59.
-
-**Schedule update — 16 October 2026.** Sprint 3 runs 4–17 October; planning was on 4 October but scope was not finalised. No Sprint 3 work has started according to the chat update, and six members will focus for 16–17 October. Final development Sprint 4 is projected for 18–31 October. Reserve 1–6 November for final verification, evidence, diagrams, slide deck, access checks and packaging; this is a proposed buffer, not an extension of Sprint 4 or evidence that the deliverables are complete. Arrange [final-sprint recordings](../scrum/final-sprint-recordings.md) before 18 October. The 63/63 scope selection above supersedes the earlier proposal; current owners will be chosen by the team.
-
-## Current handover readiness — 16 October 2026
-
-**Ownership update — 16 October 2026.** All 28 unfinished parent items are now unassigned in Jira. Team members will choose their own stories; independent reviewers and the integration lead are **To agree** after ownership is chosen. The scope remains **63 SP per sprint**, averaging **10.5 SP per member per sprint** and **21 SP per member across both**. Aim for roughly 10–11 SP each, retaining whole estimates and dependency order rather than forcing an exact split. Earlier named allocations are historical. Claim a Jira card and sync its sprint record before starting work.
-
-The backlog and sprint plans are ready to share for development after the pending documentation changes are reviewed, committed and pushed. Before parallel coding, confirm the team's estimates and capacity, choose owners/reviewers, create implementation subtasks and coordinate shared contracts/migration order. Actual feature implementation, tests, hosted acceptance and reviews remain to be done. Historical evidence and final submission deliverables below remain outstanding.
-
-## Earlier readiness assessment — 15 October 2026
-
-Documentation has been reconciled for Sprint 3 preparation; the final submission is **not yet complete**. Current Jira statuses, the [backlog workbook/export](1/README.md), [Sprint 2 baseline](../scrum/sprint-02/review.md), [post-sprint audit](../testing/test-evidence.md#15-october-2026-post-sprint-implementation-audit) and [customer changes](../requirements/change-requests.md) now have distinct sources and dates. The dated 21 September/11 October paragraphs below are retained history.
-
-| Next action | Record / evidence needed | Who supplies or decides |
+| Already available | Use it for | Limit |
 | --- | --- | --- |
-| Confirm Sprint 2's actual review and disposition | Reviewed build, actual date, participants, story outcomes and any remaining original criteria; record later completion separately | Team / actual review participants; record in [review](../scrum/sprint-02/review.md) |
-| Complete available historical Scrum evidence | Existing planning/estimation/attendance/standup notes, start/end boards and burndown exports; explicitly identify originals that were not retained | Team members who hold the records; use existing sprint records/evidence indexes |
-| Record retrospective agreements | Actual feedback, agreed actions, owners and dates; proposed actions are not agreements | Team / actual participants |
-| Confirm the applicable Definition of Done | Actual prior agreement date, participants and source; applicability to upcoming work | Team; [version history](../scrum/definition-of-done.md) |
-| Finish acceptance evidence and repair known defects | Targeted integrated local/shared-database scenarios and reviewed fixes; retain previously passed runs | Story owners/reviewers selected by the team; [planning triage](../scrum/sprint-03/planning.md#pre-planning-baseline-and-defect-triage) |
-| Agree Sprint 3 scope | Distinguish unfinished work, reopened repairs, existing future backlog and CR-1–CR-6; decide estimates, owners, capacity and dates | Team during refinement/planning |
-| Share the reconciled documentation | Review the current diff, then commit/push/merge when authorised | Tristan and a teammate reviewer |
+| [Backlog and change records](1/README.md) | Whole-project story scope, AC versions and Week 7 change handling | Saved Jira snapshots are dated; they are not a fresh live export |
+| [Design report and image exports](../architecture/README.md) | Current architecture, decisions and implementation boundaries | Diagram rendering is not acceptance testing |
+| [Testing report](../testing/README.md) | Automated results, connected R01–R23 and targeted repair evidence | Formal R24 release acceptance remains separate |
+| [Sprint 1–3 review records](../scrum/README.md) | Reported acceptance outcomes with source limitations | Later reports do not supply original reviewed builds |
+| [Sprint 1 source notes](../scrum/sprint-01/planning.md) | Actual notes in the supplied Documentation Tasks PDF | Its other blank prompts/guidance are not completed meeting records |
+| [Main CI and frozen-source evidence](../testing/test-evidence.md#ci-20261102-main--merge-readback-and-frozen-source-verification) | Recorded merge `fb6d8d9` and passing exact-commit CI | PR #80 was author-merged without a recorded independent approval |
 
-Do not create replacement historical screenshots, invented meeting outcomes or a burndown curve from missing observations. A current rerun may verify current behaviour, but must keep its actual date. Planning can use an explicit baseline with acknowledged evidence gaps; those gaps remain visible for submission. Final-release features, diagrams, deck, recordings and instructor access still follow the checklist below.
+**Confirmed unavailable:** the original demonstrated build/commit/branch for Sprint 1–3 was not retained. Keep it **Not recorded**; no repeated action is assigned to recover it. The original DoD adoption date/method also remain Not recorded; the [25 October team reconfirmation](../scrum/definition-of-done.md#team-confirmation--25-october-2026) is already retained. Do not manufacture missing dates from Git timestamps.
+
+## WS1: Backlog and customer changes
+
+| Item | Required input or check | Edit / completion condition |
+| --- | --- | --- |
+| [ ] DOC-101 | Review the whole-project master register and derived workbook together | [Folder 1 record](1/README.md): verify every retained parent story, agreed points, completed/pending disposition, source dates and links to story/AC text; record reviewer/date |
+| [ ] DOC-102 | Verify original requirements versus changes received 2 October | [Change register](../requirements/change-requests.md): each CR links to affected stories, ACs, design and tests; original acceptance is not silently replaced by changed scope |
+| [ ] DOC-103 | Resolve any remaining source disagreements using supplied decisions | [Assumptions/questions](../requirements/assumptions-and-questions.md): record the actual answer/source/date; refresh affected summaries only when supported |
+
+No new live Jira export is required to pretend historical metadata is current. If one is supplied, retain its export date and reconcile it rather than overwriting the earlier snapshots. Folder 1 must remain understandable without access to Jira.
+
+## WS2: Architecture
+
+| Item | Required input or check | Edit / completion condition |
+| --- | --- | --- |
+| [ ] DOC-201 | Independent review of the concise design report and rendered views | [Design review fields](../architecture/README.md#team-input-needed): reviewer/date and any factual corrections recorded; role, transaction and lifecycle explanations match the frozen release |
+| [ ] DOC-202 | Check customer-change explanations and diagram readability | [Design report](../architecture/README.md): follow CR links; open full-size images; record limitations of retained older views rather than presenting them as complete schema exports |
+
+## WS3: Testing and traceability
+
+| Item | Required input or check | Edit / completion condition |
+| --- | --- | --- |
+| [ ] DOC-301 | Reviewer validates the test report against retained runs | [Testing report](../testing/README.md): verify builds, suite counts and coverage denominators; keep browser substitutes, real DB integration and connected acceptance separate |
+| [ ] DOC-302 | Spot-check traceability across all 20 core features and six customer changes | [Traceability register](../requirements/traceability.csv), [test cases](../testing/test-cases.csv), [executions](../testing/test-executions.csv): document any unsupported claim; preserve historical versions, failed attempts and preparation placeholders |
+| [ ] DOC-303 | Review disclosed remaining coverage and acceptance limits | [Testing report](../testing/README.md): remaining gaps are accurately described, without claiming 100% or impossibility; formal R24 decision is recorded through DOC-603 |
+
+Existing test results are reused. These are document reviews, not requests to repeat the full test suite or mark more tests passed. If the team supplies new results, append supported execution evidence through AGENTS.md; do not overwrite the preserved ledger.
+
+## WS4: Sprint 1 and 2
+
+| Item | Team evidence still needed | Exact destination / completion condition |
+| --- | --- | --- |
+| [ ] DOC-401 | Clarify Sprint 1 notes calling Irfan acting Scrum Master, and distinguish tentative estimates from final commitment | [S1 planning](../scrum/sprint-01/planning.md), [S1 estimates](../scrum/sprint-01/estimation-and-capacity.md): retain formal Arvin/Irfan roles and agreed totals; add the supplied explanation and source |
+| [ ] DOC-402 | Existing start/end board captures for each sprint | [S1 evidence](../scrum/sprint-01/evidence/README.md), [S2 evidence](../scrum/sprint-02/evidence/README.md): attach files with capture dates; identify unavailable originals explicitly |
+| [ ] DOC-403 | Burndown charts and dated scope/remaining-point observations | [S1 daily progress](../scrum/sprint-01/daily-progress.md), [S2 daily progress](../scrum/sprint-02/daily-progress.md): register chart/data in the matching evidence folder; do not invent daily data from sprint-end totals |
+| [ ] DOC-404 | Retained estimation discussion/votes, capacity decisions and member standup contributions | Corresponding sprint `estimation-and-capacity.md` and `daily-progress.md`: each statement has a source; identify missing material instead of completing generic prompts |
+| [ ] DOC-405 | Actual review feedback and follow-up actions | [S1 review](../scrum/sprint-01/review.md), [S2 review](../scrum/sprint-02/review.md): feedback/action/owner/date, or an explicit supplied report that none was raised; accepted totals already recorded stay qualified |
+| [ ] DOC-406 | Each member's retrospective feedback, agreed actions and later follow-through | [S1 retrospective](../scrum/sprint-01/retrospective.md), [S2 retrospective](../scrum/sprint-02/retrospective.md): separate proposals from agreements and link an observed follow-up where available |
+
+## WS5: Sprint 3 and 4
+
+| Item | Team evidence still needed | Exact destination / completion condition |
+| --- | --- | --- |
+| [ ] DOC-501 | Sprint 4 review details and story acceptance decisions | [S4 review](../scrum/sprint-04/review.md): actual meeting details, who decided/how, per-story outcome and feedback; cite relevant testing evidence without inferring acceptance from it |
+| [ ] DOC-502 | Existing start/end board captures for S3/S4 | [S3 evidence](../scrum/sprint-03/evidence/README.md), [S4 evidence](../scrum/sprint-04/evidence/README.md): original artifact/capture date or explicit unavailability |
+| [ ] DOC-503 | Burndowns and actual dated source observations for S3/S4 | [S3 daily progress](../scrum/sprint-03/daily-progress.md), [S4 daily progress](../scrum/sprint-04/daily-progress.md), [release accounting](../scrum/release-burndown.md): chart links and inputs agree with scope changes and supported outcomes |
+| [ ] DOC-504 | Retained planning/estimation evidence and each member's standup contributions | S3/S4 `planning.md`, `estimation-and-capacity.md`, `daily-progress.md`: record actual sources and distinguish 4 October start from later scope selection |
+| [ ] DOC-505 | S3/S4 review feedback, retrospective contributions, actions and follow-through | [S3 review](../scrum/sprint-03/review.md), [S3 retro](../scrum/sprint-03/retrospective.md), [S4 review](../scrum/sprint-04/review.md), [S4 retro](../scrum/sprint-04/retrospective.md): record supplied feedback/agreements; preparation text remains a proposal until confirmed |
+| [ ] DOC-506 | Four existing final-sprint recordings and instructor-access checks | [Recording register](../scrum/final-sprint-recordings.md): planning, review, retrospective and one daily standup; actual dates, unlisted links, useful timestamps and checked access; no videos in ZIP |
+
+## WS6: Submission integration
+
+| Item | Required input or check | Exact destination / completion condition |
+| --- | --- | --- |
+| [ ] DOC-601 | Course slide template and final self-contained deck PDF | [Deck brief](5/README.md): apply the actual template, include all rubric areas with evidence references, save PDF and record review |
+| [ ] DOC-602 | Both instructors' names/accounts and verified repository access | [Access record](7/README.md#instructor-access): accepted/working access with checked-by/date; an invitation alone is insufficient |
+| [ ] DOC-603 | Independent frozen-candidate review evidence and team's formal release decision | [Release decision](7/README.md#release-decision): actual participants, method/date, acceptance/limitations and review link; reconcile R24/TC-06-32 without fabricating a historic GitHub approval |
+| [ ] DOC-604 | Final documentation/package snapshot identification | [Release record](7/README.md#release-identification): distinguish frozen code SHA, documentation SHA and package content; commit/push only when authorised |
+| [ ] DOC-605 | Cross-workstream consistency and final ZIP inspection | [Package validation](#package-validation): links, charts, figures, AC versions and access verified; remaining gaps visibly disclosed |
 
 ## Required structure and current status
 
-| Folder | Required deliverable and type | Project records | Still needed for final submission |
-| --- | --- | --- | --- |
-| **1** | Full final product backlog, with completed and pending stories — document | [Backlog export record](1/README.md), [product backlog](../requirements/product-backlog.md) (master backlog register), [change requests](../requirements/change-requests.md), [requirements](../requirements/README.md) | Export the **entire** retained backlog and story details from Jira, including work beyond Sprint 1; include the archived-scope register. Instructors will not access live Jira. |
-| **2** | C4 system design — document(s) | [Architecture and C4 models](../architecture/README.md) (C1–C3, class and sequence diagrams, exports in `docs/architecture/exports/`), [API contract](../architecture/api-contract.md) | Update to the final implementation. Add readable PDF or image exports of C4 diagrams in `docs/architecture/`; check the exports without relying on GitHub's Mermaid renderer. |
-| **3** | Test cases for all core features and traceable test evidence — document(s) | [Test guidance and templates](../testing/README.md), [specifications](../testing/test-cases.csv), [execution records](../testing/test-executions.csv), [run evidence](../testing/test-evidence.md), [traceability](../requirements/traceability.csv), [Sprint 1 AC-linked scenarios](../scrum/sprint-01/sprint-backlog.md#acceptance-test-plan) | Complete reproducible cases and story/AC links for all 20 core features and applicable customer changes. Record actual unit, integration and/or end-to-end results where relevant, including normal, boundary, conflict, failure and regression cases. Keep unperformed checks Not executed; retain failed attempts and separate retests. Store concise evidence exports in `docs/testing/`. |
-| **4** | Scrum meeting documents/screenshots from **all sprints**, plus final-sprint recording links — documents and videos by link | [Scrum records](../scrum/README.md), [release burndown](../scrum/release-burndown.md), [Sprint 1](../scrum/sprint-01/README.md), [Sprint 2](../scrum/sprint-02/README.md), [Sprint 3](../scrum/sprint-03/README.md), [recording register](../scrum/final-sprint-recordings.md) | Capture starting goals/backlogs/tasks, estimation activities, end boards, burndown charts, reviews and retrospectives for every sprint. For the **final sprint only**, include planning, review, retrospective and one daily standup recording link. Use unlisted links; exclude video files from the ZIP. |
-| **5** | Self-contained summary slide deck — **PDF** | [Deck record](5/README.md) | Use the prescribed template released in eLearn by Week 11. Summarise how the team addressed all rubric areas. The deck will not be presented. Place the PDF in `docs/submission/5/`. |
-| **6** | Software release — code | Repository source, [run instructions](../../README.md), test files and [.github/workflows/ci.yml](../../.github/workflows/ci.yml) | Implement all core features and coherent workflows; verify clean setup. Include working code, run README, relevant unit/integration test classes and the CI scripts used. |
-| **7** | Repository README and instructor access | [Repository and access record](7/README.md) | Verify both instructors can access the linked repository; record names, account checks and the submitted release commit. |
-
-**Current stage, 21 September:** Sprint 1 closed with 24 Done points and eight carried points. Sprint 2 has a 43-point commitment, including the carry-over. The [product backlog](../requirements/product-backlog.md) maps all 20 release features and records future criteria and archived scope. A [current 51-record Jira snapshot](1/jira-backlog-2026-09-21.csv) is retained and must be refreshed for final submission. The [Sprint 1 review](../scrum/sprint-01/review.md#review-defects-and-carry-over) records the four reported defects; their fixes and retests, wider release acceptance and missing Scrum artifacts remain outstanding. Preserve the dated results and limits in the [test register](../testing/test-evidence.md); backlog refinement does not establish new passing tests. This checklist covers the full Week 12 submission; a GitHub push is not the final release or evidence ZIP.
+| Folder | First document | Supporting material |
+| --- | --- | --- |
+| 1 | [Backlog guide](1/README.md) | Full workbook, requirements/story records, customer changes and dated exports |
+| 2 | [Design report](../architecture/README.md) | Readable C4/sequence/data diagrams and technical references |
+| 3 | [Testing report](../testing/README.md) | Cases, executions, traceability, coverage/CI and connected evidence |
+| 4 | [Scrum overview](../scrum/README.md) | All four sprint records, evidence/charts and final recording links |
+| 5 | [Deck brief and record](5/README.md) | Prescribed-template PDF when provided |
+| 6 | [Run instructions](../../README.md) | Frozen source, test code, CI and repository-layout documentation |
+| 7 | [Access and release record](7/README.md) | Repository link, access verification and package identification |
 
 ## Prepare the numbered folders
 
-**11 October reconciliation:** the [master register](../requirements/product-backlog.md#master-backlog-register), [Excel workbook](1/product-backlog.xlsx) and [60-record Jira export](1/jira-backlog-2026-10-11.csv) now include the current completed and future backlog. KAN-50 catalogue maintenance is merged and its checks are recorded; [current test evidence](../testing/test-evidence.md) supersedes stale implementation/test gaps above. The 21 September paragraph remains a historical snapshot. Jira Sprint 2 is still active, three child verification/review tasks remain open, and the actual Sprint 2 acceptance, retrospective and burndown records are still needed. The Definition of Done has [reported team agreement](../scrum/definition-of-done.md), with agreement details to follow.
-
-Keep editing the project documents at the paths above. From the Git repository root, with an existing commit and `origin` remote, run:
+Run from the repository root:
 
 ```sh
 npm run submission:prepare
 ```
 
-This uses the project's existing Node and Git tools, with no additional dependencies. It creates a new, ignored `dist/submission-...` folder containing:
+The unchanged script creates an ignored `dist/submission-...` directory with folders **1–7**. It copies current on-disk, nonignored files, including uncommitted documentation. Folder 6 retains the repository layout. Other folders receive mapped documentation and rewritten relative Markdown links. `7/package-record.txt` records the local HEAD and dirty state.
 
-```text
-submission-.../
-├── 1/  Product backlog export record, exports and requirements
-├── 2/  C4 architecture and design documents
-├── 3/  Test specifications, execution records, traceability and run evidence
-├── 4/  All sprint records, evidence and final-sprint recording links
-├── 5/  Summary slide deck PDF and deck record
-├── 6/  Software source, README, tests and CI configuration
-└── 7/  Repository README, access record and package metadata
-```
+The command does not render all Markdown, create missing records, run tests, verify instructor access or certify release acceptance. Do not edit generated copies. Correct source documents and prepare another draft. The team home, this tracker and detailed database source reach folder 6; mapped reports link to them. History stays available as supporting material.
 
-The command copies the current files on disk, including uncommitted files that Git does not ignore. Folder 6 preserves the repository layout and its documentation so the release can be used independently. Other folders contain snapshots of the relevant documents, with local Markdown links adjusted for the package. The package record in folder 7 records the local commit and whether uncommitted changes were included.
+## Package validation
 
-Folder 3 includes all files under `docs/testing/` plus `docs/requirements/traceability.csv`. The CSV registers can be read as spreadsheets; no duplicate workbook or screenshot-coloured template is required by the deliverable. If additional presentation exports are produced, derive them from these registers and keep the same IDs and outcomes. Label the retained combined-register archive as historical and do not count aggregate summaries or Not executed placeholders as executed cases.
+- [ ] Open the draft reading guide and each folder's first document. Its current conclusion and remaining qualifications are obvious.
+- [ ] Verify one full feature → story/AC → case → implementation/test → execution/evidence path, then check coverage across all core features and customer changes.
+- [ ] Check diagrams, tables, formulas and links in their final viewer. Do not rely on GitHub-only Mermaid rendering.
+- [ ] Confirm frozen source/SQL/tests/configuration match the recorded release. Later documentation changes have their own identification.
+- [ ] Retain actual failures/retests, source dates and reported-vs-observed distinctions. Template prompts are not evidence.
+- [ ] Check folder 5 contains the final PDF and all four recording links work for instructors.
+- [ ] Confirm both instructors' repository access and folder 7 release/package metadata.
+- [ ] Exclude credentials, `.env`, dependency/build caches and video files. Retain `.env.example`, `.nvmrc` and `.github/workflows/ci.yml` in folder 6.
+- [ ] ZIP **1–7 at the ZIP root**, reopen it and verify the contents, including dotfiles.
+- [ ] Submit to the correct eLearn assignment before the deadline. Only the latest submission is graded.
 
-The preparation command does not generate missing evidence, render diagrams, run tests or check instructor access. It excludes local environment files other than `.env.example`, dependency directories, build/test caches and video files. Add curated exports to the source locations in the table so they are included next time. Do not edit generated copies; update the source and prepare a new snapshot.
+| Draft/final packaging record | Value to fill |
+| --- | --- |
+| Package identity and documentation snapshot | Use the single [release identification record](7/README.md#release-identification) |
+| Inspected by / date | Not recorded |
+| Remaining disclosed limitations | Not assessed |
+| eLearn submission confirmation | Not recorded |
 
-For final submission, review the contents, then ZIP **the seven numbered folders together**. Open the ZIP and confirm that `1/` through `7/` are at its top level. Use a ZIP tool that includes dotfiles: `6/.github/workflows/ci.yml`, `6/.env.example` and `6/.nvmrc` are part of the release.
+## Editorial validation — 5 November 2026
 
-## Final checks
+| Documentation check | Observed result |
+| --- | --- |
+| Frozen files and raw evidence | Pass: baseline comparison found no source, SQL, test or configuration changes; existing raw evidence, test registers, traceability and run ledger remain unchanged |
+| Historical records and links | Pass: original section anchors remain available; repository relative file/fragment links resolve; archived text retains its source content with rebased links |
+| Story cards | Pass: original criteria and acceptance-plan content preserved; two malformed Sprint 4 table rows were reformatted without changing wording |
+| Workbook | Pass: [reconciliation record](1/README.md#workbook-reconciliation) identifies the corrected 24-SP formula and verifies preserved story data, native tables and formatting |
+| Rendered editing pages | Pass: nine representative guides/forms checked in Chromium; no horizontal page overflow or broken images; team home, tracker and review form visually inspected |
+| Draft packaging | Pass: existing command produced folders 1–7; packaged links, required source dotfiles and copied-file hashes checked; credentials/local environment files and videos excluded by filename checks |
 
-- [ ] Full backlog export includes completed and pending stories, descriptions and acceptance criteria, readable without Jira.
-- [ ] C4 diagrams match the release and are readable in the included document/image exports.
-- [ ] All 20 core features and all six required Week 7 customer changes work as coherent workflows; remaining gaps are resolved or disclosed.
-- [ ] All 20 core features and applicable customer changes trace through story/AC IDs to reproducible specifications, relevant test files and supported execution evidence. Historical or superseded requirements remain distinguishable from current acceptance.
-- [ ] Folder 3 separates specifications from execution records. Actual records identify the tested build/environment and retain failures/retests; missing historical details are Not recorded and unperformed cases remain Not executed.
-- [ ] Appropriate unit, integration and/or end-to-end evidence covers normal, boundary, conflict, failure and regression scenarios. Mocked HTTP/database or browser fixtures are labelled with their limits; they are not presented as live integrated local end-to-end acceptance with real authentication and shared-database persistence.
-- [ ] Report measured coverage and target 100% as required by the project rubric; where not possible, explain the uncovered code and reasons. Passing suite totals do not establish every linked scenario or story as accepted.
-- [ ] Every sprint has starting scope, estimation records, an ending board and burndown, review outcomes and retrospective actions.
-- [ ] Final-sprint planning/review/retro/standup recording links work for the instructors; video files are excluded.
-- [ ] The self-contained PDF slide deck uses the prescribed course template.
-- [ ] Setup and checks reproduce from folder 6 in a clean environment; the run README, test code and CI scripts are present. Supabase prerequisites and shared-development setup verification are documented separately from isolated database tests; credentials are excluded. Public app/API deployment is not required.
-- [ ] The intended release is committed and pushed; the package record and folder 6 match that commit.
-- [ ] Folder 7 contains the repository link and both instructors' access has been verified.
-- [ ] Missing record fields are completed or explained; no template prompts are presented as finished evidence.
-- [ ] The final ZIP has folders 1–7 at its root and opens correctly, with required dotfiles included.
-- [ ] Submit through the correct section's eLearn assignment before the deadline; only the latest submission is graded.
+These are documentation/package checks. Application suites were not rerun during this editorial cleanup. The inspected draft included uncommitted documentation and was not a final ZIP, instructor-access verification or release acceptance. Final identifiers and inspection/submission details still belong in the fields above and folder 7.
 
-For Week 13, each team member should be able to explain the relevant code and decisions, demonstrate selected behaviour, trace a requirement to tests and discuss improvements made after feedback.
+## Historical records
 
-## 25 October 2026 — Arvin contribution reconciliation (Sprints 1–3)
+Earlier checklist snapshots and their then-current pending items are preserved in the [pre-cleanup checklist](archive/2026-11-05/checklist.md). Use the workstream tables above for current editing tasks.
 
-This is a dated evidence backfill prepared with Codex on 25 October, not a new ceremony, Jira transition, test execution or acceptance decision. Historical entries, other members’ ownership and agreed estimates are preserved.
+<details>
+<summary>Links to earlier sections (historical reference)</summary>
 
-Arvin’s Sprint 1–3 contribution readback now includes owned KAN-24, KAN-51, KAN-34/KAN-78 and supporting scope correction, preparation, migration rollout and KAN-81 review fixes. The master backlog, sprint records, test narrative and traceability contain the reconciliation. Existing Jira CSV/workbook exports remain historical snapshots; a fresh Jira export and acceptance reconciliation are still required. Retained preparation snapshots are draft evidence, not final meeting records or instructor-delivery confirmation.
+<a id="submission-checklist"></a>
+
+- [Submission checklist](archive/2026-11-05/checklist.md#submission-checklist) — retained historical section.
+
+<a id="release-candidate-checkpoint--1-november-2026"></a>
+
+- [Release-candidate checkpoint — 1 November 2026](archive/2026-11-05/checklist.md#release-candidate-checkpoint--1-november-2026) — retained historical section.
+
+<a id="current-handover-readiness--16-october-2026"></a>
+
+- [Current handover readiness — 16 October 2026](archive/2026-11-05/checklist.md#current-handover-readiness--16-october-2026) — retained historical section.
+
+<a id="earlier-readiness-assessment--15-october-2026"></a>
+
+- [Earlier readiness assessment — 15 October 2026](archive/2026-11-05/checklist.md#earlier-readiness-assessment--15-october-2026) — retained historical section.
+
+<a id="final-checks"></a>
+
+- [Final checks](archive/2026-11-05/checklist.md#final-checks) — retained historical section.
+
+<a id="25-october-2026--arvin-contribution-reconciliation-sprints-13"></a>
+
+- [25 October 2026 — Arvin contribution reconciliation (Sprints 1–3)](archive/2026-11-05/checklist.md#25-october-2026--arvin-contribution-reconciliation-sprints-13) — retained historical section.
+
+</details>

@@ -1,5 +1,9 @@
 # Sprint 3 evidence register
 
+## Team input needed
+
+Workstream 5: register supplied artifacts here with their source and capture dates. Use the [shared evidence checklist](../../../submission/checklist.md#ws5-sprint-3-and-4) for the missing-input list. Existing entries below retain their original dates and evidence limits.
+
 ## S3-E29 — KAN-17, KAN-67 and KAN-80 development verification, 29 October 2026
 
 | Artifact | Evidence | Limits |

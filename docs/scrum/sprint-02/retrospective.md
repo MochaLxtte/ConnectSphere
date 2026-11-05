@@ -1,51 +1,72 @@
 # Sprint 2 retrospective
 
-**25 October 2026 reconciliation:** The [new supplied report](#25-october-2026--team-meeting-and-manual-result-reconciliation) records meeting attendance and/or manual results separately from earlier dated evidence. It does not backdate new fixes or infer acceptance.
+**Meeting reported as held:** 3 October 2026, with all six members attending; report supplied 25 October. Individual feedback and agreed improvement details are not supplied.
 
-**Status: Not recorded.** Whether and when the retrospective occurred, its participants, discussion and agreed actions have not been supplied. The planned sprint end was **3 October 2026**; the original cadence projected Sprint 3 planning on 4 October, but its actual date/commitment is **Not recorded**. Absence of a record does not establish that a meeting was not held.
+## Team input needed
 
-**Record check — 15 October 2026:** use the [baseline and later delivery register](review.md#baseline-and-later-delivery-register--15-october-2026) to distinguish original scope, later repairs and evidence gaps. It provides discussion inputs, not attributed retrospective feedback or agreed causes. Follow up Sprint 1 proposals S1-RETRO-01/02 only if the team confirms their agreement and actual outcome.
+Workstream 4: edit [Per-member feedback](#per-member-feedback), [Previous actions follow-up](#previous-actions-follow-up) and [Agreed actions](#agreed-actions). Use the [shared evidence checklist](../../submission/checklist.md#ws4-sprint-1-and-2) for missing sources and completion conditions. Preserve **Not recorded**, **To agree**, **Not executed** or **Not assessed** until a source supports a replacement.
 
-## Preparation and facilitation
+## Meeting record
 
-Use the actual [daily records](daily-progress.md), [review outcomes](review.md), PR/test history, capacity changes and carry-over defect evidence to identify what helped or hindered delivery. Record observations first, discuss causes with the team, and select one or two changes with an owner and a measurable follow-up.
+| Field | Supported record / team entry |
+| --- | --- |
+| Actual date | 3 October 2026 |
+| Time / place / facilitator | Not recorded |
+| Attendees | Arvin, Ernest, Irfan, Kai Jie, Ryan and Tristan |
+| Source | 25 October team report; original notes remain Not recorded |
 
-Potential discussion prompts, to revisit against actual Sprint 2 evidence:
+## Previous actions follow-up
 
-- Did new-story allocation leave enough room for the eight carried points, integration and review?
-- Did reproducing the four specific carry-over paths improve acceptance coverage without discarding successful demo evidence?
-- Were the availability/active-event definitions, assignment fallback, calendar detail visibility and venue overlap/suitability policies resolved early enough to implement the agreed assignment rule and role access?
-- Did the Tuesday/Thursday/Saturday Daily Scrums expose useful blockers and lead to adaptations?
-- Did inspection of existing implementation prevent rework and reveal requirement gaps before acceptance?
+| Earlier agreed action | Owner | What happened | Effect and evidence |
+| --- | --- | --- | --- |
+| Not recorded | Not recorded | Not recorded | Not assessed |
 
-These are agenda prompts, not findings or claims about team performance.
+## Per-member feedback
 
-## Actual observations and causes
+Each member fills their own row from actual experience and identifies the meeting or later-report source. Existing observations and proposed actions are preserved in the history; they are not automatically attributed to every participant.
 
-| Observation | Supporting event / artifact | Effect on goal or team | Cause discussed by the team | Participants |
-| --- | --- | --- | --- | --- |
-| Not recorded | Not recorded | Not assessed | Not recorded | Not recorded |
+| Member | Went well | To improve / did not go well | Concrete example and source |
+| --- | --- | --- | --- |
+| Arvin | Not recorded | Not recorded | Not recorded |
+| Ernest | Not recorded | Not recorded | Not recorded |
+| Irfan | Not recorded | Not recorded | Not recorded |
+| Kai Jie | Not recorded | Not recorded | Not recorded |
+| Ryan | Not recorded | Not recorded | Not recorded |
+| Tristan | Not recorded | Not recorded | Not recorded |
 
-## Improvement actions
+## Agreed actions
 
-| Agreed improvement | Owner | Due / review date | Observable success measure | Follow-up evidence |
-| --- | --- | --- | --- | --- |
-| To agree | To agree | To agree | To agree | Not recorded |
+| Action and reason | Owner | Agreed by / date / method | Due / review date | Observable success measure | Follow-through evidence |
+| --- | --- | --- | --- | --- | --- |
+| To agree | To agree | To agree | To agree | To agree | Not recorded |
 
-## Follow-through
+Keep proposals labelled **To agree** until confirmed. Any action agreed after the sprint retains its actual date. For a final-sprint action with no subsequent trial, record that limitation rather than invent an improvement result.
 
-Bring agreed actions into the actual Sprint 3 planning session, assign time where needed and inspect their effect during that sprint. Record the actual participants, decision date and source. An action newly agreed after the Sprint 2 window retains its real agreement date. No improvement action, owner or success result is established by this template.
+## Historical records
 
-## 25 October 2026 — Team meeting and manual-result reconciliation
+[Preserved pre-cleanup record](archive/2026-11-05/retrospective.md) contains the original dated updates, earlier preparations and source limitations.
 
-The supplied **25 October 2026** report confirms planning on **20 September 2026**, and review and retrospective on **3 October 2026**, with **Arvin, Ernest, Irfan, Kai Jie, Ryan and Tristan** attending all three. **Arvin is Scrum Master; Irfan is Product Owner.** Exact times, location, facilitator, note taker, original notes/recordings and individual estimation votes are **Not recorded**. Attendance does not establish who voted, accepted each story, or agreed a particular retrospective action.
+<details>
+<summary>Earlier section links</summary>
 
-The retrospective is now **reported as held**, with the attendance above. The supplied information does not include individual feedback, quotations, root-cause discussion or an agreed improvement action. Those fields remain **Not recorded**; earlier observations and proposals are preserved. The following recommendations are prepared on 25 October for team agreement, not attributed to the historical meeting.
+<a id="preparation-and-facilitation"></a>
 
-| Recommended action | Status / owner | Proposed completion check |
-| --- | --- | --- |
-| Record the tested commit, environment and case outcomes during each acceptance walkthrough, including failures and retests. | To agree / To agree | Every new manual run has a case-level execution record and evidence reference. |
-| Reserve a shared integration checkpoint for cross-role workflows, conflicting writes and recovery from uncertain responses. | To agree / To agree | Relevant integration/browser tests and a current-build walkthrough are linked before acceptance. |
-| Reconcile story ownership, current Jira status and repository evidence before closing each sprint. | To agree / To agree | Scope/points reconcile; acceptance decisions and remaining work are explicit; team burndown exports are linked. |
+[Preparation and facilitation](archive/2026-11-05/retrospective.md#preparation-and-facilitation)
 
-Agreement date, owners, due dates and follow-through are **To agree**. Per-member feedback and the result of previous actions remain **Not recorded** unless already supported above. [REPORT-20261025-TEAM-S2](../../testing/test-evidence.md#25-october-2026--team-manual-result-reports) supplies manual-result reports; it does not establish retrospective consensus.
+<a id="actual-observations-and-causes"></a>
+
+[Actual observations and causes](archive/2026-11-05/retrospective.md#actual-observations-and-causes)
+
+<a id="improvement-actions"></a>
+
+[Improvement actions](archive/2026-11-05/retrospective.md#improvement-actions)
+
+<a id="follow-through"></a>
+
+[Follow-through](archive/2026-11-05/retrospective.md#follow-through)
+
+<a id="25-october-2026--team-meeting-and-manual-result-reconciliation"></a>
+
+[25 October 2026 — Team meeting and manual-result reconciliation](archive/2026-11-05/retrospective.md#25-october-2026--team-meeting-and-manual-result-reconciliation)
+
+</details>

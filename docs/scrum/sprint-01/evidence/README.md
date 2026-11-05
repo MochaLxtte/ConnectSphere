@@ -1,5 +1,15 @@
 # Sprint 1 evidence register
 
+## Team input needed
+
+Workstream 4: register supplied artifacts here with their source and capture dates. Use the [shared evidence checklist](../../../submission/checklist.md#ws4-sprint-1-and-2) for the missing-input list. Existing entries below retain their original dates and evidence limits.
+
+## Planning-note source received 5 November 2026
+
+| Artifact | Source / received date | What it supports | Limits |
+| --- | --- | --- | --- |
+| [Documentation Tasks.pdf](documentation-tasks-20261105.pdf), pp. 2–5 | Team-supplied document; received 5 November 2026 | Sprint 1 planning notes: six attendees, approximate Zoom time, planning-poker and capacity discussion, initial choices | Original author/preparation date Not recorded; role and provisional-estimate discrepancies retained in [planning](../planning.md#supplied-planning-notes--5-november-2026). Other pages contain blank templates, not performed meetings. |
+
 ## Closure evidence position — 26 October 2026
 
 The [current review and closure summary](../review.md#current-acceptance-and-closure--26-october-2026) consolidates existing source records. This is a documentation reconciliation, not a new sprint review, test execution or screenshot. The 26 October confirmation now documents the collective acceptance decision at the 19 September review; the original **32 committed / 24 accepted / 8 carried** point outcome is unchanged.

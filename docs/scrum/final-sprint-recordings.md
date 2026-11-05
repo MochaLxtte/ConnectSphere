@@ -1,18 +1,22 @@
 # Final sprint meeting recordings
 
-Record the **final sprint's** planning, review, retrospective and one daily standup for submission. Sprint 1 recordings are optional. Keep meeting notes and other Scrum evidence for every sprint.
+The course requires recordings of final-sprint planning, review, retrospective and one Daily Scrum, in addition to written records for all sprints. Sprint 4's planned window was **18–31 October 2026**. The links below are **Not recorded**; this does not establish whether recordings exist elsewhere.
 
-Upload large recordings as unlisted videos and include accessible links here. Do not put video files in the submission ZIP.
+## Team input needed
 
-**Final sprint:** Sprint 4, as confirmed in chat on 16 October 2026. **Projected dates:** 18–31 October 2026, following the team's Sunday-to-Saturday cadence. Submission is Friday 6 November at 23:59, Singapore time (Week 12 is 2–8 November). Schedule confirmation in chat; actual meeting times, participants, recordings and access checks are **Not recorded**.
+Workstream 5 fills the [recording register](#recording-register) from existing recordings and verifies access. Track remaining inputs in the [shared checklist](../submission/checklist.md#ws5-sprint-3-and-4). Upload videos as unlisted links; keep video files out of the ZIP. Do not create a new recording and describe it as an original historical meeting.
 
-Arrange recording before the planned 18 October planning meeting. Recordings must capture the actual meetings. Proposed review and retrospective date: 31 October; one Tuesday/Thursday/Saturday Daily Scrum must also be recorded. Confirm times and who operates/checks the recordings before the events.
+## Recording register
 
-| Meeting | Meeting date | Recording link | Access checked by / date |
-| --- | --- | --- | --- |
-| Sprint planning | Planned 18 October; actual Not recorded | Not recorded | Not assessed |
-| Sprint review | Planned 31 October; actual Not recorded | Not recorded | Not assessed |
-| Sprint retrospective | Planned 31 October; actual Not recorded | Not recorded | Not assessed |
-| One daily standup | To agree within Sprint 4 | Not recorded | Not assessed |
+| Meeting | Planned date | Actual meeting date / participants | Recording link | Access checked by / date | Written record |
+| --- | --- | --- | --- | --- | --- |
+| Planning | 18 October | Not recorded | Not recorded | Not assessed | [Planning](sprint-04/planning.md) |
+| Review | 31 October | Not recorded | Not recorded | Not assessed | [Review](sprint-04/review.md) |
+| Retrospective | 31 October | Not recorded | Not recorded | Not assessed | [Retrospective](sprint-04/retrospective.md) |
+| One Daily Scrum | Within Sprint 4 | Not recorded | Not recorded | Not assessed | [Daily log](sprint-04/daily-progress.md#daily-scrum-log) |
 
-Check each link from an account with the intended instructor access before packaging. These links belong in submission folder 4.
+Check each link using the access intended for the instructors. A working link in the uploader's account alone does not establish instructor access. These records package into submission folder 4.
+
+## Historical records
+
+[Preserved pre-cleanup record](archive/2026-11-05/final-sprint-recordings.md) contains the original dated updates, earlier preparations and source limitations.

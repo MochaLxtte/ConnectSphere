@@ -1,0 +1,173 @@
+> Historical snapshot retained during the 5 November 2026 documentation cleanup. Original dates, checkpoints and source text follow. Read the [current document](../../../README.md) first. Relative file links have been rebased for this location.
+
+# ConnectSphere
+
+IS212 event planning and venue booking project, built with **Vue 3 + TypeScript, Express 5 + TypeScript, Supabase PostgreSQL and Supabase Auth**, organised as a monorepo with a modular backend.
+
+The application supports sign-in, an assigned coordinator's review queue, request details and approval/rejection. Organisers can create and save drafts, edit and submit them, list their requests across all statuses, and refresh the status and recorded outcome. Draft rows open the editor; other rows open request details and the available planning actions.
+
+The code includes Lead-controlled initial coordinator assignment and reassignment, review start, clarification and read-only status history. KAN-50 provides Venue Staff catalogue maintenance; KAN-51 provides an availability calendar for Event Coordinators, Venue Staff and Technical Support Staff; KAN-12 provides venue search. KAN-8 booking decisions, KAN-52 event-specific suitability assessment, KAN-53 booking submission and KAN-55 operational venue blocks are also implemented. Their remaining repairs and acceptance work are tracked in the [current sprint records](../../scrum/README.md) and [product backlog](../../requirements/product-backlog.md). KAN-9 provides read-only equipment availability checks for Technical Support Staff; KAN-26 adds full saved-request reservations, cancellation and readiness. Equipment stock maintenance (KAN-18), saved-request creation/editing/review (KAN-63), registration and event lifecycle/change-request workflows remain separate pending work; supporting tables alone do not complete those features. KAN-64 notification workflows and the KAN-26 equipment-reserved slice of KAN-80 are described below. Automated results are recorded against their source commits in the [test evidence](../../testing/test-evidence.md); code presence does not establish connected manual acceptance or independent review.
+
+**KAN-64 notifications — 21 October 2026:** signed-in users now have an in-app inbox at `/notifications` and a bell with an unread count. Request submission, clarification, review decisions, coordinator assignment and reassignment and venue booking decisions each notify the people the [decision log](../../requirements/assumptions-and-questions.md) lists (a proposal to agree). Migration 008 must be applied to shared Supabase only after the team agrees. Manual/hosted checks and later-workflow triggers (KAN-80) are not done.
+
+**KAN-79 implementation — 19 October 2026:** submitting a valid draft now leaves it `SUBMITTED` and unassigned, even when no coordinator is available. A trusted Event Coordinator Lead opens `/lead`, inspects basic allocation details and chooses an available Event Coordinator. The allocation atomically records one current coordinator and a manual history entry with the Lead as actor. `/lead/oversight` retains visibility of active assigned and unassigned events; Lead access does not grant review, approval, venue-planning or attendee access. The [API contract](../../architecture/api-contract.md#kan-79-submission-and-lead-allocation--19-october-2026) defines the boundaries and conflicts. Coordinate migration 007 and a mapped Lead account before deploying this workflow. KAN-65 reassignment and KAN-64 notification delivery remain separate dependencies; KAN-79's related AC9 integration is still pending. The previous KAN-29 automatic-allocation policy and its [30 September schema verification](../../testing/test-evidence.md#30-september-migration-and-hosted-schema-consistency) remain [historical records](../../../backend/src/modules/events/README.md#kan-29-automatic-assignment-on-submission), superseded for new submissions by KAN-79.
+
+**KAN-65 follow-up — 19 October 2026:** Leads can now reassign active events from `/lead/oversight/:id`, with a required reason and an expected assignment version. The handover preserves the event and prior decisions, ends the previous assignment and records the new one atomically. The former coordinator loses assignment-derived access; the new coordinator receives it. Stale pages must refresh, and selecting the already-current coordinator through the API returns an unchanged result without another history row. No new migration is needed. Migration 007 application and Coordinator Lead login have been reported successful; the deferred manual workflow tests, KAN-64 notifications and independent review remain outstanding. See the [current contract](../../architecture/api-contract.md#kan-65-coordinator-reassignment--19-october-2026) and [verification record](../../testing/test-evidence.md#19-october-2026--kan-65-coordinator-reassignment).
+
+**21 October integration follow-up:** the KAN-64 dependency recorded as pending on 19 October is now implemented, including transactional assignment/handover notices, no-op suppression and recipient-scoped inbox access. The combined build passed check/coverage (`AUTO-20261021-INTEGRATION-01`), 380 isolated PostgreSQL tests (`AUTO-20261021-INTEGRATION-05`) and 147 browser tests with zero retries (`AUTO-20261021-INTEGRATION-06`). [S3-E19](../../scrum/sprint-03/evidence/README.md) and its [integration evidence](../../scrum/sprint-03/evidence/team-integration-2026-10-21.json) retain tested revisions and boundaries. These suite results do not establish hosted acceptance or a pass for every AC. KAN-77 adds setup/turnaround settings through migration 009; buffer application and affected-booking warnings remain incomplete pending KAN-78.
+
+KAN-8 adds Venue Staff review at `/venue-bookings`: open an existing pending booking, inspect event requirements, approve or reject it, and retain the recorded outcome. The currently assigned Event Coordinator can read their bookings and decisions. Approval rechecks the event's approved status, active venue and current booking/block conflicts; it reserves the booking period without changing the event's status. No new migration is required. KAN-53 lets the assigned coordinator create pending requests from **Venue booking requests** on `/reviews/:id`; it refuses an interval already reserved by an approved booking or operational block. Follow the connected [submission checks](../../testing/README.md#kan-53-hosted-verification) and [decision checks](../../testing/README.md#kan-8-hosted-verification). Hosted acceptance remains pending.
+
+KAN-52 lets the assigned coordinator open **Check venue suitability** from an event review at `/reviews/:id/venue-suitability`. It compares current event/venue information, explains failed or unknown checks, and lets the coordinator interpret free-text facilities, accessibility and layout requirements for that assessment. The result is Suitable, Unsuitable or Needs review; it neither reserves a venue nor changes the event. No database migration is needed. See [the contract](../../architecture/api-contract.md#venue-suitability-kan-52-cf-11) and [hosted verification](../../testing/README.md#kan-52-hosted-verification); executed evidence is recorded separately in [the test register](../../testing/test-evidence.md).
+
+## KAN-9 equipment availability — 26 October 2026
+
+Technical Support Staff open `/equipment/availability`, select an approved or confirmed event, and check either its saved equipment requests or an explicitly labelled **unsaved what-if** window and item list. The result shows requested, total, damaged, maintenance, operational, peak reserved, available and shortfall quantities for every item. It is advisory: neither mode changes requests, event status, reservations, history or notifications. Venue confirmation is not required. Saved checks exclude only their own exact reserved lines from competing demand; what-if checks count all reservations.
+
+Coordinate migration [014](../../../database/migrations/014_equipment_operational_quantities.sql) and a Supabase login mapped to `TECHNICAL_SUPPORT_STAFF` before the connected manual checks. Migration 014 was initially tested in disposable PostgreSQL; the user subsequently reported migration 014 and test accounts ready. That setup confirmation does not establish manual acceptance: **KAN-9 manual acceptance is Not executed**. The current seed does not create equipment stock, so use agreed test fixtures or KAN-18's later stock workflow. See the [equipment module](../../../backend/src/modules/equipment/README.md), [API contract](../../architecture/api-contract.md#equipment-availability-kan-9-cf-16) and [test records](../../testing/test-evidence.md).
+
+## KAN-26 equipment reservations — 26 October 2026
+
+On `/equipment/availability/:id`, Technical Support selects **Load saved reservations** to inspect current saved lines and readiness. For an approved event, each full requested line can be reserved after confirmation; a reserved line can be cancelled with a reason. The API rechecks current operational stock under locks, atomically records the reservation and notifies the assigned coordinator and acting Technical Support user. Confirmed events are read-only. Empty requirements never mean ready, and later stock losses can make an all-reserved event unfulfillable. What-if checks remain unsaved and cannot reserve their inputs.
+
+Migration [015](../../../database/migrations/015_equipment_reservations.sql) adds retained release metadata, an equipment-notification link, operational-capacity protection and one-time release when an event transitions to cancelled/completed. KAN-62/KAN-10 lifecycle APIs are still pending; the trigger alone is not those user workflows. KAN-63 will provide saved request creation and KAN-18 stock maintenance. Migration 014 and test accounts are reported ready. Coordinate migration 015 before connected testing; its shared application and KAN-26 manual acceptance are **Not executed**. See the [reservation contract](../../architecture/api-contract.md#equipment-reservations-kan-26-cf-17).
+
+## Start here
+
+Prerequisites: [Node.js 24 LTS](https://nodejs.org/en/download), npm bundled with Node, Git, and access to the team's Supabase development project. Docker is optional for isolated local database testing.
+
+Run these commands from the repository root, one at a time:
+
+```sh
+npm ci
+npm run setup
+```
+
+Configure the root `.env` with the database connection and TLS settings in [database setup](../../../database/README.md), plus `SUPABASE_URL`, `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` for [authentication](../../../backend/src/modules/auth/README.md). Use the project's publishable key for `VITE_SUPABASE_ANON_KEY`; never a privileged secret key. Leave `SUPABASE_JWT_SECRET` blank for the project's asymmetric signing keys. `npm run setup` creates `.env` without overwriting an existing file, so existing clones must add missing settings manually.
+
+For a fresh database, initialise the schema and fictional profiles:
+
+```sh
+npm run db:migrate
+npm run db:seed
+```
+
+When joining the team's existing Supabase project, confirm its schema with Arvin before applying migrations or changing seed data. Provision each login in Supabase Auth and link it to `app_users.supabase_user_id` with the correct application role. Seed profiles alone do not create login credentials. The seed also adds fictional venues once migration 004 has run, ready for the Sprint 2 venue stories. It does not create equipment samples; existing data is preserved.
+
+**Migration history:** Active files run consecutively from 001 to 015. The 25 October shared-development records report migrations 001–013 applied; those records and the earlier 30 September structural comparison have distinct verification scopes. Migration `014_equipment_operational_quantities.sql` adds KAN-9 damaged and maintenance quantities; `015_equipment_reservations.sql` adds KAN-26 release history, notification links and reservation guards. The user reports 014 and test-account setup complete; shared 015 application is **Not executed**. Coordinate pending changes with the team, then run `npm run db:migrate` against the intended development database before starting the matching backend. Applied SQL and ledger rows remain unchanged. The runner recognises the documented historical filename aliases and checksums; never rename ledger entries. See the [database guide](../../../database/README.md#shared-schema-and-migrations) for the current sequence and retained earlier checkpoints.
+
+**KAN-79 setup:** after coordinating migration [007](../../../database/migrations/007_add_coordinator_lead.sql), provision the Lead through a trusted administrator by mapping their Supabase Auth user to an `app_users` profile with role `EVENT_COORDINATOR_LEAD`. Roles come from the application profile, not sign-in metadata or client input. Verify the Lead's queue access with the matching API and frontend before relying on the changed submission flow. The existing `app_users.coordinator_available` flag defaults to `false`; opt in only provisioned `EVENT_COORDINATOR` profiles ready to receive allocations. This flag controls the Lead's selectable targets. Submission succeeds without an available coordinator, while allocation requires a currently available target. Do not opt in fictional seed profiles. Follow the [coordinated rollout](../../../database/README.md#kan-79-lead-assignment-rollout), then start the application:
+
+```sh
+npm run dev
+```
+
+Open **http://localhost:5173**. The dashboard checks the API and migrated database. The API listens at http://127.0.0.1:3000; Vite proxies `/api` to it. Keep the development terminal running and stop it with Ctrl+C. Supabase hosts the database; it does not require a local database container.
+
+On Windows, use `npm.cmd` / `npx.cmd` if PowerShell blocks npm's `.ps1` wrapper.
+
+Never commit `.env` or place database passwords in frontend `VITE_*` variables. The example connection contains placeholders that must be replaced locally. If changing the API port, change `API_PORT` and `API_PROXY_TARGET` together. Restart the dev servers after environment changes. Coordinate migrations and seed changes with Arvin because teammates using the same Supabase project share its database.
+
+## Repository map
+
+```text
+frontend/                  Vue application, navigation, API client, component tests
+backend/src/modules/       Authentication, event, venue and equipment services and HTTP routes
+backend/src/               HTTP application, configuration, database pool
+backend/test/              API and environment tests, grouped by module
+database/                  SQL migrations, seed and database integration tests
+tests/e2e/                 Browser checks for events, venue calendar and booking decisions
+docs/requirements/         20 core features, customer questions, traceability
+docs/architecture/         C4 views, ERD and implemented/proposed API contracts
+docs/testing/              Test plan, acceptance cases and evidence records
+docs/scrum/                Workstreams, Definition of Done, evidence templates
+docs/submission/           Course deliverable checklist
+scripts/                   Cross-platform setup
+.github/workflows/         CI
+```
+
+See [architecture](../../architecture/README.md) and the [API contract](../../architecture/api-contract.md) for implemented endpoints, ownership boundaries and provisional workflow rules. Dependencies are locked in one root `package-lock.json`; run package installation from the root. Add a workspace dependency with, for example, `npm install <package> -w @connectsphere/backend`.
+
+## Team handoff
+
+Start with the [current sprint administration](../../scrum/README.md), [Sprint 3 plan](../../scrum/sprint-03/README.md), [selected stories and acceptance plan](../../scrum/sprint-03/sprint-backlog.md), and [product backlog](../../requirements/product-backlog.md). The current release allocation is **63 SP each for Sprints 3 and 4**. KAN-79 and KAN-65 remain In Progress; KAN-64 notification integration is now implemented and locally verified in the 21 October combined build. Deferred manual/hosted checks, agreement on the recipient matrix and independent review remain outstanding. KAN-77 stores buffer settings, while KAN-78 buffer calculations and KAN-77 AC6 booking re-evaluation/warnings remain incomplete. Other story statuses and ownership retain their latest dated snapshots. Sprint 3 is administratively Active beyond its configured 17 October end; these implementations are not recorded as completion inside that window. [Sprint 2's original 43-point baseline](../../scrum/sprint-02/README.md) remains **35 new plus eight carried from Sprint 1**, with five unfinished stories carried into Sprint 3 at their full 19 points. Historical acceptance and velocity gaps remain explicit.
+
+The following **historical Sprint 1 workstreams** were agreed on 6 September 2026. They provide ownership context and do not assign current sprint work:
+
+| Developer | Jira items              | Responsibilities                                                   |
+| --------- | ----------------------- | ------------------------------------------------------------------ |
+| Ryan      | KAN-25                  | Authentication, authorisation, protected routes and permission checks |
+| Ernest    | KAN-31, KAN-4           | Event form, request creation and draft saving                       |
+| Kai Jie   | KAN-34, KAN-6           | Draft retrieval/editing, validation and submission                  |
+| Irfan     | KAN-33, KAN-27          | Coordinator review, clarification requests and organiser visibility |
+| Tristan   | KAN-36, KAN-16          | Approval/rejection workflow and organiser-facing status             |
+| Arvin     | KAN-24                  | Initial database, schema, configuration and seed data                |
+
+After database setup, Arvin supports cross-feature integration, end-to-end testing and resolving integration issues with the feature owners.
+
+Read [AGENTS.md](../../../AGENTS.md) before the first feature branch: it holds the mandatory workflow and documentation order for people and AI assistants. The shared setup uses pre-provisioned Supabase accounts and assigned-coordinator access. Sprint 1 closed with 24 Done points and eight carried points; the [review](../../scrum/sprint-01/review.md#review-defects-and-carry-over) records the carried defects. Existing code and later fixes still need verification against the selected criteria. Account administration, event field validation, assignment/delegation and later transitions have [open customer questions](../../requirements/assumptions-and-questions.md). Team assumptions remain distinct from customer clarifications.
+
+## Checks
+
+```sh
+npm run check
+npm run test:coverage
+```
+
+`check` runs TypeScript checks (including database/tooling), workspace tests, browser-harness isolation checks, and both builds. Coverage has enforced regression floors, with 100% gates for selected authentication/navigation boundaries. It does not establish completion or acceptance of all 20 business features. See [coverage scope and exceptions](../../testing/README.md#coverage-gates-and-remaining-exceptions--1-november-2026).
+
+For database integration tests, use a dedicated test database. The optional Docker Compose service provides PostgreSQL 17 locally without using the team's Supabase data. With Docker Desktop's Linux engine running:
+
+```sh
+npm run db:up
+docker compose exec -T db createdb -U connectsphere connectsphere_test
+```
+
+Then set its URL and run the test. PowerShell:
+
+```powershell
+$env:TEST_DATABASE_URL = 'postgresql://connectsphere:connectsphere_local@127.0.0.1:5432/connectsphere_test'
+npm run test:integration
+```
+
+macOS/Linux:
+
+```sh
+TEST_DATABASE_URL=postgresql://connectsphere:connectsphere_local@127.0.0.1:5432/connectsphere_test npm run test:integration
+```
+
+Adjust the local credentials if you changed the Compose settings. Integration tests require `TEST_DATABASE_URL`, create their own schema, and remove only that schema afterward. See [database setup](../../../database/README.md) for test TLS settings and optional local development. `npm run db:down` stops the local service and retains its data volume.
+
+For combined backend coverage, keep the dedicated `TEST_DATABASE_URL` above and run `npm run test:coverage:backend`. This instruments backend source across unit/HTTP **and** real PostgreSQL tests in one run, including all database integration tests. The isolated and combined percentages are reported separately.
+
+Browser tests also require that explicit loopback `TEST_DATABASE_URL`, with a database name ending in `_test`. They migrate/seed that test database automatically and start their own API on 4311 and static frontend on 4173; both ports must be free. They never reuse the developer's 3000/5173 servers or fall back to a shared `DATABASE_URL`.
+
+```sh
+npx playwright install chromium
+npm run test:e2e
+```
+
+The browser suite uses two Chromium workers and zero retries. It covers infrastructure and browser workflows; most domain scenarios substitute API/auth responses and therefore establish frontend integration, not full connected E2E acceptance. PostgreSQL tests separately exercise persistence, authorization, rollback and concurrency. GitHub Actions runs checks, both coverage measurements and the browser suite with its own PostgreSQL service, uploading evidence for 14 days. Preserve the release report in the repository before artifact expiry. See [testing guidance](../../testing/README.md) and [test evidence](../../testing/test-evidence.md) for the separate real-authentication manual E2E results.
+
+Hosted approval and rejection checks passed, including the saved review row, outcome after reload and removal from the pending queue. See the [test evidence](../../testing/test-evidence.md) for the dated results and remaining organiser-workflow checks. KAN-16's `/events` page uses `GET /api/events?scope=all` to show owned request names, readable statuses and Singapore-time updates. Draft titles open `/events/:id/edit`; other titles open `/events/:id`, which reads the shared detail API and displays status, saved outcome, reason and recorded time alongside the available planning actions. The organiser approval/rejection display and refresh checks passed in MAN-20260917-01. Reopening a request URL after sign-out also passed: the page showed a sign-in prompt without request details or the review reason (MAN-20260917-02). Draft and submitted detail pages also showed the expected statuses and review messages (MAN-20260917-03). A second organiser could not view the first organiser's request details or see their requests in the list (MAN-20260917-04). Opening `/events` directly after signing out showed a sign-in prompt without request names or statuses (MAN-20260917-05). The request list showed matching Draft, Submitted, Rejected and Approved labels, and Draft/Submitted detail statuses and review messages remained correct after refresh (MAN-20260917-06). The submission-to-status path remains to be checked in the test evidence.
+
+## Join the repository
+
+Clone [ConnectSphere](https://github.com/MochaLxtte/ConnectSphere), then follow the setup instructions above:
+
+```sh
+git clone https://github.com/MochaLxtte/ConnectSphere.git
+cd ConnectSphere
+```
+
+Invite teammates and configure `main` to require PR review and the CI `verify` check once the first workflow has run. Follow [AGENTS.md](../../../AGENTS.md) for feature branches, documentation and reviews.
+
+## Course deliverables
+
+The [submission checklist](../../submission/checklist.md) maps the submission requirements to folders **1–7**, with project records and outstanding evidence. Keep working records in `docs/`; run `npm run submission:prepare` to assemble a fresh numbered snapshot in `dist/submission-.../`. Complete the checklist before creating the final ZIP. [Sprint 1](../../scrum/sprint-01/README.md) and [Sprint 2](../../scrum/sprint-02/README.md) retain their historical records; [Sprint 3](../../scrum/sprint-03/README.md) and [Sprint 4](../../scrum/sprint-04/README.md) hold the current release plan and evidence.
+
+## Project context
+
+The first release covers 20 core features across connected event workflows. Sprint 1 decisions are recorded in the [planning notes](../../scrum/sprint-01/planning.md). Supabase hosts PostgreSQL and handles sign-in; Express verifies sessions and enforces application roles, ownership and coordinator assignment.
+
+Team members and Scrum roles are maintained in the Sprint 1 plan. No public distribution license has been chosen for this coursework project.

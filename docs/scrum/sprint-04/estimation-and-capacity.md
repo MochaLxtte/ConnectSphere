@@ -1,61 +1,85 @@
 # Sprint 4 estimation and capacity
 
-**Estimation status:** The current 63-SP allocation is a planning baseline. Team confirmation of relative estimates, capacity and the sprint commitment is **To agree**; no planning-poker vote is recorded. The 10 to 11 SP selection target is guidance, not an individual quota. Keep existing estimates until a team-agreed change is logged.
+**Retained scope:** 15 stories / 63 SP. **Reported outcome:** Formal sprint acceptance and Done SP: Not assessed; release decision remains separate from recorded tests.
 
-**Current selected allocation: 15 parent items / 63 SP.** Relative anchors remain KAN-33 and KAN-16 at 2 SP. Points are not hours and equal sprint totals do not demonstrate equal elapsed effort or guaranteed completion.
+## Team input needed
 
-Scope and estimates follow the recorded planning decisions. Stories are unassigned for team members to choose. Planning votes and meeting attendance are **Not recorded**; see [record preparation](../README.md#record-preparation).
+Workstream 5: edit [Estimation evidence](#estimation-evidence) and [Actual capacity](#actual-capacity). Use the [shared evidence checklist](../../submission/checklist.md#ws5-sprint-3-and-4) for missing sources and completion conditions. Preserve **Not recorded**, **To agree**, **Not executed** or **Not assessed** until a source supports a replacement.
 
-**16 October ownership update:** stories are unassigned for team members to choose, targeting roughly **10–11 SP each per sprint / 21 SP across both**. Keep whole estimates and dependencies; choose another member to review. The integration lead is **To agree**. See the [selection rules](planning.md#selected-backlog).
+## Estimation evidence
 
-## Capacity
-
-| Work pool | Unclaimed SP | Selection target | Capacity record |
-| --- | ---: | --- | --- |
-| Current sprint | 63 | Roughly 10–11 SP per member across six members | Individual hours and absences Not recorded |
-| Sprints 3 and 4 combined | 126 | Roughly 21 SP per member; whole stories | Adjust for dependencies, review and integration effort |
-
-Sprint 4's planned window is 18–31 October. Increased effort is planned to finish the release; individual available hours and absences remain Not recorded. Confirm them at the actual 18 October planning meeting and include final-sprint recordings, review, integration, testing and submission preparation.
-
-Velocity reference: Sprint 1 reported 24 SP; historical Sprint 2 acceptance/velocity is **Not recorded**. No valid two-sprint average is asserted. The 63-point selection is a planned release allocation, not measured velocity. Review the actual prior-sprint outcome before treating it as a forecast supported by delivery evidence.
-
-## Estimation session
-
-| Field | Value |
+| Field | Supported record / team entry |
 | --- | --- |
-| Recorded date / method | 16 October 2026; chat-based planning and backlog refinement |
-| Participants | Relative estimates adopted through the recorded planning decisions; preparation method documented centrally; individual votes Not recorded |
-| Planning-poker / disagreement resolution | Not recorded; no six-member vote is claimed |
+| Method and anchors | Relative sizing; KAN-33 and KAN-16 are retained 2-SP reference stories |
+| Session date / participants | Not recorded for the sizing discussion separately from meeting attendance |
+| Individual votes / disagreement evidence | Not recorded |
+| Final agreement source | Retained point baseline below; missing original sizing evidence remains Not recorded |
+
+The 63-SP allocation was recorded through the delegated 16 October planning process. Team planning-poker ballots and independent confirmation of the estimates remain **Not recorded / To agree** in the retained record. Equal sprint totals do not demonstrate equal effort or capacity.
 
 ## Selected estimates
 
-| Jira | Story | SP | Owner | Rationale / estimate history |
-| --- | --- | ---: | --- | --- |
-| KAN-9 | Check Equipment Availability for an Event | 8 | Unassigned — team member to choose | Retain existing selected estimate; move the whole unstarted story with its ACs and integration obligations, without inflating points to equalise sprints. |
-| KAN-10 | Mark Event as Completed | 3 | Unassigned — team member to choose | Retain existing selected estimate; move the whole unstarted story with its ACs and integration obligations, without inflating points to equalise sprints. |
-| KAN-14 | Register for an Event | 5 | Unassigned — team member to choose | Retain existing selected estimate; move the whole unstarted story with its ACs and integration obligations, without inflating points to equalise sprints. |
-| KAN-15 | Submit and Review Event Change Requests | 5 | Unassigned — team member to choose | Retain selected 5 SP; earlier 2 → 5 re-estimate records decision/review and arrangement-impact complexity. |
-| KAN-17 | Withdraw Attendee Registration | 2 | Unassigned — team member to choose | Retain existing selected estimate; move the whole unstarted story with its ACs and integration obligations, without inflating points to equalise sprints. |
-| KAN-18 | Update Equipment Availability Status | 3 | Unassigned — team member to choose | Retain existing selected estimate; move the whole unstarted story with its ACs and integration obligations, without inflating points to equalise sprints. |
-| KAN-26 | Reserve Equipment | 3 | Unassigned — team member to choose | Retain existing selected estimate; move the whole unstarted story with its ACs and integration obligations, without inflating points to equalise sprints. |
-| KAN-61 | Confirm Event After Planning Arrangements | 3 | Unassigned — team member to choose | Retain existing selected estimate; move the whole unstarted story with its ACs and integration obligations, without inflating points to equalise sprints. |
-| KAN-62 | Cancel Event and Release Its Arrangements | 5 | Unassigned — team member to choose | Retain existing selected estimate; move the whole unstarted story with its ACs and integration obligations, without inflating points to equalise sprints. |
-| KAN-63 | Submit and Review Event Equipment Requests | 5 | Unassigned — team member to choose | Retain existing selected estimate; move the whole unstarted story with its ACs and integration obligations, without inflating points to equalise sprints. |
-| KAN-66 | Update Event Information During Planning | 3 | Unassigned — team member to choose | Retain existing selected estimate; move the whole unstarted story with its ACs and integration obligations, without inflating points to equalise sprints. |
-| KAN-67 | View Event Registrations | 2 | Unassigned — team member to choose | Retain existing selected estimate; move the whole unstarted story with its ACs and integration obligations, without inflating points to equalise sprints. |
-| KAN-80 | Receive Equipment, Lifecycle, Change and Registration Notifications | 3 | Unassigned — team member to choose | 3 SP split from KAN-64; add equipment/lifecycle/change/registration trigger integrations to the existing shared inbox, without re-estimating infrastructure. |
-| KAN-82 | Manage each venue arrangement independently for an event | 5 | Unassigned — team member to choose | 5 SP: comparable to KAN-53 booking submission plus controlled cancellation/replacement, aggregation and isolation regressions; existing request creation, approval and suitability are reused rather than reimplemented. General event-wide significant changes remain KAN-15. |
-| KAN-84 | Review operational safety before event preparation | 8 | Unassigned — team member to choose | 8 SP: new trusted role, authorized queue/detail, revision-bound review records, three outcomes, targeted return-to-planning and preparation gating across venue/equipment/lifecycle consumers. Reuses the 2-SP KAN-33 detail and 3-SP KAN-36 decision patterns but adds readiness and invalidation complexity. |
-| **Total** | **15 parent items** | **63** | **Unassigned pool** | **Tests, documentation, independent review and hosted evidence belong to story completion** |
+The table retains the selected values and their recorded rationale. Rationale describing unfinished implementation is historical planning context; current verification is in the [testing report](../../testing/README.md). Earlier hosted-only evidence references are superseded by the [25 October local acceptance policy](../definition-of-done.md); they are retained here only as original estimate context.
 
-**Point reconciliation:** the earlier Sprint 3 selection was 97 SP. Move 12 existing parents (KAN-9, KAN-10, KAN-14, KAN-15, KAN-17, KAN-18, KAN-26, KAN-61, KAN-62, KAN-63, KAN-66, KAN-67) at **47 SP** to Sprint 4; split unstarted KAN-64's **8 SP** into **KAN-64 5 SP** for request/assignment/venue notifications and **KAN-80 3 SP** for equipment/lifecycle/change/registration notifications; move **KAN-81 / CR-2 8 SP** and **KAN-83 / CR-4 8 SP** forward from the earlier Sprint 4 forecast. Thus Sprint 3 is **97 - 47 - 3 + 16 = 63** and Sprint 4 is **29 + 47 + 3 - 16 = 63**. KAN-64/KAN-80 together retain every original notification obligation; shared delivery is estimated only once. Moving the 12 unstarted stories is scope reallocation, not failed Sprint 3 delivery or a completed-sprint carry-over. No other story estimate is changed by this rebalance.
+| Jira | Story | SP | Rationale / estimate history |
+| --- | --- | ---: | --- |
+| KAN-9 | Check Equipment Availability for an Event | 8 | Retain existing selected estimate; move the whole unstarted story with its ACs and integration obligations, without inflating points to equalise sprints. |
+| KAN-10 | Mark Event as Completed | 3 | Retain existing selected estimate; move the whole unstarted story with its ACs and integration obligations, without inflating points to equalise sprints. |
+| KAN-14 | Register for an Event | 5 | Retain existing selected estimate; move the whole unstarted story with its ACs and integration obligations, without inflating points to equalise sprints. |
+| KAN-15 | Submit and Review Event Change Requests | 5 | Retain selected 5 SP; earlier 2 → 5 re-estimate records decision/review and arrangement-impact complexity. |
+| KAN-17 | Withdraw Attendee Registration | 2 | Retain existing selected estimate; move the whole unstarted story with its ACs and integration obligations, without inflating points to equalise sprints. |
+| KAN-18 | Update Equipment Availability Status | 3 | Retain existing selected estimate; move the whole unstarted story with its ACs and integration obligations, without inflating points to equalise sprints. |
+| KAN-26 | Reserve Equipment | 3 | Retain existing selected estimate; move the whole unstarted story with its ACs and integration obligations, without inflating points to equalise sprints. |
+| KAN-61 | Confirm Event After Planning Arrangements | 3 | Retain existing selected estimate; move the whole unstarted story with its ACs and integration obligations, without inflating points to equalise sprints. |
+| KAN-62 | Cancel Event and Release Its Arrangements | 5 | Retain existing selected estimate; move the whole unstarted story with its ACs and integration obligations, without inflating points to equalise sprints. |
+| KAN-63 | Submit and Review Event Equipment Requests | 5 | Retain existing selected estimate; move the whole unstarted story with its ACs and integration obligations, without inflating points to equalise sprints. |
+| KAN-66 | Update Event Information During Planning | 3 | Retain existing selected estimate; move the whole unstarted story with its ACs and integration obligations, without inflating points to equalise sprints. |
+| KAN-67 | View Event Registrations | 2 | Retain existing selected estimate; move the whole unstarted story with its ACs and integration obligations, without inflating points to equalise sprints. |
+| KAN-80 | Receive Equipment, Lifecycle, Change and Registration Notifications | 3 | 3 SP split from KAN-64; add equipment/lifecycle/change/registration trigger integrations to the existing shared inbox, without re-estimating infrastructure. |
+| KAN-82 | Manage each venue arrangement independently for an event | 5 | 5 SP: comparable to KAN-53 booking submission plus controlled cancellation/replacement, aggregation and isolation regressions; existing request creation, approval and suitability are reused rather than reimplemented. General event-wide significant changes remain KAN-15. |
+| KAN-84 | Review operational safety before event preparation | 8 | 8 SP: new trusted role, authorized queue/detail, revision-bound review records, three outcomes, targeted return-to-planning and preparation gating across venue/equipment/lifecycle consumers. Reuses the 2-SP KAN-33 detail and 3-SP KAN-36 decision patterns but adds readiness and invalidation complexity. |
+| **Total** | **15 parent items** | **63** | **Tests, documentation, independent review and hosted evidence belong to story completion** |
 
-## Re-estimates during the sprint
+## Actual capacity
 
-| Recorded date | Jira / scope | Previous | Current | Reason / authority |
+Fill from retained availability discussions or a clearly dated team report. Points are relative size, not hours; the planning heuristic does not establish actual availability.
+
+| Member | Available hours / days | Known absence or constraint | Source and date |
+| --- | --- | --- | --- |
+| Arvin | Not recorded | Not recorded | Not recorded |
+| Ernest | Not recorded | Not recorded | Not recorded |
+| Irfan | Not recorded | Not recorded | Not recorded |
+| Kai Jie | Not recorded | Not recorded | Not recorded |
+| Ryan | Not recorded | Not recorded | Not recorded |
+| Tristan | Not recorded | Not recorded | Not recorded |
+
+## Re-estimates and interpretation
+
+Preserve existing estimates. Record a supported revision as old value → new value, reason, participants, date and evidence; missing agreement stays **To agree**. Original values and earlier allocation discussions remain in the history below.
+
+| Story | Old → new SP | Reason | Participants / agreement date | Evidence |
 | --- | --- | --- | --- | --- |
-| 16 October 2026 | KAN-15 | 2 SP before earlier selection | 5 SP, retained | Review and arrangement effects exceed read-only anchors; earlier recorded re-estimate retained, not repeated by balancing |
-| 16 October 2026 | KAN-64 and KAN-80 | KAN-64 8 SP for all original notifications | KAN-64 5 + KAN-80 3 = 8 | Split unstarted scope along implemented trigger groups so each sprint has independently completable notification acceptance; Recorded backlog reconstruction and balancing |
-| 16 October 2026 | Five original carry-over stories | 19 SP original estimates | 19 SP unchanged | No zeroing or partial delivery credit; movement is separate from historical acceptance |
+| Additional revision | Not recorded | Not recorded | To agree | Not recorded |
 
-No other estimate changes in this rebalance. Unassigning stories for self-selection and moving sprint membership do not alter relative size. Record further scope/estimate changes with a new dated row.
+Use the [review disposition](review.md) for accepted/carry-over totals and the [release accounting](../release-burndown.md) for cross-sprint interpretation. Missing daily observations cannot be derived from final totals.
+
+## Historical records
+
+[Preserved pre-cleanup record](archive/2026-11-05/estimation-and-capacity.md) contains the original dated updates, earlier preparations and source limitations.
+
+<details>
+<summary>Earlier section links</summary>
+
+<a id="capacity"></a>
+
+[Capacity](archive/2026-11-05/estimation-and-capacity.md#capacity)
+
+<a id="estimation-session"></a>
+
+[Estimation session](archive/2026-11-05/estimation-and-capacity.md#estimation-session)
+
+<a id="re-estimates-during-the-sprint"></a>
+
+[Re-estimates during the sprint](archive/2026-11-05/estimation-and-capacity.md#re-estimates-during-the-sprint)
+
+</details>

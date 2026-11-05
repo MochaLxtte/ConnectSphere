@@ -1,5 +1,9 @@
 # Sprint 2 evidence register
 
+## Team input needed
+
+Workstream 4: register supplied artifacts here with their source and capture dates. Use the [shared evidence checklist](../../../submission/checklist.md#ws4-sprint-1-and-2) for the missing-input list. Existing entries below retain their original dates and evidence limits.
+
 ## Current acceptance and closure — 26 October 2026
 
 The [current twelve-story decision register](../review.md#current-acceptance-and-closure--26-october-2026) records **7 accepted stories / 24 SP at the 3 October review**, confirmed on **26 October**, and retains **5 carried stories / 19 SP**. **S2-E37** registers the supplied acceptance confirmation and closure reconciliation; it is not a newly performed test, review meeting or contemporaneous 3 October capture.

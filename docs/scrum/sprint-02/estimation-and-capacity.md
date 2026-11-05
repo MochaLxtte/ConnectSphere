@@ -1,10 +1,23 @@
 # Sprint 2 estimation and capacity
 
-**Record check — 15 October 2026:** preserve **35 new + 8 carried = 43 committed points** and the original estimates. All 12 parents are currently Done in Jira, but accepted points by the 3 October boundary and the actual review outcome are **Not recorded**; do not use 43 as a verified velocity. Historical estimate discussion/votes, capacity and allocation-decision participants remain **Not recorded**. The [review register](review.md#baseline-and-later-delivery-register--15-october-2026) separates later work and administrative dates for Sprint 3 planning.
+**Retained scope:** 12 stories / 43 SP (35 new + 8 carried). **Reported outcome:** 7 accepted / 24 SP; KAN-6, KAN-34, KAN-50, KAN-12 and KAN-52 carried / 19 SP.
 
-## Agreed story estimates and comparative rationale
+## Team input needed
 
-The selected nine new stories total **35 points**. The estimates and priorities below are recorded scope inputs. The comparative rationale is **proposed**, to be reviewed in refinement; an estimation method, votes, participants and discussion have not been recorded for Sprint 2.
+Workstream 4: edit [Estimation evidence](#estimation-evidence) and [Actual capacity](#actual-capacity). Use the [shared evidence checklist](../../submission/checklist.md#ws4-sprint-1-and-2) for missing sources and completion conditions. Preserve **Not recorded**, **To agree**, **Not executed** or **Not assessed** until a source supports a replacement.
+
+## Estimation evidence
+
+| Field | Supported record / team entry |
+| --- | --- |
+| Method and anchors | Relative sizing; KAN-33 and KAN-16 are retained 2-SP reference stories |
+| Session date / participants | Not recorded for the sizing discussion separately from meeting attendance |
+| Individual votes / disagreement evidence | Not recorded |
+| Final agreement source | Retained point baseline below; missing original sizing evidence remains Not recorded |
+
+## Selected estimates
+
+The table retains the selected values and their recorded rationale. Rationale describing unfinished implementation is historical planning context; current verification is in the [testing report](../../testing/README.md). Earlier hosted-only evidence references are superseded by the [25 October local acceptance policy](../definition-of-done.md); they are retained here only as original estimate context.
 
 | Story | Priority | New points | Proposed comparative rationale |
 | --- | --- | ---: | --- |
@@ -19,59 +32,57 @@ The selected nine new stories total **35 points**. The estimates and priorities 
 | KAN-55 — Block Venue for Operational Unavailability | Supporting | 3 | Staff-maintained blocked periods propagated to availability, suitability and booking checks. |
 | **Total new scope** | | **35** | **32 Must + 3 Supporting** |
 
-Existing implementation may reduce remaining tasks, but does not justify silently changing estimates or awarding Done points. First inspect what satisfies the agreed criteria; record any resulting estimate changes explicitly.
 
-## Carry-over and Sprint 2 baseline
+The nine new stories total **35 SP**. KAN-6 (3), KAN-33 (2) and KAN-34 (3) add **8 carried SP**, making the **43-SP** commitment.
 
-| Carried story | Original Sprint 1 points | Sprint 2 estimate | Remaining focus |
-| --- | ---: | --- | --- |
-| KAN-6 — Submit Event Request | 3 | 3, retained | S1-DEF-03 saved-draft submission and S1-DEF-04 required-field validation |
-| KAN-33 — View Submitted Event Request | 2 | 2, retained | S1-DEF-02 approved-request navigation for the authorized coordinator |
-| KAN-34 — Resume/Edit Draft Event Request | 3 | 3, retained | S1-DEF-01 registration capacity/window fields when enabling registration on an existing draft; KAN-31/KAN-4 touchpoints |
-| **Total** | **8** | **8, retained** | See [Sprint 1 defect record](../sprint-01/review.md#review-defects-and-carry-over) |
+## Actual capacity
 
-The confirmed Sprint 2 baseline is **35 new points + 8 retained carry-over points = 43 points across 12 PBIs**. Preserve Sprint 1's original estimates and closure outcome; carrying a story into Sprint 2 does not retroactively complete it in Sprint 1. Do not add separate defect points on top of carried story estimates unless a distinct scope change is agreed.
+Fill from retained availability discussions or a clearly dated team report. Points are relative size, not hours; the planning heuristic does not establish actual availability.
 
-## Workload target and availability
+| Member | Available hours / days | Known absence or constraint | Source and date |
+| --- | --- | --- | --- |
+| Arvin | Not recorded | Not recorded | Not recorded |
+| Ernest | Not recorded | Not recorded | Not recorded |
+| Irfan | Not recorded | Not recorded | Not recorded |
+| Kai Jie | Not recorded | Not recorded | Not recorded |
+| Ryan | Not recorded | Not recorded | Not recorded |
+| Tristan | Not recorded | Not recorded | Not recorded |
 
-The target of roughly **six points per member** describes the 35 new points across six members: `35 ÷ 6 ≈ 5.8`. It is a distribution guide, not an individual assignment or a points-to-hours conversion. Including carry-over, total planned scope averages `43 ÷ 6 ≈ 7.2` points per member before considering uneven availability and specialist work.
+## Re-estimates and interpretation
 
-**Record updated 11 October 2026.** Current assignments below are reconciled from Jira; the original six-point target, estimates and unknown actual capacity are unchanged. No retrospective estimate vote or planning decision is inferred.
+Preserve existing estimates. Record a supported revision as old value → new value, reason, participants, date and evidence; missing agreement stays **To agree**. Original values and earlier allocation discussions remain in the history below.
 
-| Member | Available development hours | Carry-over / integration allocation | New-story allocation | Review / ceremony allowance |
+| Story | Old → new SP | Reason | Participants / agreement date | Evidence |
 | --- | --- | --- | --- | --- |
-| Ryan | Not recorded | Not recorded | KAN-12, 5 points | Not recorded |
-| Ernest | Not recorded | Not recorded | KAN-54, 5 points | Not recorded |
-| Kai Jie | Not recorded | KAN-6 / KAN-34, 6 points; integration hours Not recorded | KAN-53 / KAN-55, 6 points | Not recorded |
-| Irfan | Not recorded | KAN-33, 2 points; integration hours Not recorded | KAN-50, 5 points | Not recorded |
-| Tristan | Not recorded | Integration hours Not recorded | KAN-29 / KAN-8 / KAN-52, 9 points | Not recorded |
-| Arvin | Not recorded | Not recorded | KAN-51, 5 points | Not recorded |
+| Additional revision | Not recorded | Not recorded | To agree | Not recorded |
 
-Record leave, coursework deadlines, working days, coordination, test execution and Scrum role responsibilities before judging feasibility. Arvin is Scrum Master and Irfan is Product Owner; both also develop, so include time for these duties within their availability. Points indicate relative scope; availability is recorded in hours separately. Sprint 1 closed with seven PBIs Done and 24 accepted points, leaving these three stories at 8 points. This is one observed sprint, not a stable capacity forecast; the 43-point Sprint 2 baseline exceeds that observed outcome and needs an explicit feasibility check.
+Use the [review disposition](review.md) for accepted/carry-over totals and the [release accounting](../release-burndown.md) for cross-sprint interpretation. Missing daily observations cannot be derived from final totals.
 
-## Refinement and commitment record
+## Historical records
 
-| Item | Record |
-| --- | --- |
-| Estimation date/time, participants and method | Not recorded |
-| Reference stories and differing estimates | Not recorded; Sprint 1 used KAN-33/KAN-16 as two-point references, but no Sprint 2 method is assumed |
-| Questions affecting estimates | Team/customer acceptance of KAN-29's implemented availability/active-status/fallback choices; calendar detail visibility, suitability matching, concurrency, operational-block behavior and defect reproduction. Assignment ordering and the three calendar roles are settled. |
-| Final carry-over estimate decision | Original 8 points retained: KAN-6 at 3, KAN-33 at 2 and KAN-34 at 3 |
-| Final Sprint 2 point baseline | Confirmed: 43 points across 12 PBIs |
-| Ownership and reviewers | Current Jira assignees checked 11 October: Ryan KAN-12; Ernest KAN-54; Kai Jie KAN-53/KAN-55/KAN-6/KAN-34; Irfan KAN-50/KAN-33; Tristan KAN-29/KAN-8/KAN-52; Arvin KAN-51. Reviewers To agree; original allocation decision participants/method Not recorded. |
-| Capacity decision and scope trade-offs | Not recorded |
-| Actual accepted points / unfinished points | Not assessed; actual decision to record in [review](review.md) |
+[Preserved pre-cleanup record](archive/2026-11-05/estimation-and-capacity.md) contains the original dated updates, earlier preparations and source limitations.
 
-At review, calculate accepted points only for stories meeting the Definition of Done. Show new work and carry-over separately, with the actual baseline and any dated changes. Partial implementation and successful individual test cases do not earn partial story points.
+<details>
+<summary>Earlier section links</summary>
 
-**28 September allocation update:** KAN-29's three points are assigned to Tristan in this plan. Local automated evidence is [AUTO-20260928-01](../../testing/test-evidence.md#28-september-kan-29-automatic-assignment); it does not award Done points, establish actual development hours or alter the 43-point commitment. Hosted acceptance, peer review and CI remain pending. The prior venue implementation was removed from `main` on 26 September; its historical presence must not be treated as reduced remaining work without a fresh implementation assessment.
+<a id="agreed-story-estimates-and-comparative-rationale"></a>
 
-**4 October allocation update:** Tristan took up KAN-8, keeping his new-story allocation at 3 + 3 = 6 points. This implementation update is after the planned 3 October boundary; it does not change the sprint dates, record review acceptance or award points. Actual review/closure and any carry-over decision still require team records.
+[Agreed story estimates and comparative rationale](archive/2026-11-05/estimation-and-capacity.md#agreed-story-estimates-and-comparative-rationale)
 
-**4 October KAN-52 responsibility update:** Tristan requested this three-point implementation after KAN-29 and KAN-8, making nine new-story points across his three implementations. The original roughly six-point target remains a historical distribution guide. No point estimate, 43-point baseline, Jira assignee, review outcome or Done count changes through this record. Reconcile capacity and formal allocation with the team.
+<a id="carry-over-and-sprint-2-baseline"></a>
 
-## 25 October 2026 — Arvin contribution reconciliation (Sprints 1–3)
+[Carry-over and Sprint 2 baseline](archive/2026-11-05/estimation-and-capacity.md#carry-over-and-sprint-2-baseline)
 
-This is a dated evidence backfill prepared with Codex on 25 October, not a new ceremony, Jira transition, test execution or acceptance decision. Historical entries, other members’ ownership and agreed estimates are preserved.
+<a id="workload-target-and-availability"></a>
 
-The original KAN-51 estimate remains **5 SP**. Actual later delivery is documented in the [sprint backlog](sprint-backlog.md); it supplies no historical capacity, planning-poker votes or on-time velocity evidence. No re-estimation occurred.
+[Workload target and availability](archive/2026-11-05/estimation-and-capacity.md#workload-target-and-availability)
+
+<a id="refinement-and-commitment-record"></a>
+
+[Refinement and commitment record](archive/2026-11-05/estimation-and-capacity.md#refinement-and-commitment-record)
+
+<a id="25-october-2026--arvin-contribution-reconciliation-sprints-13"></a>
+
+[25 October 2026 — Arvin contribution reconciliation (Sprints 1–3)](archive/2026-11-05/estimation-and-capacity.md#25-october-2026--arvin-contribution-reconciliation-sprints-13)
+
+</details>

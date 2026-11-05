@@ -1,16 +1,17 @@
 # Sprint 1 backlog and acceptance test plan
 
-**Acceptance confirmation — 26 October 2026:** all six members collectively accepted seven items / **24 SP** against the applicable ACs and DoD at the **19 September review**, according to the supplied team report. KAN-6, KAN-33 and KAN-34 carried **8 SP**. See the [current decision register](review.md#current-acceptance-and-closure--26-october-2026). Reviewed build identifiers are unavailable; historical test outcomes and later implementation evidence keep their dates. This confirmation does not create new case-level test results.
+**Scope:** 10 PBIs / 32 SP. This is the stable story/criterion reference for the sprint; current outcomes are summarised in [review](review.md).
 
-**25 October 2026 reconciliation:** The [new supplied report](#25-october-2026--team-meeting-and-manual-result-reconciliation) records meeting attendance and/or manual results separately from earlier dated evidence. It does not backdate new fixes or infer acceptance.
+## Team input needed
 
-**Record check — 15 October 2026:** this is the historical Sprint 1 scope and test record. Later repairs and current Jira statuses for KAN-6/KAN-33/KAN-34 are tracked in the [Sprint 2 review register](../sprint-02/review.md#baseline-and-later-delivery-register--15-october-2026). Preserve criterion IDs, superseded assumptions and actual run dates; later passing tests do not turn an unrecorded Sprint 1 case into a historical pass. The version of the criteria adopted at Sprint 1 review remains **Not recorded**.
+Workstream 4: edit only supported acceptance/evidence references; story and criterion identifiers remain stable. Use the [shared evidence checklist](../../submission/checklist.md#ws4-sprint-1-and-2) for missing sources and completion conditions. Preserve **Not recorded**, **To agree**, **Not executed** or **Not assessed** until a source supports a replacement.
 
-**Sprint window: 6–19 September 2026, inclusive (Asia/Singapore). Status: closed in Jira following the completed review.** At Sprint Planning on Sunday 6 September, the team committed to the nine user stories and separate KAN-24 infrastructure PBI listed below. Seven items closed Done for 24 points; KAN-6, KAN-33 and KAN-34 carried 8 points into Sprint 2. The current Jira snapshot corroborates these statuses, points and owners; exact meeting times and original tracker evidence remain to be retained. Feature links map the backlog items to the project's core requirements.
+## How to use this record
 
-The cards below retain the **local implementation criteria, task splits and historical test references**. The current Jira descriptions and 79 functional-story acceptance criteria have now been reviewed; they are not a verbatim match for these broader local criteria. Use the [current-version reconciliation](#current-jira-reconciliation--21-september) before treating the cards as the adopted Jira version. Story owners are assigned below; individual development capacity is still to be recorded. Local task IDs are documentation references for creating or linking Jira subtasks. Preserve the reviewed export with its capture metadata and the criteria version adopted at planning/review.
-
-Use [planning](planning.md) for the commitment and decisions, [estimation and capacity](estimation-and-capacity.md) for actual estimates and availability, and [daily progress](daily-progress.md) for dated changes. Assess completion against the team's adopted [definition of done](../definition-of-done.md), then record actual outcomes in the [review](review.md), [retrospective](retrospective.md) and [evidence index](evidence/README.md).
+- Read the selected/committed table, then the relevant story card and acceptance-test group.
+- Criterion wording and historical test checkpoints below retain their source versions. A dated "Not executed" or pending dependency is not automatically the latest release result.
+- Read the [current testing report](../../testing/README.md) and [execution register](../../testing/test-executions.csv) for later runs. An automated pass or a broad walkthrough does not establish every linked criterion passed.
+- Record formal sprint decisions in [review](review.md); do not infer them from Jira or CI. Detailed development and superseded allocation history is linked at the end.
 
 ## Committed backlog
 
@@ -532,46 +533,27 @@ These cases make existing local safeguards explicit without inflating the origin
 - New case execution: **Not executed**. Existing dated run records remain unchanged and may be linked only where their recorded scope proves the same scenario.
 - Database protection still requires direct evidence of the Supabase Data API setting; an earlier HTTP 503 alone does not prove that setting. Diagram accuracy now has a specific test specification.
 
-## 25 October 2026 — Arvin contribution reconciliation (Sprints 1–3)
+## Historical records
 
-This is a dated evidence backfill prepared with Codex on 25 October, not a new ceremony, Jira transition, test execution or acceptance decision. Historical entries, other members’ ownership and agreed estimates are preserved.
+[Preserved pre-cleanup record](archive/2026-11-05/sprint-backlog.md) contains the original dated updates, earlier preparations and source limitations.
 
-**KAN-24 — infrastructure, Arvin, 5 SP.** [PR #10](https://github.com/MochaLxtte/ConnectSphere/pull/10) merged on **20 September 22:43 Singapore time**, after Sprint 1’s planned 19 September end. It supplied first-release database/schema, ERD and persistence work, but also introduced business workflows beyond the infrastructure story. Arvin subsequently removed uncommitted future-scope application features in [PR #19](https://github.com/MochaLxtte/ConnectSphere/pull/19), merged **26 September 18:54**; database migration history and required shared dependencies remained. The removed workflows are not delivery credit for KAN-24 or for other members’ stories. Initial scaffolding authored by Mochs is not attributed to Arvin.
+<details>
+<summary>Earlier section links</summary>
 
-The retained Jira Done entry and the original closure totals do not establish that this 20 September merge met the Definition of Done by 19 September. PR #10 was self-merged; neither #10 nor #19 has a submitted human review in the GitHub readback. PR-reported tests are historical reported results, not newly executed manual checks. Preserve `KAN-24-AC1`–`AC4`, `TC-DB-201`–`205` and `S1-T31`–`S1-T33`; reproducible setup, hosted security configuration and diagram verification must retain their existing evidence limits. No additional Done SP or revised velocity is asserted.
+<a id="25-october-2026--arvin-contribution-reconciliation-sprints-13"></a>
 
-See the [evidence index](evidence/README.md) and [master contribution register](../../requirements/product-backlog.md).
+[25 October 2026 — Arvin contribution reconciliation (Sprints 1–3)](archive/2026-11-05/sprint-backlog.md#25-october-2026--arvin-contribution-reconciliation-sprints-13)
 
-## 25 October 2026 — reported original-story manual results
+<a id="25-october-2026--reported-original-story-manual-results"></a>
 
-**Source:** retrospective executor confirmation from Tristan, recorded 25 October. **Reported execution date:** 19 September 2026. **Environment:** localhost; exact local commit, database environment, fixture identifiers and captures **Not recorded**. The report covers all documented manual scenarios for his original Sprint 1 features, tested locally before the later push. It is not an independently repeated run.
+[25 October 2026 — reported original-story manual results](archive/2026-11-05/sprint-backlog.md#25-october-2026--reported-original-story-manual-results)
 
-| Original story | Reusable manual cases | Reported result | Acceptance-plan relationship |
-| --- | --- | --- | --- |
-| KAN-36 | TC-04-208–TC-04-217; TC-04-230 | **Pass**, reported by executor | Manual decision, persistence, owner-outcome, access and repeated/opposite-decision portions of S1-T21–S1-T24. This report does not establish a new concurrency or rollback test. |
-| KAN-16 | TC-06-201–TC-06-209 | **Pass**, reported by executor | Manual owned-status, outcome/refresh and unrelated-organiser portions of S1-T25–S1-T27. |
+<a id="25-october-2026--ryan-story-verification-records"></a>
 
-See [REPORT-20261025-TRISTAN-S1](../../testing/test-evidence.md#25-october-2026--reported-manual-results-for-original-stories) and the appended rows in [test-executions.csv](../../testing/test-executions.csv). Earlier results and Not executed placeholders remain historical records. The report covers the original criteria; mandatory rejection reasons under KAN-60 and later customer changes need their own evidence. It does not change the recorded Sprint 1 acceptance decisions, closure figures or other stories' test status.
+[25 October 2026 — Ryan story verification records](archive/2026-11-05/sprint-backlog.md#25-october-2026--ryan-story-verification-records)
 
-## 25 October 2026 — Ryan story verification records
+<a id="25-october-2026--team-meeting-and-manual-result-reconciliation"></a>
 
-**Source:** Tristan's report, recorded 25 October, that Ryan passed the original KAN-25 manual scenarios on the **19 September 2026** review day. **Tested build, environment, fixtures and captures:** Not recorded. This is reported historical execution, not an independently observed rerun.
+[25 October 2026 — Team meeting and manual-result reconciliation](archive/2026-11-05/sprint-backlog.md#25-october-2026--team-meeting-and-manual-result-reconciliation)
 
-| Story / original scope | Reusable cases | Reported result / run | Acceptance-plan relationship |
-| --- | --- | --- | --- |
-| KAN-25 authentication and authorisation | TC-01-201–TC-01-209 | **Pass**, Ryan; `MAN-20260919-02` | S1-T01–S1-T04: recognised login and roles, signed-out/role/event access, sign-out session invalidation and invalid-login refusal. |
-
-`TC-01-209` is specified on 25 October from the existing S1-T02/DEMO-01 invalid-login scenario; its specification date is not its reported execution date. [REPORT-20261025-RYAN-S1](../../testing/test-evidence.md#25-october-2026--ryan-story-verification-records) and [S1-E23](evidence/README.md#25-october-2026--ryan-story-verification-records) retain the source and limitations. Later Lead/Safety Officer permissions and other customer changes remain separately evidenced. Preserve earlier partial results and Not executed placeholders; this follow-up does not alter the original acceptance or velocity.
-
-## 25 October 2026 — Team meeting and manual-result reconciliation
-
-[REPORT-20261025-TEAM-S1](../../testing/test-evidence.md#25-october-2026--team-manual-result-reports) appends **60 reported Pass** manual case results for the owners below. Reported execution date: **19 September 2026**. Tested build, environment, exact observations and captures are **Not recorded**. Existing Tristan/Ryan reports and all earlier outcomes remain separate. Current fixes require new retests; no acceptance or Done-SP change is inferred. Burndown artifacts remain for the team to supply. The known S1-DEF-01…04 findings and 24 Done / 8 carried points remain unchanged; the broad reported passes do not identify the build/path needed to reconcile these contradictions.
-
-| Acceptance-plan references | Story / reported executor | Current evidence interpretation |
-| --- | --- | --- |
-| S1-T05–T10 | KAN-31 / KAN-4 / Ernest | Manual scenarios linked in REPORT-20261025-TEAM-S1: reported Pass. Unrun automated-only checks and hosted/build-specific acceptance remain separate. |
-| S1-T11–T17 | KAN-34 / KAN-6 / Kai Jie | Manual scenarios linked in REPORT-20261025-TEAM-S1: reported Pass. Unrun automated-only checks and hosted/build-specific acceptance remain separate. |
-| S1-T18–T20; S1-T28–T30 | KAN-33 / KAN-27 / Irfan | Manual scenarios linked in REPORT-20261025-TEAM-S1: reported Pass. Unrun automated-only checks and hosted/build-specific acceptance remain separate. |
-| S1-T31–T33 | KAN-24 / Arvin | Manual scenarios linked in REPORT-20261025-TEAM-S1: reported Pass. Unrun automated-only checks and hosted/build-specific acceptance remain separate. |
-
-Use the explicit case IDs in [REPORT-20261025-TEAM-S1](../../testing/test-evidence.md#25-october-2026--team-manual-result-reports) and their appended execution rows. This is not a blanket pass of every subcase in an S1-T plan or a formal acceptance decision. Historical failed and unperformed rows remain evidence; automated-only scenarios are not changed by the reported manual results.
+</details>
