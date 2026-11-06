@@ -1,6 +1,6 @@
 # Testing report and editing guide
 
-This is the reading guide for submission folder **3**. It explains the test strategy, the latest retained verification and how to find the supporting cases and results. Documentation reconciled **5 November 2026**; no new test run is claimed by this cleanup.
+This is the reading guide for submission folder **3**. It explains the test strategy, the latest retained verification and how to find the supporting cases and results. Documentation reconciled **5 November 2026**; no new test run is claimed by this cleanup. The [evidence review](#evidence-review--6-november-2026) of **6 November 2026** also reran no suite and added no result.
 
 ## Team input needed
 
@@ -9,7 +9,7 @@ This is the reading guide for submission folder **3**. It explains the test stra
 | Report review field | Value to fill |
 | --- | --- |
 | Reviewed by / actual review date | Not recorded |
-| Corrections or evidence supplied | Not recorded |
+| Corrections or evidence supplied | 6 November 2026: [evidence review](#evidence-review--6-november-2026) corrections, prepared for independent review |
 
 Formal release acceptance belongs in the release/Sprint 4 review records. It is **Not assessed** in the retained evidence; a documentation editor must not infer it from passing tests.
 
@@ -19,7 +19,8 @@ Formal release acceptance belongs in the release/Sprint 4 review records. It is 
 2. [Test levels and environments](#test-levels-and-environments) and [coverage](#measured-coverage-and-limitations).
 3. [Requirement-to-result examples](#following-a-requirement-to-its-result) and the reusable [full release walkthrough](release-e2e-walkthrough.md).
 4. [Editing specifications and results](#editing-specifications-and-results), when supplying supported information.
-5. [Evidence and historical records](#evidence-and-historical-records), for detailed logs and earlier checkpoints.
+5. [Evidence review](#evidence-review--6-november-2026), for checked figures, spot checks, unsupported claims and remaining gaps.
+6. [Evidence and historical records](#evidence-and-historical-records), for detailed logs and earlier checkpoints.
 
 ## Current release position
 
@@ -28,7 +29,8 @@ Formal release acceptance belongs in the release/Sprint 4 review records. It is 
 | Frozen application source | Last code commit `55e2b61`, 1 November **23:55:42 SGT**. The code-editing cutoff is after **1 November 23:59 SGT**. Only documentation/evidence changes are permitted after it. |
 | Integrated release candidate | PR #80 was author-merged at **1 November 23:58:58 SGT** into `fb6d8d93f721b114accc9857a05d62e859987e23`. No independent submitted GitHub review was present in the retained 2 November readback. |
 | Exact-commit CI | Candidate CI and merge-commit main CI passed. The main verification completed **2 November 00:08:53 SGT**. The earlier statement that remote CI/merge was pending is superseded by that recorded readback. |
-| Connected walkthrough | `MAN-20261101-01` records R01–R23 passed within their recorded scope. R24's browser checks completed, but its formal release decision remains **Not assessed**. The 24-group journey `TC-06-32` is not recorded as a complete Pass. |
+| Connected walkthrough | R01–R23 are recorded as Pass within their stated scope. R01–R12 and R13 Part A are user reports: execution dates, builds, individual executors and screenshots are **Not recorded**. `MAN-20261101-01` observed R13 Part B onward in the browser at local checkout `429397a`; the exact served build is **Not recorded**. R24's browser checks completed, but its formal release decision remains **Not assessed**. The 24-group journey `TC-06-32` is not recorded as a complete Pass. |
+| Walkthrough versus frozen source | Between `429397a` and `55e2b61`, 30 files changed under `backend/src`, `frontend/src` and `database/migrations`: 14 non-test files, including migration 023, and 16 test files. No complete connected repeat on the frozen source is recorded. Connected evidence for those changes is the four `MAN-20261101-03` cases below; other evidence for them is automated. |
 | Connected repair acceptance | `MAN-20261101-03` records Pass for `TC-06-446`, `TC-06-447`, `TC-15-108` and `TC-01-213`, with real local frontend/API, Supabase authentication and the shared development database. Migration 023 was applied and verified in that run. |
 | Formal acceptance | The recorded test results do not establish an independent teammate review, collective release decision, a new ceremony, or historical sprint delivery dates. Those inputs remain separate in the shared checklist. |
 
@@ -80,13 +82,18 @@ The enforced statements/branches/functions/lines floors are **95/92/97/98 fronte
 
 All executable frontend `.ts`/`.vue` source is measured, excluding tests, setup, test-only API fixtures and declarations. Backend measurement includes source except the process entry `server.ts`. That entry is exercised as a browser-harness subprocess whose coverage is not merged into V8. Frontend bootstrap/composition and the retained unused placeholder remain included at their measured values.
 
-The [frontend gap inventory](../scrum/sprint-04/evidence/freeze-candidate-20261101/frontend-gaps.json) and [combined backend gap inventory](../scrum/sprint-04/evidence/freeze-candidate-20261101/backend-combined-gaps.json) identify exact uncovered locations and denominators. Remaining testable paths include venue-block access/catalogue failures, uncertain draft-submit feedback, form error branches, stale clarification state, and unexpected error/rollback branches. Optional display/bootstrap paths and one V8 negative-hit anomaly are identified separately. These are disclosed gaps; the report does not claim all are impossible to test.
+The [frontend gap inventory](../scrum/sprint-04/evidence/freeze-candidate-20261101/frontend-gaps.json) and [combined backend gap inventory](../scrum/sprint-04/evidence/freeze-candidate-20261101/backend-combined-gaps.json) identify exact uncovered locations and denominators. Remaining testable paths include venue-block access/catalogue failures, a signed-in account change while editing a draft, uncertain draft-submit feedback, form error branches, stale clarification state, and unexpected error/rollback branches. Optional display/bootstrap paths and one V8 negative-hit anomaly are identified separately. These are disclosed gaps; the report does not claim all are impossible to test.
+
+| Gap inventory | Files with a gap | Uncovered lines | Uncovered statements | Uncovered functions | Uncovered branch arms |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Frontend, final local run | 52 | 40 | 169 | 17 | 413 |
+| Backend combined with PostgreSQL | 23 | 16 | 26 | 2 | 53 |
 
 **Not recorded:** SQL/trigger statement coverage, mutation score, external-provider implementation coverage, cross-tab ordering guarantees and load/performance measurements. PostgreSQL assertions cover locking, constraints, rollback and races; real-signature tests use loopback JWKS. Those boundaries do not establish provider internals or complete live Supabase behavior. Under the code freeze, later findings are reported without source/test changes.
 
 ## Following a requirement to its result
 
-The [traceability register](../requirements/traceability.csv) has **230 rows covering all 20 core features**. The [walkthrough coverage map](release-e2e-walkthrough.md#coverage-map-for-the-team) additionally connects the 24 release groups to the 20 features and six customer changes. These mappings support navigation; row counts do not establish that every AC has adequate passing acceptance evidence.
+The [traceability register](../requirements/traceability.csv) has **230 rows**: 228 cover all 20 core features and two are `Infrastructure`. One feature row spans CF-06, CF-19 and CF-20, and seven older rows have no versioned criterion IDs. The [evidence review](#evidence-review--6-november-2026) follows one chain per feature and customer change. The [walkthrough coverage map](release-e2e-walkthrough.md#coverage-map-for-the-team) additionally connects the 24 release groups to the 20 features and six customer changes. These mappings support navigation; row counts do not establish that every AC has adequate passing acceptance evidence.
 
 Use this sequence: **core feature → applicable story/AC version → test specification → executable test or manual steps → scoped execution → retained evidence**. Source/test paths inside CSV cells resolve from the repository root, or submission folder `6/`.
 
@@ -136,11 +143,112 @@ Use `execution_id`, `test_case_id`, `run_id`, `actual_result`, `result`, `remark
 
 For a supported run, record its actual narrative first, then append only the case-level outcomes established by that source. Identify substituted dependencies, original/restored fixture state, retained data and failures/retests. Update the matching sprint acceptance evidence only within its demonstrated scope. Missing metadata remains **Not recorded**. Follow [AGENTS.md §6.1](../../AGENTS.md#61-test-specifications-and-execution-records).
 
-The current registers contain **624 specifications**, including 20 historical `TC-01`–`TC-20` feature summaries and **604 detailed cases**. All detailed cases have an execution or preparation row. The **1,105** execution rows comprise **608 Pass, 39 Fail, 457 Not executed and one Blocked**. These are historical attempts/placeholders, not 1,105 distinct tests, 457 outstanding cases or 608 accepted requirements. Original feature summaries have no execution rows; their aggregate outcomes stay in historical evidence.
+The current registers contain **624 specifications**, including 20 historical `TC-01`–`TC-20` feature summaries and **604 detailed cases**. All detailed cases have an execution or preparation row. The **1,105** execution rows comprise **608 Pass, 39 Fail, 457 Not executed and one Blocked**. These are historical attempts/placeholders, not 1,105 distinct tests, 457 outstanding cases or 608 accepted requirements. Of the 604 detailed cases, 440 have at least one Pass row, 163 have only Not executed rows and `TC-03-01` has only a Fail row. Original feature summaries have no execution rows; their aggregate outcomes stay in historical evidence.
 
 ### Coverage required by IS212
 
 Submission folder 3 must cover all 20 core features and applicable customer changes with traceable normal, boundary, conflict and failure cases. The course expects appropriate unit, integration and/or E2E tests, and 100% coverage unless an exception is explained. Report measured scope and gaps explicitly. Use the [course-source index](../requirements/README.md), Week 4 Project Instructions (deliverable 3/rubric), Week 4 testing slides and Week 9 testing/CI slides. Template fields and specification/execution separation matter; the sample colours are not required formatting.
+
+## Evidence review — 6 November 2026
+
+This review compares the report with the retained logs, JSON artifacts and registers. It reran no suite, added no execution result and changed no register. Earlier failed attempts and Not executed placeholders stand as recorded. Scripted register checks and manual reading were AI-assisted. Independent review is still needed, so DOC-301, DOC-302 and DOC-303 remain unticked in the [shared checklist](../submission/checklist.md#ws3-testing-and-traceability).
+
+### Run figures and build identity (DOC-301)
+
+| Claim checked | Compared with | Outcome |
+| --- | --- | --- |
+| Local suite counts | `check.txt`, `coverage.txt`, `backend-combined.txt`, `browser-1.json`, `browser-2.json` in the [freeze-candidate folder](../scrum/sprint-04/evidence/freeze-candidate-20261101/) | Match: 1,363/63, 2,032/80, two harness tests, 2,868/123 and 253/253 twice, with zero skipped, unexpected or flaky. The 836/43 PostgreSQL figure is the combined run minus the backend run; 43 integration files exist at the frozen commit. |
+| CI suite counts | `ci-199.txt`, `main-ci.txt` | Both match the local counts, with 253 browser tests passed and migrations through 023 applied. |
+| Coverage percentages and denominators | Three local and three candidate-CI summary JSON files; main CI job log | Match. Uncovered counts recompute from the denominators, including 40 of 3,725 local and 39 of 3,722 CI frontend lines. Main CI per-file JSON is not in the repository; its log shows the candidate-CI percentages. Both GitHub artifact archives expire on 15 November 2026. |
+| Coverage floors and 100% file gates | `frontend/vite.config.ts`, `backend/vitest.config.ts`, `vitest.backend-coverage.config.ts`, per-file summaries | Match. The five frontend gated files and two backend gated files measure 100% on all four metrics. |
+| Source identity | All 456 hashes in `summary.json`, recomputed from Git with CRLF normalised to LF | No mismatch at `55e2b61`, `0384a3c`, `fb6d8d9` or this documentation branch's base. No code, SQL, test or configuration file changed between `55e2b61` and `fb6d8d9`. |
+| Merge and CI times | `main-ci.json`; GitHub PR readback on 6 November 2026 | Match. PR #80 still shows no submitted reviews. |
+| Connected walkthrough scope | [Run ledger](test-evidence.md#1-november-2026--release-walkthrough-checkpoint) | **Corrected in [Current release position](#current-release-position).** The earlier summary attributed R01–R23 to `MAN-20261101-01` and did not identify its checkout or the later source changes. |
+
+### What the Pass rows represent
+
+These rows come from the [execution register](test-executions.csv). They are grouped by run prefix and recorded environment text. This is a reading aid, not an acceptance measure, and repeated runs of the same case each count.
+
+| Evidence type | Pass rows |
+| --- | ---: |
+| Automated or operational run, PostgreSQL recorded in the environment (may also use browser or API substitutes) | 265 |
+| Automated run, browser environment without PostgreSQL recorded | 19 |
+| Automated, operational or documentation-check run, other recorded environment, such as component or CI checks | 55 |
+| Manual run, shared development database or Supabase recorded | 35 |
+| Manual run, other recorded environment, such as `Localhost; database target Not recorded` | 47 |
+| Manual team report, build and environment Not recorded | 181 |
+| Reported closeout outcome with no run ID | 6 |
+| **Total** | **608** |
+
+Across these rows, build is Not recorded on 233, environment on 181 and executor on 37. In 230 Pass rows the case ID does not appear in the run ledger. Their support is the row's recorded result and cited artifact. The sampled rows below were followed; individual review of the other rows is **Not assessed**.
+
+### Core-feature spot check (DOC-302)
+
+| Feature | Detailed cases | With a Pass | Placeholder only | Linked criteria | Criteria with any Pass | Criteria with a manual Pass | Chain followed: case / trace row / run | Recorded boundary |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- |
+| CF-01 | 14 | 14 | 0 | 18 | 18 | 9 | `TC-01-213` / 224 / `MAN-20261101-03` | Connected, repaired candidate |
+| CF-02 | 33 | 33 | 0 | 12 | 12 | 10 | `TC-02-05` / 26 / `AUTO-20261021-KAN6-02` | Real PostgreSQL |
+| CF-03 | 26 | 25 | 0 | 7 | 7 | 6 | `TC-03-302` / 137 / `AUTO-20261025-ARVIN-01` | Real PostgreSQL; browser APIs substituted |
+| CF-04 | 42 | 41 | 1 | 21 | 21 | 18 | `TC-04-08` / 122 / `AUTO-20261021-KAN79-07` | Component fixtures |
+| CF-05 | 51 | 50 | 1 | 27 | 27 | 25 | `TC-05-47` / 124 / `AUTO-20261021-KAN79-03` | Chromium with API/session fixtures |
+| CF-06 | 71 | 55 | 16 | 56 | 47 | 17 | `TC-06-446` / 212 / `MAN-20261101-03` | Connected, repaired candidate |
+| CF-07 | 7 | 7 | 0 | 26 | 26 | 21 | `TC-07-07` / 36 / `CI-20261027-KAN66-02` | Real PostgreSQL on CI |
+| CF-08 | 31 | 17 | 14 | 28 | 26 | 25 | `TC-08-17` / 40 / `AUTO-20261021-KAN77-CI-01` | Real PostgreSQL on CI |
+| CF-09 | 20 | 11 | 9 | 51 | 50 | 39 | `TC-09-14` / 74 / `AUTO-20261021-KAN81-CI-01` | Real PostgreSQL on CI |
+| CF-10 | 26 | 22 | 4 | 26 | 26 | 25 | `TC-10-213` / 229 / `AUTO-20261101-TEST-HARDENING` | HTTP integration, synthetic identities |
+| CF-11 | 16 | 15 | 1 | 35 | 35 | 22 | `TC-12-17` / 197 / `AUTO-20261030-S4-AC-FIXES` | Real PostgreSQL |
+| CF-12 | 26 | 25 | 1 | 55 | 54 | 31 | `TC-12-22` / 211 / `AUTO-20261101-BOOKING-FEEDBACK` | Chromium with synthetic API responses |
+| CF-13 | 8 | 8 | 0 | 55 | 54 | 31 | `TC-13-02` / 118 / `AUTO-20261021-KAN79-07` | Parser and component fixtures |
+| CF-14 | 44 | 41 | 3 | 70 | 66 | 43 | `TC-12-16` / 196 / `AUTO-20261030-S4-AC-FIXES` | Real PostgreSQL |
+| CF-15 | 17 | 11 | 6 | 28 | 27 | 7 | `TC-15-108` / 214 / `MAN-20261101-03` | Connected, repaired candidate |
+| CF-16 | 20 | 13 | 7 | 21 | 12 | 0 | `TC-16-20` / 207 / `AUTO-20261031-MINOR-UI` | Chromium with API fixtures |
+| CF-17 | 18 | 12 | 6 | 28 | 28 | 7 | `TC-17-102` / 25 / `AUTO-20261026-KAN26-01` | Real PostgreSQL |
+| CF-18 | 49 | 6 | 43 | 32 | 10 | 2 | `TC-18-414` / 164 / `MAN-20261101-01` | Connected at `429397a` |
+| CF-19 | 9 | 9 | 0 | 50 | 49 | 16 | `TC-19-02` / 70 / `MAN-20261028-KAN66-KAN15-01` | Connected, build `ac5cd8b` |
+| CF-20 | 70 | 22 | 48 | 79 | 58 | 27 | `TC-06-104` / 155 / `AUTO-20261028-PR63-01` | Real PostgreSQL |
+
+Each followed chain was checked for these links: the case and its criteria, the trace row, any listed test or implementation path at `fb6d8d9`, the execution row and the run's ledger entry or cited artifact. No chain link was broken. Across the whole register, every execution row references a known case, every detailed case appears in traceability, and criterion IDs match between the specifications and traceability (415 each).
+
+Cases are counted under their own `feature_id`. Criteria are counted under every feature in their trace rows, so criteria totals overlap between features. "Manual Pass" includes team reports with no recorded environment. A low figure means no case-level result was recorded, not that the behaviour is untested: automated suites and walkthrough narratives may still exercise it. The registers have no scenario-type field, so normal, boundary, conflict and failure coverage per feature is **Not assessed**.
+
+### Customer-change spot check (DOC-302)
+
+| Change | Stories | Criteria | With any Pass | With a manual Pass | Manual Pass with shared/Supabase recorded | Placeholder-only cases | Chain followed | Walkthrough groups and source |
+| --- | --- | ---: | ---: | ---: | ---: | --- | --- | --- |
+| CR-1 | KAN-77, KAN-78 | 14 | 13 | 11 | 0 | `TC-08-16`, `TC-14-05`, historical `TC-06-19` | `TC-08-17` / 40 / `AUTO-20261021-KAN77-CI-01` | R05–R08, user-reported |
+| CR-2 | KAN-81 | 12 | 11 | 4 | 0 | `TC-09-01`, `TC-09-03`–`06`, `TC-09-08`–`11` | `TC-09-14` / 74 / `AUTO-20261021-KAN81-CI-01` | R10 user-reported; R18–R20 observed |
+| CR-3 | KAN-82 | 12 | 12 | 0 | 0 | `TC-06-32`, `TC-12-20`, `TC-12-23` | `TC-12-17` / 197 / `AUTO-20261030-S4-AC-FIXES` | R07, R11 user-reported; R20 observed |
+| CR-4 | KAN-83 | 12 | 12 | 9 | 8 | None; `TC-14-15` is Blocked | `TC-14-12` / 83 / `MAN-20261025-KAN83-01` | R09–R10, user-reported |
+| CR-5 | KAN-79, KAN-65 | 22 | 22 | 20 | 0 | `TC-05-15`, historical `TC-06-19` | `TC-05-47` / 124 / `AUTO-20261021-KAN79-03` | R02–R03, user-reported |
+| CR-6 | KAN-84 | 13 | 13 | 4 | 4 | `TC-06-22`, `TC-06-31`, `TC-06-32`, `TC-06-445` | `TC-06-446` / 212 / `MAN-20261101-03` | R18–R20, observed |
+
+Walkthrough groups come from the [coverage map](release-e2e-walkthrough.md#coverage-map-for-the-team). The manual Passes for CR-1 and CR-2 are `MAN-20261017-TEAM-01` team reports. CR-5's are mainly `MAN-20261017-01`, recorded as `Localhost; database target Not recorded`. These figures use recorded environment text, so a zero means the connected environment is not recorded at case level, not that the check was disproved.
+
+### Unsupported or qualified claims (DOC-302)
+
+| Item | What the records support | Treatment |
+| --- | --- | --- |
+| "`MAN-20261101-01` records R01–R23 passed" | R01–R12 and R13 Part A are earlier user reports without dates, builds, individual executors or screenshots. Live observation covers R13 Part B onward at `429397a`, and only eight case-level rows came from that run. | Corrected above; the ledger is unchanged |
+| Criteria with no case-level Pass | 66 of 415: 15 superseded KAN-64 criteria, two KAN-24 infrastructure criteria and 49 others: KAN-9 (5), KAN-10 (3), KAN-14 (8), KAN-17 (6), KAN-18 (4), KAN-50 (1), KAN-54 (3), KAN-61 (2), KAN-62 (1), KAN-63 (1), KAN-67 (8), KAN-77 (1), KAN-80 (5), KAN-81 (1). | Disclosed; no Pass inferred from suite totals or walkthrough groups |
+| Criteria with no manual Pass | 176 of 415, including all 21 linked to CF-16 and 30 of 32 linked to CF-18. | Disclosed; walkthrough narrative is not converted into case rows |
+| Placeholder-only cases | 163 of 604 detailed cases, 12 of them marked superseded or historical in their notes. Another 294 Not executed rows sit on cases that also have performed attempts. | Placeholders preserved |
+| `TC-03-01` | Its only row is a Fail from 15 October, with no retest of that case. The ledger names `TC-03-301` as the repaired-code regression, and it has three Pass rows. | Original Fail preserved |
+| `TC-14-15` | Latest manual attempt is Blocked because no deployed API existed and `pg_cron` was then not enabled. An earlier Pass (`AUTO-20261021-KAN83-01`) covers catch-up and replay at automated layers only. `TC-14-310` later records the job configured and running. | Blocked row preserved |
+| `TC-03-303`, `TC-09-25`, `TC-14-308` | Their Fail rows appear after Pass rows in the register but are pre-fix baselines from the same date. Register order does not show which attempt came last; read the remarks. | Recorded here; rows unchanged |
+| Traceability status wording | Keyword screen: 28 rows still read as pending or Not executed although a linked case has a later Pass: 23, 24, 25, 29, 73, 88–94, 106, 112, 113, 115, 153–155, 160, 163–165, 185, 205, 211, 212, 224. | Dated wording kept; use the execution register for outcomes |
+| Traceability row quality | Rows 8 and 16–21 have no versioned criterion IDs. Row 8 has prose in `test_case_ids`. In row 5, `TC-04-01` shares no criterion ID with the row, and in row 73, `TC-17-103` does not either. The 74 `S#-Txx` references are sprint test IDs, not `test-cases.csv` entries. | Disclosed; rows unchanged |
+| Coverage inventories | Both list "live connected Supabase acceptance for this patch" as unmeasured. That describes coverage measurement at generation time, 23:40:44; `MAN-20261101-03` records the connected repair result separately. | Artifacts unchanged |
+
+### Remaining coverage and acceptance gaps (DOC-303)
+
+| Gap | Current position | Where it is resolved |
+| --- | --- | --- |
+| Whole-repository coverage | Not 100% on any metric in any measurement above. Retained evidence shows no approved blanket exception. Not every gap is claimed to be impossible to test. | Disclosed here; the code freeze prevents new tests |
+| Unmeasured areas | SQL/trigger statement coverage, mutation score, external-provider internals, cross-tab ordering and load/performance are **Not recorded**. | Disclosed here |
+| Connected run on frozen source | No complete R01–R24 connected repeat is recorded. The repaired candidate has four connected cases plus automated suites. | Team release decision |
+| Shared expiry job | Last recorded verification is `OPS-20261025-HOLD-EXPIRY-01`, 25 October. The 1 November gate says the job configuration was not freshly verified, and no later readback is recorded. `MAN-20261101-03` verified migration checksums, not the job. | Team release decision |
+| Independent review | PR #80 was author-merged with no submitted GitHub review. Requested reviewers are not reviewers. | [DOC-603](../submission/checklist.md#ws6-submission-integration); a historic approval cannot be created |
+| Formal release acceptance | R24 and `TC-06-32` remain **Not assessed** and Not executed respectively. Passing tests do not decide them. | [DOC-603](../submission/checklist.md#ws6-submission-integration) |
 
 ## Evidence and historical records
 
