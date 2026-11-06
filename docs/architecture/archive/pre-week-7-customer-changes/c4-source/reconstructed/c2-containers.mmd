@@ -1,0 +1,24 @@
+---
+title: Pre-Week 7 C2 - reconstructed from b981f11 on 6 Nov 2026
+config:
+  layout: elk
+---
+flowchart LR
+  user["Application user<br/>[Person]<br/>Five trusted role values"]
+  identity["Supabase Auth<br/>[External software system]<br/>Email/password and published signing keys"]
+  legend["Legend<br/>Arrows: calls or data access<br/>Boundary: logical system ownership<br/>Database hosting: Supabase<br/>Local development: Vite 5173 / API 3000"]
+  subgraph systemBoundary["ConnectSphere - logical system boundary"]
+    web["Web application<br/>[Container: Vue 3 / TypeScript / Vite]<br/>Browser pages and API client"]
+    api["API application<br/>[Container: Express 5 / TypeScript]<br/>One Node.js process"]
+    db["Application database<br/>[Container: Supabase PostgreSQL]<br/>Application-owned records and triggers"]
+  end
+  user -->|"Uses browser pages"| web
+  web -->|"HTTP JSON /api + HttpOnly session cookie"| api
+  web -->|"HTTPS: temporary credential exchange"| identity
+  api -->|"HTTPS: cached JWKS retrieval"| identity
+  api -->|"SQL via pg pool / transaction clients"| db
+  classDef person fill:#e0f2fe,stroke:#0369a1,color:#0c4a6e;
+  classDef external fill:#f1f5f9,stroke:#64748b,color:#0f172a;
+  classDef planned fill:#fff7ed,stroke:#c2410c,color:#7c2d12,stroke-dasharray:5 4;
+  classDef legend fill:#ffffff,stroke:#94a3b8,color:#475569;
+  class legend legend;

@@ -1,3 +1,1155 @@
+# ConnectSphere API contract
+
+**Current implementation: 6 November 2026**, build `fb6d8d93f721b114accc9857a05d62e859987e23`. This section supersedes older dated integration/pending notes below. It describes the application source, not deployment or integrated acceptance results.
+
+The inventory covers **all 85 Express routes** mounted by `createApp` when runtime dependencies are supplied. Static method/path, role, UUID and success-status extraction was checked against the actual Express route stacks constructed with inert dependencies. No socket, authentication call or database request was made by that check. [Evidence and reproduction](../scrum/sprint-03/evidence/design-audit-20261106/README.md).
+
+Originals: [Pre-Week 7 customer changes](archive/pre-week-7-customer-changes/README.md) and [before 6 November update](archive/before-2026-11-06-update/README.md). The genuine pre-change snapshot has no recorded class or sequence diagrams.
+
+## Transport, identity and errors
+
+- Paths below include `/api`. IDs are UUID strings. JSON dates represent instants; use explicit `Z` or an offset when supplying timestamps. SQL nullability does not by itself grant API write permission. The frontend presents Singapore time where applicable. Individual parsers differ in their accepted precision; equipment preserves microseconds, venue booking/hold input accepts up to milliseconds, and outage input currently uses JavaScript Date.parse.
+- Browser login first obtains a Supabase access token, then exchanges `{accessToken}` with POST `/api/auth/login`. The API verifies the token and maps the UID to `app_users.supabase_user_id`; roles and application IDs come from the mapped profile. No request may grant itself a role or nominate another attendee/owner. Login returns 400 INVALID_LOGIN_INPUT, 401 AUTHENTICATION_REQUIRED for untrusted/expired tokens, or 403 ACCOUNT_NOT_PROVISIONED for an unmapped identity.
+- The verified token is carried by the `connectsphere_session` cookie: HttpOnly, SameSite=Lax, Path=/api, Secure in production. Max-Age is the smaller of remaining token life and five days. Logout clears this cookie with 204 and does not revoke the Supabase token. The protected application endpoints use the cookie, not a client-supplied actor header.
+- Auth and protected application responses use Cache-Control: no-store. `workflowRoute` checks authentication → allowed role → UUID parameters → service. It answers 401 AUTHENTICATION_REQUIRED, 403 ACTION_FORBIDDEN, and maps WorkflowError INVALID_INPUT/NOT_FOUND/FORBIDDEN/CONFLICT to 400/404/403/409. Older event/review handlers also have their own documented error codes.
+- Errors have `{error:{code,message}}`; validation/permission errors in older event handlers may add `fields` and submission field problems. The JSON limit is 100kb: malformed JSON returns 400 INVALID_JSON, excess size 413 PAYLOAD_TOO_LARGE, unknown route 404 NOT_FOUND, and unexpected failures 500 INTERNAL_ERROR. Readiness failure is 503 DATABASE_UNAVAILABLE. Business authorization often returns 404 to conceal an unrelated record.
+- The role column is only the outer gate. Owning organiser, current assignment, current stored role, event lifecycle, record ownership and version checks still apply in services. A Lead does not inherit ordinary coordinator mutation rights. The venue calendar specifically permits C/V/T; it is not open to every signed-in user.
+
+## Complete endpoint register
+
+**Roles:** O = EVENT_ORGANISER; C = EVENT_COORDINATOR; L = EVENT_COORDINATOR_LEAD; V = VENUE_STAFF; T = TECHNICAL_SUPPORT_STAFF; A = ATTENDEE; S = SAFETY_OFFICER. “Signed in” means any mapped application role. “Public” still includes the token validation performed by login.
+
+`?` means optional, `|null` nullable. SHA256 means 64 lowercase hexadecimal characters; the safety decision fingerprint is 32 lowercase hexadecimal characters (MD5). Each source link is the concrete handler, including its response wrapper; catalogue PATCH may add affectedBookings inside venue when buffer fields are submitted. Named DTOs are defined in the shape reference below or the linked TypeScript source. No generic success envelope is added.
+
+| Method and path | Outer access | Input / query | Success status and JSON | Handler |
+| --- | --- | --- | --- | --- |
+| `GET /api/attendee/events` | A | No body | 200 {items:AttendeeEventSummary[]} | [source](../../backend/src/modules/registrations/registration-router.ts#L9) |
+| `GET /api/attendee/events/:id` | A | No body | 200 AttendeeEventDetail = {event,registration,availability} | [source](../../backend/src/modules/registrations/registration-router.ts#L15) |
+| `POST /api/attendee/events/:id/register` | A | {} or no body | 201 RegistrationResult (AttendeeEventDetail + changed:true) | [source](../../backend/src/modules/registrations/registration-router.ts#L17) |
+| `GET /api/attendee/registrations` | A | No body | 200 {items:OwnRegistrationSummary[]}; up to 100, nested event | [source](../../backend/src/modules/registrations/registration-router.ts#L12) |
+| `POST /api/auth/login` | Public | {accessToken:string}, exactly one key | 200 {user:UserSummary}; sets session cookie | [source](../../backend/src/modules/auth/router.ts#L81) |
+| `POST /api/auth/logout` | Public | Body ignored | 204 204; no body; clears cookie | [source](../../backend/src/modules/auth/router.ts#L120) |
+| `GET /api/auth/me` | Signed in | No body | 200 {user:UserSummary} | [source](../../backend/src/modules/auth/router.ts#L109) |
+| `GET /api/equipment-requests` | C/T | Optional eventId UUID; other query keys are ignored | 200 {items:EquipmentPlanLine[]} | [source](../../backend/src/modules/equipment/equipment-router.ts#L20) |
+| `POST /api/equipment-requests/:id/cancel` | C | {revision:SHA256, reason:text} | 200 {request:EquipmentPlanLine} | [source](../../backend/src/modules/equipment/equipment-router.ts#L37) |
+| `POST /api/equipment-requests/:id/replace` | C | {revision:SHA256, replacement:EquipmentLine} | 201 {replacement:{cancelledRequestId,replacement:EquipmentPlanLine,revision}} | [source](../../backend/src/modules/equipment/equipment-router.ts#L32) |
+| `POST /api/equipment-requests/:id/review` | T | {revision:SHA256, decision:RESERVED or REJECTED, reason?:text&#124;null}; rejection reason required | 200 {request:EquipmentPlanLine} | [source](../../backend/src/modules/equipment/equipment-router.ts#L27) |
+| `GET /api/equipment-types` | C/T | No body | 200 {items:{id,name,category}[]} | [source](../../backend/src/modules/equipment/equipment-router.ts#L12) |
+| `GET /api/equipment/availability/events` | T | No body | 200 {items:EquipmentEventSummary[]} | [source](../../backend/src/modules/equipment/availability-router.ts#L13) |
+| `GET /api/equipment/availability/events/:id` | T | No body | 200 EquipmentAvailabilityContext | [source](../../backend/src/modules/equipment/availability-router.ts#L16) |
+| `POST /api/equipment/availability/events/:id` | T | EquipmentAvailabilityInput (saved or what-if) | 200 {assessment:EquipmentAvailabilityAssessment} | [source](../../backend/src/modules/equipment/availability-router.ts#L18) |
+| `GET /api/equipment/reservations/events/:id` | T | No body | 200 EquipmentReservationContext | [source](../../backend/src/modules/equipment/reservation-router.ts#L11) |
+| `POST /api/equipment/reservations/events/:id/requests/:requestId/cancel` | T | {requirementsVersion:SHA256,reason:text} | 200 EquipmentReservationResult = {changed,context} | [source](../../backend/src/modules/equipment/reservation-router.ts#L14) |
+| `POST /api/equipment/reservations/events/:id/requests/:requestId/reserve` | T | {requirementsVersion:SHA256} | 200 EquipmentReservationResult = {changed,context} | [source](../../backend/src/modules/equipment/reservation-router.ts#L14) |
+| `GET /api/equipment/stock` | T | No body | 200 {items:EquipmentStockItem[]} | [source](../../backend/src/modules/equipment/stock-router.ts#L12) |
+| `GET /api/equipment/stock/:id` | T | No body | 200 EquipmentStockDetail = {item,history,shortfalls} | [source](../../backend/src/modules/equipment/stock-router.ts#L15) |
+| `PATCH /api/equipment/stock/:id` | T | EquipmentStockUpdateInput; expectedRevision, reason and at least one quantity | 200 EquipmentStockUpdateResult = {item,history,shortfalls,changed,notifiedEvents} | [source](../../backend/src/modules/equipment/stock-router.ts#L17) |
+| `GET /api/events` | O/C | scope: organiser omitted/drafts/all; coordinator omitted/history | 200 {items: SubmittedRequestSummary[] or owned request summaries} | [source](../../backend/src/modules/events/submitted-requests-router.ts#L63) |
+| `POST /api/events` | O | Partial draft fields; server owns identity and status | 201 DraftEventRecord | [source](../../backend/src/modules/events/submitted-requests-router.ts#L110) |
+| `GET /api/events/:id` | C/O | No body | 200 EventRequestDetail: fields, registration settings, revision, review, actions | [source](../../backend/src/modules/events/submitted-requests-router.ts#L143) |
+| `PATCH /api/events/:id` | O/C | Partial editable fields + expectedRevision (required outside DRAFT) | 200 DraftEventRecord including revision | [source](../../backend/src/modules/events/submitted-requests-router.ts#L178) |
+| `GET /api/events/:id/assignments` | O/C/L | No body | 200 {items:AssignmentRecord[]} | [source](../../backend/src/modules/events/assignment-router.ts#L56) |
+| `POST /api/events/:id/cancel` | O/C | {reason:text, confirmAffectedArrangements:true} | 200 {cancellation:{eventRequestId,status,cancelledBy,cancelledAt,reason,released:{venueBookings,equipmentRequests,registrations}}} | [source](../../backend/src/modules/events/cancellation-router.ts#L7) |
+| `GET /api/events/:id/cancellation` | O/C | No body | 200 {cancellation:CancellationAudit&#124;null}; null for absent/unrelated/no cancellation | [source](../../backend/src/modules/events/cancellation-router.ts#L13) |
+| `GET /api/events/:id/change-requests` | O/C | No body | 200 {items:ChangeRequestRecord[]} | [source](../../backend/src/modules/events/change-request-router.ts#L14) |
+| `POST /api/events/:id/change-requests` | O | {changes:SignificantChanges, expectedRevision:positive integer} | 201 ChangeRequestRecord | [source](../../backend/src/modules/events/change-request-router.ts#L21) |
+| `POST /api/events/:id/change-requests/:changeRequestId/decision` | C | {decision:APPROVED or REJECTED, expectedRevision:positive integer, reason?:text&#124;null}; rejection reason required | 200 ChangeRequestRecord | [source](../../backend/src/modules/events/change-request-router.ts#L28) |
+| `POST /api/events/:id/change-requests/:changeRequestId/withdraw` | O | {} or no body | 200 ChangeRequestRecord | [source](../../backend/src/modules/events/change-request-router.ts#L36) |
+| `GET /api/events/:id/clarifications` | O/C | No body | 200 {items:ClarificationRecord[]} | [source](../../backend/src/modules/events/clarification-router.ts#L22) |
+| `POST /api/events/:id/clarifications` | C | {message:text, expectedRevision?:positive integer} | 201 {clarificationId,eventRequestId,status:"CLARIFICATION_REQUESTED"} | [source](../../backend/src/modules/events/clarification-router.ts#L29) |
+| `POST /api/events/:id/clarifications/:clarificationId/response` | O | {response:text} | 200 {clarificationId,eventRequestId,status:SUBMITTED or CLARIFICATION_REQUESTED} | [source](../../backend/src/modules/events/clarification-router.ts#L36) |
+| `POST /api/events/:id/complete` | C | Body ignored | 200 {completion:EventCompletion} | [source](../../backend/src/modules/events/completion-router.ts#L8) |
+| `GET /api/events/:id/completion` | O/C | No body | 200 {completion:EventCompletion&#124;null}; null for absent/unrelated/not-completed | [source](../../backend/src/modules/events/completion-router.ts#L13) |
+| `POST /api/events/:id/confirm` | C | {} or no body | 200 {confirmation:{eventRequestId,status:"CONFIRMED",changed,confirmation:ConfirmationRecord&#124;null}} | [source](../../backend/src/modules/events/confirmation-router.ts#L12) |
+| `GET /api/events/:id/confirmation` | O/C | No body | 200 ConfirmationPanel | [source](../../backend/src/modules/events/confirmation-router.ts#L8) |
+| `PUT /api/events/:id/coordinator` | L | {coordinatorId:UUID, note?:text&#124;null} | 200 AssignmentResult | [source](../../backend/src/modules/events/assignment-router.ts#L42) |
+| `POST /api/events/:id/coordinator/reassign` | L | {coordinatorId:UUID, reason:text, expectedAssignmentVersion:UUID} | 200 ReassignmentResult (AssignmentResult + changed) | [source](../../backend/src/modules/events/assignment-router.ts#L49) |
+| `GET /api/events/:id/equipment-requests` | C/T | No body | 200 {plan:EquipmentPlan} | [source](../../backend/src/modules/equipment/equipment-router.ts#L7) |
+| `POST /api/events/:id/equipment-requests` | C | {revision:SHA256, lines:EquipmentLine[], notRequired?:boolean}; explicit notRequired:true needs [] | 201 {request:{eventRequestId,status:NOT_REQUIRED or REQUESTED,lines:EquipmentPlanLine[],revision}} | [source](../../backend/src/modules/equipment/equipment-router.ts#L15) |
+| `GET /api/events/:id/history` | O/C | No body | 200 {items:StatusHistoryEntry[]} | [source](../../backend/src/modules/events/status-history-router.ts#L8) |
+| `POST /api/events/:id/preparation/start` | C | {} or no body | 200 {eventRequestId,changed} | [source](../../backend/src/modules/safety/router.ts#L20) |
+| `GET /api/events/:id/registrations` | O/C | No body | 200 {eventId,eventName,activeCount,items:RegistrationRosterItem[]} | [source](../../backend/src/modules/registrations/router.ts#L13) |
+| `POST /api/events/:id/reviews` | C | {decision:APPROVED or REJECTED, reason?:text&#124;null, expectedRevision?:positive integer}; rejection reason required | 201 SavedReview | [source](../../backend/src/modules/events/review-router.ts#L30) |
+| `GET /api/events/:id/safety` | O/C | No body | 200 EventSafetyPanel | [source](../../backend/src/modules/safety/router.ts#L14) |
+| `POST /api/events/:id/safety-reviews` | C | {emergencyAccess?:text&#124;null,equipmentPlacement?:text&#124;null,crowdMovement?:text&#124;null} | 201 {eventRequestId,review:SafetyRound} | [source](../../backend/src/modules/safety/router.ts#L17) |
+| `POST /api/events/:id/start-review` | C | {expectedRevision?:positive integer} or no body | 200 {eventRequestId,status:"UNDER_REVIEW"} | [source](../../backend/src/modules/events/clarification-router.ts#L15) |
+| `POST /api/events/:id/submit` | O | Body ignored; submit saved draft | 200 EventRecord; status SUBMITTED, coordinatorId null | [source](../../backend/src/modules/events/submitted-requests-router.ts#L248) |
+| `POST /api/events/:id/venue-bookings` | C | {venueId,startsAt,endsAt,layout?:text&#124;null,notes?:text&#124;null,replacesBookingId?:UUID&#124;null} | 201 {booking:VenueBooking} | [source](../../backend/src/modules/venues/venue-bookings-router.ts#L65) |
+| `GET /api/events/:id/venue-suitability` | C | Optional bookingId UUID | 200 SuitabilityContext | [source](../../backend/src/modules/venues/suitability-router.ts#L14) |
+| `POST /api/events/:id/venue-suitability` | C | VenueSuitabilityInput; all requirement fields explicit | 200 {assessment:SuitabilityAssessment}; advisory only | [source](../../backend/src/modules/venues/suitability-router.ts#L19) |
+| `GET /api/events/coordinators` | L | No body | 200 {items:CoordinatorOption[]} | [source](../../backend/src/modules/events/assignment-router.ts#L25) |
+| `GET /api/events/oversight` | L | No body | 200 {items:LeadEventSummary[]} | [source](../../backend/src/modules/events/assignment-router.ts#L30) |
+| `GET /api/events/oversight/:id` | L | No body | 200 LeadEventDetail | [source](../../backend/src/modules/events/assignment-router.ts#L35) |
+| `GET /api/events/unassigned` | L | No body | 200 {items:UnassignedRequest[]} | [source](../../backend/src/modules/events/assignment-router.ts#L20) |
+| `GET /api/health` | Public | No body | 200 {status:"ok", service:"connectsphere-api"} | [source](../../backend/src/app.ts#L61) |
+| `GET /api/health/ready` | Public | No body | 200 {status:"ok", database:"connected"}; 503 DATABASE_UNAVAILABLE if scaffold check fails | [source](../../backend/src/app.ts#L65) |
+| `GET /api/notifications` | Signed in | No body | 200 {items:InboxItem[]} | [source](../../backend/src/modules/notifications/inbox-router.ts#L19) |
+| `POST /api/notifications/:id/read` | Signed in | Body ignored | 200 {notification:InboxItem} | [source](../../backend/src/modules/notifications/inbox-router.ts#L34) |
+| `POST /api/notifications/read-all` | Signed in | Body ignored | 200 {updated:number} | [source](../../backend/src/modules/notifications/inbox-router.ts#L29) |
+| `GET /api/notifications/unread-count` | Signed in | No body | 200 {unreadCount:number} | [source](../../backend/src/modules/notifications/inbox-router.ts#L24) |
+| `POST /api/registrations/:id/withdraw` | A | {confirm:true} | 200 {changed,registration:OwnRegistrationItem} | [source](../../backend/src/modules/registrations/router.ts#L10) |
+| `GET /api/registrations/mine` | A | No body | 200 {items:OwnRegistrationItem[]}; flat event fields, cancelledAt and canWithdraw | [source](../../backend/src/modules/registrations/router.ts#L7) |
+| `GET /api/safety-reviews` | S | No body | 200 {items:SafetyQueueItem[]} | [source](../../backend/src/modules/safety/router.ts#L23) |
+| `GET /api/safety-reviews/:id` | S | No body | 200 SafetyReviewDetail including fingerprint and live readiness | [source](../../backend/src/modules/safety/router.ts#L26) |
+| `POST /api/safety-reviews/:id/decision` | S | {decision:APPROVED or REJECTED or CHANGES_REQUESTED,fingerprint:MD5,notes?:text&#124;null,areas?:SafetyArea[]} | 200 {changed,review:SafetyRound} | [source](../../backend/src/modules/safety/router.ts#L29) |
+| `GET /api/venue-bookings` | V/C | Optional eventRequestId UUID; unknown keys rejected | 200 {items:VenueBooking[]} | [source](../../backend/src/modules/venues/venue-bookings-router.ts#L15) |
+| `GET /api/venue-bookings/:id` | V/C | No body | 200 {booking:VenueBooking} | [source](../../backend/src/modules/venues/venue-bookings-router.ts#L20) |
+| `POST /api/venue-bookings/:id/cancel` | C | {reason:text} | 200 {booking:VenueBooking} | [source](../../backend/src/modules/venues/venue-bookings-router.ts#L48) |
+| `POST /api/venue-bookings/:id/decision` | V | {decision:APPROVED or REJECTED,reason?:text&#124;null} | 200 {booking:VenueBooking} | [source](../../backend/src/modules/venues/venue-bookings-router.ts#L25) |
+| `POST /api/venue-bookings/:id/hold` | V | {expiresAt:explicit-offset instant} | 200 {booking:VenueBooking} | [source](../../backend/src/modules/venues/venue-bookings-router.ts#L33) |
+| `POST /api/venue-bookings/:id/hold/cancel` | V | {reason:text} | 200 {booking:VenueBooking} | [source](../../backend/src/modules/venues/venue-bookings-router.ts#L40) |
+| `GET /api/venues/:venueId/unavailability` | V | No body | 200 {items:VenueBlock[]} | [source](../../backend/src/modules/venues/block-router.ts#L19) |
+| `POST /api/venues/:venueId/unavailability` | V | {startsAt,endsAt,reason:text} | 201 {block:VenueBlock} | [source](../../backend/src/modules/venues/block-router.ts#L25) |
+| `DELETE /api/venues/:venueId/unavailability/:blockId` | V | No body | 200 {id:blockId,clearedBookingIds:UUID[]} | [source](../../backend/src/modules/venues/block-router.ts#L32) |
+| `GET /api/venues/availability` | C/V/T | from and to ISO instants; window positive and at most 31 days | 200 {from,to,items:VenueAvailability[]} | [source](../../backend/src/modules/venues/availability-router.ts#L16) |
+| `GET /api/venues/catalogue` | V | No body | 200 {items:CatalogueVenue[]} | [source](../../backend/src/modules/venues/venue-catalogue-router.ts#L20) |
+| `GET /api/venues/catalogue/:venueId` | V | No body | 200 {venue:CatalogueVenue} | [source](../../backend/src/modules/venues/venue-catalogue-router.ts#L24) |
+| `PATCH /api/venues/catalogue/:venueId` | V | VenueCatalogue patch fields at top level; expectedSetupMinutes/expectedTurnaroundMinutes for buffer changes | 200 {venue:CatalogueVenue} | [source](../../backend/src/modules/venues/venue-catalogue-router.ts#L30) |
+| `GET /api/venues/filter-options` | C | No body | 200 VenueFilterOptions | [source](../../backend/src/modules/venues/venue-router.ts#L18) |
+| `GET /api/venues/recovery` | V | Optional status: RECOVERY_REQUIRED, RESOLVED or CLEARED | 200 {items:RecoveryArrangement[]} | [source](../../backend/src/modules/venues/block-router.ts#L42) |
+| `GET /api/venues/search-venues` | C | VenueSearchFilters: startsAt, endsAt, attendance, capacity, location, layout, wheelchairAccessible, accessibility, facilities | 200 {items:VenueResult[]} | [source](../../backend/src/modules/venues/venue-router.ts#L23) |
+
+## Request and response shape reference
+
+The following source definitions are part of this versioned contract. They contain exact field names, nullable/optional fields, literal values and DTO comments. Interface names describe JSON records; they do not imply runtime ORM classes. Date values are serialized by the linked services. Internal SQL rows containing Date objects are not the public DTO.
+
+### types.ts (auth)
+
+[Implementation source](../../backend/src/modules/auth/types.ts)
+
+```typescript
+export type UserRole = (typeof USER_ROLES)[number];
+
+export interface UserSummary {
+  id: string;
+  email: string;
+  displayName: string;
+  role: UserRole;
+}
+
+export type AuthenticatedUser = UserSummary;
+```
+
+### types.ts (events)
+
+[Implementation source](../../backend/src/modules/events/types.ts)
+
+```typescript
+export type EventStatus = (typeof EVENT_STATUSES)[number];
+
+export interface EventDraftFields {
+  name: string | null;
+  purpose: string | null;
+  description: string | null;
+  startsAt: string | null;
+  endsAt: string | null;
+  expectedAttendance: number | null;
+  venueRequirements: string | null;
+  accessibilityNeeds: string | null;
+  equipmentRequirements: string | null;
+  registrationRequired: boolean | null;
+}
+
+export interface EventRecord extends EventDraftFields {
+  id: string;
+  organiserId: string;
+  coordinatorId: string | null;
+  status: EventStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type SaveEventDraftInput = Partial<EventDraftFields>;
+```
+
+### draft-update-input.ts (events)
+
+[Implementation source](../../backend/src/modules/events/draft-update-input.ts)
+
+```typescript
+export interface DraftRegistrationFields {
+  registrationCapacity: number | null;
+  registrationOpensAt: string | null;
+  registrationClosesAt: string | null;
+}
+
+export type DraftUpdateInput = SaveEventDraftInput & Partial<DraftRegistrationFields>;
+```
+
+### event-request-detail.ts (events)
+
+[Implementation source](../../backend/src/modules/events/event-request-detail.ts)
+
+```typescript
+export interface EventRequestDetail extends EventRecord, DraftRegistrationFields {
+  /** KAN-66: send as `expectedRevision` with edits and reviewer actions. */
+  revision: number;
+  review: (SavedReview & { createdAt: string }) | null;
+  actions: {
+    canEditDraft: boolean;
+    canMakeInitialDecision: boolean;
+    /** KAN-66: a non-draft direct edit is available; the server rechecks it when saving. */
+    canEditDetails: boolean;
+    editMode: EditMode | null;
+    editableFields: readonly EditableField[];
+  };
+}
+```
+
+### submitted-requests.ts (events)
+
+[Implementation source](../../backend/src/modules/events/submitted-requests.ts)
+
+```typescript
+export type ReviewableRequest = Pick<EventRecord, 'id' | 'organiserId' | 'coordinatorId' | 'status'>;
+
+export interface SubmittedRequestSummary {
+  id: string;
+  name: string | null;
+  status: EventStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+```
+
+### update-draft.ts (events)
+
+[Implementation source](../../backend/src/modules/events/update-draft.ts)
+
+```typescript
+export type DraftEventRecord = EventRecord & DraftRegistrationFields & {
+  /** KAN-66: send back as `expectedRevision` with the next edit. */
+  revision: number;
+};
+```
+
+### assignment.ts (events)
+
+[Implementation source](../../backend/src/modules/events/assignment.ts)
+
+```typescript
+export interface UnassignedRequest {
+  id: string;
+  name: string | null;
+  status: EventStatus;
+  organiserName: string;
+  startsAt: string | null;
+  endsAt: string | null;
+  expectedAttendance: number | null;
+  updatedAt: string;
+}
+
+export interface LeadEventSummary extends UnassignedRequest {
+  coordinatorId: string | null;
+  coordinatorName: string | null;
+}
+
+export interface LeadEventDetail extends LeadEventSummary {
+  purpose: string | null;
+  description: string | null;
+  venueRequirements: string | null;
+  accessibilityNeeds: string | null;
+  equipmentRequirements: string | null;
+  registrationRequired: boolean | null;
+  assignmentVersion: string | null;
+  actions: { canAssignCoordinator: boolean; canReassignCoordinator: boolean };
+}
+
+export interface CoordinatorOption {
+  id: string;
+  displayName: string;
+  email: string;
+}
+
+export interface AssignmentRecord {
+  id: string;
+  coordinatorId: string;
+  coordinatorName: string;
+  assignmentMethod: 'AUTOMATIC' | 'MANUAL';
+  assignedById: string | null;
+  assignedByName: string | null;
+  note: string | null;
+  assignedAt: string;
+  unassignedAt: string | null;
+}
+
+export interface AssignmentInput {
+  coordinatorId: string;
+  note: string | null;
+}
+
+export interface ReassignmentInput {
+  coordinatorId: string;
+  reason: string;
+  expectedAssignmentVersion: string;
+}
+
+export interface AssignmentResult {
+  eventRequestId: string;
+  assignmentId: string;
+  coordinatorId: string;
+  previousCoordinatorId: string | null;
+}
+
+export interface ReassignmentResult extends AssignmentResult {
+  changed: boolean;
+}
+```
+
+### clarifications.ts (events)
+
+[Implementation source](../../backend/src/modules/events/clarifications.ts)
+
+```typescript
+export interface ClarificationRecord {
+  id: string;
+  eventRequestId: string;
+  requestedById: string;
+  requestedByName: string;
+  message: string;
+  response: string | null;
+  createdAt: string;
+  respondedAt: string | null;
+}
+```
+
+### review-decision.ts (events)
+
+[Implementation source](../../backend/src/modules/events/review-decision.ts)
+
+```typescript
+export type ReviewRequest = Pick<EventRecord, 'id' | 'organiserId' | 'coordinatorId' | 'status'>;
+
+export interface SavedReview {
+  reviewId: string;
+  eventRequestId: string;
+  reviewedBy: string;
+  decision: ReviewDecision;
+  reason: string | null;
+}
+```
+
+### status-history.ts (events)
+
+[Implementation source](../../backend/src/modules/events/status-history.ts)
+
+```typescript
+export interface StatusHistoryEntry {
+  id: string;
+  fromStatus: EventStatus | null;
+  toStatus: EventStatus;
+  changedById: string | null;
+  changedByName: string | null;
+  createdAt: string;
+}
+```
+
+### change-requests.ts (events)
+
+[Implementation source](../../backend/src/modules/events/change-requests.ts)
+
+```typescript
+export type ChangeRequestStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'WITHDRAWN';
+
+export type ChangeValues = Partial<Record<SignificantField, unknown>>;
+
+export interface ChangeRequestRecord {
+  id: string;
+  eventRequestId: string;
+  status: ChangeRequestStatus;
+  requestedById: string;
+  requestedByName: string;
+  proposed: ChangeValues;
+  previous: ChangeValues;
+  baseRevision: number;
+  decidedById: string | null;
+  decidedByName: string | null;
+  decidedAt: string | null;
+  decisionReason: string | null;
+  appliedRevision: number | null;
+  cancelledArrangements: { venueBookings: string[]; equipmentRequests: string[] } | null;
+  createdAt: string;
+  /** PENDING only: the event's current values for the proposed fields. */
+  current?: ChangeValues;
+  /** PENDING only: a proposed field changed after submission, so the request is out of date. */
+  outdated?: boolean;
+  /** PENDING only: what approval would cancel or what blocks it (KAN-15-AC4). */
+  impact?: ChangeImpact;
+}
+```
+
+### confirmation.ts (events)
+
+[Implementation source](../../backend/src/modules/events/confirmation.ts)
+
+```typescript
+export type ReadinessCheckKey = 'VENUE' | 'EQUIPMENT' | 'CHANGE_REQUEST';
+
+export interface ReadinessCheck {
+  key: ReadinessCheckKey;
+  ready: boolean;
+  message: string;
+}
+
+export interface EventReadiness {
+  ready: boolean;
+  checks: ReadinessCheck[];
+}
+
+export interface ConfirmationRecord {
+  confirmedBy: string | null;
+  confirmedByName: string | null;
+  confirmedAt: string;
+}
+```
+
+### completion.ts (events)
+
+[Implementation source](../../backend/src/modules/events/completion.ts)
+
+```typescript
+export interface EventCompletion {
+  eventRequestId: string;
+  status: 'COMPLETED';
+  completedById: string;
+  completedByName: string | null;
+  completedAt: string;
+  /** Equipment reservations released by the completion. */
+  releasedEquipmentRequests: number;
+}
+```
+
+### availability.ts (venues)
+
+[Implementation source](../../backend/src/modules/venues/availability.ts)
+
+```typescript
+export interface AvailabilityWindow {
+  from: string;
+  to: string;
+}
+
+export interface BookedPeriod {
+  id: string;
+  kind: 'BOOKING';
+  eventStartsAt?: string;
+  eventEndsAt?: string;
+  warnings?: string[];
+  startsAt: string;
+  endsAt: string;
+  /** Only for the event's currently assigned coordinator; null for every other reader. */
+  event: { id: string; name: string | null } | null;
+  /** KAN-83: set for a live temporary hold (its deadline); null for an approved booking. */
+  heldUntil: string | null;
+}
+
+export interface BlockedPeriod {
+  id: string;
+  kind: 'BLOCKED';
+  startsAt: string;
+  endsAt: string;
+  reason: string | null;
+}
+
+export type UnavailablePeriod = BookedPeriod | BlockedPeriod;
+
+export interface VenueAvailability {
+  id: string;
+  name: string;
+  location: string | null;
+  capacity: number;
+  /** Daily opening hours in Asia/Singapore as HH:MM; null means unrestricted. */
+  opensAt: string | null;
+  closesAt: string | null;
+  /** KAN-77: setup and turnaround minutes; periods below stay event-only until KAN-78. */
+  setupMinutes: number;
+  turnaroundMinutes: number;
+  /** Confirmed bookings and blocked periods overlapping the window, earliest first. */
+  unavailable: UnavailablePeriod[];
+}
+```
+
+### venue-search.ts (venues)
+
+[Implementation source](../../backend/src/modules/venues/venue-search.ts)
+
+```typescript
+export interface VenueSearchFilters {
+  startsAt: string | null;
+  endsAt: string | null;
+  attendance: number | null;
+  capacity: number | null;
+  location: string | null;
+  layout: string | null;
+  wheelchairAccessible: boolean;
+  accessibility: string[];
+  facilities: string[];
+}
+
+export interface VenueResult {
+  id: string;
+  name: string;
+  description: string | null;
+  location: string | null;
+  capacity: number;
+  layouts: string[];
+  facilities: string[];
+  accessibilityFeatures: string[];
+  wheelchairAccessible: boolean;
+  opensAt: string | null;
+  closesAt: string | null;
+  /** KAN-77: venue setup and turnaround minutes; KAN-78 applies them to occupancy. */
+  setupMinutes: number;
+  turnaroundMinutes: number;
+  occupiedStartsAt?: string | null;
+  occupiedEndsAt?: string | null;
+  updatedAt: string;
+}
+
+export interface VenueFilterOptions {
+  layouts: string[];
+  facilities: string[];
+  accessibility: string[];
+}
+```
+
+### venue-catalogue-input.ts (venues)
+
+[Implementation source](../../backend/src/modules/venues/venue-catalogue-input.ts)
+
+```typescript
+export interface VenueCatalogueUpdate {
+  location?: string | null;
+  capacity?: number;
+  facilities?: string[];
+  accessibilityFeatures?: string[];
+  wheelchairAccessible?: boolean;
+  layouts?: string[];
+  /** "HH:MM" Singapore time; null means unrestricted at that end (as in KAN-12/KAN-52). */
+  opensAt?: string | null;
+  closesAt?: string | null;
+  /** KAN-77: whole minutes needed before and after each booking at this venue (0-1440). */
+  setupMinutes?: number;
+  turnaroundMinutes?: number;
+}
+
+export interface VenueBufferExpectations {
+  setupMinutes?: number;
+  turnaroundMinutes?: number;
+}
+
+export interface VenueCatalogueRequest {
+  update: VenueCatalogueUpdate;
+  expected: VenueBufferExpectations;
+}
+```
+
+### venue-catalogue-service.ts (venues)
+
+[Implementation source](../../backend/src/modules/venues/venue-catalogue-service.ts)
+
+```typescript
+export type CatalogueVenue = VenueResult & {
+  affectedBookings?: { id: string; eventName: string | null; startsAt: string; endsAt: string; warnings: string[] }[];
+};
+```
+
+### booking-input.ts (venues)
+
+[Implementation source](../../backend/src/modules/venues/booking-input.ts)
+
+```typescript
+export interface BookingDecisionInput {
+  decision: 'APPROVED' | 'REJECTED';
+  reason: string | null;
+}
+
+export interface BookingSubmissionInput {
+  venueId: string;
+  startsAt: string;
+  endsAt: string;
+  layout: string | null;
+  notes: string | null;
+  /** KAN-81-AC7: the outage-affected booking of the same event that this request replaces. */
+  replacesBookingId: string | null;
+}
+
+export interface HoldPlacementInput {
+  expiresAt: string;
+}
+
+export interface HoldCancellationInput {
+  reason: string;
+}
+```
+
+### booking-service.ts (venues)
+
+[Implementation source](../../backend/src/modules/venues/booking-service.ts)
+
+```typescript
+export type VenueBookingStatus = 'PENDING' | 'HELD' | 'APPROVED' | 'REJECTED' | 'CANCELLED' | 'EXPIRED';
+
+export interface VenueBooking {
+  id: string;
+  eventRequestId: string;
+  eventName: string | null;
+  eventStatus: EventStatus;
+  venueId: string;
+  venueName: string;
+  status: VenueBookingStatus;
+  occupiedStartsAt?: string;
+  occupiedEndsAt?: string;
+  warnings?: string[];
+  startsAt: string;
+  endsAt: string;
+  layout: string | null;
+  notes: string | null;
+  decidedBy: string | null;
+  decidedAt: string | null;
+  decisionReason: string | null;
+  createdAt: string;
+  updatedAt: string;
+  eventStartsAt: string | null;
+  eventEndsAt: string | null;
+  purpose: string | null;
+  description: string | null;
+  expectedAttendance: number | null;
+  venueRequirements: string | null;
+  accessibilityNeeds: string | null;
+  /** KAN-81: outages recorded against this booking and their recovery state, earliest first. */
+  recovery: BookingRecovery[];
+  /** KAN-81-AC7 / KAN-82-AC5: the outage-affected or cancelled booking this request replaces, if any. */
+  replacesBookingId: string | null;
+  /** KAN-82-AC8: requests that name this booking as the one they replace, earliest first. */
+  replacedByBookingIds: string[];
+  /** KAN-83: hold deadline and audit. Kept after approval, expiry, rejection or cancellation. */
+  holdExpiresAt: string | null;
+  heldBy: string | null;
+  heldAt: string | null;
+  expiredAt: string | null;
+  cancelledBy: string | null;
+  cancelledAt: string | null;
+  cancellationReason: string | null;
+}
+
+export interface ArrangementReadiness {
+  /** Every live arrangement is approved, none needs outage recovery, and there is at least one. */
+  ready: boolean;
+  /** Pending, live held or approved arrangements. */
+  live: number;
+  /** Live arrangements that are not yet approved, or that need recovery. */
+  outstanding: number;
+}
+```
+
+### block-service.ts (venues)
+
+[Implementation source](../../backend/src/modules/venues/block-service.ts)
+
+```typescript
+export interface VenueBlock {
+  id: string;
+  venueId: string;
+  venueName: string;
+  startsAt: string;
+  endsAt: string;
+  reason: string;
+  createdBy: string;
+  createdAt: string;
+  /** KAN-81: the approved arrangements this outage affects, with their recovery state. */
+  affected: AffectedArrangement[];
+}
+```
+
+### outage-impact.ts (venues)
+
+[Implementation source](../../backend/src/modules/venues/outage-impact.ts)
+
+```typescript
+export type RecoveryStatus = 'RECOVERY_REQUIRED' | 'RESOLVED' | 'CLEARED';
+
+export interface AffectedArrangement {
+  impactId: string;
+  status: RecoveryStatus;
+  bookingId: string;
+  eventRequestId: string;
+  eventName: string | null;
+  bookingStartsAt: string;
+  bookingEndsAt: string;
+}
+
+export interface RecoveryArrangement extends AffectedArrangement {
+  blockId: string | null;
+  venueId: string;
+  venueName: string;
+  outageStartsAt: string;
+  outageEndsAt: string;
+  outageReason: string;
+}
+
+export interface BookingRecovery {
+  impactId: string;
+  status: RecoveryStatus;
+  outageStartsAt: string;
+  outageEndsAt: string;
+  outageReason: string;
+}
+
+export interface OutageNotificationTarget {
+  eventId: string;
+  eventName: string | null;
+  organiserId: string;
+  coordinatorId: string | null;
+  bookingId: string;
+  venueName: string;
+  bookingStartsAt: Date;
+  bookingEndsAt: Date;
+}
+```
+
+### suitability-input.ts (venues)
+
+[Implementation source](../../backend/src/modules/venues/suitability-input.ts)
+
+```typescript
+export interface VenueSuitabilityInput {
+  bookingId?: string;
+  venueId: string;
+  requirementsVersion: string;
+  facilities: string[];
+  accessibility: string[];
+  layout: string | null;
+  wheelchairRequired: boolean;
+  requirementsConfirmed: boolean;
+  unresolvedRequirements: string | null;
+}
+```
+
+### suitability-rules.ts (venues)
+
+[Implementation source](../../backend/src/modules/venues/suitability-rules.ts)
+
+```typescript
+export interface SuitabilityEvent {
+  id: string;
+  name: string | null;
+  startsAt: string | null;
+  endsAt: string | null;
+  expectedAttendance: number | null;
+  venueRequirements: string | null;
+  accessibilityNeeds: string | null;
+}
+
+export interface SuitabilityVenue {
+  id: string;
+  name: string;
+  capacity: number;
+  facilities: string[];
+  accessibilityFeatures: string[];
+  layouts: string[];
+  wheelchairAccessible: boolean;
+  opensAt: string | null;
+  closesAt: string | null;
+  /** KAN-77: planning input only; KAN-78 applies the buffers to availability. */
+  setupMinutes: number;
+  turnaroundMinutes: number;
+}
+
+export interface SuitabilityCheck {
+  key: 'venueActive' | 'capacity' | 'facilities' | 'accessibility' | 'layout' | 'availability' | 'requirements';
+  status: 'PASS' | 'FAIL' | 'UNKNOWN';
+  message: string;
+}
+
+export interface SuitabilityAssessment {
+  bookingId?: string;
+  eventId: string;
+  eventName: string | null;
+  venueId: string;
+  venueName: string;
+  occupiedStartsAt?: string | null;
+  occupiedEndsAt?: string | null;
+  checkedAt: string;
+  outcome: 'SUITABLE' | 'UNSUITABLE' | 'NEEDS_REVIEW';
+  checks: SuitabilityCheck[];
+}
+```
+
+### suitability-service.ts (venues)
+
+[Implementation source](../../backend/src/modules/venues/suitability-service.ts)
+
+```typescript
+export interface SuitabilityContext {
+  event: SuitabilityEvent;
+  arrangement?: SuitabilityArrangement;
+  requirementsVersion: string;
+  venues: SuitabilityVenue[];
+}
+
+export interface SuitabilityArrangement {
+  id: string;
+  venueId: string;
+  startsAt: string | null;
+  endsAt: string | null;
+  layout: string | null;
+  notes: string | null;
+  status: VenueBookingStatus;
+}
+```
+
+### availability-types.ts (equipment)
+
+[Implementation source](../../backend/src/modules/equipment/availability-types.ts)
+
+```typescript
+export interface EquipmentEventSummary {
+  id: string;
+  name: string | null;
+  status: 'APPROVED' | 'CONFIRMED';
+  /** KAN-84 Option A: present on reservation contexts; true while technical safety changes are requested. */
+  technicalRemediation?: boolean;
+  startsAt: string | null;
+  endsAt: string | null;
+}
+
+export interface EquipmentTypeSummary {
+  id: string;
+  name: string;
+  category: string | null;
+  totalQuantity: number;
+  damagedQuantity: number;
+  maintenanceQuantity: number;
+  isActive: boolean;
+}
+
+export interface SavedEquipmentRequest {
+  id: string;
+  equipmentTypeId: string;
+  quantity: number;
+  status: 'REQUESTED' | 'RESERVED' | 'REJECTED';
+  startsAt: string;
+  endsAt: string;
+  notes: string | null;
+}
+
+export interface EquipmentAvailabilityContext {
+  event: EquipmentEventSummary & { equipmentRequirements: string | null };
+  requirementsVersion: string;
+  equipmentTypes: EquipmentTypeSummary[];
+  savedRequests: SavedEquipmentRequest[];
+}
+
+export type EquipmentAvailabilityInput = {
+  mode: 'saved';
+  requirementsVersion: string;
+} | {
+  mode: 'what-if';
+  requirementsVersion: string;
+  startsAt: string;
+  endsAt: string;
+  items: { equipmentTypeId: string; quantity: number }[];
+};
+
+export interface EquipmentAvailabilityItem {
+  equipmentTypeId: string;
+  equipmentTypeName: string;
+  requestedQuantity: number;
+  totalQuantity: number;
+  damagedQuantity: number;
+  maintenanceQuantity: number;
+  operationalQuantity: number;
+  peakReservedQuantity: number;
+  availableQuantity: number;
+  shortfallQuantity: number;
+  isActive: boolean;
+}
+
+export interface EquipmentAvailabilityAssessment {
+  eventId: string;
+  eventName: string | null;
+  mode: EquipmentAvailabilityInput['mode'];
+  startsAt: string;
+  endsAt: string;
+  checkedAt: string;
+  advisory: true;
+  outcome: 'FULFILLABLE' | 'SHORTFALL';
+  items: EquipmentAvailabilityItem[];
+}
+```
+
+### reservation-types.ts (equipment)
+
+[Implementation source](../../backend/src/modules/equipment/reservation-types.ts)
+
+```typescript
+export type EquipmentReleaseCause = 'MANUAL_CANCELLATION' | 'EVENT_CANCELLED' | 'EVENT_COMPLETED';
+
+export interface EquipmentReservationRequest {
+  id: string;
+  equipmentTypeId: string;
+  equipmentName: string;
+  quantity: number;
+  status: 'REQUESTED' | 'RESERVED' | 'REJECTED' | 'CANCELLED';
+  startsAt: string;
+  endsAt: string;
+  notes: string | null;
+  decidedBy: string | null;
+  decidedAt: string | null;
+  decisionReason: string | null;
+  releasedBy: string | null;
+  releasedAt: string | null;
+  releaseReason: string | null;
+  releaseCause: EquipmentReleaseCause | null;
+  canReserve: boolean;
+  canCancel: boolean;
+}
+
+export interface EquipmentReadiness {
+  status: 'NO_REQUIREMENTS' | 'PENDING' | 'READY' | 'SHORTFALL' | 'INVALID_REQUIREMENTS';
+  activeCount: number;
+  reservedCount: number;
+  message: string;
+}
+
+export interface EquipmentReservationContext {
+  event: EquipmentAvailabilityContext['event'];
+  requirementsVersion: string;
+  requests: EquipmentReservationRequest[];
+  readiness: EquipmentReadiness;
+}
+
+export interface EquipmentReservationResult {
+  changed: boolean;
+  context: EquipmentReservationContext;
+}
+```
+
+### stock-types.ts (equipment)
+
+[Implementation source](../../backend/src/modules/equipment/stock-types.ts)
+
+```typescript
+export type EquipmentStockStatus = 'AVAILABLE' | 'PARTLY_UNAVAILABLE' | 'UNAVAILABLE';
+
+export interface EquipmentStockItem {
+  id: string;
+  name: string;
+  category: string | null;
+  isActive: boolean;
+  totalQuantity: number;
+  damagedQuantity: number;
+  maintenanceQuantity: number;
+  /** total - damaged - maintenance, or 0 for an inactive type (the same figure availability checks use). */
+  operationalQuantity: number;
+  /** Units out of service: damaged + maintenance. */
+  unavailableQuantity: number;
+  status: EquipmentStockStatus;
+  /** The version a stock form must quote to change this row (KAN-18-AC103). */
+  revision: number;
+  /** Events whose reservations currently exceed operational stock. */
+  shortfallEventCount: number;
+  updatedAt: string;
+}
+
+export interface EquipmentStockChange {
+  id: string;
+  revision: number;
+  changedById: string;
+  changedByName: string | null;
+  changedAt: string;
+  reason: string;
+  previous: { totalQuantity: number; damagedQuantity: number; maintenanceQuantity: number };
+  next: { totalQuantity: number; damagedQuantity: number; maintenanceQuantity: number };
+}
+
+export interface EquipmentStockShortfall {
+  eventId: string;
+  eventName: string | null;
+  startsAt: string;
+  endsAt: string;
+  reservedQuantity: number;
+  /** Most units reserved at once, across every event, while this event is running. */
+  peakReservedQuantity: number;
+  operationalQuantity: number;
+  shortfallQuantity: number;
+}
+
+export interface EquipmentStockDetail {
+  item: EquipmentStockItem;
+  history: EquipmentStockChange[];
+  shortfalls: EquipmentStockShortfall[];
+}
+
+export interface EquipmentStockUpdateResult extends EquipmentStockDetail {
+  /** False when the submitted quantities already matched; nothing was written. */
+  changed: boolean;
+  /** Affected events the database trigger told about a shortfall in this change. */
+  notifiedEvents: number;
+}
+
+export interface EquipmentStockUpdateInput {
+  expectedRevision: number;
+  totalQuantity?: number;
+  damagedQuantity?: number;
+  maintenanceQuantity?: number;
+  reason: string;
+}
+```
+
+### registration-types.ts (registrations)
+
+[Implementation source](../../backend/src/modules/registrations/registration-types.ts)
+
+```typescript
+export interface AttendeeEvent {
+  id: string;
+  name: string | null;
+  purpose: string | null;
+  description: string | null;
+  startsAt: string | null;
+  endsAt: string | null;
+  accessibilityNeeds: string | null;
+  status: string;
+  /** Approved venue bookings only. */
+  venues: { name: string; location: string | null; startsAt: string; endsAt: string }[];
+  registration: {
+    required: boolean;
+    opensAt: string | null;
+    closesAt: string | null;
+    capacity: number | null;
+    placesRemaining: number | null;
+  };
+}
+
+export interface OwnRegistration {
+  id: string;
+  status: OwnRegistrationStatus;
+  registeredAt: string;
+  withdrawnAt: string | null;
+}
+
+export interface AttendeeEventDetail {
+  event: AttendeeEvent;
+  /** The caller's own registration, or null. */
+  registration: OwnRegistration | null;
+  availability: RegistrationAvailability;
+}
+
+export interface AttendeeEventSummary {
+  id: string;
+  name: string | null;
+  startsAt: string | null;
+  endsAt: string | null;
+  registration: AttendeeEvent['registration'];
+  ownStatus: OwnRegistrationStatus | null;
+  availability: RegistrationAvailability;
+}
+
+export interface OwnRegistrationSummary extends OwnRegistration {
+  event: { id: string; name: string | null; startsAt: string | null; endsAt: string | null; status: string };
+}
+
+export interface RegistrationResult extends AttendeeEventDetail {
+  /** False only for a repeat that found the attendee already registered (reported as 409, never returned). */
+  changed: true;
+}
+```
+
+### registration-rules.ts (registrations)
+
+[Implementation source](../../backend/src/modules/registrations/registration-rules.ts)
+
+```typescript
+export type RegistrationBlock =
+  | 'ALREADY_REGISTERED' | 'NOT_CONFIRMED' | 'REGISTRATION_DISABLED' | 'EVENT_STARTED' | 'CLOSED' | 'NOT_YET_OPEN' | 'FULL';
+
+export type OwnRegistrationStatus = 'REGISTERED' | 'WITHDRAWN' | 'CANCELLED';
+
+export interface RegistrationFacts {
+  status: string;
+  /** NULL when the organiser never said; treated as not taking registrations. */
+  registrationRequired: boolean | null;
+  /** now >= startsAt; true when the event has no start time. */
+  started: boolean;
+  /** now < registrationOpensAt; false when there is no opening bound. */
+  beforeOpen: boolean;
+  /** now >= registrationClosesAt; false when there is no closing bound. */
+  afterClose: boolean;
+  /** NULL means unlimited; 0 means full. */
+  capacity: number | null;
+  registered: number;
+  ownStatus: OwnRegistrationStatus | null;
+}
+
+export interface RegistrationAvailability {
+  canRegister: boolean;
+  reason: RegistrationBlock | null;
+  message: string;
+  /** NULL for an unlimited event. */
+  placesRemaining: number | null;
+}
+```
+
+### inbox.ts (notifications)
+
+[Implementation source](../../backend/src/modules/notifications/inbox.ts)
+
+```typescript
+export interface InboxItem {
+  id: string;
+  type: string;
+  title: string;
+  message: string;
+  read: boolean;
+  readAt: string | null;
+  createdAt: string;
+  /** Present only while the caller may still open the event. */
+  event: { id: string; name: string | null } | null;
+  booking: { id: string } | null;
+  /** An application path the destination page will authorise again, or null. */
+  link: string | null;
+}
+```
+
+## Current workflow constraints and response details
+
+- **Drafts, submission and editing:** event fields are name, purpose, description, startsAt, endsAt, expectedAttendance, venueRequirements, accessibilityNeeds, equipmentRequirements and registrationRequired, plus registrationCapacity/registrationOpensAt/registrationClosesAt. Incomplete/null draft fields are allowed; submission validates the saved merged record. Submission leaves the event unassigned for Lead allocation. A non-draft PATCH requires a positive expectedRevision. The owner may edit pre-approval fields; an assigned coordinator may edit ordinary name/description in APPROVED/CONFIRMED. Significant planning fields use the reviewed change-request route. Revisions and immutable `event_request_edits` retain the applied changes. Caller identity, status and current coordinator are server-owned.
+- **Assignment:** `AssignmentResult` is `{eventRequestId,assignmentId,coordinatorId,previousCoordinatorId}`; reassignment adds `changed`. Initial assignment requires no coordinator and no active assignment history. Reassignment requires the exact active history-row UUID in expectedAssignmentVersion, a nonempty reason, and an available coordinator profile. The version is checked before a same-target no-op. Submission and allocation are separate operations; historical AUTOMATIC assignment_method values remain valid SQL history.
+- **Change requests:** significant changes are a subset of purpose, startsAt, endsAt, expectedAttendance, venueRequirements, accessibilityNeeds, equipmentRequirements, registrationRequired, registrationCapacity, registrationOpensAt and registrationClosesAt. The service validates merged fields, pending status, expectedRevision and saved previous values. Related approved/reserved arrangements can require cancellation and resubmission. Approval cancels only affected pending arrangements and records their IDs; rejection leaves event values unchanged. Repeated decisions on a non-pending request conflict.
+- **Venue catalogue and calendar:** PATCH fields are location, capacity, facilities, accessibilityFeatures, wheelchairAccessible, layouts, opensAt, closesAt, setupMinutes and turnaroundMinutes. Buffer minutes are integers 0–1440. A changed buffer quotes its corresponding expectedSetupMinutes/expectedTurnaroundMinutes at the top level, not a nested expected object. The calendar includes active venues and complete overlapping periods within a positive window of at most 31 days. Booking event identity is disclosed only to its assigned coordinator; other readers receive an anonymous booking. Layout and opening-hour checks follow the venue parsers, not free-text inference.
+- **Venue planning:** occupied intervals include setup and turnaround, and use half-open overlap rules. Live HELD and APPROVED arrangements occupy; PENDING does not. Suitability POST is advisory and requires explicit venueId, requirementsVersion, facilities[], accessibility[], layout (text/null), wheelchairRequired, requirementsConfirmed and unresolvedRequirements (text/null); optional bookingId scopes an existing arrangement. A later booking/decision rechecks live state. Holds require now < expiresAt <= occupied start and are not extensions of expired holds. Expiry is driven at API startup and every 60 seconds, with optional pg_cron calling the same SQL function. The deadline stops occupancy even before the timer updates the row.
+- **Outages, replacement and independent cancellation:** outages preserve overlapping APPROVED bookings with RECOVERY_REQUIRED impact records, release overlapping live holds and notify affected people. A replacement booking uses replacesBookingId; approval resolves/supersedes only its original arrangement. Removing an outage clears its own open impacts while retaining history. Each arrangement can be cancelled independently by the assigned coordinator with a reason. The implemented DELETE block handler validates both UUIDs but uses blockId to locate the block; it does not verify the block belongs to the supplied venueId. No stronger path-parent guarantee is claimed here.
+- **Equipment requests and versions:** EquipmentLine is `{equipmentTypeId,quantity,startsAt,endsAt,technicalRequirements?:text|null}`. Save uses `{revision,lines,notRequired?}` with 1–30 distinct-type lines, or `notRequired:true` and an empty list. `revision` hashes the complete equipment plan; it is not the numeric event revision and is not interchangeable with requirementsVersion. Plan is `{eventRequestId,status,revision,eventStatus,eventStartsAt,eventEndsAt,technicalRemediation,items}`. Item records include source line fields, lineRevision, decision/release history, revision and event context. Save returns `{request:{eventRequestId,status,lines,revision}}`; this is distinct from the GET `{plan}` envelope. Replacing a RESERVED line cancels it and creates a new REQUESTED replacement atomically; the replacement still needs reservation. Direct coordinator cancellation covers REQUESTED/REJECTED lines. Confirmed equipment edits are permitted only through the specific current TECHNICAL safety-remediation path.
+- **Advisory availability and reservations:** requirementsVersion hashes current event/saved source values. Saved checks aggregate non-cancelled requirements and exclude only their own RESERVED IDs from competing demand; what-if checks include all reservations, including their own event. Active operational stock is total − damaged − maintenance, otherwise zero. Demand is the peak simultaneous quantity, not the sum of disjoint reservations. The assessment has advisory:true and never writes. The reservation API allows APPROVED, or CONFIRMED only while the latest safety round requests TECHNICAL changes; this eligibility is checked before replay handling, and it takes event → recipient profile for reserve → sorted pools → sorted lines and performs a new live check. Exact replays accept the current or reconstructed pre-action version (and same cancellation reason) and return changed:false. A stale unrelated edit still conflicts.
+- **Stock:** a patch requires expectedRevision, a nonempty reason of at most 500 characters and at least one whole quantity 0–1,000,000; damaged + maintenance cannot exceed total. It locks affected reserved events and then the type, retains reservations, appends an immutable stock history row, and returns resulting shortfalls. Shortfall notices are owned by migration 019’s SQL trigger, not duplicated by the stock service.
+- **Confirmation:** the panel is `{eventRequestId,status,started,canConfirm,readiness,confirmation}`. Readiness is `{ready,checks:[{key,ready,message}]}` with keys VENUE/EQUIPMENT/CHANGE_REQUEST; it is null outside APPROVED. Requirements are at least one live venue arrangement, all live arrangements APPROVED, no open outage impacts or current occupied-interval/hours warning, equipment explicitly NOT_REQUIRED with no active lines or all active requirements RESERVED and still fulfilable, and no pending change request. The POST repeat branch returns changed:false for an already-CONFIRMED event before first-confirmation readiness/start checks. Safety approval is required for preparation, not confirmation.
+- **Safety:** `SafetyRound` contains id, round, status, the three nullable planning notes, submittedByName/submittedAt, decidedByName/decidedAt, decisionNotes, requestedAreas and missingNotes; the general round projection omits internal fingerprints/invalidation flags. EventSafetyPanel is `{eventRequestId,eventStatus,outcome,readiness,unresolvedAreas,pendingStale,rounds,preparation,canSubmit,canStartPreparation}`. `preparation` is null or `{startedAt,startedByName,blocked}`. Officer detail additionally supplies the decision fingerprint and live context. REJECTED/CHANGES_REQUESTED need notes; CHANGES_REQUESTED needs at least one VENUE/TECHNICAL area; other decisions allow omitted/empty areas only. Submitted notes are optional, trimmed and limited to 2,000 characters each. Readiness and every requested area’s actual planning digest must permit a new round; changing only notes or another area does not satisfy remediation. Pending approval checks original/supplemental context, readiness and planning state. Identical saved decisions are no-ops before fingerprint comparison; a different decision conflicts. Permanent invalidation survives restoring old values. Preparation requires CONFIRMED plus the latest current approval and readiness before its same-round no-op.
+- **Lifecycle:** whole-event cancellation requires reason and confirmAffectedArrangements:true, cancels live venue arrangements and active registrations, and releases equipment with retained audit history. Repeated cancellation conflicts. Completion requires the current coordinator, CONFIRMED and the database-clock end reached, then releases remaining reservations; it retains registrations and venue bookings. Repeated completion conflicts. Cancellation/completion GET projections deliberately return null for some absent/unrelated records instead of exposing their existence.
+- **Attendees and privacy:** registration requires a visible CONFIRMED event, enabled registration, an open registration window, remaining capacity and event not started. An attendee cannot nominate another identity. The event is locked before a fresh capacity read; WITHDRAWN records are reused on re-registration, with a new outcome version. `/attendee/registrations` has nested event objects and a 100-row cap; `/registrations/mine` has flat event fields and canWithdraw. Withdrawal requires confirm:true and occurs only before event start on a nonterminal event; that cutoff is checked before an unchanged WITHDRAWN replay. Roster items disclose displayName, email, status and registeredAt/withdrawnAt/cancelledAt, not attendee/profile IDs. Only the owner/current coordinator may read the roster.
+- **Notifications:** every read/write is scoped to the verified recipient, with no recipient query parameter. The inbox returns role-appropriate links/DTOs. Application writers use the business transaction. SQL owns registration outcomes, final confirmation and operational-stock shortfall; hold expiry owns its notices within the SQL function. No email or push transport is implied. Notification marks preserve the original read time on repeats.
+
+
+## Errors and recovery
+
+Clients should display the server message and refresh context on 409 before another deliberate action; they must not silently replay a stale mutation. Database/notification failure rolls back a transactional business write. A network failure can occur after commit, so use a fresh read to establish saved state. Idempotence is specific to the routes above, not a general property of POST.
+
+| Area | Representative explicit errors |
+| --- | --- |
+| Versioned edits/assignments | EXPECTED_REVISION_REQUIRED, EVENT_REVISION_CONFLICT, ASSIGNMENT_VERSION_CONFLICT, ASSIGNMENT_HISTORY_CONFLICT |
+| Confirmation | EVENT_NOT_CONFIRMABLE, EVENT_ALREADY_STARTED, EVENT_NOT_READY, EVENT_ARRANGEMENTS_CHANGED |
+| Equipment | EQUIPMENT_CONTEXT_CHANGED, EQUIPMENT_STOCK_CONFLICT, EQUIPMENT_EVENT_NOT_APPROVED, STALE_EQUIPMENT_REQUEST, EQUIPMENT_UNAVAILABLE |
+| Registration/withdrawal | REGISTRATION_FULL, REGISTRATION_ALREADY_REGISTERED, REGISTRATION_CLOSED, WITHDRAWAL_CONFIRMATION_REQUIRED, WITHDRAWAL_NOT_ALLOWED |
+| Safety | SAFETY_REVIEW_PENDING, SAFETY_REVIEW_DECIDED, SAFETY_REVIEW_STALE, SAFETY_APPROVAL_STALE, SAFETY_APPROVAL_REQUIRED, EVENT_NOT_READY |
+
+Per-route UUID parameter names/codes and complete source snippets are retained in [endpoint-audit.json](../scrum/sprint-03/evidence/design-audit-20261106/endpoint-audit.json). The linked parsers/services remain authoritative for error precedence and other domain codes; this table is a recovery guide, not an assertion that every error applies to every endpoint.
+
+## Earlier contract records (historical)
+
+<details>
+<summary>Original dated integration and design notes; current contract above takes precedence</summary>
+
 # API contract
 
 ## 29 October 2026 — KAN-17, KAN-67 and KAN-80 registration outcomes
@@ -1049,3 +2201,6 @@ Errors: 401; 403 for wrong roles or a stored role that changed; 404 for unrelate
 - **Equipment:** the existing equipment-line response already returns `releaseReason` and `releaseCause`. Cancelled-line UI now labels `releaseReason` as the release reason, retaining `decisionReason` separately as the previous review reason. Missing release details show Not recorded rather than substituting a rejection reason. No database or endpoint change is required for this display fix.
 
 No OBS-12 live-update requirement or OBS-8 completion-access change was introduced: actual queue-link navigation passed, and the documented completion GET 200/null contract remains intact. See `AUTO-20261101-RELEASE-REGRESSIONS`; shared migration and connected retests are separate.
+
+
+</details>

@@ -1,0 +1,13 @@
+flowchart LR
+  user["User<br/>One of five application roles"]
+  identity["Supabase Auth<br/>Email/password sign-in and signing keys"]
+  subgraph boundary["ConnectSphere system boundary"]
+    web["Web application<br/>Vue 3, TypeScript, Vite<br/>Pages and API client"]
+    api["API application<br/>Express 5, TypeScript<br/>Authorization and business rules"]
+    db[("Database<br/>Supabase PostgreSQL<br/>Persistent application records")]
+  end
+  user -->|Uses browser| web
+  web -->|HTTP JSON /api| api
+  web -->|HTTPS credential exchange| identity
+  api -->|HTTPS public signing keys| identity
+  api -->|SQL via pg over TLS| db

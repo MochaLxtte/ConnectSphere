@@ -1,0 +1,21 @@
+---
+title: Event completion - ended confirmed event and equipment release
+---
+sequenceDiagram
+  autonumber
+  participant Client as Assigned coordinator client
+  participant API as Express HTTP boundary
+  participant Service as completeEvent
+  participant DB as PostgreSQL
+  Client->>API: POST /api/events/:id/complete
+  API->>Service: Verify coordinator and UUID
+  Service->>DB: BEGIN READ COMMITTED, set transaction actor
+  Service->>DB: Trusted profile, venue gates and bookings before event
+  Service->>Service: Require current coordinator, CONFIRMED and database-clock end reached
+  Service->>DB: Assert booking set, lock sorted equipment pools and lines
+  Service->>DB: Count RESERVED lines, set event COMPLETED
+  DB->>DB: Record history and release reservations as EVENT_COMPLETED
+  Service->>DB: Read saved completion history and write completion notices
+  Service->>DB: COMMIT on success, ROLLBACK on thrown error
+  Service-->>API: Resolve committed result or throw failure to HTTP boundary
+  API-->>Client: HTTP status and JSON, typed failures mapped

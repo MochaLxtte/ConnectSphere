@@ -1,0 +1,25 @@
+---
+title: Registration withdrawal - owned record and event-start cutoff
+---
+sequenceDiagram
+  autonumber
+  participant Client as Attendee client
+  participant API as Express HTTP boundary
+  participant Service as withdrawRegistration
+  participant DB as PostgreSQL
+  Client->>API: POST /api/registrations/:id/withdraw {confirm:true}
+  API->>Service: Verified attendee, UUID and explicit confirmation
+  Service->>DB: BEGIN READ COMMITTED, set transaction actor
+  Service->>DB: Share-lock trusted profile, discover only own registration
+  Service->>DB: Lock event, then registration, read database clock
+  alt event started or terminal
+  Service->>Service: Refuse withdrawal before replay check
+  else already WITHDRAWN before cutoff
+  Service->>Service: Keep outcome and timestamps, changed false
+  else active registration before cutoff
+  Service->>DB: Set WITHDRAWN and withdrawal time
+  DB->>DB: Registration outcome trigger writes deduplicated notices
+  end
+  Service->>DB: COMMIT on success, ROLLBACK on thrown error
+  Service-->>API: Resolve committed result or throw failure to HTTP boundary
+  API-->>Client: HTTP status and JSON, typed failures mapped

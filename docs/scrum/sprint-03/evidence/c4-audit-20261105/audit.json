@@ -1,0 +1,1952 @@
+{
+  "audit_id": "C4-20261105-01",
+  "date": "2026-11-05",
+  "source_commit": "fb6d8d93f721b114accc9857a05d62e859987e23",
+  "branch": "docs/c4-accuracy",
+  "scope": "C1, C2 and C3 source and exports; static code/migration audit and local visual/render validation",
+  "preparation": "Codex; correction scope authorised by Arvin in project chat. No meeting or independent review is asserted.",
+  "environment": {
+    "node": "v22.12.0",
+    "python": "Python 3.9.13",
+    "mermaid_cli": "11.17.1",
+    "mermaid": "11.17.2",
+    "puppeteer": "25.13.0",
+    "browser": "Chrome/153.0.8010.12",
+    "platform": "Windows"
+  },
+  "summary": {
+    "functional_blocks": 29,
+    "legend_blocks": 3,
+    "labelled_arrows": 43,
+    "boundaries": 4,
+    "all_elements_have_code_references": true,
+    "all_arrows_have_code_references": true,
+    "all_reference_anchors_found": true,
+    "all_renders_pass_geometry_checks": true
+  },
+  "diagrams": [
+    {
+      "name": "c1-context",
+      "mermaid_sha256": "cef454a8df8bf727d8db1757ce82069eed15a0ab17d4f27c13cde1b52b323152",
+      "functional_blocks": 9,
+      "legend_blocks": 1,
+      "arrows": 8,
+      "boundaries": [],
+      "blocks": [
+        {
+          "id": "organiser",
+          "label": "Event Organiser\n[Person]\nManages own requests and events",
+          "boundary": null,
+          "kind": "Architecture element",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/modules/auth/types.ts",
+              "line": 3,
+              "excerpt": "'EVENT_ORGANISER',",
+              "file_sha256": "848dc5b1a8d0a11aebe52218e97faf3cc68713c4411deee3bed53e5ed85a645f"
+            },
+            {
+              "path": "backend/src/modules/events/submitted-requests-router.ts",
+              "line": 120,
+              "excerpt": "if (actor.role !== 'EVENT_ORGANISER') {",
+              "file_sha256": "9e78f118bf23fb0ebfb90ab2e1336374d1001e86bbc1dc4b2b98329014eb5c40"
+            },
+            {
+              "path": "backend/src/modules/events/change-requests.ts",
+              "line": 194,
+              "excerpt": "export async function submitChangeRequest(",
+              "file_sha256": "e94723428ec0e70d4f7494f41d2fabb13cea58435b285c2822a99b86711b1e85"
+            }
+          ]
+        },
+        {
+          "id": "coordinator",
+          "label": "Event Coordinator\n[Person]\nReviews and plans assigned events",
+          "boundary": null,
+          "kind": "Architecture element",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/modules/auth/types.ts",
+              "line": 4,
+              "excerpt": "'EVENT_COORDINATOR',",
+              "file_sha256": "848dc5b1a8d0a11aebe52218e97faf3cc68713c4411deee3bed53e5ed85a645f"
+            },
+            {
+              "path": "backend/src/modules/events/review-decision.ts",
+              "line": 48,
+              "excerpt": "export async function recordInitialReview(",
+              "file_sha256": "93a81ae6142a81a06d10d0b1c8d82132e0b03243454b2956b7c5e37e2de6f193"
+            },
+            {
+              "path": "backend/src/modules/events/confirmation.ts",
+              "line": 175,
+              "excerpt": "export async function confirmEvent(",
+              "file_sha256": "f147a39dbe093cf18bd81e1c2072a345345005b5b560b9a690f9a679a13a5db2"
+            },
+            {
+              "path": "backend/src/modules/events/completion.ts",
+              "line": 26,
+              "excerpt": "export async function completeEvent(",
+              "file_sha256": "d4da7464455ee9d58be6ba05d33a030989af0ebfdaaac73380ac72c16959c5ca"
+            }
+          ]
+        },
+        {
+          "id": "lead",
+          "label": "Coordinator Lead\n[Person]\nAllocates coordinators and oversees events",
+          "boundary": null,
+          "kind": "Architecture element",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/modules/auth/types.ts",
+              "line": 5,
+              "excerpt": "'EVENT_COORDINATOR_LEAD',",
+              "file_sha256": "848dc5b1a8d0a11aebe52218e97faf3cc68713c4411deee3bed53e5ed85a645f"
+            },
+            {
+              "path": "backend/src/modules/events/assignment-router.ts",
+              "line": 11,
+              "excerpt": "const leadOnly = ['EVENT_COORDINATOR_LEAD'] as const;",
+              "file_sha256": "271ef4aef3a6f7e83895f087400480c8f07700a9a63b35b13393365b695701fd"
+            },
+            {
+              "path": "backend/src/modules/events/assignment.ts",
+              "line": 135,
+              "excerpt": "export async function listLeadOversight(",
+              "file_sha256": "9cb5c95707050fa166737cbaedb45f27624b2ba0e4b67ef107ca320ec9628750"
+            }
+          ]
+        },
+        {
+          "id": "venue",
+          "label": "Venue Staff\n[Person]\nMaintains venues and booking arrangements",
+          "boundary": null,
+          "kind": "Architecture element",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/modules/auth/types.ts",
+              "line": 6,
+              "excerpt": "'VENUE_STAFF',",
+              "file_sha256": "848dc5b1a8d0a11aebe52218e97faf3cc68713c4411deee3bed53e5ed85a645f"
+            },
+            {
+              "path": "backend/src/modules/venues/venue-catalogue-service.ts",
+              "line": 81,
+              "excerpt": "export async function updateCatalogueVenue(",
+              "file_sha256": "f84c171b8873684aaf556c41a46a4d2d508145f1d831e53012fb8d012778258c"
+            },
+            {
+              "path": "backend/src/modules/venues/venue-bookings-router.ts",
+              "line": 6,
+              "excerpt": "placeVenueHold,",
+              "file_sha256": "7dfe8e19c8d029c8066dfbef521d261173d57aa75cc6749eb38186651ddbe80e"
+            }
+          ]
+        },
+        {
+          "id": "technical",
+          "label": "Technical Support Staff\n[Person]\nManages pooled equipment and reservations",
+          "boundary": null,
+          "kind": "Architecture element",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/modules/auth/types.ts",
+              "line": 7,
+              "excerpt": "'TECHNICAL_SUPPORT_STAFF',",
+              "file_sha256": "848dc5b1a8d0a11aebe52218e97faf3cc68713c4411deee3bed53e5ed85a645f"
+            },
+            {
+              "path": "backend/src/modules/equipment/stock-service.ts",
+              "line": 174,
+              "excerpt": "export async function updateEquipmentStock(",
+              "file_sha256": "326bf95e02a6b77e4a2ca3ba4fea7c2ea0826794c2c0844cd612d79b5b07d449"
+            },
+            {
+              "path": "backend/src/modules/equipment/equipment-service.ts",
+              "line": 194,
+              "excerpt": "export async function reviewEquipmentRequest(pool: Pick<Pool, 'connect'>,",
+              "file_sha256": "678069ca2b82bfedcdd140b2ab6c836edaf4adc9939debb7a7546b59f952c204"
+            }
+          ]
+        },
+        {
+          "id": "attendee",
+          "label": "Attendee\n[Person]\nManages own event registrations",
+          "boundary": null,
+          "kind": "Architecture element",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/modules/auth/types.ts",
+              "line": 8,
+              "excerpt": "'ATTENDEE',",
+              "file_sha256": "848dc5b1a8d0a11aebe52218e97faf3cc68713c4411deee3bed53e5ed85a645f"
+            },
+            {
+              "path": "backend/src/modules/registrations/registration-service.ts",
+              "line": 143,
+              "excerpt": "export async function registerForEvent(",
+              "file_sha256": "baf01859c001e1688ee52a88ba16da45a3f358d9ad1bad8127c3ba0abb9a2909"
+            },
+            {
+              "path": "backend/src/modules/registrations/service.ts",
+              "line": 43,
+              "excerpt": "export async function withdrawRegistration(pool: Pick<Pool, 'connect'>, actor: WorkflowActor, id: string, input: unknown) {",
+              "file_sha256": "167aa72038bc635dbc15b1038efc5b7ac5bc5b5753121714c226eb7d602f8cae"
+            }
+          ]
+        },
+        {
+          "id": "safety",
+          "label": "Safety Officer\n[Person]\nAssesses safety and requests remediation",
+          "boundary": null,
+          "kind": "Architecture element",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/modules/auth/types.ts",
+              "line": 10,
+              "excerpt": "'SAFETY_OFFICER',",
+              "file_sha256": "848dc5b1a8d0a11aebe52218e97faf3cc68713c4411deee3bed53e5ed85a645f"
+            },
+            {
+              "path": "backend/src/modules/safety/service.ts",
+              "line": 284,
+              "excerpt": "export async function decideSafetyReview(",
+              "file_sha256": "4df1257126672c53ae49ca01ea2c5724117550724610258ae5ccdf6dcaf5de3f"
+            }
+          ]
+        },
+        {
+          "id": "system",
+          "label": "ConnectSphere\n[Software System]\nEvent planning, resource arrangements,\nregistration and safety workflows",
+          "boundary": null,
+          "kind": "Architecture element",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/app.ts",
+              "line": 53,
+              "excerpt": "export function createApp({",
+              "file_sha256": "a0761cd265bfceac384bde949ed7c4982e38f6fd66326c3693a9db6cefc76ab5"
+            },
+            {
+              "path": "frontend/src/app/router.ts",
+              "line": 39,
+              "excerpt": "export const router = createRouter({",
+              "file_sha256": "305d7679376dcb3e7636ef2859fee99ffbfa926cab72427d4e78a69b97ffd6fe"
+            }
+          ]
+        },
+        {
+          "id": "identity",
+          "label": "Supabase Auth\n[External Software System]\nAuthenticates users and publishes\ntoken verification keys",
+          "boundary": null,
+          "kind": "Architecture element",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "frontend/src/features/auth/supabase-client.ts",
+              "line": 32,
+              "excerpt": "const { data, error } = await supabase.auth.signInWithPassword({ email, password });",
+              "file_sha256": "59df258b428c5801955357ae65edfe8ce9c57952e88ea3b20dcb47370c43edc4"
+            },
+            {
+              "path": "backend/src/modules/auth/supabase.ts",
+              "line": 1,
+              "excerpt": "import { createRemoteJWKSet, jwtVerify } from 'jose';",
+              "file_sha256": "cb76f4444d7e904097b475e53430e808233f3c5af64b41bc904e80c27ddbf4db"
+            },
+            {
+              "path": "backend/src/modules/auth/supabase.ts",
+              "line": 33,
+              "excerpt": "if (SUPABASE_JWT_SECRET) {",
+              "file_sha256": "cb76f4444d7e904097b475e53430e808233f3c5af64b41bc904e80c27ddbf4db"
+            }
+          ]
+        },
+        {
+          "id": "key",
+          "label": "Legend\nPale blue: person; dark blue: ConnectSphere; grey: external system.\nEach arrow points from the caller to the system it interacts with.",
+          "boundary": null,
+          "kind": "Legend",
+          "result": "C4 notation explained"
+        }
+      ],
+      "connections": [
+        {
+          "id": "organiser->system",
+          "from": "organiser",
+          "to": "system",
+          "label": "Submits requests, proposes changes and tracks outcomes",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/modules/auth/types.ts",
+              "line": 3,
+              "excerpt": "'EVENT_ORGANISER',",
+              "file_sha256": "848dc5b1a8d0a11aebe52218e97faf3cc68713c4411deee3bed53e5ed85a645f"
+            },
+            {
+              "path": "backend/src/modules/events/submitted-requests-router.ts",
+              "line": 120,
+              "excerpt": "if (actor.role !== 'EVENT_ORGANISER') {",
+              "file_sha256": "9e78f118bf23fb0ebfb90ab2e1336374d1001e86bbc1dc4b2b98329014eb5c40"
+            },
+            {
+              "path": "backend/src/modules/events/change-requests.ts",
+              "line": 194,
+              "excerpt": "export async function submitChangeRequest(",
+              "file_sha256": "e94723428ec0e70d4f7494f41d2fabb13cea58435b285c2822a99b86711b1e85"
+            }
+          ]
+        },
+        {
+          "id": "coordinator->system",
+          "from": "coordinator",
+          "to": "system",
+          "label": "Reviews, plans, confirms and closes assigned events",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/modules/auth/types.ts",
+              "line": 4,
+              "excerpt": "'EVENT_COORDINATOR',",
+              "file_sha256": "848dc5b1a8d0a11aebe52218e97faf3cc68713c4411deee3bed53e5ed85a645f"
+            },
+            {
+              "path": "backend/src/modules/events/review-decision.ts",
+              "line": 48,
+              "excerpt": "export async function recordInitialReview(",
+              "file_sha256": "93a81ae6142a81a06d10d0b1c8d82132e0b03243454b2956b7c5e37e2de6f193"
+            },
+            {
+              "path": "backend/src/modules/events/confirmation.ts",
+              "line": 175,
+              "excerpt": "export async function confirmEvent(",
+              "file_sha256": "f147a39dbe093cf18bd81e1c2072a345345005b5b560b9a690f9a679a13a5db2"
+            },
+            {
+              "path": "backend/src/modules/events/completion.ts",
+              "line": 26,
+              "excerpt": "export async function completeEvent(",
+              "file_sha256": "d4da7464455ee9d58be6ba05d33a030989af0ebfdaaac73380ac72c16959c5ca"
+            }
+          ]
+        },
+        {
+          "id": "lead->system",
+          "from": "lead",
+          "to": "system",
+          "label": "Assigns, reassigns and reads basic oversight",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/modules/auth/types.ts",
+              "line": 5,
+              "excerpt": "'EVENT_COORDINATOR_LEAD',",
+              "file_sha256": "848dc5b1a8d0a11aebe52218e97faf3cc68713c4411deee3bed53e5ed85a645f"
+            },
+            {
+              "path": "backend/src/modules/events/assignment-router.ts",
+              "line": 11,
+              "excerpt": "const leadOnly = ['EVENT_COORDINATOR_LEAD'] as const;",
+              "file_sha256": "271ef4aef3a6f7e83895f087400480c8f07700a9a63b35b13393365b695701fd"
+            },
+            {
+              "path": "backend/src/modules/events/assignment.ts",
+              "line": 135,
+              "excerpt": "export async function listLeadOversight(",
+              "file_sha256": "9cb5c95707050fa166737cbaedb45f27624b2ba0e4b67ef107ca320ec9628750"
+            }
+          ]
+        },
+        {
+          "id": "venue->system",
+          "from": "venue",
+          "to": "system",
+          "label": "Maintains venues and blocks; decides bookings and holds",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/modules/auth/types.ts",
+              "line": 6,
+              "excerpt": "'VENUE_STAFF',",
+              "file_sha256": "848dc5b1a8d0a11aebe52218e97faf3cc68713c4411deee3bed53e5ed85a645f"
+            },
+            {
+              "path": "backend/src/modules/venues/venue-catalogue-service.ts",
+              "line": 81,
+              "excerpt": "export async function updateCatalogueVenue(",
+              "file_sha256": "f84c171b8873684aaf556c41a46a4d2d508145f1d831e53012fb8d012778258c"
+            },
+            {
+              "path": "backend/src/modules/venues/venue-bookings-router.ts",
+              "line": 6,
+              "excerpt": "placeVenueHold,",
+              "file_sha256": "7dfe8e19c8d029c8066dfbef521d261173d57aa75cc6749eb38186651ddbe80e"
+            }
+          ]
+        },
+        {
+          "id": "technical->system",
+          "from": "technical",
+          "to": "system",
+          "label": "Maintains stock, checks availability and decides equipment requests",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/modules/auth/types.ts",
+              "line": 7,
+              "excerpt": "'TECHNICAL_SUPPORT_STAFF',",
+              "file_sha256": "848dc5b1a8d0a11aebe52218e97faf3cc68713c4411deee3bed53e5ed85a645f"
+            },
+            {
+              "path": "backend/src/modules/equipment/stock-service.ts",
+              "line": 174,
+              "excerpt": "export async function updateEquipmentStock(",
+              "file_sha256": "326bf95e02a6b77e4a2ca3ba4fea7c2ea0826794c2c0844cd612d79b5b07d449"
+            },
+            {
+              "path": "backend/src/modules/equipment/equipment-service.ts",
+              "line": 194,
+              "excerpt": "export async function reviewEquipmentRequest(pool: Pick<Pool, 'connect'>,",
+              "file_sha256": "678069ca2b82bfedcdd140b2ab6c836edaf4adc9939debb7a7546b59f952c204"
+            }
+          ]
+        },
+        {
+          "id": "attendee->system",
+          "from": "attendee",
+          "to": "system",
+          "label": "Browses eligible events, registers and withdraws",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/modules/auth/types.ts",
+              "line": 8,
+              "excerpt": "'ATTENDEE',",
+              "file_sha256": "848dc5b1a8d0a11aebe52218e97faf3cc68713c4411deee3bed53e5ed85a645f"
+            },
+            {
+              "path": "backend/src/modules/registrations/registration-service.ts",
+              "line": 143,
+              "excerpt": "export async function registerForEvent(",
+              "file_sha256": "baf01859c001e1688ee52a88ba16da45a3f358d9ad1bad8127c3ba0abb9a2909"
+            },
+            {
+              "path": "backend/src/modules/registrations/service.ts",
+              "line": 43,
+              "excerpt": "export async function withdrawRegistration(pool: Pick<Pool, 'connect'>, actor: WorkflowActor, id: string, input: unknown) {",
+              "file_sha256": "167aa72038bc635dbc15b1038efc5b7ac5bc5b5753121714c226eb7d602f8cae"
+            }
+          ]
+        },
+        {
+          "id": "safety->system",
+          "from": "safety",
+          "to": "system",
+          "label": "Approves, rejects or requests safety changes",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/modules/auth/types.ts",
+              "line": 10,
+              "excerpt": "'SAFETY_OFFICER',",
+              "file_sha256": "848dc5b1a8d0a11aebe52218e97faf3cc68713c4411deee3bed53e5ed85a645f"
+            },
+            {
+              "path": "backend/src/modules/safety/service.ts",
+              "line": 284,
+              "excerpt": "export async function decideSafetyReview(",
+              "file_sha256": "4df1257126672c53ae49ca01ea2c5724117550724610258ae5ccdf6dcaf5de3f"
+            }
+          ]
+        },
+        {
+          "id": "system->identity",
+          "from": "system",
+          "to": "identity",
+          "label": "Authenticates users and obtains token verification keys",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "frontend/src/features/auth/supabase-client.ts",
+              "line": 32,
+              "excerpt": "const { data, error } = await supabase.auth.signInWithPassword({ email, password });",
+              "file_sha256": "59df258b428c5801955357ae65edfe8ce9c57952e88ea3b20dcb47370c43edc4"
+            },
+            {
+              "path": "backend/src/modules/auth/supabase.ts",
+              "line": 1,
+              "excerpt": "import { createRemoteJWKSet, jwtVerify } from 'jose';",
+              "file_sha256": "cb76f4444d7e904097b475e53430e808233f3c5af64b41bc904e80c27ddbf4db"
+            },
+            {
+              "path": "backend/src/modules/auth/supabase.ts",
+              "line": 33,
+              "excerpt": "if (SUPABASE_JWT_SECRET) {",
+              "file_sha256": "cb76f4444d7e904097b475e53430e808233f3c5af64b41bc904e80c27ddbf4db"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "path": "docs/architecture/exports/c1-context.png",
+          "sha256": "b53242b930985dc148f77f91a0b52e0959e4c8414c390c1ea375228d09bfbfb4"
+        },
+        {
+          "path": "docs/architecture/exports/c1-context.svg",
+          "sha256": "5ea6f33069bae1a4a0de0acb761a73509c267d7b1522f0a243e2195974c9a91e"
+        }
+      ],
+      "png_pixels": {
+        "width": 2043,
+        "height": 2105
+      }
+    },
+    {
+      "name": "c2-containers",
+      "mermaid_sha256": "e698cb76cbb11356e7350deb98875296239a98c8a6de9dc00c3f9f3355ab1c8c",
+      "functional_blocks": 5,
+      "legend_blocks": 1,
+      "arrows": 5,
+      "boundaries": [
+        {
+          "id": "boundary",
+          "label": "ConnectSphere system boundary",
+          "parent": null,
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/runtime-app.ts",
+              "line": 16,
+              "excerpt": "export function createRuntimeApp({",
+              "file_sha256": "9fe7951d051a16d9171cbf28e7b5ebc1c27f879021fbc2c7a6b505615844b4de"
+            }
+          ]
+        }
+      ],
+      "blocks": [
+        {
+          "id": "user",
+          "label": "Application user\n[Person]\nOne of seven supported roles",
+          "boundary": null,
+          "kind": "Architecture element",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/modules/auth/types.ts",
+              "line": 2,
+              "excerpt": "export const USER_ROLES = [",
+              "file_sha256": "848dc5b1a8d0a11aebe52218e97faf3cc68713c4411deee3bed53e5ed85a645f"
+            }
+          ]
+        },
+        {
+          "id": "identity",
+          "label": "Supabase Auth\n[External Software System]\nEmail/password sign-in;\npublished JSON Web Key Set - JWKS",
+          "boundary": null,
+          "kind": "Architecture element",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "frontend/src/features/auth/supabase-client.ts",
+              "line": 32,
+              "excerpt": "const { data, error } = await supabase.auth.signInWithPassword({ email, password });",
+              "file_sha256": "59df258b428c5801955357ae65edfe8ce9c57952e88ea3b20dcb47370c43edc4"
+            },
+            {
+              "path": "backend/src/modules/auth/supabase.ts",
+              "line": 1,
+              "excerpt": "import { createRemoteJWKSet, jwtVerify } from 'jose';",
+              "file_sha256": "cb76f4444d7e904097b475e53430e808233f3c5af64b41bc904e80c27ddbf4db"
+            },
+            {
+              "path": "backend/src/modules/auth/supabase.ts",
+              "line": 33,
+              "excerpt": "if (SUPABASE_JWT_SECRET) {",
+              "file_sha256": "cb76f4444d7e904097b475e53430e808233f3c5af64b41bc904e80c27ddbf4db"
+            }
+          ]
+        },
+        {
+          "id": "web",
+          "label": "Web application\n[Container: Vue 3 / TypeScript]\nRuns in the browser; built with Vite.\nPages, sign-in and same-origin API client",
+          "boundary": "boundary",
+          "kind": "Architecture element",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "frontend/package.json",
+              "line": 14,
+              "excerpt": "\"vue\": \"^3.5.42\",",
+              "file_sha256": "eb5d97d4a712b4b98e351b37a21f8990da8075192df08d5b3899fe4b13324f76"
+            },
+            {
+              "path": "frontend/package.json",
+              "line": 25,
+              "excerpt": "\"vite\": \"^8.2.2\",",
+              "file_sha256": "eb5d97d4a712b4b98e351b37a21f8990da8075192df08d5b3899fe4b13324f76"
+            },
+            {
+              "path": "frontend/src/app/router.ts",
+              "line": 39,
+              "excerpt": "export const router = createRouter({",
+              "file_sha256": "305d7679376dcb3e7636ef2859fee99ffbfa926cab72427d4e78a69b97ffd6fe"
+            },
+            {
+              "path": "frontend/src/lib/api-client.ts",
+              "line": 26,
+              "excerpt": "export async function getJson<T>(path: `/api/${string}`, signal?: AbortSignal): Promise<T> {",
+              "file_sha256": "ac079405d94205420a35b86c949665137962412c468953cf86e471b1bf7dcfac"
+            }
+          ]
+        },
+        {
+          "id": "api",
+          "label": "API application\n[Container: Node.js / Express 5 / TypeScript]\nVerifies sessions and permissions;\nexecutes business rules and hold-expiry timer",
+          "boundary": "boundary",
+          "kind": "Architecture element",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/package.json",
+              "line": 19,
+              "excerpt": "\"express\": \"^5.0.0\",",
+              "file_sha256": "7803effc976943b76036ca43fbf59e2dca7acbdc1cd87e1e3afb9820ccabed21"
+            },
+            {
+              "path": "backend/src/runtime-app.ts",
+              "line": 16,
+              "excerpt": "export function createRuntimeApp({",
+              "file_sha256": "9fe7951d051a16d9171cbf28e7b5ebc1c27f879021fbc2c7a6b505615844b4de"
+            },
+            {
+              "path": "backend/src/server.ts",
+              "line": 4,
+              "excerpt": "import { startHoldExpiryScheduler } from './modules/venues/hold-expiry-scheduler.js';",
+              "file_sha256": "eceebb0ca3510f72d5471523ce6cafd8c852349fe89d88ef787a91d0d5a6e1c7"
+            }
+          ]
+        },
+        {
+          "id": "db",
+          "label": "Application database\n[Container: Supabase PostgreSQL]\nRecords, constraints, audit and notification triggers;\nhold-expiry function and optional pg_cron scheduler",
+          "boundary": "boundary",
+          "kind": "Architecture element",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "database/migrations/013_venue_holds.sql",
+              "line": 102,
+              "excerpt": "CREATE FUNCTION expire_venue_holds() RETURNS integer LANGUAGE plpgsql AS $$",
+              "file_sha256": "999e966a9c6cf95b433fe08b0c74959317b92ad5180dc411f8a4778eff8447e1"
+            },
+            {
+              "path": "database/migrations/019_registration_notification_outcomes.sql",
+              "line": 35,
+              "excerpt": "CREATE TRIGGER notify_registration_outcome AFTER INSERT OR UPDATE ON event_registrations",
+              "file_sha256": "d683c90bdb0345b1e1cf8d0c8562e2ffc335fa28fd757a9e483c0982d1d27933"
+            },
+            {
+              "path": "database/migrations/023_safety_approval_invalidation.sql",
+              "line": 102,
+              "excerpt": "CREATE TRIGGER invalidate_safety_stock AFTER UPDATE ON equipment_types",
+              "file_sha256": "87b039205c29c427b32f0d93f6fed76e502cc148981b0869b7ca70bdd4d48955"
+            },
+            {
+              "path": "database/migrations/013_venue_holds.sql",
+              "line": 152,
+              "excerpt": "'SELECT cron.schedule(%L, %L, %L)',",
+              "file_sha256": "999e966a9c6cf95b433fe08b0c74959317b92ad5180dc411f8a4778eff8447e1"
+            }
+          ]
+        },
+        {
+          "id": "key",
+          "label": "Legend\nPale blue: person; blue: ConnectSphere container; grey: external system.\nArrows show caller-to-dependency interactions, including their protocol.\nLocal development uses the Vite /api proxy. Legacy HS256 verifies with a backend secret instead of JWKS.",
+          "boundary": null,
+          "kind": "Legend",
+          "result": "C4 notation explained"
+        }
+      ],
+      "connections": [
+        {
+          "id": "user->web",
+          "from": "user",
+          "to": "web",
+          "label": "Uses pages in a web browser",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "frontend/src/app/router.ts",
+              "line": 39,
+              "excerpt": "export const router = createRouter({",
+              "file_sha256": "305d7679376dcb3e7636ef2859fee99ffbfa926cab72427d4e78a69b97ffd6fe"
+            }
+          ]
+        },
+        {
+          "id": "web->api",
+          "from": "web",
+          "to": "api",
+          "label": "HTTP JSON /api with HttpOnly session cookie",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "frontend/src/lib/api-client.ts",
+              "line": 29,
+              "excerpt": "response = await fetch(path, { headers: { Accept: 'application/json' }, signal });",
+              "file_sha256": "ac079405d94205420a35b86c949665137962412c468953cf86e471b1bf7dcfac"
+            },
+            {
+              "path": "frontend/src/features/auth/session.ts",
+              "line": 99,
+              "excerpt": "const user = (await postJson<{ user: SignedInUser }>('/api/auth/login', { accessToken })).user;",
+              "file_sha256": "2fadca893d3055eef5af9ddb6d09da13c1fde1c62cb9b0c605587ff4b6330661"
+            },
+            {
+              "path": "backend/src/modules/auth/router.ts",
+              "line": 43,
+              "excerpt": "return `${COOKIE_NAME}=${encodeURIComponent(value)}; Path=/api; HttpOnly; SameSite=Lax; Max-Age=${maxAgeSeconds}${isProduction ? '; Secure' : ''}`;",
+              "file_sha256": "4beefd097c6d9960f200353b9b95035ada541a1adf387c7ee897fced25b6b75b"
+            },
+            {
+              "path": "frontend/vite.config.ts",
+              "line": 18,
+              "excerpt": "'/api': {",
+              "file_sha256": "24be694d794bc398a69b281b51246846afdb823372de01b1c7f3699b82b9e80f"
+            }
+          ]
+        },
+        {
+          "id": "web->identity",
+          "from": "web",
+          "to": "identity",
+          "label": "Signs in with email and password over HTTPS",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "frontend/src/features/auth/supabase-client.ts",
+              "line": 32,
+              "excerpt": "const { data, error } = await supabase.auth.signInWithPassword({ email, password });",
+              "file_sha256": "59df258b428c5801955357ae65edfe8ce9c57952e88ea3b20dcb47370c43edc4"
+            }
+          ]
+        },
+        {
+          "id": "api->identity",
+          "from": "api",
+          "to": "identity",
+          "label": "Fetches and caches JWKS over HTTPS in asymmetric mode",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/modules/auth/supabase.ts",
+              "line": 36,
+              "excerpt": "return cachedJwks ??= createRemoteJWKSet(new URL('/auth/v1/.well-known/jwks.json', SUPABASE_URL));",
+              "file_sha256": "cb76f4444d7e904097b475e53430e808233f3c5af64b41bc904e80c27ddbf4db"
+            },
+            {
+              "path": "backend/src/modules/auth/supabase.ts",
+              "line": 33,
+              "excerpt": "if (SUPABASE_JWT_SECRET) {",
+              "file_sha256": "cb76f4444d7e904097b475e53430e808233f3c5af64b41bc904e80c27ddbf4db"
+            }
+          ]
+        },
+        {
+          "id": "api->db",
+          "from": "api",
+          "to": "db",
+          "label": "Executes SQL using pg; TLS for shared Supabase",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/db/pool.ts",
+              "line": 15,
+              "excerpt": "const pool = new pg.Pool({",
+              "file_sha256": "18c1ee91514c8d4eae15cafafa049f9e721c123a2cfaadb9b91b0c286d925efc"
+            },
+            {
+              "path": "backend/src/db/connection.ts",
+              "line": 21,
+              "excerpt": "if (url.searchParams.get('sslmode') !== 'verify-full') {",
+              "file_sha256": "4f25b9f7eadd0379492990aa32288ebf4346e1cdc7d0f7c4f0bc7cec69f1614f"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "path": "docs/architecture/exports/c2-containers.png",
+          "sha256": "320b0f8afd0b0176ddb6ca1bbad6d0f44f8ac84b2a276dbfd7bd251df641f913"
+        },
+        {
+          "path": "docs/architecture/exports/c2-containers.svg",
+          "sha256": "cd57ab206318141a93673a41a586da1af21174a7a96943c6ebfa6b64b228149f"
+        }
+      ],
+      "png_pixels": {
+        "width": 2946,
+        "height": 1115
+      }
+    },
+    {
+      "name": "c3-components",
+      "mermaid_sha256": "82b38fc01c664c778d4535e8386fd062234bd509507ec221b67d037c4e502c6f",
+      "functional_blocks": 15,
+      "legend_blocks": 1,
+      "arrows": 30,
+      "boundaries": [
+        {
+          "id": "apiBoundary",
+          "label": "API application - container boundary: Node.js / Express 5 / TypeScript",
+          "parent": null,
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/runtime-app.ts",
+              "line": 16,
+              "excerpt": "export function createRuntimeApp({",
+              "file_sha256": "9fe7951d051a16d9171cbf28e7b5ebc1c27f879021fbc2c7a6b505615844b4de"
+            }
+          ]
+        },
+        {
+          "id": "eventModule",
+          "label": "Events module",
+          "parent": "apiBoundary",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/modules/events/confirmation.ts",
+              "line": 93,
+              "excerpt": "export async function eventReadiness(client: Reader, eventRequestId: string): Promise<EventReadiness> {",
+              "file_sha256": "f147a39dbe093cf18bd81e1c2072a345345005b5b560b9a690f9a679a13a5db2"
+            },
+            {
+              "path": "backend/src/modules/events/confirmation.ts",
+              "line": 125,
+              "excerpt": "export async function lockEventArrangements(client: Reader, eventRequestId: string): Promise<LockedEventRequest> {",
+              "file_sha256": "f147a39dbe093cf18bd81e1c2072a345345005b5b560b9a690f9a679a13a5db2"
+            },
+            {
+              "path": "backend/src/modules/events/arrangement-locks.ts",
+              "line": 7,
+              "excerpt": "export async function lockVenueBookingsBeforeEvent(client: Reader, eventRequestId: string): Promise<string[]> {",
+              "file_sha256": "3195a942a0d2c78458b490a04c674adaf3bdd6aa64d592d8a1d8551a60c6f289"
+            }
+          ]
+        },
+        {
+          "id": "safetyModule",
+          "label": "Safety module",
+          "parent": "apiBoundary",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/modules/safety/remediation.ts",
+              "line": 13,
+              "excerpt": "export async function equipmentWritable(",
+              "file_sha256": "d6b0d08883ae57129b7f020862cc3adb0088712606aa150719df9e9d1bef4714"
+            },
+            {
+              "path": "backend/src/modules/safety/remediation.ts",
+              "line": 8,
+              "excerpt": "export const technicalRemediationSql = (eventColumn: string) => `EXISTS (SELECT 1 FROM safety_reviews s",
+              "file_sha256": "d6b0d08883ae57129b7f020862cc3adb0088712606aa150719df9e9d1bef4714"
+            }
+          ]
+        }
+      ],
+      "blocks": [
+        {
+          "id": "browser",
+          "label": "Web application\n[Container: Vue 3 / TypeScript]\nBrowser pages and API clients",
+          "boundary": null,
+          "kind": "Architecture element",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "frontend/package.json",
+              "line": 14,
+              "excerpt": "\"vue\": \"^3.5.42\",",
+              "file_sha256": "eb5d97d4a712b4b98e351b37a21f8990da8075192df08d5b3899fe4b13324f76"
+            },
+            {
+              "path": "frontend/package.json",
+              "line": 25,
+              "excerpt": "\"vite\": \"^8.2.2\",",
+              "file_sha256": "eb5d97d4a712b4b98e351b37a21f8990da8075192df08d5b3899fe4b13324f76"
+            },
+            {
+              "path": "frontend/src/app/router.ts",
+              "line": 39,
+              "excerpt": "export const router = createRouter({",
+              "file_sha256": "305d7679376dcb3e7636ef2859fee99ffbfa926cab72427d4e78a69b97ffd6fe"
+            },
+            {
+              "path": "frontend/src/lib/api-client.ts",
+              "line": 26,
+              "excerpt": "export async function getJson<T>(path: `/api/${string}`, signal?: AbortSignal): Promise<T> {",
+              "file_sha256": "ac079405d94205420a35b86c949665137962412c468953cf86e471b1bf7dcfac"
+            }
+          ]
+        },
+        {
+          "id": "identity",
+          "label": "Supabase Auth\n[External Software System]\nPublished JSON Web Key Set - JWKS",
+          "boundary": null,
+          "kind": "Architecture element",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/modules/auth/supabase.ts",
+              "line": 1,
+              "excerpt": "import { createRemoteJWKSet, jwtVerify } from 'jose';",
+              "file_sha256": "cb76f4444d7e904097b475e53430e808233f3c5af64b41bc904e80c27ddbf4db"
+            }
+          ]
+        },
+        {
+          "id": "routes",
+          "label": "HTTP routers\n[Component: Express / TypeScript]\nSession and role gates, input validation,\nservice dispatch and error mapping",
+          "boundary": "apiBoundary",
+          "kind": "Architecture element",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/app.ts",
+              "line": 53,
+              "excerpt": "export function createApp({",
+              "file_sha256": "a0761cd265bfceac384bde949ed7c4982e38f6fd66326c3693a9db6cefc76ab5"
+            },
+            {
+              "path": "backend/src/modules/events/workflow-http.ts",
+              "line": 28,
+              "excerpt": "export function workflowRoute(",
+              "file_sha256": "1d1df110382c004a8ae6762f36b0573b502e9927afa7506c30284cd09e4831fc"
+            }
+          ]
+        },
+        {
+          "id": "auth",
+          "label": "Session authentication\n[Component: jose / TypeScript]\nVerifies cookie token; loads trusted\napplication profile and role",
+          "boundary": "apiBoundary",
+          "kind": "Architecture element",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/modules/auth/router.ts",
+              "line": 60,
+              "excerpt": "export async function authenticateRequest(",
+              "file_sha256": "4beefd097c6d9960f200353b9b95035ada541a1adf387c7ee897fced25b6b75b"
+            },
+            {
+              "path": "backend/src/modules/auth/user-repository.ts",
+              "line": 22,
+              "excerpt": "export async function findUserBySupabaseUid(",
+              "file_sha256": "42a18d33b33a8567d8ae469b04ee7e8570f63bb73aff4e8693010c348ddd255c"
+            }
+          ]
+        },
+        {
+          "id": "events",
+          "label": "Event workflows\n[Component: TypeScript]\nDrafts, submission, assignment, review,\nchanges, lifecycle and access rules",
+          "boundary": "eventModule",
+          "kind": "Architecture element",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/modules/events/create-draft.ts",
+              "line": 28,
+              "excerpt": "export async function createDraft(",
+              "file_sha256": "c2123ad85088a73f3a0b79a2cc6334b53e83ca5e914f7a6ea960faeb99c10105"
+            },
+            {
+              "path": "backend/src/modules/events/review-decision.ts",
+              "line": 48,
+              "excerpt": "export async function recordInitialReview(",
+              "file_sha256": "93a81ae6142a81a06d10d0b1c8d82132e0b03243454b2956b7c5e37e2de6f193"
+            },
+            {
+              "path": "backend/src/modules/events/assignment.ts",
+              "line": 213,
+              "excerpt": "export async function assignCoordinator(",
+              "file_sha256": "9cb5c95707050fa166737cbaedb45f27624b2ba0e4b67ef107ca320ec9628750"
+            },
+            {
+              "path": "backend/src/modules/events/change-requests.ts",
+              "line": 194,
+              "excerpt": "export async function submitChangeRequest(",
+              "file_sha256": "e94723428ec0e70d4f7494f41d2fabb13cea58435b285c2822a99b86711b1e85"
+            },
+            {
+              "path": "backend/src/modules/events/cancellation.ts",
+              "line": 22,
+              "excerpt": "export async function cancelEvent(",
+              "file_sha256": "da73fcb6830e800c8a638dee48e440ef22be48ade49d1222ce19f9bed41ee8d8"
+            },
+            {
+              "path": "backend/src/modules/events/completion.ts",
+              "line": 26,
+              "excerpt": "export async function completeEvent(",
+              "file_sha256": "d4da7464455ee9d58be6ba05d33a030989af0ebfdaaac73380ac72c16959c5ca"
+            }
+          ]
+        },
+        {
+          "id": "readiness",
+          "label": "Readiness and arrangement locks\n[Component: TypeScript]\nCoordinates live venue, equipment\nand pending-change checks",
+          "boundary": "eventModule",
+          "kind": "Architecture element",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/modules/events/confirmation.ts",
+              "line": 93,
+              "excerpt": "export async function eventReadiness(client: Reader, eventRequestId: string): Promise<EventReadiness> {",
+              "file_sha256": "f147a39dbe093cf18bd81e1c2072a345345005b5b560b9a690f9a679a13a5db2"
+            },
+            {
+              "path": "backend/src/modules/events/confirmation.ts",
+              "line": 125,
+              "excerpt": "export async function lockEventArrangements(client: Reader, eventRequestId: string): Promise<LockedEventRequest> {",
+              "file_sha256": "f147a39dbe093cf18bd81e1c2072a345345005b5b560b9a690f9a679a13a5db2"
+            },
+            {
+              "path": "backend/src/modules/events/arrangement-locks.ts",
+              "line": 7,
+              "excerpt": "export async function lockVenueBookingsBeforeEvent(client: Reader, eventRequestId: string): Promise<string[]> {",
+              "file_sha256": "3195a942a0d2c78458b490a04c674adaf3bdd6aa64d592d8a1d8551a60c6f289"
+            }
+          ]
+        },
+        {
+          "id": "venues",
+          "label": "Venue services\n[Component: TypeScript]\nCatalogue, search, suitability, bookings,\nholds, expiry and outage recovery",
+          "boundary": "apiBoundary",
+          "kind": "Architecture element",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/modules/venues/booking-service.ts",
+              "line": 268,
+              "excerpt": "export async function createVenueBooking(",
+              "file_sha256": "93bc18dc6af60df3b48712498acd8e2e435739fbaf4e9de56d1794b743b918c4"
+            },
+            {
+              "path": "backend/src/modules/venues/booking-service.ts",
+              "line": 708,
+              "excerpt": "export async function expireVenueHolds(database: Pick<Pool, 'query'>): Promise<number> {",
+              "file_sha256": "93bc18dc6af60df3b48712498acd8e2e435739fbaf4e9de56d1794b743b918c4"
+            },
+            {
+              "path": "backend/src/modules/venues/venue-search.ts",
+              "line": 235,
+              "excerpt": "export async function searchVenues(",
+              "file_sha256": "021405bba0736b7cda4fbff910128dfa6416be6c3cfaa615c21efc4868db678a"
+            },
+            {
+              "path": "backend/src/modules/venues/suitability-service.ts",
+              "line": 128,
+              "excerpt": "export async function checkVenueSuitability(",
+              "file_sha256": "662d58cd70d490f2453cb8d0c63f36347b1d014f7a7c9873f2099d2b7fd7bd2e"
+            },
+            {
+              "path": "backend/src/modules/venues/outage-impact.ts",
+              "line": 100,
+              "excerpt": "export async function listRecoveryArrangements(",
+              "file_sha256": "3e8b40215134705eda3c4c22026ef73de1afca1b100f740108edaa1f3ce4c112"
+            }
+          ]
+        },
+        {
+          "id": "equipment",
+          "label": "Equipment services\n[Component: TypeScript]\nStock, availability, requests,\nreservation decisions and release",
+          "boundary": "apiBoundary",
+          "kind": "Architecture element",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/modules/equipment/equipment-service.ts",
+              "line": 194,
+              "excerpt": "export async function reviewEquipmentRequest(pool: Pick<Pool, 'connect'>,",
+              "file_sha256": "678069ca2b82bfedcdd140b2ab6c836edaf4adc9939debb7a7546b59f952c204"
+            },
+            {
+              "path": "backend/src/modules/equipment/availability-service.ts",
+              "line": 104,
+              "excerpt": "export async function checkEquipmentAvailability(",
+              "file_sha256": "460393e52c5ccd3ebd2cd068f0ef8eb1b2be320669b918a303d7216d73b1c9b9"
+            },
+            {
+              "path": "backend/src/modules/equipment/stock-service.ts",
+              "line": 174,
+              "excerpt": "export async function updateEquipmentStock(",
+              "file_sha256": "326bf95e02a6b77e4a2ca3ba4fea7c2ea0826794c2c0844cd612d79b5b07d449"
+            },
+            {
+              "path": "backend/src/modules/equipment/reservation-service.ts",
+              "line": 226,
+              "excerpt": "export async function reserveEquipmentInTransaction(",
+              "file_sha256": "371db19a332cb69fcb3f1acf35fdac2f751be91ecb33e77bc20941d5dfa48e1e"
+            }
+          ]
+        },
+        {
+          "id": "registrations",
+          "label": "Registration services\n[Component: TypeScript]\nEligibility, capacity, registration,\nwithdrawal and authorised rosters",
+          "boundary": "apiBoundary",
+          "kind": "Architecture element",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/modules/registrations/registration-service.ts",
+              "line": 143,
+              "excerpt": "export async function registerForEvent(",
+              "file_sha256": "baf01859c001e1688ee52a88ba16da45a3f358d9ad1bad8127c3ba0abb9a2909"
+            },
+            {
+              "path": "backend/src/modules/registrations/service.ts",
+              "line": 43,
+              "excerpt": "export async function withdrawRegistration(pool: Pick<Pool, 'connect'>, actor: WorkflowActor, id: string, input: unknown) {",
+              "file_sha256": "167aa72038bc635dbc15b1038efc5b7ac5bc5b5753121714c226eb7d602f8cae"
+            },
+            {
+              "path": "backend/src/modules/registrations/service.ts",
+              "line": 75,
+              "excerpt": "export async function getRegistrationRoster(pool: Pick<Pool, 'connect'>, actor: WorkflowActor, eventId: string) {",
+              "file_sha256": "167aa72038bc635dbc15b1038efc5b7ac5bc5b5753121714c226eb7d602f8cae"
+            }
+          ]
+        },
+        {
+          "id": "safety",
+          "label": "Safety reviews and preparation\n[Component: TypeScript]\nReview rounds, decisions, snapshots\nand current-approval gates",
+          "boundary": "safetyModule",
+          "kind": "Architecture element",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/modules/safety/service.ts",
+              "line": 284,
+              "excerpt": "export async function decideSafetyReview(",
+              "file_sha256": "4df1257126672c53ae49ca01ea2c5724117550724610258ae5ccdf6dcaf5de3f"
+            },
+            {
+              "path": "backend/src/modules/safety/service.ts",
+              "line": 359,
+              "excerpt": "export async function startPreparation(",
+              "file_sha256": "4df1257126672c53ae49ca01ea2c5724117550724610258ae5ccdf6dcaf5de3f"
+            }
+          ]
+        },
+        {
+          "id": "remediation",
+          "label": "Technical remediation policy\n[Component: TypeScript]\nPermits confirmed-event equipment edits\nduring requested technical changes",
+          "boundary": "safetyModule",
+          "kind": "Architecture element",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/modules/safety/remediation.ts",
+              "line": 13,
+              "excerpt": "export async function equipmentWritable(",
+              "file_sha256": "d6b0d08883ae57129b7f020862cc3adb0088712606aa150719df9e9d1bef4714"
+            },
+            {
+              "path": "backend/src/modules/safety/remediation.ts",
+              "line": 8,
+              "excerpt": "export const technicalRemediationSql = (eventColumn: string) => `EXISTS (SELECT 1 FROM safety_reviews s",
+              "file_sha256": "d6b0d08883ae57129b7f020862cc3adb0088712606aa150719df9e9d1bef4714"
+            }
+          ]
+        },
+        {
+          "id": "notifications",
+          "label": "Notifications\n[Component: TypeScript]\nCaller-scoped inbox and read state;\ntransactional deduplicated notice writer",
+          "boundary": "apiBoundary",
+          "kind": "Architecture element",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/modules/notifications/notify.ts",
+              "line": 26,
+              "excerpt": "export async function recordNotifications(",
+              "file_sha256": "c99ef9c27374e977f9db7f5b429a4bc924b8f4c90267e299e8adb890005f50a2"
+            },
+            {
+              "path": "backend/src/modules/notifications/inbox.ts",
+              "line": 136,
+              "excerpt": "export async function listNotifications(",
+              "file_sha256": "eb5b2d62a7da26e01f6d8432e6798fa76c67f2e63b972f24b38e30d1cf73b798"
+            },
+            {
+              "path": "backend/src/modules/notifications/inbox.ts",
+              "line": 160,
+              "excerpt": "export async function markNotificationRead(",
+              "file_sha256": "eb5b2d62a7da26e01f6d8432e6798fa76c67f2e63b972f24b38e30d1cf73b798"
+            }
+          ]
+        },
+        {
+          "id": "expiry",
+          "label": "Hold-expiry timer\n[Component: Node.js / TypeScript]\nCalls expiry at startup and every minute",
+          "boundary": "apiBoundary",
+          "kind": "Architecture element",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/server.ts",
+              "line": 14,
+              "excerpt": "const stopHoldExpiry = startHoldExpiryScheduler(pool);",
+              "file_sha256": "eceebb0ca3510f72d5471523ce6cafd8c852349fe89d88ef787a91d0d5a6e1c7"
+            },
+            {
+              "path": "backend/src/modules/venues/hold-expiry-scheduler.ts",
+              "line": 22,
+              "excerpt": "const intervalMs = options.intervalMs ?? 60_000;",
+              "file_sha256": "626805eecc6cc40add24694311fdc0bdebe514a148800eea704d73744a97873e"
+            },
+            {
+              "path": "backend/src/modules/venues/hold-expiry-scheduler.ts",
+              "line": 33,
+              "excerpt": "await expireVenueHolds(pool);",
+              "file_sha256": "626805eecc6cc40add24694311fdc0bdebe514a148800eea704d73744a97873e"
+            }
+          ]
+        },
+        {
+          "id": "connections",
+          "label": "Database connections\n[Component: pg / TypeScript]\nShared connection pool and borrowed clients;\nSQL queries and transaction execution",
+          "boundary": "apiBoundary",
+          "kind": "Architecture element",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/db/pool.ts",
+              "line": 15,
+              "excerpt": "const pool = new pg.Pool({",
+              "file_sha256": "18c1ee91514c8d4eae15cafafa049f9e721c123a2cfaadb9b91b0c286d925efc"
+            },
+            {
+              "path": "backend/src/modules/events/workflow-support.ts",
+              "line": 135,
+              "excerpt": "const client = await pool.connect();",
+              "file_sha256": "b3ef2d98469c805a9f537d1d4c6aabe5e2f615aa495b8885c86db75f658c4323"
+            },
+            {
+              "path": "backend/src/modules/events/workflow-support.ts",
+              "line": 141,
+              "excerpt": "await client.query('COMMIT');",
+              "file_sha256": "b3ef2d98469c805a9f537d1d4c6aabe5e2f615aa495b8885c86db75f658c4323"
+            },
+            {
+              "path": "backend/src/modules/events/review-decision.ts",
+              "line": 63,
+              "excerpt": "await client.query('BEGIN ISOLATION LEVEL READ COMMITTED');",
+              "file_sha256": "93a81ae6142a81a06d10d0b1c8d82132e0b03243454b2956b7c5e37e2de6f193"
+            }
+          ]
+        },
+        {
+          "id": "db",
+          "label": "Application database\n[Container: Supabase PostgreSQL]\nRecords, integrity guards and audit;\nSQL notification and safety-invalidation triggers;\nexpiry function and optional database pg_cron",
+          "boundary": null,
+          "kind": "Architecture element",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "database/migrations/013_venue_holds.sql",
+              "line": 102,
+              "excerpt": "CREATE FUNCTION expire_venue_holds() RETURNS integer LANGUAGE plpgsql AS $$",
+              "file_sha256": "999e966a9c6cf95b433fe08b0c74959317b92ad5180dc411f8a4778eff8447e1"
+            },
+            {
+              "path": "database/migrations/019_registration_notification_outcomes.sql",
+              "line": 35,
+              "excerpt": "CREATE TRIGGER notify_registration_outcome AFTER INSERT OR UPDATE ON event_registrations",
+              "file_sha256": "d683c90bdb0345b1e1cf8d0c8562e2ffc335fa28fd757a9e483c0982d1d27933"
+            },
+            {
+              "path": "database/migrations/023_safety_approval_invalidation.sql",
+              "line": 102,
+              "excerpt": "CREATE TRIGGER invalidate_safety_stock AFTER UPDATE ON equipment_types",
+              "file_sha256": "87b039205c29c427b32f0d93f6fed76e502cc148981b0869b7ca70bdd4d48955"
+            },
+            {
+              "path": "database/migrations/013_venue_holds.sql",
+              "line": 152,
+              "excerpt": "'SELECT cron.schedule(%L, %L, %L)',",
+              "file_sha256": "999e966a9c6cf95b433fe08b0c74959317b92ad5180dc411f8a4778eff8447e1"
+            }
+          ]
+        },
+        {
+          "id": "key",
+          "label": "Legend\nPale blue: API component; blue: supporting container; grey: external system.\nLabelled arrows show calls/dependencies. Nested groups identify module ownership.\nSQL triggers and pg_cron execute inside PostgreSQL. Legacy HS256 uses a backend secret instead of JWKS.",
+          "boundary": null,
+          "kind": "Legend",
+          "result": "C4 notation explained"
+        }
+      ],
+      "connections": [
+        {
+          "id": "browser->routes",
+          "from": "browser",
+          "to": "routes",
+          "label": "HTTP JSON /api; session cookie",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "frontend/src/lib/api-client.ts",
+              "line": 29,
+              "excerpt": "response = await fetch(path, { headers: { Accept: 'application/json' }, signal });",
+              "file_sha256": "ac079405d94205420a35b86c949665137962412c468953cf86e471b1bf7dcfac"
+            },
+            {
+              "path": "backend/src/modules/auth/router.ts",
+              "line": 43,
+              "excerpt": "return `${COOKIE_NAME}=${encodeURIComponent(value)}; Path=/api; HttpOnly; SameSite=Lax; Max-Age=${maxAgeSeconds}${isProduction ? '; Secure' : ''}`;",
+              "file_sha256": "4beefd097c6d9960f200353b9b95035ada541a1adf387c7ee897fced25b6b75b"
+            }
+          ]
+        },
+        {
+          "id": "routes->auth",
+          "from": "routes",
+          "to": "auth",
+          "label": "Verifies session and actor",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/runtime-app.ts",
+              "line": 21,
+              "excerpt": "authenticate: (request: Request) => authenticateRequest(pool, supabaseAuth, request),",
+              "file_sha256": "9fe7951d051a16d9171cbf28e7b5ebc1c27f879021fbc2c7a6b505615844b4de"
+            },
+            {
+              "path": "backend/src/modules/events/workflow-http.ts",
+              "line": 36,
+              "excerpt": "const actor = await dependencies.authenticate(request);",
+              "file_sha256": "1d1df110382c004a8ae6762f36b0573b502e9927afa7506c30284cd09e4831fc"
+            }
+          ]
+        },
+        {
+          "id": "routes->connections",
+          "from": "routes",
+          "to": "connections",
+          "label": "Queries public database-readiness status",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/app.ts",
+              "line": 68,
+              "excerpt": "'SELECT key, value FROM scaffold_metadata WHERE key = $1',",
+              "file_sha256": "a0761cd265bfceac384bde949ed7c4982e38f6fd66326c3693a9db6cefc76ab5"
+            }
+          ]
+        },
+        {
+          "id": "routes->events",
+          "from": "routes",
+          "to": "events",
+          "label": "Calls event workflows",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/app.ts",
+              "line": 123,
+              "excerpt": "if (submittedRequests) app.use('/api/events', createSubmittedRequestsRouter(submittedRequests));",
+              "file_sha256": "a0761cd265bfceac384bde949ed7c4982e38f6fd66326c3693a9db6cefc76ab5"
+            },
+            {
+              "path": "backend/src/app.ts",
+              "line": 107,
+              "excerpt": "app.use('/api/events', createConfirmationRouter(workspace));",
+              "file_sha256": "a0761cd265bfceac384bde949ed7c4982e38f6fd66326c3693a9db6cefc76ab5"
+            }
+          ]
+        },
+        {
+          "id": "routes->venues",
+          "from": "routes",
+          "to": "venues",
+          "label": "Calls venue services",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/app.ts",
+              "line": 96,
+              "excerpt": "app.use('/api/venue-bookings', createVenueBookingsRouter(workspace));",
+              "file_sha256": "a0761cd265bfceac384bde949ed7c4982e38f6fd66326c3693a9db6cefc76ab5"
+            },
+            {
+              "path": "backend/src/app.ts",
+              "line": 115,
+              "excerpt": "app.use('/api/venues', createVenueRouter(workspace));",
+              "file_sha256": "a0761cd265bfceac384bde949ed7c4982e38f6fd66326c3693a9db6cefc76ab5"
+            }
+          ]
+        },
+        {
+          "id": "routes->equipment",
+          "from": "routes",
+          "to": "equipment",
+          "label": "Calls equipment services",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/app.ts",
+              "line": 93,
+              "excerpt": "app.use('/api', createEquipmentRouter(workspace));",
+              "file_sha256": "a0761cd265bfceac384bde949ed7c4982e38f6fd66326c3693a9db6cefc76ab5"
+            },
+            {
+              "path": "backend/src/app.ts",
+              "line": 87,
+              "excerpt": "app.use('/api/equipment/availability', createEquipmentAvailabilityRouter(workspace));",
+              "file_sha256": "a0761cd265bfceac384bde949ed7c4982e38f6fd66326c3693a9db6cefc76ab5"
+            }
+          ]
+        },
+        {
+          "id": "routes->registrations",
+          "from": "routes",
+          "to": "registrations",
+          "label": "Calls registration services",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/app.ts",
+              "line": 85,
+              "excerpt": "app.use('/api', createRegistrationRouter(workspace));",
+              "file_sha256": "a0761cd265bfceac384bde949ed7c4982e38f6fd66326c3693a9db6cefc76ab5"
+            },
+            {
+              "path": "backend/src/app.ts",
+              "line": 90,
+              "excerpt": "app.use('/api/attendee', createAttendeeRegistrationRouter(workspace));",
+              "file_sha256": "a0761cd265bfceac384bde949ed7c4982e38f6fd66326c3693a9db6cefc76ab5"
+            }
+          ]
+        },
+        {
+          "id": "routes->safety",
+          "from": "routes",
+          "to": "safety",
+          "label": "Calls safety and preparation",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/app.ts",
+              "line": 109,
+              "excerpt": "app.use('/api', createSafetyRouter(workspace));",
+              "file_sha256": "a0761cd265bfceac384bde949ed7c4982e38f6fd66326c3693a9db6cefc76ab5"
+            }
+          ]
+        },
+        {
+          "id": "routes->notifications",
+          "from": "routes",
+          "to": "notifications",
+          "label": "Lists inbox; marks notices read",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/app.ts",
+              "line": 95,
+              "excerpt": "app.use('/api/notifications', createNotificationRouter(workspace));",
+              "file_sha256": "a0761cd265bfceac384bde949ed7c4982e38f6fd66326c3693a9db6cefc76ab5"
+            }
+          ]
+        },
+        {
+          "id": "auth->identity",
+          "from": "auth",
+          "to": "identity",
+          "label": "HTTPS: cached JWKS in asymmetric mode",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/modules/auth/supabase.ts",
+              "line": 36,
+              "excerpt": "return cachedJwks ??= createRemoteJWKSet(new URL('/auth/v1/.well-known/jwks.json', SUPABASE_URL));",
+              "file_sha256": "cb76f4444d7e904097b475e53430e808233f3c5af64b41bc904e80c27ddbf4db"
+            },
+            {
+              "path": "backend/src/modules/auth/supabase.ts",
+              "line": 33,
+              "excerpt": "if (SUPABASE_JWT_SECRET) {",
+              "file_sha256": "cb76f4444d7e904097b475e53430e808233f3c5af64b41bc904e80c27ddbf4db"
+            }
+          ]
+        },
+        {
+          "id": "auth->connections",
+          "from": "auth",
+          "to": "connections",
+          "label": "Queries trusted profile",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/modules/auth/router.ts",
+              "line": 67,
+              "excerpt": "return findUserBySupabaseUid(database, claims.uid);",
+              "file_sha256": "4beefd097c6d9960f200353b9b95035ada541a1adf387c7ee897fced25b6b75b"
+            },
+            {
+              "path": "backend/src/modules/auth/user-repository.ts",
+              "line": 25,
+              "excerpt": "const result = await database.query<UserRow>(`",
+              "file_sha256": "42a18d33b33a8567d8ae469b04ee7e8570f63bb73aff4e8693010c348ddd255c"
+            }
+          ]
+        },
+        {
+          "id": "events->readiness",
+          "from": "events",
+          "to": "readiness",
+          "label": "Checks readiness; locks arrangements",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/modules/events/confirmation.ts",
+              "line": 185,
+              "excerpt": "const event = await lockEventArrangements(client, eventRequestId);",
+              "file_sha256": "f147a39dbe093cf18bd81e1c2072a345345005b5b560b9a690f9a679a13a5db2"
+            },
+            {
+              "path": "backend/src/modules/events/confirmation.ts",
+              "line": 159,
+              "excerpt": "const readiness = event.status === 'APPROVED' ? await eventReadiness(client, eventRequestId) : null;",
+              "file_sha256": "f147a39dbe093cf18bd81e1c2072a345345005b5b560b9a690f9a679a13a5db2"
+            }
+          ]
+        },
+        {
+          "id": "safety->readiness",
+          "from": "safety",
+          "to": "readiness",
+          "label": "Reuses readiness and locks",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/modules/safety/service.ts",
+              "line": 296,
+              "excerpt": "const event = await lockEventArrangements(client, eventId);",
+              "file_sha256": "4df1257126672c53ae49ca01ea2c5724117550724610258ae5ccdf6dcaf5de3f"
+            },
+            {
+              "path": "backend/src/modules/safety/service.ts",
+              "line": 248,
+              "excerpt": "readiness: PLANNING.includes(event.status) ? await eventReadiness(client, eventId) : null,",
+              "file_sha256": "4df1257126672c53ae49ca01ea2c5724117550724610258ae5ccdf6dcaf5de3f"
+            }
+          ]
+        },
+        {
+          "id": "readiness->venues",
+          "from": "readiness",
+          "to": "venues",
+          "label": "Checks live venue readiness",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/modules/events/confirmation.ts",
+              "line": 34,
+              "excerpt": "const venue = await venueArrangementReadiness(client, eventRequestId);",
+              "file_sha256": "f147a39dbe093cf18bd81e1c2072a345345005b5b560b9a690f9a679a13a5db2"
+            }
+          ]
+        },
+        {
+          "id": "readiness->equipment",
+          "from": "readiness",
+          "to": "equipment",
+          "label": "Reads equipment readiness",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/modules/events/confirmation.ts",
+              "line": 67,
+              "excerpt": "const snapshot = await readEquipmentReservationSnapshot(client, eventRequestId);",
+              "file_sha256": "f147a39dbe093cf18bd81e1c2072a345345005b5b560b9a690f9a679a13a5db2"
+            },
+            {
+              "path": "backend/src/modules/events/confirmation.ts",
+              "line": 68,
+              "excerpt": "const equipment = equipmentReadiness(snapshot);",
+              "file_sha256": "f147a39dbe093cf18bd81e1c2072a345345005b5b560b9a690f9a679a13a5db2"
+            }
+          ]
+        },
+        {
+          "id": "readiness->connections",
+          "from": "readiness",
+          "to": "connections",
+          "label": "Runs readiness and lock SQL",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/modules/events/confirmation.ts",
+              "line": 39,
+              "excerpt": "const recovery = await client.query<{ count: number }>(`SELECT count(DISTINCT i.venue_booking_id)::int AS count",
+              "file_sha256": "f147a39dbe093cf18bd81e1c2072a345345005b5b560b9a690f9a679a13a5db2"
+            },
+            {
+              "path": "backend/src/modules/events/arrangement-locks.ts",
+              "line": 8,
+              "excerpt": "const snapshot = await client.query<{ id: string; venueId: string }>(`SELECT id, venue_id AS \"venueId\"",
+              "file_sha256": "3195a942a0d2c78458b490a04c674adaf3bdd6aa64d592d8a1d8551a60c6f289"
+            }
+          ]
+        },
+        {
+          "id": "equipment->remediation",
+          "from": "equipment",
+          "to": "remediation",
+          "label": "Checks technical edit policy",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/modules/equipment/equipment-service.ts",
+              "line": 6,
+              "excerpt": "import { equipmentWritable, technicalRemediationSql } from '../safety/remediation.js';",
+              "file_sha256": "678069ca2b82bfedcdd140b2ab6c836edaf4adc9939debb7a7546b59f952c204"
+            },
+            {
+              "path": "backend/src/modules/equipment/reservation-service.ts",
+              "line": 177,
+              "excerpt": "if (!(await equipmentWritable(client, eventId, event.rows[0].status))) {",
+              "file_sha256": "371db19a332cb69fcb3f1acf35fdac2f751be91ecb33e77bc20941d5dfa48e1e"
+            }
+          ]
+        },
+        {
+          "id": "remediation->connections",
+          "from": "remediation",
+          "to": "connections",
+          "label": "Reads latest safety round",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/modules/safety/remediation.ts",
+              "line": 18,
+              "excerpt": "const found = await client.query<{ open: boolean }>(`SELECT ${technicalRemediationSql('$1::uuid')} AS open`, [eventRequestId]);",
+              "file_sha256": "d6b0d08883ae57129b7f020862cc3adb0088712606aa150719df9e9d1bef4714"
+            }
+          ]
+        },
+        {
+          "id": "events->notifications",
+          "from": "events",
+          "to": "notifications",
+          "label": "Calls notice writer",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/modules/events/submit-request.ts",
+              "line": 132,
+              "excerpt": "await recordNotifications(client, submissionNotifications(saved));",
+              "file_sha256": "4bd516167f56c80eda5c0a1ce0088296c70176d3c1a251decaaa16f95f05cae2"
+            },
+            {
+              "path": "backend/src/modules/events/cancellation.ts",
+              "line": 98,
+              "excerpt": "await recordNotifications(client, notices);",
+              "file_sha256": "da73fcb6830e800c8a638dee48e440ef22be48ade49d1222ce19f9bed41ee8d8"
+            }
+          ]
+        },
+        {
+          "id": "venues->notifications",
+          "from": "venues",
+          "to": "notifications",
+          "label": "Calls notice writer",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/modules/venues/booking-service.ts",
+              "line": 313,
+              "excerpt": "await recordNotifications(client, replacementRequestedNotifications(ref, await venueStaffIds(client)));",
+              "file_sha256": "93bc18dc6af60df3b48712498acd8e2e435739fbaf4e9de56d1794b743b918c4"
+            }
+          ]
+        },
+        {
+          "id": "equipment->notifications",
+          "from": "equipment",
+          "to": "notifications",
+          "label": "Calls notice writer",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/modules/equipment/equipment-service.ts",
+              "line": 221,
+              "excerpt": "await recordNotifications(client, [state.event.coordinatorId, args.actor.id].filter((id): id is string => id !== null)",
+              "file_sha256": "678069ca2b82bfedcdd140b2ab6c836edaf4adc9939debb7a7546b59f952c204"
+            }
+          ]
+        },
+        {
+          "id": "safety->notifications",
+          "from": "safety",
+          "to": "notifications",
+          "label": "Calls notice writer",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/modules/safety/service.ts",
+              "line": 184,
+              "excerpt": "await recordNotifications(client, officers.rows.map(({ id }) => ({",
+              "file_sha256": "4df1257126672c53ae49ca01ea2c5724117550724610258ae5ccdf6dcaf5de3f"
+            }
+          ]
+        },
+        {
+          "id": "events->connections",
+          "from": "events",
+          "to": "connections",
+          "label": "Pool reads; transaction writes",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/modules/events/assignment.ts",
+              "line": 120,
+              "excerpt": "const found = await pool.query<DatedRequestRow<UnassignedRequest>>(",
+              "file_sha256": "9cb5c95707050fa166737cbaedb45f27624b2ba0e4b67ef107ca320ec9628750"
+            },
+            {
+              "path": "backend/src/modules/events/workflow-support.ts",
+              "line": 135,
+              "excerpt": "const client = await pool.connect();",
+              "file_sha256": "b3ef2d98469c805a9f537d1d4c6aabe5e2f615aa495b8885c86db75f658c4323"
+            },
+            {
+              "path": "backend/src/modules/events/review-decision.ts",
+              "line": 63,
+              "excerpt": "await client.query('BEGIN ISOLATION LEVEL READ COMMITTED');",
+              "file_sha256": "93a81ae6142a81a06d10d0b1c8d82132e0b03243454b2956b7c5e37e2de6f193"
+            }
+          ]
+        },
+        {
+          "id": "venues->connections",
+          "from": "venues",
+          "to": "connections",
+          "label": "Pool/client queries; expiry SQL",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/modules/venues/booking-service.ts",
+              "line": 129,
+              "excerpt": "const found = await pool.query<BookingRow>(`${bookingSelect}",
+              "file_sha256": "93bc18dc6af60df3b48712498acd8e2e435739fbaf4e9de56d1794b743b918c4"
+            },
+            {
+              "path": "backend/src/modules/venues/booking-service.ts",
+              "line": 277,
+              "excerpt": "return inActorTransaction(pool, actor.id, async (client) => {",
+              "file_sha256": "93bc18dc6af60df3b48712498acd8e2e435739fbaf4e9de56d1794b743b918c4"
+            },
+            {
+              "path": "backend/src/modules/venues/booking-service.ts",
+              "line": 709,
+              "excerpt": "const result = await database.query<{ expired: number }>('SELECT expire_venue_holds() AS expired');",
+              "file_sha256": "93bc18dc6af60df3b48712498acd8e2e435739fbaf4e9de56d1794b743b918c4"
+            }
+          ]
+        },
+        {
+          "id": "equipment->connections",
+          "from": "equipment",
+          "to": "connections",
+          "label": "Pool/client queries",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/modules/equipment/availability-service.ts",
+              "line": 52,
+              "excerpt": "const found = await pool.query<{ event: EquipmentEventSummary }>(`SELECT ${eventJson} AS event",
+              "file_sha256": "460393e52c5ccd3ebd2cd068f0ef8eb1b2be320669b918a303d7216d73b1c9b9"
+            },
+            {
+              "path": "backend/src/modules/equipment/equipment-service.ts",
+              "line": 205,
+              "excerpt": "return await inActorTransaction(pool, args.actor.id, async client => {",
+              "file_sha256": "678069ca2b82bfedcdd140b2ab6c836edaf4adc9939debb7a7546b59f952c204"
+            }
+          ]
+        },
+        {
+          "id": "registrations->connections",
+          "from": "registrations",
+          "to": "connections",
+          "label": "Reads; writes under locks",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/modules/registrations/registration-service.ts",
+              "line": 91,
+              "excerpt": "const found = await pool.query<FactsRow>(",
+              "file_sha256": "baf01859c001e1688ee52a88ba16da45a3f358d9ad1bad8127c3ba0abb9a2909"
+            },
+            {
+              "path": "backend/src/modules/registrations/registration-service.ts",
+              "line": 149,
+              "excerpt": "return inActorTransaction(pool, actor.id, async client => {",
+              "file_sha256": "baf01859c001e1688ee52a88ba16da45a3f358d9ad1bad8127c3ba0abb9a2909"
+            },
+            {
+              "path": "backend/src/modules/registrations/service.ts",
+              "line": 33,
+              "excerpt": "return inActorTransaction(pool, actor.id, async client => {",
+              "file_sha256": "167aa72038bc635dbc15b1038efc5b7ac5bc5b5753121714c226eb7d602f8cae"
+            }
+          ]
+        },
+        {
+          "id": "safety->connections",
+          "from": "safety",
+          "to": "connections",
+          "label": "Review and preparation SQL",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/modules/safety/service.ts",
+              "line": 105,
+              "excerpt": "return inActorTransaction(pool, actor.id, async (client) => {",
+              "file_sha256": "4df1257126672c53ae49ca01ea2c5724117550724610258ae5ccdf6dcaf5de3f"
+            },
+            {
+              "path": "backend/src/modules/safety/service.ts",
+              "line": 62,
+              "excerpt": "return (await client.query<RoundRow>(`SELECT ${roundColumns} WHERE s.event_request_id = $1 ORDER BY s.round DESC`,",
+              "file_sha256": "4df1257126672c53ae49ca01ea2c5724117550724610258ae5ccdf6dcaf5de3f"
+            }
+          ]
+        },
+        {
+          "id": "notifications->connections",
+          "from": "notifications",
+          "to": "connections",
+          "label": "Inbox reads; caller-client inserts",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/modules/notifications/inbox.ts",
+              "line": 139,
+              "excerpt": "const found = await pool.query<Row>(",
+              "file_sha256": "eb5b2d62a7da26e01f6d8432e6798fa76c67f2e63b972f24b38e30d1cf73b798"
+            },
+            {
+              "path": "backend/src/modules/notifications/notify.ts",
+              "line": 45,
+              "excerpt": "const result = await client.query(",
+              "file_sha256": "c99ef9c27374e977f9db7f5b429a4bc924b8f4c90267e299e8adb890005f50a2"
+            }
+          ]
+        },
+        {
+          "id": "expiry->venues",
+          "from": "expiry",
+          "to": "venues",
+          "label": "Calls expiry wrapper",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/modules/venues/hold-expiry-scheduler.ts",
+              "line": 2,
+              "excerpt": "import { expireVenueHolds } from './booking-service.js';",
+              "file_sha256": "626805eecc6cc40add24694311fdc0bdebe514a148800eea704d73744a97873e"
+            },
+            {
+              "path": "backend/src/modules/venues/hold-expiry-scheduler.ts",
+              "line": 33,
+              "excerpt": "await expireVenueHolds(pool);",
+              "file_sha256": "626805eecc6cc40add24694311fdc0bdebe514a148800eea704d73744a97873e"
+            }
+          ]
+        },
+        {
+          "id": "connections->db",
+          "from": "connections",
+          "to": "db",
+          "label": "PostgreSQL via pg; TLS for shared Supabase",
+          "result": "Source supported",
+          "evidence": [
+            {
+              "path": "backend/src/db/pool.ts",
+              "line": 15,
+              "excerpt": "const pool = new pg.Pool({",
+              "file_sha256": "18c1ee91514c8d4eae15cafafa049f9e721c123a2cfaadb9b91b0c286d925efc"
+            },
+            {
+              "path": "backend/src/db/connection.ts",
+              "line": 21,
+              "excerpt": "if (url.searchParams.get('sslmode') !== 'verify-full') {",
+              "file_sha256": "4f25b9f7eadd0379492990aa32288ebf4346e1cdc7d0f7c4f0bc7cec69f1614f"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "path": "docs/architecture/exports/c3-components.png",
+          "sha256": "55bc54d60e86a5b84356e2e444ec58a0da96a5f1548a091ae297b2f79387c4b3"
+        },
+        {
+          "path": "docs/architecture/exports/c3-components.svg",
+          "sha256": "a86215852d0284660534920da7fb7cb082ee75d78c472257481b6f87337211f5"
+        }
+      ],
+      "png_pixels": {
+        "width": 7322,
+        "height": 2357
+      }
+    }
+  ],
+  "implementation_qualifications": [
+    "JWKS is fetched and cached only in asymmetric mode; legacy HS256 verifies locally with a backend secret.",
+    "TLS describes shared Supabase; disposable local PostgreSQL configurations can use plaintext loopback connections.",
+    "The database pg_cron job is optional per environment. No running database or job state was freshly checked.",
+    "Database connections groups pg.Pool and borrowed clients. It is not a repository or business-rule layer.",
+    "HTTP role gates and service/policy ownership, assignment and transition checks have distinct responsibilities.",
+    "Services call the application notification writer with their existing transaction client; SQL triggers remain in PostgreSQL.",
+    "Registration/withdrawal, final confirmation and stock-shortfall notifications use migration 019 triggers. Cancellation uses the application writer; expiry notices are written by the SQL expiry function.",
+    "The repository lists Sprint 3 administratively Active and Sprint 4 Future. This 5 November audit is outside the configured Sprint 3 dates and supplies no sprint-end delivery credit."
+  ],
+  "cross_checks": {
+    "api_contract": "docs/architecture/api-contract.md",
+    "data_model": "docs/database-diagram.md",
+    "contract_or_schema_changes": false
+  },
+  "limits": {
+    "application_test_execution": "Not executed",
+    "shared_database_verification": "Not executed",
+    "integrated_acceptance": "Not assessed",
+    "independent_review": "Not recorded"
+  },
+  "visual_inspection": "All three diagrams inspected; high-resolution PNG and scalable SVG exports supplied. Geometry results are in render-validation.json.",
+  "render_notes": [
+    "An initial direct C3 PNG output failed with an UNKNOWN file-open error. Rendering to a temporary file and copying succeeded; the retained renderer uses that method.",
+    "All six final renders exited 0. Layout iterations changed no product code."
+  ],
+  "c4_notation_sources": [
+    "https://c4model.com/diagrams/system-context",
+    "https://c4model.com/diagrams/container",
+    "https://c4model.com/diagrams/component",
+    "https://c4model.com/diagrams/notation"
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "label": "Pre-Week 7 customer changes",
+  "source_commit": "b981f1133750e7ddd42ac412651c915cb4485418",
+  "source_commit_date": "2026-10-01T15:06:46+08:00",
+  "customer_change_receipt": "2026-10-02",
+  "preserved_on": "2026-11-06",
+  "method": "Verbatim git blob copies; no historical content rewritten",
+  "class_diagram": "Not recorded",
+  "sequence_diagrams": "Not recorded",
+  "historical_exports": "Not recorded",
+  "files": [
+    {
+      "source_path": "docs/architecture/README.md",
+      "snapshot_path": "architecture.md",
+      "git_blob": "cf0b0ce69f23465b36bb2a6ae52f67de4d4fe74c",
+      "sha256": "81ef527f7f8c8bf7d9413ce567cd0f1bc312b8bd0b65e9fc1ae99bb6b45307cd"
+    },
+    {
+      "source_path": "docs/architecture/api-contract.md",
+      "snapshot_path": "api-contract.md",
+      "git_blob": "cafc77e30bd9e1baf5c70502c574160ea8b4d1ac",
+      "sha256": "94438455127c5c6f8b913dc11f616926cd3304078cb94d3b248e19cedce75726"
+    },
+    {
+      "source_path": "docs/database-diagram.md",
+      "snapshot_path": "database-diagram.md",
+      "git_blob": "fc7ed2c9b2927075acc21991da351d298a8f1361",
+      "sha256": "1298b22bff790fcd9a36f80ad14f5417195856fa5d05965e7ffcd4fa61f02209"
+    }
+  ]
+}

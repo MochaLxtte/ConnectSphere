@@ -1,0 +1,1519 @@
+{
+  "browser": "Chrome/153.0.8010.12",
+  "renderer": "Mermaid CLI 11.17.1 / Mermaid 11.17.2; ELK layout",
+  "checks": "Every node label/shape fit; directed edge endpoints and dashed/solid style; edge labels; cluster label/membership; node/label collisions and canvas containment; source/export hashes",
+  "diagrams": [
+    {
+      "name": "c1-context-original",
+      "result": "Pass",
+      "problems": [],
+      "dimensions": {
+        "width": 1509,
+        "height": 708
+      },
+      "source_sha256": "93c6d39b0a64e4fb58dac502ec30ea39d680ed444b4f815add839828cc972ea7",
+      "svg_sha256": "e688951019e1c3f8a3832b315b5d3fe3f6ab24691bc199a3bfcb94453a4ea379",
+      "png_sha256": "da6cc3a7b513b0933b7c2393e20eebbd739656d7a24756dba5ab96c5a899f0fa",
+      "nodes": [
+        {
+          "id": "my-svg-flowchart-organiser-0",
+          "label": "Event OrganiserProvides requests and manages own events",
+          "bounds": {
+            "x": 8.015625,
+            "y": 8,
+            "width": 328,
+            "height": 116
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-coordinator-1",
+          "label": "Event CoordinatorReviews and coordinates assigned events",
+          "bounds": {
+            "x": 8.015625,
+            "y": 164,
+            "width": 328,
+            "height": 116
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-venue-2",
+          "label": "Venue StaffMaintains venues and decides bookings",
+          "bounds": {
+            "x": 8.015625,
+            "y": 320,
+            "width": 328,
+            "height": 116
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-technical-3",
+          "label": "Technical Support StaffArranges equipment",
+          "bounds": {
+            "x": 83.765625,
+            "y": 476,
+            "width": 252.25,
+            "height": 92
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-attendee-4",
+          "label": "AttendeeRegisters and withdraws",
+          "bounds": {
+            "x": 73.71875,
+            "y": 608,
+            "width": 262.296875,
+            "height": 92
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-system-5",
+          "label": "ConnectSphereEvent planning and venue booking system",
+          "bounds": {
+            "x": 636.015625,
+            "y": 320,
+            "width": 328,
+            "height": 116
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-identity-6",
+          "label": "Supabase AuthExternal identity service",
+          "bounds": {
+            "x": 1244.015625,
+            "y": 332,
+            "width": 256.96875,
+            "height": 92
+          },
+          "label_within_shape": true
+        }
+      ],
+      "edges": [
+        {
+          "id": "my-svg-L_organiser_system_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        },
+        {
+          "id": "my-svg-L_coordinator_system_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        },
+        {
+          "id": "my-svg-L_venue_system_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        },
+        {
+          "id": "my-svg-L_technical_system_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        },
+        {
+          "id": "my-svg-L_attendee_system_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        },
+        {
+          "id": "my-svg-L_system_identity_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        }
+      ],
+      "labels": [
+        {
+          "id": "L_organiser_system_0",
+          "text": "Requests and changes",
+          "bounds": {
+            "x": 394.1796875,
+            "y": 53.5,
+            "width": 163.671875,
+            "height": 24
+          }
+        },
+        {
+          "id": "L_coordinator_system_0",
+          "text": "Review and planning",
+          "bounds": {
+            "x": 401.7421875,
+            "y": 209.5,
+            "width": 148.546875,
+            "height": 24
+          }
+        },
+        {
+          "id": "L_venue_system_0",
+          "text": "Venue availability and booking decisions",
+          "bounds": {
+            "x": 376.015625,
+            "y": 353.5,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "id": "L_technical_system_0",
+          "text": "Availability and reservations",
+          "bounds": {
+            "x": 377,
+            "y": 509.5,
+            "width": 198.03125,
+            "height": 24
+          }
+        },
+        {
+          "id": "L_attendee_system_0",
+          "text": "Event registration",
+          "bounds": {
+            "x": 413.7578125,
+            "y": 641.5,
+            "width": 124.515625,
+            "height": 24
+          }
+        },
+        {
+          "id": "L_system_identity_0",
+          "text": "Sign-in and token verification",
+          "bounds": {
+            "x": 1004.015625,
+            "y": 353.5,
+            "width": 200,
+            "height": 48
+          }
+        }
+      ],
+      "clusters": [],
+      "collisions": [],
+      "labelCollisions": [],
+      "nodeCollisions": [],
+      "outOfBounds": []
+    },
+    {
+      "name": "c2-containers-original",
+      "result": "Pass",
+      "problems": [],
+      "dimensions": {
+        "width": 2314,
+        "height": 242
+      },
+      "source_sha256": "847f757e46220c2b1ddeec3773f25a85e072b4cad8d28fb90d260d686105fa6b",
+      "svg_sha256": "73131a9ed2e9fbaf4a63b8ed51851f8c14e7b01916d904858f30c5a26808f893",
+      "png_sha256": "9b2e4da2d9729b933873d138f228865836da939791597b03f0bbd0dbd06105f0",
+      "nodes": [
+        {
+          "id": "my-svg-flowchart-user-0",
+          "label": "UserOne of five application roles",
+          "bounds": {
+            "x": 8.001836776733398,
+            "y": 65.82067108154297,
+            "width": 285.5186767578125,
+            "height": 92.02112579345703
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-identity-1",
+          "label": "Supabase AuthEmail/password sign-in and signing keys",
+          "bounds": {
+            "x": 1977.9228515625,
+            "y": 8.441780090332031,
+            "width": 328.0751953125,
+            "height": 116.02664184570312
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-web-2",
+          "label": "Web applicationVue 3, TypeScript, VitePages and API client",
+          "bounds": {
+            "x": 490.8783264160156,
+            "y": 53.81791305541992,
+            "width": 249.63540649414062,
+            "height": 116.02662658691406
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-api-3",
+          "label": "API applicationExpress 5, TypeScriptAuthorization and business rules",
+          "bounds": {
+            "x": 919.3985595703125,
+            "y": 73.15567779541016,
+            "width": 319.3233642578125,
+            "height": 116.0266342163086
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-db-4",
+          "label": "DatabaseSupabase PostgreSQLPersistent application records",
+          "bounds": {
+            "x": 1446.41015625,
+            "y": 79.12467193603516,
+            "width": 231.9439697265625,
+            "height": 142.76419067382812
+          },
+          "label_within_shape": true
+        }
+      ],
+      "edges": [
+        {
+          "id": "my-svg-L_user_web_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        },
+        {
+          "id": "my-svg-L_web_api_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        },
+        {
+          "id": "my-svg-L_web_identity_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        },
+        {
+          "id": "my-svg-L_api_identity_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        },
+        {
+          "id": "my-svg-L_api_db_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        }
+      ],
+      "labels": [
+        {
+          "id": "L_user_web_0",
+          "text": "Uses browser",
+          "bounds": {
+            "x": 333.5296936035156,
+            "y": 99.32836151123047,
+            "width": 97.8349609375,
+            "height": 24.005508422851562
+          }
+        },
+        {
+          "id": "L_web_api_0",
+          "text": "HTTP JSON /api",
+          "bounds": {
+            "x": 770.5206298828125,
+            "y": 118.66613006591797,
+            "width": 118.87103271484375,
+            "height": 24.005516052246094
+          }
+        },
+        {
+          "id": "L_web_identity_0",
+          "text": "HTTPS credential exchange",
+          "bounds": {
+            "x": 1737.86767578125,
+            "y": 22.611696243286133,
+            "width": 200.0460205078125,
+            "height": 48.011024475097656
+          }
+        },
+        {
+          "id": "L_api_identity_0",
+          "text": "HTTPS public signing keys",
+          "bounds": {
+            "x": 1742.2750244140625,
+            "y": 91.6275405883789,
+            "width": 191.2313232421875,
+            "height": 24.005508422851562
+          }
+        },
+        {
+          "id": "L_api_db_0",
+          "text": "SQL via pg over TLS",
+          "bounds": {
+            "x": 1268.728759765625,
+            "y": 138.00390625,
+            "width": 147.674560546875,
+            "height": 24.005523681640625
+          }
+        }
+      ],
+      "clusters": [
+        {
+          "id": "my-svg-boundary",
+          "text": "ConnectSphere system boundary",
+          "bounds": {
+            "x": 478.8755798339844,
+            "y": 8.108366966247559,
+            "width": 1211.481201171875,
+            "height": 225.78326416015625
+          }
+        }
+      ],
+      "collisions": [],
+      "labelCollisions": [],
+      "nodeCollisions": [],
+      "outOfBounds": []
+    },
+    {
+      "name": "c1-context-reconstructed",
+      "result": "Pass",
+      "problems": [],
+      "dimensions": {
+        "width": 1580,
+        "height": 1085
+      },
+      "source_sha256": "18a5918c0f3b98628fa0c06b7896a48dbb313572d89df4fdfc3edc702167cec4",
+      "svg_sha256": "1f487a008e6feff28fa09c2c8a273074531a8e653b594a6ea190329d706ac788",
+      "png_sha256": "4230fa6acaa015b84497abdd8045f0279ce8ab00f44891a8987fccdf91ddd140",
+      "nodes": [
+        {
+          "id": "my-svg-flowchart-organiser-0",
+          "label": "Event Organiser[Person]Own requests and outcomes",
+          "bounds": {
+            "x": 44.328125,
+            "y": 61,
+            "width": 291.671875,
+            "height": 116
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-coordinator-1",
+          "label": "Event Coordinator[Person]Allocation, review and lifecycle",
+          "bounds": {
+            "x": 31,
+            "y": 217,
+            "width": 305,
+            "height": 116
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-venue-2",
+          "label": "Venue Staff[Person: planned workflow]Venue management and decisions",
+          "bounds": {
+            "x": 8,
+            "y": 373,
+            "width": 328,
+            "height": 140
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-technical-3",
+          "label": "Technical Support Staff[Person: planned workflow]Equipment availability and reservations",
+          "bounds": {
+            "x": 8,
+            "y": 553,
+            "width": 328,
+            "height": 140
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-attendee-4",
+          "label": "Attendee[Person: planned workflow]Registration and withdrawal",
+          "bounds": {
+            "x": 51.453125,
+            "y": 733,
+            "width": 284.546875,
+            "height": 116
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-system-5",
+          "label": "ConnectSphere[Software system]Implemented request and review workflows",
+          "bounds": {
+            "x": 636,
+            "y": 373,
+            "width": 328,
+            "height": 140
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-identity-6",
+          "label": "Supabase Auth[External software system]Email/password identity and signing keys",
+          "bounds": {
+            "x": 1244,
+            "y": 373,
+            "width": 328,
+            "height": 140
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-legend-7",
+          "label": "LegendSolid: implemented interactionDashed: planned business interactionSource: 1 Oct 2026 / b981f11Reconstructed: 6 Nov 2026",
+          "bounds": {
+            "x": 8,
+            "y": 889,
+            "width": 328,
+            "height": 188
+          },
+          "label_within_shape": true
+        }
+      ],
+      "edges": [
+        {
+          "id": "my-svg-L_organiser_system_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        },
+        {
+          "id": "my-svg-L_coordinator_system_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        },
+        {
+          "id": "my-svg-L_venue_system_0",
+          "style": "edge-thickness-normal edge-pattern-dotted edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "2px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        },
+        {
+          "id": "my-svg-L_technical_system_0",
+          "style": "edge-thickness-normal edge-pattern-dotted edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "2px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        },
+        {
+          "id": "my-svg-L_attendee_system_0",
+          "style": "edge-thickness-normal edge-pattern-dotted edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "2px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        },
+        {
+          "id": "my-svg-L_system_identity_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        }
+      ],
+      "labels": [
+        {
+          "id": "L_organiser_system_0",
+          "text": "Draft, submit, respond and view outcomes",
+          "bounds": {
+            "x": 376,
+            "y": 94.5,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "id": "L_coordinator_system_0",
+          "text": "Allocate, clarify, review and manage lifecycle",
+          "bounds": {
+            "x": 376,
+            "y": 250.5,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "id": "L_venue_system_0",
+          "text": "Planned: maintain venues and decide bookings",
+          "bounds": {
+            "x": 376,
+            "y": 418.5,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "id": "L_technical_system_0",
+          "text": "Planned: equipment availability and reservations",
+          "bounds": {
+            "x": 376,
+            "y": 598.5,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "id": "L_attendee_system_0",
+          "text": "Planned: registration and withdrawal",
+          "bounds": {
+            "x": 376,
+            "y": 766.5,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "id": "L_system_identity_0",
+          "text": "Sign-in and signing-key discovery",
+          "bounds": {
+            "x": 1004,
+            "y": 418.5,
+            "width": 200,
+            "height": 48
+          }
+        }
+      ],
+      "clusters": [],
+      "collisions": [],
+      "labelCollisions": [],
+      "nodeCollisions": [],
+      "outOfBounds": []
+    },
+    {
+      "name": "c2-containers-reconstructed",
+      "result": "Pass",
+      "problems": [],
+      "dimensions": {
+        "width": 2721,
+        "height": 512
+      },
+      "source_sha256": "6ae0a88a3f6e54a4f94febd5c4fed024abbd67cd1e361acd0a95ba1cf2473c67",
+      "svg_sha256": "2398f01362bfe1d315e1b49e1f040e11afa88b207f0f512442a39053d6829a68",
+      "png_sha256": "66564caa3e54f4556b39d6aa520ea89d0f650b9243d46f893093da26d9c5efc8",
+      "nodes": [
+        {
+          "id": "my-svg-flowchart-user-0",
+          "label": "Application user[Person]Five trusted role values",
+          "bounds": {
+            "x": 82.671875,
+            "y": 136,
+            "width": 253.40625,
+            "height": 116
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-identity-1",
+          "label": "Supabase Auth[External software system]Email/password and published signing keys",
+          "bounds": {
+            "x": 2384.921875,
+            "y": 80,
+            "width": 328,
+            "height": 140
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-legend-2",
+          "label": "LegendArrows: calls or data accessBoundary: logical system ownershipDatabase hosting: SupabaseLocal development: Vite 5173 / API 3000",
+          "bounds": {
+            "x": 8.078125,
+            "y": 292,
+            "width": 328,
+            "height": 212
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-web-3",
+          "label": "Web application[Container: Vue 3 / TypeScript / Vite]Browser pages and API client",
+          "bounds": {
+            "x": 581.421875,
+            "y": 124,
+            "width": 328,
+            "height": 140
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-api-4",
+          "label": "API application[Container: Express 5 / TypeScript]One Node.js process",
+          "bounds": {
+            "x": 1169.421875,
+            "y": 147.3333282470703,
+            "width": 328,
+            "height": 139.99998474121094
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-db-5",
+          "label": "Application database[Container: Supabase PostgreSQL]Application-owned records and triggers",
+          "bounds": {
+            "x": 1757.421875,
+            "y": 158.6666717529297,
+            "width": 328,
+            "height": 164.00001525878906
+          },
+          "label_within_shape": true
+        }
+      ],
+      "edges": [
+        {
+          "id": "my-svg-L_user_web_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        },
+        {
+          "id": "my-svg-L_web_api_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        },
+        {
+          "id": "my-svg-L_web_identity_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        },
+        {
+          "id": "my-svg-L_api_identity_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        },
+        {
+          "id": "my-svg-L_api_db_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        }
+      ],
+      "labels": [
+        {
+          "id": "L_user_web_0",
+          "text": "Uses browser pages",
+          "bounds": {
+            "x": 376.078125,
+            "y": 181.5,
+            "width": 145.84375,
+            "height": 24
+          }
+        },
+        {
+          "id": "L_web_api_0",
+          "text": "HTTP JSON /api + HttpOnly session cookie",
+          "bounds": {
+            "x": 939.421875,
+            "y": 192.8333282470703,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "id": "L_web_identity_0",
+          "text": "HTTPS: temporary credential exchange",
+          "bounds": {
+            "x": 2144.921875,
+            "y": 102.16666412353516,
+            "width": 200,
+            "height": 47.99999237060547
+          }
+        },
+        {
+          "id": "L_api_identity_0",
+          "text": "HTTPS: cached JWKS retrieval",
+          "bounds": {
+            "x": 2144.921875,
+            "y": 171.1666717529297,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "id": "L_api_db_0",
+          "text": "SQL via pg pool / transaction clients",
+          "bounds": {
+            "x": 1527.421875,
+            "y": 216.1666717529297,
+            "width": 200,
+            "height": 48.00001525878906
+          }
+        }
+      ],
+      "clusters": [
+        {
+          "id": "my-svg-systemBoundary",
+          "text": "ConnectSphere - logical system boundary",
+          "bounds": {
+            "x": 569.421875,
+            "y": 61,
+            "width": 1528,
+            "height": 273.6666564941406
+          }
+        }
+      ],
+      "collisions": [],
+      "labelCollisions": [],
+      "nodeCollisions": [],
+      "outOfBounds": []
+    },
+    {
+      "name": "c3-components-reconstructed",
+      "result": "Pass",
+      "problems": [],
+      "dimensions": {
+        "width": 3623,
+        "height": 1881
+      },
+      "source_sha256": "4c0161c86e279f583ad304187c63a55812b1d716d0f09e2b654dc85d2dada2d7",
+      "svg_sha256": "fce35a2fd95c08bb443fcf374e48af8c3c6900d8451a47b0482685aa81f8fcd2",
+      "png_sha256": "a2781c16532a44104a9703cd65127d0c5457efed4913ccbbcd8bc533a3dcfa5e",
+      "nodes": [
+        {
+          "id": "my-svg-flowchart-web-0",
+          "label": "Web application[External container: Vue 3]Event and review pages",
+          "bounds": {
+            "x": 60.03125,
+            "y": 1432.8636474609375,
+            "width": 275.96875,
+            "height": 116
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-identity-1",
+          "label": "Supabase Auth[External software system]Published signing keys",
+          "bounds": {
+            "x": 3287,
+            "y": 136.1363525390625,
+            "width": 275.625,
+            "height": 116
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-db-2",
+          "label": "Application database[External container: PostgreSQL]Records, constraints and SQL triggers",
+          "bounds": {
+            "x": 3287,
+            "y": 887.6363525390625,
+            "width": 328,
+            "height": 140
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-legend-3",
+          "label": "LegendArrows: runtime calls or SQL accessComponents share one API processPure type imports are omittedNo venue / equipment / attendee APINo inbox API or background scheduler",
+          "bounds": {
+            "x": 8,
+            "y": 1588.8636474609375,
+            "width": 328,
+            "height": 284
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-http-4",
+          "label": "HTTP boundary[Component: Express routers]Health, JSON, role gates and errors",
+          "bounds": {
+            "x": 635.5,
+            "y": 1420.8636474609375,
+            "width": 328,
+            "height": 140
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-session-5",
+          "label": "Session authentication[Component: TypeScript]Login, cookie, me and logout",
+          "bounds": {
+            "x": 1367.1041259765625,
+            "y": 286.8030090332031,
+            "width": 292.59375,
+            "height": 116
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-tokens-6",
+          "label": "Token verifier[Component: jose]Local JWT verification / cached keys",
+          "bounds": {
+            "x": 1991.5,
+            "y": 124.1363525390625,
+            "width": 328,
+            "height": 140
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-profiles-7",
+          "label": "Profile repository[Component: SQL / TypeScript]Supabase UID to app user / five roles",
+          "bounds": {
+            "x": 1991.5,
+            "y": 294.1363525390625,
+            "width": 328,
+            "height": 140
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-queries-8",
+          "label": "Request queries[Component: TypeScript / SQL]Owned lists, queues, detail and actions",
+          "bounds": {
+            "x": 1343.5,
+            "y": 781.1363525390625,
+            "width": 328,
+            "height": 140
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-drafts-9",
+          "label": "Draft commands[Component: TypeScript / SQL]Create / update own DRAFT and validate",
+          "bounds": {
+            "x": 1343.5,
+            "y": 465.1363525390625,
+            "width": 328,
+            "height": 140
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-submission-10",
+          "label": "Submission command[Component: TypeScript / SQL]Validate saved draft and submit",
+          "bounds": {
+            "x": 1352.0234375,
+            "y": 635.1363525390625,
+            "width": 310.953125,
+            "height": 116
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-assignment-11",
+          "label": "Coordinator assignment[Component: TypeScript / SQL]Triage, allocate and hand over",
+          "bounds": {
+            "x": 1357.6328125,
+            "y": 951.1363525390625,
+            "width": 309.15625,
+            "height": 116
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-clarification-12",
+          "label": "Clarification workflow[Component: TypeScript / SQL]Start review, ask and respond",
+          "bounds": {
+            "x": 1357.6328125,
+            "y": 1132.6363525390625,
+            "width": 309.15625,
+            "height": 116
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-review-13",
+          "label": "Initial review decision[Component: TypeScript / SQL]One approval / rejection and validation",
+          "bounds": {
+            "x": 1991.5,
+            "y": 1478.1363525390625,
+            "width": 328,
+            "height": 140
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-lifecycle-14",
+          "label": "Event lifecycle[Component: TypeScript / SQL]Confirm, cancel, complete and history",
+          "bounds": {
+            "x": 1343.5,
+            "y": 1289.6363525390625,
+            "width": 328,
+            "height": 140
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-workflow-15",
+          "label": "Workflow support[Component: TypeScript / SQL]Actor transaction, locks and relationships",
+          "bounds": {
+            "x": 1991.5,
+            "y": 1239.6363525390625,
+            "width": 328,
+            "height": 140
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-policy-16",
+          "label": "Assignment policy[Component: TypeScript]Current assigned coordinator check",
+          "bounds": {
+            "x": 2579.5,
+            "y": 1177.9697265625,
+            "width": 328,
+            "height": 140
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-notices-17",
+          "label": "Notification writer[Component: TypeScript / SQL]In-app rows in caller transaction",
+          "bounds": {
+            "x": 1995.02734375,
+            "y": 1093.6363525390625,
+            "width": 313.890625,
+            "height": 116
+          },
+          "label_within_shape": true
+        }
+      ],
+      "edges": [
+        {
+          "id": "my-svg-L_web_http_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        },
+        {
+          "id": "my-svg-L_http_session_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        },
+        {
+          "id": "my-svg-L_session_tokens_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        },
+        {
+          "id": "my-svg-L_tokens_identity_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        },
+        {
+          "id": "my-svg-L_session_profiles_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        },
+        {
+          "id": "my-svg-L_profiles_db_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        },
+        {
+          "id": "my-svg-L_http_queries_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        },
+        {
+          "id": "my-svg-L_queries_policy_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        },
+        {
+          "id": "my-svg-L_queries_db_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        },
+        {
+          "id": "my-svg-L_http_drafts_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        },
+        {
+          "id": "my-svg-L_drafts_db_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        },
+        {
+          "id": "my-svg-L_http_submission_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        },
+        {
+          "id": "my-svg-L_submission_db_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        },
+        {
+          "id": "my-svg-L_http_assignment_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        },
+        {
+          "id": "my-svg-L_assignment_workflow_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        },
+        {
+          "id": "my-svg-L_assignment_db_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        },
+        {
+          "id": "my-svg-L_assignment_notices_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        },
+        {
+          "id": "my-svg-L_http_clarification_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        },
+        {
+          "id": "my-svg-L_clarification_workflow_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        },
+        {
+          "id": "my-svg-L_clarification_db_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        },
+        {
+          "id": "my-svg-L_clarification_notices_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        },
+        {
+          "id": "my-svg-L_http_review_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        },
+        {
+          "id": "my-svg-L_review_policy_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        },
+        {
+          "id": "my-svg-L_review_db_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        },
+        {
+          "id": "my-svg-L_http_lifecycle_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        },
+        {
+          "id": "my-svg-L_lifecycle_workflow_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        },
+        {
+          "id": "my-svg-L_lifecycle_db_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        },
+        {
+          "id": "my-svg-L_lifecycle_notices_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        },
+        {
+          "id": "my-svg-L_workflow_policy_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        },
+        {
+          "id": "my-svg-L_workflow_db_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        },
+        {
+          "id": "my-svg-L_notices_db_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        },
+        {
+          "id": "my-svg-L_http_db_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        },
+        {
+          "id": "my-svg-L_http_workflow_0",
+          "style": "edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link",
+          "dasharray": "0px",
+          "end": "url(#my-svg_flowchart-v2-pointEnd)"
+        }
+      ],
+      "labels": [
+        {
+          "id": "L_web_http_0",
+          "text": "HTTP JSON /api and session cookie",
+          "bounds": {
+            "x": 376,
+            "y": 1466.3636474609375,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "id": "L_http_session_0",
+          "text": "Auth endpoints and authenticate callback",
+          "bounds": {
+            "x": 1113.5,
+            "y": 320.3030090332031,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "id": "L_session_tokens_0",
+          "text": "Verify cookie or login access token",
+          "bounds": {
+            "x": 1716.5,
+            "y": 169.6363525390625,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "id": "L_tokens_identity_0",
+          "text": "HTTPS: retrieve and cache JWKS",
+          "bounds": {
+            "x": 2967,
+            "y": 169.6363525390625,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "id": "L_session_profiles_0",
+          "text": "Resolve verified UID",
+          "bounds": {
+            "x": 1743.5859375,
+            "y": 351.6363525390625,
+            "width": 145.828125,
+            "height": 24
+          }
+        },
+        {
+          "id": "L_profiles_db_0",
+          "text": "SELECT app_users by Supabase UID",
+          "bounds": {
+            "x": 2967,
+            "y": 339.6363525390625,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "id": "L_http_queries_0",
+          "text": "Owned lists, queue and detail reads",
+          "bounds": {
+            "x": 1113.5,
+            "y": 826.6363525390625,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "id": "L_queries_policy_0",
+          "text": "Injected visibility and decision policy",
+          "bounds": {
+            "x": 2055.5,
+            "y": 849.9696655273438,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "id": "L_queries_db_0",
+          "text": "SELECT requests and first review",
+          "bounds": {
+            "x": 2967,
+            "y": 803.3030395507812,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "id": "L_http_drafts_0",
+          "text": "Create or update saved draft",
+          "bounds": {
+            "x": 1113.5,
+            "y": 510.6363525390625,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "id": "L_drafts_db_0",
+          "text": "Own transaction: INSERT / UPDATE DRAFT",
+          "bounds": {
+            "x": 2967,
+            "y": 510.6363525390625,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "id": "L_http_submission_0",
+          "text": "Submit saved request",
+          "bounds": {
+            "x": 1136.125,
+            "y": 680.6363525390625,
+            "width": 154.75,
+            "height": 24
+          }
+        },
+        {
+          "id": "L_submission_db_0",
+          "text": "Own transaction: lock, validate and submit",
+          "bounds": {
+            "x": 2967,
+            "y": 668.6363525390625,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "id": "L_http_assignment_0",
+          "text": "Triage, allocate and read assignment history",
+          "bounds": {
+            "x": 1113.5,
+            "y": 984.6363525390625,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "id": "L_assignment_workflow_0",
+          "text": "Transaction, lock and relationship helpers",
+          "bounds": {
+            "x": 1716.5,
+            "y": 1013.6363525390625,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "id": "L_assignment_db_0",
+          "text": "Read profiles / requests; update assignment",
+          "bounds": {
+            "x": 2967,
+            "y": 933.1363525390625,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "id": "L_assignment_notices_0",
+          "text": "Persist assignment notices",
+          "bounds": {
+            "x": 1721.34375,
+            "y": 973.6363525390625,
+            "width": 190.3125,
+            "height": 24
+          }
+        },
+        {
+          "id": "L_http_clarification_0",
+          "text": "Start review, ask, respond and list",
+          "bounds": {
+            "x": 1113.5,
+            "y": 1166.1363525390625,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "id": "L_clarification_workflow_0",
+          "text": "Transaction, lock and relationship helpers",
+          "bounds": {
+            "x": 1716.5,
+            "y": 1195.1363525390625,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "id": "L_clarification_db_0",
+          "text": "Read / write clarification records",
+          "bounds": {
+            "x": 2967,
+            "y": 1053.1363525390625,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "id": "L_clarification_notices_0",
+          "text": "Persist clarification / review-start notices",
+          "bounds": {
+            "x": 1716.5,
+            "y": 1127.1363525390625,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "id": "L_http_review_0",
+          "text": "Record initial review decision",
+          "bounds": {
+            "x": 1407.5,
+            "y": 1523.6363525390625,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "id": "L_review_policy_0",
+          "text": "Injected decision authorization",
+          "bounds": {
+            "x": 2349.5,
+            "y": 1500.302978515625,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "id": "L_review_db_0",
+          "text": "Own transaction: review and status update",
+          "bounds": {
+            "x": 2967,
+            "y": 1546.9697265625,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "id": "L_http_lifecycle_0",
+          "text": "Confirm, cancel, complete and history",
+          "bounds": {
+            "x": 1113.5,
+            "y": 1335.1363525390625,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "id": "L_lifecycle_workflow_0",
+          "text": "Locks, status changes and arrangement cancellation",
+          "bounds": {
+            "x": 1716.5,
+            "y": 1299.1363525390625,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "id": "L_lifecycle_db_0",
+          "text": "Read readiness, attendees and history",
+          "bounds": {
+            "x": 2967,
+            "y": 1377.4697265625,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "id": "L_lifecycle_notices_0",
+          "text": "Persist lifecycle notices",
+          "bounds": {
+            "x": 1733.8046875,
+            "y": 1259.1363525390625,
+            "width": 165.390625,
+            "height": 24
+          }
+        },
+        {
+          "id": "L_workflow_policy_0",
+          "text": "Resolve assigned-coordinator relation",
+          "bounds": {
+            "x": 2349.5,
+            "y": 1223.4697265625,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "id": "L_workflow_db_0",
+          "text": "BEGIN / locks / status and arrangement writes",
+          "bounds": {
+            "x": 2967,
+            "y": 1308.4697265625,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "id": "L_notices_db_0",
+          "text": "INSERT notifications in caller transaction",
+          "bounds": {
+            "x": 2967,
+            "y": 1127.1363525390625,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "id": "L_http_db_0",
+          "text": "Readiness: SELECT scaffold_metadata",
+          "bounds": {
+            "x": 2967,
+            "y": 424.6363525390625,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "id": "L_http_workflow_0",
+          "text": "Workflow error / UUID helpers",
+          "bounds": {
+            "x": 1407.5,
+            "y": 1459.6363525390625,
+            "width": 200,
+            "height": 48
+          }
+        }
+      ],
+      "clusters": [
+        {
+          "id": "my-svg-apiBoundary",
+          "text": "API application - one Express / Node.js process",
+          "bounds": {
+            "x": 623.5,
+            "y": 61.1363525390625,
+            "width": 2296,
+            "height": 1569
+          }
+        }
+      ],
+      "collisions": [],
+      "labelCollisions": [],
+      "nodeCollisions": [],
+      "outOfBounds": []
+    }
+  ]
+}

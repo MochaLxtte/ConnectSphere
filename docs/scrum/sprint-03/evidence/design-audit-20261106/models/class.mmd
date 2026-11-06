@@ -1,0 +1,231 @@
+---
+config:
+  layout: elk
+title: Domain records - all 22 persisted application records
+---
+classDiagram
+  direction TB
+  class AppUsers {
+    <<SQL record>>
+    uuid id
+    text role
+  }
+  class CoordinatorAssignments {
+    <<SQL record>>
+    uuid id
+    uuid event_request_id
+    uuid coordinator_id
+    uuid assigned_by
+    text assignment_method
+  }
+  class EquipmentRequests {
+    <<SQL record>>
+    uuid id
+    uuid event_request_id
+    uuid equipment_type_id
+    uuid requested_by
+    integer quantity
+    text status
+    timestamptz starts_at
+    timestamptz ends_at
+    uuid decided_by
+    uuid released_by
+    integer revision
+  }
+  class EquipmentStockChanges {
+    <<SQL record>>
+    uuid id
+    uuid equipment_type_id
+    integer revision
+    uuid changed_by
+  }
+  class EquipmentTypes {
+    <<SQL record>>
+    uuid id
+    integer total_quantity
+    integer damaged_quantity
+    integer maintenance_quantity
+  }
+  class EventCancellations {
+    <<SQL record>>
+    uuid event_request_id
+    uuid cancelled_by
+  }
+  class EventChangeRequests {
+    <<SQL record>>
+    uuid id
+    uuid event_request_id
+    uuid requested_by
+    text status
+    uuid decided_by
+  }
+  class EventClarifications {
+    <<SQL record>>
+    uuid id
+    uuid event_request_id
+    uuid requested_by
+  }
+  class EventRegistrations {
+    <<SQL record>>
+    uuid id
+    uuid event_request_id
+    uuid attendee_id
+    text status
+  }
+  class EventRequestEdits {
+    <<SQL record>>
+    uuid id
+    uuid event_request_id
+    integer revision
+    uuid edited_by
+  }
+  class EventRequests {
+    <<SQL record>>
+    uuid id
+    uuid organiser_id
+    uuid coordinator_id
+    text status
+    timestamptz starts_at
+    timestamptz ends_at
+    integer revision
+    text equipment_plan_status
+    uuid preparation_started_by
+    uuid preparation_safety_review_id
+  }
+  class EventReviews {
+    <<SQL record>>
+    uuid id
+    uuid event_request_id
+    uuid reviewed_by
+  }
+  class EventStatusHistory {
+    <<SQL record>>
+    uuid id
+    uuid event_request_id
+    uuid changed_by
+  }
+  class Notifications {
+    <<SQL record>>
+    uuid id
+    uuid recipient_id
+    uuid event_request_id
+    uuid venue_booking_id
+    uuid equipment_request_id
+    uuid registration_id
+    uuid change_request_id
+    uuid safety_review_id
+  }
+  class SafetyApprovalInvalidations {
+    <<SQL record>>
+    uuid review_id
+  }
+  class SafetyReviewChangeBaselines {
+    <<SQL record>>
+    uuid review_id
+  }
+  class SafetyReviewContextBaselines {
+    <<SQL record>>
+    uuid review_id
+  }
+  class SafetyReviews {
+    <<SQL record>>
+    uuid id
+    uuid event_request_id
+    integer round
+    text status
+    uuid submitted_by
+    uuid decided_by
+  }
+  class VenueBookings {
+    <<SQL record>>
+    uuid id
+    uuid event_request_id
+    uuid venue_id
+    uuid requested_by
+    text status
+    timestamptz starts_at
+    timestamptz ends_at
+    uuid decided_by
+    uuid replaces_booking_id
+    timestamptz hold_expires_at
+    uuid held_by
+    uuid cancelled_by
+  }
+  class VenueOutageImpacts {
+    <<SQL record>>
+    uuid id
+    uuid unavailability_id
+    uuid venue_booking_id
+    uuid venue_id
+    text status
+    uuid recorded_by
+  }
+  class VenueUnavailability {
+    <<SQL record>>
+    uuid id
+    uuid venue_id
+    timestamptz starts_at
+    timestamptz ends_at
+    uuid created_by
+  }
+  class Venues {
+    <<SQL record>>
+    uuid id
+    integer setup_minutes
+    integer turnaround_minutes
+  }
+  AppUsers --> CoordinatorAssignments : assigned_by [0..1 / 0..*]
+  AppUsers --> CoordinatorAssignments : coordinator_id [1 / 0..*]
+  EventRequests --> CoordinatorAssignments : event_request_id [1 / 0..*]
+  AppUsers --> EquipmentRequests : decided_by [0..1 / 0..*]
+  EquipmentTypes --> EquipmentRequests : equipment_type_id [1 / 0..*]
+  EventRequests --> EquipmentRequests : event_request_id [1 / 0..*]
+  AppUsers --> EquipmentRequests : released_by [0..1 / 0..*]
+  AppUsers --> EquipmentRequests : requested_by [1 / 0..*]
+  AppUsers --> EquipmentStockChanges : changed_by [1 / 0..*]
+  EquipmentTypes --> EquipmentStockChanges : equipment_type_id [1 / 0..*]
+  AppUsers --> EventCancellations : cancelled_by [1 / 0..*]
+  EventRequests --> EventCancellations : event_request_id [1 / 0..1]
+  AppUsers --> EventChangeRequests : decided_by [0..1 / 0..*]
+  EventRequests --> EventChangeRequests : event_request_id [1 / 0..*]
+  AppUsers --> EventChangeRequests : requested_by [1 / 0..*]
+  EventRequests --> EventClarifications : event_request_id [1 / 0..*]
+  AppUsers --> EventClarifications : requested_by [1 / 0..*]
+  AppUsers --> EventRegistrations : attendee_id [1 / 0..*]
+  EventRequests --> EventRegistrations : event_request_id [1 / 0..*]
+  AppUsers --> EventRequestEdits : edited_by [1 / 0..*]
+  EventRequests --> EventRequestEdits : event_request_id [1 / 0..*]
+  AppUsers --> EventRequests : coordinator_id [0..1 / 0..*]
+  AppUsers --> EventRequests : organiser_id [1 / 0..*]
+  SafetyReviews --> EventRequests : preparation_safety_review_id [0..1 / 0..*]
+  AppUsers --> EventRequests : preparation_started_by [0..1 / 0..*]
+  EventRequests --> EventReviews : event_request_id [1 / 0..*]
+  AppUsers --> EventReviews : reviewed_by [1 / 0..*]
+  AppUsers --> EventStatusHistory : changed_by [0..1 / 0..*]
+  EventRequests --> EventStatusHistory : event_request_id [1 / 0..*]
+  EventChangeRequests --> Notifications : change_request_id [0..1 / 0..*]
+  EquipmentRequests --> Notifications : equipment_request_id [0..1 / 0..*]
+  EventRequests --> Notifications : event_request_id [0..1 / 0..*]
+  AppUsers --> Notifications : recipient_id [1 / 0..*]
+  EventRegistrations --> Notifications : registration_id [0..1 / 0..*]
+  SafetyReviews --> Notifications : safety_review_id [0..1 / 0..*]
+  VenueBookings --> Notifications : venue_booking_id [0..1 / 0..*]
+  SafetyReviews --> SafetyApprovalInvalidations : review_id [1 / 0..1]
+  SafetyReviews --> SafetyReviewChangeBaselines : review_id [1 / 0..1]
+  SafetyReviews --> SafetyReviewContextBaselines : review_id [1 / 0..1]
+  AppUsers --> SafetyReviews : decided_by [0..1 / 0..*]
+  EventRequests --> SafetyReviews : event_request_id [1 / 0..*]
+  AppUsers --> SafetyReviews : submitted_by [1 / 0..*]
+  AppUsers --> VenueBookings : cancelled_by [0..1 / 0..*]
+  AppUsers --> VenueBookings : decided_by [0..1 / 0..*]
+  EventRequests --> VenueBookings : event_request_id [1 / 0..*]
+  AppUsers --> VenueBookings : held_by [0..1 / 0..*]
+  VenueBookings --> VenueBookings : replaces_booking_id [0..1 / 0..*]
+  AppUsers --> VenueBookings : requested_by [1 / 0..*]
+  Venues --> VenueBookings : venue_id [1 / 0..*]
+  AppUsers --> VenueOutageImpacts : recorded_by [0..1 / 0..*]
+  VenueUnavailability --> VenueOutageImpacts : unavailability_id [0..1 / 0..*]
+  VenueBookings --> VenueOutageImpacts : venue_booking_id [1 / 0..*]
+  Venues --> VenueOutageImpacts : venue_id [1 / 0..*]
+  AppUsers --> VenueUnavailability : created_by [0..1 / 0..*]
+  Venues --> VenueUnavailability : venue_id [1 / 0..*]

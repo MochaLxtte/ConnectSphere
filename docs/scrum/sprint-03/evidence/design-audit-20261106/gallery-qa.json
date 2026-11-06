@@ -1,0 +1,129 @@
+{
+  "images": [
+    {
+      "src": "file:///C:/Users/arvin/Downloads/GitHub/connectsphere/docs/architecture/exports/class.png",
+      "loaded": true,
+      "alt": "Domain records - all 22 persisted application records"
+    },
+    {
+      "src": "file:///C:/Users/arvin/Downloads/GitHub/connectsphere/docs/architecture/exports/class-events.png",
+      "loaded": true,
+      "alt": "Domain detail - events"
+    },
+    {
+      "src": "file:///C:/Users/arvin/Downloads/GitHub/connectsphere/docs/architecture/exports/class-planning.png",
+      "loaded": true,
+      "alt": "Domain detail - planning"
+    },
+    {
+      "src": "file:///C:/Users/arvin/Downloads/GitHub/connectsphere/docs/architecture/exports/class-safety.png",
+      "loaded": true,
+      "alt": "Domain detail - safety"
+    },
+    {
+      "src": "file:///C:/Users/arvin/Downloads/GitHub/connectsphere/docs/architecture/exports/seq-registration-withdrawal.png",
+      "loaded": true,
+      "alt": "Registration withdrawal - owned record and event-start cutoff"
+    },
+    {
+      "src": "file:///C:/Users/arvin/Downloads/GitHub/connectsphere/docs/architecture/exports/seq-event-confirmation.png",
+      "loaded": true,
+      "alt": "Event confirmation - live readiness under shared arrangement locks"
+    },
+    {
+      "src": "file:///C:/Users/arvin/Downloads/GitHub/connectsphere/docs/architecture/exports/seq-event-cancellation-equipment.png",
+      "loaded": true,
+      "alt": "Event cancellation - arrangements and notices commit together"
+    },
+    {
+      "src": "file:///C:/Users/arvin/Downloads/GitHub/connectsphere/docs/architecture/exports/seq-lead-assignment.png",
+      "loaded": true,
+      "alt": "Lead allocation and handover - versioned assignment history"
+    },
+    {
+      "src": "file:///C:/Users/arvin/Downloads/GitHub/connectsphere/docs/architecture/exports/seq-equipment-availability.png",
+      "loaded": true,
+      "alt": "Equipment availability - advisory saved or what-if assessment"
+    },
+    {
+      "src": "file:///C:/Users/arvin/Downloads/GitHub/connectsphere/docs/architecture/exports/seq-equipment-reservation.png",
+      "loaded": true,
+      "alt": "Equipment reservation - serialized stock and replay checks"
+    },
+    {
+      "src": "file:///C:/Users/arvin/Downloads/GitHub/connectsphere/docs/architecture/exports/seq-safety-review.png",
+      "loaded": true,
+      "alt": "Safety review rounds and preparation - current approval required"
+    },
+    {
+      "src": "file:///C:/Users/arvin/Downloads/GitHub/connectsphere/docs/architecture/exports/seq-venue-write-locking.png",
+      "loaded": true,
+      "alt": "Venue writers - gates precede booking and event row locks"
+    },
+    {
+      "src": "file:///C:/Users/arvin/Downloads/GitHub/connectsphere/docs/architecture/exports/seq-venue-hold.png",
+      "loaded": true,
+      "alt": "Venue temporary hold - deadline and automatic expiry"
+    },
+    {
+      "src": "file:///C:/Users/arvin/Downloads/GitHub/connectsphere/docs/architecture/exports/seq-venue-recovery.png",
+      "loaded": true,
+      "alt": "Venue outage - preserve approved booking and recover arrangements"
+    },
+    {
+      "src": "file:///C:/Users/arvin/Downloads/GitHub/connectsphere/docs/architecture/exports/seq-event-completion.png",
+      "loaded": true,
+      "alt": "Event completion - ended confirmed event and equipment release"
+    },
+    {
+      "src": "file:///C:/Users/arvin/Downloads/GitHub/connectsphere/docs/architecture/exports/seq-planning-change.png",
+      "loaded": true,
+      "alt": "Significant planning change - reviewed revision and arrangement impact"
+    },
+    {
+      "src": "file:///C:/Users/arvin/Downloads/GitHub/connectsphere/docs/architecture/exports/erd-database.png",
+      "loaded": true,
+      "alt": "Physical model - all 24 tables and 55 foreign keys"
+    },
+    {
+      "src": "file:///C:/Users/arvin/Downloads/GitHub/connectsphere/docs/architecture/exports/erd-events.png",
+      "loaded": true,
+      "alt": "Physical model - events detail"
+    },
+    {
+      "src": "file:///C:/Users/arvin/Downloads/GitHub/connectsphere/docs/architecture/exports/erd-planning.png",
+      "loaded": true,
+      "alt": "Physical model - planning detail"
+    },
+    {
+      "src": "file:///C:/Users/arvin/Downloads/GitHub/connectsphere/docs/architecture/exports/erd-safety-invalidation.png",
+      "loaded": true,
+      "alt": "Physical model - safety detail"
+    },
+    {
+      "src": "file:///C:/Users/arvin/Downloads/GitHub/connectsphere/docs/architecture/exports/c1-context.png",
+      "loaded": true,
+      "alt": "C1 — System context"
+    },
+    {
+      "src": "file:///C:/Users/arvin/Downloads/GitHub/connectsphere/docs/architecture/exports/c2-containers.png",
+      "loaded": true,
+      "alt": "C2 — Containers"
+    },
+    {
+      "src": "file:///C:/Users/arvin/Downloads/GitHub/connectsphere/docs/architecture/exports/c3-components.png",
+      "loaded": true,
+      "alt": "C3 — Backend components"
+    }
+  ],
+  "links_checked": 75,
+  "desktop": {
+    "width": 1360,
+    "scrollWidth": 1360
+  },
+  "mobile": {
+    "width": 390,
+    "scrollWidth": 390
+  },
+  "status": "Pass"
+}

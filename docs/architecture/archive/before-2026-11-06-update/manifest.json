@@ -1,0 +1,119 @@
+{
+  "label": "Before the 6 November 2026 update - contains Week 7 changes",
+  "source_commit": "fb6d8d93f721b114accc9857a05d62e859987e23",
+  "source_tree": "Working tree on docs/c4-accuracy, including uncommitted 5 November C4 corrections",
+  "preserved_on": "2026-11-06",
+  "method": "Verbatim working-file copies before edits",
+  "files": [
+    {
+      "source_path": "docs/architecture/README.md",
+      "snapshot_path": "architecture.md",
+      "sha256": "21677ce3aa3531ac06c580573dbc4973347c04e72365c91b381fe8ba2f956f5d"
+    },
+    {
+      "source_path": "docs/architecture/api-contract.md",
+      "snapshot_path": "api-contract.md",
+      "sha256": "36b188fafed4e324ec28db44f46e186d3f50ce9ce4fc4e26cbcb4a32befef727"
+    },
+    {
+      "source_path": "docs/database-diagram.md",
+      "snapshot_path": "database-diagram.md",
+      "sha256": "e25dede5752f0e88dc6885fd46f123b90cb7d27149281a54da006b3d8fd7cd45"
+    },
+    {
+      "source_path": "docs/architecture/exports/c1-context.png",
+      "snapshot_path": "exports/c1-context.png",
+      "sha256": "b53242b930985dc148f77f91a0b52e0959e4c8414c390c1ea375228d09bfbfb4"
+    },
+    {
+      "source_path": "docs/architecture/exports/c1-context.svg",
+      "snapshot_path": "exports/c1-context.svg",
+      "sha256": "5ea6f33069bae1a4a0de0acb761a73509c267d7b1522f0a243e2195974c9a91e"
+    },
+    {
+      "source_path": "docs/architecture/exports/c2-containers.png",
+      "snapshot_path": "exports/c2-containers.png",
+      "sha256": "320b0f8afd0b0176ddb6ca1bbad6d0f44f8ac84b2a276dbfd7bd251df641f913"
+    },
+    {
+      "source_path": "docs/architecture/exports/c2-containers.svg",
+      "snapshot_path": "exports/c2-containers.svg",
+      "sha256": "cd57ab206318141a93673a41a586da1af21174a7a96943c6ebfa6b64b228149f"
+    },
+    {
+      "source_path": "docs/architecture/exports/c3-components.png",
+      "snapshot_path": "exports/c3-components.png",
+      "sha256": "55bc54d60e86a5b84356e2e444ec58a0da96a5f1548a091ae297b2f79387c4b3"
+    },
+    {
+      "source_path": "docs/architecture/exports/c3-components.svg",
+      "snapshot_path": "exports/c3-components.svg",
+      "sha256": "a86215852d0284660534920da7fb7cb082ee75d78c472257481b6f87337211f5"
+    },
+    {
+      "source_path": "docs/architecture/exports/class.png",
+      "snapshot_path": "exports/class.png",
+      "sha256": "341f410d8a18b206e80315096c309e76ba2284916ad75d83447b5f7b24e51044"
+    },
+    {
+      "source_path": "docs/architecture/exports/erd-database.png",
+      "snapshot_path": "exports/erd-database.png",
+      "sha256": "12768f0d147cb2fb5731bb8ce6ee311714aa8c9de04fabce255a330790641daa"
+    },
+    {
+      "source_path": "docs/architecture/exports/erd-events.png",
+      "snapshot_path": "exports/erd-events.png",
+      "sha256": "af082db594a23269ddecacf3cf40ae9764641d312837bc7b238e161e409d74a8"
+    },
+    {
+      "source_path": "docs/architecture/exports/erd-planning.png",
+      "snapshot_path": "exports/erd-planning.png",
+      "sha256": "aea82626d08fa7db77bdca24558d0d0d6e1e71fb1d938ee3567e3c674bbe5f9a"
+    },
+    {
+      "source_path": "docs/architecture/exports/erd-safety-invalidation.png",
+      "snapshot_path": "exports/erd-safety-invalidation.png",
+      "sha256": "a67008690b0a0242eb93f95a23b231a00b3203d7d32141f463feec71c888f32e"
+    },
+    {
+      "source_path": "docs/architecture/exports/seq-equipment-availability.png",
+      "snapshot_path": "exports/seq-equipment-availability.png",
+      "sha256": "8d579ddff6104d3c35621494c1f5dda7e72ae15ad5d6a8d8b6b1c8afedeb2e29"
+    },
+    {
+      "source_path": "docs/architecture/exports/seq-equipment-reservation.png",
+      "snapshot_path": "exports/seq-equipment-reservation.png",
+      "sha256": "83138c7f568f8abb1ce532b1a9cffcd227ef85d4e39f1cc36c33e5288d4d18ee"
+    },
+    {
+      "source_path": "docs/architecture/exports/seq-event-cancellation-equipment.png",
+      "snapshot_path": "exports/seq-event-cancellation-equipment.png",
+      "sha256": "dab8b7b0f144eea89515b4e268c559cc5eb8e78222424e60d327a28b574f4650"
+    },
+    {
+      "source_path": "docs/architecture/exports/seq-event-confirmation.png",
+      "snapshot_path": "exports/seq-event-confirmation.png",
+      "sha256": "00df36ff64824045454412a1f388774c3e29ed76580d063a8e65f79a70d0d07a"
+    },
+    {
+      "source_path": "docs/architecture/exports/seq-lead-assignment.png",
+      "snapshot_path": "exports/seq-lead-assignment.png",
+      "sha256": "6d751216b7c424367abb902efef79cb1ef970a038494e719070243a6e84ed356"
+    },
+    {
+      "source_path": "docs/architecture/exports/seq-registration-withdrawal.png",
+      "snapshot_path": "exports/seq-registration-withdrawal.png",
+      "sha256": "474a819325173451d53f7537c93963f61fa98e0cf4b6128a187b48f8b8837b83"
+    },
+    {
+      "source_path": "docs/architecture/exports/seq-safety-review.png",
+      "snapshot_path": "exports/seq-safety-review.png",
+      "sha256": "2cfc2cce79ed43918df795b2e0752b6ea3c8644320f9443e8bb0eae4a51d9a26"
+    },
+    {
+      "source_path": "docs/architecture/exports/seq-venue-write-locking.png",
+      "snapshot_path": "exports/seq-venue-write-locking.png",
+      "sha256": "ca5148357a176c2076df00bcade983b1ce5a14a83625ba6b8f4983391c2178f4"
+    }
+  ]
+}

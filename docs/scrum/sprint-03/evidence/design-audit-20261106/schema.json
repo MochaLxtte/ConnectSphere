@@ -1,0 +1,4084 @@
+{
+  "server_version": "PostgreSQL 17.11 (Debian 17.11-1.pgdg13+2) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit",
+  "tables": [
+    {
+      "name": "app_users",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "not_null": true,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "email",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "display_name",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "role",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "password_hash",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        },
+        {
+          "name": "supabase_user_id",
+          "type": "uuid",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "coordinator_available",
+          "type": "boolean",
+          "not_null": true,
+          "default": "false"
+        }
+      ],
+      "primary_key": [
+        "id"
+      ]
+    },
+    {
+      "name": "coordinator_assignments",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "not_null": true,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "event_request_id",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "coordinator_id",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "assigned_by",
+          "type": "uuid",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "note",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "assigned_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        },
+        {
+          "name": "unassigned_at",
+          "type": "timestamp with time zone",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "assignment_method",
+          "type": "text",
+          "not_null": true,
+          "default": "'MANUAL'::text"
+        }
+      ],
+      "primary_key": [
+        "id"
+      ]
+    },
+    {
+      "name": "equipment_requests",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "not_null": true,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "event_request_id",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "equipment_type_id",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "requested_by",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "quantity",
+          "type": "integer",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "status",
+          "type": "text",
+          "not_null": true,
+          "default": "'REQUESTED'::text"
+        },
+        {
+          "name": "starts_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "ends_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "notes",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "decided_by",
+          "type": "uuid",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "decided_at",
+          "type": "timestamp with time zone",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "decision_reason",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        },
+        {
+          "name": "released_at",
+          "type": "timestamp with time zone",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "released_by",
+          "type": "uuid",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "release_reason",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "release_cause",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "technical_requirements",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "revision",
+          "type": "integer",
+          "not_null": true,
+          "default": "1"
+        }
+      ],
+      "primary_key": [
+        "id"
+      ]
+    },
+    {
+      "name": "equipment_stock_changes",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "not_null": true,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "equipment_type_id",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "revision",
+          "type": "integer",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "changed_by",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "changed_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "clock_timestamp()"
+        },
+        {
+          "name": "reason",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "previous_total_quantity",
+          "type": "integer",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "previous_damaged_quantity",
+          "type": "integer",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "previous_maintenance_quantity",
+          "type": "integer",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "new_total_quantity",
+          "type": "integer",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "new_damaged_quantity",
+          "type": "integer",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "new_maintenance_quantity",
+          "type": "integer",
+          "not_null": true,
+          "default": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ]
+    },
+    {
+      "name": "equipment_types",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "not_null": true,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "name",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "category",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "description",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "total_quantity",
+          "type": "integer",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "is_active",
+          "type": "boolean",
+          "not_null": true,
+          "default": "true"
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        },
+        {
+          "name": "damaged_quantity",
+          "type": "integer",
+          "not_null": true,
+          "default": "0"
+        },
+        {
+          "name": "maintenance_quantity",
+          "type": "integer",
+          "not_null": true,
+          "default": "0"
+        },
+        {
+          "name": "stock_revision",
+          "type": "integer",
+          "not_null": true,
+          "default": "0"
+        }
+      ],
+      "primary_key": [
+        "id"
+      ]
+    },
+    {
+      "name": "event_cancellations",
+      "columns": [
+        {
+          "name": "event_request_id",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "cancelled_by",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "cancelled_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        },
+        {
+          "name": "reason",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "affected_venue_bookings",
+          "type": "integer",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "affected_equipment_requests",
+          "type": "integer",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "affected_registrations",
+          "type": "integer",
+          "not_null": true,
+          "default": null
+        }
+      ],
+      "primary_key": [
+        "event_request_id"
+      ]
+    },
+    {
+      "name": "event_change_requests",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "not_null": true,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "event_request_id",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "requested_by",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "status",
+          "type": "text",
+          "not_null": true,
+          "default": "'PENDING'::text"
+        },
+        {
+          "name": "proposed_changes",
+          "type": "jsonb",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "reason",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "decided_by",
+          "type": "uuid",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "decided_at",
+          "type": "timestamp with time zone",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "decision_reason",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        },
+        {
+          "name": "previous",
+          "type": "jsonb",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "base_revision",
+          "type": "integer",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "applied_revision",
+          "type": "integer",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "cancelled_arrangements",
+          "type": "jsonb",
+          "not_null": false,
+          "default": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ]
+    },
+    {
+      "name": "event_clarifications",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "not_null": true,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "event_request_id",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "requested_by",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "message",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "response",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        },
+        {
+          "name": "responded_at",
+          "type": "timestamp with time zone",
+          "not_null": false,
+          "default": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ]
+    },
+    {
+      "name": "event_registrations",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "not_null": true,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "event_request_id",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "attendee_id",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "status",
+          "type": "text",
+          "not_null": true,
+          "default": "'REGISTERED'::text"
+        },
+        {
+          "name": "registered_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        },
+        {
+          "name": "withdrawn_at",
+          "type": "timestamp with time zone",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "cancellation_outcome_at",
+          "type": "timestamp with time zone",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "outcome_version",
+          "type": "integer",
+          "not_null": true,
+          "default": "1"
+        }
+      ],
+      "primary_key": [
+        "id"
+      ]
+    },
+    {
+      "name": "event_request_edits",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "not_null": true,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "event_request_id",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "revision",
+          "type": "integer",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "edited_by",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "editor_role",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "event_status",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "changes",
+          "type": "jsonb",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        }
+      ],
+      "primary_key": [
+        "id"
+      ]
+    },
+    {
+      "name": "event_requests",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "not_null": true,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "organiser_id",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "coordinator_id",
+          "type": "uuid",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "status",
+          "type": "text",
+          "not_null": true,
+          "default": "'DRAFT'::text"
+        },
+        {
+          "name": "name",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "purpose",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "description",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "starts_at",
+          "type": "timestamp with time zone",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "ends_at",
+          "type": "timestamp with time zone",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "expected_attendance",
+          "type": "integer",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "venue_requirements",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "accessibility_needs",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "equipment_requirements",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "registration_required",
+          "type": "boolean",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        },
+        {
+          "name": "registration_capacity",
+          "type": "integer",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "registration_opens_at",
+          "type": "timestamp with time zone",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "registration_closes_at",
+          "type": "timestamp with time zone",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "revision",
+          "type": "integer",
+          "not_null": true,
+          "default": "1"
+        },
+        {
+          "name": "equipment_plan_status",
+          "type": "text",
+          "not_null": true,
+          "default": "'REQUIRED'::text"
+        },
+        {
+          "name": "preparation_started_at",
+          "type": "timestamp with time zone",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "preparation_started_by",
+          "type": "uuid",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "preparation_safety_review_id",
+          "type": "uuid",
+          "not_null": false,
+          "default": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ]
+    },
+    {
+      "name": "event_reviews",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "not_null": true,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "event_request_id",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "reviewed_by",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "decision",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "reason",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        }
+      ],
+      "primary_key": [
+        "id"
+      ]
+    },
+    {
+      "name": "event_status_history",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "not_null": true,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "event_request_id",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "from_status",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "to_status",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "changed_by",
+          "type": "uuid",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        },
+        {
+          "name": "reason",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ]
+    },
+    {
+      "name": "notifications",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "not_null": true,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "recipient_id",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "event_request_id",
+          "type": "uuid",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "type",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "title",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "message",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "read_at",
+          "type": "timestamp with time zone",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        },
+        {
+          "name": "venue_booking_id",
+          "type": "uuid",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "dedupe_key",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "equipment_request_id",
+          "type": "uuid",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "registration_id",
+          "type": "uuid",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "change_request_id",
+          "type": "uuid",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "safety_review_id",
+          "type": "uuid",
+          "not_null": false,
+          "default": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ]
+    },
+    {
+      "name": "safety_approval_invalidations",
+      "columns": [
+        {
+          "name": "review_id",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "invalidated_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "clock_timestamp()"
+        },
+        {
+          "name": "source",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        }
+      ],
+      "primary_key": [
+        "review_id"
+      ]
+    },
+    {
+      "name": "safety_review_change_baselines",
+      "columns": [
+        {
+          "name": "review_id",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "venue_fingerprint",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "technical_fingerprint",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "captured_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        }
+      ],
+      "primary_key": [
+        "review_id"
+      ]
+    },
+    {
+      "name": "safety_review_context_baselines",
+      "columns": [
+        {
+          "name": "review_id",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "context_fingerprint",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "captured_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "clock_timestamp()"
+        }
+      ],
+      "primary_key": [
+        "review_id"
+      ]
+    },
+    {
+      "name": "safety_reviews",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "not_null": true,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "event_request_id",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "round",
+          "type": "integer",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "status",
+          "type": "text",
+          "not_null": true,
+          "default": "'PENDING'::text"
+        },
+        {
+          "name": "arrangement_fingerprint",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "emergency_access",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "equipment_placement",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "crowd_movement",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "submitted_by",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "submitted_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        },
+        {
+          "name": "decided_by",
+          "type": "uuid",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "decided_at",
+          "type": "timestamp with time zone",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "decision_notes",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "requested_areas",
+          "type": "text[]",
+          "not_null": false,
+          "default": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ]
+    },
+    {
+      "name": "scaffold_metadata",
+      "columns": [
+        {
+          "name": "key",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "value",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        }
+      ],
+      "primary_key": [
+        "key"
+      ]
+    },
+    {
+      "name": "schema_migrations",
+      "columns": [
+        {
+          "name": "name",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "checksum",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "applied_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        }
+      ],
+      "primary_key": [
+        "name"
+      ]
+    },
+    {
+      "name": "venue_bookings",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "not_null": true,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "event_request_id",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "venue_id",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "requested_by",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "status",
+          "type": "text",
+          "not_null": true,
+          "default": "'PENDING'::text"
+        },
+        {
+          "name": "starts_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "ends_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "layout",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "notes",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "decided_by",
+          "type": "uuid",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "decided_at",
+          "type": "timestamp with time zone",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "decision_reason",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        },
+        {
+          "name": "replaces_booking_id",
+          "type": "uuid",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "reserved_setup_minutes",
+          "type": "integer",
+          "not_null": true,
+          "default": "0"
+        },
+        {
+          "name": "reserved_turnaround_minutes",
+          "type": "integer",
+          "not_null": true,
+          "default": "0"
+        },
+        {
+          "name": "hold_expires_at",
+          "type": "timestamp with time zone",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "held_by",
+          "type": "uuid",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "held_at",
+          "type": "timestamp with time zone",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "expired_at",
+          "type": "timestamp with time zone",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "cancelled_by",
+          "type": "uuid",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "cancelled_at",
+          "type": "timestamp with time zone",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "cancellation_reason",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ]
+    },
+    {
+      "name": "venue_outage_impacts",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "not_null": true,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "unavailability_id",
+          "type": "uuid",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "venue_booking_id",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "venue_id",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "outage_starts_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "outage_ends_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "outage_reason",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "status",
+          "type": "text",
+          "not_null": true,
+          "default": "'RECOVERY_REQUIRED'::text"
+        },
+        {
+          "name": "recorded_by",
+          "type": "uuid",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        }
+      ],
+      "primary_key": [
+        "id"
+      ]
+    },
+    {
+      "name": "venue_unavailability",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "not_null": true,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "venue_id",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "starts_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "ends_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "reason",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "created_by",
+          "type": "uuid",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        }
+      ],
+      "primary_key": [
+        "id"
+      ]
+    },
+    {
+      "name": "venues",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "not_null": true,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "name",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "description",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "location",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "capacity",
+          "type": "integer",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "layouts",
+          "type": "text[]",
+          "not_null": true,
+          "default": "'{}'::text[]"
+        },
+        {
+          "name": "facilities",
+          "type": "text[]",
+          "not_null": true,
+          "default": "'{}'::text[]"
+        },
+        {
+          "name": "accessibility_features",
+          "type": "text[]",
+          "not_null": true,
+          "default": "'{}'::text[]"
+        },
+        {
+          "name": "wheelchair_accessible",
+          "type": "boolean",
+          "not_null": true,
+          "default": "false"
+        },
+        {
+          "name": "opens_at",
+          "type": "time without time zone",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "closes_at",
+          "type": "time without time zone",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "is_active",
+          "type": "boolean",
+          "not_null": true,
+          "default": "true"
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        },
+        {
+          "name": "setup_minutes",
+          "type": "integer",
+          "not_null": true,
+          "default": "0"
+        },
+        {
+          "name": "turnaround_minutes",
+          "type": "integer",
+          "not_null": true,
+          "default": "0"
+        }
+      ],
+      "primary_key": [
+        "id"
+      ]
+    }
+  ],
+  "foreign_keys": [
+    {
+      "name": "coordinator_assignments_assigned_by_fkey",
+      "child": "coordinator_assignments",
+      "parent": "app_users",
+      "columns": [
+        "assigned_by"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": false,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (assigned_by) REFERENCES app_users(id)",
+      "delete_action": "a",
+      "update_action": "a"
+    },
+    {
+      "name": "coordinator_assignments_coordinator_id_fkey",
+      "child": "coordinator_assignments",
+      "parent": "app_users",
+      "columns": [
+        "coordinator_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (coordinator_id) REFERENCES app_users(id)",
+      "delete_action": "a",
+      "update_action": "a"
+    },
+    {
+      "name": "coordinator_assignments_event_request_id_fkey",
+      "child": "coordinator_assignments",
+      "parent": "event_requests",
+      "columns": [
+        "event_request_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (event_request_id) REFERENCES event_requests(id) ON DELETE CASCADE",
+      "delete_action": "c",
+      "update_action": "a"
+    },
+    {
+      "name": "equipment_requests_decided_by_fkey",
+      "child": "equipment_requests",
+      "parent": "app_users",
+      "columns": [
+        "decided_by"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": false,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (decided_by) REFERENCES app_users(id)",
+      "delete_action": "a",
+      "update_action": "a"
+    },
+    {
+      "name": "equipment_requests_equipment_type_id_fkey",
+      "child": "equipment_requests",
+      "parent": "equipment_types",
+      "columns": [
+        "equipment_type_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (equipment_type_id) REFERENCES equipment_types(id)",
+      "delete_action": "a",
+      "update_action": "a"
+    },
+    {
+      "name": "equipment_requests_event_request_id_fkey",
+      "child": "equipment_requests",
+      "parent": "event_requests",
+      "columns": [
+        "event_request_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (event_request_id) REFERENCES event_requests(id)",
+      "delete_action": "a",
+      "update_action": "a"
+    },
+    {
+      "name": "equipment_requests_released_by_fkey",
+      "child": "equipment_requests",
+      "parent": "app_users",
+      "columns": [
+        "released_by"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": false,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (released_by) REFERENCES app_users(id)",
+      "delete_action": "a",
+      "update_action": "a"
+    },
+    {
+      "name": "equipment_requests_requested_by_fkey",
+      "child": "equipment_requests",
+      "parent": "app_users",
+      "columns": [
+        "requested_by"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (requested_by) REFERENCES app_users(id)",
+      "delete_action": "a",
+      "update_action": "a"
+    },
+    {
+      "name": "equipment_stock_changes_changed_by_fkey",
+      "child": "equipment_stock_changes",
+      "parent": "app_users",
+      "columns": [
+        "changed_by"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (changed_by) REFERENCES app_users(id)",
+      "delete_action": "a",
+      "update_action": "a"
+    },
+    {
+      "name": "equipment_stock_changes_equipment_type_id_fkey",
+      "child": "equipment_stock_changes",
+      "parent": "equipment_types",
+      "columns": [
+        "equipment_type_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (equipment_type_id) REFERENCES equipment_types(id)",
+      "delete_action": "a",
+      "update_action": "a"
+    },
+    {
+      "name": "event_cancellations_cancelled_by_fkey",
+      "child": "event_cancellations",
+      "parent": "app_users",
+      "columns": [
+        "cancelled_by"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (cancelled_by) REFERENCES app_users(id)",
+      "delete_action": "a",
+      "update_action": "a"
+    },
+    {
+      "name": "event_cancellations_event_request_id_fkey",
+      "child": "event_cancellations",
+      "parent": "event_requests",
+      "columns": [
+        "event_request_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": true,
+      "identifying": true,
+      "definition": "FOREIGN KEY (event_request_id) REFERENCES event_requests(id)",
+      "delete_action": "a",
+      "update_action": "a"
+    },
+    {
+      "name": "event_change_requests_decided_by_fkey",
+      "child": "event_change_requests",
+      "parent": "app_users",
+      "columns": [
+        "decided_by"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": false,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (decided_by) REFERENCES app_users(id)",
+      "delete_action": "a",
+      "update_action": "a"
+    },
+    {
+      "name": "event_change_requests_event_request_id_fkey",
+      "child": "event_change_requests",
+      "parent": "event_requests",
+      "columns": [
+        "event_request_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (event_request_id) REFERENCES event_requests(id)",
+      "delete_action": "a",
+      "update_action": "a"
+    },
+    {
+      "name": "event_change_requests_requested_by_fkey",
+      "child": "event_change_requests",
+      "parent": "app_users",
+      "columns": [
+        "requested_by"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (requested_by) REFERENCES app_users(id)",
+      "delete_action": "a",
+      "update_action": "a"
+    },
+    {
+      "name": "event_clarifications_event_request_id_fkey",
+      "child": "event_clarifications",
+      "parent": "event_requests",
+      "columns": [
+        "event_request_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (event_request_id) REFERENCES event_requests(id)",
+      "delete_action": "a",
+      "update_action": "a"
+    },
+    {
+      "name": "event_clarifications_requested_by_fkey",
+      "child": "event_clarifications",
+      "parent": "app_users",
+      "columns": [
+        "requested_by"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (requested_by) REFERENCES app_users(id)",
+      "delete_action": "a",
+      "update_action": "a"
+    },
+    {
+      "name": "event_registrations_attendee_id_fkey",
+      "child": "event_registrations",
+      "parent": "app_users",
+      "columns": [
+        "attendee_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (attendee_id) REFERENCES app_users(id)",
+      "delete_action": "a",
+      "update_action": "a"
+    },
+    {
+      "name": "event_registrations_event_request_id_fkey",
+      "child": "event_registrations",
+      "parent": "event_requests",
+      "columns": [
+        "event_request_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (event_request_id) REFERENCES event_requests(id)",
+      "delete_action": "a",
+      "update_action": "a"
+    },
+    {
+      "name": "event_request_edits_edited_by_fkey",
+      "child": "event_request_edits",
+      "parent": "app_users",
+      "columns": [
+        "edited_by"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (edited_by) REFERENCES app_users(id)",
+      "delete_action": "a",
+      "update_action": "a"
+    },
+    {
+      "name": "event_request_edits_event_request_id_fkey",
+      "child": "event_request_edits",
+      "parent": "event_requests",
+      "columns": [
+        "event_request_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (event_request_id) REFERENCES event_requests(id) ON DELETE CASCADE",
+      "delete_action": "c",
+      "update_action": "a"
+    },
+    {
+      "name": "event_requests_coordinator_id_fkey",
+      "child": "event_requests",
+      "parent": "app_users",
+      "columns": [
+        "coordinator_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": false,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (coordinator_id) REFERENCES app_users(id)",
+      "delete_action": "a",
+      "update_action": "a"
+    },
+    {
+      "name": "event_requests_organiser_id_fkey",
+      "child": "event_requests",
+      "parent": "app_users",
+      "columns": [
+        "organiser_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (organiser_id) REFERENCES app_users(id)",
+      "delete_action": "a",
+      "update_action": "a"
+    },
+    {
+      "name": "event_requests_preparation_safety_review_id_fkey",
+      "child": "event_requests",
+      "parent": "safety_reviews",
+      "columns": [
+        "preparation_safety_review_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": false,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (preparation_safety_review_id) REFERENCES safety_reviews(id)",
+      "delete_action": "a",
+      "update_action": "a"
+    },
+    {
+      "name": "event_requests_preparation_started_by_fkey",
+      "child": "event_requests",
+      "parent": "app_users",
+      "columns": [
+        "preparation_started_by"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": false,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (preparation_started_by) REFERENCES app_users(id)",
+      "delete_action": "a",
+      "update_action": "a"
+    },
+    {
+      "name": "event_reviews_event_request_id_fkey",
+      "child": "event_reviews",
+      "parent": "event_requests",
+      "columns": [
+        "event_request_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (event_request_id) REFERENCES event_requests(id)",
+      "delete_action": "a",
+      "update_action": "a"
+    },
+    {
+      "name": "event_reviews_reviewed_by_fkey",
+      "child": "event_reviews",
+      "parent": "app_users",
+      "columns": [
+        "reviewed_by"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (reviewed_by) REFERENCES app_users(id)",
+      "delete_action": "a",
+      "update_action": "a"
+    },
+    {
+      "name": "event_status_history_changed_by_fkey",
+      "child": "event_status_history",
+      "parent": "app_users",
+      "columns": [
+        "changed_by"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": false,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (changed_by) REFERENCES app_users(id)",
+      "delete_action": "a",
+      "update_action": "a"
+    },
+    {
+      "name": "event_status_history_event_request_id_fkey",
+      "child": "event_status_history",
+      "parent": "event_requests",
+      "columns": [
+        "event_request_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (event_request_id) REFERENCES event_requests(id) ON DELETE CASCADE",
+      "delete_action": "c",
+      "update_action": "a"
+    },
+    {
+      "name": "notifications_change_request_id_fkey",
+      "child": "notifications",
+      "parent": "event_change_requests",
+      "columns": [
+        "change_request_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": false,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (change_request_id) REFERENCES event_change_requests(id)",
+      "delete_action": "a",
+      "update_action": "a"
+    },
+    {
+      "name": "notifications_equipment_request_id_fkey",
+      "child": "notifications",
+      "parent": "equipment_requests",
+      "columns": [
+        "equipment_request_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": false,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (equipment_request_id) REFERENCES equipment_requests(id)",
+      "delete_action": "a",
+      "update_action": "a"
+    },
+    {
+      "name": "notifications_event_request_id_fkey",
+      "child": "notifications",
+      "parent": "event_requests",
+      "columns": [
+        "event_request_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": false,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (event_request_id) REFERENCES event_requests(id) ON DELETE CASCADE",
+      "delete_action": "c",
+      "update_action": "a"
+    },
+    {
+      "name": "notifications_recipient_id_fkey",
+      "child": "notifications",
+      "parent": "app_users",
+      "columns": [
+        "recipient_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (recipient_id) REFERENCES app_users(id) ON DELETE CASCADE",
+      "delete_action": "c",
+      "update_action": "a"
+    },
+    {
+      "name": "notifications_registration_id_fkey",
+      "child": "notifications",
+      "parent": "event_registrations",
+      "columns": [
+        "registration_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": false,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (registration_id) REFERENCES event_registrations(id)",
+      "delete_action": "a",
+      "update_action": "a"
+    },
+    {
+      "name": "notifications_safety_review_id_fkey",
+      "child": "notifications",
+      "parent": "safety_reviews",
+      "columns": [
+        "safety_review_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": false,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (safety_review_id) REFERENCES safety_reviews(id)",
+      "delete_action": "a",
+      "update_action": "a"
+    },
+    {
+      "name": "notifications_venue_booking_id_fkey",
+      "child": "notifications",
+      "parent": "venue_bookings",
+      "columns": [
+        "venue_booking_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": false,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (venue_booking_id) REFERENCES venue_bookings(id) ON DELETE SET NULL",
+      "delete_action": "n",
+      "update_action": "a"
+    },
+    {
+      "name": "safety_approval_invalidations_review_id_fkey",
+      "child": "safety_approval_invalidations",
+      "parent": "safety_reviews",
+      "columns": [
+        "review_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": true,
+      "identifying": true,
+      "definition": "FOREIGN KEY (review_id) REFERENCES safety_reviews(id)",
+      "delete_action": "a",
+      "update_action": "a"
+    },
+    {
+      "name": "safety_review_change_baselines_review_id_fkey",
+      "child": "safety_review_change_baselines",
+      "parent": "safety_reviews",
+      "columns": [
+        "review_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": true,
+      "identifying": true,
+      "definition": "FOREIGN KEY (review_id) REFERENCES safety_reviews(id)",
+      "delete_action": "a",
+      "update_action": "a"
+    },
+    {
+      "name": "safety_review_context_baselines_review_id_fkey",
+      "child": "safety_review_context_baselines",
+      "parent": "safety_reviews",
+      "columns": [
+        "review_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": true,
+      "identifying": true,
+      "definition": "FOREIGN KEY (review_id) REFERENCES safety_reviews(id)",
+      "delete_action": "a",
+      "update_action": "a"
+    },
+    {
+      "name": "safety_reviews_decided_by_fkey",
+      "child": "safety_reviews",
+      "parent": "app_users",
+      "columns": [
+        "decided_by"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": false,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (decided_by) REFERENCES app_users(id)",
+      "delete_action": "a",
+      "update_action": "a"
+    },
+    {
+      "name": "safety_reviews_event_request_id_fkey",
+      "child": "safety_reviews",
+      "parent": "event_requests",
+      "columns": [
+        "event_request_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (event_request_id) REFERENCES event_requests(id)",
+      "delete_action": "a",
+      "update_action": "a"
+    },
+    {
+      "name": "safety_reviews_submitted_by_fkey",
+      "child": "safety_reviews",
+      "parent": "app_users",
+      "columns": [
+        "submitted_by"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (submitted_by) REFERENCES app_users(id)",
+      "delete_action": "a",
+      "update_action": "a"
+    },
+    {
+      "name": "venue_bookings_cancelled_by_fkey",
+      "child": "venue_bookings",
+      "parent": "app_users",
+      "columns": [
+        "cancelled_by"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": false,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (cancelled_by) REFERENCES app_users(id)",
+      "delete_action": "a",
+      "update_action": "a"
+    },
+    {
+      "name": "venue_bookings_decided_by_fkey",
+      "child": "venue_bookings",
+      "parent": "app_users",
+      "columns": [
+        "decided_by"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": false,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (decided_by) REFERENCES app_users(id)",
+      "delete_action": "a",
+      "update_action": "a"
+    },
+    {
+      "name": "venue_bookings_event_request_id_fkey",
+      "child": "venue_bookings",
+      "parent": "event_requests",
+      "columns": [
+        "event_request_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (event_request_id) REFERENCES event_requests(id)",
+      "delete_action": "a",
+      "update_action": "a"
+    },
+    {
+      "name": "venue_bookings_held_by_fkey",
+      "child": "venue_bookings",
+      "parent": "app_users",
+      "columns": [
+        "held_by"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": false,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (held_by) REFERENCES app_users(id)",
+      "delete_action": "a",
+      "update_action": "a"
+    },
+    {
+      "name": "venue_bookings_replaces_booking_id_fkey",
+      "child": "venue_bookings",
+      "parent": "venue_bookings",
+      "columns": [
+        "replaces_booking_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": false,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (replaces_booking_id) REFERENCES venue_bookings(id)",
+      "delete_action": "a",
+      "update_action": "a"
+    },
+    {
+      "name": "venue_bookings_requested_by_fkey",
+      "child": "venue_bookings",
+      "parent": "app_users",
+      "columns": [
+        "requested_by"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (requested_by) REFERENCES app_users(id)",
+      "delete_action": "a",
+      "update_action": "a"
+    },
+    {
+      "name": "venue_bookings_venue_id_fkey",
+      "child": "venue_bookings",
+      "parent": "venues",
+      "columns": [
+        "venue_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (venue_id) REFERENCES venues(id)",
+      "delete_action": "a",
+      "update_action": "a"
+    },
+    {
+      "name": "venue_outage_impacts_recorded_by_fkey",
+      "child": "venue_outage_impacts",
+      "parent": "app_users",
+      "columns": [
+        "recorded_by"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": false,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (recorded_by) REFERENCES app_users(id)",
+      "delete_action": "a",
+      "update_action": "a"
+    },
+    {
+      "name": "venue_outage_impacts_unavailability_id_fkey",
+      "child": "venue_outage_impacts",
+      "parent": "venue_unavailability",
+      "columns": [
+        "unavailability_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": false,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (unavailability_id) REFERENCES venue_unavailability(id) ON DELETE SET NULL",
+      "delete_action": "n",
+      "update_action": "a"
+    },
+    {
+      "name": "venue_outage_impacts_venue_booking_id_fkey",
+      "child": "venue_outage_impacts",
+      "parent": "venue_bookings",
+      "columns": [
+        "venue_booking_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (venue_booking_id) REFERENCES venue_bookings(id)",
+      "delete_action": "a",
+      "update_action": "a"
+    },
+    {
+      "name": "venue_outage_impacts_venue_id_fkey",
+      "child": "venue_outage_impacts",
+      "parent": "venues",
+      "columns": [
+        "venue_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (venue_id) REFERENCES venues(id)",
+      "delete_action": "a",
+      "update_action": "a"
+    },
+    {
+      "name": "venue_unavailability_created_by_fkey",
+      "child": "venue_unavailability",
+      "parent": "app_users",
+      "columns": [
+        "created_by"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": false,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (created_by) REFERENCES app_users(id)",
+      "delete_action": "a",
+      "update_action": "a"
+    },
+    {
+      "name": "venue_unavailability_venue_id_fkey",
+      "child": "venue_unavailability",
+      "parent": "venues",
+      "columns": [
+        "venue_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (venue_id) REFERENCES venues(id) ON DELETE CASCADE",
+      "delete_action": "c",
+      "update_action": "a"
+    }
+  ],
+  "constraints": [
+    {
+      "table": "app_users",
+      "name": "app_users_pkey",
+      "kind": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table": "app_users",
+      "name": "app_users_role_check",
+      "kind": "c",
+      "definition": "CHECK (role = ANY (ARRAY['EVENT_ORGANISER'::text, 'EVENT_COORDINATOR'::text, 'EVENT_COORDINATOR_LEAD'::text, 'VENUE_STAFF'::text, 'TECHNICAL_SUPPORT_STAFF'::text, 'ATTENDEE'::text, 'SAFETY_OFFICER'::text]))"
+    },
+    {
+      "table": "coordinator_assignments",
+      "name": "coordinator_assignments_assigned_by_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (assigned_by) REFERENCES app_users(id)"
+    },
+    {
+      "table": "coordinator_assignments",
+      "name": "coordinator_assignments_check",
+      "kind": "c",
+      "definition": "CHECK (unassigned_at IS NULL OR unassigned_at >= assigned_at)"
+    },
+    {
+      "table": "coordinator_assignments",
+      "name": "coordinator_assignments_coordinator_id_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (coordinator_id) REFERENCES app_users(id)"
+    },
+    {
+      "table": "coordinator_assignments",
+      "name": "coordinator_assignments_event_request_id_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (event_request_id) REFERENCES event_requests(id) ON DELETE CASCADE"
+    },
+    {
+      "table": "coordinator_assignments",
+      "name": "coordinator_assignments_method_actor_check",
+      "kind": "c",
+      "definition": "CHECK (assignment_method = 'MANUAL'::text AND assigned_by IS NOT NULL OR assignment_method = 'AUTOMATIC'::text AND assigned_by IS NULL)"
+    },
+    {
+      "table": "coordinator_assignments",
+      "name": "coordinator_assignments_pkey",
+      "kind": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table": "equipment_requests",
+      "name": "equipment_release_metadata",
+      "kind": "c",
+      "definition": "CHECK (released_at IS NULL AND released_by IS NULL AND release_reason IS NULL AND release_cause IS NULL OR status = 'CANCELLED'::text AND released_at IS NOT NULL AND release_reason IS NOT NULL AND length(TRIM(BOTH FROM release_reason)) > 0 AND release_cause IS NOT NULL AND (release_cause = ANY (ARRAY['MANUAL_CANCELLATION'::text, 'EVENT_CANCELLED'::text, 'EVENT_COMPLETED'::text])) AND (release_cause <> 'MANUAL_CANCELLATION'::text OR released_by IS NOT NULL))"
+    },
+    {
+      "table": "equipment_requests",
+      "name": "equipment_requests_check",
+      "kind": "c",
+      "definition": "CHECK (ends_at > starts_at)"
+    },
+    {
+      "table": "equipment_requests",
+      "name": "equipment_requests_check1",
+      "kind": "c",
+      "definition": "CHECK ((status = ANY (ARRAY['RESERVED'::text, 'REJECTED'::text])) = (decided_by IS NOT NULL AND decided_at IS NOT NULL) OR status = 'CANCELLED'::text)"
+    },
+    {
+      "table": "equipment_requests",
+      "name": "equipment_requests_decided_by_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (decided_by) REFERENCES app_users(id)"
+    },
+    {
+      "table": "equipment_requests",
+      "name": "equipment_requests_equipment_type_id_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (equipment_type_id) REFERENCES equipment_types(id)"
+    },
+    {
+      "table": "equipment_requests",
+      "name": "equipment_requests_event_request_id_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (event_request_id) REFERENCES event_requests(id)"
+    },
+    {
+      "table": "equipment_requests",
+      "name": "equipment_requests_pkey",
+      "kind": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table": "equipment_requests",
+      "name": "equipment_requests_quantity_check",
+      "kind": "c",
+      "definition": "CHECK (quantity > 0)"
+    },
+    {
+      "table": "equipment_requests",
+      "name": "equipment_requests_released_by_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (released_by) REFERENCES app_users(id)"
+    },
+    {
+      "table": "equipment_requests",
+      "name": "equipment_requests_requested_by_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (requested_by) REFERENCES app_users(id)"
+    },
+    {
+      "table": "equipment_requests",
+      "name": "equipment_requests_revision_check",
+      "kind": "c",
+      "definition": "CHECK (revision > 0)"
+    },
+    {
+      "table": "equipment_requests",
+      "name": "equipment_requests_status_check",
+      "kind": "c",
+      "definition": "CHECK (status = ANY (ARRAY['REQUESTED'::text, 'RESERVED'::text, 'REJECTED'::text, 'CANCELLED'::text]))"
+    },
+    {
+      "table": "equipment_stock_changes",
+      "name": "equipment_stock_changes_changed_by_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (changed_by) REFERENCES app_users(id)"
+    },
+    {
+      "table": "equipment_stock_changes",
+      "name": "equipment_stock_changes_equipment_type_id_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (equipment_type_id) REFERENCES equipment_types(id)"
+    },
+    {
+      "table": "equipment_stock_changes",
+      "name": "equipment_stock_changes_equipment_type_id_revision_key",
+      "kind": "u",
+      "definition": "UNIQUE (equipment_type_id, revision)"
+    },
+    {
+      "table": "equipment_stock_changes",
+      "name": "equipment_stock_changes_new_damaged_quantity_check",
+      "kind": "c",
+      "definition": "CHECK (new_damaged_quantity >= 0)"
+    },
+    {
+      "table": "equipment_stock_changes",
+      "name": "equipment_stock_changes_new_maintenance_quantity_check",
+      "kind": "c",
+      "definition": "CHECK (new_maintenance_quantity >= 0)"
+    },
+    {
+      "table": "equipment_stock_changes",
+      "name": "equipment_stock_changes_new_total_quantity_check",
+      "kind": "c",
+      "definition": "CHECK (new_total_quantity >= 0)"
+    },
+    {
+      "table": "equipment_stock_changes",
+      "name": "equipment_stock_changes_new_within_total",
+      "kind": "c",
+      "definition": "CHECK ((new_damaged_quantity::bigint + new_maintenance_quantity::bigint) <= new_total_quantity::bigint)"
+    },
+    {
+      "table": "equipment_stock_changes",
+      "name": "equipment_stock_changes_pkey",
+      "kind": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table": "equipment_stock_changes",
+      "name": "equipment_stock_changes_previous_damaged_quantity_check",
+      "kind": "c",
+      "definition": "CHECK (previous_damaged_quantity >= 0)"
+    },
+    {
+      "table": "equipment_stock_changes",
+      "name": "equipment_stock_changes_previous_maintenance_quantity_check",
+      "kind": "c",
+      "definition": "CHECK (previous_maintenance_quantity >= 0)"
+    },
+    {
+      "table": "equipment_stock_changes",
+      "name": "equipment_stock_changes_previous_total_quantity_check",
+      "kind": "c",
+      "definition": "CHECK (previous_total_quantity >= 0)"
+    },
+    {
+      "table": "equipment_stock_changes",
+      "name": "equipment_stock_changes_reason_check",
+      "kind": "c",
+      "definition": "CHECK (length(TRIM(BOTH FROM reason)) > 0 AND length(reason) <= 500)"
+    },
+    {
+      "table": "equipment_stock_changes",
+      "name": "equipment_stock_changes_revision_check",
+      "kind": "c",
+      "definition": "CHECK (revision >= 1)"
+    },
+    {
+      "table": "equipment_types",
+      "name": "equipment_damaged_quantity_nonnegative",
+      "kind": "c",
+      "definition": "CHECK (damaged_quantity >= 0)"
+    },
+    {
+      "table": "equipment_types",
+      "name": "equipment_maintenance_quantity_nonnegative",
+      "kind": "c",
+      "definition": "CHECK (maintenance_quantity >= 0)"
+    },
+    {
+      "table": "equipment_types",
+      "name": "equipment_operational_quantities_within_total",
+      "kind": "c",
+      "definition": "CHECK ((damaged_quantity::bigint + maintenance_quantity::bigint) <= total_quantity::bigint)"
+    },
+    {
+      "table": "equipment_types",
+      "name": "equipment_types_name_check",
+      "kind": "c",
+      "definition": "CHECK (length(TRIM(BOTH FROM name)) > 0)"
+    },
+    {
+      "table": "equipment_types",
+      "name": "equipment_types_pkey",
+      "kind": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table": "equipment_types",
+      "name": "equipment_types_stock_revision_check",
+      "kind": "c",
+      "definition": "CHECK (stock_revision >= 0)"
+    },
+    {
+      "table": "equipment_types",
+      "name": "equipment_types_total_quantity_check",
+      "kind": "c",
+      "definition": "CHECK (total_quantity >= 0)"
+    },
+    {
+      "table": "event_cancellations",
+      "name": "event_cancellations_affected_equipment_requests_check",
+      "kind": "c",
+      "definition": "CHECK (affected_equipment_requests >= 0)"
+    },
+    {
+      "table": "event_cancellations",
+      "name": "event_cancellations_affected_registrations_check",
+      "kind": "c",
+      "definition": "CHECK (affected_registrations >= 0)"
+    },
+    {
+      "table": "event_cancellations",
+      "name": "event_cancellations_affected_venue_bookings_check",
+      "kind": "c",
+      "definition": "CHECK (affected_venue_bookings >= 0)"
+    },
+    {
+      "table": "event_cancellations",
+      "name": "event_cancellations_cancelled_by_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (cancelled_by) REFERENCES app_users(id)"
+    },
+    {
+      "table": "event_cancellations",
+      "name": "event_cancellations_event_request_id_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (event_request_id) REFERENCES event_requests(id)"
+    },
+    {
+      "table": "event_cancellations",
+      "name": "event_cancellations_pkey",
+      "kind": "p",
+      "definition": "PRIMARY KEY (event_request_id)"
+    },
+    {
+      "table": "event_cancellations",
+      "name": "event_cancellations_reason_check",
+      "kind": "c",
+      "definition": "CHECK (length(TRIM(BOTH FROM reason)) > 0)"
+    },
+    {
+      "table": "event_change_requests",
+      "name": "event_change_requests_applied_check",
+      "kind": "c",
+      "definition": "CHECK ((status = 'APPROVED'::text) = (applied_revision IS NOT NULL)) NOT VALID"
+    },
+    {
+      "table": "event_change_requests",
+      "name": "event_change_requests_applied_revision_check",
+      "kind": "c",
+      "definition": "CHECK (applied_revision >= 2)"
+    },
+    {
+      "table": "event_change_requests",
+      "name": "event_change_requests_base_revision_check",
+      "kind": "c",
+      "definition": "CHECK (base_revision >= 1)"
+    },
+    {
+      "table": "event_change_requests",
+      "name": "event_change_requests_cancelled_check",
+      "kind": "c",
+      "definition": "CHECK (cancelled_arrangements IS NULL OR jsonb_typeof(cancelled_arrangements) = 'object'::text)"
+    },
+    {
+      "table": "event_change_requests",
+      "name": "event_change_requests_decided_by_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (decided_by) REFERENCES app_users(id)"
+    },
+    {
+      "table": "event_change_requests",
+      "name": "event_change_requests_decision_check",
+      "kind": "c",
+      "definition": "CHECK ((status = 'PENDING'::text) = (decided_at IS NULL) AND (decided_at IS NULL) = (decided_by IS NULL)) NOT VALID"
+    },
+    {
+      "table": "event_change_requests",
+      "name": "event_change_requests_event_request_id_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (event_request_id) REFERENCES event_requests(id)"
+    },
+    {
+      "table": "event_change_requests",
+      "name": "event_change_requests_pkey",
+      "kind": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table": "event_change_requests",
+      "name": "event_change_requests_previous_check",
+      "kind": "c",
+      "definition": "CHECK (jsonb_typeof(previous) = 'object'::text)"
+    },
+    {
+      "table": "event_change_requests",
+      "name": "event_change_requests_proposed_changes_check",
+      "kind": "c",
+      "definition": "CHECK (jsonb_typeof(proposed_changes) = 'object'::text AND proposed_changes <> '{}'::jsonb)"
+    },
+    {
+      "table": "event_change_requests",
+      "name": "event_change_requests_reason_text_check",
+      "kind": "c",
+      "definition": "CHECK (reason IS NULL OR length(TRIM(BOTH FROM reason)) > 0)"
+    },
+    {
+      "table": "event_change_requests",
+      "name": "event_change_requests_rejection_reason_check",
+      "kind": "c",
+      "definition": "CHECK (status <> 'REJECTED'::text OR length(TRIM(BOTH FROM COALESCE(decision_reason, ''::text))) > 0)"
+    },
+    {
+      "table": "event_change_requests",
+      "name": "event_change_requests_requested_by_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (requested_by) REFERENCES app_users(id)"
+    },
+    {
+      "table": "event_change_requests",
+      "name": "event_change_requests_status_check",
+      "kind": "c",
+      "definition": "CHECK (status = ANY (ARRAY['PENDING'::text, 'APPROVED'::text, 'REJECTED'::text, 'WITHDRAWN'::text]))"
+    },
+    {
+      "table": "event_clarifications",
+      "name": "event_clarifications_event_request_id_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (event_request_id) REFERENCES event_requests(id)"
+    },
+    {
+      "table": "event_clarifications",
+      "name": "event_clarifications_message_check",
+      "kind": "c",
+      "definition": "CHECK (length(TRIM(BOTH FROM message)) > 0)"
+    },
+    {
+      "table": "event_clarifications",
+      "name": "event_clarifications_pkey",
+      "kind": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table": "event_clarifications",
+      "name": "event_clarifications_requested_by_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (requested_by) REFERENCES app_users(id)"
+    },
+    {
+      "table": "event_registrations",
+      "name": "event_registrations_attendee_id_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (attendee_id) REFERENCES app_users(id)"
+    },
+    {
+      "table": "event_registrations",
+      "name": "event_registrations_cancelled_at_check",
+      "kind": "c",
+      "definition": "CHECK ((status = 'CANCELLED'::text) = (cancellation_outcome_at IS NOT NULL))"
+    },
+    {
+      "table": "event_registrations",
+      "name": "event_registrations_check",
+      "kind": "c",
+      "definition": "CHECK ((status = 'WITHDRAWN'::text) = (withdrawn_at IS NOT NULL))"
+    },
+    {
+      "table": "event_registrations",
+      "name": "event_registrations_event_request_id_attendee_id_key",
+      "kind": "u",
+      "definition": "UNIQUE (event_request_id, attendee_id)"
+    },
+    {
+      "table": "event_registrations",
+      "name": "event_registrations_event_request_id_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (event_request_id) REFERENCES event_requests(id)"
+    },
+    {
+      "table": "event_registrations",
+      "name": "event_registrations_outcome_version_check",
+      "kind": "c",
+      "definition": "CHECK (outcome_version > 0)"
+    },
+    {
+      "table": "event_registrations",
+      "name": "event_registrations_pkey",
+      "kind": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table": "event_registrations",
+      "name": "event_registrations_status_check",
+      "kind": "c",
+      "definition": "CHECK (status = ANY (ARRAY['REGISTERED'::text, 'WITHDRAWN'::text, 'CANCELLED'::text]))"
+    },
+    {
+      "table": "event_request_edits",
+      "name": "event_request_edits_changes_check",
+      "kind": "c",
+      "definition": "CHECK (jsonb_typeof(changes) = 'object'::text AND changes <> '{}'::jsonb)"
+    },
+    {
+      "table": "event_request_edits",
+      "name": "event_request_edits_edited_by_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (edited_by) REFERENCES app_users(id)"
+    },
+    {
+      "table": "event_request_edits",
+      "name": "event_request_edits_editor_role_check",
+      "kind": "c",
+      "definition": "CHECK (editor_role = ANY (ARRAY['EVENT_ORGANISER'::text, 'EVENT_COORDINATOR'::text]))"
+    },
+    {
+      "table": "event_request_edits",
+      "name": "event_request_edits_event_request_id_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (event_request_id) REFERENCES event_requests(id) ON DELETE CASCADE"
+    },
+    {
+      "table": "event_request_edits",
+      "name": "event_request_edits_event_request_id_revision_key",
+      "kind": "u",
+      "definition": "UNIQUE (event_request_id, revision)"
+    },
+    {
+      "table": "event_request_edits",
+      "name": "event_request_edits_pkey",
+      "kind": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table": "event_request_edits",
+      "name": "event_request_edits_revision_check",
+      "kind": "c",
+      "definition": "CHECK (revision >= 2)"
+    },
+    {
+      "table": "event_requests",
+      "name": "event_requests_coordinator_id_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (coordinator_id) REFERENCES app_users(id)"
+    },
+    {
+      "table": "event_requests",
+      "name": "event_requests_equipment_plan_status_check",
+      "kind": "c",
+      "definition": "CHECK (equipment_plan_status = ANY (ARRAY['REQUIRED'::text, 'NOT_REQUIRED'::text]))"
+    },
+    {
+      "table": "event_requests",
+      "name": "event_requests_expected_attendance_check",
+      "kind": "c",
+      "definition": "CHECK (expected_attendance >= 0)"
+    },
+    {
+      "table": "event_requests",
+      "name": "event_requests_organiser_id_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (organiser_id) REFERENCES app_users(id)"
+    },
+    {
+      "table": "event_requests",
+      "name": "event_requests_pkey",
+      "kind": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table": "event_requests",
+      "name": "event_requests_preparation_check",
+      "kind": "c",
+      "definition": "CHECK ((preparation_started_at IS NULL) = (preparation_started_by IS NULL) AND (preparation_started_at IS NULL) = (preparation_safety_review_id IS NULL))"
+    },
+    {
+      "table": "event_requests",
+      "name": "event_requests_preparation_safety_review_id_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (preparation_safety_review_id) REFERENCES safety_reviews(id)"
+    },
+    {
+      "table": "event_requests",
+      "name": "event_requests_preparation_started_by_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (preparation_started_by) REFERENCES app_users(id)"
+    },
+    {
+      "table": "event_requests",
+      "name": "event_requests_registration_capacity_check",
+      "kind": "c",
+      "definition": "CHECK (registration_capacity >= 0)"
+    },
+    {
+      "table": "event_requests",
+      "name": "event_requests_revision_check",
+      "kind": "c",
+      "definition": "CHECK (revision >= 1)"
+    },
+    {
+      "table": "event_requests",
+      "name": "event_requests_status_check",
+      "kind": "c",
+      "definition": "CHECK (status = ANY (ARRAY['DRAFT'::text, 'SUBMITTED'::text, 'UNDER_REVIEW'::text, 'CLARIFICATION_REQUESTED'::text, 'APPROVED'::text, 'REJECTED'::text, 'CONFIRMED'::text, 'CANCELLED'::text, 'COMPLETED'::text]))"
+    },
+    {
+      "table": "event_reviews",
+      "name": "event_reviews_decision_check",
+      "kind": "c",
+      "definition": "CHECK (decision = ANY (ARRAY['APPROVED'::text, 'REJECTED'::text]))"
+    },
+    {
+      "table": "event_reviews",
+      "name": "event_reviews_event_request_id_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (event_request_id) REFERENCES event_requests(id)"
+    },
+    {
+      "table": "event_reviews",
+      "name": "event_reviews_pkey",
+      "kind": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table": "event_reviews",
+      "name": "event_reviews_reviewed_by_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (reviewed_by) REFERENCES app_users(id)"
+    },
+    {
+      "table": "event_status_history",
+      "name": "event_status_history_changed_by_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (changed_by) REFERENCES app_users(id)"
+    },
+    {
+      "table": "event_status_history",
+      "name": "event_status_history_event_request_id_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (event_request_id) REFERENCES event_requests(id) ON DELETE CASCADE"
+    },
+    {
+      "table": "event_status_history",
+      "name": "event_status_history_pkey",
+      "kind": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table": "notifications",
+      "name": "notifications_change_request_id_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (change_request_id) REFERENCES event_change_requests(id)"
+    },
+    {
+      "table": "notifications",
+      "name": "notifications_dedupe_key_check",
+      "kind": "c",
+      "definition": "CHECK (dedupe_key IS NULL OR length(TRIM(BOTH FROM dedupe_key)) > 0)"
+    },
+    {
+      "table": "notifications",
+      "name": "notifications_equipment_request_id_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (equipment_request_id) REFERENCES equipment_requests(id)"
+    },
+    {
+      "table": "notifications",
+      "name": "notifications_event_request_id_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (event_request_id) REFERENCES event_requests(id) ON DELETE CASCADE"
+    },
+    {
+      "table": "notifications",
+      "name": "notifications_pkey",
+      "kind": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table": "notifications",
+      "name": "notifications_recipient_id_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (recipient_id) REFERENCES app_users(id) ON DELETE CASCADE"
+    },
+    {
+      "table": "notifications",
+      "name": "notifications_registration_id_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (registration_id) REFERENCES event_registrations(id)"
+    },
+    {
+      "table": "notifications",
+      "name": "notifications_safety_review_id_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (safety_review_id) REFERENCES safety_reviews(id)"
+    },
+    {
+      "table": "notifications",
+      "name": "notifications_title_check",
+      "kind": "c",
+      "definition": "CHECK (length(TRIM(BOTH FROM title)) > 0)"
+    },
+    {
+      "table": "notifications",
+      "name": "notifications_type_check",
+      "kind": "c",
+      "definition": "CHECK (length(TRIM(BOTH FROM type)) > 0)"
+    },
+    {
+      "table": "notifications",
+      "name": "notifications_venue_booking_id_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (venue_booking_id) REFERENCES venue_bookings(id) ON DELETE SET NULL"
+    },
+    {
+      "table": "safety_approval_invalidations",
+      "name": "safety_approval_invalidations_pkey",
+      "kind": "p",
+      "definition": "PRIMARY KEY (review_id)"
+    },
+    {
+      "table": "safety_approval_invalidations",
+      "name": "safety_approval_invalidations_review_id_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (review_id) REFERENCES safety_reviews(id)"
+    },
+    {
+      "table": "safety_review_change_baselines",
+      "name": "safety_review_change_baselines_pkey",
+      "kind": "p",
+      "definition": "PRIMARY KEY (review_id)"
+    },
+    {
+      "table": "safety_review_change_baselines",
+      "name": "safety_review_change_baselines_review_id_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (review_id) REFERENCES safety_reviews(id)"
+    },
+    {
+      "table": "safety_review_change_baselines",
+      "name": "safety_review_change_baselines_technical_fingerprint_check",
+      "kind": "c",
+      "definition": "CHECK (technical_fingerprint ~ '^[0-9a-f]{32}$'::text)"
+    },
+    {
+      "table": "safety_review_change_baselines",
+      "name": "safety_review_change_baselines_venue_fingerprint_check",
+      "kind": "c",
+      "definition": "CHECK (venue_fingerprint ~ '^[0-9a-f]{32}$'::text)"
+    },
+    {
+      "table": "safety_review_context_baselines",
+      "name": "safety_review_context_baselines_context_fingerprint_check",
+      "kind": "c",
+      "definition": "CHECK (context_fingerprint ~ '^[0-9a-f]{32}$'::text)"
+    },
+    {
+      "table": "safety_review_context_baselines",
+      "name": "safety_review_context_baselines_pkey",
+      "kind": "p",
+      "definition": "PRIMARY KEY (review_id)"
+    },
+    {
+      "table": "safety_review_context_baselines",
+      "name": "safety_review_context_baselines_review_id_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (review_id) REFERENCES safety_reviews(id)"
+    },
+    {
+      "table": "safety_reviews",
+      "name": "safety_reviews_arrangement_fingerprint_check",
+      "kind": "c",
+      "definition": "CHECK (length(arrangement_fingerprint) = 32)"
+    },
+    {
+      "table": "safety_reviews",
+      "name": "safety_reviews_check",
+      "kind": "c",
+      "definition": "CHECK ((status = 'PENDING'::text) = (decided_at IS NULL) AND (decided_at IS NULL) = (decided_by IS NULL))"
+    },
+    {
+      "table": "safety_reviews",
+      "name": "safety_reviews_check1",
+      "kind": "c",
+      "definition": "CHECK ((status = ANY (ARRAY['PENDING'::text, 'APPROVED'::text])) OR decision_notes IS NOT NULL)"
+    },
+    {
+      "table": "safety_reviews",
+      "name": "safety_reviews_check2",
+      "kind": "c",
+      "definition": "CHECK ((status = 'CHANGES_REQUESTED'::text) = (requested_areas IS NOT NULL))"
+    },
+    {
+      "table": "safety_reviews",
+      "name": "safety_reviews_crowd_movement_check",
+      "kind": "c",
+      "definition": "CHECK (crowd_movement IS NULL OR length(TRIM(BOTH FROM crowd_movement)) >= 1 AND length(TRIM(BOTH FROM crowd_movement)) <= 2000)"
+    },
+    {
+      "table": "safety_reviews",
+      "name": "safety_reviews_decided_by_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (decided_by) REFERENCES app_users(id)"
+    },
+    {
+      "table": "safety_reviews",
+      "name": "safety_reviews_decision_notes_check",
+      "kind": "c",
+      "definition": "CHECK (decision_notes IS NULL OR length(TRIM(BOTH FROM decision_notes)) >= 1 AND length(TRIM(BOTH FROM decision_notes)) <= 2000)"
+    },
+    {
+      "table": "safety_reviews",
+      "name": "safety_reviews_emergency_access_check",
+      "kind": "c",
+      "definition": "CHECK (emergency_access IS NULL OR length(TRIM(BOTH FROM emergency_access)) >= 1 AND length(TRIM(BOTH FROM emergency_access)) <= 2000)"
+    },
+    {
+      "table": "safety_reviews",
+      "name": "safety_reviews_equipment_placement_check",
+      "kind": "c",
+      "definition": "CHECK (equipment_placement IS NULL OR length(TRIM(BOTH FROM equipment_placement)) >= 1 AND length(TRIM(BOTH FROM equipment_placement)) <= 2000)"
+    },
+    {
+      "table": "safety_reviews",
+      "name": "safety_reviews_event_request_id_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (event_request_id) REFERENCES event_requests(id)"
+    },
+    {
+      "table": "safety_reviews",
+      "name": "safety_reviews_event_request_id_round_key",
+      "kind": "u",
+      "definition": "UNIQUE (event_request_id, round)"
+    },
+    {
+      "table": "safety_reviews",
+      "name": "safety_reviews_pkey",
+      "kind": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table": "safety_reviews",
+      "name": "safety_reviews_requested_areas_check",
+      "kind": "c",
+      "definition": "CHECK (requested_areas IS NULL OR cardinality(requested_areas) > 0 AND requested_areas <@ ARRAY['VENUE'::text, 'TECHNICAL'::text])"
+    },
+    {
+      "table": "safety_reviews",
+      "name": "safety_reviews_round_check",
+      "kind": "c",
+      "definition": "CHECK (round > 0)"
+    },
+    {
+      "table": "safety_reviews",
+      "name": "safety_reviews_status_check",
+      "kind": "c",
+      "definition": "CHECK (status = ANY (ARRAY['PENDING'::text, 'APPROVED'::text, 'REJECTED'::text, 'CHANGES_REQUESTED'::text]))"
+    },
+    {
+      "table": "safety_reviews",
+      "name": "safety_reviews_submitted_by_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (submitted_by) REFERENCES app_users(id)"
+    },
+    {
+      "table": "scaffold_metadata",
+      "name": "scaffold_metadata_pkey",
+      "kind": "p",
+      "definition": "PRIMARY KEY (key)"
+    },
+    {
+      "table": "schema_migrations",
+      "name": "schema_migrations_pkey",
+      "kind": "p",
+      "definition": "PRIMARY KEY (name)"
+    },
+    {
+      "table": "venue_bookings",
+      "name": "venue_bookings_cancellation_check",
+      "kind": "c",
+      "definition": "CHECK ((cancelled_at IS NULL) = (cancelled_by IS NULL) AND (cancelled_at IS NULL OR length(TRIM(BOTH FROM cancellation_reason)) > 0))"
+    },
+    {
+      "table": "venue_bookings",
+      "name": "venue_bookings_cancelled_by_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (cancelled_by) REFERENCES app_users(id)"
+    },
+    {
+      "table": "venue_bookings",
+      "name": "venue_bookings_check",
+      "kind": "c",
+      "definition": "CHECK (ends_at > starts_at)"
+    },
+    {
+      "table": "venue_bookings",
+      "name": "venue_bookings_check1",
+      "kind": "c",
+      "definition": "CHECK ((status = ANY (ARRAY['APPROVED'::text, 'REJECTED'::text])) = (decided_by IS NOT NULL AND decided_at IS NOT NULL) OR status = 'CANCELLED'::text)"
+    },
+    {
+      "table": "venue_bookings",
+      "name": "venue_bookings_decided_by_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (decided_by) REFERENCES app_users(id)"
+    },
+    {
+      "table": "venue_bookings",
+      "name": "venue_bookings_event_request_id_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (event_request_id) REFERENCES event_requests(id)"
+    },
+    {
+      "table": "venue_bookings",
+      "name": "venue_bookings_expired_check",
+      "kind": "c",
+      "definition": "CHECK ((status = 'EXPIRED'::text) = (expired_at IS NOT NULL) AND (status <> 'EXPIRED'::text OR hold_expires_at IS NOT NULL))"
+    },
+    {
+      "table": "venue_bookings",
+      "name": "venue_bookings_held_by_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (held_by) REFERENCES app_users(id)"
+    },
+    {
+      "table": "venue_bookings",
+      "name": "venue_bookings_held_has_deadline_check",
+      "kind": "c",
+      "definition": "CHECK (status <> 'HELD'::text OR hold_expires_at IS NOT NULL)"
+    },
+    {
+      "table": "venue_bookings",
+      "name": "venue_bookings_hold_fields_check",
+      "kind": "c",
+      "definition": "CHECK ((hold_expires_at IS NULL) = (held_by IS NULL) AND (held_by IS NULL) = (held_at IS NULL))"
+    },
+    {
+      "table": "venue_bookings",
+      "name": "venue_bookings_pkey",
+      "kind": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table": "venue_bookings",
+      "name": "venue_bookings_replaces_booking_id_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (replaces_booking_id) REFERENCES venue_bookings(id)"
+    },
+    {
+      "table": "venue_bookings",
+      "name": "venue_bookings_requested_by_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (requested_by) REFERENCES app_users(id)"
+    },
+    {
+      "table": "venue_bookings",
+      "name": "venue_bookings_status_check",
+      "kind": "c",
+      "definition": "CHECK (status = ANY (ARRAY['PENDING'::text, 'HELD'::text, 'APPROVED'::text, 'REJECTED'::text, 'CANCELLED'::text, 'EXPIRED'::text]))"
+    },
+    {
+      "table": "venue_bookings",
+      "name": "venue_bookings_venue_id_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (venue_id) REFERENCES venues(id)"
+    },
+    {
+      "table": "venue_outage_impacts",
+      "name": "venue_outage_impacts_check",
+      "kind": "c",
+      "definition": "CHECK (outage_ends_at > outage_starts_at)"
+    },
+    {
+      "table": "venue_outage_impacts",
+      "name": "venue_outage_impacts_outage_reason_check",
+      "kind": "c",
+      "definition": "CHECK (length(TRIM(BOTH FROM outage_reason)) > 0)"
+    },
+    {
+      "table": "venue_outage_impacts",
+      "name": "venue_outage_impacts_pkey",
+      "kind": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table": "venue_outage_impacts",
+      "name": "venue_outage_impacts_recorded_by_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (recorded_by) REFERENCES app_users(id)"
+    },
+    {
+      "table": "venue_outage_impacts",
+      "name": "venue_outage_impacts_status_check",
+      "kind": "c",
+      "definition": "CHECK (status = ANY (ARRAY['RECOVERY_REQUIRED'::text, 'RESOLVED'::text, 'CLEARED'::text]))"
+    },
+    {
+      "table": "venue_outage_impacts",
+      "name": "venue_outage_impacts_unavailability_id_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (unavailability_id) REFERENCES venue_unavailability(id) ON DELETE SET NULL"
+    },
+    {
+      "table": "venue_outage_impacts",
+      "name": "venue_outage_impacts_venue_booking_id_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (venue_booking_id) REFERENCES venue_bookings(id)"
+    },
+    {
+      "table": "venue_outage_impacts",
+      "name": "venue_outage_impacts_venue_id_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (venue_id) REFERENCES venues(id)"
+    },
+    {
+      "table": "venues",
+      "name": "venues_capacity_check",
+      "kind": "c",
+      "definition": "CHECK (capacity > 0)"
+    },
+    {
+      "table": "venues",
+      "name": "venues_check",
+      "kind": "c",
+      "definition": "CHECK (opens_at IS NULL OR closes_at IS NULL OR closes_at > opens_at)"
+    },
+    {
+      "table": "venues",
+      "name": "venues_name_check",
+      "kind": "c",
+      "definition": "CHECK (length(TRIM(BOTH FROM name)) > 0)"
+    },
+    {
+      "table": "venues",
+      "name": "venues_pkey",
+      "kind": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table": "venues",
+      "name": "venues_setup_minutes_check",
+      "kind": "c",
+      "definition": "CHECK (setup_minutes >= 0 AND setup_minutes <= 1440)"
+    },
+    {
+      "table": "venues",
+      "name": "venues_turnaround_minutes_check",
+      "kind": "c",
+      "definition": "CHECK (turnaround_minutes >= 0 AND turnaround_minutes <= 1440)"
+    },
+    {
+      "table": "venue_unavailability",
+      "name": "venue_unavailability_check",
+      "kind": "c",
+      "definition": "CHECK (ends_at > starts_at)"
+    },
+    {
+      "table": "venue_unavailability",
+      "name": "venue_unavailability_created_by_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (created_by) REFERENCES app_users(id)"
+    },
+    {
+      "table": "venue_unavailability",
+      "name": "venue_unavailability_pkey",
+      "kind": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table": "venue_unavailability",
+      "name": "venue_unavailability_venue_id_fkey",
+      "kind": "f",
+      "definition": "FOREIGN KEY (venue_id) REFERENCES venues(id) ON DELETE CASCADE"
+    }
+  ],
+  "indexes": [
+    {
+      "table": "app_users",
+      "name": "app_users_email_unique",
+      "definition": "CREATE UNIQUE INDEX app_users_email_unique ON public.app_users USING btree (lower(email))"
+    },
+    {
+      "table": "app_users",
+      "name": "app_users_pkey",
+      "definition": "CREATE UNIQUE INDEX app_users_pkey ON public.app_users USING btree (id)"
+    },
+    {
+      "table": "app_users",
+      "name": "app_users_supabase_user_id_unique",
+      "definition": "CREATE UNIQUE INDEX app_users_supabase_user_id_unique ON public.app_users USING btree (supabase_user_id)"
+    },
+    {
+      "table": "coordinator_assignments",
+      "name": "coordinator_assignments_coordinator_idx",
+      "definition": "CREATE INDEX coordinator_assignments_coordinator_idx ON public.coordinator_assignments USING btree (coordinator_id)"
+    },
+    {
+      "table": "coordinator_assignments",
+      "name": "coordinator_assignments_one_active",
+      "definition": "CREATE UNIQUE INDEX coordinator_assignments_one_active ON public.coordinator_assignments USING btree (event_request_id) WHERE (unassigned_at IS NULL)"
+    },
+    {
+      "table": "coordinator_assignments",
+      "name": "coordinator_assignments_pkey",
+      "definition": "CREATE UNIQUE INDEX coordinator_assignments_pkey ON public.coordinator_assignments USING btree (id)"
+    },
+    {
+      "table": "equipment_requests",
+      "name": "equipment_requests_availability_idx",
+      "definition": "CREATE INDEX equipment_requests_availability_idx ON public.equipment_requests USING btree (equipment_type_id, status, starts_at, ends_at)"
+    },
+    {
+      "table": "equipment_requests",
+      "name": "equipment_requests_event_idx",
+      "definition": "CREATE INDEX equipment_requests_event_idx ON public.equipment_requests USING btree (event_request_id)"
+    },
+    {
+      "table": "equipment_requests",
+      "name": "equipment_requests_pkey",
+      "definition": "CREATE UNIQUE INDEX equipment_requests_pkey ON public.equipment_requests USING btree (id)"
+    },
+    {
+      "table": "equipment_stock_changes",
+      "name": "equipment_stock_changes_equipment_type_id_revision_key",
+      "definition": "CREATE UNIQUE INDEX equipment_stock_changes_equipment_type_id_revision_key ON public.equipment_stock_changes USING btree (equipment_type_id, revision)"
+    },
+    {
+      "table": "equipment_stock_changes",
+      "name": "equipment_stock_changes_pkey",
+      "definition": "CREATE UNIQUE INDEX equipment_stock_changes_pkey ON public.equipment_stock_changes USING btree (id)"
+    },
+    {
+      "table": "equipment_stock_changes",
+      "name": "equipment_stock_changes_type_idx",
+      "definition": "CREATE INDEX equipment_stock_changes_type_idx ON public.equipment_stock_changes USING btree (equipment_type_id, revision DESC)"
+    },
+    {
+      "table": "equipment_types",
+      "name": "equipment_types_name_unique",
+      "definition": "CREATE UNIQUE INDEX equipment_types_name_unique ON public.equipment_types USING btree (lower(name))"
+    },
+    {
+      "table": "equipment_types",
+      "name": "equipment_types_pkey",
+      "definition": "CREATE UNIQUE INDEX equipment_types_pkey ON public.equipment_types USING btree (id)"
+    },
+    {
+      "table": "event_cancellations",
+      "name": "event_cancellations_pkey",
+      "definition": "CREATE UNIQUE INDEX event_cancellations_pkey ON public.event_cancellations USING btree (event_request_id)"
+    },
+    {
+      "table": "event_change_requests",
+      "name": "event_change_requests_event_idx",
+      "definition": "CREATE INDEX event_change_requests_event_idx ON public.event_change_requests USING btree (event_request_id, status)"
+    },
+    {
+      "table": "event_change_requests",
+      "name": "event_change_requests_one_pending_idx",
+      "definition": "CREATE UNIQUE INDEX event_change_requests_one_pending_idx ON public.event_change_requests USING btree (event_request_id) WHERE (status = 'PENDING'::text)"
+    },
+    {
+      "table": "event_change_requests",
+      "name": "event_change_requests_pkey",
+      "definition": "CREATE UNIQUE INDEX event_change_requests_pkey ON public.event_change_requests USING btree (id)"
+    },
+    {
+      "table": "event_clarifications",
+      "name": "event_clarifications_event_idx",
+      "definition": "CREATE INDEX event_clarifications_event_idx ON public.event_clarifications USING btree (event_request_id)"
+    },
+    {
+      "table": "event_clarifications",
+      "name": "event_clarifications_pkey",
+      "definition": "CREATE UNIQUE INDEX event_clarifications_pkey ON public.event_clarifications USING btree (id)"
+    },
+    {
+      "table": "event_registrations",
+      "name": "event_registrations_attendee_idx",
+      "definition": "CREATE INDEX event_registrations_attendee_idx ON public.event_registrations USING btree (attendee_id)"
+    },
+    {
+      "table": "event_registrations",
+      "name": "event_registrations_event_request_id_attendee_id_key",
+      "definition": "CREATE UNIQUE INDEX event_registrations_event_request_id_attendee_id_key ON public.event_registrations USING btree (event_request_id, attendee_id)"
+    },
+    {
+      "table": "event_registrations",
+      "name": "event_registrations_pkey",
+      "definition": "CREATE UNIQUE INDEX event_registrations_pkey ON public.event_registrations USING btree (id)"
+    },
+    {
+      "table": "event_request_edits",
+      "name": "event_request_edits_event_idx",
+      "definition": "CREATE INDEX event_request_edits_event_idx ON public.event_request_edits USING btree (event_request_id, created_at)"
+    },
+    {
+      "table": "event_request_edits",
+      "name": "event_request_edits_event_request_id_revision_key",
+      "definition": "CREATE UNIQUE INDEX event_request_edits_event_request_id_revision_key ON public.event_request_edits USING btree (event_request_id, revision)"
+    },
+    {
+      "table": "event_request_edits",
+      "name": "event_request_edits_pkey",
+      "definition": "CREATE UNIQUE INDEX event_request_edits_pkey ON public.event_request_edits USING btree (id)"
+    },
+    {
+      "table": "event_requests",
+      "name": "event_requests_organiser_idx",
+      "definition": "CREATE INDEX event_requests_organiser_idx ON public.event_requests USING btree (organiser_id)"
+    },
+    {
+      "table": "event_requests",
+      "name": "event_requests_pkey",
+      "definition": "CREATE UNIQUE INDEX event_requests_pkey ON public.event_requests USING btree (id)"
+    },
+    {
+      "table": "event_requests",
+      "name": "event_requests_review_queue_idx",
+      "definition": "CREATE INDEX event_requests_review_queue_idx ON public.event_requests USING btree (coordinator_id, status)"
+    },
+    {
+      "table": "event_reviews",
+      "name": "event_reviews_event_idx",
+      "definition": "CREATE INDEX event_reviews_event_idx ON public.event_reviews USING btree (event_request_id)"
+    },
+    {
+      "table": "event_reviews",
+      "name": "event_reviews_pkey",
+      "definition": "CREATE UNIQUE INDEX event_reviews_pkey ON public.event_reviews USING btree (id)"
+    },
+    {
+      "table": "event_status_history",
+      "name": "event_status_history_event_idx",
+      "definition": "CREATE INDEX event_status_history_event_idx ON public.event_status_history USING btree (event_request_id, created_at)"
+    },
+    {
+      "table": "event_status_history",
+      "name": "event_status_history_pkey",
+      "definition": "CREATE UNIQUE INDEX event_status_history_pkey ON public.event_status_history USING btree (id)"
+    },
+    {
+      "table": "notifications",
+      "name": "notifications_booking_idx",
+      "definition": "CREATE INDEX notifications_booking_idx ON public.notifications USING btree (venue_booking_id) WHERE (venue_booking_id IS NOT NULL)"
+    },
+    {
+      "table": "notifications",
+      "name": "notifications_equipment_request_idx",
+      "definition": "CREATE INDEX notifications_equipment_request_idx ON public.notifications USING btree (equipment_request_id) WHERE (equipment_request_id IS NOT NULL)"
+    },
+    {
+      "table": "notifications",
+      "name": "notifications_inbox_idx",
+      "definition": "CREATE INDEX notifications_inbox_idx ON public.notifications USING btree (recipient_id, created_at DESC)"
+    },
+    {
+      "table": "notifications",
+      "name": "notifications_pkey",
+      "definition": "CREATE UNIQUE INDEX notifications_pkey ON public.notifications USING btree (id)"
+    },
+    {
+      "table": "notifications",
+      "name": "notifications_recipient_outcome_unique",
+      "definition": "CREATE UNIQUE INDEX notifications_recipient_outcome_unique ON public.notifications USING btree (recipient_id, dedupe_key)"
+    },
+    {
+      "table": "notifications",
+      "name": "notifications_unread_idx",
+      "definition": "CREATE INDEX notifications_unread_idx ON public.notifications USING btree (recipient_id) WHERE (read_at IS NULL)"
+    },
+    {
+      "table": "safety_approval_invalidations",
+      "name": "safety_approval_invalidations_pkey",
+      "definition": "CREATE UNIQUE INDEX safety_approval_invalidations_pkey ON public.safety_approval_invalidations USING btree (review_id)"
+    },
+    {
+      "table": "safety_review_change_baselines",
+      "name": "safety_review_change_baselines_pkey",
+      "definition": "CREATE UNIQUE INDEX safety_review_change_baselines_pkey ON public.safety_review_change_baselines USING btree (review_id)"
+    },
+    {
+      "table": "safety_review_context_baselines",
+      "name": "safety_review_context_baselines_pkey",
+      "definition": "CREATE UNIQUE INDEX safety_review_context_baselines_pkey ON public.safety_review_context_baselines USING btree (review_id)"
+    },
+    {
+      "table": "safety_reviews",
+      "name": "safety_reviews_event_request_id_round_key",
+      "definition": "CREATE UNIQUE INDEX safety_reviews_event_request_id_round_key ON public.safety_reviews USING btree (event_request_id, round)"
+    },
+    {
+      "table": "safety_reviews",
+      "name": "safety_reviews_one_pending",
+      "definition": "CREATE UNIQUE INDEX safety_reviews_one_pending ON public.safety_reviews USING btree (event_request_id) WHERE (status = 'PENDING'::text)"
+    },
+    {
+      "table": "safety_reviews",
+      "name": "safety_reviews_pkey",
+      "definition": "CREATE UNIQUE INDEX safety_reviews_pkey ON public.safety_reviews USING btree (id)"
+    },
+    {
+      "table": "scaffold_metadata",
+      "name": "scaffold_metadata_pkey",
+      "definition": "CREATE UNIQUE INDEX scaffold_metadata_pkey ON public.scaffold_metadata USING btree (key)"
+    },
+    {
+      "table": "schema_migrations",
+      "name": "schema_migrations_pkey",
+      "definition": "CREATE UNIQUE INDEX schema_migrations_pkey ON public.schema_migrations USING btree (name)"
+    },
+    {
+      "table": "venue_bookings",
+      "name": "venue_bookings_calendar_idx",
+      "definition": "CREATE INDEX venue_bookings_calendar_idx ON public.venue_bookings USING btree (venue_id, status, starts_at, ends_at)"
+    },
+    {
+      "table": "venue_bookings",
+      "name": "venue_bookings_event_idx",
+      "definition": "CREATE INDEX venue_bookings_event_idx ON public.venue_bookings USING btree (event_request_id)"
+    },
+    {
+      "table": "venue_bookings",
+      "name": "venue_bookings_live_hold_idx",
+      "definition": "CREATE INDEX venue_bookings_live_hold_idx ON public.venue_bookings USING btree (hold_expires_at) WHERE (status = 'HELD'::text)"
+    },
+    {
+      "table": "venue_bookings",
+      "name": "venue_bookings_pkey",
+      "definition": "CREATE UNIQUE INDEX venue_bookings_pkey ON public.venue_bookings USING btree (id)"
+    },
+    {
+      "table": "venue_bookings",
+      "name": "venue_bookings_replaces_idx",
+      "definition": "CREATE INDEX venue_bookings_replaces_idx ON public.venue_bookings USING btree (replaces_booking_id) WHERE (replaces_booking_id IS NOT NULL)"
+    },
+    {
+      "table": "venue_outage_impacts",
+      "name": "venue_outage_impacts_once",
+      "definition": "CREATE UNIQUE INDEX venue_outage_impacts_once ON public.venue_outage_impacts USING btree (unavailability_id, venue_booking_id) WHERE (unavailability_id IS NOT NULL)"
+    },
+    {
+      "table": "venue_outage_impacts",
+      "name": "venue_outage_impacts_open",
+      "definition": "CREATE INDEX venue_outage_impacts_open ON public.venue_outage_impacts USING btree (venue_booking_id) WHERE (status = 'RECOVERY_REQUIRED'::text)"
+    },
+    {
+      "table": "venue_outage_impacts",
+      "name": "venue_outage_impacts_pkey",
+      "definition": "CREATE UNIQUE INDEX venue_outage_impacts_pkey ON public.venue_outage_impacts USING btree (id)"
+    },
+    {
+      "table": "venue_unavailability",
+      "name": "venue_unavailability_calendar_idx",
+      "definition": "CREATE INDEX venue_unavailability_calendar_idx ON public.venue_unavailability USING btree (venue_id, starts_at, ends_at)"
+    },
+    {
+      "table": "venue_unavailability",
+      "name": "venue_unavailability_pkey",
+      "definition": "CREATE UNIQUE INDEX venue_unavailability_pkey ON public.venue_unavailability USING btree (id)"
+    },
+    {
+      "table": "venues",
+      "name": "venues_accessibility_idx",
+      "definition": "CREATE INDEX venues_accessibility_idx ON public.venues USING gin (accessibility_features)"
+    },
+    {
+      "table": "venues",
+      "name": "venues_facilities_idx",
+      "definition": "CREATE INDEX venues_facilities_idx ON public.venues USING gin (facilities)"
+    },
+    {
+      "table": "venues",
+      "name": "venues_name_unique",
+      "definition": "CREATE UNIQUE INDEX venues_name_unique ON public.venues USING btree (lower(name))"
+    },
+    {
+      "table": "venues",
+      "name": "venues_pkey",
+      "definition": "CREATE UNIQUE INDEX venues_pkey ON public.venues USING btree (id)"
+    },
+    {
+      "table": "venues",
+      "name": "venues_search_idx",
+      "definition": "CREATE INDEX venues_search_idx ON public.venues USING btree (is_active, capacity)"
+    }
+  ],
+  "views": [
+    {
+      "name": "venue_booking_intervals",
+      "definition": " SELECT b.id,\n    b.event_request_id,\n    b.venue_id,\n    b.requested_by,\n    b.status,\n    b.starts_at,\n    b.ends_at,\n    b.layout,\n    b.notes,\n    b.decided_by,\n    b.decided_at,\n    b.decision_reason,\n    b.created_at,\n    b.updated_at,\n    b.replaces_booking_id,\n    b.reserved_setup_minutes,\n    b.reserved_turnaround_minutes,\n    b.hold_expires_at,\n    b.held_by,\n    b.held_at,\n    b.expired_at,\n    b.cancelled_by,\n    b.cancelled_at,\n    b.cancellation_reason,\n    venue_occupied_start(b.starts_at,\n        CASE\n            WHEN ((b.ends_at > now()) AND (e.status <> 'COMPLETED'::text)) THEN v.setup_minutes\n            ELSE b.reserved_setup_minutes\n        END) AS occupied_starts_at,\n    venue_occupied_end(b.ends_at,\n        CASE\n            WHEN ((b.ends_at > now()) AND (e.status <> 'COMPLETED'::text)) THEN v.turnaround_minutes\n            ELSE b.reserved_turnaround_minutes\n        END) AS occupied_ends_at\n   FROM ((venue_bookings b\n     JOIN venues v ON ((v.id = b.venue_id)))\n     JOIN event_requests e ON ((e.id = b.event_request_id)));"
+    }
+  ],
+  "triggers": [
+    {
+      "table": "equipment_requests",
+      "name": "equipment_requests_overbooking",
+      "function": "prevent_equipment_overbooking",
+      "definition": "CREATE TRIGGER equipment_requests_overbooking BEFORE INSERT OR UPDATE ON equipment_requests FOR EACH ROW WHEN (new.status = 'RESERVED'::text) EXECUTE FUNCTION prevent_equipment_overbooking()"
+    },
+    {
+      "table": "equipment_requests",
+      "name": "equipment_requests_preserve_reservation",
+      "function": "protect_equipment_reservation_history",
+      "definition": "CREATE TRIGGER equipment_requests_preserve_reservation BEFORE UPDATE ON equipment_requests FOR EACH ROW WHEN (old.status = ANY (ARRAY['RESERVED'::text, 'CANCELLED'::text])) EXECUTE FUNCTION protect_equipment_reservation_history()"
+    },
+    {
+      "table": "equipment_requests",
+      "name": "invalidate_safety_equipment",
+      "function": "invalidate_safety_on_arrangement_change",
+      "definition": "CREATE TRIGGER invalidate_safety_equipment AFTER INSERT OR DELETE OR UPDATE ON equipment_requests FOR EACH ROW EXECUTE FUNCTION invalidate_safety_on_arrangement_change()"
+    },
+    {
+      "table": "equipment_stock_changes",
+      "name": "equipment_stock_changes_append_only",
+      "function": "equipment_stock_changes_append_only",
+      "definition": "CREATE TRIGGER equipment_stock_changes_append_only BEFORE DELETE OR UPDATE ON equipment_stock_changes FOR EACH ROW EXECUTE FUNCTION equipment_stock_changes_append_only()"
+    },
+    {
+      "table": "equipment_types",
+      "name": "invalidate_safety_stock",
+      "function": "invalidate_safety_on_arrangement_change",
+      "definition": "CREATE TRIGGER invalidate_safety_stock AFTER UPDATE ON equipment_types FOR EACH ROW EXECUTE FUNCTION invalidate_safety_on_arrangement_change()"
+    },
+    {
+      "table": "equipment_types",
+      "name": "notify_equipment_shortfall",
+      "function": "notify_equipment_shortfall",
+      "definition": "CREATE TRIGGER notify_equipment_shortfall AFTER UPDATE OF total_quantity, damaged_quantity, maintenance_quantity, is_active ON equipment_types FOR EACH ROW EXECUTE FUNCTION notify_equipment_shortfall()"
+    },
+    {
+      "table": "event_registrations",
+      "name": "event_registrations_capacity",
+      "function": "prevent_registration_overflow",
+      "definition": "CREATE TRIGGER event_registrations_capacity BEFORE INSERT OR UPDATE ON event_registrations FOR EACH ROW WHEN (new.status = 'REGISTERED'::text) EXECUTE FUNCTION prevent_registration_overflow()"
+    },
+    {
+      "table": "event_registrations",
+      "name": "notify_registration_outcome",
+      "function": "notify_registration_outcome",
+      "definition": "CREATE TRIGGER notify_registration_outcome AFTER INSERT OR UPDATE ON event_registrations FOR EACH ROW EXECUTE FUNCTION notify_registration_outcome()"
+    },
+    {
+      "table": "event_registrations",
+      "name": "registration_outcome_version",
+      "function": "registration_outcome_version",
+      "definition": "CREATE TRIGGER registration_outcome_version BEFORE UPDATE ON event_registrations FOR EACH ROW EXECUTE FUNCTION registration_outcome_version()"
+    },
+    {
+      "table": "event_requests",
+      "name": "event_requests_advance_revision",
+      "function": "advance_event_request_revision",
+      "definition": "CREATE TRIGGER event_requests_advance_revision BEFORE UPDATE ON event_requests FOR EACH ROW EXECUTE FUNCTION advance_event_request_revision()"
+    },
+    {
+      "table": "event_requests",
+      "name": "event_requests_release_equipment",
+      "function": "release_terminal_event_equipment",
+      "definition": "CREATE TRIGGER event_requests_release_equipment AFTER UPDATE OF status ON event_requests FOR EACH ROW WHEN (old.status IS DISTINCT FROM new.status AND (new.status = ANY (ARRAY['CANCELLED'::text, 'COMPLETED'::text]))) EXECUTE FUNCTION release_terminal_event_equipment()"
+    },
+    {
+      "table": "event_requests",
+      "name": "event_requests_status_insert",
+      "function": "record_event_status_change",
+      "definition": "CREATE TRIGGER event_requests_status_insert AFTER INSERT ON event_requests FOR EACH ROW EXECUTE FUNCTION record_event_status_change()"
+    },
+    {
+      "table": "event_requests",
+      "name": "event_requests_status_update",
+      "function": "record_event_status_change",
+      "definition": "CREATE TRIGGER event_requests_status_update AFTER UPDATE OF status ON event_requests FOR EACH ROW WHEN (old.status IS DISTINCT FROM new.status) EXECUTE FUNCTION record_event_status_change()"
+    },
+    {
+      "table": "event_requests",
+      "name": "invalidate_safety_event",
+      "function": "invalidate_safety_on_arrangement_change",
+      "definition": "CREATE TRIGGER invalidate_safety_event AFTER UPDATE ON event_requests FOR EACH ROW EXECUTE FUNCTION invalidate_safety_on_arrangement_change()"
+    },
+    {
+      "table": "event_requests",
+      "name": "notify_final_event_outcome",
+      "function": "notify_final_event_outcome",
+      "definition": "CREATE TRIGGER notify_final_event_outcome AFTER UPDATE OF status ON event_requests FOR EACH ROW EXECUTE FUNCTION notify_final_event_outcome()"
+    },
+    {
+      "table": "safety_approval_invalidations",
+      "name": "protect_safety_invalidation_evidence",
+      "function": "protect_safety_invalidation_evidence",
+      "definition": "CREATE TRIGGER protect_safety_invalidation_evidence BEFORE DELETE OR UPDATE ON safety_approval_invalidations FOR EACH ROW EXECUTE FUNCTION protect_safety_invalidation_evidence()"
+    },
+    {
+      "table": "safety_review_change_baselines",
+      "name": "protect_safety_change_baseline",
+      "function": "protect_safety_change_baseline",
+      "definition": "CREATE TRIGGER protect_safety_change_baseline BEFORE DELETE OR UPDATE ON safety_review_change_baselines FOR EACH ROW EXECUTE FUNCTION protect_safety_change_baseline()"
+    },
+    {
+      "table": "safety_review_context_baselines",
+      "name": "protect_safety_context_baseline",
+      "function": "protect_safety_invalidation_evidence",
+      "definition": "CREATE TRIGGER protect_safety_context_baseline BEFORE DELETE OR UPDATE ON safety_review_context_baselines FOR EACH ROW EXECUTE FUNCTION protect_safety_invalidation_evidence()"
+    },
+    {
+      "table": "safety_reviews",
+      "name": "capture_safety_review_context",
+      "function": "capture_safety_review_context",
+      "definition": "CREATE TRIGGER capture_safety_review_context AFTER INSERT ON safety_reviews FOR EACH ROW EXECUTE FUNCTION capture_safety_review_context()"
+    },
+    {
+      "table": "safety_reviews",
+      "name": "protect_decided_safety_review",
+      "function": "protect_decided_safety_review",
+      "definition": "CREATE TRIGGER protect_decided_safety_review BEFORE DELETE OR UPDATE ON safety_reviews FOR EACH ROW EXECUTE FUNCTION protect_decided_safety_review()"
+    },
+    {
+      "table": "venue_bookings",
+      "name": "invalidate_safety_booking",
+      "function": "invalidate_safety_on_arrangement_change",
+      "definition": "CREATE TRIGGER invalidate_safety_booking AFTER INSERT OR DELETE OR UPDATE ON venue_bookings FOR EACH ROW EXECUTE FUNCTION invalidate_safety_on_arrangement_change()"
+    },
+    {
+      "table": "venue_bookings",
+      "name": "venue_bookings_conflict",
+      "function": "prevent_venue_booking_conflict",
+      "definition": "CREATE TRIGGER venue_bookings_conflict BEFORE INSERT OR UPDATE ON venue_bookings FOR EACH ROW WHEN (new.status = ANY (ARRAY['APPROVED'::text, 'HELD'::text])) EXECUTE FUNCTION prevent_venue_booking_conflict()"
+    },
+    {
+      "table": "venue_outage_impacts",
+      "name": "invalidate_safety_outage",
+      "function": "invalidate_safety_on_arrangement_change",
+      "definition": "CREATE TRIGGER invalidate_safety_outage AFTER INSERT OR DELETE OR UPDATE ON venue_outage_impacts FOR EACH ROW EXECUTE FUNCTION invalidate_safety_on_arrangement_change()"
+    },
+    {
+      "table": "venues",
+      "name": "invalidate_safety_venue",
+      "function": "invalidate_safety_on_arrangement_change",
+      "definition": "CREATE TRIGGER invalidate_safety_venue AFTER UPDATE ON venues FOR EACH ROW EXECUTE FUNCTION invalidate_safety_on_arrangement_change()"
+    },
+    {
+      "table": "venue_unavailability",
+      "name": "invalidate_safety_unavailability",
+      "function": "invalidate_safety_on_unavailability",
+      "definition": "CREATE TRIGGER invalidate_safety_unavailability AFTER INSERT OR UPDATE ON venue_unavailability FOR EACH ROW EXECUTE FUNCTION invalidate_safety_on_unavailability()"
+    },
+    {
+      "table": "venue_unavailability",
+      "name": "venue_blocks_conflict",
+      "function": "prevent_blocking_occupied_booking",
+      "definition": "CREATE TRIGGER venue_blocks_conflict BEFORE INSERT OR UPDATE ON venue_unavailability FOR EACH ROW EXECUTE FUNCTION prevent_blocking_occupied_booking()"
+    }
+  ]
+}

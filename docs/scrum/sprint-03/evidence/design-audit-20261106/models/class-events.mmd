@@ -1,0 +1,167 @@
+---
+config:
+  layout: elk
+title: Domain detail - events
+---
+classDiagram
+  direction TB
+  class AppUsers {
+    <<SQL record>>
+    uuid id
+    text email
+    text display_name
+    text role
+    text password_hash
+    timestamptz created_at
+    timestamptz updated_at
+    uuid supabase_user_id
+    boolean coordinator_available
+  }
+  class CoordinatorAssignments {
+    <<SQL record>>
+    uuid id
+    uuid event_request_id
+    uuid coordinator_id
+    uuid assigned_by
+    text note
+    timestamptz assigned_at
+    timestamptz unassigned_at
+    text assignment_method
+  }
+  class EventCancellations {
+    <<SQL record>>
+    uuid event_request_id
+    uuid cancelled_by
+    timestamptz cancelled_at
+    text reason
+    integer affected_venue_bookings
+    integer affected_equipment_requests
+    integer affected_registrations
+  }
+  class EventChangeRequests {
+    <<SQL record>>
+    uuid id
+    uuid event_request_id
+    uuid requested_by
+    text status
+    jsonb proposed_changes
+    text reason
+    uuid decided_by
+    timestamptz decided_at
+    text decision_reason
+    timestamptz created_at
+    timestamptz updated_at
+    jsonb previous
+    integer base_revision
+    integer applied_revision
+    jsonb cancelled_arrangements
+  }
+  class EventClarifications {
+    <<SQL record>>
+    uuid id
+    uuid event_request_id
+    uuid requested_by
+    text message
+    text response
+    timestamptz created_at
+    timestamptz responded_at
+  }
+  class EventRegistrations {
+    <<SQL record>>
+    uuid id
+    uuid event_request_id
+    uuid attendee_id
+    text status
+    timestamptz registered_at
+    timestamptz withdrawn_at
+    timestamptz cancellation_outcome_at
+    integer outcome_version
+  }
+  class EventRequestEdits {
+    <<SQL record>>
+    uuid id
+    uuid event_request_id
+    integer revision
+    uuid edited_by
+    text editor_role
+    text event_status
+    jsonb changes
+    timestamptz created_at
+  }
+  class EventRequests {
+    <<SQL record>>
+    uuid id
+    uuid organiser_id
+    uuid coordinator_id
+    text status
+    text name
+    text purpose
+    text description
+    timestamptz starts_at
+    timestamptz ends_at
+    integer expected_attendance
+    text venue_requirements
+    text accessibility_needs
+    text equipment_requirements
+    boolean registration_required
+    timestamptz created_at
+    timestamptz updated_at
+    integer registration_capacity
+    timestamptz registration_opens_at
+    timestamptz registration_closes_at
+    integer revision
+    text equipment_plan_status
+    timestamptz preparation_started_at
+    uuid preparation_started_by
+    uuid preparation_safety_review_id
+  }
+  class EventReviews {
+    <<SQL record>>
+    uuid id
+    uuid event_request_id
+    uuid reviewed_by
+    text decision
+    text reason
+    timestamptz created_at
+  }
+  class EventStatusHistory {
+    <<SQL record>>
+    uuid id
+    uuid event_request_id
+    text from_status
+    text to_status
+    uuid changed_by
+    timestamptz created_at
+    text reason
+  }
+  class SafetyReviews {
+    <<SQL record>>
+    uuid id
+    uuid event_request_id
+    integer round
+    text status
+    uuid submitted_by
+    uuid decided_by
+  }
+  AppUsers --> CoordinatorAssignments : assigned_by [0..1 / 0..*]
+  AppUsers --> CoordinatorAssignments : coordinator_id [1 / 0..*]
+  EventRequests --> CoordinatorAssignments : event_request_id [1 / 0..*]
+  AppUsers --> EventCancellations : cancelled_by [1 / 0..*]
+  EventRequests --> EventCancellations : event_request_id [1 / 0..1]
+  AppUsers --> EventChangeRequests : decided_by [0..1 / 0..*]
+  EventRequests --> EventChangeRequests : event_request_id [1 / 0..*]
+  AppUsers --> EventChangeRequests : requested_by [1 / 0..*]
+  EventRequests --> EventClarifications : event_request_id [1 / 0..*]
+  AppUsers --> EventClarifications : requested_by [1 / 0..*]
+  AppUsers --> EventRegistrations : attendee_id [1 / 0..*]
+  EventRequests --> EventRegistrations : event_request_id [1 / 0..*]
+  AppUsers --> EventRequestEdits : edited_by [1 / 0..*]
+  EventRequests --> EventRequestEdits : event_request_id [1 / 0..*]
+  AppUsers --> EventRequests : coordinator_id [0..1 / 0..*]
+  AppUsers --> EventRequests : organiser_id [1 / 0..*]
+  SafetyReviews --> EventRequests : preparation_safety_review_id [0..1 / 0..*]
+  AppUsers --> EventRequests : preparation_started_by [0..1 / 0..*]
+  EventRequests --> EventReviews : event_request_id [1 / 0..*]
+  AppUsers --> EventReviews : reviewed_by [1 / 0..*]
+  AppUsers --> EventStatusHistory : changed_by [0..1 / 0..*]
+  EventRequests --> EventStatusHistory : event_request_id [1 / 0..*]

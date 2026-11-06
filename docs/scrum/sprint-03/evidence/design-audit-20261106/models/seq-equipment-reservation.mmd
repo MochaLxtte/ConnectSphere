@@ -1,0 +1,28 @@
+---
+title: Equipment reservation - serialized stock and replay checks
+---
+sequenceDiagram
+  autonumber
+  participant Client as Technical Support client
+  participant API as Express HTTP boundary
+  participant Service as Equipment reservation service
+  participant DB as PostgreSQL
+  Client->>API: POST reserve or cancel for the named event and saved request
+  API->>Service: Verify Technical Support, validate version and cancellation reason
+  Service->>DB: BEGIN READ COMMITTED, set transaction actor
+  Service->>DB: Lock trusted actor, event and reserve-recipient profile
+  Service->>Service: Require APPROVED or confirmed TECHNICAL remediation, even for replay
+  Service->>DB: Lock sorted pools then saved lines, reload live snapshot
+  Service->>Service: Validate source version or exact reconstructed pre-action replay
+  opt new action, exact eligible replay skips writes
+  alt reserve REQUESTED saved line
+  Service->>DB: Check live capacity and exact period, set RESERVED
+  Service->>DB: Write deduplicated reserve notices with the same client
+  else cancel RESERVED line
+  Service->>DB: Set CANCELLED and immutable release actor, time, reason and cause
+  end
+  end
+  Service->>DB: Read refreshed reservation context
+  Service->>DB: COMMIT on success, ROLLBACK on thrown error
+  Service-->>API: Resolve committed result or throw failure to HTTP boundary
+  API-->>Client: HTTP status and JSON, typed failures mapped
