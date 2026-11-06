@@ -11,7 +11,7 @@ Enter a primary editor and a different reviewer here. These are documentation re
 | Workstream | Editor | Reviewer | Start editing | Outstanding inputs |
 | --- | --- | --- | --- | --- |
 | WS1 — Backlog and customer changes | To agree | To agree | [Requirements guide](requirements/README.md) | [WS1 checklist](submission/checklist.md#ws1-backlog-and-customer-changes) |
-| WS2 — Architecture | To agree | To agree | [Design report](architecture/README.md) | [WS2 checklist](submission/checklist.md#ws2-architecture) |
+| WS2 — Architecture | Arvin | Irfan | [Design report](architecture/README.md) | [WS2 checklist](submission/checklist.md#ws2-architecture) |
 | WS3 — Testing and traceability | To agree | To agree | [Testing report](testing/README.md) | [WS3 checklist](submission/checklist.md#ws3-testing-and-traceability) |
 | WS4 — Sprint 1 and 2 | To agree | To agree | [Sprint 1](scrum/sprint-01/README.md), [Sprint 2](scrum/sprint-02/README.md) | [WS4 checklist](submission/checklist.md#ws4-sprint-1-and-2) |
 | WS5 — Sprint 3 and 4 | To agree | To agree | [Sprint 3](scrum/sprint-03/README.md), [Sprint 4](scrum/sprint-04/README.md) | [WS5 checklist](submission/checklist.md#ws5-sprint-3-and-4) |

@@ -1,0 +1,60 @@
+{
+  "result": "Pass",
+  "source_commit": "b981f1133750e7ddd42ac412651c915cb4485418",
+  "source_catalog_files": 107,
+  "proof_references": 143,
+  "original_files_preserved": 25,
+  "current_c4_source_and_six_exports_unchanged": true,
+  "current_other_models": "Validated separately with design-audit-20261106/validate-design.py",
+  "counts": {
+    "nodes": 44,
+    "edges": 55,
+    "boundaries": 3
+  },
+  "backend_source_files": 35,
+  "cross_component_runtime_imports": 26,
+  "local_links_checked": 165,
+  "models": [
+    {
+      "name": "c1-context-original",
+      "nodes": 7,
+      "edges": 6,
+      "boundaries": 0,
+      "source_proofs": "Pass",
+      "render_and_visual": "Pass"
+    },
+    {
+      "name": "c2-containers-original",
+      "nodes": 5,
+      "edges": 5,
+      "boundaries": 1,
+      "source_proofs": "Pass",
+      "render_and_visual": "Pass"
+    },
+    {
+      "name": "c1-context-reconstructed",
+      "nodes": 8,
+      "edges": 6,
+      "boundaries": 0,
+      "source_proofs": "Pass",
+      "render_and_visual": "Pass"
+    },
+    {
+      "name": "c2-containers-reconstructed",
+      "nodes": 6,
+      "edges": 5,
+      "boundaries": 1,
+      "source_proofs": "Pass",
+      "render_and_visual": "Pass"
+    },
+    {
+      "name": "c3-components-reconstructed",
+      "nodes": 18,
+      "edges": 33,
+      "boundaries": 1,
+      "source_proofs": "Pass",
+      "render_and_visual": "Pass"
+    }
+  ],
+  "scope": "Static historical code/design, topology, geometry, provenance and local links; no live business acceptance"
+}

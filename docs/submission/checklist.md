@@ -31,8 +31,8 @@ No new live Jira export is required to pretend historical metadata is current. I
 
 | Item | Required input or check | Edit / completion condition |
 | --- | --- | --- |
-| [ ] DOC-201 | Independent review of the concise design report and rendered views | [Design review fields](../architecture/README.md#team-input-needed): reviewer/date and any factual corrections recorded; role, transaction and lifecycle explanations match the frozen release |
-| [ ] DOC-202 | Check customer-change explanations and diagram readability | [Design report](../architecture/README.md): follow CR links; open full-size images; record limitations of retained older views rather than presenting them as complete schema exports |
+| [ ] DOC-201 | Independent review of the concise design report and rendered views | [Design review fields](../architecture/README.md#team-input-needed): reviewer/date and any factual corrections recorded; role, transaction and lifecycle explanations match the frozen release. **6 November 2026:** review fields completed by Irfan; still open until a second member confirms Irfan's 6 November integration edits |
+| [x] DOC-202 | Check customer-change explanations and diagram readability | [Design report](../architecture/README.md): follow CR links; open full-size images; record limitations of retained older views rather than presenting them as complete schema exports. **Done 6 November 2026 (Irfan):** CR-1 to CR-6 rows link to the change register and diagrams; all 23 views checked; limitations recorded under [Diagram exports](../architecture/README.md#diagram-exports) |
 
 ## WS3: Testing and traceability
 

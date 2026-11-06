@@ -1,0 +1,24 @@
+{
+  "audit_id": "C4-20261105-01",
+  "date": "2026-11-05",
+  "result": "Pass",
+  "functional_blocks": 29,
+  "labelled_arrows": 43,
+  "boundaries": 4,
+  "source_proof_references_validated": 185,
+  "diagram_source_hashes": 3,
+  "export_hashes": 6,
+  "rendered_block_ids_and_text_match_source": true,
+  "rendered_arrow_endpoints_and_labels_match_source": true,
+  "added_local_links_validated": 28,
+  "role_count": 7,
+  "python_syntax": "Pass",
+  "javascript_syntax": "Pass",
+  "git_diff_check": "Pass",
+  "render_results": [
+    "Pass",
+    "Pass",
+    "Pass"
+  ],
+  "scope": "Documentation and local render validation; no application workflow, database connection or product test run"
+}

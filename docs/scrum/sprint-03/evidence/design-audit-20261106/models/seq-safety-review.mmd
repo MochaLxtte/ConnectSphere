@@ -1,0 +1,43 @@
+---
+title: Safety review rounds and preparation - current approval required
+---
+sequenceDiagram
+  autonumber
+  participant Client as Coordinator or Safety Officer client
+  participant API as Express HTTP boundary
+  participant Service as Safety service
+  participant DB as PostgreSQL
+  Client->>API: Coordinator POST /api/events/:id/safety-reviews
+  API->>Service: Verify assigned coordinator, parse optional planning notes
+  Service->>DB: BEGIN READ COMMITTED, set transaction actor
+  Service->>DB: Lock trusted profile and arrangements, read readiness and latest round
+  Service->>Service: Require ready arrangements and every requested area changed
+  Service->>DB: Insert next PENDING review with arrangement fingerprint
+  DB->>DB: Capture supplemental context baseline on insert
+  Service->>DB: Notify Safety Officers in submission transaction
+  Service->>DB: COMMIT on success, ROLLBACK on thrown error
+  Service-->>API: Resolve committed result or throw failure to HTTP boundary
+  API-->>Client: HTTP status and JSON, typed failures mapped
+  Client->>API: Officer POST /api/safety-reviews/:id/decision
+  API->>Service: Officer-only, decision, fingerprint, notes and requested areas
+  Service->>DB: BEGIN READ COMMITTED, set transaction actor
+  Service->>DB: Lock arrangements then target review, check existing decision first
+  alt review already decided
+  Service->>Service: Same decision unchanged, different saved decision conflicts
+  else pending review
+  Service->>Service: For pending round require supplied fingerprint and planning state
+  opt decision is APPROVED
+  Service->>DB: Require original and supplemental context unchanged and ready
+  end
+  Service->>DB: Persist decision, CHANGES_REQUESTED captures per-area baselines
+  Service->>DB: Store coordinator and relevant Venue or Technical Staff notices
+  end
+  Service->>DB: COMMIT on success, ROLLBACK on thrown error
+  Service-->>API: Resolve committed result or throw failure to HTTP boundary
+  API-->>Client: HTTP status and JSON, typed failures mapped
+  Client->>API: Coordinator POST /api/events/:id/preparation/start {}
+  API->>Service: Assigned coordinator, lock arrangements in new transaction
+  Service->>DB: Require CONFIRMED, latest current approval and live readiness
+  Service->>DB: Store preparation time, actor and exact approved round
+  Service-->>API: After commit return eventRequestId and changed
+  API-->>Client: 200 JSON, failures roll back

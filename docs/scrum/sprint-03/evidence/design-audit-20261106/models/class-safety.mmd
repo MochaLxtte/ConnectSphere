@@ -1,0 +1,135 @@
+---
+config:
+  layout: elk
+title: Domain detail - safety
+---
+classDiagram
+  direction TB
+  class AppUsers {
+    <<SQL record>>
+    uuid id
+    text role
+  }
+  class EquipmentRequests {
+    <<SQL record>>
+    uuid id
+    uuid event_request_id
+    uuid equipment_type_id
+    uuid requested_by
+    integer quantity
+    text status
+    timestamptz starts_at
+    timestamptz ends_at
+    uuid decided_by
+    uuid released_by
+    integer revision
+  }
+  class EventChangeRequests {
+    <<SQL record>>
+    uuid id
+    uuid event_request_id
+    uuid requested_by
+    text status
+    uuid decided_by
+  }
+  class EventRegistrations {
+    <<SQL record>>
+    uuid id
+    uuid event_request_id
+    uuid attendee_id
+    text status
+  }
+  class EventRequests {
+    <<SQL record>>
+    uuid id
+    uuid organiser_id
+    uuid coordinator_id
+    text status
+    timestamptz starts_at
+    timestamptz ends_at
+    integer revision
+    text equipment_plan_status
+    uuid preparation_started_by
+    uuid preparation_safety_review_id
+  }
+  class Notifications {
+    <<SQL record>>
+    uuid id
+    uuid recipient_id
+    uuid event_request_id
+    text type
+    text title
+    text message
+    timestamptz read_at
+    timestamptz created_at
+    uuid venue_booking_id
+    text dedupe_key
+    uuid equipment_request_id
+    uuid registration_id
+    uuid change_request_id
+    uuid safety_review_id
+  }
+  class SafetyApprovalInvalidations {
+    <<SQL record>>
+    uuid review_id
+    timestamptz invalidated_at
+    text source
+  }
+  class SafetyReviewChangeBaselines {
+    <<SQL record>>
+    uuid review_id
+    text venue_fingerprint
+    text technical_fingerprint
+    timestamptz captured_at
+  }
+  class SafetyReviewContextBaselines {
+    <<SQL record>>
+    uuid review_id
+    text context_fingerprint
+    timestamptz captured_at
+  }
+  class SafetyReviews {
+    <<SQL record>>
+    uuid id
+    uuid event_request_id
+    integer round
+    text status
+    text arrangement_fingerprint
+    text emergency_access
+    text equipment_placement
+    text crowd_movement
+    uuid submitted_by
+    timestamptz submitted_at
+    uuid decided_by
+    timestamptz decided_at
+    text decision_notes
+    textArray requested_areas
+  }
+  class VenueBookings {
+    <<SQL record>>
+    uuid id
+    uuid event_request_id
+    uuid venue_id
+    uuid requested_by
+    text status
+    timestamptz starts_at
+    timestamptz ends_at
+    uuid decided_by
+    uuid replaces_booking_id
+    timestamptz hold_expires_at
+    uuid held_by
+    uuid cancelled_by
+  }
+  EventChangeRequests --> Notifications : change_request_id [0..1 / 0..*]
+  EquipmentRequests --> Notifications : equipment_request_id [0..1 / 0..*]
+  EventRequests --> Notifications : event_request_id [0..1 / 0..*]
+  AppUsers --> Notifications : recipient_id [1 / 0..*]
+  EventRegistrations --> Notifications : registration_id [0..1 / 0..*]
+  SafetyReviews --> Notifications : safety_review_id [0..1 / 0..*]
+  VenueBookings --> Notifications : venue_booking_id [0..1 / 0..*]
+  SafetyReviews --> SafetyApprovalInvalidations : review_id [1 / 0..1]
+  SafetyReviews --> SafetyReviewChangeBaselines : review_id [1 / 0..1]
+  SafetyReviews --> SafetyReviewContextBaselines : review_id [1 / 0..1]
+  AppUsers --> SafetyReviews : decided_by [0..1 / 0..*]
+  EventRequests --> SafetyReviews : event_request_id [1 / 0..*]
+  AppUsers --> SafetyReviews : submitted_by [1 / 0..*]

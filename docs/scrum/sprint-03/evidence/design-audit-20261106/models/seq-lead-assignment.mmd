@@ -1,0 +1,27 @@
+---
+title: Lead allocation and handover - versioned assignment history
+---
+sequenceDiagram
+  autonumber
+  participant Client as Coordinator Lead client
+  participant API as Express HTTP boundary
+  participant Service as Assignment service
+  participant DB as PostgreSQL
+  Client->>API: PUT /api/events/:id/coordinator or POST coordinator/reassign
+  API->>Service: Verified Lead, parse target and optional note or handover reason
+  Service->>DB: BEGIN READ COMMITTED, set transaction actor
+  Service->>DB: Lock event, hide drafts and reject closed states
+  alt initial allocation
+  Service->>DB: Require no coordinator and no active assignment history
+  else reassignment
+  Service->>DB: Lock active history and compare expectedAssignmentVersion
+  Service->>Service: Same target is unchanged only after version check
+  end
+  opt genuine new allocation or handover
+  Service->>DB: Lock selected profile, require available EVENT_COORDINATOR
+  Service->>DB: Close previous interval when handing over, insert assignment
+  Service->>DB: Set current event coordinator and store allocation notices
+  end
+  Service->>DB: COMMIT on success, ROLLBACK on thrown error
+  Service-->>API: Resolve committed result or throw failure to HTTP boundary
+  API-->>Client: HTTP status and JSON, typed failures mapped

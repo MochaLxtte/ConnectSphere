@@ -1,0 +1,644 @@
+[
+  {
+    "path": "backend/package.json",
+    "git_blob": "41ffd20f03c761f4422bb14b4dcad4d5a9c24fff",
+    "sha256": "a36cf2f48ace60f97098490caed08ae9dbb2bbfe1b1238b09a0bce251257d89b",
+    "lines": 34
+  },
+  {
+    "path": "backend/src/app.ts",
+    "git_blob": "bd59486fedf6df5257da371b528b002f2deabb7d",
+    "sha256": "5f6f497340d329b2890d25e49c014e39058d0d41a1ce1dd53676801d5ef8895d",
+    "lines": 110
+  },
+  {
+    "path": "backend/src/config/env.ts",
+    "git_blob": "8fe8f589cbf3edba30796d084cf1c8449ec6c119",
+    "sha256": "45d42ef59a10b9cc96003e46f8651d21a43da2baf3a857de60102c42ac9a63bb",
+    "lines": 37
+  },
+  {
+    "path": "backend/src/db/connection.ts",
+    "git_blob": "243eb2b5b67ff39b82b82cdf401f256769aa2aeb",
+    "sha256": "63b6fabe2d4b99b27670a1c60f65582eff95a81ec2ada51b0118c513f632707d",
+    "lines": 29
+  },
+  {
+    "path": "backend/src/db/pool.ts",
+    "git_blob": "98f49038ad2e61a505d52b8cf9805450788b7a84",
+    "sha256": "8366223861704572daa9e4d3c225d08acef3b8a0f59e6595387a54bd26c223a5",
+    "lines": 30
+  },
+  {
+    "path": "backend/src/modules/auth/README.md",
+    "git_blob": "2a05dd9855b8608d5ce554e1823658e0d71a7d80",
+    "sha256": "6576100b6447e17885960587291a02b225458b6c5cc194d7da9a1db1e4c74d49",
+    "lines": 21
+  },
+  {
+    "path": "backend/src/modules/auth/router.ts",
+    "git_blob": "cfe4c45b0aae7465a707cfd9eafd03291eaffb2d",
+    "sha256": "71bfa0ebb12091af39d41b06773d19b56062d7b183970ef5404c6eb7c2021ad5",
+    "lines": 129
+  },
+  {
+    "path": "backend/src/modules/auth/supabase.ts",
+    "git_blob": "8fb7437e06ee4bedd86d403f1193f41b1288045d",
+    "sha256": "ba55ea2a8bf5980aa68861c68ee8ae2de77e2ca89cbf879b3f366d470555c0b2",
+    "lines": 63
+  },
+  {
+    "path": "backend/src/modules/auth/types.ts",
+    "git_blob": "7870947565804b4bb2ff9e5bfa9032e6c38eaa29",
+    "sha256": "a29f3efdb5da80dd6bbd3aa5e9a33ec96acddc2347a843b2e246d9e824062954",
+    "lines": 21
+  },
+  {
+    "path": "backend/src/modules/auth/user-repository.ts",
+    "git_blob": "966f2bd54e2c95ab71e4b84158486c7137bbf4cf",
+    "sha256": "a11ee300157443ab11d5c704521e74401539da732a1f07c6f4b3bdfca2323016",
+    "lines": 35
+  },
+  {
+    "path": "backend/src/modules/events/README.md",
+    "git_blob": "06d18df4b623f5e637986533dbaf91ac6afa95d6",
+    "sha256": "4c37c3e7321bbc6353e254abb9c04ad335e93dab749b9c30f4280ececda3ec85",
+    "lines": 13
+  },
+  {
+    "path": "backend/src/modules/events/assignment-router.ts",
+    "git_blob": "312b3b501c480c84d22f7941a9d8633dd0fade18",
+    "sha256": "1020ad4742b372bed0228cdc599eeeee339417fd6f92c725cf631a22cb01b2aa",
+    "lines": 44
+  },
+  {
+    "path": "backend/src/modules/events/assignment.ts",
+    "git_blob": "325a8f83200d5500247fd1e39c64591166435ab9",
+    "sha256": "69c8f3fd10320ce50cc96d4622fe55577296937b81a3c40787345c1b4f3e0d27",
+    "lines": 219
+  },
+  {
+    "path": "backend/src/modules/events/clarification-router.ts",
+    "git_blob": "cff0da085de1b7c229d6586059ca8f49aaae56f9",
+    "sha256": "f5bed67672feeea08694c29778f3a46235d87a8bad4a5c1317634e4f0ac6dfb3",
+    "lines": 48
+  },
+  {
+    "path": "backend/src/modules/events/clarifications.ts",
+    "git_blob": "6f903bf094ef59a9880372eb07d691b97435399d",
+    "sha256": "170ba056859967951b9646642678032a447d984862b5f6d27c6df49b160c6cab",
+    "lines": 161
+  },
+  {
+    "path": "backend/src/modules/events/coordinator-access.ts",
+    "git_blob": "c95bc7b3ee7d699109f0bf4727175f6b54c0ccaa",
+    "sha256": "7966b7d378405bb76eabe52f67bdcafb94f68ad2baa3c8214d07e335c4ffa377",
+    "lines": 11
+  },
+  {
+    "path": "backend/src/modules/events/create-draft.ts",
+    "git_blob": "858cb202686505305d83e5d0164352ad7c9fe093",
+    "sha256": "7c3cc7b492036ab19186deb56f38ab1638deb68e2b421a53a16f3ee17e9fbef8",
+    "lines": 68
+  },
+  {
+    "path": "backend/src/modules/events/draft-eligibility.ts",
+    "git_blob": "0e2e276bcfe09b6248b017fea71c442ef86f0c31",
+    "sha256": "439b2d5a693e9f0ecbfa67a1e452f1ccbba1a66f33060da2dd150afa01b99269",
+    "lines": 44
+  },
+  {
+    "path": "backend/src/modules/events/draft-update-input.ts",
+    "git_blob": "baa3de77490917a499bda033c02a6f8bfd972f19",
+    "sha256": "507da5b8712a7b5f1551e76a0e9c2c3c512f53ffb960679125003a9c8983bd06",
+    "lines": 109
+  },
+  {
+    "path": "backend/src/modules/events/event-request-detail.ts",
+    "git_blob": "f36c287e1bc7d264032cbe5b3742b0b2bad9b1b3",
+    "sha256": "d1aa30beae289b915c289e80932a036583f5f01415632480a71e733e0c220b60",
+    "lines": 99
+  },
+  {
+    "path": "backend/src/modules/events/lifecycle-router.ts",
+    "git_blob": "b8d661cd06b16a8a26542d3bef2cfb536f6a0a4c",
+    "sha256": "6d11040cd722724dd9bb284f8defd1390f92516294263557a4e8b2dd658891c7",
+    "lines": 39
+  },
+  {
+    "path": "backend/src/modules/events/lifecycle.ts",
+    "git_blob": "92c4c0f31a12e52720c5c6317ee0febfa2cc39b0",
+    "sha256": "6e87a61fd445d3aa33db7a9f20fe30a2bedfef54bf7042f342b6c23dd2943123",
+    "lines": 172
+  },
+  {
+    "path": "backend/src/modules/events/review-decision.ts",
+    "git_blob": "e4c3e1ecea68dd0fdab7660e5452d31faf72e669",
+    "sha256": "e11fbc223b7e6a844b3d7410ab84b4baadd6c1efee663e576a32aad24146701c",
+    "lines": 113
+  },
+  {
+    "path": "backend/src/modules/events/review-eligibility.ts",
+    "git_blob": "6692ae141280d406938ffe3c9ea2114843fd226e",
+    "sha256": "eb5028756fc22bf4218bedf7660012724dfef86e8054e65d01558591921bc1b7",
+    "lines": 56
+  },
+  {
+    "path": "backend/src/modules/events/review-input.ts",
+    "git_blob": "72d7041a7c35a3d1cfaf34f87456a90dab519db3",
+    "sha256": "b90d9322e7d48d211bc007d70f3993e0a30133dab4a9ebcd64b36469c4660101",
+    "lines": 38
+  },
+  {
+    "path": "backend/src/modules/events/review-router.ts",
+    "git_blob": "8355d5d8d82c36d79449fee06db9d6d23fb945d9",
+    "sha256": "b102bcd7b29bf074b3ce67e8c117d05976c0750f4b4cf7df4b83251d6e70651f",
+    "lines": 79
+  },
+  {
+    "path": "backend/src/modules/events/submit-eligibility.ts",
+    "git_blob": "2bfde8ffa59abc102a2bf73e8f4e549d15856740",
+    "sha256": "2d50b82ecb012612dca936dc30419a88adaf50e0319814eb52845f239978867d",
+    "lines": 44
+  },
+  {
+    "path": "backend/src/modules/events/submit-input.ts",
+    "git_blob": "6687900d71c8790ea4a9a8466214eb5a90bce4fb",
+    "sha256": "48a5bfb77ac695b255df17456853e9493d9c4c99556647ac203d2d8d59d23558",
+    "lines": 26
+  },
+  {
+    "path": "backend/src/modules/events/submit-request.ts",
+    "git_blob": "1eac05893876e08fb0835e54f230058455b45032",
+    "sha256": "9c1a7b701a9d759bcbb33bcf351f84b98bb5a9b07e61e041e9c712990c02f369",
+    "lines": 109
+  },
+  {
+    "path": "backend/src/modules/events/submitted-requests-router.ts",
+    "git_blob": "1895e6f81241f19dfbd8d4e11f2d58f6ea5f7c28",
+    "sha256": "394ca2abd7978969f0e57239b46acd2f0152ae4e562148ac9011044a13a8ecde",
+    "lines": 257
+  },
+  {
+    "path": "backend/src/modules/events/submitted-requests.ts",
+    "git_blob": "7baf47492c7600a18d9ed6160c97692205bfbad3",
+    "sha256": "87be0b28c90818b5ad5ee578773237858386bdaf58194c5d3209250b03a78da7",
+    "lines": 120
+  },
+  {
+    "path": "backend/src/modules/events/types.ts",
+    "git_blob": "00e0d6b50d3a2e90da21297b4c0df13324bd0302",
+    "sha256": "132f24280b8a3f14970a09bba0a61e8a54960964dd0dcc4b647563531b58feba",
+    "lines": 41
+  },
+  {
+    "path": "backend/src/modules/events/update-draft.ts",
+    "git_blob": "278ee66cd66823c5b3b8ab5914eccf7f72606c9c",
+    "sha256": "283e89eff4df9d6c908befedb8c9385742e9f5272867c80d5e4f898181d26d40",
+    "lines": 142
+  },
+  {
+    "path": "backend/src/modules/events/workflow-http.ts",
+    "git_blob": "8dfabf1db8048245d6a6044524f432e5ee3864d3",
+    "sha256": "5fa4fac1d2b2d545a45dc314b643d6437610cb7a9ab66b668215b1528590d084",
+    "lines": 73
+  },
+  {
+    "path": "backend/src/modules/events/workflow-support.ts",
+    "git_blob": "e64371467e55d35a3052a1ce260e35ea99e86169",
+    "sha256": "0f7394f6af3942a77cf262158f1e930678cae2b69e40c2b592c778a7eeeb8030",
+    "lines": 223
+  },
+  {
+    "path": "backend/src/modules/notifications/notify.ts",
+    "git_blob": "7c59d92573859fe360bfd3b7a1d3a6fea119118b",
+    "sha256": "62c46e24c8f0d471062aa89e2d1b45c1b3961486d848e7e5a138f9bf4e5357f8",
+    "lines": 34
+  },
+  {
+    "path": "backend/src/runtime-app.ts",
+    "git_blob": "ab6f36a24fc72b3e829574e675c877f1f1b488fc",
+    "sha256": "9fe7951d051a16d9171cbf28e7b5ebc1c27f879021fbc2c7a6b505615844b4de",
+    "lines": 33
+  },
+  {
+    "path": "backend/src/server.ts",
+    "git_blob": "7edacf83b7bf06488e854ba929f30990679e6b8e",
+    "sha256": "49f694fb773cc38442b6ecb2514b1c2d90e138bcf232428884b16d6174134407",
+    "lines": 50
+  },
+  {
+    "path": "database/README.md",
+    "git_blob": "300b0129beb82d85b7fc68ecd16ed1638bf03156",
+    "sha256": "4a6583d845eaa98dbd2c9c42756e9bfcb96990f729281feec4887e675825e33c",
+    "lines": 90
+  },
+  {
+    "path": "database/migrations/001_initial_scaffold.sql",
+    "git_blob": "85fa4e8e3c1c84e9d5762f0eaeb9b6c0b6a3f25a",
+    "sha256": "f3a1fffced244fc273abdb140351d0ca2248ad679f900cb3ca9314636a991e14",
+    "lines": 63
+  },
+  {
+    "path": "database/migrations/002_restrict_data_api_access.sql",
+    "git_blob": "a198503467b6d9c8ce5438b008dc881af39174fe",
+    "sha256": "ecd44c4e0357b0b7967672697783b1992ca36b59bfac3f4b04457c494f3045a1",
+    "lines": 32
+  },
+  {
+    "path": "database/migrations/003_add_firebase_identities.sql",
+    "git_blob": "fcdf78676d4f186a109802fab5aaaf17215421f4",
+    "sha256": "1befbc68426fd4e58e0f3800c7cc6797de60ff0f350115fab5176243bf275ee4",
+    "lines": 22
+  },
+  {
+    "path": "database/migrations/004_add_supabase_user_id.sql",
+    "git_blob": "6891c2115bc377d60c500de55e1f9c2e20db9380",
+    "sha256": "64e47cc594b4a5c1b34c6e7ffec60178ec58b40ee2c8330bf99b181167e135ab",
+    "lines": 7
+  },
+  {
+    "path": "database/migrations/005_core_feature_schema.sql",
+    "git_blob": "0a4bbcabd4851f4f0389bf6be1fdd1ccf004554b",
+    "sha256": "20c1422083fc45b4d3a30e1b830f8bf2aaf1566d51d737c84bcfcefe9554cd9f",
+    "lines": 333
+  },
+  {
+    "path": "database/migrations/006_equipment_peak_availability.sql",
+    "git_blob": "89f3434a0cd888828ac310ec8044d88b7c1cb3cd",
+    "sha256": "1708c25eb681eb12ae800f774cfd14260e2c578d8a8284f1b8da7c946aa76aa4",
+    "lines": 41
+  },
+  {
+    "path": "docs/architecture/README.md",
+    "git_blob": "cf0b0ce69f23465b36bb2a6ae52f67de4d4fe74c",
+    "sha256": "81ef527f7f8c8bf7d9413ce567cd0f1bc312b8bd0b65e9fc1ae99bb6b45307cd",
+    "lines": 248
+  },
+  {
+    "path": "docs/requirements/README.md",
+    "git_blob": "5983b18c7eee8203bd2e88bb6e5a088cf4b67b47",
+    "sha256": "5658586acdad2667a8097f04a57e88a0cfbdf8013e274d1d419468ec625a3cae",
+    "lines": 62
+  },
+  {
+    "path": "docs/requirements/assumptions-and-questions.md",
+    "git_blob": "38f13c14d215bc225465c414dc3d0950ca5ded1c",
+    "sha256": "970964b22843c89df8914e054b10ed5dbf5be5cac7d7cd53b9c2377ea9f2c503",
+    "lines": 802
+  },
+  {
+    "path": "frontend/package.json",
+    "git_blob": "6a75fb8152bb0a4625f4f8a52c06c603fff63f3d",
+    "sha256": "dc4e9ff72afa35692cfb9d50f1cc285172d917a5f0b4cb85635e1d6c4cc77d76",
+    "lines": 29
+  },
+  {
+    "path": "frontend/src/app/App.vue",
+    "git_blob": "171c2f7c331f8e06a9f2abcc5027adb8fbb8f245",
+    "sha256": "dd4eedf9954e900c8d52711701633a3fabd193d213febdd7154961498daa86b7",
+    "lines": 9
+  },
+  {
+    "path": "frontend/src/app/router.ts",
+    "git_blob": "ab8888c0043a31fa5218bcadc09950d2d1dfeec4",
+    "sha256": "296510b95b9f59b5146735d7428ad2401c4c7b6fa73561749aa337770bf9c66c",
+    "lines": 38
+  },
+  {
+    "path": "frontend/src/app/styles.css",
+    "git_blob": "a7a7d43af0869c1664a510b63cdd8eb60b02cc5d",
+    "sha256": "7175bc30e8bd34b68e2f85d1fb25c3808dd38ad9e32ead201343026ff1c997ad",
+    "lines": 1173
+  },
+  {
+    "path": "frontend/src/components/AppIcon.vue",
+    "git_blob": "a0d6fc987f11bdfedcc56c5b1582a09820dbbad4",
+    "sha256": "7a7f459a622b23b9e1edd57f9c052bcc2cd576061dd14b131ccbb8f04986cda6",
+    "lines": 50
+  },
+  {
+    "path": "frontend/src/components/AppShell.vue",
+    "git_blob": "983197cbe49465a059c6f897dbd050156d18f50a",
+    "sha256": "024efa0a90aed38e7e35b61edb76a98ce88a55831ff8f7d52773e6ef5063ae20",
+    "lines": 86
+  },
+  {
+    "path": "frontend/src/components/FeaturePlaceholder.vue",
+    "git_blob": "f22bdd14cc234c40b9cd944b072981cc36426327",
+    "sha256": "14be1d0fa1b72239d1bb540b6e15ea1f0c8a6f1103f528bf5bf9e552ba698a8a",
+    "lines": 36
+  },
+  {
+    "path": "frontend/src/components/NotFoundPage.vue",
+    "git_blob": "f70128c8dcf9551953f32173964d0ffce2547e6c",
+    "sha256": "4a988954585117b9ab80d2a8317801aae09b9fe1cf3a6f584a3cf2c77fa55c50",
+    "lines": 8
+  },
+  {
+    "path": "frontend/src/features/auth/pages/LoginPage.vue",
+    "git_blob": "add7785d81be13cfa114dd7aab3823b9e60cc515",
+    "sha256": "c9c2631c2500ad37a59f04196d06093b70d36fdf4bfe56059b5537306ed1785f",
+    "lines": 54
+  },
+  {
+    "path": "frontend/src/features/auth/session.ts",
+    "git_blob": "1fe3cafd7a6964a4417f9f202ffa3c6186a68f03",
+    "sha256": "5d503c2aa9ae322ca325b7344253649c07865cce79e92a552122ad0e9ae1bdd6",
+    "lines": 60
+  },
+  {
+    "path": "frontend/src/features/auth/supabase-client.test.ts",
+    "git_blob": "9b2c8f70ffadc581ae86c9fa13319161405af274",
+    "sha256": "b4cfec48a41350aefab1e24bc41c374f4f5722bbb5904e8e0c613966b5cfdae8",
+    "lines": 51
+  },
+  {
+    "path": "frontend/src/features/auth/supabase-client.ts",
+    "git_blob": "28b6fc91196e2791cd692da42455f01e0b1f3af8",
+    "sha256": "7ec856b1e01079ded6ec6a404f0ea584add94550a443dd296071a77a197b3f13",
+    "lines": 41
+  },
+  {
+    "path": "frontend/src/features/events/api/assignments.ts",
+    "git_blob": "6b6b088818c6b4a004cf10ab7acbb45c1c701f4f",
+    "sha256": "6d14963f4965f7746a041fd600e469bf06e10dbde3eb10b9c65d5f607a91300d",
+    "lines": 85
+  },
+  {
+    "path": "frontend/src/features/events/api/clarifications.ts",
+    "git_blob": "04c8bc171690f2ef68401af2f3c4174451fd41e7",
+    "sha256": "2e3a05b831dfb44bf06eb9867b5b67f8f6803ce761c979cdda23b8ff130ac399",
+    "lines": 41
+  },
+  {
+    "path": "frontend/src/features/events/api/event-requests.ts",
+    "git_blob": "dfddd9c26cba4fc924a6fa7987999f2d81056007",
+    "sha256": "67cf2dfeb82202585bcc22cc8165bbaeb20e98968c8a3bc42efd0cbedfbd08e2",
+    "lines": 131
+  },
+  {
+    "path": "frontend/src/features/events/api/lifecycle.ts",
+    "git_blob": "9fb0dd56817e5b5e87d41c6f4eba076e2d473cf6",
+    "sha256": "984c962cf9fc07d338bf6e359bc3546357b38437c68e1ab0b612c533c255d5b9",
+    "lines": 37
+  },
+  {
+    "path": "frontend/src/features/events/components/AssignmentPanel.test.ts",
+    "git_blob": "abd012673effa66af146ff32c96e13624c57d6dd",
+    "sha256": "714426bf9eca4cae55aa72778ea7f1557f41535992f9db5a8435c5e77cc72695",
+    "lines": 102
+  },
+  {
+    "path": "frontend/src/features/events/components/AssignmentPanel.vue",
+    "git_blob": "971d1772dbfa5995f2d53092b617959ec4a72f73",
+    "sha256": "cde6227ea88576b8718921fc7c75a8abdc1b71a2cf7c8c16915629e872110003",
+    "lines": 118
+  },
+  {
+    "path": "frontend/src/features/events/components/ClarificationPanel.test.ts",
+    "git_blob": "0ea72294846167e0f739150a8a790e13efee857f",
+    "sha256": "785f0165e17ee4f8f1a6de566ebeb851a1ff542596bf3f19ef6750f60027ed56",
+    "lines": 93
+  },
+  {
+    "path": "frontend/src/features/events/components/ClarificationPanel.vue",
+    "git_blob": "64a5969ef7dacbddc8b2f35432277b79ef121d88",
+    "sha256": "c190d815e5ecf7221fa7be5c2157cfd6a8cea1d2818243d24604be4f40dd0350",
+    "lines": 117
+  },
+  {
+    "path": "frontend/src/features/events/components/EventPlanningPanels.vue",
+    "git_blob": "9e95b10b0af1a3c3607ca4624e2ef6a390d1dd9b",
+    "sha256": "4ac69eac24b214aaad69848c664d2304a0df7a658b8bbe65c25ec98527a248b7",
+    "lines": 32
+  },
+  {
+    "path": "frontend/src/features/events/components/EventRequestForm.test.ts",
+    "git_blob": "89ffe5cf8769d4e23393dfbfb046e1604517e407",
+    "sha256": "7ed4f462493d8b3a5263c2efd3025ba308d3ebf22a334eda45a904a3e93107b8",
+    "lines": 359
+  },
+  {
+    "path": "frontend/src/features/events/components/EventRequestForm.vue",
+    "git_blob": "cdc3549d3a1f76e4edc0058d1e7ea9cb73976e30",
+    "sha256": "ee626a0cbd1451b518fcb9091580d43b55696d0207c8fe1b152a24c32f338e23",
+    "lines": 453
+  },
+  {
+    "path": "frontend/src/features/events/components/LifecyclePanel.test.ts",
+    "git_blob": "37de72e4866c136753a4ba3522738213a13b78e0",
+    "sha256": "9120bf269bb8b16a4e925f1d4ffa7cffd52c793c36051f9a8a16c0a920264883",
+    "lines": 104
+  },
+  {
+    "path": "frontend/src/features/events/components/LifecyclePanel.vue",
+    "git_blob": "c36f0f01a6bd102ddabaeaa39a76edc2b928202b",
+    "sha256": "f2674618df085394d4617a78dab6ba44f82bfdeb6a434292e4e8f214958605ed",
+    "lines": 117
+  },
+  {
+    "path": "frontend/src/features/events/components/test-api.ts",
+    "git_blob": "e86be2e4a2803884f939b1329ff22f36ac220a21",
+    "sha256": "6e75c76aed8b0bbf9723931f4b591aaf7a857d14b714205a2bef7c9dcdcfeff7",
+    "lines": 25
+  },
+  {
+    "path": "frontend/src/features/events/components/use-workflow-panel.ts",
+    "git_blob": "c1e1641946126395a8d80628e6f13b18a684151a",
+    "sha256": "fb224157c9d383245e448c85f5e1251d506ef5379a73899f83b0da78bf72dd86",
+    "lines": 87
+  },
+  {
+    "path": "frontend/src/features/events/components/workflow-panel.css",
+    "git_blob": "7eddd536e24c01668877a311c4c34b947c0f8dc6",
+    "sha256": "add9f4ebea1d38cbb0f3d659b47533faaa07fb3d3c978b5a115b8f31020c6a6d",
+    "lines": 65
+  },
+  {
+    "path": "frontend/src/features/events/pages/EventDraftEditPage.test.ts",
+    "git_blob": "23fba4ac96cc099ffaaf86ab5a0e4dd65bc37e11",
+    "sha256": "a3698e64bedc41e605cd860f82a71d9e990b25a30e1e59962648ae10afcd7245",
+    "lines": 165
+  },
+  {
+    "path": "frontend/src/features/events/pages/EventDraftEditPage.vue",
+    "git_blob": "ad9edfabbb6364186d6aec9592476f1df7086f14",
+    "sha256": "8270281cd0010342b948e619f2278af21381364f9f7b1b351a2f54d6c97b75b7",
+    "lines": 112
+  },
+  {
+    "path": "frontend/src/features/events/pages/EventRequestDetailPage.test.ts",
+    "git_blob": "7783b1a5ba1ad3d5a005fff124e128bf61e309aa",
+    "sha256": "ed8259cfe206662f17fbf7af24d62167a893fb46dbcab59784e4e4045e23d9c5",
+    "lines": 387
+  },
+  {
+    "path": "frontend/src/features/events/pages/EventRequestDetailPage.vue",
+    "git_blob": "e47697ded3ff2c9c76fe9a88c770ab61f7a1ae54",
+    "sha256": "791d6c7b4aaa5cf50e4f91151864254628c603714a9f8707aa0abd5984be97bc",
+    "lines": 215
+  },
+  {
+    "path": "frontend/src/features/events/pages/EventRequestsPage.test.ts",
+    "git_blob": "223ff87c4a7e4cf070527aacd48deb91c3663053",
+    "sha256": "731e7fc2b9847dce1aa0e3da2b93c4af2ba5c4bc440ee92a83deaec6ad4235a5",
+    "lines": 235
+  },
+  {
+    "path": "frontend/src/features/events/pages/EventRequestsPage.vue",
+    "git_blob": "830d5d59a62099e974ddc0a1065c9dbf34dbc272",
+    "sha256": "4d60dc0bc08f9778bb13e102474d516fbbda1e51ed12727910b23c33a34a0b88",
+    "lines": 132
+  },
+  {
+    "path": "frontend/src/features/events/pages/NewEventPage.test.ts",
+    "git_blob": "47358b82ca7a7a232e25db962352ab75762c2ad2",
+    "sha256": "24ca41b622bfac7bf181e501147b04cad98249211eb1129385c014833866dc54",
+    "lines": 149
+  },
+  {
+    "path": "frontend/src/features/events/pages/NewEventPage.vue",
+    "git_blob": "f7fdc00c11227f842e31730923a31f554719c2da",
+    "sha256": "b38d7a64e29f829f3437197c15d683a6088583c2df555d6190585fcb550f3b31",
+    "lines": 51
+  },
+  {
+    "path": "frontend/src/features/events/presentation.ts",
+    "git_blob": "e9a26e457bea311b69de47e0a244d5481157f85b",
+    "sha256": "a55b3b3f2d6c84eaa5581daad6de5a845074725ba57873b498a17595b4d61e3e",
+    "lines": 48
+  },
+  {
+    "path": "frontend/src/features/reviews/api/submitted-requests.ts",
+    "git_blob": "2e948b4ab9dbe96abaed1383224ba039ad31693c",
+    "sha256": "8c3139e2000a8ddf52181114d21dfdf0b676d5c91976a02f924a3346480f3809",
+    "lines": 30
+  },
+  {
+    "path": "frontend/src/features/reviews/components/ReviewDecisionPanel.test.ts",
+    "git_blob": "3208722912bfe1b83ec460fb68824f7e870a894a",
+    "sha256": "bc91de264ac5c4ac28c9158da5df3b5acc1290892b92c3acb8fe53cdb28438f4",
+    "lines": 303
+  },
+  {
+    "path": "frontend/src/features/reviews/components/ReviewDecisionPanel.vue",
+    "git_blob": "712b0293bc9bf348aa7355cd8e9c42a0baa50772",
+    "sha256": "ec4b22ae7b149a36342c821b5e8ae5ea8c80e34218046646780cdc7e08cad908",
+    "lines": 178
+  },
+  {
+    "path": "frontend/src/features/reviews/pages/ReviewAccessPage.test.ts",
+    "git_blob": "c0f687ebaa2cc691842e5235b124e6a0ae75c24a",
+    "sha256": "1ca634b94995d844795112bb294e3ebd38cc5b123928eff7c9bf9eb2cc7cafc7",
+    "lines": 310
+  },
+  {
+    "path": "frontend/src/features/reviews/pages/ReviewAccessPage.vue",
+    "git_blob": "138ceb75bb86d1e4e40057ab2eec1faa65d64c91",
+    "sha256": "32c846b9c957be01807ebf58a200b69ea1391424ce63106d25754dd33beb9c69",
+    "lines": 31
+  },
+  {
+    "path": "frontend/src/features/reviews/pages/ReviewQueuePage.test.ts",
+    "git_blob": "4b362e592b051188618f1918a7f6e888f97556ee",
+    "sha256": "d2378b56546f04f67dbc5ad7e48ed60021618b0b07fadcb87feb80cf65801527",
+    "lines": 115
+  },
+  {
+    "path": "frontend/src/features/reviews/pages/ReviewQueuePage.vue",
+    "git_blob": "28488fb96bc6522fa21cdad0ad79fca157eb67aa",
+    "sha256": "7e77f5ce4a9bbd9c81ee4c40c0db33aa0edcd64f39b6e24683820fb83df6e302",
+    "lines": 126
+  },
+  {
+    "path": "frontend/src/features/reviews/pages/ReviewRequestPage.test.ts",
+    "git_blob": "0e208f4dfa1a7c5156a32171659610b98ca6bc24",
+    "sha256": "6d840fd0168f973a5065b303c6d5b5384bd98f25e8f24efc2611715743f72332",
+    "lines": 240
+  },
+  {
+    "path": "frontend/src/features/reviews/pages/ReviewRequestPage.vue",
+    "git_blob": "5bab1f09e4ff44dbaab3acbf5742e2b824451171",
+    "sha256": "cd9a27dbfd10d30456f95c02189fc5af18858f1e3fb4f0cd7997bdc837a76e2f",
+    "lines": 165
+  },
+  {
+    "path": "frontend/src/features/reviews/pages/UnassignedRequestsPage.test.ts",
+    "git_blob": "64386947154ee8ddaacc431e01fd794faacb04a8",
+    "sha256": "6a963fdff4d46edc12c0f56244d935f469b7c1428dfab2e356540438e80bd947",
+    "lines": 92
+  },
+  {
+    "path": "frontend/src/features/reviews/pages/UnassignedRequestsPage.vue",
+    "git_blob": "f584da56f7fa349dcf05c5679f3be2df1fc9221a",
+    "sha256": "35d7f0802842f65f658d54bf5697967afef6775f22909645f25682e721bf41a0",
+    "lines": 169
+  },
+  {
+    "path": "frontend/src/features/reviews/types.ts",
+    "git_blob": "b8c5f07d51c9dc278232989f3bc2f1f82af4c817",
+    "sha256": "32012fb95f513a22367b629937b4440eba56ac30df71b1533615899014c23214",
+    "lines": 63
+  },
+  {
+    "path": "frontend/src/features/system/api/health.ts",
+    "git_blob": "d1ed033e017fa6bdc1418b8021d852e333ada0d3",
+    "sha256": "4632432ccfaec80e50c85141a0c7232720e23e66ec7a87c82ca098ab0b5cee30",
+    "lines": 35
+  },
+  {
+    "path": "frontend/src/features/system/components/HealthCheckCard.vue",
+    "git_blob": "a747ab123713605bd15f7fda719e2b16322799c0",
+    "sha256": "f2dfad40474853a1779489a74d3f5108cac0905739124d9c88a55d0a9fa78d44",
+    "lines": 37
+  },
+  {
+    "path": "frontend/src/features/system/pages/DashboardPage.test.ts",
+    "git_blob": "ffc95b109fd2f28b8a4423c6779ce52599ff76f5",
+    "sha256": "1de722e0f85451f2fffc349e54fc8826983b8ec0a0fef62ee7a36f366900823d",
+    "lines": 51
+  },
+  {
+    "path": "frontend/src/features/system/pages/DashboardPage.vue",
+    "git_blob": "aaab25e791667f0e126fc97460f3a2d255c42ebe",
+    "sha256": "d14bae167a2ea5983deb3470953afe28883fab2f6d7bf8686f504b1d49fbecdd",
+    "lines": 143
+  },
+  {
+    "path": "frontend/src/lib/api-client.test.ts",
+    "git_blob": "e607cc1016c618156eded40179bef88891f33dfe",
+    "sha256": "9b80fe4c647ed986b0a10fae4158e137c22272cb2a445b69ca6aabab4fdb78d3",
+    "lines": 45
+  },
+  {
+    "path": "frontend/src/lib/api-client.ts",
+    "git_blob": "6b66b5cbb6b83d229a5cd1438d257e7ceae0ab21",
+    "sha256": "7142344ee2357e3311b3f7773765a7f1458f1ae8e953b2cafa4442be3c8d29ee",
+    "lines": 116
+  },
+  {
+    "path": "frontend/src/main.ts",
+    "git_blob": "76cd9cba44f98e6baa1711a072065f0a0b6078f9",
+    "sha256": "ac41018092e8da626879eb161c5b0402b8eecfd211cb85c239dbf9abee9a2e95",
+    "lines": 6
+  },
+  {
+    "path": "frontend/src/test/setup.ts",
+    "git_blob": "564e0bb487a291305b93ad29ae3af972e0d8a11c",
+    "sha256": "263fbf3312aabd26934f8412096b59b64c7dd76da44a293cbcaa36bb5ac42766",
+    "lines": 8
+  },
+  {
+    "path": "frontend/vite.config.ts",
+    "git_blob": "c8f2b595f8beb80027d0d8cc932b4acc695fe89d",
+    "sha256": "1acd6adec54687e30865d6639a892dc99747e955ef99233bd1e7544a8a7f364a",
+    "lines": 38
+  },
+  {
+    "path": "package.json",
+    "git_blob": "1d9a3a72aea1e5be95bde5df189b0121b9befa02",
+    "sha256": "90e9fecc28ce1599c672dbfe764b26c16a7e7aa4552841a7b125874fbcdbdc5a",
+    "lines": 46
+  }
+]

@@ -1,0 +1,64 @@
+---
+title: Pre-Week 7 C3 - reconstructed from b981f11 on 6 Nov 2026
+config:
+  layout: elk
+---
+flowchart LR
+  web["Web application<br/>[External container: Vue 3]<br/>Event and review pages"]
+  identity["Supabase Auth<br/>[External software system]<br/>Published signing keys"]
+  db["Application database<br/>[External container: PostgreSQL]<br/>Records, constraints and SQL triggers"]
+  legend["Legend<br/>Arrows: runtime calls or SQL access<br/>Components share one API process<br/>Pure type imports are omitted<br/>No venue / equipment / attendee API<br/>No inbox API or background scheduler"]
+  subgraph apiBoundary["API application - one Express / Node.js process"]
+    http["HTTP boundary<br/>[Component: Express routers]<br/>Health, JSON, role gates and errors"]
+    session["Session authentication<br/>[Component: TypeScript]<br/>Login, cookie, me and logout"]
+    tokens["Token verifier<br/>[Component: jose]<br/>Local JWT verification / cached keys"]
+    profiles["Profile repository<br/>[Component: SQL / TypeScript]<br/>Supabase UID to app user / five roles"]
+    queries["Request queries<br/>[Component: TypeScript / SQL]<br/>Owned lists, queues, detail and actions"]
+    drafts["Draft commands<br/>[Component: TypeScript / SQL]<br/>Create / update own DRAFT and validate"]
+    submission["Submission command<br/>[Component: TypeScript / SQL]<br/>Validate saved draft and submit"]
+    assignment["Coordinator assignment<br/>[Component: TypeScript / SQL]<br/>Triage, allocate and hand over"]
+    clarification["Clarification workflow<br/>[Component: TypeScript / SQL]<br/>Start review, ask and respond"]
+    review["Initial review decision<br/>[Component: TypeScript / SQL]<br/>One approval / rejection and validation"]
+    lifecycle["Event lifecycle<br/>[Component: TypeScript / SQL]<br/>Confirm, cancel, complete and history"]
+    workflow["Workflow support<br/>[Component: TypeScript / SQL]<br/>Actor transaction, locks and relationships"]
+    policy["Assignment policy<br/>[Component: TypeScript]<br/>Current assigned coordinator check"]
+    notices["Notification writer<br/>[Component: TypeScript / SQL]<br/>In-app rows in caller transaction"]
+  end
+  web -->|"HTTP JSON /api and session cookie"| http
+  http -->|"Auth endpoints and authenticate callback"| session
+  session -->|"Verify cookie or login access token"| tokens
+  tokens -->|"HTTPS: retrieve and cache JWKS"| identity
+  session -->|"Resolve verified UID"| profiles
+  profiles -->|"SELECT app_users by Supabase UID"| db
+  http -->|"Owned lists, queue and detail reads"| queries
+  queries -->|"Injected visibility and decision policy"| policy
+  queries -->|"SELECT requests and first review"| db
+  http -->|"Create or update saved draft"| drafts
+  drafts -->|"Own transaction: INSERT / UPDATE DRAFT"| db
+  http -->|"Submit saved request"| submission
+  submission -->|"Own transaction: lock, validate and submit"| db
+  http -->|"Triage, allocate and read assignment history"| assignment
+  assignment -->|"Transaction, lock and relationship helpers"| workflow
+  assignment -->|"Read profiles / requests; update assignment"| db
+  assignment -->|"Persist assignment notices"| notices
+  http -->|"Start review, ask, respond and list"| clarification
+  clarification -->|"Transaction, lock and relationship helpers"| workflow
+  clarification -->|"Read / write clarification records"| db
+  clarification -->|"Persist clarification / review-start notices"| notices
+  http -->|"Record initial review decision"| review
+  review -->|"Injected decision authorization"| policy
+  review -->|"Own transaction: review and status update"| db
+  http -->|"Confirm, cancel, complete and history"| lifecycle
+  lifecycle -->|"Locks, status changes and arrangement cancellation"| workflow
+  lifecycle -->|"Read readiness, attendees and history"| db
+  lifecycle -->|"Persist lifecycle notices"| notices
+  workflow -->|"Resolve assigned-coordinator relation"| policy
+  workflow -->|"BEGIN / locks / status and arrangement writes"| db
+  notices -->|"INSERT notifications in caller transaction"| db
+  http -->|"Readiness: SELECT scaffold_metadata"| db
+  http -->|"Workflow error / UUID helpers"| workflow
+  classDef person fill:#e0f2fe,stroke:#0369a1,color:#0c4a6e;
+  classDef external fill:#f1f5f9,stroke:#64748b,color:#0f172a;
+  classDef planned fill:#fff7ed,stroke:#c2410c,color:#7c2d12,stroke-dasharray:5 4;
+  classDef legend fill:#ffffff,stroke:#94a3b8,color:#475569;
+  class legend legend;

@@ -1,0 +1,26 @@
+---
+title: Venue writers - gates precede booking and event row locks
+---
+sequenceDiagram
+  autonumber
+  participant Client as Planning client
+  participant API as Express HTTP boundary
+  participant Service as Venue or lifecycle service
+  participant DB as PostgreSQL
+  Client->>API: Send authorized venue or lifecycle mutation
+  API->>Service: Authenticate and enforce route role and identifiers
+  Service->>DB: BEGIN READ COMMITTED, set transaction actor
+  alt existing-booking approval or hold
+  Service->>DB: Take venue advisory gate before booking row lock
+  Service->>DB: Lock replacement original before event when approving replacement
+  Service->>DB: Lock event then venue, re-read clock and availability after waits
+  else new venue booking
+  Service->>DB: Take selected venue gate then event and venue rows
+  else lifecycle operation across event arrangements
+  Service->>DB: Snapshot live bookings, take sorted venue gates then booking rows
+  Service->>DB: Lock event then verify no new booking escaped the snapshot
+  end
+  Service->>DB: Apply mutation, triggers enforce buffered occupancy and state
+  Service->>DB: COMMIT on success, ROLLBACK on thrown error
+  Service-->>API: Resolve committed result or throw failure to HTTP boundary
+  API-->>Client: HTTP status and JSON, typed failures mapped

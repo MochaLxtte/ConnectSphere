@@ -1,0 +1,12 @@
+{
+  "container": "connectsphere-design-audit-20261106",
+  "id": "32d92fcaf71ac87bb86e74df6864541107ccaae2dce40c3e49a29ff76b18f9a7",
+  "ownership_label_verified": true,
+  "network_mode": "none",
+  "host_ports": false,
+  "host_bind_mounts": false,
+  "image_created_anonymous_volume": "5b26095ad36209f40576eda7945f743002165824c09cc54b251220b7da70daa6",
+  "container_removed": true,
+  "anonymous_volume_removed": true,
+  "shared_database_accessed": false
+}

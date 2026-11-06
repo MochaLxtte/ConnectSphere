@@ -1,0 +1,167 @@
+---
+config:
+  layout: elk
+title: Domain detail - planning
+---
+classDiagram
+  direction TB
+  class AppUsers {
+    <<SQL record>>
+    uuid id
+    text role
+  }
+  class EquipmentRequests {
+    <<SQL record>>
+    uuid id
+    uuid event_request_id
+    uuid equipment_type_id
+    uuid requested_by
+    integer quantity
+    text status
+    timestamptz starts_at
+    timestamptz ends_at
+    text notes
+    uuid decided_by
+    timestamptz decided_at
+    text decision_reason
+    timestamptz created_at
+    timestamptz updated_at
+    timestamptz released_at
+    uuid released_by
+    text release_reason
+    text release_cause
+    text technical_requirements
+    integer revision
+  }
+  class EquipmentStockChanges {
+    <<SQL record>>
+    uuid id
+    uuid equipment_type_id
+    integer revision
+    uuid changed_by
+    timestamptz changed_at
+    text reason
+    integer previous_total_quantity
+    integer previous_damaged_quantity
+    integer previous_maintenance_quantity
+    integer new_total_quantity
+    integer new_damaged_quantity
+    integer new_maintenance_quantity
+  }
+  class EquipmentTypes {
+    <<SQL record>>
+    uuid id
+    text name
+    text category
+    text description
+    integer total_quantity
+    boolean is_active
+    timestamptz created_at
+    timestamptz updated_at
+    integer damaged_quantity
+    integer maintenance_quantity
+    integer stock_revision
+  }
+  class EventRequests {
+    <<SQL record>>
+    uuid id
+    uuid organiser_id
+    uuid coordinator_id
+    text status
+    timestamptz starts_at
+    timestamptz ends_at
+    integer revision
+    text equipment_plan_status
+    uuid preparation_started_by
+    uuid preparation_safety_review_id
+  }
+  class VenueBookings {
+    <<SQL record>>
+    uuid id
+    uuid event_request_id
+    uuid venue_id
+    uuid requested_by
+    text status
+    timestamptz starts_at
+    timestamptz ends_at
+    text layout
+    text notes
+    uuid decided_by
+    timestamptz decided_at
+    text decision_reason
+    timestamptz created_at
+    timestamptz updated_at
+    uuid replaces_booking_id
+    integer reserved_setup_minutes
+    integer reserved_turnaround_minutes
+    timestamptz hold_expires_at
+    uuid held_by
+    timestamptz held_at
+    timestamptz expired_at
+    uuid cancelled_by
+    timestamptz cancelled_at
+    text cancellation_reason
+  }
+  class VenueOutageImpacts {
+    <<SQL record>>
+    uuid id
+    uuid unavailability_id
+    uuid venue_booking_id
+    uuid venue_id
+    timestamptz outage_starts_at
+    timestamptz outage_ends_at
+    text outage_reason
+    text status
+    uuid recorded_by
+    timestamptz created_at
+    timestamptz updated_at
+  }
+  class VenueUnavailability {
+    <<SQL record>>
+    uuid id
+    uuid venue_id
+    timestamptz starts_at
+    timestamptz ends_at
+    text reason
+    uuid created_by
+    timestamptz created_at
+  }
+  class Venues {
+    <<SQL record>>
+    uuid id
+    text name
+    text description
+    text location
+    integer capacity
+    textArray layouts
+    textArray facilities
+    textArray accessibility_features
+    boolean wheelchair_accessible
+    time opens_at
+    time closes_at
+    boolean is_active
+    timestamptz created_at
+    timestamptz updated_at
+    integer setup_minutes
+    integer turnaround_minutes
+  }
+  AppUsers --> EquipmentRequests : decided_by [0..1 / 0..*]
+  EquipmentTypes --> EquipmentRequests : equipment_type_id [1 / 0..*]
+  EventRequests --> EquipmentRequests : event_request_id [1 / 0..*]
+  AppUsers --> EquipmentRequests : released_by [0..1 / 0..*]
+  AppUsers --> EquipmentRequests : requested_by [1 / 0..*]
+  AppUsers --> EquipmentStockChanges : changed_by [1 / 0..*]
+  EquipmentTypes --> EquipmentStockChanges : equipment_type_id [1 / 0..*]
+  AppUsers --> VenueBookings : cancelled_by [0..1 / 0..*]
+  AppUsers --> VenueBookings : decided_by [0..1 / 0..*]
+  EventRequests --> VenueBookings : event_request_id [1 / 0..*]
+  AppUsers --> VenueBookings : held_by [0..1 / 0..*]
+  VenueBookings --> VenueBookings : replaces_booking_id [0..1 / 0..*]
+  AppUsers --> VenueBookings : requested_by [1 / 0..*]
+  Venues --> VenueBookings : venue_id [1 / 0..*]
+  AppUsers --> VenueOutageImpacts : recorded_by [0..1 / 0..*]
+  VenueUnavailability --> VenueOutageImpacts : unavailability_id [0..1 / 0..*]
+  VenueBookings --> VenueOutageImpacts : venue_booking_id [1 / 0..*]
+  Venues --> VenueOutageImpacts : venue_id [1 / 0..*]
+  AppUsers --> VenueUnavailability : created_by [0..1 / 0..*]
+  Venues --> VenueUnavailability : venue_id [1 / 0..*]

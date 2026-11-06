@@ -1,0 +1,2393 @@
+{
+  "source_commit": "fb6d8d93f721b114accc9857a05d62e859987e23",
+  "scope": "Statically mounted Express routes; no server or database started",
+  "count": 85,
+  "mounts": [
+    {
+      "prefix": "/api/auth",
+      "factory": "createAuthRouter",
+      "line": 82,
+      "module": "C:\\Users\\arvin\\Downloads\\GitHub\\connectsphere\\backend\\src\\modules\\auth\\router.ts"
+    },
+    {
+      "prefix": "/api",
+      "factory": "createRegistrationRouter",
+      "line": 85,
+      "module": "C:\\Users\\arvin\\Downloads\\GitHub\\connectsphere\\backend\\src\\modules\\registrations\\router.ts"
+    },
+    {
+      "prefix": "/api/equipment/availability",
+      "factory": "createEquipmentAvailabilityRouter",
+      "line": 87,
+      "module": "C:\\Users\\arvin\\Downloads\\GitHub\\connectsphere\\backend\\src\\modules\\equipment\\availability-router.ts"
+    },
+    {
+      "prefix": "/api/equipment/reservations",
+      "factory": "createEquipmentReservationRouter",
+      "line": 88,
+      "module": "C:\\Users\\arvin\\Downloads\\GitHub\\connectsphere\\backend\\src\\modules\\equipment\\reservation-router.ts"
+    },
+    {
+      "prefix": "/api/attendee",
+      "factory": "createAttendeeRegistrationRouter",
+      "line": 90,
+      "module": "C:\\Users\\arvin\\Downloads\\GitHub\\connectsphere\\backend\\src\\modules\\registrations\\registration-router.ts"
+    },
+    {
+      "prefix": "/api/equipment/stock",
+      "factory": "createEquipmentStockRouter",
+      "line": 92,
+      "module": "C:\\Users\\arvin\\Downloads\\GitHub\\connectsphere\\backend\\src\\modules\\equipment\\stock-router.ts"
+    },
+    {
+      "prefix": "/api",
+      "factory": "createEquipmentRouter",
+      "line": 93,
+      "module": "C:\\Users\\arvin\\Downloads\\GitHub\\connectsphere\\backend\\src\\modules\\equipment\\equipment-router.ts"
+    },
+    {
+      "prefix": "/api/notifications",
+      "factory": "createNotificationRouter",
+      "line": 95,
+      "module": "C:\\Users\\arvin\\Downloads\\GitHub\\connectsphere\\backend\\src\\modules\\notifications\\inbox-router.ts"
+    },
+    {
+      "prefix": "/api/venue-bookings",
+      "factory": "createVenueBookingsRouter",
+      "line": 96,
+      "module": "C:\\Users\\arvin\\Downloads\\GitHub\\connectsphere\\backend\\src\\modules\\venues\\venue-bookings-router.ts"
+    },
+    {
+      "prefix": "/api/venues",
+      "factory": "createVenueAvailabilityRouter",
+      "line": 98,
+      "module": "C:\\Users\\arvin\\Downloads\\GitHub\\connectsphere\\backend\\src\\modules\\venues\\availability-router.ts"
+    },
+    {
+      "prefix": "/api/events",
+      "factory": "createAssignmentRouter",
+      "line": 100,
+      "module": "C:\\Users\\arvin\\Downloads\\GitHub\\connectsphere\\backend\\src\\modules\\events\\assignment-router.ts"
+    },
+    {
+      "prefix": "/api/events",
+      "factory": "createClarificationRouter",
+      "line": 101,
+      "module": "C:\\Users\\arvin\\Downloads\\GitHub\\connectsphere\\backend\\src\\modules\\events\\clarification-router.ts"
+    },
+    {
+      "prefix": "/api/events",
+      "factory": "createChangeRequestRouter",
+      "line": 103,
+      "module": "C:\\Users\\arvin\\Downloads\\GitHub\\connectsphere\\backend\\src\\modules\\events\\change-request-router.ts"
+    },
+    {
+      "prefix": "/api/events",
+      "factory": "createStatusHistoryRouter",
+      "line": 104,
+      "module": "C:\\Users\\arvin\\Downloads\\GitHub\\connectsphere\\backend\\src\\modules\\events\\status-history-router.ts"
+    },
+    {
+      "prefix": "/api/events",
+      "factory": "createCancellationRouter",
+      "line": 105,
+      "module": "C:\\Users\\arvin\\Downloads\\GitHub\\connectsphere\\backend\\src\\modules\\events\\cancellation-router.ts"
+    },
+    {
+      "prefix": "/api/events",
+      "factory": "createConfirmationRouter",
+      "line": 107,
+      "module": "C:\\Users\\arvin\\Downloads\\GitHub\\connectsphere\\backend\\src\\modules\\events\\confirmation-router.ts"
+    },
+    {
+      "prefix": "/api",
+      "factory": "createSafetyRouter",
+      "line": 109,
+      "module": "C:\\Users\\arvin\\Downloads\\GitHub\\connectsphere\\backend\\src\\modules\\safety\\router.ts"
+    },
+    {
+      "prefix": "/api/events",
+      "factory": "createCompletionRouter",
+      "line": 111,
+      "module": "C:\\Users\\arvin\\Downloads\\GitHub\\connectsphere\\backend\\src\\modules\\events\\completion-router.ts"
+    },
+    {
+      "prefix": "/api/events",
+      "factory": "createVenueSuitabilityRouter",
+      "line": 112,
+      "module": "C:\\Users\\arvin\\Downloads\\GitHub\\connectsphere\\backend\\src\\modules\\venues\\suitability-router.ts"
+    },
+    {
+      "prefix": "/api/events",
+      "factory": "createVenueBookingSubmissionRouter",
+      "line": 114,
+      "module": "C:\\Users\\arvin\\Downloads\\GitHub\\connectsphere\\backend\\src\\modules\\venues\\venue-bookings-router.ts"
+    },
+    {
+      "prefix": "/api/venues",
+      "factory": "createVenueRouter",
+      "line": 115,
+      "module": "C:\\Users\\arvin\\Downloads\\GitHub\\connectsphere\\backend\\src\\modules\\venues\\venue-router.ts"
+    },
+    {
+      "prefix": "/api/venues",
+      "factory": "createVenueBlockRouter",
+      "line": 117,
+      "module": "C:\\Users\\arvin\\Downloads\\GitHub\\connectsphere\\backend\\src\\modules\\venues\\block-router.ts"
+    },
+    {
+      "prefix": "/api/venues",
+      "factory": "createVenueCatalogueRouter",
+      "line": 119,
+      "module": "C:\\Users\\arvin\\Downloads\\GitHub\\connectsphere\\backend\\src\\modules\\venues\\venue-catalogue-router.ts"
+    },
+    {
+      "prefix": "/api/events",
+      "factory": "createSubmittedRequestsRouter",
+      "line": 123,
+      "module": "C:\\Users\\arvin\\Downloads\\GitHub\\connectsphere\\backend\\src\\modules\\events\\submitted-requests-router.ts"
+    },
+    {
+      "prefix": "/api/events",
+      "factory": "createReviewRouter",
+      "line": 125,
+      "module": "C:\\Users\\arvin\\Downloads\\GitHub\\connectsphere\\backend\\src\\modules\\events\\review-router.ts"
+    }
+  ],
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/api/attendee/events",
+      "factory": "createAttendeeRegistrationRouter",
+      "mount_line": 90,
+      "source": "backend/src/modules/registrations/registration-router.ts",
+      "line": 9,
+      "roles": [
+        "ATTENDEE"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "roles": [
+          "ATTENDEE"
+        ],
+        "signInMessage": "Sign in as an attendee to view and register for events.",
+        "uuidParams": {}
+      },
+      "source_text": "router.get('/events', workflowRoute(dependencies, { ...options, uuidParams: {} }, async actor => ({\r\n    items: await listAttendeeEvents(dependencies, { actor }),\r\n  })))",
+      "request_contract": "No body",
+      "response_contract": "{items:AttendeeEventSummary[]}"
+    },
+    {
+      "method": "GET",
+      "path": "/api/attendee/events/:id",
+      "factory": "createAttendeeRegistrationRouter",
+      "mount_line": 90,
+      "source": "backend/src/modules/registrations/registration-router.ts",
+      "line": 15,
+      "roles": [
+        "ATTENDEE"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "roles": [
+          "ATTENDEE"
+        ],
+        "signInMessage": "Sign in as an attendee to view and register for events.",
+        "uuidParams": {
+          "id": "INVALID_EVENT_ID"
+        }
+      },
+      "source_text": "router.get('/events/:id', workflowRoute(dependencies, { ...options, uuidParams: { id: 'INVALID_EVENT_ID' } },\r\n    (actor, request) => getAttendeeEvent(dependencies, { actor, eventId: param(request, 'id') })))",
+      "request_contract": "No body",
+      "response_contract": "AttendeeEventDetail = {event,registration,availability}"
+    },
+    {
+      "method": "POST",
+      "path": "/api/attendee/events/:id/register",
+      "factory": "createAttendeeRegistrationRouter",
+      "mount_line": 90,
+      "source": "backend/src/modules/registrations/registration-router.ts",
+      "line": 17,
+      "roles": [
+        "ATTENDEE"
+      ],
+      "access": "role restricted",
+      "success_status": 201,
+      "options": {
+        "roles": [
+          "ATTENDEE"
+        ],
+        "signInMessage": "Sign in as an attendee to view and register for events.",
+        "uuidParams": {
+          "id": "INVALID_EVENT_ID"
+        },
+        "successStatus": 201
+      },
+      "source_text": "router.post('/events/:id/register', workflowRoute(dependencies, { ...options, uuidParams: { id: 'INVALID_EVENT_ID' }, successStatus: 201 },\r\n    (actor, request) => registerForEvent(dependencies, { actor, eventId: param(request, 'id'), input: request.body })))",
+      "request_contract": "{} or no body",
+      "response_contract": "RegistrationResult (AttendeeEventDetail + changed:true)"
+    },
+    {
+      "method": "GET",
+      "path": "/api/attendee/registrations",
+      "factory": "createAttendeeRegistrationRouter",
+      "mount_line": 90,
+      "source": "backend/src/modules/registrations/registration-router.ts",
+      "line": 12,
+      "roles": [
+        "ATTENDEE"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "roles": [
+          "ATTENDEE"
+        ],
+        "signInMessage": "Sign in as an attendee to view and register for events.",
+        "uuidParams": {}
+      },
+      "source_text": "router.get('/registrations', workflowRoute(dependencies, { ...options, uuidParams: {} }, async actor => ({\r\n    items: await listOwnRegistrations(dependencies, { actor }),\r\n  })))",
+      "request_contract": "No body",
+      "response_contract": "{items:OwnRegistrationSummary[]}; up to 100, nested event"
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/login",
+      "factory": "createAuthRouter",
+      "mount_line": 82,
+      "source": "backend/src/modules/auth/router.ts",
+      "line": 81,
+      "roles": [],
+      "access": "public",
+      "success_status": 200,
+      "source_text": "router.post('/login', async (request, response, next) => {\r\n    const accessToken = parseAccessToken(request.body);\r\n    if (!accessToken) {\r\n      response.status(400).json({ error: { code: 'INVALID_LOGIN_INPUT', message: 'A Supabase access token is required.' } });\r\n      return;\r\n    }\r\n    try {\r\n      const claims = await supabaseAuth.verifyAccessToken(accessToken);\r\n      const user = await findUserBySupabaseUid(database, claims.uid);\r\n      if (!user) {\r\n        response.status(403).json({ error: { code: 'ACCOUNT_NOT_PROVISIONED', message: 'This account is not authorised for ConnectSphere.' } });\r\n        return;\r\n      }\r\n      // The verified Supabase access token *is* the session artifact \u00e2\u20ac\u201d the cookie just carries\r\n      // it to the browser as HttpOnly so client-side JS never touches it again.\r\n      response.set('Set-Cookie', serializeSessionCookie(accessToken, cookieMaxAgeSeconds(claims.exp), isProduction));\r\n      response.status(200).json({ user });\r\n    } catch (error) {\r\n      // Malformed/expired/untrusted tokens are expected user-facing authentication failures;\r\n      // unexpected repository failures still follow the application's generic error handler.\r\n      if (isSupabaseTokenError(error)) {\r\n        response.status(401).json({ error: { code: 'AUTHENTICATION_REQUIRED', message: 'Sign in to continue.' } });\r\n        return;\r\n      }\r\n      next(error);\r\n    }\r\n  })",
+      "request_contract": "{accessToken:string}, exactly one key",
+      "response_contract": "{user:UserSummary}; sets session cookie"
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/logout",
+      "factory": "createAuthRouter",
+      "mount_line": 82,
+      "source": "backend/src/modules/auth/router.ts",
+      "line": 120,
+      "roles": [],
+      "access": "public",
+      "success_status": 204,
+      "source_text": "router.post('/logout', (_request, response) => {\r\n    // The session is a stateless verified token, so logout just stops sending the cookie back \u00e2\u20ac\u201d\r\n    // there is nothing to revoke server-side. The token remains valid, at Supabase's layer,\r\n    // until it naturally expires; that's why the JWT expiry configured in Supabase should stay\r\n    // short-to-moderate rather than relying on this endpoint for revocation.\r\n    response.set('Set-Cookie', serializeSessionCookie('', 0, isProduction));\r\n    response.status(204).end();\r\n  })",
+      "request_contract": "Body ignored",
+      "response_contract": "204; no body; clears cookie"
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/me",
+      "factory": "createAuthRouter",
+      "mount_line": 82,
+      "source": "backend/src/modules/auth/router.ts",
+      "line": 109,
+      "roles": [],
+      "access": "any mapped signed-in role",
+      "success_status": 200,
+      "source_text": "router.get('/me', async (request, response, next) => {\r\n    try {\r\n      const user = await authenticateRequest(database, supabaseAuth, request);\r\n      if (!user) {\r\n        response.status(401).json({ error: { code: 'AUTHENTICATION_REQUIRED', message: 'Sign in to continue.' } });\r\n        return;\r\n      }\r\n      response.status(200).json({ user });\r\n    } catch (error) { next(error); }\r\n  })",
+      "request_contract": "No body",
+      "response_contract": "{user:UserSummary}"
+    },
+    {
+      "method": "GET",
+      "path": "/api/equipment-requests",
+      "factory": "createEquipmentRouter",
+      "mount_line": 93,
+      "source": "backend/src/modules/equipment/equipment-router.ts",
+      "line": 20,
+      "roles": [
+        "EVENT_COORDINATOR",
+        "TECHNICAL_SUPPORT_STAFF"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to view equipment requests.",
+        "roles": [
+          "EVENT_COORDINATOR",
+          "TECHNICAL_SUPPORT_STAFF"
+        ],
+        "uuidParams": {}
+      },
+      "source_text": "router.get('/equipment-requests', workflowRoute(dependencies, {\r\n    signInMessage: 'Sign in to view equipment requests.',\r\n    roles: ['EVENT_COORDINATOR', 'TECHNICAL_SUPPORT_STAFF'], uuidParams: {},\r\n  }, async (actor, request) => {\r\n    const eventId = typeof request.query.eventId === 'string' ? request.query.eventId : undefined;\r\n    return { items: await listEquipmentRequests(dependencies.pool, { actor, ...(eventId ? { eventId } : {}) }) };\r\n  }))",
+      "request_contract": "Optional eventId UUID; other query keys are ignored",
+      "response_contract": "{items:EquipmentPlanLine[]}"
+    },
+    {
+      "method": "POST",
+      "path": "/api/equipment-requests/:id/cancel",
+      "factory": "createEquipmentRouter",
+      "mount_line": 93,
+      "source": "backend/src/modules/equipment/equipment-router.ts",
+      "line": 37,
+      "roles": [
+        "EVENT_COORDINATOR"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to cancel an equipment request.",
+        "roles": [
+          "EVENT_COORDINATOR"
+        ],
+        "uuidParams": {
+          "id": "INVALID_EQUIPMENT_REQUEST_ID"
+        }
+      },
+      "source_text": "router.post('/equipment-requests/:id/cancel', workflowRoute(dependencies, {\r\n    signInMessage: 'Sign in to cancel an equipment request.', roles: ['EVENT_COORDINATOR'],\r\n    uuidParams: { id: 'INVALID_EQUIPMENT_REQUEST_ID' },\r\n  }, async (actor, request) => ({ request: await cancelEquipmentLine(dependencies.pool,\r\n    { lineId: param(request, 'id'), actor, input: request.body }) })))",
+      "request_contract": "{revision:SHA256, reason:text}",
+      "response_contract": "{request:EquipmentPlanLine}"
+    },
+    {
+      "method": "POST",
+      "path": "/api/equipment-requests/:id/replace",
+      "factory": "createEquipmentRouter",
+      "mount_line": 93,
+      "source": "backend/src/modules/equipment/equipment-router.ts",
+      "line": 32,
+      "roles": [
+        "EVENT_COORDINATOR"
+      ],
+      "access": "role restricted",
+      "success_status": 201,
+      "options": {
+        "signInMessage": "Sign in to replace a reserved equipment line.",
+        "roles": [
+          "EVENT_COORDINATOR"
+        ],
+        "uuidParams": {
+          "id": "INVALID_EQUIPMENT_REQUEST_ID"
+        },
+        "successStatus": 201
+      },
+      "source_text": "router.post('/equipment-requests/:id/replace', workflowRoute(dependencies, {\r\n    signInMessage: 'Sign in to replace a reserved equipment line.', roles: ['EVENT_COORDINATOR'],\r\n    uuidParams: { id: 'INVALID_EQUIPMENT_REQUEST_ID' }, successStatus: 201,\r\n  }, async (actor, request) => ({ replacement: await replaceReservedEquipmentLine(dependencies.pool,\r\n    { lineId: param(request, 'id'), actor, input: request.body }) })))",
+      "request_contract": "{revision:SHA256, replacement:EquipmentLine}",
+      "response_contract": "{replacement:{cancelledRequestId,replacement:EquipmentPlanLine,revision}}"
+    },
+    {
+      "method": "POST",
+      "path": "/api/equipment-requests/:id/review",
+      "factory": "createEquipmentRouter",
+      "mount_line": 93,
+      "source": "backend/src/modules/equipment/equipment-router.ts",
+      "line": 27,
+      "roles": [
+        "TECHNICAL_SUPPORT_STAFF"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to review equipment requests.",
+        "roles": [
+          "TECHNICAL_SUPPORT_STAFF"
+        ],
+        "uuidParams": {
+          "id": "INVALID_EQUIPMENT_REQUEST_ID"
+        }
+      },
+      "source_text": "router.post('/equipment-requests/:id/review', workflowRoute(dependencies, {\r\n    signInMessage: 'Sign in to review equipment requests.', roles: ['TECHNICAL_SUPPORT_STAFF'],\r\n    uuidParams: { id: 'INVALID_EQUIPMENT_REQUEST_ID' },\r\n  }, async (actor, request) => ({ request: await reviewEquipmentRequest(dependencies.pool,\r\n    { lineId: param(request, 'id'), actor, input: request.body }) })))",
+      "request_contract": "{revision:SHA256, decision:RESERVED or REJECTED, reason?:text|null}; rejection reason required",
+      "response_contract": "{request:EquipmentPlanLine}"
+    },
+    {
+      "method": "GET",
+      "path": "/api/equipment-types",
+      "factory": "createEquipmentRouter",
+      "mount_line": 93,
+      "source": "backend/src/modules/equipment/equipment-router.ts",
+      "line": 12,
+      "roles": [
+        "EVENT_COORDINATOR",
+        "TECHNICAL_SUPPORT_STAFF"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to view equipment types.",
+        "roles": [
+          "EVENT_COORDINATOR",
+          "TECHNICAL_SUPPORT_STAFF"
+        ],
+        "uuidParams": {}
+      },
+      "source_text": "router.get('/equipment-types', workflowRoute(dependencies, {\r\n    signInMessage: 'Sign in to view equipment types.', roles: ['EVENT_COORDINATOR', 'TECHNICAL_SUPPORT_STAFF'], uuidParams: {},\r\n  }, async () => ({ items: await listEquipmentTypes(dependencies.pool) })))",
+      "request_contract": "No body",
+      "response_contract": "{items:{id,name,category}[]}"
+    },
+    {
+      "method": "GET",
+      "path": "/api/equipment/availability/events",
+      "factory": "createEquipmentAvailabilityRouter",
+      "mount_line": 87,
+      "source": "backend/src/modules/equipment/availability-router.ts",
+      "line": 13,
+      "roles": [
+        "TECHNICAL_SUPPORT_STAFF"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "roles": [
+          "TECHNICAL_SUPPORT_STAFF"
+        ],
+        "signInMessage": "Sign in as Technical Support Staff to check equipment availability.",
+        "uuidParams": {}
+      },
+      "source_text": "router.get('/events', workflowRoute(dependencies, { ...options, uuidParams: {} }, async actor => ({\r\n    items: await listEquipmentAvailabilityEvents(dependencies, actor),\r\n  })))",
+      "request_contract": "No body",
+      "response_contract": "{items:EquipmentEventSummary[]}"
+    },
+    {
+      "method": "GET",
+      "path": "/api/equipment/availability/events/:id",
+      "factory": "createEquipmentAvailabilityRouter",
+      "mount_line": 87,
+      "source": "backend/src/modules/equipment/availability-router.ts",
+      "line": 16,
+      "roles": [
+        "TECHNICAL_SUPPORT_STAFF"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "roles": [
+          "TECHNICAL_SUPPORT_STAFF"
+        ],
+        "signInMessage": "Sign in as Technical Support Staff to check equipment availability."
+      },
+      "source_text": "router.get('/events/:id', workflowRoute(dependencies, options, (actor, request) =>\r\n    getEquipmentAvailabilityContext(dependencies, { actor, eventId: param(request, 'id') })))",
+      "request_contract": "No body",
+      "response_contract": "EquipmentAvailabilityContext"
+    },
+    {
+      "method": "POST",
+      "path": "/api/equipment/availability/events/:id",
+      "factory": "createEquipmentAvailabilityRouter",
+      "mount_line": 87,
+      "source": "backend/src/modules/equipment/availability-router.ts",
+      "line": 18,
+      "roles": [
+        "TECHNICAL_SUPPORT_STAFF"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "roles": [
+          "TECHNICAL_SUPPORT_STAFF"
+        ],
+        "signInMessage": "Sign in as Technical Support Staff to check equipment availability."
+      },
+      "source_text": "router.post('/events/:id', workflowRoute(dependencies, options, async (actor, request) => ({\r\n    assessment: await checkEquipmentAvailability(dependencies, {\r\n      actor, eventId: param(request, 'id'), input: request.body,\r\n    }),\r\n  })))",
+      "request_contract": "EquipmentAvailabilityInput (saved or what-if)",
+      "response_contract": "{assessment:EquipmentAvailabilityAssessment}"
+    },
+    {
+      "method": "GET",
+      "path": "/api/equipment/reservations/events/:id",
+      "factory": "createEquipmentReservationRouter",
+      "mount_line": 88,
+      "source": "backend/src/modules/equipment/reservation-router.ts",
+      "line": 11,
+      "roles": [
+        "TECHNICAL_SUPPORT_STAFF"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "roles": [
+          "TECHNICAL_SUPPORT_STAFF"
+        ],
+        "signInMessage": "Sign in as Technical Support Staff to manage equipment reservations."
+      },
+      "source_text": "router.get('/events/:id', workflowRoute(dependencies, options, (actor, request) =>\r\n    getEquipmentReservationContext(dependencies, { actor, eventId: param(request, 'id') })))",
+      "request_contract": "No body",
+      "response_contract": "EquipmentReservationContext"
+    },
+    {
+      "method": "POST",
+      "path": "/api/equipment/reservations/events/:id/requests/:requestId/cancel",
+      "factory": "createEquipmentReservationRouter",
+      "mount_line": 88,
+      "source": "backend/src/modules/equipment/reservation-router.ts",
+      "line": 14,
+      "roles": [
+        "TECHNICAL_SUPPORT_STAFF"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "roles": [
+          "TECHNICAL_SUPPORT_STAFF"
+        ],
+        "signInMessage": "Sign in as Technical Support Staff to manage equipment reservations.",
+        "uuidParams": {
+          "id": "INVALID_EVENT_REQUEST_ID",
+          "requestId": "INVALID_EQUIPMENT_REQUEST_ID"
+        }
+      },
+      "source_text": "router.post(`/events/:id/requests/:requestId/${action}`, workflowRoute(dependencies, {\r\n      ...options, uuidParams: { id: 'INVALID_EVENT_REQUEST_ID', requestId: 'INVALID_EQUIPMENT_REQUEST_ID' },\r\n    }, (actor, request) => changeEquipmentReservation(dependencies, {\r\n      actor, eventId: param(request, 'id'), requestId: param(request, 'requestId'), action, input: request.body,\r\n    })))",
+      "request_contract": "{requirementsVersion:SHA256,reason:text}",
+      "response_contract": "EquipmentReservationResult = {changed,context}"
+    },
+    {
+      "method": "POST",
+      "path": "/api/equipment/reservations/events/:id/requests/:requestId/reserve",
+      "factory": "createEquipmentReservationRouter",
+      "mount_line": 88,
+      "source": "backend/src/modules/equipment/reservation-router.ts",
+      "line": 14,
+      "roles": [
+        "TECHNICAL_SUPPORT_STAFF"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "roles": [
+          "TECHNICAL_SUPPORT_STAFF"
+        ],
+        "signInMessage": "Sign in as Technical Support Staff to manage equipment reservations.",
+        "uuidParams": {
+          "id": "INVALID_EVENT_REQUEST_ID",
+          "requestId": "INVALID_EQUIPMENT_REQUEST_ID"
+        }
+      },
+      "source_text": "router.post(`/events/:id/requests/:requestId/${action}`, workflowRoute(dependencies, {\r\n      ...options, uuidParams: { id: 'INVALID_EVENT_REQUEST_ID', requestId: 'INVALID_EQUIPMENT_REQUEST_ID' },\r\n    }, (actor, request) => changeEquipmentReservation(dependencies, {\r\n      actor, eventId: param(request, 'id'), requestId: param(request, 'requestId'), action, input: request.body,\r\n    })))",
+      "request_contract": "{requirementsVersion:SHA256}",
+      "response_contract": "EquipmentReservationResult = {changed,context}"
+    },
+    {
+      "method": "GET",
+      "path": "/api/equipment/stock",
+      "factory": "createEquipmentStockRouter",
+      "mount_line": 92,
+      "source": "backend/src/modules/equipment/stock-router.ts",
+      "line": 12,
+      "roles": [
+        "TECHNICAL_SUPPORT_STAFF"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "roles": [
+          "TECHNICAL_SUPPORT_STAFF"
+        ],
+        "signInMessage": "Sign in as Technical Support Staff to manage equipment stock.",
+        "uuidParams": {}
+      },
+      "source_text": "router.get('/', workflowRoute(dependencies, { ...options, uuidParams: {} }, async actor => ({\r\n    items: await listEquipmentStock(dependencies, { actor }),\r\n  })))",
+      "request_contract": "No body",
+      "response_contract": "{items:EquipmentStockItem[]}"
+    },
+    {
+      "method": "GET",
+      "path": "/api/equipment/stock/:id",
+      "factory": "createEquipmentStockRouter",
+      "mount_line": 92,
+      "source": "backend/src/modules/equipment/stock-router.ts",
+      "line": 15,
+      "roles": [
+        "TECHNICAL_SUPPORT_STAFF"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "roles": [
+          "TECHNICAL_SUPPORT_STAFF"
+        ],
+        "signInMessage": "Sign in as Technical Support Staff to manage equipment stock.",
+        "uuidParams": {
+          "id": "INVALID_EQUIPMENT_TYPE_ID"
+        }
+      },
+      "source_text": "router.get('/:id', workflowRoute(dependencies, { ...options, uuidParams: { id: 'INVALID_EQUIPMENT_TYPE_ID' } },\r\n    (actor, request) => getEquipmentStock(dependencies, { actor, typeId: param(request, 'id') })))",
+      "request_contract": "No body",
+      "response_contract": "EquipmentStockDetail = {item,history,shortfalls}"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/equipment/stock/:id",
+      "factory": "createEquipmentStockRouter",
+      "mount_line": 92,
+      "source": "backend/src/modules/equipment/stock-router.ts",
+      "line": 17,
+      "roles": [
+        "TECHNICAL_SUPPORT_STAFF"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "roles": [
+          "TECHNICAL_SUPPORT_STAFF"
+        ],
+        "signInMessage": "Sign in as Technical Support Staff to manage equipment stock.",
+        "uuidParams": {
+          "id": "INVALID_EQUIPMENT_TYPE_ID"
+        }
+      },
+      "source_text": "router.patch('/:id', workflowRoute(dependencies, { ...options, uuidParams: { id: 'INVALID_EQUIPMENT_TYPE_ID' } },\r\n    (actor, request) => updateEquipmentStock(dependencies, { actor, typeId: param(request, 'id'), input: request.body })))",
+      "request_contract": "EquipmentStockUpdateInput; expectedRevision, reason and at least one quantity",
+      "response_contract": "EquipmentStockUpdateResult = {item,history,shortfalls,changed,notifiedEvents}"
+    },
+    {
+      "method": "GET",
+      "path": "/api/events",
+      "factory": "createSubmittedRequestsRouter",
+      "mount_line": 123,
+      "source": "backend/src/modules/events/submitted-requests-router.ts",
+      "line": 63,
+      "roles": [
+        "EVENT_ORGANISER",
+        "EVENT_COORDINATOR"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "source_text": "router.get('/', async (request, response, next) => {\r\n    response.set('Cache-Control', 'no-store');\r\n    try {\r\n      const actor = await dependencies.authenticate(request);\r\n      if (!actor) {\r\n        response.status(401).json({\r\n          error: { code: 'AUTHENTICATION_REQUIRED', message: 'Sign in to view submitted event requests.' },\r\n        });\r\n        return;\r\n      }\r\n      if (actor.role === 'EVENT_ORGANISER') {\r\n        const scope = request.query.scope;\r\n        if (scope !== undefined && scope !== 'drafts' && scope !== 'all') {\r\n          response.status(400).json({\r\n            error: { code: 'INVALID_EVENT_LIST_SCOPE', message: 'scope must be either drafts or all.' },\r\n          });\r\n          return;\r\n        }\r\n        const items = scope === 'all'\r\n          ? await listOwnedRequests(dependencies, actor)\r\n          : await listOwnedDrafts(dependencies, actor);\r\n        response.status(200).json({ items });\r\n        return;\r\n      }\r\n      if (actor.role !== 'EVENT_COORDINATOR') {\r\n        response.status(403).json({\r\n          error: { code: 'VIEW_FORBIDDEN', message: 'Only event coordinators can view the review queue.' },\r\n        });\r\n        return;\r\n      }\r\n\r\n      const scope = request.query.scope;\r\n      if (scope !== undefined && scope !== 'history') {\r\n        response.status(400).json({\r\n          error: { code: 'INVALID_EVENT_LIST_SCOPE', message: 'Coordinators may only request scope=history.' },\r\n        });\r\n        return;\r\n      }\r\n      const items = scope === 'history'\r\n        ? await listFollowUpRequests(dependencies, actor)\r\n        : await listReviewableRequests(dependencies, actor);\r\n      response.status(200).json({ items });\r\n    } catch (error) {\r\n      next(error);\r\n    }\r\n  })",
+      "request_contract": "scope: organiser omitted/drafts/all; coordinator omitted/history",
+      "response_contract": "{items: SubmittedRequestSummary[] or owned request summaries}"
+    },
+    {
+      "method": "POST",
+      "path": "/api/events",
+      "factory": "createSubmittedRequestsRouter",
+      "mount_line": 123,
+      "source": "backend/src/modules/events/submitted-requests-router.ts",
+      "line": 110,
+      "roles": [
+        "EVENT_ORGANISER"
+      ],
+      "access": "role restricted",
+      "success_status": 201,
+      "source_text": "router.post('/', async (request, response, next) => {\r\n    response.set('Cache-Control', 'no-store');\r\n    try {\r\n      const actor = await dependencies.authenticate(request);\r\n      if (!actor) {\r\n        response.status(401).json({\r\n          error: { code: 'AUTHENTICATION_REQUIRED', message: 'Sign in to create an event request.' },\r\n        });\r\n        return;\r\n      }\r\n      if (actor.role !== 'EVENT_ORGANISER') {\r\n        response.status(403).json({\r\n          error: { code: 'DRAFT_CREATE_FORBIDDEN', message: 'Only event organisers can create an event request.' },\r\n        });\r\n        return;\r\n      }\r\n\r\n      // The owner is always the verified actor; the body can only carry draft fields.\r\n      const created = await createDraft(dependencies, { actor, input: request.body });\r\n      response.status(201).json(created);\r\n    } catch (error) {\r\n      if (error instanceof DraftUpdateInputError) {\r\n        response.status(400).json({ error: { code: 'INVALID_DRAFT_INPUT', message: error.message } });\r\n        return;\r\n      }\r\n      if (error instanceof DraftCreateForbiddenError) {\r\n        response.status(403).json({ error: { code: error.code, message: error.message } });\r\n        return;\r\n      }\r\n      next(error);\r\n    }\r\n  })",
+      "request_contract": "Partial draft fields; server owns identity and status",
+      "response_contract": "DraftEventRecord"
+    },
+    {
+      "method": "GET",
+      "path": "/api/events/:id",
+      "factory": "createSubmittedRequestsRouter",
+      "mount_line": 123,
+      "source": "backend/src/modules/events/submitted-requests-router.ts",
+      "line": 143,
+      "roles": [
+        "EVENT_COORDINATOR",
+        "EVENT_ORGANISER"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "source_text": "router.get('/:id', async (request, response, next) => {\r\n    response.set('Cache-Control', 'no-store');\r\n    try {\r\n      const actor = await dependencies.authenticate(request);\r\n      if (!actor) {\r\n        response.status(401).json({\r\n          error: { code: 'AUTHENTICATION_REQUIRED', message: 'Sign in to view this event request.' },\r\n        });\r\n        return;\r\n      }\r\n      if (actor.role !== 'EVENT_COORDINATOR' && actor.role !== 'EVENT_ORGANISER') {\r\n        response.status(403).json({\r\n          error: { code: 'VIEW_FORBIDDEN', message: 'This account cannot view event request details.' },\r\n        });\r\n        return;\r\n      }\r\n\r\n      if (!uuid.test(request.params.id)) {\r\n        response.status(400).json({\r\n          error: { code: 'INVALID_EVENT_REQUEST_ID', message: 'The event request ID must be a UUID.' },\r\n        });\r\n        return;\r\n      }\r\n\r\n      const detail = await getEventRequestDetail(dependencies, actor, request.params.id);\r\n      response.status(200).json(detail);\r\n    } catch (error) {\r\n      if (error instanceof EventRequestNotFoundError) {\r\n        response.status(404).json(unavailableRequest);\r\n        return;\r\n      }\r\n      next(error);\r\n    }\r\n  })",
+      "request_contract": "No body",
+      "response_contract": "EventRequestDetail: fields, registration settings, revision, review, actions"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/events/:id",
+      "factory": "createSubmittedRequestsRouter",
+      "mount_line": 123,
+      "source": "backend/src/modules/events/submitted-requests-router.ts",
+      "line": 178,
+      "roles": [
+        "EVENT_ORGANISER",
+        "EVENT_COORDINATOR"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "source_text": "router.patch('/:id', async (request, response, next) => {\r\n    response.set('Cache-Control', 'no-store');\r\n    try {\r\n      const actor = await dependencies.authenticate(request);\r\n      if (!actor) {\r\n        response.status(401).json({\r\n          error: { code: 'AUTHENTICATION_REQUIRED', message: 'Sign in to edit an event request.' },\r\n        });\r\n        return;\r\n      }\r\n      // KAN-66: assigned coordinators may make ordinary edits to approved events.\r\n      if (actor.role !== 'EVENT_ORGANISER' && actor.role !== 'EVENT_COORDINATOR') {\r\n        response.status(403).json({\r\n          error: {\r\n            code: 'DRAFT_EDIT_FORBIDDEN',\r\n            message: 'Only event organisers and coordinators can edit an event request.',\r\n          },\r\n        });\r\n        return;\r\n      }\r\n\r\n      if (!uuid.test(request.params.id)) {\r\n        response.status(400).json({\r\n          error: { code: 'INVALID_EVENT_REQUEST_ID', message: 'The event request ID must be a UUID.' },\r\n        });\r\n        return;\r\n      }\r\n      const updated = await updateEventRequest(dependencies, {\r\n        eventRequestId: request.params.id,\r\n        actor,\r\n        input: request.body,\r\n      });\r\n      response.status(200).json(updated);\r\n    } catch (error) {\r\n      if (error instanceof DraftUpdateInputError) {\r\n        response.status(400).json({ error: { code: 'INVALID_DRAFT_UPDATE', message: error.message } });\r\n        return;\r\n      }\r\n      if (error instanceof SubmissionValidationError) {\r\n        response.status(400).json(submissionErrorBody(error));\r\n        return;\r\n      }\r\n      // An unrelated user must not learn whether this request exists or its current state.\r\n      if (error instanceof DraftRequestNotFoundError ||\r\n          (error instanceof DraftEligibilityError && error.code === 'DRAFT_EDIT_FORBIDDEN')) {\r\n        response.status(404).json(unavailableRequest);\r\n        return;\r\n      }\r\n      if (error instanceof DraftEligibilityError) {\r\n        const status = error.code === 'EDIT_ROLE_NOT_PERMITTED' ? 403 : 409;\r\n        response.status(status).json({\r\n          error: {\r\n            code: error.code,\r\n            message: error.message,\r\n            ...(error.fields.length > 0 ? { fields: error.fields } : {}),\r\n          },\r\n        });\r\n        return;\r\n      }\r\n      // Revision problems from KAN-66: 400 when missing or malformed, 409 when stale.\r\n      if (error instanceof WorkflowError) {\r\n        response.status(error.kind === 'CONFLICT' ? 409 : 400).json({\r\n          error: { code: error.code, message: error.message },\r\n        });\r\n        return;\r\n      }\r\n      next(error);\r\n    }\r\n  })",
+      "request_contract": "Partial editable fields + expectedRevision (required outside DRAFT)",
+      "response_contract": "DraftEventRecord including revision"
+    },
+    {
+      "method": "GET",
+      "path": "/api/events/:id/assignments",
+      "factory": "createAssignmentRouter",
+      "mount_line": 100,
+      "source": "backend/src/modules/events/assignment-router.ts",
+      "line": 56,
+      "roles": [
+        "EVENT_ORGANISER",
+        "EVENT_COORDINATOR",
+        "EVENT_COORDINATOR_LEAD"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to manage coordinator assignments.",
+        "roles": [
+          "EVENT_ORGANISER",
+          "EVENT_COORDINATOR",
+          "EVENT_COORDINATOR_LEAD"
+        ]
+      },
+      "source_text": "router.get('/:id/assignments', workflowRoute(\r\n    dependencies, { signInMessage, roles: ['EVENT_ORGANISER', 'EVENT_COORDINATOR', 'EVENT_COORDINATOR_LEAD'] },\r\n    async (actor, request) => ({\r\n      items: await listAssignments(dependencies, { eventRequestId: param(request, 'id'), actor }),\r\n    }),\r\n  ))",
+      "request_contract": "No body",
+      "response_contract": "{items:AssignmentRecord[]}"
+    },
+    {
+      "method": "POST",
+      "path": "/api/events/:id/cancel",
+      "factory": "createCancellationRouter",
+      "mount_line": 105,
+      "source": "backend/src/modules/events/cancellation-router.ts",
+      "line": 7,
+      "roles": [
+        "EVENT_ORGANISER",
+        "EVENT_COORDINATOR"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to cancel this event.",
+        "roles": [
+          "EVENT_ORGANISER",
+          "EVENT_COORDINATOR"
+        ],
+        "uuidParams": {
+          "id": "INVALID_EVENT_REQUEST_ID"
+        }
+      },
+      "source_text": "router.post('/:id/cancel', workflowRoute(dependencies, {\r\n    signInMessage: 'Sign in to cancel this event.',\r\n    roles: ['EVENT_ORGANISER', 'EVENT_COORDINATOR'],\r\n    uuidParams: { id: 'INVALID_EVENT_REQUEST_ID' },\r\n  }, async (actor, request) => ({ cancellation: await cancelEvent(dependencies.pool,\r\n    { eventRequestId: param(request, 'id'), actor, input: request.body }) })))",
+      "request_contract": "{reason:text, confirmAffectedArrangements:true}",
+      "response_contract": "{cancellation:{eventRequestId,status,cancelledBy,cancelledAt,reason,released:{venueBookings,equipmentRequests,registrations}}}"
+    },
+    {
+      "method": "GET",
+      "path": "/api/events/:id/cancellation",
+      "factory": "createCancellationRouter",
+      "mount_line": 105,
+      "source": "backend/src/modules/events/cancellation-router.ts",
+      "line": 13,
+      "roles": [
+        "EVENT_ORGANISER",
+        "EVENT_COORDINATOR"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to view this event outcome.",
+        "roles": [
+          "EVENT_ORGANISER",
+          "EVENT_COORDINATOR"
+        ],
+        "uuidParams": {
+          "id": "INVALID_EVENT_REQUEST_ID"
+        }
+      },
+      "source_text": "router.get('/:id/cancellation', workflowRoute(dependencies, {\r\n    signInMessage: 'Sign in to view this event outcome.', roles: ['EVENT_ORGANISER', 'EVENT_COORDINATOR'],\r\n    uuidParams: { id: 'INVALID_EVENT_REQUEST_ID' },\r\n  }, async (actor, request) => {\r\n    const found = await dependencies.pool.query(`SELECT c.event_request_id AS \"eventRequestId\",\r\n      c.cancelled_by AS \"cancelledBy\", c.cancelled_at AS \"cancelledAt\", c.reason,\r\n      c.affected_venue_bookings AS \"affectedVenueBookings\",\r\n      c.affected_equipment_requests AS \"affectedEquipmentRequests\",\r\n      c.affected_registrations AS \"affectedRegistrations\", e.organiser_id AS \"organiserId\",\r\n      e.coordinator_id AS \"coordinatorId\" FROM event_cancellations c\r\n      JOIN event_requests e ON e.id = c.event_request_id WHERE c.event_request_id = $1`, [param(request, 'id')]);\r\n    const row = found.rows[0] as (Record<string, unknown> & { organiserId: string; coordinatorId: string | null }) | undefined;\r\n    if (!row || !(actor.role === 'EVENT_ORGANISER' && row.organiserId === actor.id)\r\n        && !(actor.role === 'EVENT_COORDINATOR' && row.coordinatorId === actor.id)) {\r\n      return { cancellation: null };\r\n    }\r\n    const { organiserId: _organiserId, coordinatorId: _coordinatorId, ...cancellation } = row;\r\n    return { cancellation };\r\n  }))",
+      "request_contract": "No body",
+      "response_contract": "{cancellation:CancellationAudit|null}; null for absent/unrelated/no cancellation"
+    },
+    {
+      "method": "GET",
+      "path": "/api/events/:id/change-requests",
+      "factory": "createChangeRequestRouter",
+      "mount_line": 103,
+      "source": "backend/src/modules/events/change-request-router.ts",
+      "line": 14,
+      "roles": [
+        "EVENT_ORGANISER",
+        "EVENT_COORDINATOR"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to work with change requests.",
+        "roles": [
+          "EVENT_ORGANISER",
+          "EVENT_COORDINATOR"
+        ]
+      },
+      "source_text": "router.get('/:id/change-requests', workflowRoute(\r\n    dependencies, { signInMessage, roles: ['EVENT_ORGANISER', 'EVENT_COORDINATOR'] },\r\n    async (actor, request) => ({\r\n      items: await listChangeRequests(dependencies, { eventRequestId: param(request, 'id'), actor }),\r\n    }),\r\n  ))",
+      "request_contract": "No body",
+      "response_contract": "{items:ChangeRequestRecord[]}"
+    },
+    {
+      "method": "POST",
+      "path": "/api/events/:id/change-requests",
+      "factory": "createChangeRequestRouter",
+      "mount_line": 103,
+      "source": "backend/src/modules/events/change-request-router.ts",
+      "line": 21,
+      "roles": [
+        "EVENT_ORGANISER"
+      ],
+      "access": "role restricted",
+      "success_status": 201,
+      "options": {
+        "signInMessage": "Sign in to work with change requests.",
+        "roles": [
+          "EVENT_ORGANISER"
+        ],
+        "successStatus": 201
+      },
+      "source_text": "router.post('/:id/change-requests', workflowRoute(\r\n    dependencies, { signInMessage, roles: ['EVENT_ORGANISER'], successStatus: 201 },\r\n    (actor, request) => submitChangeRequest(dependencies, {\r\n      eventRequestId: param(request, 'id'), actor, input: request.body,\r\n    }),\r\n  ))",
+      "request_contract": "{changes:SignificantChanges, expectedRevision:positive integer}",
+      "response_contract": "ChangeRequestRecord"
+    },
+    {
+      "method": "POST",
+      "path": "/api/events/:id/change-requests/:changeRequestId/decision",
+      "factory": "createChangeRequestRouter",
+      "mount_line": 103,
+      "source": "backend/src/modules/events/change-request-router.ts",
+      "line": 28,
+      "roles": [
+        "EVENT_COORDINATOR"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to work with change requests.",
+        "roles": [
+          "EVENT_COORDINATOR"
+        ],
+        "uuidParams": {
+          "id": "INVALID_EVENT_REQUEST_ID",
+          "changeRequestId": "INVALID_CHANGE_REQUEST_ID"
+        }
+      },
+      "source_text": "router.post('/:id/change-requests/:changeRequestId/decision', workflowRoute(\r\n    dependencies, { signInMessage, roles: ['EVENT_COORDINATOR'], uuidParams: nestedIds },\r\n    (actor, request) => decideChangeRequest(dependencies, {\r\n      eventRequestId: param(request, 'id'), changeRequestId: param(request, 'changeRequestId'),\r\n      actor, input: request.body,\r\n    }),\r\n  ))",
+      "request_contract": "{decision:APPROVED or REJECTED, expectedRevision:positive integer, reason?:text|null}; rejection reason required",
+      "response_contract": "ChangeRequestRecord"
+    },
+    {
+      "method": "POST",
+      "path": "/api/events/:id/change-requests/:changeRequestId/withdraw",
+      "factory": "createChangeRequestRouter",
+      "mount_line": 103,
+      "source": "backend/src/modules/events/change-request-router.ts",
+      "line": 36,
+      "roles": [
+        "EVENT_ORGANISER"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to work with change requests.",
+        "roles": [
+          "EVENT_ORGANISER"
+        ],
+        "uuidParams": {
+          "id": "INVALID_EVENT_REQUEST_ID",
+          "changeRequestId": "INVALID_CHANGE_REQUEST_ID"
+        }
+      },
+      "source_text": "router.post('/:id/change-requests/:changeRequestId/withdraw', workflowRoute(\r\n    dependencies, { signInMessage, roles: ['EVENT_ORGANISER'], uuidParams: nestedIds },\r\n    (actor, request) => withdrawChangeRequest(dependencies, {\r\n      eventRequestId: param(request, 'id'), changeRequestId: param(request, 'changeRequestId'),\r\n      actor, input: request.body,\r\n    }),\r\n  ))",
+      "request_contract": "{} or no body",
+      "response_contract": "ChangeRequestRecord"
+    },
+    {
+      "method": "GET",
+      "path": "/api/events/:id/clarifications",
+      "factory": "createClarificationRouter",
+      "mount_line": 101,
+      "source": "backend/src/modules/events/clarification-router.ts",
+      "line": 22,
+      "roles": [
+        "EVENT_ORGANISER",
+        "EVENT_COORDINATOR"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to work with clarification requests.",
+        "roles": [
+          "EVENT_ORGANISER",
+          "EVENT_COORDINATOR"
+        ]
+      },
+      "source_text": "router.get('/:id/clarifications', workflowRoute(\r\n    dependencies, { signInMessage, roles: ['EVENT_ORGANISER', 'EVENT_COORDINATOR'] },\r\n    async (actor, request) => ({\r\n      items: await listClarifications(dependencies, { eventRequestId: param(request, 'id'), actor }),\r\n    }),\r\n  ))",
+      "request_contract": "No body",
+      "response_contract": "{items:ClarificationRecord[]}"
+    },
+    {
+      "method": "POST",
+      "path": "/api/events/:id/clarifications",
+      "factory": "createClarificationRouter",
+      "mount_line": 101,
+      "source": "backend/src/modules/events/clarification-router.ts",
+      "line": 29,
+      "roles": [
+        "EVENT_COORDINATOR"
+      ],
+      "access": "role restricted",
+      "success_status": 201,
+      "options": {
+        "signInMessage": "Sign in to work with clarification requests.",
+        "roles": [
+          "EVENT_COORDINATOR"
+        ],
+        "successStatus": 201
+      },
+      "source_text": "router.post('/:id/clarifications', workflowRoute(\r\n    dependencies, { signInMessage, roles: ['EVENT_COORDINATOR'], successStatus: 201 },\r\n    (actor, request) => requestClarification(dependencies, {\r\n      eventRequestId: param(request, 'id'), actor, input: request.body,\r\n    }),\r\n  ))",
+      "request_contract": "{message:text, expectedRevision?:positive integer}",
+      "response_contract": "{clarificationId,eventRequestId,status:\"CLARIFICATION_REQUESTED\"}"
+    },
+    {
+      "method": "POST",
+      "path": "/api/events/:id/clarifications/:clarificationId/response",
+      "factory": "createClarificationRouter",
+      "mount_line": 101,
+      "source": "backend/src/modules/events/clarification-router.ts",
+      "line": 36,
+      "roles": [
+        "EVENT_ORGANISER"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to work with clarification requests.",
+        "roles": [
+          "EVENT_ORGANISER"
+        ],
+        "uuidParams": {
+          "id": "INVALID_EVENT_REQUEST_ID",
+          "clarificationId": "INVALID_CLARIFICATION_ID"
+        }
+      },
+      "source_text": "router.post('/:id/clarifications/:clarificationId/response', workflowRoute(\r\n    dependencies,\r\n    {\r\n      signInMessage, roles: ['EVENT_ORGANISER'],\r\n      uuidParams: { id: 'INVALID_EVENT_REQUEST_ID', clarificationId: 'INVALID_CLARIFICATION_ID' },\r\n    },\r\n    (actor, request) => respondToClarification(dependencies, {\r\n      eventRequestId: param(request, 'id'),\r\n      clarificationId: param(request, 'clarificationId'),\r\n      actor, input: request.body,\r\n    }),\r\n  ))",
+      "request_contract": "{response:text}",
+      "response_contract": "{clarificationId,eventRequestId,status:SUBMITTED or CLARIFICATION_REQUESTED}"
+    },
+    {
+      "method": "POST",
+      "path": "/api/events/:id/complete",
+      "factory": "createCompletionRouter",
+      "mount_line": 111,
+      "source": "backend/src/modules/events/completion-router.ts",
+      "line": 8,
+      "roles": [
+        "EVENT_COORDINATOR"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to mark this event completed.",
+        "roles": [
+          "EVENT_COORDINATOR"
+        ],
+        "uuidParams": {
+          "id": "INVALID_EVENT_REQUEST_ID"
+        }
+      },
+      "source_text": "router.post('/:id/complete', workflowRoute(dependencies, {\r\n    signInMessage: 'Sign in to mark this event completed.', roles: ['EVENT_COORDINATOR'],\r\n    uuidParams: { id: 'INVALID_EVENT_REQUEST_ID' },\r\n  }, async (actor, request) => ({ completion: await completeEvent(dependencies.pool,\r\n    { eventRequestId: param(request, 'id'), actor }) })))",
+      "request_contract": "Body ignored",
+      "response_contract": "{completion:EventCompletion}"
+    },
+    {
+      "method": "GET",
+      "path": "/api/events/:id/completion",
+      "factory": "createCompletionRouter",
+      "mount_line": 111,
+      "source": "backend/src/modules/events/completion-router.ts",
+      "line": 13,
+      "roles": [
+        "EVENT_ORGANISER",
+        "EVENT_COORDINATOR"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to view this event outcome.",
+        "roles": [
+          "EVENT_ORGANISER",
+          "EVENT_COORDINATOR"
+        ],
+        "uuidParams": {
+          "id": "INVALID_EVENT_REQUEST_ID"
+        }
+      },
+      "source_text": "router.get('/:id/completion', workflowRoute(dependencies, {\r\n    signInMessage: 'Sign in to view this event outcome.', roles: ['EVENT_ORGANISER', 'EVENT_COORDINATOR'],\r\n    uuidParams: { id: 'INVALID_EVENT_REQUEST_ID' },\r\n  }, async (actor, request) => ({ completion: await readEventCompletion(dependencies.pool,\r\n    { eventRequestId: param(request, 'id'), actor }) })))",
+      "request_contract": "No body",
+      "response_contract": "{completion:EventCompletion|null}; null for absent/unrelated/not-completed"
+    },
+    {
+      "method": "POST",
+      "path": "/api/events/:id/confirm",
+      "factory": "createConfirmationRouter",
+      "mount_line": 107,
+      "source": "backend/src/modules/events/confirmation-router.ts",
+      "line": 12,
+      "roles": [
+        "EVENT_COORDINATOR"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to confirm this event.",
+        "roles": [
+          "EVENT_COORDINATOR"
+        ],
+        "uuidParams": {
+          "id": "INVALID_EVENT_REQUEST_ID"
+        }
+      },
+      "source_text": "router.post('/:id/confirm', workflowRoute(dependencies, {\r\n    signInMessage: 'Sign in to confirm this event.', roles: ['EVENT_COORDINATOR'],\r\n    uuidParams: { id: 'INVALID_EVENT_REQUEST_ID' },\r\n  }, async (actor, request) => ({ confirmation: await confirmEvent(dependencies.pool,\r\n    { eventRequestId: param(request, 'id'), actor, input: request.body }) })))",
+      "request_contract": "{} or no body",
+      "response_contract": "{confirmation:{eventRequestId,status:\"CONFIRMED\",changed,confirmation:ConfirmationRecord|null}}"
+    },
+    {
+      "method": "GET",
+      "path": "/api/events/:id/confirmation",
+      "factory": "createConfirmationRouter",
+      "mount_line": 107,
+      "source": "backend/src/modules/events/confirmation-router.ts",
+      "line": 8,
+      "roles": [
+        "EVENT_ORGANISER",
+        "EVENT_COORDINATOR"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to view event confirmation.",
+        "roles": [
+          "EVENT_ORGANISER",
+          "EVENT_COORDINATOR"
+        ],
+        "uuidParams": {
+          "id": "INVALID_EVENT_REQUEST_ID"
+        }
+      },
+      "source_text": "router.get('/:id/confirmation', workflowRoute(dependencies, {\r\n    signInMessage: 'Sign in to view event confirmation.', roles: ['EVENT_ORGANISER', 'EVENT_COORDINATOR'],\r\n    uuidParams: { id: 'INVALID_EVENT_REQUEST_ID' },\r\n  }, async (actor, request) => getEventConfirmation(dependencies.pool, { eventRequestId: param(request, 'id'), actor })))",
+      "request_contract": "No body",
+      "response_contract": "ConfirmationPanel"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/events/:id/coordinator",
+      "factory": "createAssignmentRouter",
+      "mount_line": 100,
+      "source": "backend/src/modules/events/assignment-router.ts",
+      "line": 42,
+      "roles": [
+        "EVENT_COORDINATOR_LEAD"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to manage coordinator assignments.",
+        "roles": [
+          "EVENT_COORDINATOR_LEAD"
+        ]
+      },
+      "source_text": "router.put('/:id/coordinator', workflowRoute(\r\n    dependencies, { signInMessage, roles: leadOnly },\r\n    (actor, request) => assignCoordinator(dependencies, {\r\n      eventRequestId: param(request, 'id'), actor, input: request.body,\r\n    }),\r\n  ))",
+      "request_contract": "{coordinatorId:UUID, note?:text|null}",
+      "response_contract": "AssignmentResult"
+    },
+    {
+      "method": "POST",
+      "path": "/api/events/:id/coordinator/reassign",
+      "factory": "createAssignmentRouter",
+      "mount_line": 100,
+      "source": "backend/src/modules/events/assignment-router.ts",
+      "line": 49,
+      "roles": [
+        "EVENT_COORDINATOR_LEAD"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to manage coordinator assignments.",
+        "roles": [
+          "EVENT_COORDINATOR_LEAD"
+        ]
+      },
+      "source_text": "router.post('/:id/coordinator/reassign', workflowRoute(\r\n    dependencies, { signInMessage, roles: leadOnly },\r\n    (actor, request) => reassignCoordinator(dependencies, {\r\n      eventRequestId: param(request, 'id'), actor, input: request.body,\r\n    }),\r\n  ))",
+      "request_contract": "{coordinatorId:UUID, reason:text, expectedAssignmentVersion:UUID}",
+      "response_contract": "ReassignmentResult (AssignmentResult + changed)"
+    },
+    {
+      "method": "GET",
+      "path": "/api/events/:id/equipment-requests",
+      "factory": "createEquipmentRouter",
+      "mount_line": 93,
+      "source": "backend/src/modules/equipment/equipment-router.ts",
+      "line": 7,
+      "roles": [
+        "EVENT_COORDINATOR",
+        "TECHNICAL_SUPPORT_STAFF"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to view event equipment requests.",
+        "roles": [
+          "EVENT_COORDINATOR",
+          "TECHNICAL_SUPPORT_STAFF"
+        ],
+        "uuidParams": {
+          "id": "INVALID_EVENT_REQUEST_ID"
+        }
+      },
+      "source_text": "router.get('/events/:id/equipment-requests', workflowRoute(dependencies, {\r\n    signInMessage: 'Sign in to view event equipment requests.', roles: ['EVENT_COORDINATOR', 'TECHNICAL_SUPPORT_STAFF'],\r\n    uuidParams: { id: 'INVALID_EVENT_REQUEST_ID' },\r\n  }, async (actor, request) => ({ plan: await getEventEquipmentPlan(dependencies.pool,\r\n    { eventId: param(request, 'id'), actor }) })))",
+      "request_contract": "No body",
+      "response_contract": "{plan:EquipmentPlan}"
+    },
+    {
+      "method": "POST",
+      "path": "/api/events/:id/equipment-requests",
+      "factory": "createEquipmentRouter",
+      "mount_line": 93,
+      "source": "backend/src/modules/equipment/equipment-router.ts",
+      "line": 15,
+      "roles": [
+        "EVENT_COORDINATOR"
+      ],
+      "access": "role restricted",
+      "success_status": 201,
+      "options": {
+        "signInMessage": "Sign in to request equipment.",
+        "roles": [
+          "EVENT_COORDINATOR"
+        ],
+        "uuidParams": {
+          "id": "INVALID_EVENT_REQUEST_ID"
+        },
+        "successStatus": 201
+      },
+      "source_text": "router.post('/events/:id/equipment-requests', workflowRoute(dependencies, {\r\n    signInMessage: 'Sign in to request equipment.', roles: ['EVENT_COORDINATOR'],\r\n    uuidParams: { id: 'INVALID_EVENT_REQUEST_ID' }, successStatus: 201,\r\n  }, async (actor, request) => ({ request: await saveEquipmentRequest(dependencies.pool,\r\n    { eventId: param(request, 'id'), actor, input: request.body }) })))",
+      "request_contract": "{revision:SHA256, lines:EquipmentLine[], notRequired?:boolean}; explicit notRequired:true needs []",
+      "response_contract": "{request:{eventRequestId,status:NOT_REQUIRED or REQUESTED,lines:EquipmentPlanLine[],revision}}"
+    },
+    {
+      "method": "GET",
+      "path": "/api/events/:id/history",
+      "factory": "createStatusHistoryRouter",
+      "mount_line": 104,
+      "source": "backend/src/modules/events/status-history-router.ts",
+      "line": 8,
+      "roles": [
+        "EVENT_ORGANISER",
+        "EVENT_COORDINATOR"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to view this event.",
+        "roles": [
+          "EVENT_ORGANISER",
+          "EVENT_COORDINATOR"
+        ]
+      },
+      "source_text": "router.get('/:id/history', workflowRoute(\r\n    dependencies, {\r\n      signInMessage: 'Sign in to view this event.',\r\n      roles: ['EVENT_ORGANISER', 'EVENT_COORDINATOR'],\r\n    },\r\n    async (actor, request) => ({\r\n      items: await listStatusHistory(dependencies, { eventRequestId: param(request, 'id'), actor }),\r\n    }),\r\n  ))",
+      "request_contract": "No body",
+      "response_contract": "{items:StatusHistoryEntry[]}"
+    },
+    {
+      "method": "POST",
+      "path": "/api/events/:id/preparation/start",
+      "factory": "createSafetyRouter",
+      "mount_line": 109,
+      "source": "backend/src/modules/safety/router.ts",
+      "line": 20,
+      "roles": [
+        "EVENT_COORDINATOR"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to start event preparation.",
+        "roles": [
+          "EVENT_COORDINATOR"
+        ],
+        "uuidParams": {
+          "id": "INVALID_EVENT_REQUEST_ID"
+        }
+      },
+      "source_text": "router.post('/events/:id/preparation/start', workflowRoute(dependencies, {\r\n    signInMessage: 'Sign in to start event preparation.', roles: ['EVENT_COORDINATOR'], uuidParams: eventId,\r\n  }, (actor, request) => startPreparation(pool, { eventRequestId: param(request, 'id'), actor, input: request.body })))",
+      "request_contract": "{} or no body",
+      "response_contract": "{eventRequestId,changed}"
+    },
+    {
+      "method": "GET",
+      "path": "/api/events/:id/registrations",
+      "factory": "createRegistrationRouter",
+      "mount_line": 85,
+      "source": "backend/src/modules/registrations/router.ts",
+      "line": 13,
+      "roles": [
+        "EVENT_ORGANISER",
+        "EVENT_COORDINATOR"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to view registrations.",
+        "roles": [
+          "EVENT_ORGANISER",
+          "EVENT_COORDINATOR"
+        ]
+      },
+      "source_text": "router.get('/events/:id/registrations', workflowRoute(deps, {\r\n    signInMessage: 'Sign in to view registrations.', roles: ['EVENT_ORGANISER', 'EVENT_COORDINATOR'],\r\n  }, (actor, req) => getRegistrationRoster(deps.pool, actor, param(req, 'id'))))",
+      "request_contract": "No body",
+      "response_contract": "{eventId,eventName,activeCount,items:RegistrationRosterItem[]}"
+    },
+    {
+      "method": "POST",
+      "path": "/api/events/:id/reviews",
+      "factory": "createReviewRouter",
+      "mount_line": 125,
+      "source": "backend/src/modules/events/review-router.ts",
+      "line": 30,
+      "roles": [
+        "EVENT_COORDINATOR"
+      ],
+      "access": "role restricted",
+      "success_status": 201,
+      "source_text": "router.post('/:id/reviews', async (request, response, next) => {\r\n    response.set('Cache-Control', 'no-store');\r\n    try {\r\n      const reviewer = await dependencies.authenticate(request);\r\n      if (!reviewer) {\r\n        response.status(401).json({\r\n          error: { code: 'AUTHENTICATION_REQUIRED', message: 'Sign in to review an event request.' },\r\n        });\r\n        return;\r\n      }\r\n      if (reviewer.role !== 'EVENT_COORDINATOR') {\r\n        response.status(403).json({\r\n          error: { code: 'REVIEW_FORBIDDEN', message: 'Only event coordinators can review event requests.' },\r\n        });\r\n        return;\r\n      }\r\n\r\n      if (!uuid.test(request.params.id)) {\r\n        response.status(400).json({\r\n          error: { code: 'INVALID_EVENT_REQUEST_ID', message: 'The event request ID must be a UUID.' },\r\n        });\r\n        return;\r\n      }\r\n      const input = parseReviewInput(request.body);\r\n      const saved = await recordInitialReview(dependencies, {\r\n        eventRequestId: request.params.id,\r\n        reviewer,\r\n        input,\r\n      });\r\n      response.status(201).json(saved);\r\n    } catch (error) {\r\n      if (error instanceof ReviewInputError) {\r\n        response.status(400).json({\r\n          error: {\r\n            code: 'INVALID_REVIEW_INPUT',\r\n            message: error.message,\r\n            ...(error.field ? { field: error.field } : {}),\r\n          },\r\n        });\r\n        return;\r\n      }\r\n      // An unrelated coordinator must not learn whether this request exists or its current state.\r\n      if (error instanceof ReviewRequestNotFoundError ||\r\n          (error instanceof ReviewEligibilityError && error.code === 'REVIEW_FORBIDDEN')) {\r\n        response.status(404).json(unavailableRequest);\r\n        return;\r\n      }\r\n      if (error instanceof ReviewEligibilityError ||\r\n          (error instanceof WorkflowError && error.code === 'EVENT_REVISION_CONFLICT')) {\r\n        response.status(409).json({ error: { code: error.code, message: error.message } });\r\n        return;\r\n      }\r\n      next(error);\r\n    }\r\n  })",
+      "request_contract": "{decision:APPROVED or REJECTED, reason?:text|null, expectedRevision?:positive integer}; rejection reason required",
+      "response_contract": "SavedReview"
+    },
+    {
+      "method": "GET",
+      "path": "/api/events/:id/safety",
+      "factory": "createSafetyRouter",
+      "mount_line": 109,
+      "source": "backend/src/modules/safety/router.ts",
+      "line": 14,
+      "roles": [
+        "EVENT_ORGANISER",
+        "EVENT_COORDINATOR"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to view the safety review.",
+        "roles": [
+          "EVENT_ORGANISER",
+          "EVENT_COORDINATOR"
+        ],
+        "uuidParams": {
+          "id": "INVALID_EVENT_REQUEST_ID"
+        }
+      },
+      "source_text": "router.get('/events/:id/safety', workflowRoute(dependencies, {\r\n    signInMessage: 'Sign in to view the safety review.', roles: ['EVENT_ORGANISER', 'EVENT_COORDINATOR'], uuidParams: eventId,\r\n  }, (actor, request) => getEventSafety(pool, { eventRequestId: param(request, 'id'), actor })))",
+      "request_contract": "No body",
+      "response_contract": "EventSafetyPanel"
+    },
+    {
+      "method": "POST",
+      "path": "/api/events/:id/safety-reviews",
+      "factory": "createSafetyRouter",
+      "mount_line": 109,
+      "source": "backend/src/modules/safety/router.ts",
+      "line": 17,
+      "roles": [
+        "EVENT_COORDINATOR"
+      ],
+      "access": "role restricted",
+      "success_status": 201,
+      "options": {
+        "signInMessage": "Sign in to submit a safety review.",
+        "roles": [
+          "EVENT_COORDINATOR"
+        ],
+        "uuidParams": {
+          "id": "INVALID_EVENT_REQUEST_ID"
+        },
+        "successStatus": 201
+      },
+      "source_text": "router.post('/events/:id/safety-reviews', workflowRoute(dependencies, {\r\n    signInMessage: 'Sign in to submit a safety review.', roles: ['EVENT_COORDINATOR'], uuidParams: eventId, successStatus: 201,\r\n  }, (actor, request) => submitSafetyReview(pool, { eventRequestId: param(request, 'id'), actor, input: request.body })))",
+      "request_contract": "{emergencyAccess?:text|null,equipmentPlacement?:text|null,crowdMovement?:text|null}",
+      "response_contract": "{eventRequestId,review:SafetyRound}"
+    },
+    {
+      "method": "POST",
+      "path": "/api/events/:id/start-review",
+      "factory": "createClarificationRouter",
+      "mount_line": 101,
+      "source": "backend/src/modules/events/clarification-router.ts",
+      "line": 15,
+      "roles": [
+        "EVENT_COORDINATOR"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to work with clarification requests.",
+        "roles": [
+          "EVENT_COORDINATOR"
+        ]
+      },
+      "source_text": "router.post('/:id/start-review', workflowRoute(\r\n    dependencies, { signInMessage, roles: ['EVENT_COORDINATOR'] },\r\n    (actor, request) => startReview(dependencies, {\r\n      eventRequestId: param(request, 'id'), actor, input: request.body,\r\n    }),\r\n  ))",
+      "request_contract": "{expectedRevision?:positive integer} or no body",
+      "response_contract": "{eventRequestId,status:\"UNDER_REVIEW\"}"
+    },
+    {
+      "method": "POST",
+      "path": "/api/events/:id/submit",
+      "factory": "createSubmittedRequestsRouter",
+      "mount_line": 123,
+      "source": "backend/src/modules/events/submitted-requests-router.ts",
+      "line": 248,
+      "roles": [
+        "EVENT_ORGANISER"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "source_text": "router.post('/:id/submit', async (request, response, next) => {\r\n    response.set('Cache-Control', 'no-store');\r\n    try {\r\n      const actor = await dependencies.authenticate(request);\r\n      if (!actor) {\r\n        response.status(401).json({\r\n          error: { code: 'AUTHENTICATION_REQUIRED', message: 'Sign in to submit an event request.' },\r\n        });\r\n        return;\r\n      }\r\n      if (actor.role !== 'EVENT_ORGANISER') {\r\n        response.status(403).json({\r\n          error: { code: 'SUBMIT_FORBIDDEN', message: 'Only event organisers can submit a draft event request.' },\r\n        });\r\n        return;\r\n      }\r\n\r\n      if (!uuid.test(request.params.id)) {\r\n        response.status(400).json({\r\n          error: { code: 'INVALID_EVENT_REQUEST_ID', message: 'The event request ID must be a UUID.' },\r\n        });\r\n        return;\r\n      }\r\n      const submitted = await submitEventRequest(dependencies, {\r\n        eventRequestId: request.params.id,\r\n        actor,\r\n      });\r\n      response.status(200).json(submitted);\r\n    } catch (error) {\r\n      if (error instanceof SubmissionValidationError) {\r\n        response.status(400).json(submissionErrorBody(error));\r\n        return;\r\n      }\r\n      // An unrelated organiser must not learn whether this request exists or its current state.\r\n      if (error instanceof SubmitRequestNotFoundError ||\r\n          (error instanceof SubmitEligibilityError && error.code === 'SUBMIT_FORBIDDEN')) {\r\n        response.status(404).json(unavailableRequest);\r\n        return;\r\n      }\r\n      if (error instanceof SubmitEligibilityError || error instanceof DraftAssignmentConflictError) {\r\n        response.status(409).json({ error: { code: error.code, message: error.message } });\r\n        return;\r\n      }\r\n      next(error);\r\n    }\r\n  })",
+      "request_contract": "Body ignored; submit saved draft",
+      "response_contract": "EventRecord; status SUBMITTED, coordinatorId null"
+    },
+    {
+      "method": "POST",
+      "path": "/api/events/:id/venue-bookings",
+      "factory": "createVenueBookingSubmissionRouter",
+      "mount_line": 114,
+      "source": "backend/src/modules/venues/venue-bookings-router.ts",
+      "line": 65,
+      "roles": [
+        "EVENT_COORDINATOR"
+      ],
+      "access": "role restricted",
+      "success_status": 201,
+      "options": {
+        "signInMessage": "Sign in to submit a venue booking request.",
+        "roles": [
+          "EVENT_COORDINATOR"
+        ],
+        "uuidParams": {
+          "id": "INVALID_EVENT_REQUEST_ID"
+        },
+        "successStatus": 201
+      },
+      "source_text": "router.post('/:id/venue-bookings', workflowRoute(dependencies, {\r\n    signInMessage: 'Sign in to submit a venue booking request.',\r\n    roles: ['EVENT_COORDINATOR'], uuidParams: { id: 'INVALID_EVENT_REQUEST_ID' }, successStatus: 201,\r\n  }, async (actor, request) => ({\r\n    booking: await createVenueBooking(dependencies,\r\n      { actor, eventRequestId: param(request, 'id'), input: request.body }),\r\n  })))",
+      "request_contract": "{venueId,startsAt,endsAt,layout?:text|null,notes?:text|null,replacesBookingId?:UUID|null}",
+      "response_contract": "{booking:VenueBooking}"
+    },
+    {
+      "method": "GET",
+      "path": "/api/events/:id/venue-suitability",
+      "factory": "createVenueSuitabilityRouter",
+      "mount_line": 112,
+      "source": "backend/src/modules/venues/suitability-router.ts",
+      "line": 14,
+      "roles": [
+        "EVENT_COORDINATOR"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to check venue suitability.",
+        "roles": [
+          "EVENT_COORDINATOR"
+        ],
+        "uuidParams": {
+          "id": "INVALID_EVENT_REQUEST_ID"
+        }
+      },
+      "source_text": "router.get('/:id/venue-suitability', workflowRoute(dependencies, options, (actor, request) => {\r\n    const bookingId = parseSuitabilityBookingId(request.query.bookingId);\r\n    return getVenueSuitabilityContext(dependencies, { actor, eventId: param(request, 'id'),\r\n      ...(bookingId ? { bookingId } : {}) });\r\n  }))",
+      "request_contract": "Optional bookingId UUID",
+      "response_contract": "SuitabilityContext"
+    },
+    {
+      "method": "POST",
+      "path": "/api/events/:id/venue-suitability",
+      "factory": "createVenueSuitabilityRouter",
+      "mount_line": 112,
+      "source": "backend/src/modules/venues/suitability-router.ts",
+      "line": 19,
+      "roles": [
+        "EVENT_COORDINATOR"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to check venue suitability.",
+        "roles": [
+          "EVENT_COORDINATOR"
+        ],
+        "uuidParams": {
+          "id": "INVALID_EVENT_REQUEST_ID"
+        }
+      },
+      "source_text": "router.post('/:id/venue-suitability', workflowRoute(dependencies, options, async (actor, request) => ({\r\n    assessment: await checkVenueSuitability(dependencies, { actor, eventId: param(request, 'id'), input: request.body }),\r\n  })))",
+      "request_contract": "VenueSuitabilityInput; all requirement fields explicit",
+      "response_contract": "{assessment:SuitabilityAssessment}; advisory only"
+    },
+    {
+      "method": "GET",
+      "path": "/api/events/coordinators",
+      "factory": "createAssignmentRouter",
+      "mount_line": 100,
+      "source": "backend/src/modules/events/assignment-router.ts",
+      "line": 25,
+      "roles": [
+        "EVENT_COORDINATOR_LEAD"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to manage coordinator assignments.",
+        "roles": [
+          "EVENT_COORDINATOR_LEAD"
+        ],
+        "uuidParams": {}
+      },
+      "source_text": "router.get('/coordinators', workflowRoute(\r\n    dependencies, { signInMessage, roles: leadOnly, uuidParams: {} },\r\n    async (actor) => ({ items: await listCoordinators(dependencies, actor) }),\r\n  ))",
+      "request_contract": "No body",
+      "response_contract": "{items:CoordinatorOption[]}"
+    },
+    {
+      "method": "GET",
+      "path": "/api/events/oversight",
+      "factory": "createAssignmentRouter",
+      "mount_line": 100,
+      "source": "backend/src/modules/events/assignment-router.ts",
+      "line": 30,
+      "roles": [
+        "EVENT_COORDINATOR_LEAD"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to manage coordinator assignments.",
+        "roles": [
+          "EVENT_COORDINATOR_LEAD"
+        ],
+        "uuidParams": {}
+      },
+      "source_text": "router.get('/oversight', workflowRoute(\r\n    dependencies, { signInMessage, roles: leadOnly, uuidParams: {} },\r\n    async (actor) => ({ items: await listLeadOversight(dependencies, actor) }),\r\n  ))",
+      "request_contract": "No body",
+      "response_contract": "{items:LeadEventSummary[]}"
+    },
+    {
+      "method": "GET",
+      "path": "/api/events/oversight/:id",
+      "factory": "createAssignmentRouter",
+      "mount_line": 100,
+      "source": "backend/src/modules/events/assignment-router.ts",
+      "line": 35,
+      "roles": [
+        "EVENT_COORDINATOR_LEAD"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to manage coordinator assignments.",
+        "roles": [
+          "EVENT_COORDINATOR_LEAD"
+        ]
+      },
+      "source_text": "router.get('/oversight/:id', workflowRoute(\r\n    dependencies, { signInMessage, roles: leadOnly },\r\n    (actor, request) => getLeadEventDetail(dependencies, {\r\n      eventRequestId: param(request, 'id'), actor,\r\n    }),\r\n  ))",
+      "request_contract": "No body",
+      "response_contract": "LeadEventDetail"
+    },
+    {
+      "method": "GET",
+      "path": "/api/events/unassigned",
+      "factory": "createAssignmentRouter",
+      "mount_line": 100,
+      "source": "backend/src/modules/events/assignment-router.ts",
+      "line": 20,
+      "roles": [
+        "EVENT_COORDINATOR_LEAD"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to manage coordinator assignments.",
+        "roles": [
+          "EVENT_COORDINATOR_LEAD"
+        ],
+        "uuidParams": {}
+      },
+      "source_text": "router.get('/unassigned', workflowRoute(\r\n    dependencies, { signInMessage, roles: leadOnly, uuidParams: {} },\r\n    async (actor) => ({ items: await listUnassignedRequests(dependencies, actor) }),\r\n  ))",
+      "request_contract": "No body",
+      "response_contract": "{items:UnassignedRequest[]}"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health",
+      "source": "backend/src/app.ts",
+      "line": 61,
+      "roles": [],
+      "access": "public",
+      "success_status": 200,
+      "source_text": "app.get('/api/health', (_request, response) => {\r\n    response.status(200).json({ status: 'ok', service: 'connectsphere-api' });\r\n  })",
+      "request_contract": "No body",
+      "response_contract": "{status:\"ok\", service:\"connectsphere-api\"}"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health/ready",
+      "source": "backend/src/app.ts",
+      "line": 65,
+      "roles": [],
+      "access": "public",
+      "success_status": 200,
+      "source_text": "app.get('/api/health/ready', async (_request, response) => {\r\n    try {\r\n      const result = await database.query(\r\n        'SELECT key, value FROM scaffold_metadata WHERE key = $1',\r\n        ['scaffold_version'],\r\n      );\r\n      const ready = result.rows.some((row) => row.key === 'scaffold_version' && row.value === '1');\r\n      if (!ready) {\r\n        response.status(503).json(databaseUnavailable);\r\n        return;\r\n      }\r\n      response.status(200).json({ status: 'ok', database: 'connected' });\r\n    } catch {\r\n      response.status(503).json(databaseUnavailable);\r\n    }\r\n  })",
+      "request_contract": "No body",
+      "response_contract": "{status:\"ok\", database:\"connected\"}; 503 DATABASE_UNAVAILABLE if scaffold check fails"
+    },
+    {
+      "method": "GET",
+      "path": "/api/notifications",
+      "factory": "createNotificationRouter",
+      "mount_line": 95,
+      "source": "backend/src/modules/notifications/inbox-router.ts",
+      "line": 19,
+      "roles": [],
+      "access": "any mapped signed-in role",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to view your notifications.",
+        "uuidParams": {}
+      },
+      "source_text": "router.get('/', workflowRoute(\r\n    dependencies, { signInMessage, uuidParams: {} },\r\n    async (actor) => ({ items: await listNotifications(dependencies, actor) }),\r\n  ))",
+      "request_contract": "No body",
+      "response_contract": "{items:InboxItem[]}"
+    },
+    {
+      "method": "POST",
+      "path": "/api/notifications/:id/read",
+      "factory": "createNotificationRouter",
+      "mount_line": 95,
+      "source": "backend/src/modules/notifications/inbox-router.ts",
+      "line": 34,
+      "roles": [],
+      "access": "any mapped signed-in role",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to view your notifications.",
+        "uuidParams": {
+          "id": "INVALID_NOTIFICATION_ID"
+        }
+      },
+      "source_text": "router.post('/:id/read', workflowRoute(\r\n    dependencies, { signInMessage, uuidParams: { id: 'INVALID_NOTIFICATION_ID' } },\r\n    async (actor, request) => ({\r\n      notification: await markNotificationRead(dependencies, { notificationId: param(request, 'id'), actor }),\r\n    }),\r\n  ))",
+      "request_contract": "Body ignored",
+      "response_contract": "{notification:InboxItem}"
+    },
+    {
+      "method": "POST",
+      "path": "/api/notifications/read-all",
+      "factory": "createNotificationRouter",
+      "mount_line": 95,
+      "source": "backend/src/modules/notifications/inbox-router.ts",
+      "line": 29,
+      "roles": [],
+      "access": "any mapped signed-in role",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to view your notifications.",
+        "uuidParams": {}
+      },
+      "source_text": "router.post('/read-all', workflowRoute(\r\n    dependencies, { signInMessage, uuidParams: {} },\r\n    async (actor) => ({ updated: await markAllNotificationsRead(dependencies, actor) }),\r\n  ))",
+      "request_contract": "Body ignored",
+      "response_contract": "{updated:number}"
+    },
+    {
+      "method": "GET",
+      "path": "/api/notifications/unread-count",
+      "factory": "createNotificationRouter",
+      "mount_line": 95,
+      "source": "backend/src/modules/notifications/inbox-router.ts",
+      "line": 24,
+      "roles": [],
+      "access": "any mapped signed-in role",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to view your notifications.",
+        "uuidParams": {}
+      },
+      "source_text": "router.get('/unread-count', workflowRoute(\r\n    dependencies, { signInMessage, uuidParams: {} },\r\n    async (actor) => ({ unreadCount: await countUnreadNotifications(dependencies, actor) }),\r\n  ))",
+      "request_contract": "No body",
+      "response_contract": "{unreadCount:number}"
+    },
+    {
+      "method": "POST",
+      "path": "/api/registrations/:id/withdraw",
+      "factory": "createRegistrationRouter",
+      "mount_line": 85,
+      "source": "backend/src/modules/registrations/router.ts",
+      "line": 10,
+      "roles": [
+        "ATTENDEE"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to withdraw your registration.",
+        "roles": [
+          "ATTENDEE"
+        ],
+        "uuidParams": {
+          "id": "INVALID_REGISTRATION_ID"
+        }
+      },
+      "source_text": "router.post('/registrations/:id/withdraw', workflowRoute(deps, {\r\n    signInMessage: 'Sign in to withdraw your registration.', roles: ['ATTENDEE'], uuidParams: { id: 'INVALID_REGISTRATION_ID' },\r\n  }, (actor, req) => withdrawRegistration(deps.pool, actor, param(req, 'id'), req.body)))",
+      "request_contract": "{confirm:true}",
+      "response_contract": "{changed,registration:OwnRegistrationItem}"
+    },
+    {
+      "method": "GET",
+      "path": "/api/registrations/mine",
+      "factory": "createRegistrationRouter",
+      "mount_line": 85,
+      "source": "backend/src/modules/registrations/router.ts",
+      "line": 7,
+      "roles": [
+        "ATTENDEE"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to view your registrations.",
+        "roles": [
+          "ATTENDEE"
+        ],
+        "uuidParams": {}
+      },
+      "source_text": "router.get('/registrations/mine', workflowRoute(deps, {\r\n    signInMessage: 'Sign in to view your registrations.', roles: ['ATTENDEE'], uuidParams: {},\r\n  }, actor => listOwnRegistrations(deps.pool, actor)))",
+      "request_contract": "No body",
+      "response_contract": "{items:OwnRegistrationItem[]}; flat event fields, cancelledAt and canWithdraw"
+    },
+    {
+      "method": "GET",
+      "path": "/api/safety-reviews",
+      "factory": "createSafetyRouter",
+      "mount_line": 109,
+      "source": "backend/src/modules/safety/router.ts",
+      "line": 23,
+      "roles": [
+        "SAFETY_OFFICER"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to view safety reviews.",
+        "roles": [
+          "SAFETY_OFFICER"
+        ],
+        "uuidParams": {}
+      },
+      "source_text": "router.get('/safety-reviews', workflowRoute(dependencies, {\r\n    signInMessage: 'Sign in to view safety reviews.', roles: ['SAFETY_OFFICER'], uuidParams: {},\r\n  }, actor => listSafetyQueue(pool, actor)))",
+      "request_contract": "No body",
+      "response_contract": "{items:SafetyQueueItem[]}"
+    },
+    {
+      "method": "GET",
+      "path": "/api/safety-reviews/:id",
+      "factory": "createSafetyRouter",
+      "mount_line": 109,
+      "source": "backend/src/modules/safety/router.ts",
+      "line": 26,
+      "roles": [
+        "SAFETY_OFFICER"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to view this safety review.",
+        "roles": [
+          "SAFETY_OFFICER"
+        ],
+        "uuidParams": {
+          "id": "INVALID_SAFETY_REVIEW_ID"
+        }
+      },
+      "source_text": "router.get('/safety-reviews/:id', workflowRoute(dependencies, {\r\n    signInMessage: 'Sign in to view this safety review.', roles: ['SAFETY_OFFICER'], uuidParams: reviewId,\r\n  }, (actor, request) => getSafetyReview(pool, { reviewId: param(request, 'id'), actor })))",
+      "request_contract": "No body",
+      "response_contract": "SafetyReviewDetail including fingerprint and live readiness"
+    },
+    {
+      "method": "POST",
+      "path": "/api/safety-reviews/:id/decision",
+      "factory": "createSafetyRouter",
+      "mount_line": 109,
+      "source": "backend/src/modules/safety/router.ts",
+      "line": 29,
+      "roles": [
+        "SAFETY_OFFICER"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to decide this safety review.",
+        "roles": [
+          "SAFETY_OFFICER"
+        ],
+        "uuidParams": {
+          "id": "INVALID_SAFETY_REVIEW_ID"
+        }
+      },
+      "source_text": "router.post('/safety-reviews/:id/decision', workflowRoute(dependencies, {\r\n    signInMessage: 'Sign in to decide this safety review.', roles: ['SAFETY_OFFICER'], uuidParams: reviewId,\r\n  }, (actor, request) => decideSafetyReview(pool, { reviewId: param(request, 'id'), actor, input: request.body })))",
+      "request_contract": "{decision:APPROVED or REJECTED or CHANGES_REQUESTED,fingerprint:MD5,notes?:text|null,areas?:SafetyArea[]}",
+      "response_contract": "{changed,review:SafetyRound}"
+    },
+    {
+      "method": "GET",
+      "path": "/api/venue-bookings",
+      "factory": "createVenueBookingsRouter",
+      "mount_line": 96,
+      "source": "backend/src/modules/venues/venue-bookings-router.ts",
+      "line": 15,
+      "roles": [
+        "VENUE_STAFF",
+        "EVENT_COORDINATOR"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to view venue booking requests.",
+        "roles": [
+          "VENUE_STAFF",
+          "EVENT_COORDINATOR"
+        ],
+        "uuidParams": {}
+      },
+      "source_text": "router.get('/', workflowRoute(dependencies, { ...readOptions, uuidParams: {} }, async (actor, request) => {\r\n    const eventRequestId = parseBookingFilter(request.query);\r\n    return { items: await listVenueBookings(dependencies,\r\n      { actor, ...(eventRequestId === undefined ? {} : { eventRequestId }) }) };\r\n  }))",
+      "request_contract": "Optional eventRequestId UUID; unknown keys rejected",
+      "response_contract": "{items:VenueBooking[]}"
+    },
+    {
+      "method": "GET",
+      "path": "/api/venue-bookings/:id",
+      "factory": "createVenueBookingsRouter",
+      "mount_line": 96,
+      "source": "backend/src/modules/venues/venue-bookings-router.ts",
+      "line": 20,
+      "roles": [
+        "VENUE_STAFF",
+        "EVENT_COORDINATOR"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to view venue booking requests.",
+        "roles": [
+          "VENUE_STAFF",
+          "EVENT_COORDINATOR"
+        ],
+        "uuidParams": {
+          "id": "INVALID_VENUE_BOOKING_ID"
+        }
+      },
+      "source_text": "router.get('/:id', workflowRoute(dependencies, {\r\n    ...readOptions, uuidParams: { id: 'INVALID_VENUE_BOOKING_ID' },\r\n  }, async (actor, request) => ({\r\n    booking: await getVenueBooking(dependencies, { actor, bookingId: param(request, 'id') }),\r\n  })))",
+      "request_contract": "No body",
+      "response_contract": "{booking:VenueBooking}"
+    },
+    {
+      "method": "POST",
+      "path": "/api/venue-bookings/:id/cancel",
+      "factory": "createVenueBookingsRouter",
+      "mount_line": 96,
+      "source": "backend/src/modules/venues/venue-bookings-router.ts",
+      "line": 48,
+      "roles": [
+        "EVENT_COORDINATOR"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to cancel a venue arrangement.",
+        "roles": [
+          "EVENT_COORDINATOR"
+        ],
+        "uuidParams": {
+          "id": "INVALID_VENUE_BOOKING_ID"
+        }
+      },
+      "source_text": "router.post('/:id/cancel', workflowRoute(dependencies, {\r\n    signInMessage: 'Sign in to cancel a venue arrangement.',\r\n    roles: ['EVENT_COORDINATOR'], uuidParams: { id: 'INVALID_VENUE_BOOKING_ID' },\r\n  }, async (actor, request) => ({\r\n    booking: await cancelVenueArrangement(dependencies,\r\n      { actor, bookingId: param(request, 'id'), input: request.body }),\r\n  })))",
+      "request_contract": "{reason:text}",
+      "response_contract": "{booking:VenueBooking}"
+    },
+    {
+      "method": "POST",
+      "path": "/api/venue-bookings/:id/decision",
+      "factory": "createVenueBookingsRouter",
+      "mount_line": 96,
+      "source": "backend/src/modules/venues/venue-bookings-router.ts",
+      "line": 25,
+      "roles": [
+        "VENUE_STAFF"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to decide a venue booking request.",
+        "roles": [
+          "VENUE_STAFF"
+        ],
+        "uuidParams": {
+          "id": "INVALID_VENUE_BOOKING_ID"
+        }
+      },
+      "source_text": "router.post('/:id/decision', workflowRoute(dependencies, {\r\n    signInMessage: 'Sign in to decide a venue booking request.',\r\n    roles: ['VENUE_STAFF'], uuidParams: { id: 'INVALID_VENUE_BOOKING_ID' },\r\n  }, async (actor, request) => ({\r\n    booking: await decideVenueBooking(dependencies,\r\n      { actor, bookingId: param(request, 'id'), input: request.body }),\r\n  })))",
+      "request_contract": "{decision:APPROVED or REJECTED,reason?:text|null}",
+      "response_contract": "{booking:VenueBooking}"
+    },
+    {
+      "method": "POST",
+      "path": "/api/venue-bookings/:id/hold",
+      "factory": "createVenueBookingsRouter",
+      "mount_line": 96,
+      "source": "backend/src/modules/venues/venue-bookings-router.ts",
+      "line": 33,
+      "roles": [
+        "VENUE_STAFF"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to place a venue hold.",
+        "roles": [
+          "VENUE_STAFF"
+        ],
+        "uuidParams": {
+          "id": "INVALID_VENUE_BOOKING_ID"
+        }
+      },
+      "source_text": "router.post('/:id/hold', workflowRoute(dependencies, {\r\n    signInMessage: 'Sign in to place a venue hold.',\r\n    roles: ['VENUE_STAFF'], uuidParams: { id: 'INVALID_VENUE_BOOKING_ID' },\r\n  }, async (actor, request) => ({\r\n    booking: await placeVenueHold(dependencies,\r\n      { actor, bookingId: param(request, 'id'), input: request.body }),\r\n  })))",
+      "request_contract": "{expiresAt:explicit-offset instant}",
+      "response_contract": "{booking:VenueBooking}"
+    },
+    {
+      "method": "POST",
+      "path": "/api/venue-bookings/:id/hold/cancel",
+      "factory": "createVenueBookingsRouter",
+      "mount_line": 96,
+      "source": "backend/src/modules/venues/venue-bookings-router.ts",
+      "line": 40,
+      "roles": [
+        "VENUE_STAFF"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to cancel a venue hold.",
+        "roles": [
+          "VENUE_STAFF"
+        ],
+        "uuidParams": {
+          "id": "INVALID_VENUE_BOOKING_ID"
+        }
+      },
+      "source_text": "router.post('/:id/hold/cancel', workflowRoute(dependencies, {\r\n    signInMessage: 'Sign in to cancel a venue hold.',\r\n    roles: ['VENUE_STAFF'], uuidParams: { id: 'INVALID_VENUE_BOOKING_ID' },\r\n  }, async (actor, request) => ({\r\n    booking: await cancelVenueHold(dependencies,\r\n      { actor, bookingId: param(request, 'id'), input: request.body }),\r\n  })))",
+      "request_contract": "{reason:text}",
+      "response_contract": "{booking:VenueBooking}"
+    },
+    {
+      "method": "GET",
+      "path": "/api/venues/:venueId/unavailability",
+      "factory": "createVenueBlockRouter",
+      "mount_line": 117,
+      "source": "backend/src/modules/venues/block-router.ts",
+      "line": 19,
+      "roles": [
+        "VENUE_STAFF"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to manage venue-unavailability blocks.",
+        "roles": [
+          "VENUE_STAFF"
+        ],
+        "uuidParams": {
+          "venueId": "INVALID_VENUE_ID"
+        }
+      },
+      "source_text": "router.get('/:venueId/unavailability', workflowRoute(dependencies, {\r\n    signInMessage, roles: staffOnly, uuidParams: venueIdParam,\r\n  }, async (actor, request) => ({\r\n    items: await listVenueBlocks(dependencies, { actor, venueId: param(request, 'venueId') }),\r\n  })))",
+      "request_contract": "No body",
+      "response_contract": "{items:VenueBlock[]}"
+    },
+    {
+      "method": "POST",
+      "path": "/api/venues/:venueId/unavailability",
+      "factory": "createVenueBlockRouter",
+      "mount_line": 117,
+      "source": "backend/src/modules/venues/block-router.ts",
+      "line": 25,
+      "roles": [
+        "VENUE_STAFF"
+      ],
+      "access": "role restricted",
+      "success_status": 201,
+      "options": {
+        "signInMessage": "Sign in to manage venue-unavailability blocks.",
+        "roles": [
+          "VENUE_STAFF"
+        ],
+        "uuidParams": {
+          "venueId": "INVALID_VENUE_ID"
+        },
+        "successStatus": 201
+      },
+      "source_text": "router.post('/:venueId/unavailability', workflowRoute(dependencies, {\r\n    signInMessage, roles: staffOnly, uuidParams: venueIdParam, successStatus: 201,\r\n  }, async (actor, request) => ({\r\n    block: await createVenueBlock(dependencies,\r\n      { actor, venueId: param(request, 'venueId'), input: request.body }),\r\n  })))",
+      "request_contract": "{startsAt,endsAt,reason:text}",
+      "response_contract": "{block:VenueBlock}"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/venues/:venueId/unavailability/:blockId",
+      "factory": "createVenueBlockRouter",
+      "mount_line": 117,
+      "source": "backend/src/modules/venues/block-router.ts",
+      "line": 32,
+      "roles": [
+        "VENUE_STAFF"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to manage venue-unavailability blocks.",
+        "roles": [
+          "VENUE_STAFF"
+        ],
+        "uuidParams": {
+          "venueId": "INVALID_VENUE_ID",
+          "blockId": "INVALID_VENUE_BLOCK_ID"
+        }
+      },
+      "source_text": "router.delete('/:venueId/unavailability/:blockId', workflowRoute(dependencies, {\r\n    signInMessage, roles: staffOnly,\r\n    uuidParams: { ...venueIdParam, blockId: 'INVALID_VENUE_BLOCK_ID' },\r\n  }, async (actor, request) => {\r\n    const blockId = param(request, 'blockId');\r\n    const { clearedBookingIds } = await deleteVenueBlock(dependencies, { actor, blockId });\r\n    return { id: blockId, clearedBookingIds };\r\n  }))",
+      "request_contract": "No body",
+      "response_contract": "{id:blockId,clearedBookingIds:UUID[]}"
+    },
+    {
+      "method": "GET",
+      "path": "/api/venues/availability",
+      "factory": "createVenueAvailabilityRouter",
+      "mount_line": 98,
+      "source": "backend/src/modules/venues/availability-router.ts",
+      "line": 16,
+      "roles": [
+        "EVENT_COORDINATOR",
+        "VENUE_STAFF",
+        "TECHNICAL_SUPPORT_STAFF"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to view venue availability.",
+        "roles": [
+          "EVENT_COORDINATOR",
+          "VENUE_STAFF",
+          "TECHNICAL_SUPPORT_STAFF"
+        ],
+        "uuidParams": {}
+      },
+      "source_text": "router.get('/availability', workflowRoute(\r\n    dependencies, { signInMessage, roles: VENUE_CALENDAR_ROLES, uuidParams: {} },\r\n    async (actor, request) => {\r\n      const window = parseAvailabilityWindow(request.query);\r\n      return { ...window, items: await listVenueAvailability(dependencies, actor, window) };\r\n    },\r\n  ))",
+      "request_contract": "from and to ISO instants; window positive and at most 31 days",
+      "response_contract": "{from,to,items:VenueAvailability[]}"
+    },
+    {
+      "method": "GET",
+      "path": "/api/venues/catalogue",
+      "factory": "createVenueCatalogueRouter",
+      "mount_line": 119,
+      "source": "backend/src/modules/venues/venue-catalogue-router.ts",
+      "line": 20,
+      "roles": [
+        "VENUE_STAFF"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to maintain the venue catalogue.",
+        "roles": [
+          "VENUE_STAFF"
+        ],
+        "uuidParams": {}
+      },
+      "source_text": "router.get('/catalogue', workflowRoute(dependencies, {\r\n    signInMessage, roles: staffOnly, uuidParams: {},\r\n  }, async (actor) => ({ items: await listCatalogueVenues(dependencies, { actor }) })))",
+      "request_contract": "No body",
+      "response_contract": "{items:CatalogueVenue[]}"
+    },
+    {
+      "method": "GET",
+      "path": "/api/venues/catalogue/:venueId",
+      "factory": "createVenueCatalogueRouter",
+      "mount_line": 119,
+      "source": "backend/src/modules/venues/venue-catalogue-router.ts",
+      "line": 24,
+      "roles": [
+        "VENUE_STAFF"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to maintain the venue catalogue.",
+        "roles": [
+          "VENUE_STAFF"
+        ],
+        "uuidParams": {
+          "venueId": "INVALID_VENUE_ID"
+        }
+      },
+      "source_text": "router.get('/catalogue/:venueId', workflowRoute(dependencies, {\r\n    signInMessage, roles: staffOnly, uuidParams: venueIdParam,\r\n  }, async (actor, request) => ({\r\n    venue: await getCatalogueVenue(dependencies, { actor, venueId: param(request, 'venueId') }),\r\n  })))",
+      "request_contract": "No body",
+      "response_contract": "{venue:CatalogueVenue}"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/venues/catalogue/:venueId",
+      "factory": "createVenueCatalogueRouter",
+      "mount_line": 119,
+      "source": "backend/src/modules/venues/venue-catalogue-router.ts",
+      "line": 30,
+      "roles": [
+        "VENUE_STAFF"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to maintain the venue catalogue.",
+        "roles": [
+          "VENUE_STAFF"
+        ],
+        "uuidParams": {
+          "venueId": "INVALID_VENUE_ID"
+        }
+      },
+      "source_text": "router.patch('/catalogue/:venueId', workflowRoute(dependencies, {\r\n    signInMessage, roles: staffOnly, uuidParams: venueIdParam,\r\n  }, async (actor, request) => ({\r\n    venue: await updateCatalogueVenue(dependencies,\r\n      { actor, venueId: param(request, 'venueId'), input: request.body }),\r\n  })))",
+      "request_contract": "VenueCatalogue patch fields at top level; expectedSetupMinutes/expectedTurnaroundMinutes for buffer changes",
+      "response_contract": "{venue:CatalogueVenue}"
+    },
+    {
+      "method": "GET",
+      "path": "/api/venues/filter-options",
+      "factory": "createVenueRouter",
+      "mount_line": 115,
+      "source": "backend/src/modules/venues/venue-router.ts",
+      "line": 18,
+      "roles": [
+        "EVENT_COORDINATOR"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to search venues.",
+        "roles": [
+          "EVENT_COORDINATOR"
+        ],
+        "uuidParams": {}
+      },
+      "source_text": "router.get('/filter-options', workflowRoute(\r\n    dependencies, { signInMessage, roles: coordinatorOnly, uuidParams: {} },\r\n    (actor) => listVenueFilterOptions(dependencies, actor),\r\n  ))",
+      "request_contract": "No body",
+      "response_contract": "VenueFilterOptions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/venues/recovery",
+      "factory": "createVenueBlockRouter",
+      "mount_line": 117,
+      "source": "backend/src/modules/venues/block-router.ts",
+      "line": 42,
+      "roles": [
+        "VENUE_STAFF"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to view venue recovery.",
+        "roles": [
+          "VENUE_STAFF"
+        ],
+        "uuidParams": {}
+      },
+      "source_text": "router.get('/recovery', workflowRoute(dependencies, {\r\n    signInMessage: 'Sign in to view venue recovery.', roles: staffOnly, uuidParams: {},\r\n  }, async (actor, request) => ({\r\n    items: await listRecoveryArrangements(dependencies, {\r\n      actor, status: parseRecoveryFilter(request.query as Record<string, unknown>),\r\n    }),\r\n  })))",
+      "request_contract": "Optional status: RECOVERY_REQUIRED, RESOLVED or CLEARED",
+      "response_contract": "{items:RecoveryArrangement[]}"
+    },
+    {
+      "method": "GET",
+      "path": "/api/venues/search-venues",
+      "factory": "createVenueRouter",
+      "mount_line": 115,
+      "source": "backend/src/modules/venues/venue-router.ts",
+      "line": 23,
+      "roles": [
+        "EVENT_COORDINATOR"
+      ],
+      "access": "role restricted",
+      "success_status": 200,
+      "options": {
+        "signInMessage": "Sign in to search venues.",
+        "roles": [
+          "EVENT_COORDINATOR"
+        ],
+        "uuidParams": {}
+      },
+      "source_text": "router.get('/search-venues', workflowRoute(\r\n    dependencies, { signInMessage, roles: coordinatorOnly, uuidParams: {} },\r\n    async (actor, request) => ({\r\n      items: await searchVenues(dependencies, actor, parseVenueSearchQuery(request.query)),\r\n    }),\r\n  ))",
+      "request_contract": "VenueSearchFilters: startsAt, endsAt, attendance, capacity, location, layout, wheelchairAccessible, accessibility, facilities",
+      "response_contract": "{items:VenueResult[]}"
+    }
+  ],
+  "source_files": [
+    {
+      "path": "backend/src/app.ts",
+      "sha256": "a0761cd265bfceac384bde949ed7c4982e38f6fd66326c3693a9db6cefc76ab5"
+    },
+    {
+      "path": "backend/src/modules/auth/router.ts",
+      "sha256": "4beefd097c6d9960f200353b9b95035ada541a1adf387c7ee897fced25b6b75b"
+    },
+    {
+      "path": "backend/src/modules/auth/user-repository.ts",
+      "sha256": "42a18d33b33a8567d8ae469b04ee7e8570f63bb73aff4e8693010c348ddd255c"
+    },
+    {
+      "path": "backend/src/modules/auth/supabase.ts",
+      "sha256": "cb76f4444d7e904097b475e53430e808233f3c5af64b41bc904e80c27ddbf4db"
+    },
+    {
+      "path": "backend/src/modules/auth/types.ts",
+      "sha256": "848dc5b1a8d0a11aebe52218e97faf3cc68713c4411deee3bed53e5ed85a645f"
+    },
+    {
+      "path": "backend/src/modules/registrations/router.ts",
+      "sha256": "43210e1d45219329c7734bd311f8046a22aed9ae179b7d5841a4df137481d14b"
+    },
+    {
+      "path": "backend/src/modules/events/workflow-http.ts",
+      "sha256": "1d1df110382c004a8ae6762f36b0573b502e9927afa7506c30284cd09e4831fc"
+    },
+    {
+      "path": "backend/src/modules/registrations/service.ts",
+      "sha256": "167aa72038bc635dbc15b1038efc5b7ac5bc5b5753121714c226eb7d602f8cae"
+    },
+    {
+      "path": "backend/src/modules/equipment/availability-router.ts",
+      "sha256": "ef3961d89f709a26496d55ce149af194bf75a6507c8310a80f1012270f49a0b3"
+    },
+    {
+      "path": "backend/src/modules/equipment/availability-service.ts",
+      "sha256": "460393e52c5ccd3ebd2cd068f0ef8eb1b2be320669b918a303d7216d73b1c9b9"
+    },
+    {
+      "path": "backend/src/modules/equipment/reservation-router.ts",
+      "sha256": "8f3aa796613e8e90774b9e142f0bf9fc6e381dc15a604778c03c1b40babaadea"
+    },
+    {
+      "path": "backend/src/modules/equipment/reservation-service.ts",
+      "sha256": "371db19a332cb69fcb3f1acf35fdac2f751be91ecb33e77bc20941d5dfa48e1e"
+    },
+    {
+      "path": "backend/src/modules/registrations/registration-router.ts",
+      "sha256": "d1d4781a4562d7959bbfa64303fa5affa79045ad855eae1817d15d5cd2ff2003"
+    },
+    {
+      "path": "backend/src/modules/registrations/registration-service.ts",
+      "sha256": "baf01859c001e1688ee52a88ba16da45a3f358d9ad1bad8127c3ba0abb9a2909"
+    },
+    {
+      "path": "backend/src/modules/equipment/stock-router.ts",
+      "sha256": "9f413cbbccad4405c35f7360194fe094d884c35ab48f29d84b6b865167fe6513"
+    },
+    {
+      "path": "backend/src/modules/equipment/stock-service.ts",
+      "sha256": "326bf95e02a6b77e4a2ca3ba4fea7c2ea0826794c2c0844cd612d79b5b07d449"
+    },
+    {
+      "path": "backend/src/modules/equipment/equipment-router.ts",
+      "sha256": "7c262fb80293ea63b15fd3c1198e3b25e751a42e553caa72e03caaaf8b7bc51c"
+    },
+    {
+      "path": "backend/src/modules/equipment/equipment-service.ts",
+      "sha256": "678069ca2b82bfedcdd140b2ab6c836edaf4adc9939debb7a7546b59f952c204"
+    },
+    {
+      "path": "backend/src/modules/notifications/inbox-router.ts",
+      "sha256": "da495c51ede5800bde5dbd863e25cafe0e2247a65c3d783ac7cfdcd1b5a63b79"
+    },
+    {
+      "path": "backend/src/modules/notifications/inbox.ts",
+      "sha256": "eb5b2d62a7da26e01f6d8432e6798fa76c67f2e63b972f24b38e30d1cf73b798"
+    },
+    {
+      "path": "backend/src/modules/venues/venue-bookings-router.ts",
+      "sha256": "7dfe8e19c8d029c8066dfbef521d261173d57aa75cc6749eb38186651ddbe80e"
+    },
+    {
+      "path": "backend/src/modules/venues/booking-input.ts",
+      "sha256": "e143b9fe012d403d8e32f522ced31486578dd13200d654f165df2b4ffedaad4c"
+    },
+    {
+      "path": "backend/src/modules/venues/booking-service.ts",
+      "sha256": "93bc18dc6af60df3b48712498acd8e2e435739fbaf4e9de56d1794b743b918c4"
+    },
+    {
+      "path": "backend/src/modules/venues/availability-router.ts",
+      "sha256": "2d687df619a91946f5344b2feb7bbd3e65eebff8ac9cd81cb69f345a5b3b3635"
+    },
+    {
+      "path": "backend/src/modules/venues/availability.ts",
+      "sha256": "5ab1dec71089ea8cc30a98e7cb1f2306d39a716b27b32a19989b2007f9785f35"
+    },
+    {
+      "path": "backend/src/modules/events/assignment-router.ts",
+      "sha256": "271ef4aef3a6f7e83895f087400480c8f07700a9a63b35b13393365b695701fd"
+    },
+    {
+      "path": "backend/src/modules/events/assignment.ts",
+      "sha256": "9cb5c95707050fa166737cbaedb45f27624b2ba0e4b67ef107ca320ec9628750"
+    },
+    {
+      "path": "backend/src/modules/events/clarification-router.ts",
+      "sha256": "84da66d0e1b9dd032a1e75373281ea18f7ba6300993bce7e0bdd5478edf40571"
+    },
+    {
+      "path": "backend/src/modules/events/clarifications.ts",
+      "sha256": "e26f872442eddabe5dcbde62284736eede4da0aee42c78b50a3651435af5bf03"
+    },
+    {
+      "path": "backend/src/modules/events/change-request-router.ts",
+      "sha256": "331d5bff35e02d7c48691381ec14d5d61377ac4c95970a236ed842917b61839a"
+    },
+    {
+      "path": "backend/src/modules/events/change-requests.ts",
+      "sha256": "e94723428ec0e70d4f7494f41d2fabb13cea58435b285c2822a99b86711b1e85"
+    },
+    {
+      "path": "backend/src/modules/events/status-history-router.ts",
+      "sha256": "964f36c7584159d00e864691d0d30f311f5fae7810e19b47cebd396a0effd6a9"
+    },
+    {
+      "path": "backend/src/modules/events/status-history.ts",
+      "sha256": "bd9a10a38b3d65359877f2443b2f76c1e5905f49e531a622803bbdfbd895c86e"
+    },
+    {
+      "path": "backend/src/modules/events/cancellation-router.ts",
+      "sha256": "bed99a87648cf1b861d7598747eee4833fbca8406ab5326fd4406b10d53f3d54"
+    },
+    {
+      "path": "backend/src/modules/events/cancellation.ts",
+      "sha256": "da73fcb6830e800c8a638dee48e440ef22be48ade49d1222ce19f9bed41ee8d8"
+    },
+    {
+      "path": "backend/src/modules/events/confirmation-router.ts",
+      "sha256": "c3e4527a6d53b7446a2c31dada7917b25cb55c6d25aeb1099d77cf2dc830b10f"
+    },
+    {
+      "path": "backend/src/modules/events/confirmation.ts",
+      "sha256": "f147a39dbe093cf18bd81e1c2072a345345005b5b560b9a690f9a679a13a5db2"
+    },
+    {
+      "path": "backend/src/modules/safety/router.ts",
+      "sha256": "676af0c4928692d3ccce06d0ba7e3ac63e2b94f8938b5197050dd3debb89ff70"
+    },
+    {
+      "path": "backend/src/modules/safety/service.ts",
+      "sha256": "4df1257126672c53ae49ca01ea2c5724117550724610258ae5ccdf6dcaf5de3f"
+    },
+    {
+      "path": "backend/src/modules/events/completion-router.ts",
+      "sha256": "ce9bc00a11e78c417e85fcf5392f282728e9f476ae1f2f9c5865289ed7897025"
+    },
+    {
+      "path": "backend/src/modules/events/completion.ts",
+      "sha256": "d4da7464455ee9d58be6ba05d33a030989af0ebfdaaac73380ac72c16959c5ca"
+    },
+    {
+      "path": "backend/src/modules/venues/suitability-router.ts",
+      "sha256": "8eb127306a8bc7d215a890338e60609af585bccf57a87f4596e4ae4691a29556"
+    },
+    {
+      "path": "backend/src/modules/venues/suitability-service.ts",
+      "sha256": "662d58cd70d490f2453cb8d0c63f36347b1d014f7a7c9873f2099d2b7fd7bd2e"
+    },
+    {
+      "path": "backend/src/modules/venues/suitability-input.ts",
+      "sha256": "8c6a7bfd65769484c3195208f20514ed9d8f0b2d4abf63d93d624d4b5ad6d5b2"
+    },
+    {
+      "path": "backend/src/modules/venues/venue-router.ts",
+      "sha256": "b0e693303b415abebe8c1ee8cbf5d62a0f190fb677d92299db6b40189a35dde2"
+    },
+    {
+      "path": "backend/src/modules/venues/venue-search.ts",
+      "sha256": "021405bba0736b7cda4fbff910128dfa6416be6c3cfaa615c21efc4868db678a"
+    },
+    {
+      "path": "backend/src/modules/venues/block-router.ts",
+      "sha256": "bd133fdf6782848a85c49cf71394f60a008c5ef135b9706a9e32802a489650e3"
+    },
+    {
+      "path": "backend/src/modules/venues/block-service.ts",
+      "sha256": "ab5e1747503f9eac9c878da747b51ddce810ddec898be0a06485a755e28d4990"
+    },
+    {
+      "path": "backend/src/modules/venues/outage-impact.ts",
+      "sha256": "3e8b40215134705eda3c4c22026ef73de1afca1b100f740108edaa1f3ce4c112"
+    },
+    {
+      "path": "backend/src/modules/venues/venue-catalogue-router.ts",
+      "sha256": "caeec55ec321f3bc19a87de546fbd442f634c5628bcca7ba52ebb7580d08572d"
+    },
+    {
+      "path": "backend/src/modules/venues/venue-catalogue-service.ts",
+      "sha256": "f84c171b8873684aaf556c41a46a4d2d508145f1d831e53012fb8d012778258c"
+    },
+    {
+      "path": "backend/src/modules/events/submitted-requests-router.ts",
+      "sha256": "9e78f118bf23fb0ebfb90ab2e1336374d1001e86bbc1dc4b2b98329014eb5c40"
+    },
+    {
+      "path": "backend/src/modules/events/event-request-detail.ts",
+      "sha256": "53d02948ee26d348f625db3d83b4c03acedd2d8a0648ccc1a86246bbee21e317"
+    },
+    {
+      "path": "backend/src/modules/events/submitted-requests.ts",
+      "sha256": "1ec2364e2d65c54e2a6beabe58c7c945f7669ffe655a397fe3868212ab472126"
+    },
+    {
+      "path": "backend/src/modules/events/create-draft.ts",
+      "sha256": "c2123ad85088a73f3a0b79a2cc6334b53e83ca5e914f7a6ea960faeb99c10105"
+    },
+    {
+      "path": "backend/src/modules/events/update-draft.ts",
+      "sha256": "d94df62c9278aebfea40b32ced1f55ffaabf30b790f7b20a7c1431c2a4551903"
+    },
+    {
+      "path": "backend/src/modules/events/draft-eligibility.ts",
+      "sha256": "ae605ebe79940ba8979a6f41e2932b1cc342a2077d875977790d03d6243f8d9c"
+    },
+    {
+      "path": "backend/src/modules/events/draft-update-input.ts",
+      "sha256": "90a18afe19a0dad5464c0e890e1ade75f380b4280da8060bb583a728a7840511"
+    },
+    {
+      "path": "backend/src/modules/events/submit-request.ts",
+      "sha256": "4bd516167f56c80eda5c0a1ce0088296c70176d3c1a251decaaa16f95f05cae2"
+    },
+    {
+      "path": "backend/src/modules/events/submit-eligibility.ts",
+      "sha256": "9019c7ba75919a9539f4d048379713cb09f0f5902444ff9a448315e3b4997ab1"
+    },
+    {
+      "path": "backend/src/modules/events/submit-input.ts",
+      "sha256": "525f58a3236ab05356a578fe52867c089110d67e0385369fec53e646ea912808"
+    },
+    {
+      "path": "backend/src/modules/events/workflow-support.ts",
+      "sha256": "b3ef2d98469c805a9f537d1d4c6aabe5e2f615aa495b8885c86db75f658c4323"
+    },
+    {
+      "path": "backend/src/modules/events/review-router.ts",
+      "sha256": "aeef5b7fd5211933dda508e182ac74234b409e6a1bbfc6501eca52b039958bf5"
+    },
+    {
+      "path": "backend/src/modules/events/review-decision.ts",
+      "sha256": "93a81ae6142a81a06d10d0b1c8d82132e0b03243454b2956b7c5e37e2de6f193"
+    },
+    {
+      "path": "backend/src/modules/events/review-eligibility.ts",
+      "sha256": "422b53b48438b7fe71f687f6b074b3c40576c26a8e6ab0569b5d9dc293874d60"
+    },
+    {
+      "path": "backend/src/modules/events/review-input.ts",
+      "sha256": "b773f71c5ecdab87fe1b5803bcffae0b1211af960b20aa38cd2c35bc735c1770"
+    }
+  ],
+  "runtime_verification": {
+    "method": "Construct each mounted router with inert dependencies; inspect Express route stack. No socket, auth or database call.",
+    "count": 85,
+    "exact_match": true
+  }
+}

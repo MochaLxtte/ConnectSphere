@@ -1,0 +1,2367 @@
+[
+  {
+    "name": "c1-context-original",
+    "title": "Original C1 - pre-Week 7 intended release",
+    "kind": "Original",
+    "source": "docs/architecture/archive/pre-week-7-customer-changes/c4-source/original/c1-context.mmd",
+    "source_sha256": "93c6d39b0a64e4fb58dac502ec30ea39d680ed444b4f815add839828cc972ea7",
+    "nodes": [
+      {
+        "id": "organiser",
+        "label": "Event Organiser<br/>Provides requests and manages own events",
+        "proofs": [
+          {
+            "path": "backend/src/modules/auth/types.ts",
+            "git_blob": "7870947565804b4bb2ff9e5bfa9032e6c38eaa29",
+            "sha256": "a29f3efdb5da80dd6bbd3aa5e9a33ec96acddc2347a843b2e246d9e824062954",
+            "token": "'EVENT_ORGANISER'",
+            "line": 3,
+            "snippet": "'EVENT_ORGANISER',",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/auth/types.ts#L3"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "group": null
+      },
+      {
+        "id": "coordinator",
+        "label": "Event Coordinator<br/>Reviews and coordinates assigned events",
+        "proofs": [
+          {
+            "path": "backend/src/modules/auth/types.ts",
+            "git_blob": "7870947565804b4bb2ff9e5bfa9032e6c38eaa29",
+            "sha256": "a29f3efdb5da80dd6bbd3aa5e9a33ec96acddc2347a843b2e246d9e824062954",
+            "token": "'EVENT_COORDINATOR'",
+            "line": 4,
+            "snippet": "'EVENT_COORDINATOR',",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/auth/types.ts#L4"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "group": null
+      },
+      {
+        "id": "venue",
+        "label": "Venue Staff<br/>Maintains venues and decides bookings",
+        "proofs": [
+          {
+            "path": "backend/src/modules/auth/types.ts",
+            "git_blob": "7870947565804b4bb2ff9e5bfa9032e6c38eaa29",
+            "sha256": "a29f3efdb5da80dd6bbd3aa5e9a33ec96acddc2347a843b2e246d9e824062954",
+            "token": "'VENUE_STAFF'",
+            "line": 5,
+            "snippet": "'VENUE_STAFF',",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/auth/types.ts#L5"
+          }
+        ],
+        "assessment": "Planned workflow",
+        "note": "Role exists; maintenance/booking API and UI absent (N1).",
+        "group": null
+      },
+      {
+        "id": "technical",
+        "label": "Technical Support Staff<br/>Arranges equipment",
+        "proofs": [
+          {
+            "path": "backend/src/modules/auth/types.ts",
+            "git_blob": "7870947565804b4bb2ff9e5bfa9032e6c38eaa29",
+            "sha256": "a29f3efdb5da80dd6bbd3aa5e9a33ec96acddc2347a843b2e246d9e824062954",
+            "token": "'TECHNICAL_SUPPORT_STAFF'",
+            "line": 6,
+            "snippet": "'TECHNICAL_SUPPORT_STAFF',",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/auth/types.ts#L6"
+          }
+        ],
+        "assessment": "Planned workflow",
+        "note": "Role and equipment schema exist; business API/UI absent (N1).",
+        "group": null
+      },
+      {
+        "id": "attendee",
+        "label": "Attendee<br/>Registers and withdraws",
+        "proofs": [
+          {
+            "path": "backend/src/modules/auth/types.ts",
+            "git_blob": "7870947565804b4bb2ff9e5bfa9032e6c38eaa29",
+            "sha256": "a29f3efdb5da80dd6bbd3aa5e9a33ec96acddc2347a843b2e246d9e824062954",
+            "token": "'ATTENDEE'",
+            "line": 7,
+            "snippet": "'ATTENDEE',",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/auth/types.ts#L7"
+          }
+        ],
+        "assessment": "Planned workflow",
+        "note": "Role and registration schema exist; business API/UI absent (N1).",
+        "group": null
+      },
+      {
+        "id": "system",
+        "label": "ConnectSphere<br/>Event planning and venue booking system",
+        "proofs": [
+          {
+            "path": "backend/src/app.ts",
+            "git_blob": "bd59486fedf6df5257da371b528b002f2deabb7d",
+            "sha256": "5f6f497340d329b2890d25e49c014e39058d0d41a1ce1dd53676801d5ef8895d",
+            "token": "export function createApp(",
+            "line": 33,
+            "snippet": "export function createApp({",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/app.ts#L33"
+          },
+          {
+            "path": "frontend/src/app/router.ts",
+            "git_blob": "ab8888c0043a31fa5218bcadc09950d2d1dfeec4",
+            "sha256": "296510b95b9f59b5146735d7428ad2401c4c7b6fa73561749aa337770bf9c66c",
+            "token": "export const router = createRouter(",
+            "line": 14,
+            "snippet": "export const router = createRouter({",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/frontend/src/app/router.ts#L14"
+          }
+        ],
+        "assessment": "Mixed implemented/planned",
+        "note": "System description is intended-release scope, not a claim that venue booking was working.",
+        "group": null
+      },
+      {
+        "id": "identity",
+        "label": "Supabase Auth<br/>External identity service",
+        "proofs": [
+          {
+            "path": "frontend/src/features/auth/supabase-client.ts",
+            "git_blob": "28b6fc91196e2791cd692da42455f01e0b1f3af8",
+            "sha256": "7ec856b1e01079ded6ec6a404f0ea584add94550a443dd296071a77a197b3f13",
+            "token": "supabase.auth.signInWithPassword(",
+            "line": 32,
+            "snippet": "const { data, error } = await supabase.auth.signInWithPassword({ email, password });",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/frontend/src/features/auth/supabase-client.ts#L32"
+          },
+          {
+            "path": "backend/src/modules/auth/supabase.ts",
+            "git_blob": "8fb7437e06ee4bedd86d403f1193f41b1288045d",
+            "sha256": "ba55ea2a8bf5980aa68861c68ee8ae2de77e2ca89cbf879b3f366d470555c0b2",
+            "token": "export async function verifySupabaseAccessToken(",
+            "line": 40,
+            "snippet": "export async function verifySupabaseAccessToken(token: string): Promise<SupabaseAccessTokenClaims> {",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/auth/supabase.ts#L40"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "group": null
+      }
+    ],
+    "edges": [
+      {
+        "id": "organiser__system",
+        "from": "organiser",
+        "to": "system",
+        "label": "Requests and changes",
+        "proofs": [
+          {
+            "path": "frontend/src/features/events/api/event-requests.ts",
+            "git_blob": "dfddd9c26cba4fc924a6fa7987999f2d81056007",
+            "sha256": "67cf2dfeb82202585bcc22cc8165bbaeb20e98968c8a3bc42efd0cbedfbd08e2",
+            "token": "return sendJson<SavedEventRequest>('POST', '/api/events', input, signal);",
+            "line": 118,
+            "snippet": "return sendJson<SavedEventRequest>('POST', '/api/events', input, signal);",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/frontend/src/features/events/api/event-requests.ts#L118"
+          },
+          {
+            "path": "backend/src/modules/events/update-draft.ts",
+            "git_blob": "278ee66cd66823c5b3b8ab5914eccf7f72606c9c",
+            "sha256": "283e89eff4df9d6c908befedb8c9385742e9f5272867c80d5e4f898181d26d40",
+            "token": "export async function updateOwnedDraft(",
+            "line": 85,
+            "snippet": "export async function updateOwnedDraft(",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/events/update-draft.ts#L85"
+          }
+        ],
+        "assessment": "Implemented subset",
+        "note": "Owned draft create/update, submit, outcomes and clarification/cancellation; not arbitrary post-submission change approval.",
+        "dashed": false
+      },
+      {
+        "id": "coordinator__system",
+        "from": "coordinator",
+        "to": "system",
+        "label": "Review and planning",
+        "proofs": [
+          {
+            "path": "backend/src/modules/events/assignment-router.ts",
+            "git_blob": "312b3b501c480c84d22f7941a9d8633dd0fade18",
+            "sha256": "1020ad4742b372bed0228cdc599eeeee339417fd6f92c725cf631a22cb01b2aa",
+            "token": "export function createAssignmentRouter(",
+            "line": 16,
+            "snippet": "export function createAssignmentRouter(dependencies: AssignmentRouterDependencies) {",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/events/assignment-router.ts#L16"
+          },
+          {
+            "path": "backend/src/modules/events/review-router.ts",
+            "git_blob": "8355d5d8d82c36d79449fee06db9d6d23fb945d9",
+            "sha256": "b102bcd7b29bf074b3ce67e8c117d05976c0750f4b4cf7df4b83251d6e70651f",
+            "token": "export function createReviewRouter(",
+            "line": 26,
+            "snippet": "export function createReviewRouter(dependencies: ReviewRouterDependencies) {",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/events/review-router.ts#L26"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "dashed": false
+      },
+      {
+        "id": "venue__system",
+        "from": "venue",
+        "to": "system",
+        "label": "Venue availability and booking decisions",
+        "proofs": [
+          {
+            "path": "database/migrations/005_core_feature_schema.sql",
+            "git_blob": "0a4bbcabd4851f4f0389bf6be1fdd1ccf004554b",
+            "sha256": "20c1422083fc45b4d3a30e1b830f8bf2aaf1566d51d737c84bcfcefe9554cd9f",
+            "token": "CREATE TABLE venue_bookings",
+            "line": 108,
+            "snippet": "CREATE TABLE venue_bookings (",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/database/migrations/005_core_feature_schema.sql#L108"
+          }
+        ],
+        "assessment": "Planned workflow",
+        "note": "Schema only; no corresponding route/page (N1).",
+        "dashed": false
+      },
+      {
+        "id": "technical__system",
+        "from": "technical",
+        "to": "system",
+        "label": "Availability and reservations",
+        "proofs": [
+          {
+            "path": "database/migrations/005_core_feature_schema.sql",
+            "git_blob": "0a4bbcabd4851f4f0389bf6be1fdd1ccf004554b",
+            "sha256": "20c1422083fc45b4d3a30e1b830f8bf2aaf1566d51d737c84bcfcefe9554cd9f",
+            "token": "CREATE TABLE equipment_requests",
+            "line": 174,
+            "snippet": "CREATE TABLE equipment_requests (",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/database/migrations/005_core_feature_schema.sql#L174"
+          }
+        ],
+        "assessment": "Planned workflow",
+        "note": "Schema only; no corresponding route/page (N1).",
+        "dashed": false
+      },
+      {
+        "id": "attendee__system",
+        "from": "attendee",
+        "to": "system",
+        "label": "Event registration",
+        "proofs": [
+          {
+            "path": "database/migrations/005_core_feature_schema.sql",
+            "git_blob": "0a4bbcabd4851f4f0389bf6be1fdd1ccf004554b",
+            "sha256": "20c1422083fc45b4d3a30e1b830f8bf2aaf1566d51d737c84bcfcefe9554cd9f",
+            "token": "CREATE TABLE event_registrations",
+            "line": 224,
+            "snippet": "CREATE TABLE event_registrations (",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/database/migrations/005_core_feature_schema.sql#L224"
+          }
+        ],
+        "assessment": "Planned workflow",
+        "note": "Schema only; no corresponding route/page (N1).",
+        "dashed": false
+      },
+      {
+        "id": "system__identity",
+        "from": "system",
+        "to": "identity",
+        "label": "Sign-in and token verification",
+        "proofs": [
+          {
+            "path": "frontend/src/features/auth/supabase-client.ts",
+            "git_blob": "28b6fc91196e2791cd692da42455f01e0b1f3af8",
+            "sha256": "7ec856b1e01079ded6ec6a404f0ea584add94550a443dd296071a77a197b3f13",
+            "token": "supabase.auth.signInWithPassword(",
+            "line": 32,
+            "snippet": "const { data, error } = await supabase.auth.signInWithPassword({ email, password });",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/frontend/src/features/auth/supabase-client.ts#L32"
+          },
+          {
+            "path": "backend/src/modules/auth/supabase.ts",
+            "git_blob": "8fb7437e06ee4bedd86d403f1193f41b1288045d",
+            "sha256": "ba55ea2a8bf5980aa68861c68ee8ae2de77e2ca89cbf879b3f366d470555c0b2",
+            "token": "return cachedJwks ??= createRemoteJWKSet(",
+            "line": 36,
+            "snippet": "return cachedJwks ??= createRemoteJWKSet(new URL('/auth/v1/.well-known/jwks.json', SUPABASE_URL));",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/auth/supabase.ts#L36"
+          }
+        ],
+        "assessment": "Implemented with qualification",
+        "note": "Browser exchanges credentials; API verifies locally with cached JWKS, or local legacy HS256 secret. Not a per-request remote verification call.",
+        "dashed": false
+      }
+    ],
+    "boundaries": []
+  },
+  {
+    "name": "c2-containers-original",
+    "title": "Original C2 - pre-Week 7 containers",
+    "kind": "Original",
+    "source": "docs/architecture/archive/pre-week-7-customer-changes/c4-source/original/c2-containers.mmd",
+    "source_sha256": "847f757e46220c2b1ddeec3773f25a85e072b4cad8d28fb90d260d686105fa6b",
+    "nodes": [
+      {
+        "id": "user",
+        "label": "User<br/>One of five application roles",
+        "proofs": [
+          {
+            "path": "backend/src/modules/auth/types.ts",
+            "git_blob": "7870947565804b4bb2ff9e5bfa9032e6c38eaa29",
+            "sha256": "a29f3efdb5da80dd6bbd3aa5e9a33ec96acddc2347a843b2e246d9e824062954",
+            "token": "export const USER_ROLES = [",
+            "line": 2,
+            "snippet": "export const USER_ROLES = [",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/auth/types.ts#L2"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "group": null
+      },
+      {
+        "id": "identity",
+        "label": "Supabase Auth<br/>Email/password sign-in and signing keys",
+        "proofs": [
+          {
+            "path": "frontend/src/features/auth/supabase-client.ts",
+            "git_blob": "28b6fc91196e2791cd692da42455f01e0b1f3af8",
+            "sha256": "7ec856b1e01079ded6ec6a404f0ea584add94550a443dd296071a77a197b3f13",
+            "token": "supabase.auth.signInWithPassword(",
+            "line": 32,
+            "snippet": "const { data, error } = await supabase.auth.signInWithPassword({ email, password });",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/frontend/src/features/auth/supabase-client.ts#L32"
+          },
+          {
+            "path": "backend/src/modules/auth/supabase.ts",
+            "git_blob": "8fb7437e06ee4bedd86d403f1193f41b1288045d",
+            "sha256": "ba55ea2a8bf5980aa68861c68ee8ae2de77e2ca89cbf879b3f366d470555c0b2",
+            "token": "return cachedJwks ??= createRemoteJWKSet(",
+            "line": 36,
+            "snippet": "return cachedJwks ??= createRemoteJWKSet(new URL('/auth/v1/.well-known/jwks.json', SUPABASE_URL));",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/auth/supabase.ts#L36"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "group": null
+      },
+      {
+        "id": "web",
+        "label": "Web application<br/>Vue 3, TypeScript, Vite<br/>Pages and API client",
+        "proofs": [
+          {
+            "path": "frontend/src/app/router.ts",
+            "git_blob": "ab8888c0043a31fa5218bcadc09950d2d1dfeec4",
+            "sha256": "296510b95b9f59b5146735d7428ad2401c4c7b6fa73561749aa337770bf9c66c",
+            "token": "export const router = createRouter(",
+            "line": 14,
+            "snippet": "export const router = createRouter({",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/frontend/src/app/router.ts#L14"
+          },
+          {
+            "path": "frontend/package.json",
+            "git_blob": "6a75fb8152bb0a4625f4f8a52c06c603fff63f3d",
+            "sha256": "dc4e9ff72afa35692cfb9d50f1cc285172d917a5f0b4cb85635e1d6c4cc77d76",
+            "token": "\"vue\"",
+            "line": 14,
+            "snippet": "\"vue\": \"^3.5.42\",",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/frontend/package.json#L14"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "group": "boundary"
+      },
+      {
+        "id": "api",
+        "label": "API application<br/>Express 5, TypeScript<br/>Authorization and business rules",
+        "proofs": [
+          {
+            "path": "backend/src/app.ts",
+            "git_blob": "bd59486fedf6df5257da371b528b002f2deabb7d",
+            "sha256": "5f6f497340d329b2890d25e49c014e39058d0d41a1ce1dd53676801d5ef8895d",
+            "token": "export function createApp(",
+            "line": 33,
+            "snippet": "export function createApp({",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/app.ts#L33"
+          },
+          {
+            "path": "backend/package.json",
+            "git_blob": "41ffd20f03c761f4422bb14b4dcad4d5a9c24fff",
+            "sha256": "a36cf2f48ace60f97098490caed08ae9dbb2bbfe1b1238b09a0bce251257d89b",
+            "token": "\"express\"",
+            "line": 19,
+            "snippet": "\"express\": \"^5.0.0\",",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/package.json#L19"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "group": "boundary"
+      },
+      {
+        "id": "db",
+        "label": "Database<br/>Supabase PostgreSQL<br/>Persistent application records",
+        "proofs": [
+          {
+            "path": "backend/src/db/pool.ts",
+            "git_blob": "98f49038ad2e61a505d52b8cf9805450788b7a84",
+            "sha256": "8366223861704572daa9e4d3c225d08acef3b8a0f59e6595387a54bd26c223a5",
+            "token": "const pool = new pg.Pool(",
+            "line": 15,
+            "snippet": "const pool = new pg.Pool({",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/db/pool.ts#L15"
+          },
+          {
+            "path": "backend/src/db/connection.ts",
+            "git_blob": "243eb2b5b67ff39b82b82cdf401f256769aa2aeb",
+            "sha256": "63b6fabe2d4b99b27670a1c60f65582eff95a81ec2ada51b0118c513f632707d",
+            "token": "url.searchParams.get('sslmode') !== 'verify-full'",
+            "line": 21,
+            "snippet": "if (url.searchParams.get('sslmode') !== 'verify-full') {",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/db/connection.ts#L21"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "group": "boundary"
+      }
+    ],
+    "edges": [
+      {
+        "id": "user__web",
+        "from": "user",
+        "to": "web",
+        "label": "Uses browser",
+        "proofs": [
+          {
+            "path": "frontend/src/app/router.ts",
+            "git_blob": "ab8888c0043a31fa5218bcadc09950d2d1dfeec4",
+            "sha256": "296510b95b9f59b5146735d7428ad2401c4c7b6fa73561749aa337770bf9c66c",
+            "token": "export const router = createRouter(",
+            "line": 14,
+            "snippet": "export const router = createRouter({",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/frontend/src/app/router.ts#L14"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "dashed": false
+      },
+      {
+        "id": "web__api",
+        "from": "web",
+        "to": "api",
+        "label": "HTTP JSON /api",
+        "proofs": [
+          {
+            "path": "frontend/src/lib/api-client.ts",
+            "git_blob": "6b66b5cbb6b83d229a5cd1438d257e7ceae0ab21",
+            "sha256": "7142344ee2357e3311b3f7773765a7f1458f1ae8e953b2cafa4442be3c8d29ee",
+            "token": "fetch(",
+            "line": 29,
+            "snippet": "response = await fetch(path, { headers: { Accept: 'application/json' }, signal });",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/frontend/src/lib/api-client.ts#L29"
+          },
+          {
+            "path": "frontend/vite.config.ts",
+            "git_blob": "c8f2b595f8beb80027d0d8cc932b4acc695fe89d",
+            "sha256": "1acd6adec54687e30865d6639a892dc99747e955ef99233bd1e7544a8a7f364a",
+            "token": "'/api':",
+            "line": 18,
+            "snippet": "'/api': {",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/frontend/vite.config.ts#L18"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "dashed": false
+      },
+      {
+        "id": "web__identity",
+        "from": "web",
+        "to": "identity",
+        "label": "HTTPS credential exchange",
+        "proofs": [
+          {
+            "path": "frontend/src/features/auth/supabase-client.ts",
+            "git_blob": "28b6fc91196e2791cd692da42455f01e0b1f3af8",
+            "sha256": "7ec856b1e01079ded6ec6a404f0ea584add94550a443dd296071a77a197b3f13",
+            "token": "supabase.auth.signInWithPassword(",
+            "line": 32,
+            "snippet": "const { data, error } = await supabase.auth.signInWithPassword({ email, password });",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/frontend/src/features/auth/supabase-client.ts#L32"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "dashed": false
+      },
+      {
+        "id": "api__identity",
+        "from": "api",
+        "to": "identity",
+        "label": "HTTPS public signing keys",
+        "proofs": [
+          {
+            "path": "backend/src/modules/auth/supabase.ts",
+            "git_blob": "8fb7437e06ee4bedd86d403f1193f41b1288045d",
+            "sha256": "ba55ea2a8bf5980aa68861c68ee8ae2de77e2ca89cbf879b3f366d470555c0b2",
+            "token": "return cachedJwks ??= createRemoteJWKSet(",
+            "line": 36,
+            "snippet": "return cachedJwks ??= createRemoteJWKSet(new URL('/auth/v1/.well-known/jwks.json', SUPABASE_URL));",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/auth/supabase.ts#L36"
+          }
+        ],
+        "assessment": "Conditional JWKS fetch",
+        "note": "Cached key retrieval, not one remote request per API call; HS256 fallback uses a local secret.",
+        "dashed": false
+      },
+      {
+        "id": "api__db",
+        "from": "api",
+        "to": "db",
+        "label": "SQL via pg over TLS",
+        "proofs": [
+          {
+            "path": "backend/src/db/pool.ts",
+            "git_blob": "98f49038ad2e61a505d52b8cf9805450788b7a84",
+            "sha256": "8366223861704572daa9e4d3c225d08acef3b8a0f59e6595387a54bd26c223a5",
+            "token": "const pool = new pg.Pool(",
+            "line": 15,
+            "snippet": "const pool = new pg.Pool({",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/db/pool.ts#L15"
+          },
+          {
+            "path": "backend/src/db/connection.ts",
+            "git_blob": "243eb2b5b67ff39b82b82cdf401f256769aa2aeb",
+            "sha256": "63b6fabe2d4b99b27670a1c60f65582eff95a81ec2ada51b0118c513f632707d",
+            "token": "url.searchParams.get('sslmode') !== 'verify-full'",
+            "line": 21,
+            "snippet": "if (url.searchParams.get('sslmode') !== 'verify-full') {",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/db/connection.ts#L21"
+          }
+        ],
+        "assessment": "Supabase configuration",
+        "note": "TLS verify-full required for Supabase; local PostgreSQL can use a non-TLS connection.",
+        "dashed": false
+      }
+    ],
+    "boundaries": [
+      {
+        "id": "boundary",
+        "label": "ConnectSphere system boundary",
+        "members": [
+          "web",
+          "api",
+          "db"
+        ],
+        "proofs": [
+          {
+            "path": "backend/src/app.ts",
+            "git_blob": "bd59486fedf6df5257da371b528b002f2deabb7d",
+            "sha256": "5f6f497340d329b2890d25e49c014e39058d0d41a1ce1dd53676801d5ef8895d",
+            "token": "export function createApp(",
+            "line": 33,
+            "snippet": "export function createApp({",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/app.ts#L33"
+          },
+          {
+            "path": "frontend/src/app/router.ts",
+            "git_blob": "ab8888c0043a31fa5218bcadc09950d2d1dfeec4",
+            "sha256": "296510b95b9f59b5146735d7428ad2401c4c7b6fa73561749aa337770bf9c66c",
+            "token": "export const router = createRouter(",
+            "line": 14,
+            "snippet": "export const router = createRouter({",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/frontend/src/app/router.ts#L14"
+          },
+          {
+            "path": "backend/src/db/pool.ts",
+            "git_blob": "98f49038ad2e61a505d52b8cf9805450788b7a84",
+            "sha256": "8366223861704572daa9e4d3c225d08acef3b8a0f59e6595387a54bd26c223a5",
+            "token": "const pool = new pg.Pool(",
+            "line": 15,
+            "snippet": "const pool = new pg.Pool({",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/db/pool.ts#L15"
+          }
+        ],
+        "assessment": "Logical ownership",
+        "note": "Logical ownership of application data, not physical hosting or a single deployment. Supabase Auth remains external."
+      }
+    ]
+  },
+  {
+    "name": "c1-context-reconstructed",
+    "title": "Pre-Week 7 C1 - reconstructed from b981f11 on 6 Nov 2026",
+    "kind": "Reconstruction",
+    "source": "docs/architecture/archive/pre-week-7-customer-changes/c4-source/reconstructed/c1-context.mmd",
+    "source_sha256": "18a5918c0f3b98628fa0c06b7896a48dbb313572d89df4fdfc3edc702167cec4",
+    "nodes": [
+      {
+        "id": "organiser",
+        "label": "Event Organiser<br/>[Person]<br/>Own requests and outcomes",
+        "proofs": [
+          {
+            "path": "backend/src/modules/auth/types.ts",
+            "git_blob": "7870947565804b4bb2ff9e5bfa9032e6c38eaa29",
+            "sha256": "a29f3efdb5da80dd6bbd3aa5e9a33ec96acddc2347a843b2e246d9e824062954",
+            "token": "'EVENT_ORGANISER'",
+            "line": 3,
+            "snippet": "'EVENT_ORGANISER',",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/auth/types.ts#L3"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "group": null
+      },
+      {
+        "id": "coordinator",
+        "label": "Event Coordinator<br/>[Person]<br/>Allocation, review and lifecycle",
+        "proofs": [
+          {
+            "path": "backend/src/modules/auth/types.ts",
+            "git_blob": "7870947565804b4bb2ff9e5bfa9032e6c38eaa29",
+            "sha256": "a29f3efdb5da80dd6bbd3aa5e9a33ec96acddc2347a843b2e246d9e824062954",
+            "token": "'EVENT_COORDINATOR'",
+            "line": 4,
+            "snippet": "'EVENT_COORDINATOR',",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/auth/types.ts#L4"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "group": null
+      },
+      {
+        "id": "venue",
+        "label": "Venue Staff<br/>[Person: planned workflow]<br/>Venue management and decisions",
+        "proofs": [
+          {
+            "path": "backend/src/modules/auth/types.ts",
+            "git_blob": "7870947565804b4bb2ff9e5bfa9032e6c38eaa29",
+            "sha256": "a29f3efdb5da80dd6bbd3aa5e9a33ec96acddc2347a843b2e246d9e824062954",
+            "token": "'VENUE_STAFF'",
+            "line": 5,
+            "snippet": "'VENUE_STAFF',",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/auth/types.ts#L5"
+          }
+        ],
+        "assessment": "Planned workflow",
+        "note": "Role enum exists; feature absent (N1).",
+        "group": null
+      },
+      {
+        "id": "technical",
+        "label": "Technical Support Staff<br/>[Person: planned workflow]<br/>Equipment availability and reservations",
+        "proofs": [
+          {
+            "path": "backend/src/modules/auth/types.ts",
+            "git_blob": "7870947565804b4bb2ff9e5bfa9032e6c38eaa29",
+            "sha256": "a29f3efdb5da80dd6bbd3aa5e9a33ec96acddc2347a843b2e246d9e824062954",
+            "token": "'TECHNICAL_SUPPORT_STAFF'",
+            "line": 6,
+            "snippet": "'TECHNICAL_SUPPORT_STAFF',",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/auth/types.ts#L6"
+          }
+        ],
+        "assessment": "Planned workflow",
+        "note": "Role enum exists; feature absent (N1).",
+        "group": null
+      },
+      {
+        "id": "attendee",
+        "label": "Attendee<br/>[Person: planned workflow]<br/>Registration and withdrawal",
+        "proofs": [
+          {
+            "path": "backend/src/modules/auth/types.ts",
+            "git_blob": "7870947565804b4bb2ff9e5bfa9032e6c38eaa29",
+            "sha256": "a29f3efdb5da80dd6bbd3aa5e9a33ec96acddc2347a843b2e246d9e824062954",
+            "token": "'ATTENDEE'",
+            "line": 7,
+            "snippet": "'ATTENDEE',",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/auth/types.ts#L7"
+          }
+        ],
+        "assessment": "Planned workflow",
+        "note": "Role enum exists; feature absent (N1).",
+        "group": null
+      },
+      {
+        "id": "system",
+        "label": "ConnectSphere<br/>[Software system]<br/>Implemented request and review workflows",
+        "proofs": [
+          {
+            "path": "backend/src/app.ts",
+            "git_blob": "bd59486fedf6df5257da371b528b002f2deabb7d",
+            "sha256": "5f6f497340d329b2890d25e49c014e39058d0d41a1ce1dd53676801d5ef8895d",
+            "token": "export function createApp(",
+            "line": 33,
+            "snippet": "export function createApp({",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/app.ts#L33"
+          },
+          {
+            "path": "frontend/src/app/router.ts",
+            "git_blob": "ab8888c0043a31fa5218bcadc09950d2d1dfeec4",
+            "sha256": "296510b95b9f59b5146735d7428ad2401c4c7b6fa73561749aa337770bf9c66c",
+            "token": "export const router = createRouter(",
+            "line": 14,
+            "snippet": "export const router = createRouter({",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/frontend/src/app/router.ts#L14"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "group": null
+      },
+      {
+        "id": "identity",
+        "label": "Supabase Auth<br/>[External software system]<br/>Email/password identity and signing keys",
+        "proofs": [
+          {
+            "path": "frontend/src/features/auth/supabase-client.ts",
+            "git_blob": "28b6fc91196e2791cd692da42455f01e0b1f3af8",
+            "sha256": "7ec856b1e01079ded6ec6a404f0ea584add94550a443dd296071a77a197b3f13",
+            "token": "supabase.auth.signInWithPassword(",
+            "line": 32,
+            "snippet": "const { data, error } = await supabase.auth.signInWithPassword({ email, password });",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/frontend/src/features/auth/supabase-client.ts#L32"
+          },
+          {
+            "path": "backend/src/modules/auth/supabase.ts",
+            "git_blob": "8fb7437e06ee4bedd86d403f1193f41b1288045d",
+            "sha256": "ba55ea2a8bf5980aa68861c68ee8ae2de77e2ca89cbf879b3f366d470555c0b2",
+            "token": "return cachedJwks ??= createRemoteJWKSet(",
+            "line": 36,
+            "snippet": "return cachedJwks ??= createRemoteJWKSet(new URL('/auth/v1/.well-known/jwks.json', SUPABASE_URL));",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/auth/supabase.ts#L36"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "group": null
+      },
+      {
+        "id": "legend",
+        "label": "Legend<br/>Solid: implemented interaction<br/>Dashed: planned business interaction<br/>Source: 1 Oct 2026 / b981f11<br/>Reconstructed: 6 Nov 2026",
+        "proofs": [],
+        "assessment": "Notation",
+        "note": "Retrospective notation added on 6 November; checked against this diagram definition, with no application-code counterpart.",
+        "group": null,
+        "notation_source": {
+          "path": "docs/architecture/archive/pre-week-7-customer-changes/c4-source/reconstructed/c1-context.mmd",
+          "sha256": "18a5918c0f3b98628fa0c06b7896a48dbb313572d89df4fdfc3edc702167cec4"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "organiser__system",
+        "from": "organiser",
+        "to": "system",
+        "label": "Draft, submit, respond and view outcomes",
+        "proofs": [
+          {
+            "path": "backend/src/modules/events/submitted-requests-router.ts",
+            "git_blob": "1895e6f81241f19dfbd8d4e11f2d58f6ea5f7c28",
+            "sha256": "394ca2abd7978969f0e57239b46acd2f0152ae4e562148ac9011044a13a8ecde",
+            "token": "const created = await createDraft(",
+            "line": 109,
+            "snippet": "const created = await createDraft(dependencies, { actor, input: request.body });",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/events/submitted-requests-router.ts#L109"
+          },
+          {
+            "path": "backend/src/modules/events/clarifications.ts",
+            "git_blob": "6f903bf094ef59a9880372eb07d691b97435399d",
+            "sha256": "170ba056859967951b9646642678032a447d984862b5f6d27c6df49b160c6cab",
+            "token": "export async function respondToClarification(",
+            "line": 85,
+            "snippet": "export async function respondToClarification(",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/events/clarifications.ts#L85"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "dashed": false
+      },
+      {
+        "id": "coordinator__system",
+        "from": "coordinator",
+        "to": "system",
+        "label": "Allocate, clarify, review and manage lifecycle",
+        "proofs": [
+          {
+            "path": "backend/src/modules/events/assignment.ts",
+            "git_blob": "325a8f83200d5500247fd1e39c64591166435ab9",
+            "sha256": "69c8f3fd10320ce50cc96d4622fe55577296937b81a3c40787345c1b4f3e0d27",
+            "token": "export async function assignCoordinator(",
+            "line": 113,
+            "snippet": "export async function assignCoordinator(",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/events/assignment.ts#L113"
+          },
+          {
+            "path": "backend/src/modules/events/lifecycle.ts",
+            "git_blob": "92c4c0f31a12e52720c5c6317ee0febfa2cc39b0",
+            "sha256": "6e87a61fd445d3aa33db7a9f20fe30a2bedfef54bf7042f342b6c23dd2943123",
+            "token": "export async function confirmEvent(",
+            "line": 41,
+            "snippet": "export async function confirmEvent(",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/events/lifecycle.ts#L41"
+          },
+          {
+            "path": "backend/src/modules/events/review-decision.ts",
+            "git_blob": "e4c3e1ecea68dd0fdab7660e5452d31faf72e669",
+            "sha256": "e11fbc223b7e6a844b3d7410ab84b4baadd6c1efee663e576a32aad24146701c",
+            "token": "export async function recordInitialReview(",
+            "line": 45,
+            "snippet": "export async function recordInitialReview(",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/events/review-decision.ts#L45"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "dashed": false
+      },
+      {
+        "id": "venue__system",
+        "from": "venue",
+        "to": "system",
+        "label": "Planned: maintain venues and decide bookings",
+        "proofs": [
+          {
+            "path": "database/migrations/005_core_feature_schema.sql",
+            "git_blob": "0a4bbcabd4851f4f0389bf6be1fdd1ccf004554b",
+            "sha256": "20c1422083fc45b4d3a30e1b830f8bf2aaf1566d51d737c84bcfcefe9554cd9f",
+            "token": "CREATE TABLE venue_bookings",
+            "line": 108,
+            "snippet": "CREATE TABLE venue_bookings (",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/database/migrations/005_core_feature_schema.sql#L108"
+          }
+        ],
+        "assessment": "Planned workflow",
+        "note": "Schema only; N1.",
+        "dashed": true
+      },
+      {
+        "id": "technical__system",
+        "from": "technical",
+        "to": "system",
+        "label": "Planned: equipment availability and reservations",
+        "proofs": [
+          {
+            "path": "database/migrations/005_core_feature_schema.sql",
+            "git_blob": "0a4bbcabd4851f4f0389bf6be1fdd1ccf004554b",
+            "sha256": "20c1422083fc45b4d3a30e1b830f8bf2aaf1566d51d737c84bcfcefe9554cd9f",
+            "token": "CREATE TABLE equipment_requests",
+            "line": 174,
+            "snippet": "CREATE TABLE equipment_requests (",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/database/migrations/005_core_feature_schema.sql#L174"
+          }
+        ],
+        "assessment": "Planned workflow",
+        "note": "Schema only; N1.",
+        "dashed": true
+      },
+      {
+        "id": "attendee__system",
+        "from": "attendee",
+        "to": "system",
+        "label": "Planned: registration and withdrawal",
+        "proofs": [
+          {
+            "path": "database/migrations/005_core_feature_schema.sql",
+            "git_blob": "0a4bbcabd4851f4f0389bf6be1fdd1ccf004554b",
+            "sha256": "20c1422083fc45b4d3a30e1b830f8bf2aaf1566d51d737c84bcfcefe9554cd9f",
+            "token": "CREATE TABLE event_registrations",
+            "line": 224,
+            "snippet": "CREATE TABLE event_registrations (",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/database/migrations/005_core_feature_schema.sql#L224"
+          }
+        ],
+        "assessment": "Planned workflow",
+        "note": "Schema only; N1.",
+        "dashed": true
+      },
+      {
+        "id": "system__identity",
+        "from": "system",
+        "to": "identity",
+        "label": "Sign-in and signing-key discovery",
+        "proofs": [
+          {
+            "path": "frontend/src/features/auth/supabase-client.ts",
+            "git_blob": "28b6fc91196e2791cd692da42455f01e0b1f3af8",
+            "sha256": "7ec856b1e01079ded6ec6a404f0ea584add94550a443dd296071a77a197b3f13",
+            "token": "supabase.auth.signInWithPassword(",
+            "line": 32,
+            "snippet": "const { data, error } = await supabase.auth.signInWithPassword({ email, password });",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/frontend/src/features/auth/supabase-client.ts#L32"
+          },
+          {
+            "path": "backend/src/modules/auth/supabase.ts",
+            "git_blob": "8fb7437e06ee4bedd86d403f1193f41b1288045d",
+            "sha256": "ba55ea2a8bf5980aa68861c68ee8ae2de77e2ca89cbf879b3f366d470555c0b2",
+            "token": "return cachedJwks ??= createRemoteJWKSet(",
+            "line": 36,
+            "snippet": "return cachedJwks ??= createRemoteJWKSet(new URL('/auth/v1/.well-known/jwks.json', SUPABASE_URL));",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/auth/supabase.ts#L36"
+          }
+        ],
+        "assessment": "Implemented with qualification",
+        "note": "Context-level aggregate: browser credential exchange and API cached JWKS retrieval; local JWT verification. HS256 fallback has no remote key request.",
+        "dashed": false
+      }
+    ],
+    "boundaries": []
+  },
+  {
+    "name": "c2-containers-reconstructed",
+    "title": "Pre-Week 7 C2 - reconstructed from b981f11 on 6 Nov 2026",
+    "kind": "Reconstruction",
+    "source": "docs/architecture/archive/pre-week-7-customer-changes/c4-source/reconstructed/c2-containers.mmd",
+    "source_sha256": "6ae0a88a3f6e54a4f94febd5c4fed024abbd67cd1e361acd0a95ba1cf2473c67",
+    "nodes": [
+      {
+        "id": "user",
+        "label": "Application user<br/>[Person]<br/>Five trusted role values",
+        "proofs": [
+          {
+            "path": "backend/src/modules/auth/types.ts",
+            "git_blob": "7870947565804b4bb2ff9e5bfa9032e6c38eaa29",
+            "sha256": "a29f3efdb5da80dd6bbd3aa5e9a33ec96acddc2347a843b2e246d9e824062954",
+            "token": "export const USER_ROLES = [",
+            "line": 2,
+            "snippet": "export const USER_ROLES = [",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/auth/types.ts#L2"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "Business UI exists only for organiser/coordinator workflows; other provisioned roles can authenticate.",
+        "group": null
+      },
+      {
+        "id": "identity",
+        "label": "Supabase Auth<br/>[External software system]<br/>Email/password and published signing keys",
+        "proofs": [
+          {
+            "path": "frontend/src/features/auth/supabase-client.ts",
+            "git_blob": "28b6fc91196e2791cd692da42455f01e0b1f3af8",
+            "sha256": "7ec856b1e01079ded6ec6a404f0ea584add94550a443dd296071a77a197b3f13",
+            "token": "supabase.auth.signInWithPassword(",
+            "line": 32,
+            "snippet": "const { data, error } = await supabase.auth.signInWithPassword({ email, password });",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/frontend/src/features/auth/supabase-client.ts#L32"
+          },
+          {
+            "path": "backend/src/modules/auth/supabase.ts",
+            "git_blob": "8fb7437e06ee4bedd86d403f1193f41b1288045d",
+            "sha256": "ba55ea2a8bf5980aa68861c68ee8ae2de77e2ca89cbf879b3f366d470555c0b2",
+            "token": "return cachedJwks ??= createRemoteJWKSet(",
+            "line": 36,
+            "snippet": "return cachedJwks ??= createRemoteJWKSet(new URL('/auth/v1/.well-known/jwks.json', SUPABASE_URL));",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/auth/supabase.ts#L36"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "group": null
+      },
+      {
+        "id": "web",
+        "label": "Web application<br/>[Container: Vue 3 / TypeScript / Vite]<br/>Browser pages and API client",
+        "proofs": [
+          {
+            "path": "frontend/src/app/router.ts",
+            "git_blob": "ab8888c0043a31fa5218bcadc09950d2d1dfeec4",
+            "sha256": "296510b95b9f59b5146735d7428ad2401c4c7b6fa73561749aa337770bf9c66c",
+            "token": "export const router = createRouter(",
+            "line": 14,
+            "snippet": "export const router = createRouter({",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/frontend/src/app/router.ts#L14"
+          },
+          {
+            "path": "frontend/package.json",
+            "git_blob": "6a75fb8152bb0a4625f4f8a52c06c603fff63f3d",
+            "sha256": "dc4e9ff72afa35692cfb9d50f1cc285172d917a5f0b4cb85635e1d6c4cc77d76",
+            "token": "\"vue\"",
+            "line": 14,
+            "snippet": "\"vue\": \"^3.5.42\",",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/frontend/package.json#L14"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "group": "systemBoundary"
+      },
+      {
+        "id": "api",
+        "label": "API application<br/>[Container: Express 5 / TypeScript]<br/>One Node.js process",
+        "proofs": [
+          {
+            "path": "backend/src/app.ts",
+            "git_blob": "bd59486fedf6df5257da371b528b002f2deabb7d",
+            "sha256": "5f6f497340d329b2890d25e49c014e39058d0d41a1ce1dd53676801d5ef8895d",
+            "token": "export function createApp(",
+            "line": 33,
+            "snippet": "export function createApp({",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/app.ts#L33"
+          },
+          {
+            "path": "backend/src/server.ts",
+            "git_blob": "7edacf83b7bf06488e854ba929f30990679e6b8e",
+            "sha256": "49f694fb773cc38442b6ecb2514b1c2d90e138bcf232428884b16d6174134407",
+            "token": "const server = app.listen(",
+            "line": 12,
+            "snippet": "const server = app.listen(environment.apiPort, environment.apiHost, () => {",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/server.ts#L12"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "group": "systemBoundary"
+      },
+      {
+        "id": "db",
+        "label": "Application database<br/>[Container: Supabase PostgreSQL]<br/>Application-owned records and triggers",
+        "proofs": [
+          {
+            "path": "backend/src/db/pool.ts",
+            "git_blob": "98f49038ad2e61a505d52b8cf9805450788b7a84",
+            "sha256": "8366223861704572daa9e4d3c225d08acef3b8a0f59e6595387a54bd26c223a5",
+            "token": "const pool = new pg.Pool(",
+            "line": 15,
+            "snippet": "const pool = new pg.Pool({",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/db/pool.ts#L15"
+          },
+          {
+            "path": "database/migrations/005_core_feature_schema.sql",
+            "git_blob": "0a4bbcabd4851f4f0389bf6be1fdd1ccf004554b",
+            "sha256": "20c1422083fc45b4d3a30e1b830f8bf2aaf1566d51d737c84bcfcefe9554cd9f",
+            "token": "CREATE TABLE notifications",
+            "line": 281,
+            "snippet": "CREATE TABLE notifications (",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/database/migrations/005_core_feature_schema.sql#L281"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "group": "systemBoundary"
+      },
+      {
+        "id": "legend",
+        "label": "Legend<br/>Arrows: calls or data access<br/>Boundary: logical system ownership<br/>Database hosting: Supabase<br/>Local development: Vite 5173 / API 3000",
+        "proofs": [],
+        "assessment": "Notation",
+        "note": "Retrospective notation added on 6 November; checked against this diagram definition, with no application-code counterpart.",
+        "group": null,
+        "notation_source": {
+          "path": "docs/architecture/archive/pre-week-7-customer-changes/c4-source/reconstructed/c2-containers.mmd",
+          "sha256": "6ae0a88a3f6e54a4f94febd5c4fed024abbd67cd1e361acd0a95ba1cf2473c67"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "user__web",
+        "from": "user",
+        "to": "web",
+        "label": "Uses browser pages",
+        "proofs": [
+          {
+            "path": "frontend/src/app/router.ts",
+            "git_blob": "ab8888c0043a31fa5218bcadc09950d2d1dfeec4",
+            "sha256": "296510b95b9f59b5146735d7428ad2401c4c7b6fa73561749aa337770bf9c66c",
+            "token": "export const router = createRouter(",
+            "line": 14,
+            "snippet": "export const router = createRouter({",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/frontend/src/app/router.ts#L14"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "dashed": false
+      },
+      {
+        "id": "web__api",
+        "from": "web",
+        "to": "api",
+        "label": "HTTP JSON /api + HttpOnly session cookie",
+        "proofs": [
+          {
+            "path": "frontend/src/lib/api-client.ts",
+            "git_blob": "6b66b5cbb6b83d229a5cd1438d257e7ceae0ab21",
+            "sha256": "7142344ee2357e3311b3f7773765a7f1458f1ae8e953b2cafa4442be3c8d29ee",
+            "token": "fetch(",
+            "line": 29,
+            "snippet": "response = await fetch(path, { headers: { Accept: 'application/json' }, signal });",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/frontend/src/lib/api-client.ts#L29"
+          },
+          {
+            "path": "frontend/vite.config.ts",
+            "git_blob": "c8f2b595f8beb80027d0d8cc932b4acc695fe89d",
+            "sha256": "1acd6adec54687e30865d6639a892dc99747e955ef99233bd1e7544a8a7f364a",
+            "token": "'/api':",
+            "line": 18,
+            "snippet": "'/api': {",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/frontend/vite.config.ts#L18"
+          },
+          {
+            "path": "backend/src/modules/auth/router.ts",
+            "git_blob": "cfe4c45b0aae7465a707cfd9eafd03291eaffb2d",
+            "sha256": "71bfa0ebb12091af39d41b06773d19b56062d7b183970ef5404c6eb7c2021ad5",
+            "token": "HttpOnly; SameSite=Lax;",
+            "line": 43,
+            "snippet": "return `${COOKIE_NAME}=${encodeURIComponent(value)}; Path=/api; HttpOnly; SameSite=Lax; Max-Age=${maxAgeSeconds}${isProduction ? '; Secure' : ''}`;",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/auth/router.ts#L43"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "Development /api proxy targets API3000; same-origin fetch carries the Path=/api cookie. No deployment claim.",
+        "dashed": false
+      },
+      {
+        "id": "web__identity",
+        "from": "web",
+        "to": "identity",
+        "label": "HTTPS: temporary credential exchange",
+        "proofs": [
+          {
+            "path": "frontend/src/features/auth/supabase-client.ts",
+            "git_blob": "28b6fc91196e2791cd692da42455f01e0b1f3af8",
+            "sha256": "7ec856b1e01079ded6ec6a404f0ea584add94550a443dd296071a77a197b3f13",
+            "token": "supabase.auth.signInWithPassword(",
+            "line": 32,
+            "snippet": "const { data, error } = await supabase.auth.signInWithPassword({ email, password });",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/frontend/src/features/auth/supabase-client.ts#L32"
+          },
+          {
+            "path": "frontend/src/features/auth/supabase-client.ts",
+            "git_blob": "28b6fc91196e2791cd692da42455f01e0b1f3af8",
+            "sha256": "7ec856b1e01079ded6ec6a404f0ea584add94550a443dd296071a77a197b3f13",
+            "token": "persistSession: false",
+            "line": 20,
+            "snippet": "persistSession: false,",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/frontend/src/features/auth/supabase-client.ts#L20"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "SDK session discarded locally after extracting token; Express owns durable browser cookie.",
+        "dashed": false
+      },
+      {
+        "id": "api__identity",
+        "from": "api",
+        "to": "identity",
+        "label": "HTTPS: cached JWKS retrieval",
+        "proofs": [
+          {
+            "path": "backend/src/modules/auth/supabase.ts",
+            "git_blob": "8fb7437e06ee4bedd86d403f1193f41b1288045d",
+            "sha256": "ba55ea2a8bf5980aa68861c68ee8ae2de77e2ca89cbf879b3f366d470555c0b2",
+            "token": "return cachedJwks ??= createRemoteJWKSet(",
+            "line": 36,
+            "snippet": "return cachedJwks ??= createRemoteJWKSet(new URL('/auth/v1/.well-known/jwks.json', SUPABASE_URL));",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/auth/supabase.ts#L36"
+          }
+        ],
+        "assessment": "Conditional JWKS fetch",
+        "note": "JWT verified locally; optional legacy SUPABASE_JWT_SECRET path makes no JWKS request.",
+        "dashed": false
+      },
+      {
+        "id": "api__db",
+        "from": "api",
+        "to": "db",
+        "label": "SQL via pg pool / transaction clients",
+        "proofs": [
+          {
+            "path": "backend/src/db/pool.ts",
+            "git_blob": "98f49038ad2e61a505d52b8cf9805450788b7a84",
+            "sha256": "8366223861704572daa9e4d3c225d08acef3b8a0f59e6595387a54bd26c223a5",
+            "token": "const pool = new pg.Pool(",
+            "line": 15,
+            "snippet": "const pool = new pg.Pool({",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/db/pool.ts#L15"
+          },
+          {
+            "path": "backend/src/db/connection.ts",
+            "git_blob": "243eb2b5b67ff39b82b82cdf401f256769aa2aeb",
+            "sha256": "63b6fabe2d4b99b27670a1c60f65582eff95a81ec2ada51b0118c513f632707d",
+            "token": "url.searchParams.get('sslmode') !== 'verify-full'",
+            "line": 21,
+            "snippet": "if (url.searchParams.get('sslmode') !== 'verify-full') {",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/db/connection.ts#L21"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "TLS verify-full for Supabase; direct/session pooler supported. Browser does not use the Data API.",
+        "dashed": false
+      }
+    ],
+    "boundaries": [
+      {
+        "id": "systemBoundary",
+        "label": "ConnectSphere - logical system boundary",
+        "members": [
+          "web",
+          "api",
+          "db"
+        ],
+        "proofs": [
+          {
+            "path": "backend/src/app.ts",
+            "git_blob": "bd59486fedf6df5257da371b528b002f2deabb7d",
+            "sha256": "5f6f497340d329b2890d25e49c014e39058d0d41a1ce1dd53676801d5ef8895d",
+            "token": "export function createApp(",
+            "line": 33,
+            "snippet": "export function createApp({",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/app.ts#L33"
+          },
+          {
+            "path": "frontend/src/app/router.ts",
+            "git_blob": "ab8888c0043a31fa5218bcadc09950d2d1dfeec4",
+            "sha256": "296510b95b9f59b5146735d7428ad2401c4c7b6fa73561749aa337770bf9c66c",
+            "token": "export const router = createRouter(",
+            "line": 14,
+            "snippet": "export const router = createRouter({",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/frontend/src/app/router.ts#L14"
+          },
+          {
+            "path": "backend/src/db/pool.ts",
+            "git_blob": "98f49038ad2e61a505d52b8cf9805450788b7a84",
+            "sha256": "8366223861704572daa9e4d3c225d08acef3b8a0f59e6595387a54bd26c223a5",
+            "token": "const pool = new pg.Pool(",
+            "line": 15,
+            "snippet": "const pool = new pg.Pool({",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/db/pool.ts#L15"
+          }
+        ],
+        "assessment": "Logical ownership",
+        "note": "Logical ownership of application data, not physical hosting or a single deployment. Supabase Auth remains external."
+      }
+    ]
+  },
+  {
+    "name": "c3-components-reconstructed",
+    "title": "Pre-Week 7 C3 - reconstructed from b981f11 on 6 Nov 2026",
+    "kind": "Reconstruction",
+    "source": "docs/architecture/archive/pre-week-7-customer-changes/c4-source/reconstructed/c3-components.mmd",
+    "source_sha256": "4c0161c86e279f583ad304187c63a55812b1d716d0f09e2b654dc85d2dada2d7",
+    "nodes": [
+      {
+        "id": "web",
+        "label": "Web application<br/>[External container: Vue 3]<br/>Event and review pages",
+        "proofs": [
+          {
+            "path": "frontend/src/app/router.ts",
+            "git_blob": "ab8888c0043a31fa5218bcadc09950d2d1dfeec4",
+            "sha256": "296510b95b9f59b5146735d7428ad2401c4c7b6fa73561749aa337770bf9c66c",
+            "token": "export const router = createRouter(",
+            "line": 14,
+            "snippet": "export const router = createRouter({",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/frontend/src/app/router.ts#L14"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "group": null
+      },
+      {
+        "id": "identity",
+        "label": "Supabase Auth<br/>[External software system]<br/>Published signing keys",
+        "proofs": [
+          {
+            "path": "backend/src/modules/auth/supabase.ts",
+            "git_blob": "8fb7437e06ee4bedd86d403f1193f41b1288045d",
+            "sha256": "ba55ea2a8bf5980aa68861c68ee8ae2de77e2ca89cbf879b3f366d470555c0b2",
+            "token": "return cachedJwks ??= createRemoteJWKSet(",
+            "line": 36,
+            "snippet": "return cachedJwks ??= createRemoteJWKSet(new URL('/auth/v1/.well-known/jwks.json', SUPABASE_URL));",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/auth/supabase.ts#L36"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "group": null
+      },
+      {
+        "id": "db",
+        "label": "Application database<br/>[External container: PostgreSQL]<br/>Records, constraints and SQL triggers",
+        "proofs": [
+          {
+            "path": "backend/src/db/pool.ts",
+            "git_blob": "98f49038ad2e61a505d52b8cf9805450788b7a84",
+            "sha256": "8366223861704572daa9e4d3c225d08acef3b8a0f59e6595387a54bd26c223a5",
+            "token": "const pool = new pg.Pool(",
+            "line": 15,
+            "snippet": "const pool = new pg.Pool({",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/db/pool.ts#L15"
+          },
+          {
+            "path": "database/migrations/005_core_feature_schema.sql",
+            "git_blob": "0a4bbcabd4851f4f0389bf6be1fdd1ccf004554b",
+            "sha256": "20c1422083fc45b4d3a30e1b830f8bf2aaf1566d51d737c84bcfcefe9554cd9f",
+            "token": "CREATE TABLE notifications",
+            "line": 281,
+            "snippet": "CREATE TABLE notifications (",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/database/migrations/005_core_feature_schema.sql#L281"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "group": null
+      },
+      {
+        "id": "legend",
+        "label": "Legend<br/>Arrows: runtime calls or SQL access<br/>Components share one API process<br/>Pure type imports are omitted<br/>No venue / equipment / attendee API<br/>No inbox API or background scheduler",
+        "proofs": [],
+        "assessment": "Notation",
+        "note": "Retrospective notation added on 6 November; checked against this diagram definition, with no application-code counterpart.",
+        "group": null,
+        "notation_source": {
+          "path": "docs/architecture/archive/pre-week-7-customer-changes/c4-source/reconstructed/c3-components.mmd",
+          "sha256": "4c0161c86e279f583ad304187c63a55812b1d716d0f09e2b654dc85d2dada2d7"
+        }
+      },
+      {
+        "id": "http",
+        "label": "HTTP boundary<br/>[Component: Express routers]<br/>Health, JSON, role gates and errors",
+        "proofs": [
+          {
+            "path": "backend/src/app.ts",
+            "git_blob": "bd59486fedf6df5257da371b528b002f2deabb7d",
+            "sha256": "5f6f497340d329b2890d25e49c014e39058d0d41a1ce1dd53676801d5ef8895d",
+            "token": "export function createApp(",
+            "line": 33,
+            "snippet": "export function createApp({",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/app.ts#L33"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "group": "apiBoundary"
+      },
+      {
+        "id": "session",
+        "label": "Session authentication<br/>[Component: TypeScript]<br/>Login, cookie, me and logout",
+        "proofs": [
+          {
+            "path": "backend/src/modules/auth/router.ts",
+            "git_blob": "cfe4c45b0aae7465a707cfd9eafd03291eaffb2d",
+            "sha256": "71bfa0ebb12091af39d41b06773d19b56062d7b183970ef5404c6eb7c2021ad5",
+            "token": "export async function authenticateRequest(",
+            "line": 60,
+            "snippet": "export async function authenticateRequest(",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/auth/router.ts#L60"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "group": "apiBoundary"
+      },
+      {
+        "id": "tokens",
+        "label": "Token verifier<br/>[Component: jose]<br/>Local JWT verification / cached keys",
+        "proofs": [
+          {
+            "path": "backend/src/modules/auth/supabase.ts",
+            "git_blob": "8fb7437e06ee4bedd86d403f1193f41b1288045d",
+            "sha256": "ba55ea2a8bf5980aa68861c68ee8ae2de77e2ca89cbf879b3f366d470555c0b2",
+            "token": "export async function verifySupabaseAccessToken(",
+            "line": 40,
+            "snippet": "export async function verifySupabaseAccessToken(token: string): Promise<SupabaseAccessTokenClaims> {",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/auth/supabase.ts#L40"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "group": "apiBoundary"
+      },
+      {
+        "id": "profiles",
+        "label": "Profile repository<br/>[Component: SQL / TypeScript]<br/>Supabase UID to app user / five roles",
+        "proofs": [
+          {
+            "path": "backend/src/modules/auth/user-repository.ts",
+            "git_blob": "966f2bd54e2c95ab71e4b84158486c7137bbf4cf",
+            "sha256": "a11ee300157443ab11d5c704521e74401539da732a1f07c6f4b3bdfca2323016",
+            "token": "export async function findUserBySupabaseUid(",
+            "line": 24,
+            "snippet": "export async function findUserBySupabaseUid(",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/auth/user-repository.ts#L24"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "group": "apiBoundary"
+      },
+      {
+        "id": "queries",
+        "label": "Request queries<br/>[Component: TypeScript / SQL]<br/>Owned lists, queues, detail and actions",
+        "proofs": [
+          {
+            "path": "backend/src/modules/events/submitted-requests.ts",
+            "git_blob": "7baf47492c7600a18d9ed6160c97692205bfbad3",
+            "sha256": "87be0b28c90818b5ad5ee578773237858386bdaf58194c5d3209250b03a78da7",
+            "token": "export function listReviewableRequests(",
+            "line": 54,
+            "snippet": "export function listReviewableRequests(",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/events/submitted-requests.ts#L54"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "group": "apiBoundary"
+      },
+      {
+        "id": "drafts",
+        "label": "Draft commands<br/>[Component: TypeScript / SQL]<br/>Create / update own DRAFT and validate",
+        "proofs": [
+          {
+            "path": "backend/src/modules/events/update-draft.ts",
+            "git_blob": "278ee66cd66823c5b3b8ab5914eccf7f72606c9c",
+            "sha256": "283e89eff4df9d6c908befedb8c9385742e9f5272867c80d5e4f898181d26d40",
+            "token": "export async function updateOwnedDraft(",
+            "line": 85,
+            "snippet": "export async function updateOwnedDraft(",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/events/update-draft.ts#L85"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "group": "apiBoundary"
+      },
+      {
+        "id": "submission",
+        "label": "Submission command<br/>[Component: TypeScript / SQL]<br/>Validate saved draft and submit",
+        "proofs": [
+          {
+            "path": "backend/src/modules/events/submit-request.ts",
+            "git_blob": "1eac05893876e08fb0835e54f230058455b45032",
+            "sha256": "9c1a7b701a9d759bcbb33bcf351f84b98bb5a9b07e61e041e9c712990c02f369",
+            "token": "export async function submitEventRequest(",
+            "line": 57,
+            "snippet": "export async function submitEventRequest(",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/events/submit-request.ts#L57"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "group": "apiBoundary"
+      },
+      {
+        "id": "assignment",
+        "label": "Coordinator assignment<br/>[Component: TypeScript / SQL]<br/>Triage, allocate and hand over",
+        "proofs": [
+          {
+            "path": "backend/src/modules/events/assignment.ts",
+            "git_blob": "325a8f83200d5500247fd1e39c64591166435ab9",
+            "sha256": "69c8f3fd10320ce50cc96d4622fe55577296937b81a3c40787345c1b4f3e0d27",
+            "token": "export async function assignCoordinator(",
+            "line": 113,
+            "snippet": "export async function assignCoordinator(",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/events/assignment.ts#L113"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "group": "apiBoundary"
+      },
+      {
+        "id": "clarification",
+        "label": "Clarification workflow<br/>[Component: TypeScript / SQL]<br/>Start review, ask and respond",
+        "proofs": [
+          {
+            "path": "backend/src/modules/events/clarifications.ts",
+            "git_blob": "6f903bf094ef59a9880372eb07d691b97435399d",
+            "sha256": "170ba056859967951b9646642678032a447d984862b5f6d27c6df49b160c6cab",
+            "token": "export async function requestClarification(",
+            "line": 53,
+            "snippet": "export async function requestClarification(",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/events/clarifications.ts#L53"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "group": "apiBoundary"
+      },
+      {
+        "id": "review",
+        "label": "Initial review decision<br/>[Component: TypeScript / SQL]<br/>One approval / rejection and validation",
+        "proofs": [
+          {
+            "path": "backend/src/modules/events/review-decision.ts",
+            "git_blob": "e4c3e1ecea68dd0fdab7660e5452d31faf72e669",
+            "sha256": "e11fbc223b7e6a844b3d7410ab84b4baadd6c1efee663e576a32aad24146701c",
+            "token": "export async function recordInitialReview(",
+            "line": 45,
+            "snippet": "export async function recordInitialReview(",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/events/review-decision.ts#L45"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "group": "apiBoundary"
+      },
+      {
+        "id": "lifecycle",
+        "label": "Event lifecycle<br/>[Component: TypeScript / SQL]<br/>Confirm, cancel, complete and history",
+        "proofs": [
+          {
+            "path": "backend/src/modules/events/lifecycle.ts",
+            "git_blob": "92c4c0f31a12e52720c5c6317ee0febfa2cc39b0",
+            "sha256": "6e87a61fd445d3aa33db7a9f20fe30a2bedfef54bf7042f342b6c23dd2943123",
+            "token": "export async function confirmEvent(",
+            "line": 41,
+            "snippet": "export async function confirmEvent(",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/events/lifecycle.ts#L41"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "group": "apiBoundary"
+      },
+      {
+        "id": "workflow",
+        "label": "Workflow support<br/>[Component: TypeScript / SQL]<br/>Actor transaction, locks and relationships",
+        "proofs": [
+          {
+            "path": "backend/src/modules/events/workflow-support.ts",
+            "git_blob": "e64371467e55d35a3052a1ce260e35ea99e86169",
+            "sha256": "0f7394f6af3942a77cf262158f1e930678cae2b69e40c2b592c778a7eeeb8030",
+            "token": "export async function inActorTransaction<T>(",
+            "line": 114,
+            "snippet": "export async function inActorTransaction<T>(",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/events/workflow-support.ts#L114"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "group": "apiBoundary"
+      },
+      {
+        "id": "policy",
+        "label": "Assignment policy<br/>[Component: TypeScript]<br/>Current assigned coordinator check",
+        "proofs": [
+          {
+            "path": "backend/src/modules/events/coordinator-access.ts",
+            "git_blob": "c95bc7b3ee7d699109f0bf4727175f6b54c0ccaa",
+            "sha256": "7966b7d378405bb76eabe52f67bdcafb94f68ad2baa3c8214d07e335c4ffa377",
+            "token": "export function isAssignedCoordinator(",
+            "line": 5,
+            "snippet": "export function isAssignedCoordinator(",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/events/coordinator-access.ts#L5"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "group": "apiBoundary"
+      },
+      {
+        "id": "notices",
+        "label": "Notification writer<br/>[Component: TypeScript / SQL]<br/>In-app rows in caller transaction",
+        "proofs": [
+          {
+            "path": "backend/src/modules/notifications/notify.ts",
+            "git_blob": "7c59d92573859fe360bfd3b7a1d3a6fea119118b",
+            "sha256": "62c46e24c8f0d471062aa89e2d1b45c1b3961486d848e7e5a138f9bf4e5357f8",
+            "token": "export async function notify(",
+            "line": 18,
+            "snippet": "export async function notify(",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/notifications/notify.ts#L18"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "group": "apiBoundary"
+      }
+    ],
+    "edges": [
+      {
+        "id": "web__http",
+        "from": "web",
+        "to": "http",
+        "label": "HTTP JSON /api and session cookie",
+        "proofs": [
+          {
+            "path": "frontend/src/lib/api-client.ts",
+            "git_blob": "6b66b5cbb6b83d229a5cd1438d257e7ceae0ab21",
+            "sha256": "7142344ee2357e3311b3f7773765a7f1458f1ae8e953b2cafa4442be3c8d29ee",
+            "token": "fetch(",
+            "line": 29,
+            "snippet": "response = await fetch(path, { headers: { Accept: 'application/json' }, signal });",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/frontend/src/lib/api-client.ts#L29"
+          },
+          {
+            "path": "frontend/vite.config.ts",
+            "git_blob": "c8f2b595f8beb80027d0d8cc932b4acc695fe89d",
+            "sha256": "1acd6adec54687e30865d6639a892dc99747e955ef99233bd1e7544a8a7f364a",
+            "token": "'/api':",
+            "line": 18,
+            "snippet": "'/api': {",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/frontend/vite.config.ts#L18"
+          },
+          {
+            "path": "backend/src/modules/auth/router.ts",
+            "git_blob": "cfe4c45b0aae7465a707cfd9eafd03291eaffb2d",
+            "sha256": "71bfa0ebb12091af39d41b06773d19b56062d7b183970ef5404c6eb7c2021ad5",
+            "token": "HttpOnly; SameSite=Lax;",
+            "line": 43,
+            "snippet": "return `${COOKIE_NAME}=${encodeURIComponent(value)}; Path=/api; HttpOnly; SameSite=Lax; Max-Age=${maxAgeSeconds}${isProduction ? '; Secure' : ''}`;",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/auth/router.ts#L43"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "dashed": false
+      },
+      {
+        "id": "http__session",
+        "from": "http",
+        "to": "session",
+        "label": "Auth endpoints and authenticate callback",
+        "proofs": [
+          {
+            "path": "backend/src/app.ts",
+            "git_blob": "bd59486fedf6df5257da371b528b002f2deabb7d",
+            "sha256": "5f6f497340d329b2890d25e49c014e39058d0d41a1ce1dd53676801d5ef8895d",
+            "token": "if (auth) app.use('/api/auth', createAuthRouter(auth));",
+            "line": 62,
+            "snippet": "if (auth) app.use('/api/auth', createAuthRouter(auth));",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/app.ts#L62"
+          },
+          {
+            "path": "backend/src/runtime-app.ts",
+            "git_blob": "ab6f36a24fc72b3e829574e675c877f1f1b488fc",
+            "sha256": "9fe7951d051a16d9171cbf28e7b5ebc1c27f879021fbc2c7a6b505615844b4de",
+            "token": "authenticateRequest(pool, supabaseAuth, request)",
+            "line": 21,
+            "snippet": "authenticate: (request: Request) => authenticateRequest(pool, supabaseAuth, request),",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/runtime-app.ts#L21"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "dashed": false
+      },
+      {
+        "id": "session__tokens",
+        "from": "session",
+        "to": "tokens",
+        "label": "Verify cookie or login access token",
+        "proofs": [
+          {
+            "path": "backend/src/modules/auth/router.ts",
+            "git_blob": "cfe4c45b0aae7465a707cfd9eafd03291eaffb2d",
+            "sha256": "71bfa0ebb12091af39d41b06773d19b56062d7b183970ef5404c6eb7c2021ad5",
+            "token": "verifySupabaseAccessToken(accessToken)",
+            "line": 19,
+            "snippet": "const claims = await verifySupabaseAccessToken(accessToken);",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/auth/router.ts#L19"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "dashed": false
+      },
+      {
+        "id": "tokens__identity",
+        "from": "tokens",
+        "to": "identity",
+        "label": "HTTPS: retrieve and cache JWKS",
+        "proofs": [
+          {
+            "path": "backend/src/modules/auth/supabase.ts",
+            "git_blob": "8fb7437e06ee4bedd86d403f1193f41b1288045d",
+            "sha256": "ba55ea2a8bf5980aa68861c68ee8ae2de77e2ca89cbf879b3f366d470555c0b2",
+            "token": "return cachedJwks ??= createRemoteJWKSet(",
+            "line": 36,
+            "snippet": "return cachedJwks ??= createRemoteJWKSet(new URL('/auth/v1/.well-known/jwks.json', SUPABASE_URL));",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/auth/supabase.ts#L36"
+          }
+        ],
+        "assessment": "Conditional JWKS fetch",
+        "note": "HS256 secret fallback is local, without this remote call.",
+        "dashed": false
+      },
+      {
+        "id": "session__profiles",
+        "from": "session",
+        "to": "profiles",
+        "label": "Resolve verified UID",
+        "proofs": [
+          {
+            "path": "backend/src/modules/auth/router.ts",
+            "git_blob": "cfe4c45b0aae7465a707cfd9eafd03291eaffb2d",
+            "sha256": "71bfa0ebb12091af39d41b06773d19b56062d7b183970ef5404c6eb7c2021ad5",
+            "token": "findUserBySupabaseUid(database, claims.uid)",
+            "line": 67,
+            "snippet": "return findUserBySupabaseUid(database, claims.uid);",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/auth/router.ts#L67"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "dashed": false
+      },
+      {
+        "id": "profiles__db",
+        "from": "profiles",
+        "to": "db",
+        "label": "SELECT app_users by Supabase UID",
+        "proofs": [
+          {
+            "path": "backend/src/modules/auth/user-repository.ts",
+            "git_blob": "966f2bd54e2c95ab71e4b84158486c7137bbf4cf",
+            "sha256": "a11ee300157443ab11d5c704521e74401539da732a1f07c6f4b3bdfca2323016",
+            "token": "WHERE supabase_user_id = $1",
+            "line": 30,
+            "snippet": "WHERE supabase_user_id = $1",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/auth/user-repository.ts#L30"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "dashed": false
+      },
+      {
+        "id": "http__queries",
+        "from": "http",
+        "to": "queries",
+        "label": "Owned lists, queue and detail reads",
+        "proofs": [
+          {
+            "path": "backend/src/modules/events/submitted-requests-router.ts",
+            "git_blob": "1895e6f81241f19dfbd8d4e11f2d58f6ea5f7c28",
+            "sha256": "394ca2abd7978969f0e57239b46acd2f0152ae4e562148ac9011044a13a8ecde",
+            "token": "listOwnedRequests(dependencies, actor)",
+            "line": 63,
+            "snippet": "? await listOwnedRequests(dependencies, actor)",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/events/submitted-requests-router.ts#L63"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "dashed": false
+      },
+      {
+        "id": "queries__policy",
+        "from": "queries",
+        "to": "policy",
+        "label": "Injected visibility and decision policy",
+        "proofs": [
+          {
+            "path": "backend/src/modules/events/submitted-requests.ts",
+            "git_blob": "7baf47492c7600a18d9ed6160c97692205bfbad3",
+            "sha256": "87be0b28c90818b5ad5ee578773237858386bdaf58194c5d3209250b03a78da7",
+            "token": "await canViewRequest(actor, row)",
+            "line": 85,
+            "snippet": "if (await canViewRequest(actor, row)) {",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/events/submitted-requests.ts#L85"
+          },
+          {
+            "path": "backend/src/modules/events/event-request-detail.ts",
+            "git_blob": "f36c287e1bc7d264032cbe5b3742b0b2bad9b1b3",
+            "sha256": "d1aa30beae289b915c289e80932a036583f5f01415632480a71e733e0c220b60",
+            "token": "await canReviewRequest(actor, row, client)",
+            "line": 83,
+            "snippet": "&& await canReviewRequest(actor, row, client);",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/events/event-request-detail.ts#L83"
+          },
+          {
+            "path": "backend/src/runtime-app.ts",
+            "git_blob": "ab6f36a24fc72b3e829574e675c877f1f1b488fc",
+            "sha256": "9fe7951d051a16d9171cbf28e7b5ebc1c27f879021fbc2c7a6b505615844b4de",
+            "token": "canViewRequest: isAssignedCoordinator",
+            "line": 22,
+            "snippet": "canViewRequest: isAssignedCoordinator,",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/runtime-app.ts#L22"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "dashed": false
+      },
+      {
+        "id": "queries__db",
+        "from": "queries",
+        "to": "db",
+        "label": "SELECT requests and first review",
+        "proofs": [
+          {
+            "path": "backend/src/modules/events/event-request-detail.ts",
+            "git_blob": "f36c287e1bc7d264032cbe5b3742b0b2bad9b1b3",
+            "sha256": "d1aa30beae289b915c289e80932a036583f5f01415632480a71e733e0c220b60",
+            "token": "client.query",
+            "line": 51,
+            "snippet": "const result = await client.query<DetailRow>(`",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/events/event-request-detail.ts#L51"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "dashed": false
+      },
+      {
+        "id": "http__drafts",
+        "from": "http",
+        "to": "drafts",
+        "label": "Create or update saved draft",
+        "proofs": [
+          {
+            "path": "backend/src/modules/events/submitted-requests-router.ts",
+            "git_blob": "1895e6f81241f19dfbd8d4e11f2d58f6ea5f7c28",
+            "sha256": "394ca2abd7978969f0e57239b46acd2f0152ae4e562148ac9011044a13a8ecde",
+            "token": "createDraft(dependencies,",
+            "line": 109,
+            "snippet": "const created = await createDraft(dependencies, { actor, input: request.body });",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/events/submitted-requests-router.ts#L109"
+          },
+          {
+            "path": "backend/src/modules/events/submitted-requests-router.ts",
+            "git_blob": "1895e6f81241f19dfbd8d4e11f2d58f6ea5f7c28",
+            "sha256": "394ca2abd7978969f0e57239b46acd2f0152ae4e562148ac9011044a13a8ecde",
+            "token": "updateOwnedDraft(dependencies,",
+            "line": 182,
+            "snippet": "const updated = await updateOwnedDraft(dependencies, {",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/events/submitted-requests-router.ts#L182"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "dashed": false
+      },
+      {
+        "id": "drafts__db",
+        "from": "drafts",
+        "to": "db",
+        "label": "Own transaction: INSERT / UPDATE DRAFT",
+        "proofs": [
+          {
+            "path": "backend/src/modules/events/create-draft.ts",
+            "git_blob": "858cb202686505305d83e5d0164352ad7c9fe093",
+            "sha256": "7c3cc7b492036ab19186deb56f38ab1638deb68e2b421a53a16f3ee17e9fbef8",
+            "token": "client.query",
+            "line": 43,
+            "snippet": "await client.query('BEGIN ISOLATION LEVEL READ COMMITTED');",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/events/create-draft.ts#L43"
+          },
+          {
+            "path": "backend/src/modules/events/update-draft.ts",
+            "git_blob": "278ee66cd66823c5b3b8ab5914eccf7f72606c9c",
+            "sha256": "283e89eff4df9d6c908befedb8c9385742e9f5272867c80d5e4f898181d26d40",
+            "token": "client.query",
+            "line": 100,
+            "snippet": "await client.query('BEGIN ISOLATION LEVEL READ COMMITTED');",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/events/update-draft.ts#L100"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "dashed": false
+      },
+      {
+        "id": "http__submission",
+        "from": "http",
+        "to": "submission",
+        "label": "Submit saved request",
+        "proofs": [
+          {
+            "path": "backend/src/modules/events/submitted-requests-router.ts",
+            "git_blob": "1895e6f81241f19dfbd8d4e11f2d58f6ea5f7c28",
+            "sha256": "394ca2abd7978969f0e57239b46acd2f0152ae4e562148ac9011044a13a8ecde",
+            "token": "submitEventRequest(",
+            "line": 230,
+            "snippet": "const submitted = await submitEventRequest(dependencies, {",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/events/submitted-requests-router.ts#L230"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "dashed": false
+      },
+      {
+        "id": "submission__db",
+        "from": "submission",
+        "to": "db",
+        "label": "Own transaction: lock, validate and submit",
+        "proofs": [
+          {
+            "path": "backend/src/modules/events/submit-request.ts",
+            "git_blob": "1eac05893876e08fb0835e54f230058455b45032",
+            "sha256": "9c1a7b701a9d759bcbb33bcf351f84b98bb5a9b07e61e041e9c712990c02f369",
+            "token": "client.query",
+            "line": 71,
+            "snippet": "await client.query('BEGIN ISOLATION LEVEL READ COMMITTED');",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/events/submit-request.ts#L71"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "dashed": false
+      },
+      {
+        "id": "http__assignment",
+        "from": "http",
+        "to": "assignment",
+        "label": "Triage, allocate and read assignment history",
+        "proofs": [
+          {
+            "path": "backend/src/modules/events/assignment-router.ts",
+            "git_blob": "312b3b501c480c84d22f7941a9d8633dd0fade18",
+            "sha256": "1020ad4742b372bed0228cdc599eeeee339417fd6f92c725cf631a22cb01b2aa",
+            "token": "from './assignment.js'",
+            "line": 4,
+            "snippet": "} from './assignment.js';",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/events/assignment-router.ts#L4"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "dashed": false
+      },
+      {
+        "id": "assignment__workflow",
+        "from": "assignment",
+        "to": "workflow",
+        "label": "Transaction, lock and relationship helpers",
+        "proofs": [
+          {
+            "path": "backend/src/modules/events/assignment.ts",
+            "git_blob": "325a8f83200d5500247fd1e39c64591166435ab9",
+            "sha256": "69c8f3fd10320ce50cc96d4622fe55577296937b81a3c40787345c1b4f3e0d27",
+            "token": "from './workflow-support.js'",
+            "line": 8,
+            "snippet": "} from './workflow-support.js';",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/events/assignment.ts#L8"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "dashed": false
+      },
+      {
+        "id": "assignment__db",
+        "from": "assignment",
+        "to": "db",
+        "label": "Read profiles / requests; update assignment",
+        "proofs": [
+          {
+            "path": "backend/src/modules/events/assignment.ts",
+            "git_blob": "325a8f83200d5500247fd1e39c64591166435ab9",
+            "sha256": "69c8f3fd10320ce50cc96d4622fe55577296937b81a3c40787345c1b4f3e0d27",
+            "token": "client.query",
+            "line": 133,
+            "snippet": "const targets = await client.query<{ role: UserRole; displayName: string }>(",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/events/assignment.ts#L133"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "dashed": false
+      },
+      {
+        "id": "assignment__notices",
+        "from": "assignment",
+        "to": "notices",
+        "label": "Persist assignment notices",
+        "proofs": [
+          {
+            "path": "backend/src/modules/events/assignment.ts",
+            "git_blob": "325a8f83200d5500247fd1e39c64591166435ab9",
+            "sha256": "69c8f3fd10320ce50cc96d4622fe55577296937b81a3c40787345c1b4f3e0d27",
+            "token": "await notify(client, notifications)",
+            "line": 182,
+            "snippet": "await notify(client, notifications);",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/events/assignment.ts#L182"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "dashed": false
+      },
+      {
+        "id": "http__clarification",
+        "from": "http",
+        "to": "clarification",
+        "label": "Start review, ask, respond and list",
+        "proofs": [
+          {
+            "path": "backend/src/modules/events/clarification-router.ts",
+            "git_blob": "cff0da085de1b7c229d6586059ca8f49aaae56f9",
+            "sha256": "f5bed67672feeea08694c29778f3a46235d87a8bad4a5c1317634e4f0ac6dfb3",
+            "token": "from './clarifications.js'",
+            "line": 4,
+            "snippet": "} from './clarifications.js';",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/events/clarification-router.ts#L4"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "dashed": false
+      },
+      {
+        "id": "clarification__workflow",
+        "from": "clarification",
+        "to": "workflow",
+        "label": "Transaction, lock and relationship helpers",
+        "proofs": [
+          {
+            "path": "backend/src/modules/events/clarifications.ts",
+            "git_blob": "6f903bf094ef59a9880372eb07d691b97435399d",
+            "sha256": "170ba056859967951b9646642678032a447d984862b5f6d27c6df49b160c6cab",
+            "token": "from './workflow-support.js'",
+            "line": 6,
+            "snippet": "} from './workflow-support.js';",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/events/clarifications.ts#L6"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "dashed": false
+      },
+      {
+        "id": "clarification__db",
+        "from": "clarification",
+        "to": "db",
+        "label": "Read / write clarification records",
+        "proofs": [
+          {
+            "path": "backend/src/modules/events/clarifications.ts",
+            "git_blob": "6f903bf094ef59a9880372eb07d691b97435399d",
+            "sha256": "170ba056859967951b9646642678032a447d984862b5f6d27c6df49b160c6cab",
+            "token": "client.query",
+            "line": 66,
+            "snippet": "const inserted = await client.query<{ id: string }>(",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/events/clarifications.ts#L66"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "dashed": false
+      },
+      {
+        "id": "clarification__notices",
+        "from": "clarification",
+        "to": "notices",
+        "label": "Persist clarification / review-start notices",
+        "proofs": [
+          {
+            "path": "backend/src/modules/events/clarifications.ts",
+            "git_blob": "6f903bf094ef59a9880372eb07d691b97435399d",
+            "sha256": "170ba056859967951b9646642678032a447d984862b5f6d27c6df49b160c6cab",
+            "token": "await notify(client,",
+            "line": 44,
+            "snippet": "await notify(client, othersThan(actor.id, event.organiserId).map((recipientId) => ({",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/events/clarifications.ts#L44"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "dashed": false
+      },
+      {
+        "id": "http__review",
+        "from": "http",
+        "to": "review",
+        "label": "Record initial review decision",
+        "proofs": [
+          {
+            "path": "backend/src/modules/events/review-router.ts",
+            "git_blob": "8355d5d8d82c36d79449fee06db9d6d23fb945d9",
+            "sha256": "b102bcd7b29bf074b3ce67e8c117d05976c0750f4b4cf7df4b83251d6e70651f",
+            "token": "recordInitialReview(",
+            "line": 53,
+            "snippet": "const saved = await recordInitialReview(dependencies, {",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/events/review-router.ts#L53"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "dashed": false
+      },
+      {
+        "id": "review__policy",
+        "from": "review",
+        "to": "policy",
+        "label": "Injected decision authorization",
+        "proofs": [
+          {
+            "path": "backend/src/modules/events/review-decision.ts",
+            "git_blob": "e4c3e1ecea68dd0fdab7660e5452d31faf72e669",
+            "sha256": "e11fbc223b7e6a844b3d7410ab84b4baadd6c1efee663e576a32aad24146701c",
+            "token": "await canReviewRequest(reviewer, request, client)",
+            "line": 70,
+            "snippet": "const authorised = await canReviewRequest(reviewer, request, client);",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/events/review-decision.ts#L70"
+          },
+          {
+            "path": "backend/src/runtime-app.ts",
+            "git_blob": "ab6f36a24fc72b3e829574e675c877f1f1b488fc",
+            "sha256": "9fe7951d051a16d9171cbf28e7b5ebc1c27f879021fbc2c7a6b505615844b4de",
+            "token": "canReviewRequest: isAssignedCoordinator",
+            "line": 23,
+            "snippet": "canReviewRequest: isAssignedCoordinator,",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/runtime-app.ts#L23"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "dashed": false
+      },
+      {
+        "id": "review__db",
+        "from": "review",
+        "to": "db",
+        "label": "Own transaction: review and status update",
+        "proofs": [
+          {
+            "path": "backend/src/modules/events/review-decision.ts",
+            "git_blob": "e4c3e1ecea68dd0fdab7660e5452d31faf72e669",
+            "sha256": "e11fbc223b7e6a844b3d7410ab84b4baadd6c1efee663e576a32aad24146701c",
+            "token": "client.query",
+            "line": 60,
+            "snippet": "await client.query('BEGIN ISOLATION LEVEL READ COMMITTED');",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/events/review-decision.ts#L60"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "dashed": false
+      },
+      {
+        "id": "http__lifecycle",
+        "from": "http",
+        "to": "lifecycle",
+        "label": "Confirm, cancel, complete and history",
+        "proofs": [
+          {
+            "path": "backend/src/modules/events/lifecycle-router.ts",
+            "git_blob": "b8d661cd06b16a8a26542d3bef2cfb536f6a0a4c",
+            "sha256": "6d11040cd722724dd9bb284f8defd1390f92516294263557a4e8b2dd658891c7",
+            "token": "from './lifecycle.js'",
+            "line": 2,
+            "snippet": "import { cancelEvent, completeEvent, confirmEvent, listStatusHistory } from './lifecycle.js';",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/events/lifecycle-router.ts#L2"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "dashed": false
+      },
+      {
+        "id": "lifecycle__workflow",
+        "from": "lifecycle",
+        "to": "workflow",
+        "label": "Locks, status changes and arrangement cancellation",
+        "proofs": [
+          {
+            "path": "backend/src/modules/events/lifecycle.ts",
+            "git_blob": "92c4c0f31a12e52720c5c6317ee0febfa2cc39b0",
+            "sha256": "6e87a61fd445d3aa33db7a9f20fe30a2bedfef54bf7042f342b6c23dd2943123",
+            "token": "from './workflow-support.js'",
+            "line": 7,
+            "snippet": "} from './workflow-support.js';",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/events/lifecycle.ts#L7"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "dashed": false
+      },
+      {
+        "id": "lifecycle__db",
+        "from": "lifecycle",
+        "to": "db",
+        "label": "Read readiness, attendees and history",
+        "proofs": [
+          {
+            "path": "backend/src/modules/events/lifecycle.ts",
+            "git_blob": "92c4c0f31a12e52720c5c6317ee0febfa2cc39b0",
+            "sha256": "6e87a61fd445d3aa33db7a9f20fe30a2bedfef54bf7042f342b6c23dd2943123",
+            "token": "client.query",
+            "line": 51,
+            "snippet": "const arrangements = await client.query<{ approvedVenues: number; pendingEquipment: number }>(",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/events/lifecycle.ts#L51"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "dashed": false
+      },
+      {
+        "id": "lifecycle__notices",
+        "from": "lifecycle",
+        "to": "notices",
+        "label": "Persist lifecycle notices",
+        "proofs": [
+          {
+            "path": "backend/src/modules/events/lifecycle.ts",
+            "git_blob": "92c4c0f31a12e52720c5c6317ee0febfa2cc39b0",
+            "sha256": "6e87a61fd445d3aa33db7a9f20fe30a2bedfef54bf7042f342b6c23dd2943123",
+            "token": "await notify(client, notifications)",
+            "line": 122,
+            "snippet": "await notify(client, notifications);",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/events/lifecycle.ts#L122"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "dashed": false
+      },
+      {
+        "id": "workflow__policy",
+        "from": "workflow",
+        "to": "policy",
+        "label": "Resolve assigned-coordinator relation",
+        "proofs": [
+          {
+            "path": "backend/src/modules/events/workflow-support.ts",
+            "git_blob": "e64371467e55d35a3052a1ce260e35ea99e86169",
+            "sha256": "0f7394f6af3942a77cf262158f1e930678cae2b69e40c2b592c778a7eeeb8030",
+            "token": "isAssignedCoordinator(actor, event)",
+            "line": 86,
+            "snippet": "if (isAssignedCoordinator(actor, event)) return 'ASSIGNED_COORDINATOR';",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/events/workflow-support.ts#L86"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "dashed": false
+      },
+      {
+        "id": "workflow__db",
+        "from": "workflow",
+        "to": "db",
+        "label": "BEGIN / locks / status and arrangement writes",
+        "proofs": [
+          {
+            "path": "backend/src/modules/events/workflow-support.ts",
+            "git_blob": "e64371467e55d35a3052a1ce260e35ea99e86169",
+            "sha256": "0f7394f6af3942a77cf262158f1e930678cae2b69e40c2b592c778a7eeeb8030",
+            "token": "client.query",
+            "line": 57,
+            "snippet": "const found = await client.query<LockedEventRequest>(",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/events/workflow-support.ts#L57"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "dashed": false
+      },
+      {
+        "id": "notices__db",
+        "from": "notices",
+        "to": "db",
+        "label": "INSERT notifications in caller transaction",
+        "proofs": [
+          {
+            "path": "backend/src/modules/notifications/notify.ts",
+            "git_blob": "7c59d92573859fe360bfd3b7a1d3a6fea119118b",
+            "sha256": "62c46e24c8f0d471062aa89e2d1b45c1b3961486d848e7e5a138f9bf4e5357f8",
+            "token": "INSERT INTO notifications",
+            "line": 29,
+            "snippet": "`INSERT INTO notifications (recipient_id, event_request_id, type, title, message)",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/notifications/notify.ts#L29"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "dashed": false
+      },
+      {
+        "id": "http__db",
+        "from": "http",
+        "to": "db",
+        "label": "Readiness: SELECT scaffold_metadata",
+        "proofs": [
+          {
+            "path": "backend/src/app.ts",
+            "git_blob": "bd59486fedf6df5257da371b528b002f2deabb7d",
+            "sha256": "5f6f497340d329b2890d25e49c014e39058d0d41a1ce1dd53676801d5ef8895d",
+            "token": "SELECT key, value FROM scaffold_metadata",
+            "line": 48,
+            "snippet": "'SELECT key, value FROM scaffold_metadata WHERE key = $1',",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/app.ts#L48"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "dashed": false
+      },
+      {
+        "id": "http__workflow",
+        "from": "http",
+        "to": "workflow",
+        "label": "Workflow error / UUID helpers",
+        "proofs": [
+          {
+            "path": "backend/src/modules/events/workflow-http.ts",
+            "git_blob": "8dfabf1db8048245d6a6044524f432e5ee3864d3",
+            "sha256": "5fa4fac1d2b2d545a45dc314b643d6437610cb7a9ab66b668215b1528590d084",
+            "token": "import { UUID_PATTERN, WorkflowError, type WorkflowActor } from './workflow-support.js';",
+            "line": 4,
+            "snippet": "import { UUID_PATTERN, WorkflowError, type WorkflowActor } from './workflow-support.js';",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/modules/events/workflow-http.ts#L4"
+          }
+        ],
+        "assessment": "Implemented",
+        "note": "",
+        "dashed": false
+      }
+    ],
+    "boundaries": [
+      {
+        "id": "apiBoundary",
+        "label": "API application - one Express / Node.js process",
+        "members": [
+          "http",
+          "session",
+          "tokens",
+          "profiles",
+          "queries",
+          "drafts",
+          "submission",
+          "assignment",
+          "clarification",
+          "review",
+          "lifecycle",
+          "workflow",
+          "policy",
+          "notices"
+        ],
+        "proofs": [
+          {
+            "path": "backend/src/runtime-app.ts",
+            "git_blob": "ab6f36a24fc72b3e829574e675c877f1f1b488fc",
+            "sha256": "9fe7951d051a16d9171cbf28e7b5ebc1c27f879021fbc2c7a6b505615844b4de",
+            "token": "return createApp({",
+            "line": 26,
+            "snippet": "return createApp({",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/runtime-app.ts#L26"
+          },
+          {
+            "path": "backend/src/server.ts",
+            "git_blob": "7edacf83b7bf06488e854ba929f30990679e6b8e",
+            "sha256": "49f694fb773cc38442b6ecb2514b1c2d90e138bcf232428884b16d6174134407",
+            "token": "const server = app.listen(",
+            "line": 12,
+            "snippet": "const server = app.listen(environment.apiPort, environment.apiHost, () => {",
+            "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/server.ts#L12"
+          }
+        ],
+        "assessment": "Logical ownership",
+        "note": "Code components in one process; PostgreSQL and Auth are external to this container. Routers grouped into HTTP boundary; reusable type declarations and bootstrap are catalogued separately."
+      }
+    ]
+  }
+]

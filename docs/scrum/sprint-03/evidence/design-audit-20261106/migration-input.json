@@ -1,0 +1,100 @@
+{
+  "container": "connectsphere-design-audit-20261106",
+  "network": "none",
+  "database": "connectsphere_design_audit_test",
+  "migrations": [
+    {
+      "path": "database/migrations/001_initial_scaffold.sql",
+      "checksum": "f3a1fffced244fc273abdb140351d0ca2248ad679f900cb3ca9314636a991e14"
+    },
+    {
+      "path": "database/migrations/002_restrict_data_api_access.sql",
+      "checksum": "ecd44c4e0357b0b7967672697783b1992ca36b59bfac3f4b04457c494f3045a1"
+    },
+    {
+      "path": "database/migrations/003_add_supabase_user_id.sql",
+      "checksum": "64e47cc594b4a5c1b34c6e7ffec60178ec58b40ee2c8330bf99b181167e135ab"
+    },
+    {
+      "path": "database/migrations/004_core_feature_schema.sql",
+      "checksum": "20c1422083fc45b4d3a30e1b830f8bf2aaf1566d51d737c84bcfcefe9554cd9f"
+    },
+    {
+      "path": "database/migrations/005_equipment_peak_availability.sql",
+      "checksum": "1708c25eb681eb12ae800f774cfd14260e2c578d8a8284f1b8da7c946aa76aa4"
+    },
+    {
+      "path": "database/migrations/006_automatic_coordinator_assignment.sql",
+      "checksum": "ff76a888e5419e4f8f77c025312fa26b13bde30f0e9ba91cf56e00cabfff6610"
+    },
+    {
+      "path": "database/migrations/007_add_coordinator_lead.sql",
+      "checksum": "8c1bd7baa7bb255af74d2e68c532377a34e1cbe503e1cc2735147d215d1101e6"
+    },
+    {
+      "path": "database/migrations/008_notification_inbox.sql",
+      "checksum": "8f71835ba4221e8a1cfdb8ad837939a30b7618ee4829c9b6a6492fb700ec69d5"
+    },
+    {
+      "path": "database/migrations/009_venue_buffer_durations.sql",
+      "checksum": "fa0dbcab17359317a9bd527395ec907bbe3b7dbe79e896d5960004b51b77de8e"
+    },
+    {
+      "path": "database/migrations/010_venue_outage_impacts.sql",
+      "checksum": "9b7016bf9cc812bffdc481c056f11ee0f402e1bd240bf7a7971119b27cdd9108"
+    },
+    {
+      "path": "database/migrations/011_venue_booking_replacements.sql",
+      "checksum": "f6fee969329a205944730d97fb1a7892f08e4b900cad25519eb741259883ecf0"
+    },
+    {
+      "path": "database/migrations/012_venue_occupied_intervals.sql",
+      "checksum": "cd9c26d65e98e5f99563a8c96bbba194464d333f859af71a62b408757700b386"
+    },
+    {
+      "path": "database/migrations/013_venue_holds.sql",
+      "checksum": "11c46aaeae1002568744558fe3c45f2cacda6634639ebd5eb041cdeaf73dd0ee"
+    },
+    {
+      "path": "database/migrations/014_equipment_operational_quantities.sql",
+      "checksum": "11282c9991d35aba337db65fe39bcbdf428d89ea80ec31b9230bb20f0f3a7a87"
+    },
+    {
+      "path": "database/migrations/015_equipment_reservations.sql",
+      "checksum": "42ac9fa4b111e19ebba2c24fc236698361cd0842e5b85c3e192780e7d1e44c35"
+    },
+    {
+      "path": "database/migrations/016_event_request_revisions.sql",
+      "checksum": "ce4fb32829660239b657389d90657e1569b0147f2d76b21783fcd900cbbcddb3"
+    },
+    {
+      "path": "database/migrations/017_event_change_requests.sql",
+      "checksum": "6d6970154c9b82167b4abbf4ae33fef93cb5036e782c7cd6a65d5ac8b5e97e2f"
+    },
+    {
+      "path": "database/migrations/018_event_cancellation_equipment_workflows.sql",
+      "checksum": "ab569cfa7d4206237a931a65938321449fb1d663f1d4c6173690a0dfdd4e630c"
+    },
+    {
+      "path": "database/migrations/019_registration_notification_outcomes.sql",
+      "checksum": "548ce5c24cc7fa31a29a1eaca216ce6c391164dd426d51f8e766ffbc87cebcfe"
+    },
+    {
+      "path": "database/migrations/020_equipment_stock_changes.sql",
+      "checksum": "2dccf2da43708c755a37df78f8989f1795d79ef6ac54a1c61bad4aa040b48fde"
+    },
+    {
+      "path": "database/migrations/021_safety_reviews.sql",
+      "checksum": "2603919c447b67d7d80192ba67a1ab14a8cac028b3082dc2ec8af931769e27b5"
+    },
+    {
+      "path": "database/migrations/022_safety_review_remediation.sql",
+      "checksum": "263f72ad26fa6d0bc38419d14b90cf6fb0f27dae841871a09269281b8d79ff07"
+    },
+    {
+      "path": "database/migrations/023_safety_approval_invalidation.sql",
+      "checksum": "d5a1b176b831b43009559153b45b03a7130539ad730fce98702096fd4facd70c"
+    }
+  ],
+  "exit_code": 0
+}
