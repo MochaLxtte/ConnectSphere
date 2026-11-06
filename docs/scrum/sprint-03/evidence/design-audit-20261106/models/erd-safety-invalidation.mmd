@@ -1,0 +1,124 @@
+---
+config:
+  layout: elk
+title: Physical model - safety detail
+---
+erDiagram
+  direction TB
+  app_users {
+    uuid id PK "NOT NULL"
+    text role "NOT NULL"
+  }
+  equipment_requests {
+    uuid id PK "NOT NULL"
+    uuid event_request_id FK "NOT NULL"
+    uuid equipment_type_id FK "NOT NULL"
+    uuid requested_by FK "NOT NULL"
+    integer quantity "NOT NULL"
+    text status "NOT NULL"
+    timestamptz starts_at "NOT NULL"
+    timestamptz ends_at "NOT NULL"
+    uuid decided_by FK "nullable"
+    uuid released_by FK "nullable"
+    integer revision "NOT NULL"
+  }
+  event_change_requests {
+    uuid id PK "NOT NULL"
+    uuid event_request_id FK "NOT NULL"
+    uuid requested_by FK "NOT NULL"
+    text status "NOT NULL"
+    uuid decided_by FK "nullable"
+  }
+  event_registrations {
+    uuid id PK "NOT NULL"
+    uuid event_request_id FK "NOT NULL"
+    uuid attendee_id FK "NOT NULL"
+    text status "NOT NULL"
+  }
+  event_requests {
+    uuid id PK "NOT NULL"
+    uuid organiser_id FK "NOT NULL"
+    uuid coordinator_id FK "nullable"
+    text status "NOT NULL"
+    timestamptz starts_at "nullable"
+    timestamptz ends_at "nullable"
+    integer revision "NOT NULL"
+    text equipment_plan_status "NOT NULL"
+    uuid preparation_started_by FK "nullable"
+    uuid preparation_safety_review_id FK "nullable"
+  }
+  notifications {
+    uuid id PK "NOT NULL"
+    uuid recipient_id FK "NOT NULL"
+    uuid event_request_id FK "nullable"
+    text type "NOT NULL"
+    text title "NOT NULL"
+    text message "NOT NULL"
+    timestamptz read_at "nullable"
+    timestamptz created_at "NOT NULL"
+    uuid venue_booking_id FK "nullable"
+    text dedupe_key "nullable"
+    uuid equipment_request_id FK "nullable"
+    uuid registration_id FK "nullable"
+    uuid change_request_id FK "nullable"
+    uuid safety_review_id FK "nullable"
+  }
+  safety_approval_invalidations {
+    uuid review_id PK,FK "NOT NULL"
+    timestamptz invalidated_at "NOT NULL"
+    text source "NOT NULL"
+  }
+  safety_review_change_baselines {
+    uuid review_id PK,FK "NOT NULL"
+    text venue_fingerprint "NOT NULL"
+    text technical_fingerprint "NOT NULL"
+    timestamptz captured_at "NOT NULL"
+  }
+  safety_review_context_baselines {
+    uuid review_id PK,FK "NOT NULL"
+    text context_fingerprint "NOT NULL"
+    timestamptz captured_at "NOT NULL"
+  }
+  safety_reviews {
+    uuid id PK "NOT NULL"
+    uuid event_request_id FK "NOT NULL"
+    integer round "NOT NULL"
+    text status "NOT NULL"
+    text arrangement_fingerprint "NOT NULL"
+    text emergency_access "nullable"
+    text equipment_placement "nullable"
+    text crowd_movement "nullable"
+    uuid submitted_by FK "NOT NULL"
+    timestamptz submitted_at "NOT NULL"
+    uuid decided_by FK "nullable"
+    timestamptz decided_at "nullable"
+    text decision_notes "nullable"
+    textArray requested_areas "nullable"
+  }
+  venue_bookings {
+    uuid id PK "NOT NULL"
+    uuid event_request_id FK "NOT NULL"
+    uuid venue_id FK "NOT NULL"
+    uuid requested_by FK "NOT NULL"
+    text status "NOT NULL"
+    timestamptz starts_at "NOT NULL"
+    timestamptz ends_at "NOT NULL"
+    uuid decided_by FK "nullable"
+    uuid replaces_booking_id FK "nullable"
+    timestamptz hold_expires_at "nullable"
+    uuid held_by FK "nullable"
+    uuid cancelled_by FK "nullable"
+  }
+  event_change_requests |o..o{ notifications : "change_request_id"
+  equipment_requests |o..o{ notifications : "equipment_request_id"
+  event_requests |o..o{ notifications : "event_request_id"
+  app_users ||..o{ notifications : "recipient_id"
+  event_registrations |o..o{ notifications : "registration_id"
+  safety_reviews |o..o{ notifications : "safety_review_id"
+  venue_bookings |o..o{ notifications : "venue_booking_id"
+  safety_reviews ||--o| safety_approval_invalidations : "review_id"
+  safety_reviews ||--o| safety_review_change_baselines : "review_id"
+  safety_reviews ||--o| safety_review_context_baselines : "review_id"
+  app_users |o..o{ safety_reviews : "decided_by"
+  event_requests ||..o{ safety_reviews : "event_request_id"
+  app_users ||..o{ safety_reviews : "submitted_by"

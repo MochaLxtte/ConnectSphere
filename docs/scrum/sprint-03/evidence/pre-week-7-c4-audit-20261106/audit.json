@@ -1,0 +1,50 @@
+{
+  "label": "Pre-Week 7 customer changes - retrospective C4 audit",
+  "prepared_on": "2026-11-06",
+  "source_commit": "b981f1133750e7ddd42ac412651c915cb4485418",
+  "source_commit_date": "2026-10-01T15:06:46+08:00",
+  "customer_change_receipt": "2026-10-02",
+  "preparation": "AI-assisted source inspection by Codex; approved design-document scope. Independent review: Not recorded.",
+  "original_c3": "Not recorded",
+  "original_exports": "Not recorded; new PNG/SVG renders prepared on 6 November",
+  "counts": {
+    "nodes": 44,
+    "edges": 55,
+    "boundaries": 3
+  },
+  "source_catalog_files": 107,
+  "backend_component_files": 29,
+  "limitations": "Retrospective static code/design audit, not a historical execution or fresh live application acceptance. Planned original interactions are retained and qualified.",
+  "models": [
+    {
+      "name": "c1-context-original",
+      "nodes": 7,
+      "edges": 6,
+      "boundaries": 0
+    },
+    {
+      "name": "c2-containers-original",
+      "nodes": 5,
+      "edges": 5,
+      "boundaries": 1
+    },
+    {
+      "name": "c1-context-reconstructed",
+      "nodes": 8,
+      "edges": 6,
+      "boundaries": 0
+    },
+    {
+      "name": "c2-containers-reconstructed",
+      "nodes": 6,
+      "edges": 5,
+      "boundaries": 1
+    },
+    {
+      "name": "c3-components-reconstructed",
+      "nodes": 18,
+      "edges": 33,
+      "boundaries": 1
+    }
+  ]
+}

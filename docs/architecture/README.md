@@ -1,6 +1,6 @@
 # Architecture
 
-**Current implementation — 1 November 2026.** The current branch implements all seven application roles and the event lifecycle from draft submission through assignment, review, arrangements, confirmation, safety/preparation, registration, cancellation and completion. The views below describe the mounted application in `backend/src/app.ts` and `frontend/src/app/router.ts`; they do not establish story acceptance or code-freeze readiness. Migration 023 adds permanent safety-approval invalidation and supplemental context baselines. Its shared application and the three focused connected regression checks passed on 1 November in `MAN-20261101-03`; see the [rollout checkpoint](../../database/README.md#1-november-2026--shared-023-rollout-and-connected-retests). See the [API contract](api-contract.md), [current database model](../database-diagram.md), and [test evidence](../testing/test-evidence.md) for the separate automated, connected and release-review boundaries.
+**Current implementation — reviewed 6 November 2026.** The current branch implements all seven application roles and the event lifecycle from draft submission through assignment, review, arrangements, confirmation, safety/preparation, registration, cancellation and completion. The views below describe the mounted application in `backend/src/app.ts` and `frontend/src/app/router.ts`; they do not establish story acceptance or code-freeze readiness. Migration 023 adds permanent safety-approval invalidation and supplemental context baselines. Its shared application and the three focused connected regression checks passed on 1 November in `MAN-20261101-03`; see the [rollout checkpoint](../../database/README.md#1-november-2026--shared-023-rollout-and-connected-retests). See the [API contract](api-contract.md), [current database model](../database-diagram.md), and [test evidence](../testing/test-evidence.md) for the separate automated, connected and release-review boundaries.
 
 <details>
 <summary>Earlier implementation checkpoints — retained as dated history</summary>
@@ -35,49 +35,65 @@ The organiser's approved outcome and rejected status/reason remained visible aft
 </details>
 
 ```mermaid
+---
+title: "C1 - ConnectSphere system context"
+---
 flowchart LR
-  organiser["Event Organiser<br/>Provides requests and manages own events"]
-  coordinator["Event Coordinator<br/>Reviews and coordinates assigned events"]
-  lead["Coordinator Lead<br/>Assigns, reassigns and oversees active events"]
-  venue["Venue Staff<br/>Maintains venues and decides bookings"]
-  technical["Technical Support Staff<br/>Arranges equipment"]
-  attendee["Attendee<br/>Registers and withdraws"]
-  safety["Safety Officer<br/>Assesses safety and requests remediation"]
-  system["ConnectSphere<br/>Event planning and venue booking system"]
-  identity["Supabase Auth<br/>External identity service"]
-  organiser -->|Requests and changes| system
-  coordinator -->|Review and planning| system
-  lead -->|Initial assignment, handover and basic oversight| system
-  venue -->|Venue availability and booking decisions| system
-  technical -->|Stock, requests and reservations| system
-  attendee -->|Event registration| system
-  safety -->|Safety review decisions| system
-  system -->|Sign-in and token verification| identity
+  organiser["Event Organiser<br/>[Person]<br/>Manages own requests and events"]:::person
+  coordinator["Event Coordinator<br/>[Person]<br/>Reviews and plans assigned events"]:::person
+  lead["Coordinator Lead<br/>[Person]<br/>Allocates coordinators and oversees events"]:::person
+  venue["Venue Staff<br/>[Person]<br/>Maintains venues and booking arrangements"]:::person
+  technical["Technical Support Staff<br/>[Person]<br/>Manages pooled equipment and reservations"]:::person
+  attendee["Attendee<br/>[Person]<br/>Manages own event registrations"]:::person
+  safety["Safety Officer<br/>[Person]<br/>Assesses safety and requests remediation"]:::person
+  system["ConnectSphere<br/>[Software System]<br/>Event planning, resource arrangements,<br/>registration and safety workflows"]:::system
+  identity["Supabase Auth<br/>[External Software System]<br/>Authenticates users and publishes<br/>token verification keys"]:::external
+  organiser -->|Submits requests, proposes changes and tracks outcomes| system
+  coordinator -->|Reviews, plans, confirms and closes assigned events| system
+  lead -->|Assigns, reassigns and reads basic oversight| system
+  venue -->|Maintains venues and blocks; decides bookings and holds| system
+  technical -->|Maintains stock, checks availability and decides equipment requests| system
+  attendee -->|Browses eligible events, registers and withdraws| system
+  safety -->|Approves, rejects or requests safety changes| system
+  system -->|Authenticates users and obtains token verification keys| identity
+  key["Legend<br/>Pale blue: person; dark blue: ConnectSphere; grey: external system.<br/>Each arrow points from the caller to the system it interacts with."]:::legend
+  classDef person fill:#e0f2fe,stroke:#0369a1,color:#0c4a6e
+  classDef system fill:#1d4ed8,stroke:#1e3a8a,color:#ffffff
+  classDef external fill:#f1f5f9,stroke:#64748b,color:#0f172a
+  classDef legend fill:#fff7ed,stroke:#c2410c,color:#7c2d12,stroke-dasharray:4 3
 ```
 
 ## C4 containers
 
 ```mermaid
+---
+title: "C2 - ConnectSphere containers"
+---
 flowchart LR
-  user["User<br/>One of seven supported application roles"]
-  identity["Supabase Auth<br/>Email/password sign-in and signing keys"]
+  user["Application user<br/>[Person]<br/>One of seven supported roles"]:::person
+  identity["Supabase Auth<br/>[External Software System]<br/>Email/password sign-in;<br/>published JSON Web Key Set - JWKS"]:::external
   subgraph boundary["ConnectSphere system boundary"]
-    web["Web application<br/>Vue 3, TypeScript, Vite<br/>Pages and API client"]
-    api["API application<br/>Express 5, TypeScript<br/>Authorization, business rules and expiry timer"]
-    db[("Database<br/>Supabase PostgreSQL<br/>Records, integrity guards and expiry function")]
+    web["Web application<br/>[Container: Vue 3 / TypeScript]<br/>Runs in the browser; built with Vite.<br/>Pages, sign-in and same-origin API client"]:::container
+    api["API application<br/>[Container: Node.js / Express 5 / TypeScript]<br/>Verifies sessions and permissions;<br/>executes business rules and hold-expiry timer"]:::container
+    db[("Application database<br/>[Container: Supabase PostgreSQL]<br/>Records, constraints, audit and notification triggers;<br/>hold-expiry function and optional pg_cron scheduler")]:::container
   end
-  user -->|Uses browser| web
-  web -->|HTTP JSON /api| api
-  web -->|HTTPS credential exchange| identity
-  api -->|HTTPS public signing keys| identity
-  api -->|SQL via pg over TLS| db
+  user -->|Uses pages in a web browser| web
+  web -->|HTTP JSON /api with HttpOnly session cookie| api
+  web -->|Signs in with email and password over HTTPS| identity
+  api -->|Fetches and caches JWKS over HTTPS in asymmetric mode| identity
+  api -->|Executes SQL using pg; TLS for shared Supabase| db
+  key["Legend<br/>Pale blue: person; blue: ConnectSphere container; grey: external system.<br/>Arrows show caller-to-dependency interactions, including their protocol.<br/>Local development uses the Vite /api proxy. Legacy HS256 verifies with a backend secret instead of JWKS."]:::legend
+  classDef person fill:#e0f2fe,stroke:#0369a1,color:#0c4a6e
+  classDef container fill:#dbeafe,stroke:#1d4ed8,color:#172554
+  classDef external fill:#f1f5f9,stroke:#64748b,color:#0f172a
+  classDef legend fill:#fff7ed,stroke:#c2410c,color:#7c2d12,stroke-dasharray:4 3
 ```
 
 In local development Vite proxies `/api` to Express; the browser needs no database credentials or direct database access. Supabase hosts PostgreSQL, while the frontend and API run locally. Deployment of the frontend and API is not configured. Plan HTTPS and same-origin API routing when deployment enters scope.
 
 Application tables remain in the `public` schema. Supabase's unused Data API is disabled; the hardening migration enables row-level security and removes Data API roles' access to application tables. Express uses its server database connection for application reads/writes and enforces roles, ownership and coordinator assignment. Supabase Auth remains available independently of the Data API.
 
-The browser obtains a Supabase access token through sign-in, clears the temporary SDK session, and exchanges the token at `POST /api/auth/login`. Express verifies the token and stores it in an HttpOnly session cookie, revalidating it for later API calls. The token subject maps through `app_users.supabase_user_id` to the application's trusted ID and role. Session lifetime follows the token's expiry; automatic session refresh is not implemented. Logout clears the API cookie and local application state; it does not revoke a previously copied access token before its expiry. Public signing keys are retrieved from the project's JWKS; the backend-only HS256 secret is an optional compatibility path for legacy projects.
+The browser obtains a Supabase access token through sign-in, clears the temporary SDK session, and exchanges the token at `POST /api/auth/login`. Express verifies the token and stores it in an HttpOnly session cookie, revalidating it for later API calls. The token subject maps through `app_users.supabase_user_id` to the application's trusted ID and role. The cookie expires at the earlier of the token's expiry and the application's five-day cap; automatic session refresh is not implemented. Logout clears the API cookie and local application state; it does not revoke a previously copied access token before its expiry. Public signing keys are retrieved from the project's JWKS; the backend-only HS256 secret is an optional compatibility path for legacy projects.
 
 The API runs the idempotent hold-expiry function at startup and every minute; the shared development database also has the recorded `pg_cron` schedule. These are two callers of the same database operation, not separate booking authorities. Queries stop counting a hold at its database-clock deadline even if a cleanup call has not yet updated its status.
 
@@ -85,7 +101,7 @@ The API runs the idempotent hold-expiry function at startup and every minute; th
 
 | Area | Responsibility and current implementation | Main implementation reference |
 | --- | --- | --- |
-| auth | Supabase sign-in exchange, verified HttpOnly session, trusted profile/role mapping and event access policies. | [Auth module](../../backend/src/modules/auth/README.md) |
+| auth | Supabase sign-in exchange, verified HttpOnly session, trusted profile/role mapping. Service modules own event-access policies. | [Auth module](../../backend/src/modules/auth/README.md) |
 | events | Owned drafts/submission, Lead assignment/handover, clarification, initial review, planning edits and reviewed significant changes; shared readiness, confirmation, cancellation, completion and status history. | [Events module](../../backend/src/modules/events/README.md) |
 | venues | Catalogue and buffers, search/calendar, advisory suitability for event or selected arrangement, booking/hold decisions, independent cancellation/replacement, operational blocks and outage recovery. | [Venues module](../../backend/src/modules/venues/README.md) |
 | equipment | Stock/loss audit, read-only saved/what-if availability, coordinator request/replacement/cancellation and Technical Support review/full reservation; live readiness, terminal release and restricted technical-remediation work. | [Equipment module](../../backend/src/modules/equipment/README.md) |
@@ -99,51 +115,80 @@ The backend is under `backend/src/modules/`, frontend pages/components under `fr
 
 ## C4 components (C3)
 
-The API is one process. Every protected router resolves the verified session to the current trusted application profile. KAN-79 allocation reads use their own DTOs rather than widening coordinator review access.
+The API is one process. Every protected router resolves the verified session to the current trusted application profile. KAN-79 allocation reads use their own DTOs rather than widening coordinator review access. The view decomposes the API container; the browser application, Supabase Auth and PostgreSQL are supporting elements outside that boundary. Arrows represent calls/dependencies, not a mandatory request sequence.
 
 ```mermaid
+---
+title: "C3 - Components of the ConnectSphere API"
+config:
+  layout: elk
+---
 flowchart LR
-  browser["Vue API clients"]
-  routes["HTTP routers<br/>Input validation and error mapping"]
-  auth["Auth and policy checks<br/>Verified cookie, current profile and relationship"]
-  identity["Supabase Auth JWKS"]
-  subgraph domains["Domain services in the same API process"]
-    events["Events<br/>Drafts, assignment, review, changes and lifecycle"]
-    venues["Venues<br/>Catalogue, suitability, bookings, holds and recovery"]
-    equipment["Equipment<br/>Stock, availability, requests and reservations"]
-    registrations["Registrations<br/>Eligibility, capacity, withdrawal and roster"]
-    safety["Safety<br/>Review rounds, remediation and preparation"]
-    inbox["Notifications inbox<br/>Current recipient and target access"]
+  browser["Web application<br/>[Container: Vue 3 / TypeScript]<br/>Browser pages and API clients"]:::container
+  identity["Supabase Auth<br/>[External Software System]<br/>Published JSON Web Key Set - JWKS"]:::external
+  subgraph apiBoundary["API application - container boundary: Node.js / Express 5 / TypeScript"]
+    routes["HTTP routers<br/>[Component: Express / TypeScript]<br/>Session and role gates, input validation,<br/>service dispatch and error mapping"]:::component
+    auth["Session authentication<br/>[Component: jose / TypeScript]<br/>Verifies cookie token; loads trusted<br/>application profile and role"]:::component
+    subgraph eventModule["Events module"]
+      events["Event workflows<br/>[Component: TypeScript]<br/>Drafts, submission, assignment, review,<br/>changes, lifecycle and access rules"]:::component
+      readiness["Readiness and arrangement locks<br/>[Component: TypeScript]<br/>Coordinates live venue, equipment<br/>and pending-change checks"]:::component
+    end
+    venues["Venue services<br/>[Component: TypeScript]<br/>Catalogue, search, suitability, bookings,<br/>holds, expiry and outage recovery"]:::component
+    equipment["Equipment services<br/>[Component: TypeScript]<br/>Stock, availability, requests,<br/>reservation decisions and release"]:::component
+    registrations["Registration services<br/>[Component: TypeScript]<br/>Eligibility, capacity, registration,<br/>withdrawal and authorised rosters"]:::component
+    subgraph safetyModule["Safety module"]
+      safety["Safety reviews and preparation<br/>[Component: TypeScript]<br/>Review rounds, decisions, snapshots<br/>and current-approval gates"]:::component
+      remediation["Technical remediation policy<br/>[Component: TypeScript]<br/>Permits confirmed-event equipment edits<br/>during requested technical changes"]:::component
+    end
+    notifications["Notifications<br/>[Component: TypeScript]<br/>Caller-scoped inbox and read state;<br/>transactional deduplicated notice writer"]:::component
+    expiry["Hold-expiry timer<br/>[Component: Node.js / TypeScript]<br/>Calls expiry at startup and every minute"]:::component
+    connections["Database connections<br/>[Component: pg / TypeScript]<br/>Shared connection pool and borrowed clients;<br/>SQL queries and transaction execution"]:::component
   end
-  rules["Shared rules<br/>Readiness, source revisions and arrangement locks"]
-  tx["Transaction client<br/>Ordered locks, parameterized SQL and rollback"]
-  notify["Outcome notices<br/>Writer and database triggers; deduplicated"]
-  db[("PostgreSQL<br/>Records, audit history, constraints and triggers")]
-  expiry["Hold-expiry callers<br/>API timer and database pg_cron"]
-  browser --> routes
-  routes --> auth
-  auth --> identity
-  auth -->|Trusted profile lookup| db
-  routes --> events
-  routes --> venues
-  routes --> equipment
-  routes --> registrations
-  routes --> safety
-  routes --> inbox
-  events --> rules
-  safety --> rules
-  venues --> tx
-  equipment --> tx
-  registrations --> tx
-  rules --> tx
-  inbox -->|Read and mark caller-visible notices| db
-  tx -->|Business write and notices share commit| notify
-  tx --> db
-  notify --> db
-  expiry -->|Same idempotent expiry function| db
+  db[("Application database<br/>[Container: Supabase PostgreSQL]<br/>Records, integrity guards and audit;<br/>SQL notification and safety-invalidation triggers;<br/>expiry function and optional database pg_cron")]:::container
+  browser -->|HTTP JSON /api; session cookie| routes
+  routes -->|Verifies session and actor| auth
+  routes -->|Queries public database-readiness status| connections
+  routes -->|Calls event workflows| events
+  routes -->|Calls venue services| venues
+  routes -->|Calls equipment services| equipment
+  routes -->|Calls registration services| registrations
+  routes -->|Calls safety and preparation| safety
+  routes -->|Lists inbox; marks notices read| notifications
+  auth -->|HTTPS: cached JWKS in asymmetric mode| identity
+  auth -->|Queries trusted profile| connections
+  events -->|Checks readiness; locks arrangements| readiness
+  safety -->|Reuses readiness and locks| readiness
+  readiness -->|Checks live venue readiness| venues
+  readiness -->|Reads equipment readiness| equipment
+  readiness -->|Runs readiness and lock SQL| connections
+  equipment -->|Checks technical edit policy| remediation
+  remediation -->|Reads latest safety round| connections
+  events -->|Calls notice writer| notifications
+  venues -->|Calls notice writer| notifications
+  equipment -->|Calls notice writer| notifications
+  safety -->|Calls notice writer| notifications
+  events -->|Pool reads; transaction writes| connections
+  venues -->|Pool/client queries; expiry SQL| connections
+  equipment -->|Pool/client queries| connections
+  registrations -->|Reads; writes under locks| connections
+  safety -->|Review and preparation SQL| connections
+  notifications -->|Inbox reads; caller-client inserts| connections
+  expiry -->|Calls expiry wrapper| venues
+  connections -->|PostgreSQL via pg; TLS for shared Supabase| db
+  key["Legend<br/>Pale blue: API component; blue: supporting container; grey: external system.<br/>Labelled arrows show calls/dependencies. Nested groups identify module ownership.<br/>SQL triggers and pg_cron execute inside PostgreSQL. Legacy HS256 uses a backend secret instead of JWKS."]:::legend
+  classDef component fill:#eff6ff,stroke:#2563eb,color:#172554
+  classDef container fill:#dbeafe,stroke:#1d4ed8,color:#172554
+  classDef external fill:#f1f5f9,stroke:#64748b,color:#0f172a
+  classDef legend fill:#fff7ed,stroke:#c2410c,color:#7c2d12,stroke-dasharray:4 3
 ```
 
-The displayed authentication dependencies are policy checks, not a second sign-in operation. Assignment services use parameterized SQL through the shared pool; queue/oversight reads have no write side effects. Reassignment checks the active-history version under event/history locks before changing linkage. Assignment, clarification and status-history reads hold a shared event lock across authorisation and their data query; a handover cannot expose newly protected rows through an earlier permission check. The KAN-64 writer uses the caller's transaction client: business changes and notification rows commit or roll back together. A unique recipient/outcome key suppresses duplicate rows. Inbox queries recheck the current recipient, role and event/booking access; they do not reuse the permissions held when a notice was created. Delivery is in-app polling, with no email service or background delivery worker.
+The authentication component verifies the session and maps its subject to the current application profile. HTTP handlers apply route-level role gates; services and their policy helpers enforce role, ownership, assignment and transition rules, including checks under database locks. Public health endpoints and the sign-in exchange are exceptions to the protected-route session gate. The Auth dependency retrieves and caches public verification keys; token verification itself is local. The optional legacy HS256 mode uses a backend secret instead.
+
+Database connections represents the shared `pg.Pool` and its borrowed clients, not a repository/service layer that owns business rules or lock ordering. Read-only searches, availability and queues can call `pool.query` directly. Services execute parameterized SQL and choose their locks; `inActorTransaction` and the older explicit transaction bodies manage begin/commit/rollback. Readiness and arrangement-lock helpers live in the events module (`confirmation.ts`, `arrangement-locks.ts`); source-revision policies remain with their event, venue and equipment consumers. The equipment services call the separate `safety/remediation.ts` policy when considering technical edits on a confirmed event.
+
+Assignment services use parameterized SQL through the shared pool; queue/oversight reads have no write side effects. Reassignment checks the active-history version under event/history locks before changing linkage. Assignment, clarification and status-history reads hold a shared event lock across authorisation and their data query; a handover cannot expose newly protected rows through an earlier permission check. Event, venue, equipment and safety services call the KAN-64 writer with their existing transaction client: business changes and notification rows commit or roll back together. A unique recipient/outcome key suppresses duplicate writer inserts. Registration/withdrawal, final event confirmation and stock-shortfall notices use the database triggers in migration 019 instead; event cancellation uses the application writer; expiry notices are written within `expire_venue_holds()`. These SQL writers run inside PostgreSQL in the source transaction, not as API components or separate delivery workers. Inbox queries recheck the current recipient, role and target access. Delivery is in-app polling.
+
+The API timer calls the venue expiry wrapper, which executes `SELECT expire_venue_holds()`. The optional database `pg_cron` job calls that same function independently inside PostgreSQL. The shared job's last verified configuration is recorded in [the database setup evidence](../scrum/sprint-03/evidence/supabase-hold-expiry-20261025.json); the diagram does not assert a fresh check of running infrastructure.
 
 Availability and suitability are advisory reads; booking, reservation, confirmation and safety writes re-evaluate live state under their own locks. Readiness combines venue, equipment and pending-change state without treating advisory success as permission to commit. Technical remediation on a confirmed event is restricted to a current changes-requested safety round that names the technical area; normal request/reservation editing remains subject to its lifecycle restrictions.
 
@@ -155,6 +200,1680 @@ Safety decisions retain immutable reviewed snapshots. Current approval requires 
 KAN-9's equipment service has its own minimal approved/confirmed event projection rather than widening shared event-detail access. One SQL statement reads source requirements, saved requests, stock and relevant reservations; the service validates the source version and calculates advisory quantities without joining a write transaction or notification flow. What-if input is explicitly unsaved; saved input reloads persisted lines and excludes only its own reserved IDs. Migration 014 provides damaged/maintenance quantities. KAN-26 uses a separate mutation service for full saved requests on approved events, locking current source/pools/lines before checking capacity and writing notices. Migration 015 protects operational stock, immutable allocation/release history and one-time terminal release. KAN-63 adds coordinator request entry and Technical Support review, using explicit manual release metadata for cancellation/replacement. KAN-62 changes event status in the same transaction as its audit and notices; the migration-015 trigger releases RESERVED equipment while KAN-62 cancels remaining REQUESTED/REJECTED lines. Migration 018 adds the remaining event/request planning state.
 
 </details>
+
+## Current design reference — 6 November 2026
+
+[Open the diagram gallery](exports/index.html) to browse the current PNG and SVG exports.
+
+These class, sequence and domain data views describe source build `fb6d8d93f721b114accc9857a05d62e859987e23` and migrations 001–023. The C1–C3 sources above retain the preceding C4 accuracy corrections. [Current API contract](api-contract.md) · [Complete data model and column dictionary](../database-diagram.md) · [Node and connection audit](../scrum/sprint-03/evidence/design-audit-20261106/README.md).
+
+Originals are preserved separately: [genuine Pre-Week 7 customer changes, 1 October](archive/pre-week-7-customer-changes/README.md) and [before this update, including existing Week 7 models](archive/before-2026-11-06-update/README.md). Class and sequence diagrams are **Not recorded** in the genuine pre-change snapshot; later diagrams have not been relabelled as pre-change evidence.
+
+## Class diagram
+
+This is a domain model of **22 persisted SQL record types**, not a runtime class hierarchy or ORM. The implementation uses TypeScript services/types and explicit SQL. The complete view contains all **55 declared FK associations**, including actor roles, optional notification references, equipment stock history, clarification/edit history, preparation’s review reference and the three safety supplement records. Class names are title-cased SQL table names; attribute names retain their actual SQL spelling. No derived projection is depicted as a persisted class.
+
+Association labels use `column [parents per child / children per parent]`; source is the referenced parent and arrow target is the FK-owning child. Cardinalities are placed with each label so the many independent user-actor references remain readable. Types use Mermaid-safe aliases (`textArray` = `text[]`, `timestamptz` = timestamp with time zone). Multiplicities describe the migrated SQL constraints: nullable FK → zero/one parent; required FK → one parent; a parent can have zero/many children unless the child FK is unique. No composition or inheritance is inferred. In particular, initial reviews are not SQL-enforced one-per-event; cancellations and safety supplements use shared primary keys. The diagram curates scalar fields; the [dictionary](../database-diagram.md#column-dictionary) lists all columns, SQL types, defaults and nullability. The domain detail views show additional attributes and retain each child table’s complete FK set.
+
+### Domain records - all 22 persisted application records
+
+```mermaid
+---
+config:
+  layout: elk
+title: Domain records - all 22 persisted application records
+---
+classDiagram
+  direction TB
+  class AppUsers {
+    <<SQL record>>
+    uuid id
+    text role
+  }
+  class CoordinatorAssignments {
+    <<SQL record>>
+    uuid id
+    uuid event_request_id
+    uuid coordinator_id
+    uuid assigned_by
+    text assignment_method
+  }
+  class EquipmentRequests {
+    <<SQL record>>
+    uuid id
+    uuid event_request_id
+    uuid equipment_type_id
+    uuid requested_by
+    integer quantity
+    text status
+    timestamptz starts_at
+    timestamptz ends_at
+    uuid decided_by
+    uuid released_by
+    integer revision
+  }
+  class EquipmentStockChanges {
+    <<SQL record>>
+    uuid id
+    uuid equipment_type_id
+    integer revision
+    uuid changed_by
+  }
+  class EquipmentTypes {
+    <<SQL record>>
+    uuid id
+    integer total_quantity
+    integer damaged_quantity
+    integer maintenance_quantity
+  }
+  class EventCancellations {
+    <<SQL record>>
+    uuid event_request_id
+    uuid cancelled_by
+  }
+  class EventChangeRequests {
+    <<SQL record>>
+    uuid id
+    uuid event_request_id
+    uuid requested_by
+    text status
+    uuid decided_by
+  }
+  class EventClarifications {
+    <<SQL record>>
+    uuid id
+    uuid event_request_id
+    uuid requested_by
+  }
+  class EventRegistrations {
+    <<SQL record>>
+    uuid id
+    uuid event_request_id
+    uuid attendee_id
+    text status
+  }
+  class EventRequestEdits {
+    <<SQL record>>
+    uuid id
+    uuid event_request_id
+    integer revision
+    uuid edited_by
+  }
+  class EventRequests {
+    <<SQL record>>
+    uuid id
+    uuid organiser_id
+    uuid coordinator_id
+    text status
+    timestamptz starts_at
+    timestamptz ends_at
+    integer revision
+    text equipment_plan_status
+    uuid preparation_started_by
+    uuid preparation_safety_review_id
+  }
+  class EventReviews {
+    <<SQL record>>
+    uuid id
+    uuid event_request_id
+    uuid reviewed_by
+  }
+  class EventStatusHistory {
+    <<SQL record>>
+    uuid id
+    uuid event_request_id
+    uuid changed_by
+  }
+  class Notifications {
+    <<SQL record>>
+    uuid id
+    uuid recipient_id
+    uuid event_request_id
+    uuid venue_booking_id
+    uuid equipment_request_id
+    uuid registration_id
+    uuid change_request_id
+    uuid safety_review_id
+  }
+  class SafetyApprovalInvalidations {
+    <<SQL record>>
+    uuid review_id
+  }
+  class SafetyReviewChangeBaselines {
+    <<SQL record>>
+    uuid review_id
+  }
+  class SafetyReviewContextBaselines {
+    <<SQL record>>
+    uuid review_id
+  }
+  class SafetyReviews {
+    <<SQL record>>
+    uuid id
+    uuid event_request_id
+    integer round
+    text status
+    uuid submitted_by
+    uuid decided_by
+  }
+  class VenueBookings {
+    <<SQL record>>
+    uuid id
+    uuid event_request_id
+    uuid venue_id
+    uuid requested_by
+    text status
+    timestamptz starts_at
+    timestamptz ends_at
+    uuid decided_by
+    uuid replaces_booking_id
+    timestamptz hold_expires_at
+    uuid held_by
+    uuid cancelled_by
+  }
+  class VenueOutageImpacts {
+    <<SQL record>>
+    uuid id
+    uuid unavailability_id
+    uuid venue_booking_id
+    uuid venue_id
+    text status
+    uuid recorded_by
+  }
+  class VenueUnavailability {
+    <<SQL record>>
+    uuid id
+    uuid venue_id
+    timestamptz starts_at
+    timestamptz ends_at
+    uuid created_by
+  }
+  class Venues {
+    <<SQL record>>
+    uuid id
+    integer setup_minutes
+    integer turnaround_minutes
+  }
+  AppUsers --> CoordinatorAssignments : assigned_by [0..1 / 0..*]
+  AppUsers --> CoordinatorAssignments : coordinator_id [1 / 0..*]
+  EventRequests --> CoordinatorAssignments : event_request_id [1 / 0..*]
+  AppUsers --> EquipmentRequests : decided_by [0..1 / 0..*]
+  EquipmentTypes --> EquipmentRequests : equipment_type_id [1 / 0..*]
+  EventRequests --> EquipmentRequests : event_request_id [1 / 0..*]
+  AppUsers --> EquipmentRequests : released_by [0..1 / 0..*]
+  AppUsers --> EquipmentRequests : requested_by [1 / 0..*]
+  AppUsers --> EquipmentStockChanges : changed_by [1 / 0..*]
+  EquipmentTypes --> EquipmentStockChanges : equipment_type_id [1 / 0..*]
+  AppUsers --> EventCancellations : cancelled_by [1 / 0..*]
+  EventRequests --> EventCancellations : event_request_id [1 / 0..1]
+  AppUsers --> EventChangeRequests : decided_by [0..1 / 0..*]
+  EventRequests --> EventChangeRequests : event_request_id [1 / 0..*]
+  AppUsers --> EventChangeRequests : requested_by [1 / 0..*]
+  EventRequests --> EventClarifications : event_request_id [1 / 0..*]
+  AppUsers --> EventClarifications : requested_by [1 / 0..*]
+  AppUsers --> EventRegistrations : attendee_id [1 / 0..*]
+  EventRequests --> EventRegistrations : event_request_id [1 / 0..*]
+  AppUsers --> EventRequestEdits : edited_by [1 / 0..*]
+  EventRequests --> EventRequestEdits : event_request_id [1 / 0..*]
+  AppUsers --> EventRequests : coordinator_id [0..1 / 0..*]
+  AppUsers --> EventRequests : organiser_id [1 / 0..*]
+  SafetyReviews --> EventRequests : preparation_safety_review_id [0..1 / 0..*]
+  AppUsers --> EventRequests : preparation_started_by [0..1 / 0..*]
+  EventRequests --> EventReviews : event_request_id [1 / 0..*]
+  AppUsers --> EventReviews : reviewed_by [1 / 0..*]
+  AppUsers --> EventStatusHistory : changed_by [0..1 / 0..*]
+  EventRequests --> EventStatusHistory : event_request_id [1 / 0..*]
+  EventChangeRequests --> Notifications : change_request_id [0..1 / 0..*]
+  EquipmentRequests --> Notifications : equipment_request_id [0..1 / 0..*]
+  EventRequests --> Notifications : event_request_id [0..1 / 0..*]
+  AppUsers --> Notifications : recipient_id [1 / 0..*]
+  EventRegistrations --> Notifications : registration_id [0..1 / 0..*]
+  SafetyReviews --> Notifications : safety_review_id [0..1 / 0..*]
+  VenueBookings --> Notifications : venue_booking_id [0..1 / 0..*]
+  SafetyReviews --> SafetyApprovalInvalidations : review_id [1 / 0..1]
+  SafetyReviews --> SafetyReviewChangeBaselines : review_id [1 / 0..1]
+  SafetyReviews --> SafetyReviewContextBaselines : review_id [1 / 0..1]
+  AppUsers --> SafetyReviews : decided_by [0..1 / 0..*]
+  EventRequests --> SafetyReviews : event_request_id [1 / 0..*]
+  AppUsers --> SafetyReviews : submitted_by [1 / 0..*]
+  AppUsers --> VenueBookings : cancelled_by [0..1 / 0..*]
+  AppUsers --> VenueBookings : decided_by [0..1 / 0..*]
+  EventRequests --> VenueBookings : event_request_id [1 / 0..*]
+  AppUsers --> VenueBookings : held_by [0..1 / 0..*]
+  VenueBookings --> VenueBookings : replaces_booking_id [0..1 / 0..*]
+  AppUsers --> VenueBookings : requested_by [1 / 0..*]
+  Venues --> VenueBookings : venue_id [1 / 0..*]
+  AppUsers --> VenueOutageImpacts : recorded_by [0..1 / 0..*]
+  VenueUnavailability --> VenueOutageImpacts : unavailability_id [0..1 / 0..*]
+  VenueBookings --> VenueOutageImpacts : venue_booking_id [1 / 0..*]
+  Venues --> VenueOutageImpacts : venue_id [1 / 0..*]
+  AppUsers --> VenueUnavailability : created_by [0..1 / 0..*]
+  Venues --> VenueUnavailability : venue_id [1 / 0..*]
+```
+
+[PNG](exports/class.png) · [SVG](exports/class.svg)
+
+### Domain detail - events
+
+```mermaid
+---
+config:
+  layout: elk
+title: Domain detail - events
+---
+classDiagram
+  direction TB
+  class AppUsers {
+    <<SQL record>>
+    uuid id
+    text email
+    text display_name
+    text role
+    text password_hash
+    timestamptz created_at
+    timestamptz updated_at
+    uuid supabase_user_id
+    boolean coordinator_available
+  }
+  class CoordinatorAssignments {
+    <<SQL record>>
+    uuid id
+    uuid event_request_id
+    uuid coordinator_id
+    uuid assigned_by
+    text note
+    timestamptz assigned_at
+    timestamptz unassigned_at
+    text assignment_method
+  }
+  class EventCancellations {
+    <<SQL record>>
+    uuid event_request_id
+    uuid cancelled_by
+    timestamptz cancelled_at
+    text reason
+    integer affected_venue_bookings
+    integer affected_equipment_requests
+    integer affected_registrations
+  }
+  class EventChangeRequests {
+    <<SQL record>>
+    uuid id
+    uuid event_request_id
+    uuid requested_by
+    text status
+    jsonb proposed_changes
+    text reason
+    uuid decided_by
+    timestamptz decided_at
+    text decision_reason
+    timestamptz created_at
+    timestamptz updated_at
+    jsonb previous
+    integer base_revision
+    integer applied_revision
+    jsonb cancelled_arrangements
+  }
+  class EventClarifications {
+    <<SQL record>>
+    uuid id
+    uuid event_request_id
+    uuid requested_by
+    text message
+    text response
+    timestamptz created_at
+    timestamptz responded_at
+  }
+  class EventRegistrations {
+    <<SQL record>>
+    uuid id
+    uuid event_request_id
+    uuid attendee_id
+    text status
+    timestamptz registered_at
+    timestamptz withdrawn_at
+    timestamptz cancellation_outcome_at
+    integer outcome_version
+  }
+  class EventRequestEdits {
+    <<SQL record>>
+    uuid id
+    uuid event_request_id
+    integer revision
+    uuid edited_by
+    text editor_role
+    text event_status
+    jsonb changes
+    timestamptz created_at
+  }
+  class EventRequests {
+    <<SQL record>>
+    uuid id
+    uuid organiser_id
+    uuid coordinator_id
+    text status
+    text name
+    text purpose
+    text description
+    timestamptz starts_at
+    timestamptz ends_at
+    integer expected_attendance
+    text venue_requirements
+    text accessibility_needs
+    text equipment_requirements
+    boolean registration_required
+    timestamptz created_at
+    timestamptz updated_at
+    integer registration_capacity
+    timestamptz registration_opens_at
+    timestamptz registration_closes_at
+    integer revision
+    text equipment_plan_status
+    timestamptz preparation_started_at
+    uuid preparation_started_by
+    uuid preparation_safety_review_id
+  }
+  class EventReviews {
+    <<SQL record>>
+    uuid id
+    uuid event_request_id
+    uuid reviewed_by
+    text decision
+    text reason
+    timestamptz created_at
+  }
+  class EventStatusHistory {
+    <<SQL record>>
+    uuid id
+    uuid event_request_id
+    text from_status
+    text to_status
+    uuid changed_by
+    timestamptz created_at
+    text reason
+  }
+  class SafetyReviews {
+    <<SQL record>>
+    uuid id
+    uuid event_request_id
+    integer round
+    text status
+    uuid submitted_by
+    uuid decided_by
+  }
+  AppUsers --> CoordinatorAssignments : assigned_by [0..1 / 0..*]
+  AppUsers --> CoordinatorAssignments : coordinator_id [1 / 0..*]
+  EventRequests --> CoordinatorAssignments : event_request_id [1 / 0..*]
+  AppUsers --> EventCancellations : cancelled_by [1 / 0..*]
+  EventRequests --> EventCancellations : event_request_id [1 / 0..1]
+  AppUsers --> EventChangeRequests : decided_by [0..1 / 0..*]
+  EventRequests --> EventChangeRequests : event_request_id [1 / 0..*]
+  AppUsers --> EventChangeRequests : requested_by [1 / 0..*]
+  EventRequests --> EventClarifications : event_request_id [1 / 0..*]
+  AppUsers --> EventClarifications : requested_by [1 / 0..*]
+  AppUsers --> EventRegistrations : attendee_id [1 / 0..*]
+  EventRequests --> EventRegistrations : event_request_id [1 / 0..*]
+  AppUsers --> EventRequestEdits : edited_by [1 / 0..*]
+  EventRequests --> EventRequestEdits : event_request_id [1 / 0..*]
+  AppUsers --> EventRequests : coordinator_id [0..1 / 0..*]
+  AppUsers --> EventRequests : organiser_id [1 / 0..*]
+  SafetyReviews --> EventRequests : preparation_safety_review_id [0..1 / 0..*]
+  AppUsers --> EventRequests : preparation_started_by [0..1 / 0..*]
+  EventRequests --> EventReviews : event_request_id [1 / 0..*]
+  AppUsers --> EventReviews : reviewed_by [1 / 0..*]
+  AppUsers --> EventStatusHistory : changed_by [0..1 / 0..*]
+  EventRequests --> EventStatusHistory : event_request_id [1 / 0..*]
+```
+
+[PNG](exports/class-events.png) · [SVG](exports/class-events.svg)
+
+### Domain detail - planning
+
+```mermaid
+---
+config:
+  layout: elk
+title: Domain detail - planning
+---
+classDiagram
+  direction TB
+  class AppUsers {
+    <<SQL record>>
+    uuid id
+    text role
+  }
+  class EquipmentRequests {
+    <<SQL record>>
+    uuid id
+    uuid event_request_id
+    uuid equipment_type_id
+    uuid requested_by
+    integer quantity
+    text status
+    timestamptz starts_at
+    timestamptz ends_at
+    text notes
+    uuid decided_by
+    timestamptz decided_at
+    text decision_reason
+    timestamptz created_at
+    timestamptz updated_at
+    timestamptz released_at
+    uuid released_by
+    text release_reason
+    text release_cause
+    text technical_requirements
+    integer revision
+  }
+  class EquipmentStockChanges {
+    <<SQL record>>
+    uuid id
+    uuid equipment_type_id
+    integer revision
+    uuid changed_by
+    timestamptz changed_at
+    text reason
+    integer previous_total_quantity
+    integer previous_damaged_quantity
+    integer previous_maintenance_quantity
+    integer new_total_quantity
+    integer new_damaged_quantity
+    integer new_maintenance_quantity
+  }
+  class EquipmentTypes {
+    <<SQL record>>
+    uuid id
+    text name
+    text category
+    text description
+    integer total_quantity
+    boolean is_active
+    timestamptz created_at
+    timestamptz updated_at
+    integer damaged_quantity
+    integer maintenance_quantity
+    integer stock_revision
+  }
+  class EventRequests {
+    <<SQL record>>
+    uuid id
+    uuid organiser_id
+    uuid coordinator_id
+    text status
+    timestamptz starts_at
+    timestamptz ends_at
+    integer revision
+    text equipment_plan_status
+    uuid preparation_started_by
+    uuid preparation_safety_review_id
+  }
+  class VenueBookings {
+    <<SQL record>>
+    uuid id
+    uuid event_request_id
+    uuid venue_id
+    uuid requested_by
+    text status
+    timestamptz starts_at
+    timestamptz ends_at
+    text layout
+    text notes
+    uuid decided_by
+    timestamptz decided_at
+    text decision_reason
+    timestamptz created_at
+    timestamptz updated_at
+    uuid replaces_booking_id
+    integer reserved_setup_minutes
+    integer reserved_turnaround_minutes
+    timestamptz hold_expires_at
+    uuid held_by
+    timestamptz held_at
+    timestamptz expired_at
+    uuid cancelled_by
+    timestamptz cancelled_at
+    text cancellation_reason
+  }
+  class VenueOutageImpacts {
+    <<SQL record>>
+    uuid id
+    uuid unavailability_id
+    uuid venue_booking_id
+    uuid venue_id
+    timestamptz outage_starts_at
+    timestamptz outage_ends_at
+    text outage_reason
+    text status
+    uuid recorded_by
+    timestamptz created_at
+    timestamptz updated_at
+  }
+  class VenueUnavailability {
+    <<SQL record>>
+    uuid id
+    uuid venue_id
+    timestamptz starts_at
+    timestamptz ends_at
+    text reason
+    uuid created_by
+    timestamptz created_at
+  }
+  class Venues {
+    <<SQL record>>
+    uuid id
+    text name
+    text description
+    text location
+    integer capacity
+    textArray layouts
+    textArray facilities
+    textArray accessibility_features
+    boolean wheelchair_accessible
+    time opens_at
+    time closes_at
+    boolean is_active
+    timestamptz created_at
+    timestamptz updated_at
+    integer setup_minutes
+    integer turnaround_minutes
+  }
+  AppUsers --> EquipmentRequests : decided_by [0..1 / 0..*]
+  EquipmentTypes --> EquipmentRequests : equipment_type_id [1 / 0..*]
+  EventRequests --> EquipmentRequests : event_request_id [1 / 0..*]
+  AppUsers --> EquipmentRequests : released_by [0..1 / 0..*]
+  AppUsers --> EquipmentRequests : requested_by [1 / 0..*]
+  AppUsers --> EquipmentStockChanges : changed_by [1 / 0..*]
+  EquipmentTypes --> EquipmentStockChanges : equipment_type_id [1 / 0..*]
+  AppUsers --> VenueBookings : cancelled_by [0..1 / 0..*]
+  AppUsers --> VenueBookings : decided_by [0..1 / 0..*]
+  EventRequests --> VenueBookings : event_request_id [1 / 0..*]
+  AppUsers --> VenueBookings : held_by [0..1 / 0..*]
+  VenueBookings --> VenueBookings : replaces_booking_id [0..1 / 0..*]
+  AppUsers --> VenueBookings : requested_by [1 / 0..*]
+  Venues --> VenueBookings : venue_id [1 / 0..*]
+  AppUsers --> VenueOutageImpacts : recorded_by [0..1 / 0..*]
+  VenueUnavailability --> VenueOutageImpacts : unavailability_id [0..1 / 0..*]
+  VenueBookings --> VenueOutageImpacts : venue_booking_id [1 / 0..*]
+  Venues --> VenueOutageImpacts : venue_id [1 / 0..*]
+  AppUsers --> VenueUnavailability : created_by [0..1 / 0..*]
+  Venues --> VenueUnavailability : venue_id [1 / 0..*]
+```
+
+[PNG](exports/class-planning.png) · [SVG](exports/class-planning.svg)
+
+### Domain detail - safety
+
+```mermaid
+---
+config:
+  layout: elk
+title: Domain detail - safety
+---
+classDiagram
+  direction TB
+  class AppUsers {
+    <<SQL record>>
+    uuid id
+    text role
+  }
+  class EquipmentRequests {
+    <<SQL record>>
+    uuid id
+    uuid event_request_id
+    uuid equipment_type_id
+    uuid requested_by
+    integer quantity
+    text status
+    timestamptz starts_at
+    timestamptz ends_at
+    uuid decided_by
+    uuid released_by
+    integer revision
+  }
+  class EventChangeRequests {
+    <<SQL record>>
+    uuid id
+    uuid event_request_id
+    uuid requested_by
+    text status
+    uuid decided_by
+  }
+  class EventRegistrations {
+    <<SQL record>>
+    uuid id
+    uuid event_request_id
+    uuid attendee_id
+    text status
+  }
+  class EventRequests {
+    <<SQL record>>
+    uuid id
+    uuid organiser_id
+    uuid coordinator_id
+    text status
+    timestamptz starts_at
+    timestamptz ends_at
+    integer revision
+    text equipment_plan_status
+    uuid preparation_started_by
+    uuid preparation_safety_review_id
+  }
+  class Notifications {
+    <<SQL record>>
+    uuid id
+    uuid recipient_id
+    uuid event_request_id
+    text type
+    text title
+    text message
+    timestamptz read_at
+    timestamptz created_at
+    uuid venue_booking_id
+    text dedupe_key
+    uuid equipment_request_id
+    uuid registration_id
+    uuid change_request_id
+    uuid safety_review_id
+  }
+  class SafetyApprovalInvalidations {
+    <<SQL record>>
+    uuid review_id
+    timestamptz invalidated_at
+    text source
+  }
+  class SafetyReviewChangeBaselines {
+    <<SQL record>>
+    uuid review_id
+    text venue_fingerprint
+    text technical_fingerprint
+    timestamptz captured_at
+  }
+  class SafetyReviewContextBaselines {
+    <<SQL record>>
+    uuid review_id
+    text context_fingerprint
+    timestamptz captured_at
+  }
+  class SafetyReviews {
+    <<SQL record>>
+    uuid id
+    uuid event_request_id
+    integer round
+    text status
+    text arrangement_fingerprint
+    text emergency_access
+    text equipment_placement
+    text crowd_movement
+    uuid submitted_by
+    timestamptz submitted_at
+    uuid decided_by
+    timestamptz decided_at
+    text decision_notes
+    textArray requested_areas
+  }
+  class VenueBookings {
+    <<SQL record>>
+    uuid id
+    uuid event_request_id
+    uuid venue_id
+    uuid requested_by
+    text status
+    timestamptz starts_at
+    timestamptz ends_at
+    uuid decided_by
+    uuid replaces_booking_id
+    timestamptz hold_expires_at
+    uuid held_by
+    uuid cancelled_by
+  }
+  EventChangeRequests --> Notifications : change_request_id [0..1 / 0..*]
+  EquipmentRequests --> Notifications : equipment_request_id [0..1 / 0..*]
+  EventRequests --> Notifications : event_request_id [0..1 / 0..*]
+  AppUsers --> Notifications : recipient_id [1 / 0..*]
+  EventRegistrations --> Notifications : registration_id [0..1 / 0..*]
+  SafetyReviews --> Notifications : safety_review_id [0..1 / 0..*]
+  VenueBookings --> Notifications : venue_booking_id [0..1 / 0..*]
+  SafetyReviews --> SafetyApprovalInvalidations : review_id [1 / 0..1]
+  SafetyReviews --> SafetyReviewChangeBaselines : review_id [1 / 0..1]
+  SafetyReviews --> SafetyReviewContextBaselines : review_id [1 / 0..1]
+  AppUsers --> SafetyReviews : decided_by [0..1 / 0..*]
+  EventRequests --> SafetyReviews : event_request_id [1 / 0..*]
+  AppUsers --> SafetyReviews : submitted_by [1 / 0..*]
+```
+
+[PNG](exports/class-safety.png) · [SVG](exports/class-safety.svg)
+
+## Current workflow sequences
+
+Each participant and numbered message has an individual source reference in [sequence-audit.json](../scrum/sprint-03/evidence/design-audit-20261106/sequence-audit.json). These are workflow views: SQL queries and local validation can be grouped into one message, while transaction boundaries, relevant branch ordering and notification ownership remain explicit. “Client” means the caller of the HTTP API; it is not an unauthenticated actor trusted by a service. No arrow implies email, server push, or a separate notification service. Mutating workflow routes derive identity at the HTTP boundary and recheck service-specific ownership/state/version conditions.
+
+### Registration withdrawal - owned record and event-start cutoff
+
+```mermaid
+---
+title: Registration withdrawal - owned record and event-start cutoff
+---
+sequenceDiagram
+  autonumber
+  participant Client as Attendee client
+  participant API as Express HTTP boundary
+  participant Service as withdrawRegistration
+  participant DB as PostgreSQL
+  Client->>API: POST /api/registrations/:id/withdraw {confirm:true}
+  API->>Service: Verified attendee, UUID and explicit confirmation
+  Service->>DB: BEGIN READ COMMITTED, set transaction actor
+  Service->>DB: Share-lock trusted profile, discover only own registration
+  Service->>DB: Lock event, then registration, read database clock
+  alt event started or terminal
+  Service->>Service: Refuse withdrawal before replay check
+  else already WITHDRAWN before cutoff
+  Service->>Service: Keep outcome and timestamps, changed false
+  else active registration before cutoff
+  Service->>DB: Set WITHDRAWN and withdrawal time
+  DB->>DB: Registration outcome trigger writes deduplicated notices
+  end
+  Service->>DB: COMMIT on success, ROLLBACK on thrown error
+  Service-->>API: Resolve committed result or throw failure to HTTP boundary
+  API-->>Client: HTTP status and JSON, typed failures mapped
+```
+
+[PNG](exports/seq-registration-withdrawal.png) · [SVG](exports/seq-registration-withdrawal.svg)
+
+Only an active owned registration can change. A replay after the event-start cutoff is refused. Capacity comes from active rows; no stock-style counter is incremented. Notices are stored in the same transaction, with no push to an inbox client.
+
+### Event confirmation - live readiness under shared arrangement locks
+
+```mermaid
+---
+title: Event confirmation - live readiness under shared arrangement locks
+---
+sequenceDiagram
+  autonumber
+  participant Client as Assigned coordinator client
+  participant API as Express HTTP boundary
+  participant Service as confirmEvent
+  participant DB as PostgreSQL
+  Client->>API: POST /api/events/:id/confirm {}
+  API->>Service: Authenticate, restrict role, validate UUID and empty body
+  Service->>DB: BEGIN READ COMMITTED, set transaction actor
+  Service->>DB: Trusted profile, venue gates and bookings before event
+  Service->>DB: Sorted equipment pools and lines, share-lock venue catalogue
+  Service->>Service: Recheck current coordinator assignment
+  alt already CONFIRMED
+  Service->>DB: Read original confirmation history, changed false
+  else first confirmation
+  Service->>DB: Require APPROVED and start still in future by database clock
+  Service->>DB: Read current venue, equipment and pending-change readiness
+  Service->>Service: Reject all unmet readiness checks together
+  Service->>DB: Set event CONFIRMED
+  DB->>DB: Status history and final-confirmation notices in transaction
+  end
+  Service->>DB: COMMIT on success, ROLLBACK on thrown error
+  Service-->>API: Resolve committed result or throw failure to HTTP boundary
+  API-->>Client: HTTP status and JSON, typed failures mapped
+```
+
+[PNG](exports/seq-event-confirmation.png) · [SVG](exports/seq-event-confirmation.svg)
+
+The already-confirmed branch precedes first-confirmation state, clock and readiness checks. Safety approval is a separate preparation gate; it is not an extra confirmation precondition. GET /confirmation supplies the panel, and POST wraps the result in {confirmation}.
+
+### Event cancellation - arrangements and notices commit together
+
+```mermaid
+---
+title: Event cancellation - arrangements and notices commit together
+---
+sequenceDiagram
+  autonumber
+  participant Client as Owner or assigned coordinator client
+  participant API as Express HTTP boundary
+  participant Service as cancelEvent
+  participant DB as PostgreSQL
+  Client->>API: POST /api/events/:id/cancel with reason and acknowledgement
+  API->>Service: Validate reason and confirmAffectedArrangements true
+  Service->>DB: BEGIN READ COMMITTED, set transaction actor
+  Service->>DB: Trusted actor, sorted venue gates and bookings before event
+  Service->>Service: Check ownership or current assignment and cancellable state
+  Service->>DB: Assert booking set unchanged, lock sorted equipment pools and lines
+  Service->>DB: Capture affected staff and counts before release
+  Service->>DB: Cancel live venue arrangements, set event CANCELLED
+  DB->>DB: Status trigger releases RESERVED equipment once
+  Service->>DB: Cancel remaining REQUESTED or REJECTED lines and active registrations
+  Service->>DB: Insert cancellation audit, attach internal history reason
+  Service->>DB: Store notices for owner, coordinator, affected staff and attendees
+  Service->>DB: COMMIT on success, ROLLBACK on thrown error
+  Service-->>API: Resolve committed result or throw failure to HTTP boundary
+  API-->>Client: HTTP status and JSON, typed failures mapped
+```
+
+[PNG](exports/seq-event-cancellation-equipment.png) · [SVG](exports/seq-event-cancellation-equipment.svg)
+
+Repeated whole-event cancellation returns a state conflict. Equipment release preserves allocation history and does not increment pooled stock. Attendee notices omit the internal cancellation reason; only affected staff are selected before updates. Completion is shown separately below.
+
+### Lead allocation and handover - versioned assignment history
+
+```mermaid
+---
+title: Lead allocation and handover - versioned assignment history
+---
+sequenceDiagram
+  autonumber
+  participant Client as Coordinator Lead client
+  participant API as Express HTTP boundary
+  participant Service as Assignment service
+  participant DB as PostgreSQL
+  Client->>API: PUT /api/events/:id/coordinator or POST coordinator/reassign
+  API->>Service: Verified Lead, parse target and optional note or handover reason
+  Service->>DB: BEGIN READ COMMITTED, set transaction actor
+  Service->>DB: Lock event, hide drafts and reject closed states
+  alt initial allocation
+  Service->>DB: Require no coordinator and no active assignment history
+  else reassignment
+  Service->>DB: Lock active history and compare expectedAssignmentVersion
+  Service->>Service: Same target is unchanged only after version check
+  end
+  opt genuine new allocation or handover
+  Service->>DB: Lock selected profile, require available EVENT_COORDINATOR
+  Service->>DB: Close previous interval when handing over, insert assignment
+  Service->>DB: Set current event coordinator and store allocation notices
+  end
+  Service->>DB: COMMIT on success, ROLLBACK on thrown error
+  Service-->>API: Resolve committed result or throw failure to HTTP boundary
+  API-->>Client: HTTP status and JSON, typed failures mapped
+```
+
+[PNG](exports/seq-lead-assignment.png) · [SVG](exports/seq-lead-assignment.svg)
+
+Initial allocation inserts directly; only reassignment closes a previous interval. Reassignment checks the assignment-row UUID before its same-target no-op, preventing an A → B → A stale form from succeeding. Submission leaves the request unassigned for Lead allocation; historical AUTOMATIC assignment_method rows remain valid history. Lead reads do not widen the ordinary event-detail policy.
+
+### Equipment availability - advisory saved or what-if assessment
+
+```mermaid
+---
+title: Equipment availability - advisory saved or what-if assessment
+---
+sequenceDiagram
+  autonumber
+  participant Client as Technical Support client
+  participant API as Express HTTP boundary
+  participant Service as Equipment availability service
+  participant DB as PostgreSQL snapshot
+  Client->>API: GET context, POST assessment with requirementsVersion
+  API->>Service: Verified Technical Support and validated input
+  Service->>DB: Load event, saved lines, stock and reservations as one snapshot
+  Service->>Service: Compare source-value requirementsVersion
+  alt saved mode
+  Service->>Service: Aggregate non-cancelled saved lines, enforce current event period
+  Service->>Service: Exclude only the saved RESERVED line IDs being assessed
+  else what-if mode
+  Service->>Service: Use explicit items and interval, exclude no saved reservation
+  end
+  Service->>Service: Compute half-open peak demand against operational stock
+  Service-->>API: Return advisory assessment, no reservation or other write
+  API-->>Client: 200 {assessment}, stale context requires refresh
+```
+
+[PNG](exports/seq-equipment-availability.png) · [SVG](exports/seq-equipment-availability.svg)
+
+Each check is a fresh advisory snapshot. Inactive stock is zero; exact adjacency does not overlap. What-if mode includes reservations of the same event. The later reservation action performs its own live locked check.
+
+### Equipment reservation - serialized stock and replay checks
+
+```mermaid
+---
+title: Equipment reservation - serialized stock and replay checks
+---
+sequenceDiagram
+  autonumber
+  participant Client as Technical Support client
+  participant API as Express HTTP boundary
+  participant Service as Equipment reservation service
+  participant DB as PostgreSQL
+  Client->>API: POST reserve or cancel for the named event and saved request
+  API->>Service: Verify Technical Support, validate version and cancellation reason
+  Service->>DB: BEGIN READ COMMITTED, set transaction actor
+  Service->>DB: Lock trusted actor, event and reserve-recipient profile
+  Service->>Service: Require APPROVED or confirmed TECHNICAL remediation, even for replay
+  Service->>DB: Lock sorted pools then saved lines, reload live snapshot
+  Service->>Service: Validate source version or exact reconstructed pre-action replay
+  opt new action, exact eligible replay skips writes
+  alt reserve REQUESTED saved line
+  Service->>DB: Check live capacity and exact period, set RESERVED
+  Service->>DB: Write deduplicated reserve notices with the same client
+  else cancel RESERVED line
+  Service->>DB: Set CANCELLED and immutable release actor, time, reason and cause
+  end
+  end
+  Service->>DB: Read refreshed reservation context
+  Service->>DB: COMMIT on success, ROLLBACK on thrown error
+  Service-->>API: Resolve committed result or throw failure to HTTP boundary
+  API-->>Client: HTTP status and JSON, typed failures mapped
+```
+
+[PNG](exports/seq-equipment-reservation.png) · [SVG](exports/seq-equipment-reservation.svg)
+
+The input never supplies quantity/type/period. An exact eligible replay returns changed:false without rewriting the allocation or release. Both reservation and saved-request mutation services allow APPROVED, or CONFIRMED only while the latest safety round requests TECHNICAL changes. Other confirmed events are read-only. State eligibility is checked before the replay no-op.
+
+### Safety review rounds and preparation - current approval required
+
+```mermaid
+---
+title: Safety review rounds and preparation - current approval required
+---
+sequenceDiagram
+  autonumber
+  participant Client as Coordinator or Safety Officer client
+  participant API as Express HTTP boundary
+  participant Service as Safety service
+  participant DB as PostgreSQL
+  Client->>API: Coordinator POST /api/events/:id/safety-reviews
+  API->>Service: Verify assigned coordinator, parse optional planning notes
+  Service->>DB: BEGIN READ COMMITTED, set transaction actor
+  Service->>DB: Lock trusted profile and arrangements, read readiness and latest round
+  Service->>Service: Require ready arrangements and every requested area changed
+  Service->>DB: Insert next PENDING review with arrangement fingerprint
+  DB->>DB: Capture supplemental context baseline on insert
+  Service->>DB: Notify Safety Officers in submission transaction
+  Service->>DB: COMMIT on success, ROLLBACK on thrown error
+  Service-->>API: Resolve committed result or throw failure to HTTP boundary
+  API-->>Client: HTTP status and JSON, typed failures mapped
+  Client->>API: Officer POST /api/safety-reviews/:id/decision
+  API->>Service: Officer-only, decision, fingerprint, notes and requested areas
+  Service->>DB: BEGIN READ COMMITTED, set transaction actor
+  Service->>DB: Lock arrangements then target review, check existing decision first
+  alt review already decided
+  Service->>Service: Same decision unchanged, different saved decision conflicts
+  else pending review
+  Service->>Service: For pending round require supplied fingerprint and planning state
+  opt decision is APPROVED
+  Service->>DB: Require original and supplemental context unchanged and ready
+  end
+  Service->>DB: Persist decision, CHANGES_REQUESTED captures per-area baselines
+  Service->>DB: Store coordinator and relevant Venue or Technical Staff notices
+  end
+  Service->>DB: COMMIT on success, ROLLBACK on thrown error
+  Service-->>API: Resolve committed result or throw failure to HTTP boundary
+  API-->>Client: HTTP status and JSON, typed failures mapped
+  Client->>API: Coordinator POST /api/events/:id/preparation/start {}
+  API->>Service: Assigned coordinator, lock arrangements in new transaction
+  Service->>DB: Require CONFIRMED, latest current approval and live readiness
+  Service->>DB: Store preparation time, actor and exact approved round
+  Service-->>API: After commit return eventRequestId and changed
+  API-->>Client: 200 JSON, failures roll back
+```
+
+[PNG](exports/seq-safety-review.png) · [SVG](exports/seq-safety-review.svg)
+
+Each HTTP action has its own transaction. Identical decided-round retries are handled before fingerprint validation; pending approval still requires the submitted fingerprint and both live context checks. Requested-area baselines fail closed if missing. Preparation validates current approval before its same-round no-op.
+
+### Venue writers - gates precede booking and event row locks
+
+```mermaid
+---
+title: Venue writers - gates precede booking and event row locks
+---
+sequenceDiagram
+  autonumber
+  participant Client as Planning client
+  participant API as Express HTTP boundary
+  participant Service as Venue or lifecycle service
+  participant DB as PostgreSQL
+  Client->>API: Send authorized venue or lifecycle mutation
+  API->>Service: Authenticate and enforce route role and identifiers
+  Service->>DB: BEGIN READ COMMITTED, set transaction actor
+  alt existing-booking approval or hold
+  Service->>DB: Take venue advisory gate before booking row lock
+  Service->>DB: Lock replacement original before event when approving replacement
+  Service->>DB: Lock event then venue, re-read clock and availability after waits
+  else new venue booking
+  Service->>DB: Take selected venue gate then event and venue rows
+  else lifecycle operation across event arrangements
+  Service->>DB: Snapshot live bookings, take sorted venue gates then booking rows
+  Service->>DB: Lock event then verify no new booking escaped the snapshot
+  end
+  Service->>DB: Apply mutation, triggers enforce buffered occupancy and state
+  Service->>DB: COMMIT on success, ROLLBACK on thrown error
+  Service-->>API: Resolve committed result or throw failure to HTTP boundary
+  API-->>Client: HTTP status and JSON, typed failures mapped
+```
+
+[PNG](exports/seq-venue-write-locking.png) · [SVG](exports/seq-venue-write-locking.svg)
+
+This shows the shared venue-gate ordering, not one universal lock list. The existing-booking branch models approval and hold placement; a rejection skips the approval-only event/venue eligibility checks. Venue catalogue edits lock the venue row and check expected buffer values. Outage writers use gate → venue → overlapping hold rows; they do not lock reverse event/review rows. Confirmation additionally locks equipment rows and share-locks venues. A newly discovered arrangement yields a conflict instead of taking a gate after the event.
+
+### Venue temporary hold - deadline and automatic expiry
+
+```mermaid
+---
+title: Venue temporary hold - deadline and automatic expiry
+---
+sequenceDiagram
+  autonumber
+  participant Client as Venue Staff client
+  participant API as Express HTTP boundary
+  participant Service as Venue booking service
+  participant DB as PostgreSQL
+  participant Timer as API startup and 60-second timer
+  Client->>API: POST /api/venue-bookings/:id/hold {expiresAt}
+  API->>Service: Verify Venue Staff and explicit deadline
+  Service->>DB: BEGIN READ COMMITTED, set transaction actor
+  Service->>DB: Take venue gate, lock booking then event then venue
+  Service->>Service: Require PENDING booking and APPROVED event
+  Service->>DB: Recheck suitability, buffered occupancy, hours and database clock
+  Service->>Service: Require now < expiresAt <= occupied start
+  Service->>DB: Set HELD with deadline and actor, notify current coordinator
+  Service->>DB: COMMIT on success, ROLLBACK on thrown error
+  Service-->>API: Resolve committed result or throw failure to HTTP boundary
+  API-->>Client: HTTP status and JSON, typed failures mapped
+  Timer->>Service: Call expireVenueHolds at startup and each timer tick
+  Service->>DB: SELECT expire_venue_holds()
+  DB->>DB: Lock overdue holds, set EXPIRED and write deduplicated notices
+  Note over Service,DB: Reads stop counting a hold at its deadline, independently of timer execution.
+```
+
+[PNG](exports/seq-venue-hold.png) · [SVG](exports/seq-venue-hold.svg)
+
+An approval must finish its deadline check while owning current locks. Staff cancellation needs a reason; an outage can also release an overlapping live hold. Optional pg_cron is another caller of the same idempotent SQL function, not a required extension or browser timer.
+
+### Venue outage - preserve approved booking and recover arrangements
+
+```mermaid
+---
+title: Venue outage - preserve approved booking and recover arrangements
+---
+sequenceDiagram
+  autonumber
+  participant Client as Venue Staff client
+  participant API as Express HTTP boundary
+  participant Service as Venue outage service
+  participant DB as PostgreSQL
+  Client->>API: POST /api/venues/:venueId/unavailability
+  API->>Service: Staff-only, validate outage period and reason
+  Service->>DB: BEGIN READ COMMITTED, set transaction actor
+  Service->>DB: Take venue gate, lock active venue and overlapping live holds
+  Service->>DB: Release overlapping HELD arrangements with recorded reason
+  Service->>DB: Insert unavailability, record impacts for overlapping APPROVED bookings
+  Service->>DB: Keep approved booking and event, store recovery notices
+  Service->>DB: COMMIT on success, ROLLBACK on thrown error
+  Service-->>API: Resolve committed result or throw failure to HTTP boundary
+  API-->>Client: HTTP status and JSON, typed failures mapped
+  Note over Client,DB: Coordinator requests a replacement using replacesBookingId, staff approve it separately.
+  Client->>API: DELETE outage block by venueId and blockId
+  API->>Service: Staff-only, locate block then take its venue gate
+  Service->>DB: In transaction, clear open impacts and delete block
+  Service-->>API: After commit return cleared booking IDs
+  API-->>Client: 200 {id, clearedBookingIds}
+```
+
+[PNG](exports/seq-venue-recovery.png) · [SVG](exports/seq-venue-recovery.svg)
+
+Approved bookings are retained with RECOVERY_REQUIRED impacts. A successfully approved replacement resolves the original recovery and cancels the superseded arrangement in the booking decision transaction. Removing one block clears only its impacts; other outages can still block readiness. The implemented DELETE looks up blockId and does not verify it belongs to the venueId path segment; documented as a limitation, not silently fixed in a diagram.
+
+### Event completion - ended confirmed event and equipment release
+
+```mermaid
+---
+title: Event completion - ended confirmed event and equipment release
+---
+sequenceDiagram
+  autonumber
+  participant Client as Assigned coordinator client
+  participant API as Express HTTP boundary
+  participant Service as completeEvent
+  participant DB as PostgreSQL
+  Client->>API: POST /api/events/:id/complete
+  API->>Service: Verify coordinator and UUID
+  Service->>DB: BEGIN READ COMMITTED, set transaction actor
+  Service->>DB: Trusted profile, venue gates and bookings before event
+  Service->>Service: Require current coordinator, CONFIRMED and database-clock end reached
+  Service->>DB: Assert booking set, lock sorted equipment pools and lines
+  Service->>DB: Count RESERVED lines, set event COMPLETED
+  DB->>DB: Record history and release reservations as EVENT_COMPLETED
+  Service->>DB: Read saved completion history and write completion notices
+  Service->>DB: COMMIT on success, ROLLBACK on thrown error
+  Service-->>API: Resolve committed result or throw failure to HTTP boundary
+  API-->>Client: HTTP status and JSON, typed failures mapped
+```
+
+[PNG](exports/seq-event-completion.png) · [SVG](exports/seq-event-completion.svg)
+
+Completion leaves registrations and venue bookings as history; it does not cancel them. Repeated completion conflicts with EVENT_ALREADY_COMPLETED. The route does not inspect the request body. GET /completion returns {completion:null} for unrelated, absent or not-completed records.
+
+### Significant planning change - reviewed revision and arrangement impact
+
+```mermaid
+---
+title: Significant planning change - reviewed revision and arrangement impact
+---
+sequenceDiagram
+  autonumber
+  participant Client as Assigned coordinator client
+  participant API as Express HTTP boundary
+  participant Service as decideChangeRequest
+  participant DB as PostgreSQL
+  Client->>API: POST decision for the named event and change request
+  API->>Service: Coordinator, decision and required expectedRevision
+  Service->>DB: BEGIN READ COMMITTED, set transaction actor
+  opt approval action
+  Service->>DB: Take venue gates and booking locks before event
+  end
+  Service->>DB: Lock event and pending change request, require current assignment
+  Service->>Service: Compare event revision
+  alt reject
+  Service->>DB: Save rejection and decision notice, keep event details
+  else approve
+  Service->>DB: Recheck saved prior values, then assess arrangement impacts
+  Service->>Service: Refuse approval that requires cancel and resubmit
+  Service->>DB: Validate merged event, apply values and append revision edit audit
+  Service->>DB: Cancel affected pending arrangements only, preserve others
+  Service->>DB: Persist applied revision, cancelled IDs and relevant notices
+  end
+  Service->>DB: COMMIT on success, ROLLBACK on thrown error
+  Service-->>API: Resolve committed result or throw failure to HTTP boundary
+  API-->>Client: HTTP status and JSON, typed failures mapped
+```
+
+[PNG](exports/seq-planning-change.png) · [SVG](exports/seq-planning-change.svg)
+
+This is the decision step; the owner first submits a change request with changes and expectedRevision. Rejections do not need the event to remain in planning, but approvals do. Approved or reserved arrangements may prevent significant changes; this is not a general override. Ordinary name/description edits use PATCH /api/events/:id instead.
+
+## Current domain data views
+
+These are readable slices of the physical data model. All attributes of each slice’s primary tables are shown; referenced tables outside the slice are context nodes with selected keys. Relationships are included for every FK whose child belongs to the slice. The [complete model](../database-diagram.md#complete-relationship-model) covers all 24 tables, including two infrastructure tables, and all 55 FKs. A layout edge or near placement never creates a relationship; only the drawn, named FK does.
+
+### Physical model - events detail
+
+```mermaid
+---
+config:
+  layout: elk
+title: Physical model - events detail
+---
+erDiagram
+  direction TB
+  app_users {
+    uuid id PK "NOT NULL"
+    text email "NOT NULL"
+    text display_name "NOT NULL"
+    text role "NOT NULL"
+    text password_hash "nullable"
+    timestamptz created_at "NOT NULL"
+    timestamptz updated_at "NOT NULL"
+    uuid supabase_user_id "nullable"
+    boolean coordinator_available "NOT NULL"
+  }
+  coordinator_assignments {
+    uuid id PK "NOT NULL"
+    uuid event_request_id FK "NOT NULL"
+    uuid coordinator_id FK "NOT NULL"
+    uuid assigned_by FK "nullable"
+    text note "nullable"
+    timestamptz assigned_at "NOT NULL"
+    timestamptz unassigned_at "nullable"
+    text assignment_method "NOT NULL"
+  }
+  event_cancellations {
+    uuid event_request_id PK,FK "NOT NULL"
+    uuid cancelled_by FK "NOT NULL"
+    timestamptz cancelled_at "NOT NULL"
+    text reason "NOT NULL"
+    integer affected_venue_bookings "NOT NULL"
+    integer affected_equipment_requests "NOT NULL"
+    integer affected_registrations "NOT NULL"
+  }
+  event_change_requests {
+    uuid id PK "NOT NULL"
+    uuid event_request_id FK "NOT NULL"
+    uuid requested_by FK "NOT NULL"
+    text status "NOT NULL"
+    jsonb proposed_changes "NOT NULL"
+    text reason "nullable"
+    uuid decided_by FK "nullable"
+    timestamptz decided_at "nullable"
+    text decision_reason "nullable"
+    timestamptz created_at "NOT NULL"
+    timestamptz updated_at "NOT NULL"
+    jsonb previous "NOT NULL"
+    integer base_revision "NOT NULL"
+    integer applied_revision "nullable"
+    jsonb cancelled_arrangements "nullable"
+  }
+  event_clarifications {
+    uuid id PK "NOT NULL"
+    uuid event_request_id FK "NOT NULL"
+    uuid requested_by FK "NOT NULL"
+    text message "NOT NULL"
+    text response "nullable"
+    timestamptz created_at "NOT NULL"
+    timestamptz responded_at "nullable"
+  }
+  event_registrations {
+    uuid id PK "NOT NULL"
+    uuid event_request_id FK "NOT NULL"
+    uuid attendee_id FK "NOT NULL"
+    text status "NOT NULL"
+    timestamptz registered_at "NOT NULL"
+    timestamptz withdrawn_at "nullable"
+    timestamptz cancellation_outcome_at "nullable"
+    integer outcome_version "NOT NULL"
+  }
+  event_request_edits {
+    uuid id PK "NOT NULL"
+    uuid event_request_id FK "NOT NULL"
+    integer revision "NOT NULL"
+    uuid edited_by FK "NOT NULL"
+    text editor_role "NOT NULL"
+    text event_status "NOT NULL"
+    jsonb changes "NOT NULL"
+    timestamptz created_at "NOT NULL"
+  }
+  event_requests {
+    uuid id PK "NOT NULL"
+    uuid organiser_id FK "NOT NULL"
+    uuid coordinator_id FK "nullable"
+    text status "NOT NULL"
+    text name "nullable"
+    text purpose "nullable"
+    text description "nullable"
+    timestamptz starts_at "nullable"
+    timestamptz ends_at "nullable"
+    integer expected_attendance "nullable"
+    text venue_requirements "nullable"
+    text accessibility_needs "nullable"
+    text equipment_requirements "nullable"
+    boolean registration_required "nullable"
+    timestamptz created_at "NOT NULL"
+    timestamptz updated_at "NOT NULL"
+    integer registration_capacity "nullable"
+    timestamptz registration_opens_at "nullable"
+    timestamptz registration_closes_at "nullable"
+    integer revision "NOT NULL"
+    text equipment_plan_status "NOT NULL"
+    timestamptz preparation_started_at "nullable"
+    uuid preparation_started_by FK "nullable"
+    uuid preparation_safety_review_id FK "nullable"
+  }
+  event_reviews {
+    uuid id PK "NOT NULL"
+    uuid event_request_id FK "NOT NULL"
+    uuid reviewed_by FK "NOT NULL"
+    text decision "NOT NULL"
+    text reason "nullable"
+    timestamptz created_at "NOT NULL"
+  }
+  event_status_history {
+    uuid id PK "NOT NULL"
+    uuid event_request_id FK "NOT NULL"
+    text from_status "nullable"
+    text to_status "NOT NULL"
+    uuid changed_by FK "nullable"
+    timestamptz created_at "NOT NULL"
+    text reason "nullable"
+  }
+  safety_reviews {
+    uuid id PK "NOT NULL"
+    uuid event_request_id FK "NOT NULL"
+    integer round "NOT NULL"
+    text status "NOT NULL"
+    uuid submitted_by FK "NOT NULL"
+    uuid decided_by FK "nullable"
+  }
+  app_users |o..o{ coordinator_assignments : "assigned_by"
+  app_users ||..o{ coordinator_assignments : "coordinator_id"
+  event_requests ||..o{ coordinator_assignments : "event_request_id"
+  app_users ||..o{ event_cancellations : "cancelled_by"
+  event_requests ||--o| event_cancellations : "event_request_id"
+  app_users |o..o{ event_change_requests : "decided_by"
+  event_requests ||..o{ event_change_requests : "event_request_id"
+  app_users ||..o{ event_change_requests : "requested_by"
+  event_requests ||..o{ event_clarifications : "event_request_id"
+  app_users ||..o{ event_clarifications : "requested_by"
+  app_users ||..o{ event_registrations : "attendee_id"
+  event_requests ||..o{ event_registrations : "event_request_id"
+  app_users ||..o{ event_request_edits : "edited_by"
+  event_requests ||..o{ event_request_edits : "event_request_id"
+  app_users |o..o{ event_requests : "coordinator_id"
+  app_users ||..o{ event_requests : "organiser_id"
+  safety_reviews |o..o{ event_requests : "preparation_safety_review_id"
+  app_users |o..o{ event_requests : "preparation_started_by"
+  event_requests ||..o{ event_reviews : "event_request_id"
+  app_users ||..o{ event_reviews : "reviewed_by"
+  app_users |o..o{ event_status_history : "changed_by"
+  event_requests ||..o{ event_status_history : "event_request_id"
+```
+
+[PNG](exports/erd-events.png) · [SVG](exports/erd-events.svg)
+
+### Physical model - planning detail
+
+```mermaid
+---
+config:
+  layout: elk
+title: Physical model - planning detail
+---
+erDiagram
+  direction TB
+  app_users {
+    uuid id PK "NOT NULL"
+    text role "NOT NULL"
+  }
+  equipment_requests {
+    uuid id PK "NOT NULL"
+    uuid event_request_id FK "NOT NULL"
+    uuid equipment_type_id FK "NOT NULL"
+    uuid requested_by FK "NOT NULL"
+    integer quantity "NOT NULL"
+    text status "NOT NULL"
+    timestamptz starts_at "NOT NULL"
+    timestamptz ends_at "NOT NULL"
+    text notes "nullable"
+    uuid decided_by FK "nullable"
+    timestamptz decided_at "nullable"
+    text decision_reason "nullable"
+    timestamptz created_at "NOT NULL"
+    timestamptz updated_at "NOT NULL"
+    timestamptz released_at "nullable"
+    uuid released_by FK "nullable"
+    text release_reason "nullable"
+    text release_cause "nullable"
+    text technical_requirements "nullable"
+    integer revision "NOT NULL"
+  }
+  equipment_stock_changes {
+    uuid id PK "NOT NULL"
+    uuid equipment_type_id FK "NOT NULL"
+    integer revision "NOT NULL"
+    uuid changed_by FK "NOT NULL"
+    timestamptz changed_at "NOT NULL"
+    text reason "NOT NULL"
+    integer previous_total_quantity "NOT NULL"
+    integer previous_damaged_quantity "NOT NULL"
+    integer previous_maintenance_quantity "NOT NULL"
+    integer new_total_quantity "NOT NULL"
+    integer new_damaged_quantity "NOT NULL"
+    integer new_maintenance_quantity "NOT NULL"
+  }
+  equipment_types {
+    uuid id PK "NOT NULL"
+    text name "NOT NULL"
+    text category "nullable"
+    text description "nullable"
+    integer total_quantity "NOT NULL"
+    boolean is_active "NOT NULL"
+    timestamptz created_at "NOT NULL"
+    timestamptz updated_at "NOT NULL"
+    integer damaged_quantity "NOT NULL"
+    integer maintenance_quantity "NOT NULL"
+    integer stock_revision "NOT NULL"
+  }
+  event_requests {
+    uuid id PK "NOT NULL"
+    uuid organiser_id FK "NOT NULL"
+    uuid coordinator_id FK "nullable"
+    text status "NOT NULL"
+    timestamptz starts_at "nullable"
+    timestamptz ends_at "nullable"
+    integer revision "NOT NULL"
+    text equipment_plan_status "NOT NULL"
+    uuid preparation_started_by FK "nullable"
+    uuid preparation_safety_review_id FK "nullable"
+  }
+  venue_bookings {
+    uuid id PK "NOT NULL"
+    uuid event_request_id FK "NOT NULL"
+    uuid venue_id FK "NOT NULL"
+    uuid requested_by FK "NOT NULL"
+    text status "NOT NULL"
+    timestamptz starts_at "NOT NULL"
+    timestamptz ends_at "NOT NULL"
+    text layout "nullable"
+    text notes "nullable"
+    uuid decided_by FK "nullable"
+    timestamptz decided_at "nullable"
+    text decision_reason "nullable"
+    timestamptz created_at "NOT NULL"
+    timestamptz updated_at "NOT NULL"
+    uuid replaces_booking_id FK "nullable"
+    integer reserved_setup_minutes "NOT NULL"
+    integer reserved_turnaround_minutes "NOT NULL"
+    timestamptz hold_expires_at "nullable"
+    uuid held_by FK "nullable"
+    timestamptz held_at "nullable"
+    timestamptz expired_at "nullable"
+    uuid cancelled_by FK "nullable"
+    timestamptz cancelled_at "nullable"
+    text cancellation_reason "nullable"
+  }
+  venue_outage_impacts {
+    uuid id PK "NOT NULL"
+    uuid unavailability_id FK "nullable"
+    uuid venue_booking_id FK "NOT NULL"
+    uuid venue_id FK "NOT NULL"
+    timestamptz outage_starts_at "NOT NULL"
+    timestamptz outage_ends_at "NOT NULL"
+    text outage_reason "NOT NULL"
+    text status "NOT NULL"
+    uuid recorded_by FK "nullable"
+    timestamptz created_at "NOT NULL"
+    timestamptz updated_at "NOT NULL"
+  }
+  venue_unavailability {
+    uuid id PK "NOT NULL"
+    uuid venue_id FK "NOT NULL"
+    timestamptz starts_at "NOT NULL"
+    timestamptz ends_at "NOT NULL"
+    text reason "nullable"
+    uuid created_by FK "nullable"
+    timestamptz created_at "NOT NULL"
+  }
+  venues {
+    uuid id PK "NOT NULL"
+    text name "NOT NULL"
+    text description "nullable"
+    text location "nullable"
+    integer capacity "NOT NULL"
+    textArray layouts "NOT NULL"
+    textArray facilities "NOT NULL"
+    textArray accessibility_features "NOT NULL"
+    boolean wheelchair_accessible "NOT NULL"
+    time opens_at "nullable"
+    time closes_at "nullable"
+    boolean is_active "NOT NULL"
+    timestamptz created_at "NOT NULL"
+    timestamptz updated_at "NOT NULL"
+    integer setup_minutes "NOT NULL"
+    integer turnaround_minutes "NOT NULL"
+  }
+  app_users |o..o{ equipment_requests : "decided_by"
+  equipment_types ||..o{ equipment_requests : "equipment_type_id"
+  event_requests ||..o{ equipment_requests : "event_request_id"
+  app_users |o..o{ equipment_requests : "released_by"
+  app_users ||..o{ equipment_requests : "requested_by"
+  app_users ||..o{ equipment_stock_changes : "changed_by"
+  equipment_types ||..o{ equipment_stock_changes : "equipment_type_id"
+  app_users |o..o{ venue_bookings : "cancelled_by"
+  app_users |o..o{ venue_bookings : "decided_by"
+  event_requests ||..o{ venue_bookings : "event_request_id"
+  app_users |o..o{ venue_bookings : "held_by"
+  venue_bookings |o..o{ venue_bookings : "replaces_booking_id"
+  app_users ||..o{ venue_bookings : "requested_by"
+  venues ||..o{ venue_bookings : "venue_id"
+  app_users |o..o{ venue_outage_impacts : "recorded_by"
+  venue_unavailability |o..o{ venue_outage_impacts : "unavailability_id"
+  venue_bookings ||..o{ venue_outage_impacts : "venue_booking_id"
+  venues ||..o{ venue_outage_impacts : "venue_id"
+  app_users |o..o{ venue_unavailability : "created_by"
+  venues ||..o{ venue_unavailability : "venue_id"
+```
+
+[PNG](exports/erd-planning.png) · [SVG](exports/erd-planning.svg)
+
+### Physical model - safety detail
+
+```mermaid
+---
+config:
+  layout: elk
+title: Physical model - safety detail
+---
+erDiagram
+  direction TB
+  app_users {
+    uuid id PK "NOT NULL"
+    text role "NOT NULL"
+  }
+  equipment_requests {
+    uuid id PK "NOT NULL"
+    uuid event_request_id FK "NOT NULL"
+    uuid equipment_type_id FK "NOT NULL"
+    uuid requested_by FK "NOT NULL"
+    integer quantity "NOT NULL"
+    text status "NOT NULL"
+    timestamptz starts_at "NOT NULL"
+    timestamptz ends_at "NOT NULL"
+    uuid decided_by FK "nullable"
+    uuid released_by FK "nullable"
+    integer revision "NOT NULL"
+  }
+  event_change_requests {
+    uuid id PK "NOT NULL"
+    uuid event_request_id FK "NOT NULL"
+    uuid requested_by FK "NOT NULL"
+    text status "NOT NULL"
+    uuid decided_by FK "nullable"
+  }
+  event_registrations {
+    uuid id PK "NOT NULL"
+    uuid event_request_id FK "NOT NULL"
+    uuid attendee_id FK "NOT NULL"
+    text status "NOT NULL"
+  }
+  event_requests {
+    uuid id PK "NOT NULL"
+    uuid organiser_id FK "NOT NULL"
+    uuid coordinator_id FK "nullable"
+    text status "NOT NULL"
+    timestamptz starts_at "nullable"
+    timestamptz ends_at "nullable"
+    integer revision "NOT NULL"
+    text equipment_plan_status "NOT NULL"
+    uuid preparation_started_by FK "nullable"
+    uuid preparation_safety_review_id FK "nullable"
+  }
+  notifications {
+    uuid id PK "NOT NULL"
+    uuid recipient_id FK "NOT NULL"
+    uuid event_request_id FK "nullable"
+    text type "NOT NULL"
+    text title "NOT NULL"
+    text message "NOT NULL"
+    timestamptz read_at "nullable"
+    timestamptz created_at "NOT NULL"
+    uuid venue_booking_id FK "nullable"
+    text dedupe_key "nullable"
+    uuid equipment_request_id FK "nullable"
+    uuid registration_id FK "nullable"
+    uuid change_request_id FK "nullable"
+    uuid safety_review_id FK "nullable"
+  }
+  safety_approval_invalidations {
+    uuid review_id PK,FK "NOT NULL"
+    timestamptz invalidated_at "NOT NULL"
+    text source "NOT NULL"
+  }
+  safety_review_change_baselines {
+    uuid review_id PK,FK "NOT NULL"
+    text venue_fingerprint "NOT NULL"
+    text technical_fingerprint "NOT NULL"
+    timestamptz captured_at "NOT NULL"
+  }
+  safety_review_context_baselines {
+    uuid review_id PK,FK "NOT NULL"
+    text context_fingerprint "NOT NULL"
+    timestamptz captured_at "NOT NULL"
+  }
+  safety_reviews {
+    uuid id PK "NOT NULL"
+    uuid event_request_id FK "NOT NULL"
+    integer round "NOT NULL"
+    text status "NOT NULL"
+    text arrangement_fingerprint "NOT NULL"
+    text emergency_access "nullable"
+    text equipment_placement "nullable"
+    text crowd_movement "nullable"
+    uuid submitted_by FK "NOT NULL"
+    timestamptz submitted_at "NOT NULL"
+    uuid decided_by FK "nullable"
+    timestamptz decided_at "nullable"
+    text decision_notes "nullable"
+    textArray requested_areas "nullable"
+  }
+  venue_bookings {
+    uuid id PK "NOT NULL"
+    uuid event_request_id FK "NOT NULL"
+    uuid venue_id FK "NOT NULL"
+    uuid requested_by FK "NOT NULL"
+    text status "NOT NULL"
+    timestamptz starts_at "NOT NULL"
+    timestamptz ends_at "NOT NULL"
+    uuid decided_by FK "nullable"
+    uuid replaces_booking_id FK "nullable"
+    timestamptz hold_expires_at "nullable"
+    uuid held_by FK "nullable"
+    uuid cancelled_by FK "nullable"
+  }
+  event_change_requests |o..o{ notifications : "change_request_id"
+  equipment_requests |o..o{ notifications : "equipment_request_id"
+  event_requests |o..o{ notifications : "event_request_id"
+  app_users ||..o{ notifications : "recipient_id"
+  event_registrations |o..o{ notifications : "registration_id"
+  safety_reviews |o..o{ notifications : "safety_review_id"
+  venue_bookings |o..o{ notifications : "venue_booking_id"
+  safety_reviews ||--o| safety_approval_invalidations : "review_id"
+  safety_reviews ||--o| safety_review_change_baselines : "review_id"
+  safety_reviews ||--o| safety_review_context_baselines : "review_id"
+  app_users |o..o{ safety_reviews : "decided_by"
+  event_requests ||..o{ safety_reviews : "event_request_id"
+  app_users ||..o{ safety_reviews : "submitted_by"
+```
+
+[PNG](exports/erd-safety-invalidation.png) · [SVG](exports/erd-safety-invalidation.svg)
+
+## Diagram exports
+
+| View | PNG | Scalable SVG |
+| --- | --- | --- |
+| C1 context | [PNG](exports/c1-context.png) | [SVG](exports/c1-context.svg) |
+| C2 containers | [PNG](exports/c2-containers.png) | [SVG](exports/c2-containers.svg) |
+| C3 components | [PNG](exports/c3-components.png) | [SVG](exports/c3-components.svg) |
+| Domain records - all 22 persisted application records | [PNG](exports/class.png) | [SVG](exports/class.svg) |
+| Domain detail - events | [PNG](exports/class-events.png) | [SVG](exports/class-events.svg) |
+| Domain detail - planning | [PNG](exports/class-planning.png) | [SVG](exports/class-planning.svg) |
+| Domain detail - safety | [PNG](exports/class-safety.png) | [SVG](exports/class-safety.svg) |
+| Physical model - all 24 tables and 55 foreign keys | [PNG](exports/erd-database.png) | [SVG](exports/erd-database.svg) |
+| Physical model - events detail | [PNG](exports/erd-events.png) | [SVG](exports/erd-events.svg) |
+| Physical model - planning detail | [PNG](exports/erd-planning.png) | [SVG](exports/erd-planning.svg) |
+| Physical model - safety detail | [PNG](exports/erd-safety-invalidation.png) | [SVG](exports/erd-safety-invalidation.svg) |
+| Registration withdrawal - owned record and event-start cutoff | [PNG](exports/seq-registration-withdrawal.png) | [SVG](exports/seq-registration-withdrawal.svg) |
+| Event confirmation - live readiness under shared arrangement locks | [PNG](exports/seq-event-confirmation.png) | [SVG](exports/seq-event-confirmation.svg) |
+| Event cancellation - arrangements and notices commit together | [PNG](exports/seq-event-cancellation-equipment.png) | [SVG](exports/seq-event-cancellation-equipment.svg) |
+| Lead allocation and handover - versioned assignment history | [PNG](exports/seq-lead-assignment.png) | [SVG](exports/seq-lead-assignment.svg) |
+| Equipment availability - advisory saved or what-if assessment | [PNG](exports/seq-equipment-availability.png) | [SVG](exports/seq-equipment-availability.svg) |
+| Equipment reservation - serialized stock and replay checks | [PNG](exports/seq-equipment-reservation.png) | [SVG](exports/seq-equipment-reservation.svg) |
+| Safety review rounds and preparation - current approval required | [PNG](exports/seq-safety-review.png) | [SVG](exports/seq-safety-review.svg) |
+| Venue writers - gates precede booking and event row locks | [PNG](exports/seq-venue-write-locking.png) | [SVG](exports/seq-venue-write-locking.svg) |
+| Venue temporary hold - deadline and automatic expiry | [PNG](exports/seq-venue-hold.png) | [SVG](exports/seq-venue-hold.svg) |
+| Venue outage - preserve approved booking and recover arrangements | [PNG](exports/seq-venue-recovery.png) | [SVG](exports/seq-venue-recovery.svg) |
+| Event completion - ended confirmed event and equipment release | [PNG](exports/seq-event-completion.png) | [SVG](exports/seq-event-completion.svg) |
+| Significant planning change - reviewed revision and arrangement impact | [PNG](exports/seq-planning-change.png) | [SVG](exports/seq-planning-change.svg) |
+
+Large all-record views are intended for zooming; the smaller domain views are provided for reading and presentation. Mermaid source lives next to the relevant section and is also preserved as `.mmd` in the dated audit evidence. PNG and SVG exports are rendered from the same source; the final audit records source/output hashes and checks labels and connection counts.
+
+## Earlier design notes (historical)
+
+<details>
+<summary>Preserved design history from before the 6 November update; current diagrams above take precedence</summary>
 
 ## Class diagram
 
@@ -661,6 +2380,16 @@ The request row is both the requirement and, while `RESERVED`, its reservation. 
 
 ## Diagram exports
 
+**5 November 2026 — C4 accuracy correction.** C1, C2 and C3 were checked against application source and migrations at `main` `fb6d8d93f721b114accc9857a05d62e859987e23`. The revised views contain 29 functional blocks, 43 labelled relationships, three legends and four system/container/module boundaries. Every functional block, relationship and boundary has a source reference in the [element-by-element audit](../scrum/sprint-03/evidence/c4-audit-20261105/audit.json), registered as [S3-E30](../scrum/sprint-03/evidence/README.md#s3-e30--c4-accuracy-audit-and-exports-5-november-2026). The exported titles, types, technology labels and legends follow the [C4 notation recommendations](https://c4model.com/diagrams/notation); C3 scopes its components to the API container. The current API contract and database model were cross-checked for these boundaries; this is a documentation correction with no endpoint or schema change.
+
+| View | PNG export | Scalable SVG export | Functional blocks / relationships |
+| --- | --- | --- | --- |
+| C1 system context | [c1-context.png](exports/c1-context.png) | [c1-context.svg](exports/c1-context.svg) | 9 / 8 |
+| C2 containers | [c2-containers.png](exports/c2-containers.png) | [c2-containers.svg](exports/c2-containers.svg) | 5 / 5 |
+| C3 API components | [c3-components.png](exports/c3-components.png) | [c3-components.svg](exports/c3-components.svg) | 15 / 30 |
+
+All six exports were generated with Mermaid CLI 11.17.1 / Mermaid 11.17.2 and visually inspected. [Rendering instructions](../scrum/sprint-03/evidence/c4-audit-20261105/render.py), [configuration](../scrum/sprint-03/evidence/c4-audit-20261105/mermaid-config.json) and [render checks](../scrum/sprint-03/evidence/c4-audit-20261105/render-validation.json) retain reproducibility and label-fit evidence. The checks found all 43 rendered arrows labelled, with no clipped node labels, edge-label/node overlaps or edge-label overlaps. C3 uses the ELK layout declared in its Mermaid front matter. These checks establish source/export consistency and diagram readability; application tests, integrated acceptance and a fresh shared database/job check were **Not executed** in this audit.
+
 On **1 November 2026**, C1 context, C2 containers, C3 components and the class view were regenerated from this file for all seven roles and currently mounted workflows, including safety, registration, stock, significant changes and lifecycle transitions. Migration 023 was pending shared application at that rendering checkpoint; the [later rollout checkpoint](../../database/README.md#1-november-2026--shared-023-rollout-and-connected-retests) verifies its application and focused connected retests without changing the diagram structure. Rendering and visual inspection are design verification; they do not replace connected acceptance. Other exported sequences retain their documented generation dates. The automated test-hardening record is `AUTO-20261101-TEST-HARDENING` in [test evidence](../testing/test-evidence.md).
 
 On 29 October 2026 the C3, class and planning ERD exports were refreshed for registration and notification outcomes. The new `seq-registration-withdrawal.png` and `erd-database.png` exports depict the current withdrawal sequence and detailed database diagram. These exports are design evidence, not execution or acceptance results.
@@ -1051,3 +2780,6 @@ The venues component adds coordinator cancellation of one venue arrangement and 
 The [023 schema](../database-diagram.md#1-november-2026--migration-023-permanent-safety-invalidation) supplements the historical 021/022 design without changing public decision bodies or rewriting decisions. Triggers record invalidation without acquiring reverse-order event/review locks from venue or equipment stock writes. Supplemental baselines cover facilities and line technical requirements, displayed to the officer. Upgrade backfills detectable differences and buffered operational-block overlaps; it cannot reconstruct a change already restored before upgrade. See the [current migration procedure](../../database/README.md#kan-84-persistent-invalidation--migration-023-1-november-2026).
 
 **Later 1 November rollout checkpoint:** shared 023 was applied with checksum validation and a no-op repeat, preserving all 30 existing reviews and 10 preparation records. `MAN-20261101-03` then passed TC-06-446 (permanent invalidation after exact restoration, followed by a new approved round and resumed preparation), TC-06-447 (live confirmation readiness refresh after a pending venue request and cancellation), and TC-15-108 (separate equipment decision/release reasons). The [rollout record](../../database/README.md#1-november-2026--shared-023-rollout-and-connected-retests) links persisted snapshots and connected evidence. These results verify the described boundaries; exact-commit CI and independent review remain separate release requirements.
+
+
+</details>

@@ -1,0 +1,3665 @@
+{
+  "tables": [
+    {
+      "table": "app_users",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "not_null": true,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "email",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "display_name",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "role",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "password_hash",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        },
+        {
+          "name": "supabase_user_id",
+          "type": "uuid",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "coordinator_available",
+          "type": "boolean",
+          "not_null": true,
+          "default": "false"
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "source": "schema.json:tables",
+      "verified_against": "Fresh PostgreSQL catalog after all 23 migrations"
+    },
+    {
+      "table": "coordinator_assignments",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "not_null": true,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "event_request_id",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "coordinator_id",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "assigned_by",
+          "type": "uuid",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "note",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "assigned_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        },
+        {
+          "name": "unassigned_at",
+          "type": "timestamp with time zone",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "assignment_method",
+          "type": "text",
+          "not_null": true,
+          "default": "'MANUAL'::text"
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "source": "schema.json:tables",
+      "verified_against": "Fresh PostgreSQL catalog after all 23 migrations"
+    },
+    {
+      "table": "equipment_requests",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "not_null": true,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "event_request_id",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "equipment_type_id",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "requested_by",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "quantity",
+          "type": "integer",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "status",
+          "type": "text",
+          "not_null": true,
+          "default": "'REQUESTED'::text"
+        },
+        {
+          "name": "starts_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "ends_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "notes",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "decided_by",
+          "type": "uuid",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "decided_at",
+          "type": "timestamp with time zone",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "decision_reason",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        },
+        {
+          "name": "released_at",
+          "type": "timestamp with time zone",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "released_by",
+          "type": "uuid",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "release_reason",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "release_cause",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "technical_requirements",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "revision",
+          "type": "integer",
+          "not_null": true,
+          "default": "1"
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "source": "schema.json:tables",
+      "verified_against": "Fresh PostgreSQL catalog after all 23 migrations"
+    },
+    {
+      "table": "equipment_stock_changes",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "not_null": true,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "equipment_type_id",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "revision",
+          "type": "integer",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "changed_by",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "changed_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "clock_timestamp()"
+        },
+        {
+          "name": "reason",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "previous_total_quantity",
+          "type": "integer",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "previous_damaged_quantity",
+          "type": "integer",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "previous_maintenance_quantity",
+          "type": "integer",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "new_total_quantity",
+          "type": "integer",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "new_damaged_quantity",
+          "type": "integer",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "new_maintenance_quantity",
+          "type": "integer",
+          "not_null": true,
+          "default": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "source": "schema.json:tables",
+      "verified_against": "Fresh PostgreSQL catalog after all 23 migrations"
+    },
+    {
+      "table": "equipment_types",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "not_null": true,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "name",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "category",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "description",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "total_quantity",
+          "type": "integer",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "is_active",
+          "type": "boolean",
+          "not_null": true,
+          "default": "true"
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        },
+        {
+          "name": "damaged_quantity",
+          "type": "integer",
+          "not_null": true,
+          "default": "0"
+        },
+        {
+          "name": "maintenance_quantity",
+          "type": "integer",
+          "not_null": true,
+          "default": "0"
+        },
+        {
+          "name": "stock_revision",
+          "type": "integer",
+          "not_null": true,
+          "default": "0"
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "source": "schema.json:tables",
+      "verified_against": "Fresh PostgreSQL catalog after all 23 migrations"
+    },
+    {
+      "table": "event_cancellations",
+      "columns": [
+        {
+          "name": "event_request_id",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "cancelled_by",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "cancelled_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        },
+        {
+          "name": "reason",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "affected_venue_bookings",
+          "type": "integer",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "affected_equipment_requests",
+          "type": "integer",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "affected_registrations",
+          "type": "integer",
+          "not_null": true,
+          "default": null
+        }
+      ],
+      "primary_key": [
+        "event_request_id"
+      ],
+      "source": "schema.json:tables",
+      "verified_against": "Fresh PostgreSQL catalog after all 23 migrations"
+    },
+    {
+      "table": "event_change_requests",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "not_null": true,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "event_request_id",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "requested_by",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "status",
+          "type": "text",
+          "not_null": true,
+          "default": "'PENDING'::text"
+        },
+        {
+          "name": "proposed_changes",
+          "type": "jsonb",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "reason",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "decided_by",
+          "type": "uuid",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "decided_at",
+          "type": "timestamp with time zone",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "decision_reason",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        },
+        {
+          "name": "previous",
+          "type": "jsonb",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "base_revision",
+          "type": "integer",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "applied_revision",
+          "type": "integer",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "cancelled_arrangements",
+          "type": "jsonb",
+          "not_null": false,
+          "default": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "source": "schema.json:tables",
+      "verified_against": "Fresh PostgreSQL catalog after all 23 migrations"
+    },
+    {
+      "table": "event_clarifications",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "not_null": true,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "event_request_id",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "requested_by",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "message",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "response",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        },
+        {
+          "name": "responded_at",
+          "type": "timestamp with time zone",
+          "not_null": false,
+          "default": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "source": "schema.json:tables",
+      "verified_against": "Fresh PostgreSQL catalog after all 23 migrations"
+    },
+    {
+      "table": "event_registrations",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "not_null": true,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "event_request_id",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "attendee_id",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "status",
+          "type": "text",
+          "not_null": true,
+          "default": "'REGISTERED'::text"
+        },
+        {
+          "name": "registered_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        },
+        {
+          "name": "withdrawn_at",
+          "type": "timestamp with time zone",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "cancellation_outcome_at",
+          "type": "timestamp with time zone",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "outcome_version",
+          "type": "integer",
+          "not_null": true,
+          "default": "1"
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "source": "schema.json:tables",
+      "verified_against": "Fresh PostgreSQL catalog after all 23 migrations"
+    },
+    {
+      "table": "event_request_edits",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "not_null": true,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "event_request_id",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "revision",
+          "type": "integer",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "edited_by",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "editor_role",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "event_status",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "changes",
+          "type": "jsonb",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "source": "schema.json:tables",
+      "verified_against": "Fresh PostgreSQL catalog after all 23 migrations"
+    },
+    {
+      "table": "event_requests",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "not_null": true,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "organiser_id",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "coordinator_id",
+          "type": "uuid",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "status",
+          "type": "text",
+          "not_null": true,
+          "default": "'DRAFT'::text"
+        },
+        {
+          "name": "name",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "purpose",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "description",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "starts_at",
+          "type": "timestamp with time zone",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "ends_at",
+          "type": "timestamp with time zone",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "expected_attendance",
+          "type": "integer",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "venue_requirements",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "accessibility_needs",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "equipment_requirements",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "registration_required",
+          "type": "boolean",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        },
+        {
+          "name": "registration_capacity",
+          "type": "integer",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "registration_opens_at",
+          "type": "timestamp with time zone",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "registration_closes_at",
+          "type": "timestamp with time zone",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "revision",
+          "type": "integer",
+          "not_null": true,
+          "default": "1"
+        },
+        {
+          "name": "equipment_plan_status",
+          "type": "text",
+          "not_null": true,
+          "default": "'REQUIRED'::text"
+        },
+        {
+          "name": "preparation_started_at",
+          "type": "timestamp with time zone",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "preparation_started_by",
+          "type": "uuid",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "preparation_safety_review_id",
+          "type": "uuid",
+          "not_null": false,
+          "default": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "source": "schema.json:tables",
+      "verified_against": "Fresh PostgreSQL catalog after all 23 migrations"
+    },
+    {
+      "table": "event_reviews",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "not_null": true,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "event_request_id",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "reviewed_by",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "decision",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "reason",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "source": "schema.json:tables",
+      "verified_against": "Fresh PostgreSQL catalog after all 23 migrations"
+    },
+    {
+      "table": "event_status_history",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "not_null": true,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "event_request_id",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "from_status",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "to_status",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "changed_by",
+          "type": "uuid",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        },
+        {
+          "name": "reason",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "source": "schema.json:tables",
+      "verified_against": "Fresh PostgreSQL catalog after all 23 migrations"
+    },
+    {
+      "table": "notifications",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "not_null": true,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "recipient_id",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "event_request_id",
+          "type": "uuid",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "type",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "title",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "message",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "read_at",
+          "type": "timestamp with time zone",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        },
+        {
+          "name": "venue_booking_id",
+          "type": "uuid",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "dedupe_key",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "equipment_request_id",
+          "type": "uuid",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "registration_id",
+          "type": "uuid",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "change_request_id",
+          "type": "uuid",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "safety_review_id",
+          "type": "uuid",
+          "not_null": false,
+          "default": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "source": "schema.json:tables",
+      "verified_against": "Fresh PostgreSQL catalog after all 23 migrations"
+    },
+    {
+      "table": "safety_approval_invalidations",
+      "columns": [
+        {
+          "name": "review_id",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "invalidated_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "clock_timestamp()"
+        },
+        {
+          "name": "source",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        }
+      ],
+      "primary_key": [
+        "review_id"
+      ],
+      "source": "schema.json:tables",
+      "verified_against": "Fresh PostgreSQL catalog after all 23 migrations"
+    },
+    {
+      "table": "safety_review_change_baselines",
+      "columns": [
+        {
+          "name": "review_id",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "venue_fingerprint",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "technical_fingerprint",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "captured_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        }
+      ],
+      "primary_key": [
+        "review_id"
+      ],
+      "source": "schema.json:tables",
+      "verified_against": "Fresh PostgreSQL catalog after all 23 migrations"
+    },
+    {
+      "table": "safety_review_context_baselines",
+      "columns": [
+        {
+          "name": "review_id",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "context_fingerprint",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "captured_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "clock_timestamp()"
+        }
+      ],
+      "primary_key": [
+        "review_id"
+      ],
+      "source": "schema.json:tables",
+      "verified_against": "Fresh PostgreSQL catalog after all 23 migrations"
+    },
+    {
+      "table": "safety_reviews",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "not_null": true,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "event_request_id",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "round",
+          "type": "integer",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "status",
+          "type": "text",
+          "not_null": true,
+          "default": "'PENDING'::text"
+        },
+        {
+          "name": "arrangement_fingerprint",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "emergency_access",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "equipment_placement",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "crowd_movement",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "submitted_by",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "submitted_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        },
+        {
+          "name": "decided_by",
+          "type": "uuid",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "decided_at",
+          "type": "timestamp with time zone",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "decision_notes",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "requested_areas",
+          "type": "text[]",
+          "not_null": false,
+          "default": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "source": "schema.json:tables",
+      "verified_against": "Fresh PostgreSQL catalog after all 23 migrations"
+    },
+    {
+      "table": "scaffold_metadata",
+      "columns": [
+        {
+          "name": "key",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "value",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        }
+      ],
+      "primary_key": [
+        "key"
+      ],
+      "source": "schema.json:tables",
+      "verified_against": "Fresh PostgreSQL catalog after all 23 migrations"
+    },
+    {
+      "table": "schema_migrations",
+      "columns": [
+        {
+          "name": "name",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "checksum",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "applied_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        }
+      ],
+      "primary_key": [
+        "name"
+      ],
+      "source": "schema.json:tables",
+      "verified_against": "Fresh PostgreSQL catalog after all 23 migrations"
+    },
+    {
+      "table": "venue_bookings",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "not_null": true,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "event_request_id",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "venue_id",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "requested_by",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "status",
+          "type": "text",
+          "not_null": true,
+          "default": "'PENDING'::text"
+        },
+        {
+          "name": "starts_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "ends_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "layout",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "notes",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "decided_by",
+          "type": "uuid",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "decided_at",
+          "type": "timestamp with time zone",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "decision_reason",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        },
+        {
+          "name": "replaces_booking_id",
+          "type": "uuid",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "reserved_setup_minutes",
+          "type": "integer",
+          "not_null": true,
+          "default": "0"
+        },
+        {
+          "name": "reserved_turnaround_minutes",
+          "type": "integer",
+          "not_null": true,
+          "default": "0"
+        },
+        {
+          "name": "hold_expires_at",
+          "type": "timestamp with time zone",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "held_by",
+          "type": "uuid",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "held_at",
+          "type": "timestamp with time zone",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "expired_at",
+          "type": "timestamp with time zone",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "cancelled_by",
+          "type": "uuid",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "cancelled_at",
+          "type": "timestamp with time zone",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "cancellation_reason",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "source": "schema.json:tables",
+      "verified_against": "Fresh PostgreSQL catalog after all 23 migrations"
+    },
+    {
+      "table": "venue_outage_impacts",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "not_null": true,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "unavailability_id",
+          "type": "uuid",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "venue_booking_id",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "venue_id",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "outage_starts_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "outage_ends_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "outage_reason",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "status",
+          "type": "text",
+          "not_null": true,
+          "default": "'RECOVERY_REQUIRED'::text"
+        },
+        {
+          "name": "recorded_by",
+          "type": "uuid",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "source": "schema.json:tables",
+      "verified_against": "Fresh PostgreSQL catalog after all 23 migrations"
+    },
+    {
+      "table": "venue_unavailability",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "not_null": true,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "venue_id",
+          "type": "uuid",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "starts_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "ends_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "reason",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "created_by",
+          "type": "uuid",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "source": "schema.json:tables",
+      "verified_against": "Fresh PostgreSQL catalog after all 23 migrations"
+    },
+    {
+      "table": "venues",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "not_null": true,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "name",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "description",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "location",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "capacity",
+          "type": "integer",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "layouts",
+          "type": "text[]",
+          "not_null": true,
+          "default": "'{}'::text[]"
+        },
+        {
+          "name": "facilities",
+          "type": "text[]",
+          "not_null": true,
+          "default": "'{}'::text[]"
+        },
+        {
+          "name": "accessibility_features",
+          "type": "text[]",
+          "not_null": true,
+          "default": "'{}'::text[]"
+        },
+        {
+          "name": "wheelchair_accessible",
+          "type": "boolean",
+          "not_null": true,
+          "default": "false"
+        },
+        {
+          "name": "opens_at",
+          "type": "time without time zone",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "closes_at",
+          "type": "time without time zone",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "is_active",
+          "type": "boolean",
+          "not_null": true,
+          "default": "true"
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        },
+        {
+          "name": "setup_minutes",
+          "type": "integer",
+          "not_null": true,
+          "default": "0"
+        },
+        {
+          "name": "turnaround_minutes",
+          "type": "integer",
+          "not_null": true,
+          "default": "0"
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "source": "schema.json:tables",
+      "verified_against": "Fresh PostgreSQL catalog after all 23 migrations"
+    }
+  ],
+  "foreign_keys": [
+    {
+      "name": "coordinator_assignments_assigned_by_fkey",
+      "child": "coordinator_assignments",
+      "parent": "app_users",
+      "columns": [
+        "assigned_by"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": false,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (assigned_by) REFERENCES app_users(id)",
+      "delete_action": "a",
+      "update_action": "a",
+      "parent_cardinality": "0..1",
+      "children_cardinality": "0..*",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "coordinator_assignments_coordinator_id_fkey",
+      "child": "coordinator_assignments",
+      "parent": "app_users",
+      "columns": [
+        "coordinator_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (coordinator_id) REFERENCES app_users(id)",
+      "delete_action": "a",
+      "update_action": "a",
+      "parent_cardinality": "1",
+      "children_cardinality": "0..*",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "coordinator_assignments_event_request_id_fkey",
+      "child": "coordinator_assignments",
+      "parent": "event_requests",
+      "columns": [
+        "event_request_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (event_request_id) REFERENCES event_requests(id) ON DELETE CASCADE",
+      "delete_action": "c",
+      "update_action": "a",
+      "parent_cardinality": "1",
+      "children_cardinality": "0..*",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "equipment_requests_decided_by_fkey",
+      "child": "equipment_requests",
+      "parent": "app_users",
+      "columns": [
+        "decided_by"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": false,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (decided_by) REFERENCES app_users(id)",
+      "delete_action": "a",
+      "update_action": "a",
+      "parent_cardinality": "0..1",
+      "children_cardinality": "0..*",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "equipment_requests_equipment_type_id_fkey",
+      "child": "equipment_requests",
+      "parent": "equipment_types",
+      "columns": [
+        "equipment_type_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (equipment_type_id) REFERENCES equipment_types(id)",
+      "delete_action": "a",
+      "update_action": "a",
+      "parent_cardinality": "1",
+      "children_cardinality": "0..*",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "equipment_requests_event_request_id_fkey",
+      "child": "equipment_requests",
+      "parent": "event_requests",
+      "columns": [
+        "event_request_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (event_request_id) REFERENCES event_requests(id)",
+      "delete_action": "a",
+      "update_action": "a",
+      "parent_cardinality": "1",
+      "children_cardinality": "0..*",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "equipment_requests_released_by_fkey",
+      "child": "equipment_requests",
+      "parent": "app_users",
+      "columns": [
+        "released_by"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": false,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (released_by) REFERENCES app_users(id)",
+      "delete_action": "a",
+      "update_action": "a",
+      "parent_cardinality": "0..1",
+      "children_cardinality": "0..*",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "equipment_requests_requested_by_fkey",
+      "child": "equipment_requests",
+      "parent": "app_users",
+      "columns": [
+        "requested_by"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (requested_by) REFERENCES app_users(id)",
+      "delete_action": "a",
+      "update_action": "a",
+      "parent_cardinality": "1",
+      "children_cardinality": "0..*",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "equipment_stock_changes_changed_by_fkey",
+      "child": "equipment_stock_changes",
+      "parent": "app_users",
+      "columns": [
+        "changed_by"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (changed_by) REFERENCES app_users(id)",
+      "delete_action": "a",
+      "update_action": "a",
+      "parent_cardinality": "1",
+      "children_cardinality": "0..*",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "equipment_stock_changes_equipment_type_id_fkey",
+      "child": "equipment_stock_changes",
+      "parent": "equipment_types",
+      "columns": [
+        "equipment_type_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (equipment_type_id) REFERENCES equipment_types(id)",
+      "delete_action": "a",
+      "update_action": "a",
+      "parent_cardinality": "1",
+      "children_cardinality": "0..*",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "event_cancellations_cancelled_by_fkey",
+      "child": "event_cancellations",
+      "parent": "app_users",
+      "columns": [
+        "cancelled_by"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (cancelled_by) REFERENCES app_users(id)",
+      "delete_action": "a",
+      "update_action": "a",
+      "parent_cardinality": "1",
+      "children_cardinality": "0..*",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "event_cancellations_event_request_id_fkey",
+      "child": "event_cancellations",
+      "parent": "event_requests",
+      "columns": [
+        "event_request_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": true,
+      "identifying": true,
+      "definition": "FOREIGN KEY (event_request_id) REFERENCES event_requests(id)",
+      "delete_action": "a",
+      "update_action": "a",
+      "parent_cardinality": "1",
+      "children_cardinality": "0..1",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "event_change_requests_decided_by_fkey",
+      "child": "event_change_requests",
+      "parent": "app_users",
+      "columns": [
+        "decided_by"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": false,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (decided_by) REFERENCES app_users(id)",
+      "delete_action": "a",
+      "update_action": "a",
+      "parent_cardinality": "0..1",
+      "children_cardinality": "0..*",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "event_change_requests_event_request_id_fkey",
+      "child": "event_change_requests",
+      "parent": "event_requests",
+      "columns": [
+        "event_request_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (event_request_id) REFERENCES event_requests(id)",
+      "delete_action": "a",
+      "update_action": "a",
+      "parent_cardinality": "1",
+      "children_cardinality": "0..*",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "event_change_requests_requested_by_fkey",
+      "child": "event_change_requests",
+      "parent": "app_users",
+      "columns": [
+        "requested_by"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (requested_by) REFERENCES app_users(id)",
+      "delete_action": "a",
+      "update_action": "a",
+      "parent_cardinality": "1",
+      "children_cardinality": "0..*",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "event_clarifications_event_request_id_fkey",
+      "child": "event_clarifications",
+      "parent": "event_requests",
+      "columns": [
+        "event_request_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (event_request_id) REFERENCES event_requests(id)",
+      "delete_action": "a",
+      "update_action": "a",
+      "parent_cardinality": "1",
+      "children_cardinality": "0..*",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "event_clarifications_requested_by_fkey",
+      "child": "event_clarifications",
+      "parent": "app_users",
+      "columns": [
+        "requested_by"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (requested_by) REFERENCES app_users(id)",
+      "delete_action": "a",
+      "update_action": "a",
+      "parent_cardinality": "1",
+      "children_cardinality": "0..*",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "event_registrations_attendee_id_fkey",
+      "child": "event_registrations",
+      "parent": "app_users",
+      "columns": [
+        "attendee_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (attendee_id) REFERENCES app_users(id)",
+      "delete_action": "a",
+      "update_action": "a",
+      "parent_cardinality": "1",
+      "children_cardinality": "0..*",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "event_registrations_event_request_id_fkey",
+      "child": "event_registrations",
+      "parent": "event_requests",
+      "columns": [
+        "event_request_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (event_request_id) REFERENCES event_requests(id)",
+      "delete_action": "a",
+      "update_action": "a",
+      "parent_cardinality": "1",
+      "children_cardinality": "0..*",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "event_request_edits_edited_by_fkey",
+      "child": "event_request_edits",
+      "parent": "app_users",
+      "columns": [
+        "edited_by"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (edited_by) REFERENCES app_users(id)",
+      "delete_action": "a",
+      "update_action": "a",
+      "parent_cardinality": "1",
+      "children_cardinality": "0..*",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "event_request_edits_event_request_id_fkey",
+      "child": "event_request_edits",
+      "parent": "event_requests",
+      "columns": [
+        "event_request_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (event_request_id) REFERENCES event_requests(id) ON DELETE CASCADE",
+      "delete_action": "c",
+      "update_action": "a",
+      "parent_cardinality": "1",
+      "children_cardinality": "0..*",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "event_requests_coordinator_id_fkey",
+      "child": "event_requests",
+      "parent": "app_users",
+      "columns": [
+        "coordinator_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": false,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (coordinator_id) REFERENCES app_users(id)",
+      "delete_action": "a",
+      "update_action": "a",
+      "parent_cardinality": "0..1",
+      "children_cardinality": "0..*",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "event_requests_organiser_id_fkey",
+      "child": "event_requests",
+      "parent": "app_users",
+      "columns": [
+        "organiser_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (organiser_id) REFERENCES app_users(id)",
+      "delete_action": "a",
+      "update_action": "a",
+      "parent_cardinality": "1",
+      "children_cardinality": "0..*",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "event_requests_preparation_safety_review_id_fkey",
+      "child": "event_requests",
+      "parent": "safety_reviews",
+      "columns": [
+        "preparation_safety_review_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": false,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (preparation_safety_review_id) REFERENCES safety_reviews(id)",
+      "delete_action": "a",
+      "update_action": "a",
+      "parent_cardinality": "0..1",
+      "children_cardinality": "0..*",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "event_requests_preparation_started_by_fkey",
+      "child": "event_requests",
+      "parent": "app_users",
+      "columns": [
+        "preparation_started_by"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": false,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (preparation_started_by) REFERENCES app_users(id)",
+      "delete_action": "a",
+      "update_action": "a",
+      "parent_cardinality": "0..1",
+      "children_cardinality": "0..*",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "event_reviews_event_request_id_fkey",
+      "child": "event_reviews",
+      "parent": "event_requests",
+      "columns": [
+        "event_request_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (event_request_id) REFERENCES event_requests(id)",
+      "delete_action": "a",
+      "update_action": "a",
+      "parent_cardinality": "1",
+      "children_cardinality": "0..*",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "event_reviews_reviewed_by_fkey",
+      "child": "event_reviews",
+      "parent": "app_users",
+      "columns": [
+        "reviewed_by"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (reviewed_by) REFERENCES app_users(id)",
+      "delete_action": "a",
+      "update_action": "a",
+      "parent_cardinality": "1",
+      "children_cardinality": "0..*",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "event_status_history_changed_by_fkey",
+      "child": "event_status_history",
+      "parent": "app_users",
+      "columns": [
+        "changed_by"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": false,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (changed_by) REFERENCES app_users(id)",
+      "delete_action": "a",
+      "update_action": "a",
+      "parent_cardinality": "0..1",
+      "children_cardinality": "0..*",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "event_status_history_event_request_id_fkey",
+      "child": "event_status_history",
+      "parent": "event_requests",
+      "columns": [
+        "event_request_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (event_request_id) REFERENCES event_requests(id) ON DELETE CASCADE",
+      "delete_action": "c",
+      "update_action": "a",
+      "parent_cardinality": "1",
+      "children_cardinality": "0..*",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "notifications_change_request_id_fkey",
+      "child": "notifications",
+      "parent": "event_change_requests",
+      "columns": [
+        "change_request_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": false,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (change_request_id) REFERENCES event_change_requests(id)",
+      "delete_action": "a",
+      "update_action": "a",
+      "parent_cardinality": "0..1",
+      "children_cardinality": "0..*",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "notifications_equipment_request_id_fkey",
+      "child": "notifications",
+      "parent": "equipment_requests",
+      "columns": [
+        "equipment_request_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": false,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (equipment_request_id) REFERENCES equipment_requests(id)",
+      "delete_action": "a",
+      "update_action": "a",
+      "parent_cardinality": "0..1",
+      "children_cardinality": "0..*",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "notifications_event_request_id_fkey",
+      "child": "notifications",
+      "parent": "event_requests",
+      "columns": [
+        "event_request_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": false,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (event_request_id) REFERENCES event_requests(id) ON DELETE CASCADE",
+      "delete_action": "c",
+      "update_action": "a",
+      "parent_cardinality": "0..1",
+      "children_cardinality": "0..*",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "notifications_recipient_id_fkey",
+      "child": "notifications",
+      "parent": "app_users",
+      "columns": [
+        "recipient_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (recipient_id) REFERENCES app_users(id) ON DELETE CASCADE",
+      "delete_action": "c",
+      "update_action": "a",
+      "parent_cardinality": "1",
+      "children_cardinality": "0..*",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "notifications_registration_id_fkey",
+      "child": "notifications",
+      "parent": "event_registrations",
+      "columns": [
+        "registration_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": false,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (registration_id) REFERENCES event_registrations(id)",
+      "delete_action": "a",
+      "update_action": "a",
+      "parent_cardinality": "0..1",
+      "children_cardinality": "0..*",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "notifications_safety_review_id_fkey",
+      "child": "notifications",
+      "parent": "safety_reviews",
+      "columns": [
+        "safety_review_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": false,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (safety_review_id) REFERENCES safety_reviews(id)",
+      "delete_action": "a",
+      "update_action": "a",
+      "parent_cardinality": "0..1",
+      "children_cardinality": "0..*",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "notifications_venue_booking_id_fkey",
+      "child": "notifications",
+      "parent": "venue_bookings",
+      "columns": [
+        "venue_booking_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": false,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (venue_booking_id) REFERENCES venue_bookings(id) ON DELETE SET NULL",
+      "delete_action": "n",
+      "update_action": "a",
+      "parent_cardinality": "0..1",
+      "children_cardinality": "0..*",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "safety_approval_invalidations_review_id_fkey",
+      "child": "safety_approval_invalidations",
+      "parent": "safety_reviews",
+      "columns": [
+        "review_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": true,
+      "identifying": true,
+      "definition": "FOREIGN KEY (review_id) REFERENCES safety_reviews(id)",
+      "delete_action": "a",
+      "update_action": "a",
+      "parent_cardinality": "1",
+      "children_cardinality": "0..1",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "safety_review_change_baselines_review_id_fkey",
+      "child": "safety_review_change_baselines",
+      "parent": "safety_reviews",
+      "columns": [
+        "review_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": true,
+      "identifying": true,
+      "definition": "FOREIGN KEY (review_id) REFERENCES safety_reviews(id)",
+      "delete_action": "a",
+      "update_action": "a",
+      "parent_cardinality": "1",
+      "children_cardinality": "0..1",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "safety_review_context_baselines_review_id_fkey",
+      "child": "safety_review_context_baselines",
+      "parent": "safety_reviews",
+      "columns": [
+        "review_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": true,
+      "identifying": true,
+      "definition": "FOREIGN KEY (review_id) REFERENCES safety_reviews(id)",
+      "delete_action": "a",
+      "update_action": "a",
+      "parent_cardinality": "1",
+      "children_cardinality": "0..1",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "safety_reviews_decided_by_fkey",
+      "child": "safety_reviews",
+      "parent": "app_users",
+      "columns": [
+        "decided_by"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": false,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (decided_by) REFERENCES app_users(id)",
+      "delete_action": "a",
+      "update_action": "a",
+      "parent_cardinality": "0..1",
+      "children_cardinality": "0..*",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "safety_reviews_event_request_id_fkey",
+      "child": "safety_reviews",
+      "parent": "event_requests",
+      "columns": [
+        "event_request_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (event_request_id) REFERENCES event_requests(id)",
+      "delete_action": "a",
+      "update_action": "a",
+      "parent_cardinality": "1",
+      "children_cardinality": "0..*",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "safety_reviews_submitted_by_fkey",
+      "child": "safety_reviews",
+      "parent": "app_users",
+      "columns": [
+        "submitted_by"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (submitted_by) REFERENCES app_users(id)",
+      "delete_action": "a",
+      "update_action": "a",
+      "parent_cardinality": "1",
+      "children_cardinality": "0..*",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "venue_bookings_cancelled_by_fkey",
+      "child": "venue_bookings",
+      "parent": "app_users",
+      "columns": [
+        "cancelled_by"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": false,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (cancelled_by) REFERENCES app_users(id)",
+      "delete_action": "a",
+      "update_action": "a",
+      "parent_cardinality": "0..1",
+      "children_cardinality": "0..*",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "venue_bookings_decided_by_fkey",
+      "child": "venue_bookings",
+      "parent": "app_users",
+      "columns": [
+        "decided_by"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": false,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (decided_by) REFERENCES app_users(id)",
+      "delete_action": "a",
+      "update_action": "a",
+      "parent_cardinality": "0..1",
+      "children_cardinality": "0..*",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "venue_bookings_event_request_id_fkey",
+      "child": "venue_bookings",
+      "parent": "event_requests",
+      "columns": [
+        "event_request_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (event_request_id) REFERENCES event_requests(id)",
+      "delete_action": "a",
+      "update_action": "a",
+      "parent_cardinality": "1",
+      "children_cardinality": "0..*",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "venue_bookings_held_by_fkey",
+      "child": "venue_bookings",
+      "parent": "app_users",
+      "columns": [
+        "held_by"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": false,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (held_by) REFERENCES app_users(id)",
+      "delete_action": "a",
+      "update_action": "a",
+      "parent_cardinality": "0..1",
+      "children_cardinality": "0..*",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "venue_bookings_replaces_booking_id_fkey",
+      "child": "venue_bookings",
+      "parent": "venue_bookings",
+      "columns": [
+        "replaces_booking_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": false,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (replaces_booking_id) REFERENCES venue_bookings(id)",
+      "delete_action": "a",
+      "update_action": "a",
+      "parent_cardinality": "0..1",
+      "children_cardinality": "0..*",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "venue_bookings_requested_by_fkey",
+      "child": "venue_bookings",
+      "parent": "app_users",
+      "columns": [
+        "requested_by"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (requested_by) REFERENCES app_users(id)",
+      "delete_action": "a",
+      "update_action": "a",
+      "parent_cardinality": "1",
+      "children_cardinality": "0..*",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "venue_bookings_venue_id_fkey",
+      "child": "venue_bookings",
+      "parent": "venues",
+      "columns": [
+        "venue_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (venue_id) REFERENCES venues(id)",
+      "delete_action": "a",
+      "update_action": "a",
+      "parent_cardinality": "1",
+      "children_cardinality": "0..*",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "venue_outage_impacts_recorded_by_fkey",
+      "child": "venue_outage_impacts",
+      "parent": "app_users",
+      "columns": [
+        "recorded_by"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": false,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (recorded_by) REFERENCES app_users(id)",
+      "delete_action": "a",
+      "update_action": "a",
+      "parent_cardinality": "0..1",
+      "children_cardinality": "0..*",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "venue_outage_impacts_unavailability_id_fkey",
+      "child": "venue_outage_impacts",
+      "parent": "venue_unavailability",
+      "columns": [
+        "unavailability_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": false,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (unavailability_id) REFERENCES venue_unavailability(id) ON DELETE SET NULL",
+      "delete_action": "n",
+      "update_action": "a",
+      "parent_cardinality": "0..1",
+      "children_cardinality": "0..*",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "venue_outage_impacts_venue_booking_id_fkey",
+      "child": "venue_outage_impacts",
+      "parent": "venue_bookings",
+      "columns": [
+        "venue_booking_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (venue_booking_id) REFERENCES venue_bookings(id)",
+      "delete_action": "a",
+      "update_action": "a",
+      "parent_cardinality": "1",
+      "children_cardinality": "0..*",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "venue_outage_impacts_venue_id_fkey",
+      "child": "venue_outage_impacts",
+      "parent": "venues",
+      "columns": [
+        "venue_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (venue_id) REFERENCES venues(id)",
+      "delete_action": "a",
+      "update_action": "a",
+      "parent_cardinality": "1",
+      "children_cardinality": "0..*",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "venue_unavailability_created_by_fkey",
+      "child": "venue_unavailability",
+      "parent": "app_users",
+      "columns": [
+        "created_by"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": false,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (created_by) REFERENCES app_users(id)",
+      "delete_action": "a",
+      "update_action": "a",
+      "parent_cardinality": "0..1",
+      "children_cardinality": "0..*",
+      "source": "schema.json:foreign_keys"
+    },
+    {
+      "name": "venue_unavailability_venue_id_fkey",
+      "child": "venue_unavailability",
+      "parent": "venues",
+      "columns": [
+        "venue_id"
+      ],
+      "parent_columns": [
+        "id"
+      ],
+      "required": true,
+      "child_unique": false,
+      "identifying": false,
+      "definition": "FOREIGN KEY (venue_id) REFERENCES venues(id) ON DELETE CASCADE",
+      "delete_action": "c",
+      "update_action": "a",
+      "parent_cardinality": "1",
+      "children_cardinality": "0..*",
+      "source": "schema.json:foreign_keys"
+    }
+  ],
+  "class_views": [
+    {
+      "name": "class",
+      "nodes": [
+        {
+          "table": "app_users",
+          "class": "AppUsers",
+          "columns": [
+            "id",
+            "role"
+          ]
+        },
+        {
+          "table": "coordinator_assignments",
+          "class": "CoordinatorAssignments",
+          "columns": [
+            "id",
+            "event_request_id",
+            "coordinator_id",
+            "assigned_by",
+            "assignment_method"
+          ]
+        },
+        {
+          "table": "equipment_requests",
+          "class": "EquipmentRequests",
+          "columns": [
+            "id",
+            "event_request_id",
+            "equipment_type_id",
+            "requested_by",
+            "quantity",
+            "status",
+            "starts_at",
+            "ends_at",
+            "decided_by",
+            "released_by",
+            "revision"
+          ]
+        },
+        {
+          "table": "equipment_stock_changes",
+          "class": "EquipmentStockChanges",
+          "columns": [
+            "id",
+            "equipment_type_id",
+            "revision",
+            "changed_by"
+          ]
+        },
+        {
+          "table": "equipment_types",
+          "class": "EquipmentTypes",
+          "columns": [
+            "id",
+            "total_quantity",
+            "damaged_quantity",
+            "maintenance_quantity"
+          ]
+        },
+        {
+          "table": "event_cancellations",
+          "class": "EventCancellations",
+          "columns": [
+            "event_request_id",
+            "cancelled_by"
+          ]
+        },
+        {
+          "table": "event_change_requests",
+          "class": "EventChangeRequests",
+          "columns": [
+            "id",
+            "event_request_id",
+            "requested_by",
+            "status",
+            "decided_by"
+          ]
+        },
+        {
+          "table": "event_clarifications",
+          "class": "EventClarifications",
+          "columns": [
+            "id",
+            "event_request_id",
+            "requested_by"
+          ]
+        },
+        {
+          "table": "event_registrations",
+          "class": "EventRegistrations",
+          "columns": [
+            "id",
+            "event_request_id",
+            "attendee_id",
+            "status"
+          ]
+        },
+        {
+          "table": "event_request_edits",
+          "class": "EventRequestEdits",
+          "columns": [
+            "id",
+            "event_request_id",
+            "revision",
+            "edited_by"
+          ]
+        },
+        {
+          "table": "event_requests",
+          "class": "EventRequests",
+          "columns": [
+            "id",
+            "organiser_id",
+            "coordinator_id",
+            "status",
+            "starts_at",
+            "ends_at",
+            "revision",
+            "equipment_plan_status",
+            "preparation_started_by",
+            "preparation_safety_review_id"
+          ]
+        },
+        {
+          "table": "event_reviews",
+          "class": "EventReviews",
+          "columns": [
+            "id",
+            "event_request_id",
+            "reviewed_by"
+          ]
+        },
+        {
+          "table": "event_status_history",
+          "class": "EventStatusHistory",
+          "columns": [
+            "id",
+            "event_request_id",
+            "changed_by"
+          ]
+        },
+        {
+          "table": "notifications",
+          "class": "Notifications",
+          "columns": [
+            "id",
+            "recipient_id",
+            "event_request_id",
+            "venue_booking_id",
+            "equipment_request_id",
+            "registration_id",
+            "change_request_id",
+            "safety_review_id"
+          ]
+        },
+        {
+          "table": "safety_approval_invalidations",
+          "class": "SafetyApprovalInvalidations",
+          "columns": [
+            "review_id"
+          ]
+        },
+        {
+          "table": "safety_review_change_baselines",
+          "class": "SafetyReviewChangeBaselines",
+          "columns": [
+            "review_id"
+          ]
+        },
+        {
+          "table": "safety_review_context_baselines",
+          "class": "SafetyReviewContextBaselines",
+          "columns": [
+            "review_id"
+          ]
+        },
+        {
+          "table": "safety_reviews",
+          "class": "SafetyReviews",
+          "columns": [
+            "id",
+            "event_request_id",
+            "round",
+            "status",
+            "submitted_by",
+            "decided_by"
+          ]
+        },
+        {
+          "table": "venue_bookings",
+          "class": "VenueBookings",
+          "columns": [
+            "id",
+            "event_request_id",
+            "venue_id",
+            "requested_by",
+            "status",
+            "starts_at",
+            "ends_at",
+            "decided_by",
+            "replaces_booking_id",
+            "hold_expires_at",
+            "held_by",
+            "cancelled_by"
+          ]
+        },
+        {
+          "table": "venue_outage_impacts",
+          "class": "VenueOutageImpacts",
+          "columns": [
+            "id",
+            "unavailability_id",
+            "venue_booking_id",
+            "venue_id",
+            "status",
+            "recorded_by"
+          ]
+        },
+        {
+          "table": "venue_unavailability",
+          "class": "VenueUnavailability",
+          "columns": [
+            "id",
+            "venue_id",
+            "starts_at",
+            "ends_at",
+            "created_by"
+          ]
+        },
+        {
+          "table": "venues",
+          "class": "Venues",
+          "columns": [
+            "id",
+            "setup_minutes",
+            "turnaround_minutes"
+          ]
+        }
+      ],
+      "foreign_keys": [
+        "coordinator_assignments_assigned_by_fkey",
+        "coordinator_assignments_coordinator_id_fkey",
+        "coordinator_assignments_event_request_id_fkey",
+        "equipment_requests_decided_by_fkey",
+        "equipment_requests_equipment_type_id_fkey",
+        "equipment_requests_event_request_id_fkey",
+        "equipment_requests_released_by_fkey",
+        "equipment_requests_requested_by_fkey",
+        "equipment_stock_changes_changed_by_fkey",
+        "equipment_stock_changes_equipment_type_id_fkey",
+        "event_cancellations_cancelled_by_fkey",
+        "event_cancellations_event_request_id_fkey",
+        "event_change_requests_decided_by_fkey",
+        "event_change_requests_event_request_id_fkey",
+        "event_change_requests_requested_by_fkey",
+        "event_clarifications_event_request_id_fkey",
+        "event_clarifications_requested_by_fkey",
+        "event_registrations_attendee_id_fkey",
+        "event_registrations_event_request_id_fkey",
+        "event_request_edits_edited_by_fkey",
+        "event_request_edits_event_request_id_fkey",
+        "event_requests_coordinator_id_fkey",
+        "event_requests_organiser_id_fkey",
+        "event_requests_preparation_safety_review_id_fkey",
+        "event_requests_preparation_started_by_fkey",
+        "event_reviews_event_request_id_fkey",
+        "event_reviews_reviewed_by_fkey",
+        "event_status_history_changed_by_fkey",
+        "event_status_history_event_request_id_fkey",
+        "notifications_change_request_id_fkey",
+        "notifications_equipment_request_id_fkey",
+        "notifications_event_request_id_fkey",
+        "notifications_recipient_id_fkey",
+        "notifications_registration_id_fkey",
+        "notifications_safety_review_id_fkey",
+        "notifications_venue_booking_id_fkey",
+        "safety_approval_invalidations_review_id_fkey",
+        "safety_review_change_baselines_review_id_fkey",
+        "safety_review_context_baselines_review_id_fkey",
+        "safety_reviews_decided_by_fkey",
+        "safety_reviews_event_request_id_fkey",
+        "safety_reviews_submitted_by_fkey",
+        "venue_bookings_cancelled_by_fkey",
+        "venue_bookings_decided_by_fkey",
+        "venue_bookings_event_request_id_fkey",
+        "venue_bookings_held_by_fkey",
+        "venue_bookings_replaces_booking_id_fkey",
+        "venue_bookings_requested_by_fkey",
+        "venue_bookings_venue_id_fkey",
+        "venue_outage_impacts_recorded_by_fkey",
+        "venue_outage_impacts_unavailability_id_fkey",
+        "venue_outage_impacts_venue_booking_id_fkey",
+        "venue_outage_impacts_venue_id_fkey",
+        "venue_unavailability_created_by_fkey",
+        "venue_unavailability_venue_id_fkey"
+      ]
+    },
+    {
+      "name": "class-events",
+      "nodes": [
+        {
+          "table": "app_users",
+          "class": "AppUsers",
+          "columns": [
+            "id",
+            "email",
+            "display_name",
+            "role",
+            "password_hash",
+            "created_at",
+            "updated_at",
+            "supabase_user_id",
+            "coordinator_available"
+          ]
+        },
+        {
+          "table": "coordinator_assignments",
+          "class": "CoordinatorAssignments",
+          "columns": [
+            "id",
+            "event_request_id",
+            "coordinator_id",
+            "assigned_by",
+            "note",
+            "assigned_at",
+            "unassigned_at",
+            "assignment_method"
+          ]
+        },
+        {
+          "table": "event_cancellations",
+          "class": "EventCancellations",
+          "columns": [
+            "event_request_id",
+            "cancelled_by",
+            "cancelled_at",
+            "reason",
+            "affected_venue_bookings",
+            "affected_equipment_requests",
+            "affected_registrations"
+          ]
+        },
+        {
+          "table": "event_change_requests",
+          "class": "EventChangeRequests",
+          "columns": [
+            "id",
+            "event_request_id",
+            "requested_by",
+            "status",
+            "proposed_changes",
+            "reason",
+            "decided_by",
+            "decided_at",
+            "decision_reason",
+            "created_at",
+            "updated_at",
+            "previous",
+            "base_revision",
+            "applied_revision",
+            "cancelled_arrangements"
+          ]
+        },
+        {
+          "table": "event_clarifications",
+          "class": "EventClarifications",
+          "columns": [
+            "id",
+            "event_request_id",
+            "requested_by",
+            "message",
+            "response",
+            "created_at",
+            "responded_at"
+          ]
+        },
+        {
+          "table": "event_registrations",
+          "class": "EventRegistrations",
+          "columns": [
+            "id",
+            "event_request_id",
+            "attendee_id",
+            "status",
+            "registered_at",
+            "withdrawn_at",
+            "cancellation_outcome_at",
+            "outcome_version"
+          ]
+        },
+        {
+          "table": "event_request_edits",
+          "class": "EventRequestEdits",
+          "columns": [
+            "id",
+            "event_request_id",
+            "revision",
+            "edited_by",
+            "editor_role",
+            "event_status",
+            "changes",
+            "created_at"
+          ]
+        },
+        {
+          "table": "event_requests",
+          "class": "EventRequests",
+          "columns": [
+            "id",
+            "organiser_id",
+            "coordinator_id",
+            "status",
+            "name",
+            "purpose",
+            "description",
+            "starts_at",
+            "ends_at",
+            "expected_attendance",
+            "venue_requirements",
+            "accessibility_needs",
+            "equipment_requirements",
+            "registration_required",
+            "created_at",
+            "updated_at",
+            "registration_capacity",
+            "registration_opens_at",
+            "registration_closes_at",
+            "revision",
+            "equipment_plan_status",
+            "preparation_started_at",
+            "preparation_started_by",
+            "preparation_safety_review_id"
+          ]
+        },
+        {
+          "table": "event_reviews",
+          "class": "EventReviews",
+          "columns": [
+            "id",
+            "event_request_id",
+            "reviewed_by",
+            "decision",
+            "reason",
+            "created_at"
+          ]
+        },
+        {
+          "table": "event_status_history",
+          "class": "EventStatusHistory",
+          "columns": [
+            "id",
+            "event_request_id",
+            "from_status",
+            "to_status",
+            "changed_by",
+            "created_at",
+            "reason"
+          ]
+        },
+        {
+          "table": "safety_reviews",
+          "class": "SafetyReviews",
+          "columns": [
+            "id",
+            "event_request_id",
+            "round",
+            "status",
+            "submitted_by",
+            "decided_by"
+          ]
+        }
+      ],
+      "foreign_keys": [
+        "coordinator_assignments_assigned_by_fkey",
+        "coordinator_assignments_coordinator_id_fkey",
+        "coordinator_assignments_event_request_id_fkey",
+        "event_cancellations_cancelled_by_fkey",
+        "event_cancellations_event_request_id_fkey",
+        "event_change_requests_decided_by_fkey",
+        "event_change_requests_event_request_id_fkey",
+        "event_change_requests_requested_by_fkey",
+        "event_clarifications_event_request_id_fkey",
+        "event_clarifications_requested_by_fkey",
+        "event_registrations_attendee_id_fkey",
+        "event_registrations_event_request_id_fkey",
+        "event_request_edits_edited_by_fkey",
+        "event_request_edits_event_request_id_fkey",
+        "event_requests_coordinator_id_fkey",
+        "event_requests_organiser_id_fkey",
+        "event_requests_preparation_safety_review_id_fkey",
+        "event_requests_preparation_started_by_fkey",
+        "event_reviews_event_request_id_fkey",
+        "event_reviews_reviewed_by_fkey",
+        "event_status_history_changed_by_fkey",
+        "event_status_history_event_request_id_fkey"
+      ]
+    },
+    {
+      "name": "class-planning",
+      "nodes": [
+        {
+          "table": "app_users",
+          "class": "AppUsers",
+          "columns": [
+            "id",
+            "role"
+          ]
+        },
+        {
+          "table": "equipment_requests",
+          "class": "EquipmentRequests",
+          "columns": [
+            "id",
+            "event_request_id",
+            "equipment_type_id",
+            "requested_by",
+            "quantity",
+            "status",
+            "starts_at",
+            "ends_at",
+            "notes",
+            "decided_by",
+            "decided_at",
+            "decision_reason",
+            "created_at",
+            "updated_at",
+            "released_at",
+            "released_by",
+            "release_reason",
+            "release_cause",
+            "technical_requirements",
+            "revision"
+          ]
+        },
+        {
+          "table": "equipment_stock_changes",
+          "class": "EquipmentStockChanges",
+          "columns": [
+            "id",
+            "equipment_type_id",
+            "revision",
+            "changed_by",
+            "changed_at",
+            "reason",
+            "previous_total_quantity",
+            "previous_damaged_quantity",
+            "previous_maintenance_quantity",
+            "new_total_quantity",
+            "new_damaged_quantity",
+            "new_maintenance_quantity"
+          ]
+        },
+        {
+          "table": "equipment_types",
+          "class": "EquipmentTypes",
+          "columns": [
+            "id",
+            "name",
+            "category",
+            "description",
+            "total_quantity",
+            "is_active",
+            "created_at",
+            "updated_at",
+            "damaged_quantity",
+            "maintenance_quantity",
+            "stock_revision"
+          ]
+        },
+        {
+          "table": "event_requests",
+          "class": "EventRequests",
+          "columns": [
+            "id",
+            "organiser_id",
+            "coordinator_id",
+            "status",
+            "starts_at",
+            "ends_at",
+            "revision",
+            "equipment_plan_status",
+            "preparation_started_by",
+            "preparation_safety_review_id"
+          ]
+        },
+        {
+          "table": "venue_bookings",
+          "class": "VenueBookings",
+          "columns": [
+            "id",
+            "event_request_id",
+            "venue_id",
+            "requested_by",
+            "status",
+            "starts_at",
+            "ends_at",
+            "layout",
+            "notes",
+            "decided_by",
+            "decided_at",
+            "decision_reason",
+            "created_at",
+            "updated_at",
+            "replaces_booking_id",
+            "reserved_setup_minutes",
+            "reserved_turnaround_minutes",
+            "hold_expires_at",
+            "held_by",
+            "held_at",
+            "expired_at",
+            "cancelled_by",
+            "cancelled_at",
+            "cancellation_reason"
+          ]
+        },
+        {
+          "table": "venue_outage_impacts",
+          "class": "VenueOutageImpacts",
+          "columns": [
+            "id",
+            "unavailability_id",
+            "venue_booking_id",
+            "venue_id",
+            "outage_starts_at",
+            "outage_ends_at",
+            "outage_reason",
+            "status",
+            "recorded_by",
+            "created_at",
+            "updated_at"
+          ]
+        },
+        {
+          "table": "venue_unavailability",
+          "class": "VenueUnavailability",
+          "columns": [
+            "id",
+            "venue_id",
+            "starts_at",
+            "ends_at",
+            "reason",
+            "created_by",
+            "created_at"
+          ]
+        },
+        {
+          "table": "venues",
+          "class": "Venues",
+          "columns": [
+            "id",
+            "name",
+            "description",
+            "location",
+            "capacity",
+            "layouts",
+            "facilities",
+            "accessibility_features",
+            "wheelchair_accessible",
+            "opens_at",
+            "closes_at",
+            "is_active",
+            "created_at",
+            "updated_at",
+            "setup_minutes",
+            "turnaround_minutes"
+          ]
+        }
+      ],
+      "foreign_keys": [
+        "equipment_requests_decided_by_fkey",
+        "equipment_requests_equipment_type_id_fkey",
+        "equipment_requests_event_request_id_fkey",
+        "equipment_requests_released_by_fkey",
+        "equipment_requests_requested_by_fkey",
+        "equipment_stock_changes_changed_by_fkey",
+        "equipment_stock_changes_equipment_type_id_fkey",
+        "venue_bookings_cancelled_by_fkey",
+        "venue_bookings_decided_by_fkey",
+        "venue_bookings_event_request_id_fkey",
+        "venue_bookings_held_by_fkey",
+        "venue_bookings_replaces_booking_id_fkey",
+        "venue_bookings_requested_by_fkey",
+        "venue_bookings_venue_id_fkey",
+        "venue_outage_impacts_recorded_by_fkey",
+        "venue_outage_impacts_unavailability_id_fkey",
+        "venue_outage_impacts_venue_booking_id_fkey",
+        "venue_outage_impacts_venue_id_fkey",
+        "venue_unavailability_created_by_fkey",
+        "venue_unavailability_venue_id_fkey"
+      ]
+    },
+    {
+      "name": "class-safety",
+      "nodes": [
+        {
+          "table": "app_users",
+          "class": "AppUsers",
+          "columns": [
+            "id",
+            "role"
+          ]
+        },
+        {
+          "table": "equipment_requests",
+          "class": "EquipmentRequests",
+          "columns": [
+            "id",
+            "event_request_id",
+            "equipment_type_id",
+            "requested_by",
+            "quantity",
+            "status",
+            "starts_at",
+            "ends_at",
+            "decided_by",
+            "released_by",
+            "revision"
+          ]
+        },
+        {
+          "table": "event_change_requests",
+          "class": "EventChangeRequests",
+          "columns": [
+            "id",
+            "event_request_id",
+            "requested_by",
+            "status",
+            "decided_by"
+          ]
+        },
+        {
+          "table": "event_registrations",
+          "class": "EventRegistrations",
+          "columns": [
+            "id",
+            "event_request_id",
+            "attendee_id",
+            "status"
+          ]
+        },
+        {
+          "table": "event_requests",
+          "class": "EventRequests",
+          "columns": [
+            "id",
+            "organiser_id",
+            "coordinator_id",
+            "status",
+            "starts_at",
+            "ends_at",
+            "revision",
+            "equipment_plan_status",
+            "preparation_started_by",
+            "preparation_safety_review_id"
+          ]
+        },
+        {
+          "table": "notifications",
+          "class": "Notifications",
+          "columns": [
+            "id",
+            "recipient_id",
+            "event_request_id",
+            "type",
+            "title",
+            "message",
+            "read_at",
+            "created_at",
+            "venue_booking_id",
+            "dedupe_key",
+            "equipment_request_id",
+            "registration_id",
+            "change_request_id",
+            "safety_review_id"
+          ]
+        },
+        {
+          "table": "safety_approval_invalidations",
+          "class": "SafetyApprovalInvalidations",
+          "columns": [
+            "review_id",
+            "invalidated_at",
+            "source"
+          ]
+        },
+        {
+          "table": "safety_review_change_baselines",
+          "class": "SafetyReviewChangeBaselines",
+          "columns": [
+            "review_id",
+            "venue_fingerprint",
+            "technical_fingerprint",
+            "captured_at"
+          ]
+        },
+        {
+          "table": "safety_review_context_baselines",
+          "class": "SafetyReviewContextBaselines",
+          "columns": [
+            "review_id",
+            "context_fingerprint",
+            "captured_at"
+          ]
+        },
+        {
+          "table": "safety_reviews",
+          "class": "SafetyReviews",
+          "columns": [
+            "id",
+            "event_request_id",
+            "round",
+            "status",
+            "arrangement_fingerprint",
+            "emergency_access",
+            "equipment_placement",
+            "crowd_movement",
+            "submitted_by",
+            "submitted_at",
+            "decided_by",
+            "decided_at",
+            "decision_notes",
+            "requested_areas"
+          ]
+        },
+        {
+          "table": "venue_bookings",
+          "class": "VenueBookings",
+          "columns": [
+            "id",
+            "event_request_id",
+            "venue_id",
+            "requested_by",
+            "status",
+            "starts_at",
+            "ends_at",
+            "decided_by",
+            "replaces_booking_id",
+            "hold_expires_at",
+            "held_by",
+            "cancelled_by"
+          ]
+        }
+      ],
+      "foreign_keys": [
+        "notifications_change_request_id_fkey",
+        "notifications_equipment_request_id_fkey",
+        "notifications_event_request_id_fkey",
+        "notifications_recipient_id_fkey",
+        "notifications_registration_id_fkey",
+        "notifications_safety_review_id_fkey",
+        "notifications_venue_booking_id_fkey",
+        "safety_approval_invalidations_review_id_fkey",
+        "safety_review_change_baselines_review_id_fkey",
+        "safety_review_context_baselines_review_id_fkey",
+        "safety_reviews_decided_by_fkey",
+        "safety_reviews_event_request_id_fkey",
+        "safety_reviews_submitted_by_fkey"
+      ]
+    }
+  ]
+}

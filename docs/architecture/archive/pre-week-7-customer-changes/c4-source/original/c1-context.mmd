@@ -1,0 +1,14 @@
+flowchart LR
+  organiser["Event Organiser<br/>Provides requests and manages own events"]
+  coordinator["Event Coordinator<br/>Reviews and coordinates assigned events"]
+  venue["Venue Staff<br/>Maintains venues and decides bookings"]
+  technical["Technical Support Staff<br/>Arranges equipment"]
+  attendee["Attendee<br/>Registers and withdraws"]
+  system["ConnectSphere<br/>Event planning and venue booking system"]
+  identity["Supabase Auth<br/>External identity service"]
+  organiser -->|Requests and changes| system
+  coordinator -->|Review and planning| system
+  venue -->|Venue availability and booking decisions| system
+  technical -->|Availability and reservations| system
+  attendee -->|Event registration| system
+  system -->|Sign-in and token verification| identity

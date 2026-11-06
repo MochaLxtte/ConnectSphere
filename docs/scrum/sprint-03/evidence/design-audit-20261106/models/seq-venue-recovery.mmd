@@ -1,0 +1,25 @@
+---
+title: Venue outage - preserve approved booking and recover arrangements
+---
+sequenceDiagram
+  autonumber
+  participant Client as Venue Staff client
+  participant API as Express HTTP boundary
+  participant Service as Venue outage service
+  participant DB as PostgreSQL
+  Client->>API: POST /api/venues/:venueId/unavailability
+  API->>Service: Staff-only, validate outage period and reason
+  Service->>DB: BEGIN READ COMMITTED, set transaction actor
+  Service->>DB: Take venue gate, lock active venue and overlapping live holds
+  Service->>DB: Release overlapping HELD arrangements with recorded reason
+  Service->>DB: Insert unavailability, record impacts for overlapping APPROVED bookings
+  Service->>DB: Keep approved booking and event, store recovery notices
+  Service->>DB: COMMIT on success, ROLLBACK on thrown error
+  Service-->>API: Resolve committed result or throw failure to HTTP boundary
+  API-->>Client: HTTP status and JSON, typed failures mapped
+  Note over Client,DB: Coordinator requests a replacement using replacesBookingId, staff approve it separately.
+  Client->>API: DELETE outage block by venueId and blockId
+  API->>Service: Staff-only, locate block then take its venue gate
+  Service->>DB: In transaction, clear open impacts and delete block
+  Service-->>API: After commit return cleared booking IDs
+  API-->>Client: 200 {id, clearedBookingIds}

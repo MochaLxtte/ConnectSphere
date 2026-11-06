@@ -1,0 +1,825 @@
+{
+  "commit": "b981f1133750e7ddd42ac412651c915cb4485418",
+  "files": [
+    {
+      "path": ".env.example",
+      "git_blob": "4da638665e17d99d3b03d542b0759cc62f83afe9"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "git_blob": "34e7f76acdca24410816ffed7f76aa0ef989689e"
+    },
+    {
+      "path": ".gitignore",
+      "git_blob": "49968a309f0681a30cf716a6bb19f61c3c486dda"
+    },
+    {
+      "path": ".nvmrc",
+      "git_blob": "a45fd52cc5891570d6299fab38643103c3955474"
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "git_blob": "28c3a8f5529404b25d4c886bccefd8a932a5591b"
+    },
+    {
+      "path": "README.md",
+      "git_blob": "6fa8ee638bd87401125e62e72f82a0c5b97c1434"
+    },
+    {
+      "path": "backend/README.md",
+      "git_blob": "05bc1544d99abf440bffdfa54015d7018c6ee79e"
+    },
+    {
+      "path": "backend/package.json",
+      "git_blob": "41ffd20f03c761f4422bb14b4dcad4d5a9c24fff"
+    },
+    {
+      "path": "backend/src/app.ts",
+      "git_blob": "bd59486fedf6df5257da371b528b002f2deabb7d"
+    },
+    {
+      "path": "backend/src/config/env.ts",
+      "git_blob": "8fe8f589cbf3edba30796d084cf1c8449ec6c119"
+    },
+    {
+      "path": "backend/src/db/connection.ts",
+      "git_blob": "243eb2b5b67ff39b82b82cdf401f256769aa2aeb"
+    },
+    {
+      "path": "backend/src/db/pool.ts",
+      "git_blob": "98f49038ad2e61a505d52b8cf9805450788b7a84"
+    },
+    {
+      "path": "backend/src/modules/auth/README.md",
+      "git_blob": "2a05dd9855b8608d5ce554e1823658e0d71a7d80"
+    },
+    {
+      "path": "backend/src/modules/auth/router.ts",
+      "git_blob": "cfe4c45b0aae7465a707cfd9eafd03291eaffb2d"
+    },
+    {
+      "path": "backend/src/modules/auth/supabase.ts",
+      "git_blob": "8fb7437e06ee4bedd86d403f1193f41b1288045d"
+    },
+    {
+      "path": "backend/src/modules/auth/types.ts",
+      "git_blob": "7870947565804b4bb2ff9e5bfa9032e6c38eaa29"
+    },
+    {
+      "path": "backend/src/modules/auth/user-repository.ts",
+      "git_blob": "966f2bd54e2c95ab71e4b84158486c7137bbf4cf"
+    },
+    {
+      "path": "backend/src/modules/events/README.md",
+      "git_blob": "06d18df4b623f5e637986533dbaf91ac6afa95d6"
+    },
+    {
+      "path": "backend/src/modules/events/assignment-router.ts",
+      "git_blob": "312b3b501c480c84d22f7941a9d8633dd0fade18"
+    },
+    {
+      "path": "backend/src/modules/events/assignment.ts",
+      "git_blob": "325a8f83200d5500247fd1e39c64591166435ab9"
+    },
+    {
+      "path": "backend/src/modules/events/clarification-router.ts",
+      "git_blob": "cff0da085de1b7c229d6586059ca8f49aaae56f9"
+    },
+    {
+      "path": "backend/src/modules/events/clarifications.ts",
+      "git_blob": "6f903bf094ef59a9880372eb07d691b97435399d"
+    },
+    {
+      "path": "backend/src/modules/events/coordinator-access.ts",
+      "git_blob": "c95bc7b3ee7d699109f0bf4727175f6b54c0ccaa"
+    },
+    {
+      "path": "backend/src/modules/events/create-draft.ts",
+      "git_blob": "858cb202686505305d83e5d0164352ad7c9fe093"
+    },
+    {
+      "path": "backend/src/modules/events/draft-eligibility.ts",
+      "git_blob": "0e2e276bcfe09b6248b017fea71c442ef86f0c31"
+    },
+    {
+      "path": "backend/src/modules/events/draft-update-input.ts",
+      "git_blob": "baa3de77490917a499bda033c02a6f8bfd972f19"
+    },
+    {
+      "path": "backend/src/modules/events/event-request-detail.ts",
+      "git_blob": "f36c287e1bc7d264032cbe5b3742b0b2bad9b1b3"
+    },
+    {
+      "path": "backend/src/modules/events/lifecycle-router.ts",
+      "git_blob": "b8d661cd06b16a8a26542d3bef2cfb536f6a0a4c"
+    },
+    {
+      "path": "backend/src/modules/events/lifecycle.ts",
+      "git_blob": "92c4c0f31a12e52720c5c6317ee0febfa2cc39b0"
+    },
+    {
+      "path": "backend/src/modules/events/review-decision.ts",
+      "git_blob": "e4c3e1ecea68dd0fdab7660e5452d31faf72e669"
+    },
+    {
+      "path": "backend/src/modules/events/review-eligibility.ts",
+      "git_blob": "6692ae141280d406938ffe3c9ea2114843fd226e"
+    },
+    {
+      "path": "backend/src/modules/events/review-input.ts",
+      "git_blob": "72d7041a7c35a3d1cfaf34f87456a90dab519db3"
+    },
+    {
+      "path": "backend/src/modules/events/review-router.ts",
+      "git_blob": "8355d5d8d82c36d79449fee06db9d6d23fb945d9"
+    },
+    {
+      "path": "backend/src/modules/events/submit-eligibility.ts",
+      "git_blob": "2bfde8ffa59abc102a2bf73e8f4e549d15856740"
+    },
+    {
+      "path": "backend/src/modules/events/submit-input.ts",
+      "git_blob": "6687900d71c8790ea4a9a8466214eb5a90bce4fb"
+    },
+    {
+      "path": "backend/src/modules/events/submit-request.ts",
+      "git_blob": "1eac05893876e08fb0835e54f230058455b45032"
+    },
+    {
+      "path": "backend/src/modules/events/submitted-requests-router.ts",
+      "git_blob": "1895e6f81241f19dfbd8d4e11f2d58f6ea5f7c28"
+    },
+    {
+      "path": "backend/src/modules/events/submitted-requests.ts",
+      "git_blob": "7baf47492c7600a18d9ed6160c97692205bfbad3"
+    },
+    {
+      "path": "backend/src/modules/events/types.ts",
+      "git_blob": "00e0d6b50d3a2e90da21297b4c0df13324bd0302"
+    },
+    {
+      "path": "backend/src/modules/events/update-draft.ts",
+      "git_blob": "278ee66cd66823c5b3b8ab5914eccf7f72606c9c"
+    },
+    {
+      "path": "backend/src/modules/events/workflow-http.ts",
+      "git_blob": "8dfabf1db8048245d6a6044524f432e5ee3864d3"
+    },
+    {
+      "path": "backend/src/modules/events/workflow-support.ts",
+      "git_blob": "e64371467e55d35a3052a1ce260e35ea99e86169"
+    },
+    {
+      "path": "backend/src/modules/notifications/notify.ts",
+      "git_blob": "7c59d92573859fe360bfd3b7a1d3a6fea119118b"
+    },
+    {
+      "path": "backend/src/runtime-app.ts",
+      "git_blob": "ab6f36a24fc72b3e829574e675c877f1f1b488fc"
+    },
+    {
+      "path": "backend/src/server.ts",
+      "git_blob": "7edacf83b7bf06488e854ba929f30990679e6b8e"
+    },
+    {
+      "path": "backend/test/app.test.ts",
+      "git_blob": "d0e398b8241dd1edefacae663b1b1d40d1f80a58"
+    },
+    {
+      "path": "backend/test/auth-router.test.ts",
+      "git_blob": "784345c7c20a5b9bb57808c901f66fc1ba4ead2c"
+    },
+    {
+      "path": "backend/test/connection.test.ts",
+      "git_blob": "3a8b2a2f941adf23c1fbdc4bac9061b6135c0b2d"
+    },
+    {
+      "path": "backend/test/env.test.ts",
+      "git_blob": "6ec4c7e5a74cdc40d6918345cb800ee7d13f7cc4"
+    },
+    {
+      "path": "backend/test/events/coordinator-access.test.ts",
+      "git_blob": "24df7cabf103b23e2a18254082a26a83e6d1c0b0"
+    },
+    {
+      "path": "backend/test/events/create-draft-router.test.ts",
+      "git_blob": "e601be89070afc7f5c642bed419095619fe3fcdf"
+    },
+    {
+      "path": "backend/test/events/create-draft.test.ts",
+      "git_blob": "beee76bde5ad53bfda9f46c0d077cad8ca51d332"
+    },
+    {
+      "path": "backend/test/events/draft-eligibility.test.ts",
+      "git_blob": "2824582237ec2d04e5b01d8794aef28984810cf1"
+    },
+    {
+      "path": "backend/test/events/draft-update-input.test.ts",
+      "git_blob": "7c9efa779f7329cc5a126f4db879f2ef92f32992"
+    },
+    {
+      "path": "backend/test/events/event-request-detail.test.ts",
+      "git_blob": "1a1173dccb7b713edee0acb5123820bed905a8a5"
+    },
+    {
+      "path": "backend/test/events/review-eligibility.test.ts",
+      "git_blob": "572a7902d6b2a99988e3393d7832583f984d97fb"
+    },
+    {
+      "path": "backend/test/events/review-input.test.ts",
+      "git_blob": "3a292c8a96f57df3d046ad5ed17cb429e934e4b7"
+    },
+    {
+      "path": "backend/test/events/review-router.test.ts",
+      "git_blob": "f45b77faa1a5b178b4334670834a2e1c80b22076"
+    },
+    {
+      "path": "backend/test/events/submit-eligibility.test.ts",
+      "git_blob": "c292f0a9223c1d27fde0d8ac22a709620d2c4b79"
+    },
+    {
+      "path": "backend/test/events/submit-input.test.ts",
+      "git_blob": "1f9dcf79900e7a77a6c8d49141a2cf641501eb66"
+    },
+    {
+      "path": "backend/test/events/submitted-requests-router.test.ts",
+      "git_blob": "d43357e40f79a1fb7f6134049c65c1116a9803df"
+    },
+    {
+      "path": "backend/test/events/submitted-requests.test.ts",
+      "git_blob": "ba1fcd5a26e6469ae3694e08884aa80a888328a6"
+    },
+    {
+      "path": "backend/test/events/workflow-routers.test.ts",
+      "git_blob": "077b83808b0d9cb12ead9f73e1d3ec6c3baac103"
+    },
+    {
+      "path": "backend/test/events/workflow-support.test.ts",
+      "git_blob": "d55d8bd24a2ed8be85ba5269579d67d2afbeeba0"
+    },
+    {
+      "path": "backend/test/notifications/notify.test.ts",
+      "git_blob": "129a59aa6bb448cab6348b4ce272d1c368576515"
+    },
+    {
+      "path": "backend/tsconfig.build.json",
+      "git_blob": "15ab9a9f04bc0ff3c540b0d910a398ea68b154d5"
+    },
+    {
+      "path": "backend/tsconfig.json",
+      "git_blob": "c43860b8899a9a5dc2d9189b7482402e5d03eeed"
+    },
+    {
+      "path": "backend/vitest.config.ts",
+      "git_blob": "141fc56f61f78eead60864104718fbe77beebd6d"
+    },
+    {
+      "path": "compose.yaml",
+      "git_blob": "0e37906a8174039e7f952cda0e98f90dc353d6b4"
+    },
+    {
+      "path": "database/README.md",
+      "git_blob": "300b0129beb82d85b7fc68ecd16ed1638bf03156"
+    },
+    {
+      "path": "database/config.ts",
+      "git_blob": "120041195171c17b211c8536d542998a4dcc0f63"
+    },
+    {
+      "path": "database/migrate.ts",
+      "git_blob": "ef9c27502b89976815abee4a510e23ee5f02c44b"
+    },
+    {
+      "path": "database/migrations/001_initial_scaffold.sql",
+      "git_blob": "85fa4e8e3c1c84e9d5762f0eaeb9b6c0b6a3f25a"
+    },
+    {
+      "path": "database/migrations/002_restrict_data_api_access.sql",
+      "git_blob": "a198503467b6d9c8ce5438b008dc881af39174fe"
+    },
+    {
+      "path": "database/migrations/003_add_firebase_identities.sql",
+      "git_blob": "fcdf78676d4f186a109802fab5aaaf17215421f4"
+    },
+    {
+      "path": "database/migrations/004_add_supabase_user_id.sql",
+      "git_blob": "6891c2115bc377d60c500de55e1f9c2e20db9380"
+    },
+    {
+      "path": "database/migrations/005_core_feature_schema.sql",
+      "git_blob": "0a4bbcabd4851f4f0389bf6be1fdd1ccf004554b"
+    },
+    {
+      "path": "database/migrations/006_equipment_peak_availability.sql",
+      "git_blob": "89f3434a0cd888828ac310ec8044d88b7c1cb3cd"
+    },
+    {
+      "path": "database/seed.ts",
+      "git_blob": "00fa4db85bb1462c7bd7cea891550421c891e41e"
+    },
+    {
+      "path": "database/tests/auth.integration.test.ts",
+      "git_blob": "cf79abf77c2b637c7b96e860fd65e142fa2df11e"
+    },
+    {
+      "path": "database/tests/core-schema.integration.test.ts",
+      "git_blob": "ee2846cd99fa9a30a7d40b3d3398336a5648344a"
+    },
+    {
+      "path": "database/tests/database.integration.test.ts",
+      "git_blob": "73b4c718ece0b7136702df1f933243c540e794c6"
+    },
+    {
+      "path": "database/tests/events/assignment.integration.test.ts",
+      "git_blob": "7c8bfc794422fba3d289a9ee542cb2cae5f46410"
+    },
+    {
+      "path": "database/tests/events/authenticated-review.integration.test.ts",
+      "git_blob": "18d71ec4e888f0be85adc66fcaad803d253a7a28"
+    },
+    {
+      "path": "database/tests/events/clarifications.integration.test.ts",
+      "git_blob": "4e7c1e579bdc66694942b0d585ba3d04dafcea82"
+    },
+    {
+      "path": "database/tests/events/create-draft.integration.test.ts",
+      "git_blob": "1be334829120adad3c51a97c34ebaadb4c457b01"
+    },
+    {
+      "path": "database/tests/events/event-request-detail.integration.test.ts",
+      "git_blob": "8d3fc9aa21b71d96beecd97b55ed2b5745257202"
+    },
+    {
+      "path": "database/tests/events/lifecycle.integration.test.ts",
+      "git_blob": "0199b77189618890e5c480bb484d9d8873b8def4"
+    },
+    {
+      "path": "database/tests/events/review-decision.integration.test.ts",
+      "git_blob": "e6cedacb0fdb818a3ce3f89d8b3fa6b4a2af9aa0"
+    },
+    {
+      "path": "database/tests/events/submit-request.integration.test.ts",
+      "git_blob": "9dee51148b6a9bb7edeafb67b2c8e2f5ce322d23"
+    },
+    {
+      "path": "database/tests/events/update-draft.integration.test.ts",
+      "git_blob": "69bebead34d3f3a0e0d882427181605ba311a1ab"
+    },
+    {
+      "path": "database/tests/events/workflow-fixture.ts",
+      "git_blob": "269e135b17bc27878e917441101b64d69a4da650"
+    },
+    {
+      "path": "docs/architecture/README.md",
+      "git_blob": "cf0b0ce69f23465b36bb2a6ae52f67de4d4fe74c"
+    },
+    {
+      "path": "docs/architecture/api-contract.md",
+      "git_blob": "cafc77e30bd9e1baf5c70502c574160ea8b4d1ac"
+    },
+    {
+      "path": "docs/database-diagram.md",
+      "git_blob": "fc7ed2c9b2927075acc21991da351d298a8f1361"
+    },
+    {
+      "path": "docs/requirements/README.md",
+      "git_blob": "5983b18c7eee8203bd2e88bb6e5a088cf4b67b47"
+    },
+    {
+      "path": "docs/requirements/assumptions-and-questions.md",
+      "git_blob": "38f13c14d215bc225465c414dc3d0950ca5ded1c"
+    },
+    {
+      "path": "docs/requirements/product-backlog.md",
+      "git_blob": "5a64c0ff564b252a8824a11f7d9f347eb5a4d0b3"
+    },
+    {
+      "path": "docs/requirements/traceability.csv",
+      "git_blob": "9ea0764f5f98b5da0945b4a64dd051e465f95cfd"
+    },
+    {
+      "path": "docs/scrum/README.md",
+      "git_blob": "abd95c22239b6f1af6a095a2d381addea24d166e"
+    },
+    {
+      "path": "docs/scrum/definition-of-done.md",
+      "git_blob": "01ccf47a442dcdfbc00cbc0ade30d0052603c524"
+    },
+    {
+      "path": "docs/scrum/final-sprint-recordings.md",
+      "git_blob": "53150b2dbd7bea64bde86e544238709462f8a003"
+    },
+    {
+      "path": "docs/scrum/sprint-01/README.md",
+      "git_blob": "bc6ed55f096ffc512637e02ffd9e2a7fed77bceb"
+    },
+    {
+      "path": "docs/scrum/sprint-01/daily-progress.md",
+      "git_blob": "9d66c26c33e48727d41d09b0bbf1341f203cb169"
+    },
+    {
+      "path": "docs/scrum/sprint-01/estimation-and-capacity.md",
+      "git_blob": "a78bee6fe059cdc220da10efd69e6f883ce7d613"
+    },
+    {
+      "path": "docs/scrum/sprint-01/evidence/2026-09-07-repository-baseline.txt",
+      "git_blob": "9a76dd7264172f23ffe98023504ee80e72054eb5"
+    },
+    {
+      "path": "docs/scrum/sprint-01/evidence/README.md",
+      "git_blob": "97ee5a1f5fd612a3ef273e3f3c960f056b924a7a"
+    },
+    {
+      "path": "docs/scrum/sprint-01/planning.md",
+      "git_blob": "309c7bf5997eff277a1c30bbd7d0601db57e1ade"
+    },
+    {
+      "path": "docs/scrum/sprint-01/retrospective.md",
+      "git_blob": "134f42f5d2ed03168e85bcd08f1026f770916185"
+    },
+    {
+      "path": "docs/scrum/sprint-01/review.md",
+      "git_blob": "4b470709e21ae28007f11e7fe1eda15125c8ec1b"
+    },
+    {
+      "path": "docs/scrum/sprint-01/sprint-backlog.md",
+      "git_blob": "d8b6c017e328cd3bd44323e316c7df1d6cfd1509"
+    },
+    {
+      "path": "docs/scrum/sprint-02/README.md",
+      "git_blob": "958a14652b398a04d63b376d0a1d434912259aa0"
+    },
+    {
+      "path": "docs/scrum/sprint-02/daily-progress.md",
+      "git_blob": "65734bdaa37baec7c9cd25b569e73b3c4ca07248"
+    },
+    {
+      "path": "docs/scrum/sprint-02/estimation-and-capacity.md",
+      "git_blob": "d426787c0ac4290f5f99d6c100e3fb853fbf6d5b"
+    },
+    {
+      "path": "docs/scrum/sprint-02/evidence/README.md",
+      "git_blob": "689d8ac8fd040394ac31764763658dd08fb9bfac"
+    },
+    {
+      "path": "docs/scrum/sprint-02/planning.md",
+      "git_blob": "427dc66c75544fe29f6a76e200d8b35a009202a1"
+    },
+    {
+      "path": "docs/scrum/sprint-02/retrospective.md",
+      "git_blob": "2d2d252142eb24acd0cdaba54674224e13019f6d"
+    },
+    {
+      "path": "docs/scrum/sprint-02/review.md",
+      "git_blob": "db1c6700ba8f462cb54846cdaba40d0b020494b5"
+    },
+    {
+      "path": "docs/scrum/sprint-02/sprint-backlog.md",
+      "git_blob": "fb0bbb93921e6b8ac34cbf34e2a518e7a878bc9a"
+    },
+    {
+      "path": "docs/scrum/templates/sprint-record.md",
+      "git_blob": "64a382cb98d19073b3853ebc8334d1cf2e8b22bf"
+    },
+    {
+      "path": "docs/submission/1/README.md",
+      "git_blob": "5f77a2b6fa6976dd3281d43245e0c1b989ac94f2"
+    },
+    {
+      "path": "docs/submission/1/jira-backlog-2026-09-21.csv",
+      "git_blob": "9bf50d7e38364262904148dc3b05460b71e4216d"
+    },
+    {
+      "path": "docs/submission/5/README.md",
+      "git_blob": "ab8aa85294ed15d86420412acdc0c13758e2cb22"
+    },
+    {
+      "path": "docs/submission/7/README.md",
+      "git_blob": "ea15c996125ec80fc82f6520e88e9904624bfdaa"
+    },
+    {
+      "path": "docs/submission/checklist.md",
+      "git_blob": "71dee7ea4f47153927a60f9f5a2f8c75944d7df9"
+    },
+    {
+      "path": "docs/testing/README.md",
+      "git_blob": "4a78d36301de4b59d07dce826f888206b374d2e4"
+    },
+    {
+      "path": "docs/testing/test-cases.csv",
+      "git_blob": "d640501fec1beff8e39bafc50c63d15c3941b71d"
+    },
+    {
+      "path": "docs/testing/test-evidence.md",
+      "git_blob": "aea81a9235dec223a34b2e9749096db871b41eff"
+    },
+    {
+      "path": "frontend/README.md",
+      "git_blob": "9aa5a9e4e7c6b39d27275c4c5ebaeb4ae2e5d4c3"
+    },
+    {
+      "path": "frontend/index.html",
+      "git_blob": "65dbc59c688b729c9afde4013fb1c64bd6285749"
+    },
+    {
+      "path": "frontend/package.json",
+      "git_blob": "6a75fb8152bb0a4625f4f8a52c06c603fff63f3d"
+    },
+    {
+      "path": "frontend/public/favicon.svg",
+      "git_blob": "d32bb32457e7f7655cfaed637d5d846e93fba3fa"
+    },
+    {
+      "path": "frontend/src/app/App.vue",
+      "git_blob": "171c2f7c331f8e06a9f2abcc5027adb8fbb8f245"
+    },
+    {
+      "path": "frontend/src/app/router.ts",
+      "git_blob": "ab8888c0043a31fa5218bcadc09950d2d1dfeec4"
+    },
+    {
+      "path": "frontend/src/app/styles.css",
+      "git_blob": "a7a7d43af0869c1664a510b63cdd8eb60b02cc5d"
+    },
+    {
+      "path": "frontend/src/components/AppIcon.vue",
+      "git_blob": "a0d6fc987f11bdfedcc56c5b1582a09820dbbad4"
+    },
+    {
+      "path": "frontend/src/components/AppShell.vue",
+      "git_blob": "983197cbe49465a059c6f897dbd050156d18f50a"
+    },
+    {
+      "path": "frontend/src/components/FeaturePlaceholder.vue",
+      "git_blob": "f22bdd14cc234c40b9cd944b072981cc36426327"
+    },
+    {
+      "path": "frontend/src/components/NotFoundPage.vue",
+      "git_blob": "f70128c8dcf9551953f32173964d0ffce2547e6c"
+    },
+    {
+      "path": "frontend/src/features/auth/pages/LoginPage.vue",
+      "git_blob": "add7785d81be13cfa114dd7aab3823b9e60cc515"
+    },
+    {
+      "path": "frontend/src/features/auth/session.ts",
+      "git_blob": "1fe3cafd7a6964a4417f9f202ffa3c6186a68f03"
+    },
+    {
+      "path": "frontend/src/features/auth/supabase-client.test.ts",
+      "git_blob": "9b2c8f70ffadc581ae86c9fa13319161405af274"
+    },
+    {
+      "path": "frontend/src/features/auth/supabase-client.ts",
+      "git_blob": "28b6fc91196e2791cd692da42455f01e0b1f3af8"
+    },
+    {
+      "path": "frontend/src/features/events/api/assignments.ts",
+      "git_blob": "6b6b088818c6b4a004cf10ab7acbb45c1c701f4f"
+    },
+    {
+      "path": "frontend/src/features/events/api/clarifications.ts",
+      "git_blob": "04c8bc171690f2ef68401af2f3c4174451fd41e7"
+    },
+    {
+      "path": "frontend/src/features/events/api/event-requests.ts",
+      "git_blob": "dfddd9c26cba4fc924a6fa7987999f2d81056007"
+    },
+    {
+      "path": "frontend/src/features/events/api/lifecycle.ts",
+      "git_blob": "9fb0dd56817e5b5e87d41c6f4eba076e2d473cf6"
+    },
+    {
+      "path": "frontend/src/features/events/components/AssignmentPanel.test.ts",
+      "git_blob": "abd012673effa66af146ff32c96e13624c57d6dd"
+    },
+    {
+      "path": "frontend/src/features/events/components/AssignmentPanel.vue",
+      "git_blob": "971d1772dbfa5995f2d53092b617959ec4a72f73"
+    },
+    {
+      "path": "frontend/src/features/events/components/ClarificationPanel.test.ts",
+      "git_blob": "0ea72294846167e0f739150a8a790e13efee857f"
+    },
+    {
+      "path": "frontend/src/features/events/components/ClarificationPanel.vue",
+      "git_blob": "64a5969ef7dacbddc8b2f35432277b79ef121d88"
+    },
+    {
+      "path": "frontend/src/features/events/components/EventPlanningPanels.vue",
+      "git_blob": "9e95b10b0af1a3c3607ca4624e2ef6a390d1dd9b"
+    },
+    {
+      "path": "frontend/src/features/events/components/EventRequestForm.test.ts",
+      "git_blob": "89ffe5cf8769d4e23393dfbfb046e1604517e407"
+    },
+    {
+      "path": "frontend/src/features/events/components/EventRequestForm.vue",
+      "git_blob": "cdc3549d3a1f76e4edc0058d1e7ea9cb73976e30"
+    },
+    {
+      "path": "frontend/src/features/events/components/LifecyclePanel.test.ts",
+      "git_blob": "37de72e4866c136753a4ba3522738213a13b78e0"
+    },
+    {
+      "path": "frontend/src/features/events/components/LifecyclePanel.vue",
+      "git_blob": "c36f0f01a6bd102ddabaeaa39a76edc2b928202b"
+    },
+    {
+      "path": "frontend/src/features/events/components/test-api.ts",
+      "git_blob": "e86be2e4a2803884f939b1329ff22f36ac220a21"
+    },
+    {
+      "path": "frontend/src/features/events/components/use-workflow-panel.ts",
+      "git_blob": "c1e1641946126395a8d80628e6f13b18a684151a"
+    },
+    {
+      "path": "frontend/src/features/events/components/workflow-panel.css",
+      "git_blob": "7eddd536e24c01668877a311c4c34b947c0f8dc6"
+    },
+    {
+      "path": "frontend/src/features/events/pages/EventDraftEditPage.test.ts",
+      "git_blob": "23fba4ac96cc099ffaaf86ab5a0e4dd65bc37e11"
+    },
+    {
+      "path": "frontend/src/features/events/pages/EventDraftEditPage.vue",
+      "git_blob": "ad9edfabbb6364186d6aec9592476f1df7086f14"
+    },
+    {
+      "path": "frontend/src/features/events/pages/EventRequestDetailPage.test.ts",
+      "git_blob": "7783b1a5ba1ad3d5a005fff124e128bf61e309aa"
+    },
+    {
+      "path": "frontend/src/features/events/pages/EventRequestDetailPage.vue",
+      "git_blob": "e47697ded3ff2c9c76fe9a88c770ab61f7a1ae54"
+    },
+    {
+      "path": "frontend/src/features/events/pages/EventRequestsPage.test.ts",
+      "git_blob": "223ff87c4a7e4cf070527aacd48deb91c3663053"
+    },
+    {
+      "path": "frontend/src/features/events/pages/EventRequestsPage.vue",
+      "git_blob": "830d5d59a62099e974ddc0a1065c9dbf34dbc272"
+    },
+    {
+      "path": "frontend/src/features/events/pages/NewEventPage.test.ts",
+      "git_blob": "47358b82ca7a7a232e25db962352ab75762c2ad2"
+    },
+    {
+      "path": "frontend/src/features/events/pages/NewEventPage.vue",
+      "git_blob": "f7fdc00c11227f842e31730923a31f554719c2da"
+    },
+    {
+      "path": "frontend/src/features/events/presentation.ts",
+      "git_blob": "e9a26e457bea311b69de47e0a244d5481157f85b"
+    },
+    {
+      "path": "frontend/src/features/reviews/api/submitted-requests.ts",
+      "git_blob": "2e948b4ab9dbe96abaed1383224ba039ad31693c"
+    },
+    {
+      "path": "frontend/src/features/reviews/components/ReviewDecisionPanel.test.ts",
+      "git_blob": "3208722912bfe1b83ec460fb68824f7e870a894a"
+    },
+    {
+      "path": "frontend/src/features/reviews/components/ReviewDecisionPanel.vue",
+      "git_blob": "712b0293bc9bf348aa7355cd8e9c42a0baa50772"
+    },
+    {
+      "path": "frontend/src/features/reviews/pages/ReviewAccessPage.test.ts",
+      "git_blob": "c0f687ebaa2cc691842e5235b124e6a0ae75c24a"
+    },
+    {
+      "path": "frontend/src/features/reviews/pages/ReviewAccessPage.vue",
+      "git_blob": "138ceb75bb86d1e4e40057ab2eec1faa65d64c91"
+    },
+    {
+      "path": "frontend/src/features/reviews/pages/ReviewQueuePage.test.ts",
+      "git_blob": "4b362e592b051188618f1918a7f6e888f97556ee"
+    },
+    {
+      "path": "frontend/src/features/reviews/pages/ReviewQueuePage.vue",
+      "git_blob": "28488fb96bc6522fa21cdad0ad79fca157eb67aa"
+    },
+    {
+      "path": "frontend/src/features/reviews/pages/ReviewRequestPage.test.ts",
+      "git_blob": "0e208f4dfa1a7c5156a32171659610b98ca6bc24"
+    },
+    {
+      "path": "frontend/src/features/reviews/pages/ReviewRequestPage.vue",
+      "git_blob": "5bab1f09e4ff44dbaab3acbf5742e2b824451171"
+    },
+    {
+      "path": "frontend/src/features/reviews/pages/UnassignedRequestsPage.test.ts",
+      "git_blob": "64386947154ee8ddaacc431e01fd794faacb04a8"
+    },
+    {
+      "path": "frontend/src/features/reviews/pages/UnassignedRequestsPage.vue",
+      "git_blob": "f584da56f7fa349dcf05c5679f3be2df1fc9221a"
+    },
+    {
+      "path": "frontend/src/features/reviews/types.ts",
+      "git_blob": "b8c5f07d51c9dc278232989f3bc2f1f82af4c817"
+    },
+    {
+      "path": "frontend/src/features/system/api/health.ts",
+      "git_blob": "d1ed033e017fa6bdc1418b8021d852e333ada0d3"
+    },
+    {
+      "path": "frontend/src/features/system/components/HealthCheckCard.vue",
+      "git_blob": "a747ab123713605bd15f7fda719e2b16322799c0"
+    },
+    {
+      "path": "frontend/src/features/system/pages/DashboardPage.test.ts",
+      "git_blob": "ffc95b109fd2f28b8a4423c6779ce52599ff76f5"
+    },
+    {
+      "path": "frontend/src/features/system/pages/DashboardPage.vue",
+      "git_blob": "aaab25e791667f0e126fc97460f3a2d255c42ebe"
+    },
+    {
+      "path": "frontend/src/lib/api-client.test.ts",
+      "git_blob": "e607cc1016c618156eded40179bef88891f33dfe"
+    },
+    {
+      "path": "frontend/src/lib/api-client.ts",
+      "git_blob": "6b66b5cbb6b83d229a5cd1438d257e7ceae0ab21"
+    },
+    {
+      "path": "frontend/src/main.ts",
+      "git_blob": "76cd9cba44f98e6baa1711a072065f0a0b6078f9"
+    },
+    {
+      "path": "frontend/src/test/setup.ts",
+      "git_blob": "564e0bb487a291305b93ad29ae3af972e0d8a11c"
+    },
+    {
+      "path": "frontend/tsconfig.json",
+      "git_blob": "5be48c6630642e6cb4328ede1f6b34b179702d14"
+    },
+    {
+      "path": "frontend/vite.config.ts",
+      "git_blob": "c8f2b595f8beb80027d0d8cc932b4acc695fe89d"
+    },
+    {
+      "path": "package-lock.json",
+      "git_blob": "b19cb097441eec52a287211cf495ae0472db1cae"
+    },
+    {
+      "path": "package.json",
+      "git_blob": "1d9a3a72aea1e5be95bde5df189b0121b9befa02"
+    },
+    {
+      "path": "playwright.config.ts",
+      "git_blob": "5df1dad95deb6148824275beb538646ee04c30c5"
+    },
+    {
+      "path": "scripts/prepare-submission.mjs",
+      "git_blob": "0fe5347be4960bf931b7d573a05ed44623fa3234"
+    },
+    {
+      "path": "scripts/setup.mjs",
+      "git_blob": "6aacc60e8e65a9e71e642b4891299c4097c711c9"
+    },
+    {
+      "path": "tests/e2e/browser-fixtures.ts",
+      "git_blob": "0222f8250e3d16d1976c5c6bb614e80e7822506e"
+    },
+    {
+      "path": "tests/e2e/event-request-detail.spec.ts",
+      "git_blob": "6b20428889665f7ab7288fee3cea2fa314cf52b9"
+    },
+    {
+      "path": "tests/e2e/event-requests.spec.ts",
+      "git_blob": "8378e8baaa0d2f572b3c150fd007d457428b3bfa"
+    },
+    {
+      "path": "tests/e2e/review-access.spec.ts",
+      "git_blob": "edffce96cc2b8b154100c9489d2b18c23b0e25aa"
+    },
+    {
+      "path": "tests/e2e/review-decision.spec.ts",
+      "git_blob": "784702683c23b1cb69e37418c65732ab8d947f25"
+    },
+    {
+      "path": "tests/e2e/review-queue.spec.ts",
+      "git_blob": "64af0c110b2bd2e3fc2afc703d8bca483f39425e"
+    },
+    {
+      "path": "tests/e2e/scaffold.spec.ts",
+      "git_blob": "e6fbe717fd7d022d9834d0f8b416d17084af5b13"
+    },
+    {
+      "path": "tests/e2e/workspace-fixtures.ts",
+      "git_blob": "2aac5c6e6347f09e08072e21a65ad6a6555c1941"
+    },
+    {
+      "path": "tsconfig.tools.json",
+      "git_blob": "b3f24677e80ab974c7e71fb2e9060ce88e94a53d"
+    },
+    {
+      "path": "vitest.integration.config.ts",
+      "git_blob": "fb1411e023a6ede1a3f16a1a995daed2c9bd1b05"
+    }
+  ]
+}

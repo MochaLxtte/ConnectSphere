@@ -1,0 +1,27 @@
+---
+title: Event confirmation - live readiness under shared arrangement locks
+---
+sequenceDiagram
+  autonumber
+  participant Client as Assigned coordinator client
+  participant API as Express HTTP boundary
+  participant Service as confirmEvent
+  participant DB as PostgreSQL
+  Client->>API: POST /api/events/:id/confirm {}
+  API->>Service: Authenticate, restrict role, validate UUID and empty body
+  Service->>DB: BEGIN READ COMMITTED, set transaction actor
+  Service->>DB: Trusted profile, venue gates and bookings before event
+  Service->>DB: Sorted equipment pools and lines, share-lock venue catalogue
+  Service->>Service: Recheck current coordinator assignment
+  alt already CONFIRMED
+  Service->>DB: Read original confirmation history, changed false
+  else first confirmation
+  Service->>DB: Require APPROVED and start still in future by database clock
+  Service->>DB: Read current venue, equipment and pending-change readiness
+  Service->>Service: Reject all unmet readiness checks together
+  Service->>DB: Set event CONFIRMED
+  DB->>DB: Status history and final-confirmation notices in transaction
+  end
+  Service->>DB: COMMIT on success, ROLLBACK on thrown error
+  Service-->>API: Resolve committed result or throw failure to HTTP boundary
+  API-->>Client: HTTP status and JSON, typed failures mapped

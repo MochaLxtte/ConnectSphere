@@ -1,0 +1,108 @@
+{
+  "date": "2026-11-06",
+  "reviewer": "Codex",
+  "method": "Inspected all 20 final PNG exports through tools.view_image after geometry validation; large models also have scalable SVG and domain detail views",
+  "independent_human_review": "Not assessed",
+  "models": [
+    {
+      "name": "class",
+      "png_sha256": "2f115fef33e1931820cb5a11fe13b7d3c7acb5683917a2b52048c72619be8474",
+      "status": "Pass"
+    },
+    {
+      "name": "class-events",
+      "png_sha256": "5af2e440defdf40e41150698709d4b49d148ce54ba9f41e9cf7c7affed368c7b",
+      "status": "Pass"
+    },
+    {
+      "name": "class-planning",
+      "png_sha256": "26a220b8d2d8ea4c7c70576ed1bd6ca9b9b9210b0f190dfca63251060d057324",
+      "status": "Pass"
+    },
+    {
+      "name": "class-safety",
+      "png_sha256": "6a68c4c2d7723f350bad12a5427df02e1398fc6ff8b8b4c10af6039121755401",
+      "status": "Pass"
+    },
+    {
+      "name": "erd-database",
+      "png_sha256": "55fbae1696528b669bab3ba7f1f12921eab00d7846a5ea2806e61ed448131229",
+      "status": "Pass"
+    },
+    {
+      "name": "erd-events",
+      "png_sha256": "6a0c66fba7f7c97808602595510d62be4ebb67b1a2a5fa796a4795cce772db6a",
+      "status": "Pass"
+    },
+    {
+      "name": "erd-planning",
+      "png_sha256": "be31220976165be1b91ee0359de2e93f3686c69d8a5d9c31ab850fc0dbdcaace",
+      "status": "Pass"
+    },
+    {
+      "name": "erd-safety-invalidation",
+      "png_sha256": "398fcb29cd5c4ad02a7076206cf8e0f69555b034e4f16adbb7d8b188bb28e4be",
+      "status": "Pass"
+    },
+    {
+      "name": "seq-event-confirmation",
+      "png_sha256": "e82a244d3876d35ba9db194dff4ae5f8af6ff5bcaa216de8be59be6becf4eab0",
+      "status": "Pass"
+    },
+    {
+      "name": "seq-event-cancellation-equipment",
+      "png_sha256": "558897c61735345b3b37a72b960640a78dcb569a53aa5a9589239bcd118196e3",
+      "status": "Pass"
+    },
+    {
+      "name": "seq-lead-assignment",
+      "png_sha256": "40004fdec0771abae92b4a4d47fa9c1f643e12229397db61268b7dcb5f43d92e",
+      "status": "Pass"
+    },
+    {
+      "name": "seq-safety-review",
+      "png_sha256": "93f18b509a9aca560e6599066d5d7a9071d821520c16f43d0ebaf8e64d720caf",
+      "status": "Pass"
+    },
+    {
+      "name": "seq-event-completion",
+      "png_sha256": "b30e85f7c15b585866099540248e8a26a65d5a5a4d817bfc336115579e02468b",
+      "status": "Pass"
+    },
+    {
+      "name": "seq-registration-withdrawal",
+      "png_sha256": "f1550a02b533733e579b81af8847e224f3198c5145c027098dd743941a84def0",
+      "status": "Pass"
+    },
+    {
+      "name": "seq-equipment-availability",
+      "png_sha256": "7fb330c350d724f913d85895260f3d09e63db1c0266ab7541be064950111e9a9",
+      "status": "Pass"
+    },
+    {
+      "name": "seq-equipment-reservation",
+      "png_sha256": "fac59dbeb723e9202195d569e2d5faf78b1d8654c8f61cc2778e5b091aa80893",
+      "status": "Pass"
+    },
+    {
+      "name": "seq-venue-write-locking",
+      "png_sha256": "a0666d44d0ab269047643c1db4654d9d5f236e66b612f1a0c1b6c2dcb5318d7f",
+      "status": "Pass"
+    },
+    {
+      "name": "seq-venue-hold",
+      "png_sha256": "f7a4843cdd9c5ee5928b4158574bd6664f36789fbfcb6673f962c085499a24e3",
+      "status": "Pass"
+    },
+    {
+      "name": "seq-venue-recovery",
+      "png_sha256": "e556b3d2f135b3af3aadf8843798e709ef5b9900ab6693ebc3c7dba372736780",
+      "status": "Pass"
+    },
+    {
+      "name": "seq-planning-change",
+      "png_sha256": "14362576c719c9fe5fb324847de59a2693b6f0ce0f3010e603b2fb4e9bab6aa2",
+      "status": "Pass"
+    }
+  ]
+}

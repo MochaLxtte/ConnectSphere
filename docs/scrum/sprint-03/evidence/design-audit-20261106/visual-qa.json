@@ -1,0 +1,5550 @@
+[
+  {
+    "name": "class",
+    "kind": "classDiagram",
+    "source_sha256": "81ea7cdc125f84f3b465c24d38747bf00ccb304d920bd3cbd1abf5d55a0d6263",
+    "svg_sha256": "3cf5d7ea2ada0881f1bb75931405022fc5acbc481ad9aab16a881584f6d1e1ee",
+    "png_sha256": "2f115fef33e1931820cb5a11fe13b7d3c7acb5683917a2b52048c72619be8474",
+    "expected_nodes": 22,
+    "expected_edges": 55,
+    "width": 6534.81005859375,
+    "height": 2891,
+    "nodes": [
+      {
+        "id": "my-svg-classId-AppUsers-0",
+        "text": "«SQL record»AppUsersuuid idtext role",
+        "box": {
+          "x": 6318.3701171875,
+          "y": 107.00270080566406,
+          "width": 130.42919921875,
+          "height": 167.99964904785156,
+          "right": 6448.79931640625,
+          "bottom": 275.0023498535156
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-classId-CoordinatorAssignments-1",
+        "text": "«SQL record»CoordinatorAssignmentsuuid iduuid event_request_iduuid coordinator_iduuid assigned_bytext assignment_method",
+        "box": {
+          "x": 5591.61767578125,
+          "y": 1994.9989013671875,
+          "width": 294.33544921875,
+          "height": 239.9993896484375,
+          "right": 5885.953125,
+          "bottom": 2234.998291015625
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-classId-EquipmentRequests-2",
+        "text": "«SQL record»EquipmentRequestsuuid iduuid event_request_iduuid equipment_type_iduuid requested_byinteger quantitytext statustimestamptz starts_attimestamptz ends_atuuid decided_byuuid released_byinteger revision",
+        "box": {
+          "x": 348.8899230957031,
+          "y": 1998.9989013671875,
+          "width": 271.2494812011719,
+          "height": 383.9991455078125,
+          "right": 620.139404296875,
+          "bottom": 2382.998046875
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-classId-EquipmentStockChanges-3",
+        "text": "«SQL record»EquipmentStockChangesuuid iduuid equipment_type_idinteger revisionuuid changed_by",
+        "box": {
+          "x": 599.936279296875,
+          "y": 879.0011596679688,
+          "width": 290.81195068359375,
+          "height": 215.99957275390625,
+          "right": 890.7482299804688,
+          "bottom": 1095.000732421875
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-classId-EquipmentTypes-4",
+        "text": "«SQL record»EquipmentTypesuuid idinteger total_quantityinteger damaged_quantityinteger maintenance_quantity",
+        "box": {
+          "x": 404.4939880371094,
+          "y": 59.0027961730957,
+          "width": 297.7806701660156,
+          "height": 215.9995574951172,
+          "right": 702.274658203125,
+          "bottom": 275.0023536682129
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-classId-EventCancellations-5",
+        "text": "«SQL record»EventCancellationsuuid event_request_iduuid cancelled_by",
+        "box": {
+          "x": 1365.01025390625,
+          "y": 1994.9989013671875,
+          "width": 255.25732421875,
+          "height": 167.9996337890625,
+          "right": 1620.267578125,
+          "bottom": 2162.99853515625
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-classId-EventChangeRequests-6",
+        "text": "«SQL record»EventChangeRequestsuuid iduuid event_request_iduuid requested_bytext statusuuid decided_by",
+        "box": {
+          "x": 2278.624267578125,
+          "y": 2036.998779296875,
+          "width": 268.58544921875,
+          "height": 239.99951171875,
+          "right": 2547.209716796875,
+          "bottom": 2276.998291015625
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-classId-EventClarifications-7",
+        "text": "«SQL record»EventClarificationsuuid iduuid event_request_iduuid requested_by",
+        "box": {
+          "x": 1660.267578125,
+          "y": 1994.9989013671875,
+          "width": 253.9212646484375,
+          "height": 191.9996337890625,
+          "right": 1914.1888427734375,
+          "bottom": 2186.99853515625
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-classId-EventRegistrations-8",
+        "text": "«SQL record»EventRegistrationsuuid iduuid event_request_iduuid attendee_idtext status",
+        "box": {
+          "x": 3259.57666015625,
+          "y": 2058.998779296875,
+          "width": 254.35888671875,
+          "height": 215.99951171875,
+          "right": 3513.935546875,
+          "bottom": 2274.998291015625
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-classId-EventRequestEdits-9",
+        "text": "«SQL record»EventRequestEditsuuid iduuid event_request_idinteger revisionuuid edited_by",
+        "box": {
+          "x": 4461.57470703125,
+          "y": 1994.9989013671875,
+          "width": 254.35888671875,
+          "height": 215.9996337890625,
+          "right": 4715.93359375,
+          "bottom": 2210.99853515625
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-classId-EventRequests-10",
+        "text": "«SQL record»EventRequestsuuid iduuid organiser_iduuid coordinator_idtext statustimestamptz starts_attimestamptz ends_atinteger revisiontext equipment_plan_statusuuid preparation_started_byuuid preparation_safety_review_id",
+        "box": {
+          "x": 2737.580322265625,
+          "y": 1371.0001220703125,
+          "width": 325.51513671875,
+          "height": 359.999267578125,
+          "right": 3063.095458984375,
+          "bottom": 1730.9993896484375
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-classId-EventReviews-11",
+        "text": "«SQL record»EventReviewsuuid iduuid event_request_iduuid reviewed_by",
+        "box": {
+          "x": 1089.7530517578125,
+          "y": 1994.9989013671875,
+          "width": 235.25732421875,
+          "height": 191.9996337890625,
+          "right": 1325.0103759765625,
+          "bottom": 2186.99853515625
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-classId-EventStatusHistory-12",
+        "text": "«SQL record»EventStatusHistoryuuid iduuid event_request_iduuid changed_by",
+        "box": {
+          "x": 1954.188720703125,
+          "y": 1994.9989013671875,
+          "width": 255.24951171875,
+          "height": 191.9996337890625,
+          "right": 2209.438232421875,
+          "bottom": 2186.99853515625
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-classId-Notifications-13",
+        "text": "«SQL record»Notificationsuuid iduuid recipient_iduuid event_request_iduuid venue_booking_iduuid equipment_request_iduuid registration_iduuid change_request_iduuid safety_review_id",
+        "box": {
+          "x": 3253.48681640625,
+          "y": 2570.997802734375,
+          "width": 266.53857421875,
+          "height": 311.999267578125,
+          "right": 3520.025390625,
+          "bottom": 2882.9970703125
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-classId-SafetyApprovalInvalidations-14",
+        "text": "«SQL record»SafetyApprovalInvalidationsuuid review_id",
+        "box": {
+          "x": 3757.086181640625,
+          "y": 1371.0001220703125,
+          "width": 239.17138671875,
+          "height": 143.999755859375,
+          "right": 3996.257568359375,
+          "bottom": 1514.9998779296875
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-classId-SafetyReviewChangeBaselines-15",
+        "text": "«SQL record»SafetyReviewChangeBaselinesuuid review_id",
+        "box": {
+          "x": 4036.257568359375,
+          "y": 1371.0001220703125,
+          "width": 260.546142578125,
+          "height": 143.999755859375,
+          "right": 4296.8037109375,
+          "bottom": 1514.9998779296875
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-classId-SafetyReviewContextBaselines-16",
+        "text": "«SQL record»SafetyReviewContextBaselinesuuid review_id",
+        "box": {
+          "x": 3454.649169921875,
+          "y": 1371.0001220703125,
+          "width": 261.43701171875,
+          "height": 143.999755859375,
+          "right": 3716.086181640625,
+          "bottom": 1514.9998779296875
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-classId-SafetyReviews-17",
+        "text": "«SQL record»SafetyReviewsuuid iduuid event_request_idinteger roundtext statusuuid submitted_byuuid decided_by",
+        "box": {
+          "x": 3962.972900390625,
+          "y": 879.0011596679688,
+          "width": 237.484130859375,
+          "height": 263.99945068359375,
+          "right": 4200.45703125,
+          "bottom": 1143.0006103515625
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-classId-VenueBookings-18",
+        "text": "«SQL record»VenueBookingsuuid iduuid event_request_iduuid venue_iduuid requested_bytext statustimestamptz starts_attimestamptz ends_atuuid decided_byuuid replaces_booking_idtimestamptz hold_expires_atuuid held_byuuid cancelled_by",
+        "box": {
+          "x": 5041.60595703125,
+          "y": 1994.9989013671875,
+          "width": 287.67138671875,
+          "height": 407.9991455078125,
+          "right": 5329.27734375,
+          "bottom": 2402.998046875
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-classId-VenueOutageImpacts-19",
+        "text": "«SQL record»VenueOutageImpactsuuid iduuid unavailability_iduuid venue_booking_iduuid venue_idtext statusuuid recorded_by",
+        "box": {
+          "x": 6135.63330078125,
+          "y": 2570.997802734375,
+          "width": 269.95263671875,
+          "height": 263.99951171875,
+          "right": 6405.5859375,
+          "bottom": 2834.997314453125
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-classId-VenueUnavailability-20",
+        "text": "«SQL record»VenueUnavailabilityuuid iduuid venue_idtimestamptz starts_attimestamptz ends_atuuid created_by",
+        "box": {
+          "x": 6172.0107421875,
+          "y": 2050.998779296875,
+          "width": 251.18701171875,
+          "height": 239.99951171875,
+          "right": 6423.19775390625,
+          "bottom": 2290.998291015625
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-classId-Venues-21",
+        "text": "«SQL record»Venuesuuid idinteger setup_minutesinteger turnaround_minutes",
+        "box": {
+          "x": 5759.78515625,
+          "y": 1538.999755859375,
+          "width": 269.19482421875,
+          "height": 191.9996337890625,
+          "right": 6028.97998046875,
+          "bottom": 1730.9993896484375
+        },
+        "clipped": []
+      }
+    ],
+    "edges": [
+      {
+        "id": "my-svg-id_AppUsers_CoordinatorAssignments_1",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_AppUsers_CoordinatorAssignments_2",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_EventRequests_CoordinatorAssignments_3",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_AppUsers_EquipmentRequests_4",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_EquipmentTypes_EquipmentRequests_5",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_EventRequests_EquipmentRequests_6",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_AppUsers_EquipmentRequests_7",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_AppUsers_EquipmentRequests_8",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_AppUsers_EquipmentStockChanges_9",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_EquipmentTypes_EquipmentStockChanges_10",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_AppUsers_EventCancellations_11",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_EventRequests_EventCancellations_12",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_AppUsers_EventChangeRequests_13",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_EventRequests_EventChangeRequests_14",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_AppUsers_EventChangeRequests_15",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_EventRequests_EventClarifications_16",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_AppUsers_EventClarifications_17",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_AppUsers_EventRegistrations_18",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_EventRequests_EventRegistrations_19",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_AppUsers_EventRequestEdits_20",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_EventRequests_EventRequestEdits_21",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_AppUsers_EventRequests_22",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_AppUsers_EventRequests_23",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_SafetyReviews_EventRequests_24",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_AppUsers_EventRequests_25",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_EventRequests_EventReviews_26",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_AppUsers_EventReviews_27",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_AppUsers_EventStatusHistory_28",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_EventRequests_EventStatusHistory_29",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_EventChangeRequests_Notifications_30",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_EquipmentRequests_Notifications_31",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_EventRequests_Notifications_32",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_AppUsers_Notifications_33",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_EventRegistrations_Notifications_34",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_SafetyReviews_Notifications_35",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_VenueBookings_Notifications_36",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_SafetyReviews_SafetyApprovalInvalidations_37",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_SafetyReviews_SafetyReviewChangeBaselines_38",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_SafetyReviews_SafetyReviewContextBaselines_39",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_AppUsers_SafetyReviews_40",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_EventRequests_SafetyReviews_41",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_AppUsers_SafetyReviews_42",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_AppUsers_VenueBookings_43",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_AppUsers_VenueBookings_44",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_EventRequests_VenueBookings_45",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_AppUsers_VenueBookings_46",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_VenueBookings_VenueBookings_47",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_AppUsers_VenueBookings_48",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_Venues_VenueBookings_49",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_AppUsers_VenueOutageImpacts_50",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_VenueUnavailability_VenueOutageImpacts_51",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_VenueBookings_VenueOutageImpacts_52",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_Venues_VenueOutageImpacts_53",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_AppUsers_VenueUnavailability_54",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_Venues_VenueUnavailability_55",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      }
+    ],
+    "edgeLabels": [
+      {
+        "text": "assigned_by [0..1 / 0..*]",
+        "box": {
+          "x": 5654.78564453125,
+          "y": 1275.0003662109375,
+          "width": 167.21826171875,
+          "height": 23.9998779296875,
+          "right": 5822.00390625,
+          "bottom": 1299.000244140625
+        }
+      },
+      {
+        "text": "coordinator_id [1 / 0..*]",
+        "box": {
+          "x": 5968.47998046875,
+          "y": 1275.0003662109375,
+          "width": 160.984375,
+          "height": 23.9998779296875,
+          "right": 6129.46435546875,
+          "bottom": 1299.000244140625
+        }
+      },
+      {
+        "text": "event_request_id [1 / 0..*]",
+        "box": {
+          "x": 5536.44189453125,
+          "y": 1890.9991455078125,
+          "width": 182.34326171875,
+          "height": 23.9998779296875,
+          "right": 5718.78515625,
+          "bottom": 1914.9990234375
+        }
+      },
+      {
+        "text": "decided_by [0..1 / 0..*]",
+        "box": {
+          "x": 222.7964324951172,
+          "y": 1275.0003662109375,
+          "width": 159.2184295654297,
+          "height": 23.9998779296875,
+          "right": 382.0148620605469,
+          "bottom": 1299.000244140625
+        }
+      },
+      {
+        "text": "equipment_type_id [1 / 0..*]",
+        "box": {
+          "x": 7.999983787536621,
+          "y": 1275.0003662109375,
+          "width": 194.79647827148438,
+          "height": 23.9998779296875,
+          "right": 202.796462059021,
+          "bottom": 1299.000244140625
+        }
+      },
+      {
+        "text": "event_request_id [1 / 0..*]",
+        "box": {
+          "x": 931.7481079101562,
+          "y": 1890.9991455078125,
+          "width": 182.34344482421875,
+          "height": 23.9998779296875,
+          "right": 1114.091552734375,
+          "bottom": 1914.9990234375
+        }
+      },
+      {
+        "text": "released_by [0..1 / 0..*]",
+        "box": {
+          "x": 402.0148010253906,
+          "y": 1275.0003662109375,
+          "width": 164.54653930664062,
+          "height": 23.9998779296875,
+          "right": 566.5613403320312,
+          "bottom": 1299.000244140625
+        }
+      },
+      {
+        "text": "requested_by [1 / 0..*]",
+        "box": {
+          "x": 832.248291015625,
+          "y": 1275.0003662109375,
+          "width": 156.54656982421875,
+          "height": 23.9998779296875,
+          "right": 988.7948608398438,
+          "bottom": 1299.000244140625
+        }
+      },
+      {
+        "text": "changed_by [1 / 0..*]",
+        "box": {
+          "x": 720.31103515625,
+          "y": 815.0012817382812,
+          "width": 146.78094482421875,
+          "height": 23.99993896484375,
+          "right": 867.0919799804688,
+          "bottom": 839.001220703125
+        }
+      },
+      {
+        "text": "equipment_type_id [1 / 0..*]",
+        "box": {
+          "x": 505.5146179199219,
+          "y": 815.0012817382812,
+          "width": 194.79647827148438,
+          "height": 23.99993896484375,
+          "right": 700.3110961914062,
+          "bottom": 839.001220703125
+        }
+      },
+      {
+        "text": "cancelled_by [1 / 0..*]",
+        "box": {
+          "x": 1344.6822509765625,
+          "y": 1275.0003662109375,
+          "width": 152.9840087890625,
+          "height": 23.9998779296875,
+          "right": 1497.666259765625,
+          "bottom": 1299.000244140625
+        }
+      },
+      {
+        "text": "event_request_id [1 / 0..1]",
+        "box": {
+          "x": 1442.1820068359375,
+          "y": 1890.9991455078125,
+          "width": 185.0152587890625,
+          "height": 23.9998779296875,
+          "right": 1627.197265625,
+          "bottom": 1914.9990234375
+        }
+      },
+      {
+        "text": "decided_by [0..1 / 0..*]",
+        "box": {
+          "x": 2155.19873046875,
+          "y": 1275.0003662109375,
+          "width": 159.218505859375,
+          "height": 23.9998779296875,
+          "right": 2314.417236328125,
+          "bottom": 1299.000244140625
+        }
+      },
+      {
+        "text": "event_request_id [1 / 0..*]",
+        "box": {
+          "x": 2639.747314453125,
+          "y": 1890.9991455078125,
+          "width": 182.343505859375,
+          "height": 23.9998779296875,
+          "right": 2822.0908203125,
+          "bottom": 1914.9990234375
+        }
+      },
+      {
+        "text": "requested_by [1 / 0..*]",
+        "box": {
+          "x": 2334.417236328125,
+          "y": 1275.0003662109375,
+          "width": 156.54638671875,
+          "height": 23.9998779296875,
+          "right": 2490.963623046875,
+          "bottom": 1299.000244140625
+        }
+      },
+      {
+        "text": "event_request_id [1 / 0..*]",
+        "box": {
+          "x": 1738.048583984375,
+          "y": 1890.9991455078125,
+          "width": 182.3433837890625,
+          "height": 23.9998779296875,
+          "right": 1920.3919677734375,
+          "bottom": 1914.9990234375
+        }
+      },
+      {
+        "text": "requested_by [1 / 0..*]",
+        "box": {
+          "x": 1638.548828125,
+          "y": 1275.0003662109375,
+          "width": 156.5465087890625,
+          "height": 23.9998779296875,
+          "right": 1795.0953369140625,
+          "bottom": 1299.000244140625
+        }
+      },
+      {
+        "text": "attendee_id [1 / 0..*]",
+        "box": {
+          "x": 3357.1494140625,
+          "y": 1275.0003662109375,
+          "width": 143.218505859375,
+          "height": 23.9998779296875,
+          "right": 3500.367919921875,
+          "bottom": 1299.000244140625
+        }
+      },
+      {
+        "text": "event_request_id [1 / 0..*]",
+        "box": {
+          "x": 2863.090576171875,
+          "y": 1890.9991455078125,
+          "width": 182.343505859375,
+          "height": 23.9998779296875,
+          "right": 3045.43408203125,
+          "bottom": 1914.9990234375
+        }
+      },
+      {
+        "text": "edited_by [1 / 0..*]",
+        "box": {
+          "x": 4566.64697265625,
+          "y": 1275.0003662109375,
+          "width": 128.984375,
+          "height": 23.9998779296875,
+          "right": 4695.63134765625,
+          "bottom": 1299.000244140625
+        }
+      },
+      {
+        "text": "event_request_id [1 / 0..*]",
+        "box": {
+          "x": 4428.8037109375,
+          "y": 1890.9991455078125,
+          "width": 182.34326171875,
+          "height": 23.9998779296875,
+          "right": 4611.14697265625,
+          "bottom": 1914.9990234375
+        }
+      },
+      {
+        "text": "coordinator_id [0..1 / 0..*]",
+        "box": {
+          "x": 2433.9169921875,
+          "y": 999.0009155273438,
+          "width": 178.78076171875,
+          "height": 23.99993896484375,
+          "right": 2612.69775390625,
+          "bottom": 1023.0008544921875
+        }
+      },
+      {
+        "text": "organiser_id [1 / 0..*]",
+        "box": {
+          "x": 2632.69775390625,
+          "y": 999.0009155273438,
+          "width": 147.640380859375,
+          "height": 23.99993896484375,
+          "right": 2780.338134765625,
+          "bottom": 1023.0008544921875
+        }
+      },
+      {
+        "text": "preparation_safety_review_id [0..1 / 0..*]",
+        "box": {
+          "x": 2921.337890625,
+          "y": 1263.0003662109375,
+          "width": 213.46826171875,
+          "height": 47.9998779296875,
+          "right": 3134.80615234375,
+          "bottom": 1311.000244140625
+        }
+      },
+      {
+        "text": "preparation_started_by [0..1 / 0..*]",
+        "box": {
+          "x": 2800.338134765625,
+          "y": 987.0009155273438,
+          "width": 199.99951171875,
+          "height": 47.99993896484375,
+          "right": 3000.337646484375,
+          "bottom": 1035.0008544921875
+        }
+      },
+      {
+        "text": "event_request_id [1 / 0..*]",
+        "box": {
+          "x": 1155.0914306640625,
+          "y": 1890.9991455078125,
+          "width": 182.3433837890625,
+          "height": 23.9998779296875,
+          "right": 1337.434814453125,
+          "bottom": 1914.9990234375
+        }
+      },
+      {
+        "text": "reviewed_by [1 / 0..*]",
+        "box": {
+          "x": 1059.091552734375,
+          "y": 1275.0003662109375,
+          "width": 149.421630859375,
+          "height": 23.9998779296875,
+          "right": 1208.51318359375,
+          "bottom": 1299.000244140625
+        }
+      },
+      {
+        "text": "changed_by [0..1 / 0..*]",
+        "box": {
+          "x": 1929.35546875,
+          "y": 1275.0003662109375,
+          "width": 164.562255859375,
+          "height": 23.9998779296875,
+          "right": 2093.917724609375,
+          "bottom": 1299.000244140625
+        }
+      },
+      {
+        "text": "event_request_id [1 / 0..*]",
+        "box": {
+          "x": 2032.855224609375,
+          "y": 1890.9991455078125,
+          "width": 182.343505859375,
+          "height": 23.9998779296875,
+          "right": 2215.19873046875,
+          "bottom": 1914.9990234375
+        }
+      },
+      {
+        "text": "change_request_id [0..1 / 0..*]",
+        "box": {
+          "x": 2312.917236328125,
+          "y": 2442.998046875,
+          "width": 199.99951171875,
+          "height": 47.999755859375,
+          "right": 2512.916748046875,
+          "bottom": 2490.997802734375
+        }
+      },
+      {
+        "text": "equipment_request_id [0..1 / 0..*]",
+        "box": {
+          "x": 384.5148620605469,
+          "y": 2442.998046875,
+          "width": 199.99960327148438,
+          "height": 47.999755859375,
+          "right": 584.5144653320312,
+          "bottom": 2490.997802734375
+        }
+      },
+      {
+        "text": "event_request_id [0..1 / 0..*]",
+        "box": {
+          "x": 2742.0908203125,
+          "y": 2174.99853515625,
+          "width": 199.999755859375,
+          "height": 48,
+          "right": 2942.090576171875,
+          "bottom": 2222.99853515625
+        }
+      },
+      {
+        "text": "recipient_id [1 / 0..*]",
+        "box": {
+          "x": 4336.8037109375,
+          "y": 1538.999755859375,
+          "width": 141.42138671875,
+          "height": 24,
+          "right": 4478.22509765625,
+          "bottom": 1562.999755859375
+        }
+      },
+      {
+        "text": "registration_id [0..1 / 0..*]",
+        "box": {
+          "x": 3297.75634765625,
+          "y": 2454.998046875,
+          "width": 177.87451171875,
+          "height": 23.999755859375,
+          "right": 3475.630859375,
+          "bottom": 2478.997802734375
+        }
+      },
+      {
+        "text": "safety_review_id [0..1 / 0..*]",
+        "box": {
+          "x": 3637.58642578125,
+          "y": 1890.9991455078125,
+          "width": 196.54638671875,
+          "height": 23.9998779296875,
+          "right": 3834.1328125,
+          "bottom": 1914.9990234375
+        }
+      },
+      {
+        "text": "venue_booking_id [0..1 / 0..*]",
+        "box": {
+          "x": 4918.3876953125,
+          "y": 2442.998046875,
+          "width": 199.99951171875,
+          "height": 47.999755859375,
+          "right": 5118.38720703125,
+          "bottom": 2490.997802734375
+        }
+      },
+      {
+        "text": "review_id [1 / 0..1]",
+        "box": {
+          "x": 3811.672119140625,
+          "y": 1275.0003662109375,
+          "width": 129.84326171875,
+          "height": 23.9998779296875,
+          "right": 3941.515380859375,
+          "bottom": 1299.000244140625
+        }
+      },
+      {
+        "text": "review_id [1 / 0..1]",
+        "box": {
+          "x": 4101.53076171875,
+          "y": 1275.0003662109375,
+          "width": 129.84375,
+          "height": 23.9998779296875,
+          "right": 4231.37451171875,
+          "bottom": 1299.000244140625
+        }
+      },
+      {
+        "text": "review_id [1 / 0..1]",
+        "box": {
+          "x": 3520.367919921875,
+          "y": 1275.0003662109375,
+          "width": 129.843505859375,
+          "height": 23.9998779296875,
+          "right": 3650.21142578125,
+          "bottom": 1299.000244140625
+        }
+      },
+      {
+        "text": "decided_by [0..1 / 0..*]",
+        "box": {
+          "x": 3864.577392578125,
+          "y": 815.0012817382812,
+          "width": 159.218505859375,
+          "height": 23.99993896484375,
+          "right": 4023.7958984375,
+          "bottom": 839.001220703125
+        }
+      },
+      {
+        "text": "event_request_id [1 / 0..*]",
+        "box": {
+          "x": 3154.80615234375,
+          "y": 1275.0003662109375,
+          "width": 182.34326171875,
+          "height": 23.9998779296875,
+          "right": 3337.1494140625,
+          "bottom": 1299.000244140625
+        }
+      },
+      {
+        "text": "submitted_by [1 / 0..*]",
+        "box": {
+          "x": 4043.795654296875,
+          "y": 815.0012817382812,
+          "width": 154.749755859375,
+          "height": 23.99993896484375,
+          "right": 4198.54541015625,
+          "bottom": 839.001220703125
+        }
+      },
+      {
+        "text": "cancelled_by [0..1 / 0..*]",
+        "box": {
+          "x": 4768.990234375,
+          "y": 1275.0003662109375,
+          "width": 170.78125,
+          "height": 23.9998779296875,
+          "right": 4939.771484375,
+          "bottom": 1299.000244140625
+        }
+      },
+      {
+        "text": "decided_by [0..1 / 0..*]",
+        "box": {
+          "x": 4959.771484375,
+          "y": 1275.0003662109375,
+          "width": 159.21826171875,
+          "height": 23.9998779296875,
+          "right": 5118.98974609375,
+          "bottom": 1299.000244140625
+        }
+      },
+      {
+        "text": "event_request_id [1 / 0..*]",
+        "box": {
+          "x": 4652.14697265625,
+          "y": 1890.9991455078125,
+          "width": 182.34326171875,
+          "height": 23.9998779296875,
+          "right": 4834.490234375,
+          "bottom": 1914.9990234375
+        }
+      },
+      {
+        "text": "held_by [0..1 / 0..*]",
+        "box": {
+          "x": 5138.98974609375,
+          "y": 1275.0003662109375,
+          "width": 133.42138671875,
+          "height": 23.9998779296875,
+          "right": 5272.4111328125,
+          "bottom": 1299.000244140625
+        }
+      },
+      {
+        "text": "replaces_booking_id [0..1 / 0..*]",
+        "box": {
+          "x": 4817.6064453125,
+          "y": 2174.99853515625,
+          "width": 199.99951171875,
+          "height": 48,
+          "right": 5017.60595703125,
+          "bottom": 2222.99853515625
+        }
+      },
+      {
+        "text": "requested_by [1 / 0..*]",
+        "box": {
+          "x": 5292.4111328125,
+          "y": 1275.0003662109375,
+          "width": 156.54638671875,
+          "height": 23.9998779296875,
+          "right": 5448.95751953125,
+          "bottom": 1299.000244140625
+        }
+      },
+      {
+        "text": "venue_id [1 / 0..*]",
+        "box": {
+          "x": 5391.9111328125,
+          "y": 1890.9991455078125,
+          "width": 124.53076171875,
+          "height": 23.9998779296875,
+          "right": 5516.44189453125,
+          "bottom": 1914.9990234375
+        }
+      },
+      {
+        "text": "recorded_by [0..1 / 0..*]",
+        "box": {
+          "x": 6360.46923828125,
+          "y": 1538.999755859375,
+          "width": 166.32763671875,
+          "height": 24,
+          "right": 6526.796875,
+          "bottom": 1562.999755859375
+        }
+      },
+      {
+        "text": "unavailability_id [0..1 / 0..*]",
+        "box": {
+          "x": 6202.1044921875,
+          "y": 2454.998046875,
+          "width": 190.34375,
+          "height": 23.999755859375,
+          "right": 6392.4482421875,
+          "bottom": 2478.997802734375
+        }
+      },
+      {
+        "text": "venue_booking_id [1 / 0..*]",
+        "box": {
+          "x": 5138.38720703125,
+          "y": 2454.998046875,
+          "width": 189.48388671875,
+          "height": 23.999755859375,
+          "right": 5327.87109375,
+          "bottom": 2478.997802734375
+        }
+      },
+      {
+        "text": "venue_id [1 / 0..*]",
+        "box": {
+          "x": 6007.47998046875,
+          "y": 2186.99853515625,
+          "width": 124.53125,
+          "height": 24,
+          "right": 6132.01123046875,
+          "bottom": 2210.99853515625
+        }
+      },
+      {
+        "text": "created_by [0..1 / 0..*]",
+        "box": {
+          "x": 6260.96923828125,
+          "y": 1275.0003662109375,
+          "width": 156.54638671875,
+          "height": 23.9998779296875,
+          "right": 6417.515625,
+          "bottom": 1299.000244140625
+        }
+      },
+      {
+        "text": "venue_id [1 / 0..*]",
+        "box": {
+          "x": 6193.23974609375,
+          "y": 1890.9991455078125,
+          "width": 124.53125,
+          "height": 23.9998779296875,
+          "right": 6317.77099609375,
+          "bottom": 1914.9990234375
+        }
+      }
+    ],
+    "edgeLabelOverlaps": [],
+    "edgeLabelNodeOverlaps": [],
+    "messageCount": 0,
+    "participantCount": 0,
+    "outOfBounds": []
+  },
+  {
+    "name": "class-events",
+    "kind": "classDiagram",
+    "source_sha256": "8739d7b2ba166be9c321d2d9542cce5e93b3eb97e724231071dc5704224a319f",
+    "svg_sha256": "1eb593061d832078e45d74432e22c6aeaac6a21060ea76c9fce6d42110539b12",
+    "png_sha256": "5af2e440defdf40e41150698709d4b49d148ce54ba9f41e9cf7c7affed368c7b",
+    "expected_nodes": 11,
+    "expected_edges": 22,
+    "width": 3974.513671875,
+    "height": 2091,
+    "nodes": [
+      {
+        "id": "my-svg-classId-AppUsers-0",
+        "text": "«SQL record»AppUsersuuid idtext emailtext display_nametext roletext password_hashtimestamptz created_attimestamptz updated_atuuid supabase_user_idboolean coordinator_available",
+        "box": {
+          "x": 1731.0218505859375,
+          "y": 59.003395080566406,
+          "width": 287.0068359375,
+          "height": 335.99884033203125,
+          "right": 2018.0286865234375,
+          "bottom": 395.00223541259766
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-classId-CoordinatorAssignments-1",
+        "text": "«SQL record»CoordinatorAssignmentsuuid iduuid event_request_iduuid coordinator_iduuid assigned_bytext notetimestamptz assigned_attimestamptz unassigned_attext assignment_method",
+        "box": {
+          "x": 13.302688598632812,
+          "y": 1602.998046875,
+          "width": 314.7879638671875,
+          "height": 311.9989013671875,
+          "right": 328.0906524658203,
+          "bottom": 1914.9969482421875
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-classId-EventCancellations-2",
+        "text": "«SQL record»EventCancellationsuuid event_request_iduuid cancelled_bytimestamptz cancelled_attext reasoninteger affected_venue_bookingsinteger affected_equipment_requestsinteger affected_registrations",
+        "box": {
+          "x": 368.0905456542969,
+          "y": 1602.998046875,
+          "width": 361.6940612792969,
+          "height": 287.9990234375,
+          "right": 729.7846069335938,
+          "bottom": 1890.9970703125
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-classId-EventChangeRequests-3",
+        "text": "«SQL record»EventChangeRequestsuuid iduuid event_request_iduuid requested_bytext statusjsonb proposed_changestext reasonuuid decided_bytimestamptz decided_attext decision_reasontimestamptz created_attimestamptz updated_atjsonb previousinteger base_revisioninteger applied_revisionjsonb cancelled_arrangements",
+        "box": {
+          "x": 769.7844848632812,
+          "y": 1602.998046875,
+          "width": 329.05352783203125,
+          "height": 479.998291015625,
+          "right": 1098.8380126953125,
+          "bottom": 2082.996337890625
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-classId-EventClarifications-4",
+        "text": "«SQL record»EventClarificationsuuid iduuid event_request_iduuid requested_bytext messagetext responsetimestamptz created_attimestamptz responded_at",
+        "box": {
+          "x": 1138.837890625,
+          "y": 1602.998046875,
+          "width": 285.0146484375,
+          "height": 287.9990234375,
+          "right": 1423.8525390625,
+          "bottom": 1890.9970703125
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-classId-EventRegistrations-5",
+        "text": "«SQL record»EventRegistrationsuuid iduuid event_request_iduuid attendee_idtext statustimestamptz registered_attimestamptz withdrawn_attimestamptz cancellation_outcome_atinteger outcome_version",
+        "box": {
+          "x": 2036.8504638671875,
+          "y": 1602.998046875,
+          "width": 364.6080322265625,
+          "height": 311.9989013671875,
+          "right": 2401.45849609375,
+          "bottom": 1914.9969482421875
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-classId-EventRequestEdits-6",
+        "text": "«SQL record»EventRequestEditsuuid iduuid event_request_idinteger revisionuuid edited_bytext editor_roletext event_statusjsonb changestimestamptz created_at",
+        "box": {
+          "x": 2441.45849609375,
+          "y": 1602.998046875,
+          "width": 263.2021484375,
+          "height": 311.9989013671875,
+          "right": 2704.66064453125,
+          "bottom": 1914.9969482421875
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-classId-EventRequests-7",
+        "text": "«SQL record»EventRequestsuuid iduuid organiser_iduuid coordinator_idtext statustext nametext purposetext descriptiontimestamptz starts_attimestamptz ends_atinteger expected_attendancetext venue_requirementstext accessibility_needstext equipment_requirementsboolean registration_requiredtimestamptz created_attimestamptz updated_atinteger registration_capacitytimestamptz registration_opens_attimestamptz registration_closes_atinteger revisiontext equipment_plan_statustimestamptz preparation_started_atuuid preparation_started_byuuid preparation_safety_review_id",
+        "box": {
+          "x": 1807.82861328125,
+          "y": 663.0013427734375,
+          "width": 333.4833984375,
+          "height": 695.99755859375,
+          "right": 2141.31201171875,
+          "bottom": 1358.9989013671875
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-classId-EventReviews-8",
+        "text": "«SQL record»EventReviewsuuid iduuid event_request_iduuid reviewed_bytext decisiontext reasontimestamptz created_at",
+        "box": {
+          "x": 2744.660400390625,
+          "y": 1602.998046875,
+          "width": 244.100830078125,
+          "height": 263.9991455078125,
+          "right": 2988.76123046875,
+          "bottom": 1866.9971923828125
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-classId-EventStatusHistory-9",
+        "text": "«SQL record»EventStatusHistoryuuid iduuid event_request_idtext from_statustext to_statusuuid changed_bytimestamptz created_attext reason",
+        "box": {
+          "x": 3028.760986328125,
+          "y": 1602.998046875,
+          "width": 264.093017578125,
+          "height": 287.9990234375,
+          "right": 3292.85400390625,
+          "bottom": 1890.9970703125
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-classId-SafetyReviews-10",
+        "text": "«SQL record»SafetyReviewsuuid iduuid event_request_idinteger roundtext statusuuid submitted_byuuid decided_by",
+        "box": {
+          "x": 3729.016357421875,
+          "y": 131.00314331054688,
+          "width": 237.483642578125,
+          "height": 263.99908447265625,
+          "right": 3966.5,
+          "bottom": 395.0022277832031
+        },
+        "clipped": []
+      }
+    ],
+    "edges": [
+      {
+        "id": "my-svg-id_AppUsers_CoordinatorAssignments_1",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_AppUsers_CoordinatorAssignments_2",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_EventRequests_CoordinatorAssignments_3",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_AppUsers_EventCancellations_4",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_EventRequests_EventCancellations_5",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_AppUsers_EventChangeRequests_6",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_EventRequests_EventChangeRequests_7",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_AppUsers_EventChangeRequests_8",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_EventRequests_EventClarifications_9",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_AppUsers_EventClarifications_10",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_AppUsers_EventRegistrations_11",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_EventRequests_EventRegistrations_12",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_AppUsers_EventRequestEdits_13",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_EventRequests_EventRequestEdits_14",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_AppUsers_EventRequests_15",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_AppUsers_EventRequests_16",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_SafetyReviews_EventRequests_17",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_AppUsers_EventRequests_18",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_EventRequests_EventReviews_19",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_AppUsers_EventReviews_20",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_AppUsers_EventStatusHistory_21",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_EventRequests_EventStatusHistory_22",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      }
+    ],
+    "edgeLabels": [
+      {
+        "text": "assigned_by [0..1 / 0..*]",
+        "box": {
+          "x": 7.999972343444824,
+          "y": 999.0001831054688,
+          "width": 167.21817016601562,
+          "height": 23.9998779296875,
+          "right": 175.21814250946045,
+          "bottom": 1023.0000610351562
+        }
+      },
+      {
+        "text": "coordinator_id [1 / 0..*]",
+        "box": {
+          "x": 195.21807861328125,
+          "y": 999.0001831054688,
+          "width": 160.98382568359375,
+          "height": 23.9998779296875,
+          "right": 356.201904296875,
+          "bottom": 1023.0000610351562
+        }
+      },
+      {
+        "text": "event_request_id [1 / 0..*]",
+        "box": {
+          "x": 1254.8427734375,
+          "y": 1458.99853515625,
+          "width": 182.3431396484375,
+          "height": 24,
+          "right": 1437.1859130859375,
+          "bottom": 1482.99853515625
+        }
+      },
+      {
+        "text": "cancelled_by [1 / 0..*]",
+        "box": {
+          "x": 412.1554870605469,
+          "y": 999.0001831054688,
+          "width": 152.98379516601562,
+          "height": 23.9998779296875,
+          "right": 565.1392822265625,
+          "bottom": 1023.0000610351562
+        }
+      },
+      {
+        "text": "event_request_id [1 / 0..1]",
+        "box": {
+          "x": 1457.185791015625,
+          "y": 1458.99853515625,
+          "width": 185.0150146484375,
+          "height": 24,
+          "right": 1642.2008056640625,
+          "bottom": 1482.99853515625
+        }
+      },
+      {
+        "text": "decided_by [0..1 / 0..*]",
+        "box": {
+          "x": 772.048095703125,
+          "y": 999.0001831054688,
+          "width": 159.21826171875,
+          "height": 23.9998779296875,
+          "right": 931.266357421875,
+          "bottom": 1023.0000610351562
+        }
+      },
+      {
+        "text": "event_request_id [1 / 0..*]",
+        "box": {
+          "x": 1662.20068359375,
+          "y": 1458.99853515625,
+          "width": 182.3431396484375,
+          "height": 24,
+          "right": 1844.5438232421875,
+          "bottom": 1482.99853515625
+        }
+      },
+      {
+        "text": "requested_by [1 / 0..*]",
+        "box": {
+          "x": 951.2662353515625,
+          "y": 999.0001831054688,
+          "width": 156.54638671875,
+          "height": 23.9998779296875,
+          "right": 1107.8126220703125,
+          "bottom": 1023.0000610351562
+        }
+      },
+      {
+        "text": "event_request_id [1 / 0..*]",
+        "box": {
+          "x": 1864.543701171875,
+          "y": 1458.99853515625,
+          "width": 182.34326171875,
+          "height": 24,
+          "right": 2046.886962890625,
+          "bottom": 1482.99853515625
+        }
+      },
+      {
+        "text": "requested_by [1 / 0..*]",
+        "box": {
+          "x": 1155.343017578125,
+          "y": 999.0001831054688,
+          "width": 156.54638671875,
+          "height": 23.9998779296875,
+          "right": 1311.889404296875,
+          "bottom": 1023.0000610351562
+        }
+      },
+      {
+        "text": "attendee_id [1 / 0..*]",
+        "box": {
+          "x": 3155.6357421875,
+          "y": 999.0001831054688,
+          "width": 143.21826171875,
+          "height": 23.9998779296875,
+          "right": 3298.85400390625,
+          "bottom": 1023.0000610351562
+        }
+      },
+      {
+        "text": "event_request_id [1 / 0..*]",
+        "box": {
+          "x": 2066.88671875,
+          "y": 1458.99853515625,
+          "width": 182.343017578125,
+          "height": 24,
+          "right": 2249.229736328125,
+          "bottom": 1482.99853515625
+        }
+      },
+      {
+        "text": "edited_by [1 / 0..*]",
+        "box": {
+          "x": 3318.853759765625,
+          "y": 999.0001831054688,
+          "width": 128.98388671875,
+          "height": 23.9998779296875,
+          "right": 3447.837646484375,
+          "bottom": 1023.0000610351562
+        }
+      },
+      {
+        "text": "event_request_id [1 / 0..*]",
+        "box": {
+          "x": 2437.69287109375,
+          "y": 1458.99853515625,
+          "width": 182.343017578125,
+          "height": 24,
+          "right": 2620.035888671875,
+          "bottom": 1482.99853515625
+        }
+      },
+      {
+        "text": "coordinator_id [0..1 / 0..*]",
+        "box": {
+          "x": 1785.025634765625,
+          "y": 547.001708984375,
+          "width": 178.7806396484375,
+          "height": 23.99993896484375,
+          "right": 1963.8062744140625,
+          "bottom": 571.0016479492188
+        }
+      },
+      {
+        "text": "organiser_id [1 / 0..*]",
+        "box": {
+          "x": 1983.80615234375,
+          "y": 547.001708984375,
+          "width": 147.64013671875,
+          "height": 23.99993896484375,
+          "right": 2131.4462890625,
+          "bottom": 571.0016479492188
+        }
+      },
+      {
+        "text": "preparation_safety_review_id [0..1 / 0..*]",
+        "box": {
+          "x": 3740.758544921875,
+          "y": 535.0017700195312,
+          "width": 213.468017578125,
+          "height": 47.99981689453125,
+          "right": 3954.2265625,
+          "bottom": 583.0015869140625
+        }
+      },
+      {
+        "text": "preparation_started_by [0..1 / 0..*]",
+        "box": {
+          "x": 2151.4462890625,
+          "y": 535.0017700195312,
+          "width": 199.999267578125,
+          "height": 47.99981689453125,
+          "right": 2351.445556640625,
+          "bottom": 583.0015869140625
+        }
+      },
+      {
+        "text": "event_request_id [1 / 0..*]",
+        "box": {
+          "x": 2734.527587890625,
+          "y": 1458.99853515625,
+          "width": 182.34326171875,
+          "height": 24,
+          "right": 2916.870849609375,
+          "bottom": 1482.99853515625
+        }
+      },
+      {
+        "text": "reviewed_by [1 / 0..*]",
+        "box": {
+          "x": 3467.837646484375,
+          "y": 999.0001831054688,
+          "width": 149.42138671875,
+          "height": 23.9998779296875,
+          "right": 3617.259033203125,
+          "bottom": 1023.0000610351562
+        }
+      },
+      {
+        "text": "changed_by [0..1 / 0..*]",
+        "box": {
+          "x": 3637.259033203125,
+          "y": 999.0001831054688,
+          "width": 164.561767578125,
+          "height": 23.9998779296875,
+          "right": 3801.82080078125,
+          "bottom": 1023.0000610351562
+        }
+      },
+      {
+        "text": "event_request_id [1 / 0..*]",
+        "box": {
+          "x": 3025.292236328125,
+          "y": 1458.99853515625,
+          "width": 182.34326171875,
+          "height": 24,
+          "right": 3207.635498046875,
+          "bottom": 1482.99853515625
+        }
+      }
+    ],
+    "edgeLabelOverlaps": [],
+    "edgeLabelNodeOverlaps": [],
+    "messageCount": 0,
+    "participantCount": 0,
+    "outOfBounds": []
+  },
+  {
+    "name": "class-planning",
+    "kind": "classDiagram",
+    "source_sha256": "4ea401da6360f9a21ab63d67a720e3392b69c5d1619e419b9ee289c49f9a6888",
+    "svg_sha256": "9636e97241a52d17fd00aa819c95139b2e3b4433f42b5d35c50a444438f01548",
+    "png_sha256": "26a220b8d2d8ea4c7c70576ed1bd6ca9b9b9210b0f190dfca63251060d057324",
+    "expected_nodes": 9,
+    "expected_edges": 20,
+    "width": 2977.53662109375,
+    "height": 2139,
+    "nodes": [
+      {
+        "id": "my-svg-classId-AppUsers-0",
+        "text": "«SQL record»AppUsersuuid idtext role",
+        "box": {
+          "x": 379.92120361328125,
+          "y": 395.001220703125,
+          "width": 130.429443359375,
+          "height": 167.99969482421875,
+          "right": 510.35064697265625,
+          "bottom": 563.0009155273438
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-classId-EquipmentRequests-1",
+        "text": "«SQL record»EquipmentRequestsuuid iduuid event_request_iduuid equipment_type_iduuid requested_byinteger quantitytext statustimestamptz starts_attimestamptz ends_attext notesuuid decided_bytimestamptz decided_attext decision_reasontimestamptz created_attimestamptz updated_attimestamptz released_atuuid released_bytext release_reasontext release_causetext technical_requirementsinteger revision",
+        "box": {
+          "x": 813.0745239257812,
+          "y": 927.000244140625,
+          "width": 296.99945068359375,
+          "height": 599.9989013671875,
+          "right": 1110.073974609375,
+          "bottom": 1526.9991455078125
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-classId-EquipmentStockChanges-2",
+        "text": "«SQL record»EquipmentStockChangesuuid iduuid equipment_type_idinteger revisionuuid changed_bytimestamptz changed_attext reasoninteger previous_total_quantityinteger previous_damaged_quantityinteger previous_maintenance_quantityinteger new_total_quantityinteger new_damaged_quantityinteger new_maintenance_quantity",
+        "box": {
+          "x": 7.999985694885254,
+          "y": 927.000244140625,
+          "width": 400.202392578125,
+          "height": 407.999267578125,
+          "right": 408.20237827301025,
+          "bottom": 1334.99951171875
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-classId-EquipmentTypes-3",
+        "text": "«SQL record»EquipmentTypesuuid idtext nametext categorytext descriptioninteger total_quantityboolean is_activetimestamptz created_attimestamptz updated_atinteger damaged_quantityinteger maintenance_quantityinteger stock_revision",
+        "box": {
+          "x": 42.14054870605469,
+          "y": 179.00160217285156,
+          "width": 297.78070068359375,
+          "height": 383.99932861328125,
+          "right": 339.92124938964844,
+          "bottom": 563.0009307861328
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-classId-EventRequests-4",
+        "text": "«SQL record»EventRequestsuuid iduuid organiser_iduuid coordinator_idtext statustimestamptz starts_attimestamptz ends_atinteger revisiontext equipment_plan_statusuuid preparation_started_byuuid preparation_safety_review_id",
+        "box": {
+          "x": 1223.162353515625,
+          "y": 203.00155639648438,
+          "width": 325.5150146484375,
+          "height": 359.9993591308594,
+          "right": 1548.6773681640625,
+          "bottom": 563.0009155273438
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-classId-VenueBookings-5",
+        "text": "«SQL record»VenueBookingsuuid iduuid event_request_iduuid venue_iduuid requested_bytext statustimestamptz starts_attimestamptz ends_attext layouttext notesuuid decided_bytimestamptz decided_attext decision_reasontimestamptz created_attimestamptz updated_atuuid replaces_booking_idinteger reserved_setup_minutesinteger reserved_turnaround_minutestimestamptz hold_expires_atuuid held_bytimestamptz held_attimestamptz expired_atuuid cancelled_bytimestamptz cancelled_attext cancellation_reason",
+        "box": {
+          "x": 1789.3385009765625,
+          "y": 927.000244140625,
+          "width": 350.8431396484375,
+          "height": 695.998779296875,
+          "right": 2140.181640625,
+          "bottom": 1622.9990234375
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-classId-VenueOutageImpacts-6",
+        "text": "«SQL record»VenueOutageImpactsuuid iduuid unavailability_iduuid venue_booking_iduuid venue_idtimestamptz outage_starts_attimestamptz outage_ends_attext outage_reasontext statusuuid recorded_bytimestamptz created_attimestamptz updated_at",
+        "box": {
+          "x": 1838.66015625,
+          "y": 1746.998779296875,
+          "width": 315.24951171875,
+          "height": 383.999267578125,
+          "right": 2153.90966796875,
+          "bottom": 2130.998046875
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-classId-VenueUnavailability-7",
+        "text": "«SQL record»VenueUnavailabilityuuid iduuid venue_idtimestamptz starts_attimestamptz ends_attext reasonuuid created_bytimestamptz created_at",
+        "box": {
+          "x": 2539.563232421875,
+          "y": 1063,
+          "width": 265.43701171875,
+          "height": 287.99951171875,
+          "right": 2805.000244140625,
+          "bottom": 1350.99951171875
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-classId-Venues-8",
+        "text": "«SQL record»Venuesuuid idtext nametext descriptiontext locationinteger capacitytextArray layoutstextArray facilitiestextArray accessibility_featuresboolean wheelchair_accessibletime opens_attime closes_atboolean is_activetimestamptz created_attimestamptz updated_atinteger setup_minutesinteger turnaround_minutes",
+        "box": {
+          "x": 2393.76318359375,
+          "y": 59.00182342529297,
+          "width": 294.99169921875,
+          "height": 503.99908447265625,
+          "right": 2688.7548828125,
+          "bottom": 563.0009078979492
+        },
+        "clipped": []
+      }
+    ],
+    "edges": [
+      {
+        "id": "my-svg-id_AppUsers_EquipmentRequests_1",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_EquipmentTypes_EquipmentRequests_2",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_EventRequests_EquipmentRequests_3",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_AppUsers_EquipmentRequests_4",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_AppUsers_EquipmentRequests_5",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_AppUsers_EquipmentStockChanges_6",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_EquipmentTypes_EquipmentStockChanges_7",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_AppUsers_VenueBookings_8",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_AppUsers_VenueBookings_9",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_EventRequests_VenueBookings_10",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_AppUsers_VenueBookings_11",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_VenueBookings_VenueBookings_12",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_AppUsers_VenueBookings_13",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_Venues_VenueBookings_14",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_AppUsers_VenueOutageImpacts_15",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_VenueUnavailability_VenueOutageImpacts_16",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_VenueBookings_VenueOutageImpacts_17",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_Venues_VenueOutageImpacts_18",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_AppUsers_VenueUnavailability_19",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_Venues_VenueUnavailability_20",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      }
+    ],
+    "edgeLabels": [
+      {
+        "text": "decided_by [0..1 / 0..*]",
+        "box": {
+          "x": 699.85595703125,
+          "y": 823.0004272460938,
+          "width": 159.218505859375,
+          "height": 24,
+          "right": 859.074462890625,
+          "bottom": 847.0004272460938
+        }
+      },
+      {
+        "text": "equipment_type_id [1 / 0..*]",
+        "box": {
+          "x": 485.0594787597656,
+          "y": 823.0004272460938,
+          "width": 194.79653930664062,
+          "height": 24,
+          "right": 679.8560180664062,
+          "bottom": 847.0004272460938
+        }
+      },
+      {
+        "text": "event_request_id [1 / 0..*]",
+        "box": {
+          "x": 1240.1676025390625,
+          "y": 823.0004272460938,
+          "width": 182.3433837890625,
+          "height": 24,
+          "right": 1422.510986328125,
+          "bottom": 847.0004272460938
+        }
+      },
+      {
+        "text": "released_by [0..1 / 0..*]",
+        "box": {
+          "x": 879.0744018554688,
+          "y": 823.0004272460938,
+          "width": 164.54656982421875,
+          "height": 24,
+          "right": 1043.6209716796875,
+          "bottom": 847.0004272460938
+        }
+      },
+      {
+        "text": "requested_by [1 / 0..*]",
+        "box": {
+          "x": 1063.6209716796875,
+          "y": 823.0004272460938,
+          "width": 156.546630859375,
+          "height": 24,
+          "right": 1220.1676025390625,
+          "bottom": 847.0004272460938
+        }
+      },
+      {
+        "text": "changed_by [1 / 0..*]",
+        "box": {
+          "x": 318.2785339355469,
+          "y": 823.0004272460938,
+          "width": 146.781005859375,
+          "height": 24,
+          "right": 465.0595397949219,
+          "bottom": 847.0004272460938
+        }
+      },
+      {
+        "text": "equipment_type_id [1 / 0..*]",
+        "box": {
+          "x": 43.90096664428711,
+          "y": 823.0004272460938,
+          "width": 194.79652404785156,
+          "height": 24,
+          "right": 238.69749069213867,
+          "bottom": 847.0004272460938
+        }
+      },
+      {
+        "text": "cancelled_by [0..1 / 0..*]",
+        "box": {
+          "x": 1463.5108642578125,
+          "y": 823.0004272460938,
+          "width": 170.781005859375,
+          "height": 24,
+          "right": 1634.2918701171875,
+          "bottom": 847.0004272460938
+        }
+      },
+      {
+        "text": "decided_by [0..1 / 0..*]",
+        "box": {
+          "x": 1654.2918701171875,
+          "y": 823.0004272460938,
+          "width": 159.2183837890625,
+          "height": 24,
+          "right": 1813.51025390625,
+          "bottom": 847.0004272460938
+        }
+      },
+      {
+        "text": "event_request_id [1 / 0..*]",
+        "box": {
+          "x": 2202.66796875,
+          "y": 823.0004272460938,
+          "width": 182.34326171875,
+          "height": 24,
+          "right": 2385.01123046875,
+          "bottom": 847.0004272460938
+        }
+      },
+      {
+        "text": "held_by [0..1 / 0..*]",
+        "box": {
+          "x": 1872.6998291015625,
+          "y": 823.0004272460938,
+          "width": 133.421630859375,
+          "height": 24,
+          "right": 2006.1214599609375,
+          "bottom": 847.0004272460938
+        }
+      },
+      {
+        "text": "replaces_booking_id [0..1 / 0..*]",
+        "box": {
+          "x": 1565.3388671875,
+          "y": 1250.9996337890625,
+          "width": 199.9996337890625,
+          "height": 48,
+          "right": 1765.3385009765625,
+          "bottom": 1298.9996337890625
+        }
+      },
+      {
+        "text": "requested_by [1 / 0..*]",
+        "box": {
+          "x": 2026.121337890625,
+          "y": 823.0004272460938,
+          "width": 156.546630859375,
+          "height": 24,
+          "right": 2182.66796875,
+          "bottom": 847.0004272460938
+        }
+      },
+      {
+        "text": "venue_id [1 / 0..*]",
+        "box": {
+          "x": 2405.01123046875,
+          "y": 823.0004272460938,
+          "width": 124.531005859375,
+          "height": 24,
+          "right": 2529.542236328125,
+          "bottom": 847.0004272460938
+        }
+      },
+      {
+        "text": "recorded_by [0..1 / 0..*]",
+        "box": {
+          "x": 1359.0111083984375,
+          "y": 1262.9996337890625,
+          "width": 166.3277587890625,
+          "height": 24,
+          "right": 1525.3388671875,
+          "bottom": 1286.9996337890625
+        }
+      },
+      {
+        "text": "unavailability_id [0..1 / 0..*]",
+        "box": {
+          "x": 2576.781982421875,
+          "y": 1662.9989013671875,
+          "width": 190.343505859375,
+          "height": 24,
+          "right": 2767.12548828125,
+          "bottom": 1686.9989013671875
+        }
+      },
+      {
+        "text": "venue_booking_id [1 / 0..*]",
+        "box": {
+          "x": 1869.7601318359375,
+          "y": 1662.9989013671875,
+          "width": 189.4842529296875,
+          "height": 24,
+          "right": 2059.244384765625,
+          "bottom": 1686.9989013671875
+        }
+      },
+      {
+        "text": "venue_id [1 / 0..*]",
+        "box": {
+          "x": 2845.000244140625,
+          "y": 1262.9996337890625,
+          "width": 124.531005859375,
+          "height": 24,
+          "right": 2969.53125,
+          "bottom": 1286.9996337890625
+        }
+      },
+      {
+        "text": "created_by [0..1 / 0..*]",
+        "box": {
+          "x": 2549.542236328125,
+          "y": 823.0004272460938,
+          "width": 156.546630859375,
+          "height": 24,
+          "right": 2706.0888671875,
+          "bottom": 847.0004272460938
+        }
+      },
+      {
+        "text": "venue_id [1 / 0..*]",
+        "box": {
+          "x": 2726.0888671875,
+          "y": 823.0004272460938,
+          "width": 124.531005859375,
+          "height": 24,
+          "right": 2850.619873046875,
+          "bottom": 847.0004272460938
+        }
+      }
+    ],
+    "edgeLabelOverlaps": [],
+    "edgeLabelNodeOverlaps": [],
+    "messageCount": 0,
+    "participantCount": 0,
+    "outOfBounds": []
+  },
+  {
+    "name": "class-safety",
+    "kind": "classDiagram",
+    "source_sha256": "1d24f97cf92b20cd78b74666aab64cdd5a1b807f4187d30199e273331f94011d",
+    "svg_sha256": "650515fcdd144f5269c1e4ad6155f4f4b6da5438d7daf8f8f22976880f22e65f",
+    "png_sha256": "6a68c4c2d7723f350bad12a5427df02e1398fc6ff8b8b4c10af6039121755401",
+    "expected_nodes": 11,
+    "expected_edges": 13,
+    "width": 2755.64599609375,
+    "height": 1731,
+    "nodes": [
+      {
+        "id": "my-svg-classId-AppUsers-0",
+        "text": "«SQL record»AppUsersuuid idtext role",
+        "box": {
+          "x": 652.6494750976562,
+          "y": 251.00119018554688,
+          "width": 130.429443359375,
+          "height": 167.99969482421875,
+          "right": 783.0789184570312,
+          "bottom": 419.0008850097656
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-classId-EquipmentRequests-1",
+        "text": "«SQL record»EquipmentRequestsuuid iduuid event_request_iduuid equipment_type_iduuid requested_byinteger quantitytext statustimestamptz starts_attimestamptz ends_atuuid decided_byuuid released_byinteger revision",
+        "box": {
+          "x": 1900.215087890625,
+          "y": 635.0004272460938,
+          "width": 271.24951171875,
+          "height": 383.999267578125,
+          "right": 2171.464599609375,
+          "bottom": 1018.9996948242188
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-classId-EventChangeRequests-2",
+        "text": "«SQL record»EventChangeRequestsuuid iduuid event_request_iduuid requested_bytext statusuuid decided_by",
+        "box": {
+          "x": 1591.6297607421875,
+          "y": 779.0001831054688,
+          "width": 268.5853271484375,
+          "height": 239.99951171875,
+          "right": 1860.215087890625,
+          "bottom": 1018.9996948242188
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-classId-EventRegistrations-3",
+        "text": "«SQL record»EventRegistrationsuuid iduuid event_request_iduuid attendee_idtext status",
+        "box": {
+          "x": 1297.2708740234375,
+          "y": 803.0001220703125,
+          "width": 254.35888671875,
+          "height": 215.99957275390625,
+          "right": 1551.6297607421875,
+          "bottom": 1018.9996948242188
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-classId-EventRequests-4",
+        "text": "«SQL record»EventRequestsuuid iduuid organiser_iduuid coordinator_idtext statustimestamptz starts_attimestamptz ends_atinteger revisiontext equipment_plan_statusuuid preparation_started_byuuid preparation_safety_review_id",
+        "box": {
+          "x": 2422.12548828125,
+          "y": 59.00157165527344,
+          "width": 325.514892578125,
+          "height": 359.99932861328125,
+          "right": 2747.640380859375,
+          "bottom": 419.0009002685547
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-classId-Notifications-5",
+        "text": "«SQL record»Notificationsuuid iduuid recipient_iduuid event_request_idtext typetext titletext messagetimestamptz read_attimestamptz created_atuuid venue_booking_idtext dedupe_keyuuid equipment_request_iduuid registration_iduuid change_request_iduuid safety_review_id",
+        "box": {
+          "x": 2405.914306640625,
+          "y": 1266.999267578125,
+          "width": 266.53857421875,
+          "height": 455.9990234375,
+          "right": 2672.452880859375,
+          "bottom": 1722.998291015625
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-classId-SafetyApprovalInvalidations-6",
+        "text": "«SQL record»SafetyApprovalInvalidationsuuid review_idtimestamptz invalidated_attext source",
+        "box": {
+          "x": 7.999984264373779,
+          "y": 1266.999267578125,
+          "width": 321.0228271484375,
+          "height": 191.9996337890625,
+          "right": 329.0228114128113,
+          "bottom": 1458.9989013671875
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-classId-SafetyReviewChangeBaselines-7",
+        "text": "«SQL record»SafetyReviewChangeBaselinesuuid review_idtext venue_fingerprinttext technical_fingerprinttimestamptz captured_at",
+        "box": {
+          "x": 369.022705078125,
+          "y": 1266.999267578125,
+          "width": 317.4759521484375,
+          "height": 215.99951171875,
+          "right": 686.4986572265625,
+          "bottom": 1482.998779296875
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-classId-SafetyReviewContextBaselines-8",
+        "text": "«SQL record»SafetyReviewContextBaselinesuuid review_idtext context_fingerprinttimestamptz captured_at",
+        "box": {
+          "x": 726.4985961914062,
+          "y": 1266.999267578125,
+          "width": 317.92120361328125,
+          "height": 191.9996337890625,
+          "right": 1044.4197998046875,
+          "bottom": 1458.9989013671875
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-classId-SafetyReviews-9",
+        "text": "«SQL record»SafetyReviewsuuid iduuid event_request_idinteger roundtext statustext arrangement_fingerprinttext emergency_accesstext equipment_placementtext crowd_movementuuid submitted_bytimestamptz submitted_atuuid decided_bytimestamptz decided_attext decision_notestextArray requested_areas",
+        "box": {
+          "x": 716.8407592773438,
+          "y": 563.0006103515625,
+          "width": 281.03070068359375,
+          "height": 455.99908447265625,
+          "right": 997.8714599609375,
+          "bottom": 1018.9996948242188
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-classId-VenueBookings-10",
+        "text": "«SQL record»VenueBookingsuuid iduuid event_request_iduuid venue_iduuid requested_bytext statustimestamptz starts_attimestamptz ends_atuuid decided_byuuid replaces_booking_idtimestamptz hold_expires_atuuid held_byuuid cancelled_by",
+        "box": {
+          "x": 2211.46435546875,
+          "y": 611.00048828125,
+          "width": 287.67138671875,
+          "height": 407.99920654296875,
+          "right": 2499.1357421875,
+          "bottom": 1018.9996948242188
+        },
+        "clipped": []
+      }
+    ],
+    "edges": [
+      {
+        "id": "my-svg-id_EventChangeRequests_Notifications_1",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_EquipmentRequests_Notifications_2",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_EventRequests_Notifications_3",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_AppUsers_Notifications_4",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_EventRegistrations_Notifications_5",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_SafetyReviews_Notifications_6",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_VenueBookings_Notifications_7",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_SafetyReviews_SafetyApprovalInvalidations_8",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_SafetyReviews_SafetyReviewChangeBaselines_9",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_SafetyReviews_SafetyReviewContextBaselines_10",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_AppUsers_SafetyReviews_11",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_EventRequests_SafetyReviews_12",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      },
+      {
+        "id": "my-svg-id_AppUsers_SafetyReviews_13",
+        "start": null,
+        "end": "url(#my-svg_classDiagram-dependencyEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relation"
+      }
+    ],
+    "edgeLabels": [
+      {
+        "text": "change_request_id [0..1 / 0..*]",
+        "box": {
+          "x": 1625.922607421875,
+          "y": 1078.9996337890625,
+          "width": 199.9996337890625,
+          "height": 47.9998779296875,
+          "right": 1825.9222412109375,
+          "bottom": 1126.99951171875
+        }
+      },
+      {
+        "text": "equipment_request_id [0..1 / 0..*]",
+        "box": {
+          "x": 1935.8399658203125,
+          "y": 1078.9996337890625,
+          "width": 199.9996337890625,
+          "height": 47.9998779296875,
+          "right": 2135.839599609375,
+          "bottom": 1126.99951171875
+        }
+      },
+      {
+        "text": "event_request_id [0..1 / 0..*]",
+        "box": {
+          "x": 2539.1357421875,
+          "y": 767.0001831054688,
+          "width": 199.99951171875,
+          "height": 47.99993896484375,
+          "right": 2739.13525390625,
+          "bottom": 815.0001220703125
+        }
+      },
+      {
+        "text": "recipient_id [1 / 0..*]",
+        "box": {
+          "x": 1115.849365234375,
+          "y": 779.0001831054688,
+          "width": 141.421630859375,
+          "height": 23.99993896484375,
+          "right": 1257.27099609375,
+          "bottom": 803.0001220703125
+        }
+      },
+      {
+        "text": "registration_id [0..1 / 0..*]",
+        "box": {
+          "x": 1335.4505615234375,
+          "y": 1090.99951171875,
+          "width": 177.8746337890625,
+          "height": 24,
+          "right": 1513.3251953125,
+          "bottom": 1114.99951171875
+        }
+      },
+      {
+        "text": "safety_review_id [0..1 / 0..*]",
+        "box": {
+          "x": 970.3027954101562,
+          "y": 1090.99951171875,
+          "width": 196.54644775390625,
+          "height": 24,
+          "right": 1166.8492431640625,
+          "bottom": 1114.99951171875
+        }
+      },
+      {
+        "text": "venue_booking_id [0..1 / 0..*]",
+        "box": {
+          "x": 2255.30029296875,
+          "y": 1078.9996337890625,
+          "width": 199.99951171875,
+          "height": 47.9998779296875,
+          "right": 2455.2998046875,
+          "bottom": 1126.99951171875
+        }
+      },
+      {
+        "text": "review_id [1 / 0..1]",
+        "box": {
+          "x": 103.51152038574219,
+          "y": 1090.99951171875,
+          "width": 129.84349060058594,
+          "height": 24,
+          "right": 233.35501098632812,
+          "bottom": 1114.99951171875
+        }
+      },
+      {
+        "text": "review_id [1 / 0..1]",
+        "box": {
+          "x": 462.76080322265625,
+          "y": 1090.99951171875,
+          "width": 129.843505859375,
+          "height": 24,
+          "right": 592.6043090820312,
+          "bottom": 1114.99951171875
+        }
+      },
+      {
+        "text": "review_id [1 / 0..1]",
+        "box": {
+          "x": 820.4593505859375,
+          "y": 1090.99951171875,
+          "width": 129.843505859375,
+          "height": 24,
+          "right": 950.3028564453125,
+          "bottom": 1114.99951171875
+        }
+      },
+      {
+        "text": "decided_by [0..1 / 0..*]",
+        "box": {
+          "x": 461.1459655761719,
+          "y": 459.00079345703125,
+          "width": 159.21841430664062,
+          "height": 23.99993896484375,
+          "right": 620.3643798828125,
+          "bottom": 483.000732421875
+        }
+      },
+      {
+        "text": "event_request_id [1 / 0..*]",
+        "box": {
+          "x": 836.1139526367188,
+          "y": 459.00079345703125,
+          "width": 182.3433837890625,
+          "height": 23.99993896484375,
+          "right": 1018.4573364257812,
+          "bottom": 483.000732421875
+        }
+      },
+      {
+        "text": "submitted_by [1 / 0..*]",
+        "box": {
+          "x": 640.3643798828125,
+          "y": 459.00079345703125,
+          "width": 154.74969482421875,
+          "height": 23.99993896484375,
+          "right": 795.1140747070312,
+          "bottom": 483.000732421875
+        }
+      }
+    ],
+    "edgeLabelOverlaps": [],
+    "edgeLabelNodeOverlaps": [],
+    "messageCount": 0,
+    "participantCount": 0,
+    "outOfBounds": []
+  },
+  {
+    "name": "erd-database",
+    "kind": "erDiagram",
+    "source_sha256": "f3af43b23fa1ca953d58c235cadf485b7142216b5846dc5d20df350cd2e0a7ff",
+    "svg_sha256": "3760be1b5784fdff18a0262279e32363d1defb5f520a042bbdb933b56d01dfb7",
+    "png_sha256": "55fbae1696528b669bab3ba7f1f12921eab00d7846a5ea2806e61ed448131229",
+    "expected_nodes": 24,
+    "expected_edges": 55,
+    "width": 5686.56396484375,
+    "height": 3383.5,
+    "nodes": [
+      {
+        "id": "my-svg-entity-app_users-0",
+        "text": "app_usersuuididPKNOT NULLtextroleNOT NULL",
+        "box": {
+          "x": 37.47684097290039,
+          "y": 152.00039672851562,
+          "width": 257.1249694824219,
+          "height": 139.49996948242188,
+          "right": 294.60181045532227,
+          "bottom": 291.5003662109375
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-entity-coordinator_assignments-1",
+        "text": "coordinator_assignmentsuuididPKNOT NULLuuidevent_request_idFKNOT NULLuuidcoordinator_idFKNOT NULLuuidassigned_byFKnullabletextassignment_methodNOT NULL",
+        "box": {
+          "x": 570.4373779296875,
+          "y": 2211.499755859375,
+          "width": 374.5311279296875,
+          "height": 279,
+          "right": 944.968505859375,
+          "bottom": 2490.499755859375
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-entity-equipment_requests-2",
+        "text": "equipment_requestsuuididPKNOT NULLuuidevent_request_idFKNOT NULLuuidequipment_type_idFKNOT NULLuuidrequested_byFKNOT NULLintegerquantityNOT NULLtextstatusNOT NULLtimestamptzstarts_atNOT NULLtimestamptzends_atNOT NULLuuiddecided_byFKnullableuuidreleased_byFKnullableintegerrevisionNOT NULL",
+        "box": {
+          "x": 5131.1875,
+          "y": 2219.249755859375,
+          "width": 421.65625,
+          "height": 558,
+          "right": 5552.84375,
+          "bottom": 2777.249755859375
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-entity-equipment_stock_changes-3",
+        "text": "equipment_stock_changesuuididPKNOT NULLuuidequipment_type_idFKNOT NULLintegerrevisionNOT NULLuuidchanged_byFKNOT NULL",
+        "box": {
+          "x": 4937.6875,
+          "y": 892.5001831054688,
+          "width": 384.328125,
+          "height": 232.49993896484375,
+          "right": 5322.015625,
+          "bottom": 1125.0001220703125
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-entity-equipment_types-4",
+        "text": "equipment_typesuuididPKNOT NULLintegertotal_quantityNOT NULLintegerdamaged_quantityNOT NULLintegermaintenance_quantityNOT NULL",
+        "box": {
+          "x": 5058.68212890625,
+          "y": 59.00041961669922,
+          "width": 405.671875,
+          "height": 232.49993896484375,
+          "right": 5464.35400390625,
+          "bottom": 291.50035858154297
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-entity-event_cancellations-5",
+        "text": "event_cancellationsuuidevent_request_idPK,FKNOT NULLuuidcancelled_byFKNOT NULL",
+        "box": {
+          "x": 3744.195556640625,
+          "y": 2211.499755859375,
+          "width": 378.093505859375,
+          "height": 139.5,
+          "right": 4122.2890625,
+          "bottom": 2350.999755859375
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-entity-event_change_requests-6",
+        "text": "event_change_requestsuuididPKNOT NULLuuidevent_request_idFKNOT NULLuuidrequested_byFKNOT NULLtextstatusNOT NULLuuiddecided_byFKnullable",
+        "box": {
+          "x": 3350.992431640625,
+          "y": 2292.874755859375,
+          "width": 353.203125,
+          "height": 279,
+          "right": 3704.195556640625,
+          "bottom": 2571.874755859375
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-entity-event_clarifications-7",
+        "text": "event_clarificationsuuididPKNOT NULLuuidevent_request_idFKNOT NULLuuidrequested_byFKNOT NULL",
+        "box": {
+          "x": 2397.030517578125,
+          "y": 2211.499755859375,
+          "width": 353.203125,
+          "height": 186,
+          "right": 2750.233642578125,
+          "bottom": 2397.499755859375
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-entity-event_registrations-8",
+        "text": "event_registrationsuuididPKNOT NULLuuidevent_request_idFKNOT NULLuuidattendee_idFKNOT NULLtextstatusNOT NULL",
+        "box": {
+          "x": 4162.28955078125,
+          "y": 2335.499755859375,
+          "width": 353.203125,
+          "height": 232.5,
+          "right": 4515.49267578125,
+          "bottom": 2567.999755859375
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-entity-event_request_edits-9",
+        "text": "event_request_editsuuididPKNOT NULLuuidevent_request_idFKNOT NULLintegerrevisionNOT NULLuuidedited_byFKNOT NULL",
+        "box": {
+          "x": 2939.11767578125,
+          "y": 2211.499755859375,
+          "width": 371.875,
+          "height": 232.5,
+          "right": 3310.99267578125,
+          "bottom": 2443.999755859375
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-entity-event_requests-10",
+        "text": "event_requestsuuididPKNOT NULLuuidorganiser_idFKNOT NULLuuidcoordinator_idFKnullabletextstatusNOT NULLtimestamptzstarts_atnullabletimestamptzends_atnullableintegerrevisionNOT NULLtextequipment_plan_statusNOT NULLuuidpreparation_started_byFKnullableuuidpreparation_safety_review_idFKnullable",
+        "box": {
+          "x": 2565.835205078125,
+          "y": 1479,
+          "width": 495.453125,
+          "height": 511.4998779296875,
+          "right": 3061.288330078125,
+          "bottom": 1990.4998779296875
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-entity-event_reviews-11",
+        "text": "event_reviewsuuididPKNOT NULLuuidevent_request_idFKNOT NULLuuidreviewed_byFKNOT NULL",
+        "box": {
+          "x": 1610.6246337890625,
+          "y": 2211.499755859375,
+          "width": 353.2030029296875,
+          "height": 186,
+          "right": 1963.82763671875,
+          "bottom": 2397.499755859375
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-entity-event_status_history-12",
+        "text": "event_status_historyuuididPKNOT NULLuuidevent_request_idFKNOT NULLuuidchanged_byFKnullable",
+        "box": {
+          "x": 2003.82763671875,
+          "y": 2211.499755859375,
+          "width": 353.203125,
+          "height": 186,
+          "right": 2357.03076171875,
+          "bottom": 2397.499755859375
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-entity-notifications-13",
+        "text": "notificationsuuididPKNOT NULLuuidrecipient_idFKNOT NULLuuidevent_request_idFKnullableuuidvenue_booking_idFKnullableuuidequipment_request_idFKnullableuuidregistration_idFKnullableuuidchange_request_idFKnullableuuidsafety_review_idFKnullable",
+        "box": {
+          "x": 4144.50048828125,
+          "y": 2956.999755859375,
+          "width": 388.78125,
+          "height": 418.499755859375,
+          "right": 4533.28173828125,
+          "bottom": 3375.49951171875
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-entity-safety_approval_invalidations-14",
+        "text": "safety_approval_invalidationsuuidreview_idPK,FKNOT NULL",
+        "box": {
+          "x": 4374.56298828125,
+          "y": 1479,
+          "width": 322.921875,
+          "height": 93,
+          "right": 4697.48486328125,
+          "bottom": 1572
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-entity-safety_review_change_baselines-15",
+        "text": "safety_review_change_baselinesuuidreview_idPK,FKNOT NULL",
+        "box": {
+          "x": 3646.718994140625,
+          "y": 1479,
+          "width": 322.921875,
+          "height": 93,
+          "right": 3969.640869140625,
+          "bottom": 1572
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-entity-safety_review_context_baselines-16",
+        "text": "safety_review_context_baselinesuuidreview_idPK,FKNOT NULL",
+        "box": {
+          "x": 4010.64111328125,
+          "y": 1479,
+          "width": 322.921875,
+          "height": 93,
+          "right": 4333.56298828125,
+          "bottom": 1572
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-entity-safety_reviews-17",
+        "text": "safety_reviewsuuididPKNOT NULLuuidevent_request_idFKNOT NULLintegerroundNOT NULLtextstatusNOT NULLuuidsubmitted_byFKNOT NULLuuiddecided_byFKnullable",
+        "box": {
+          "x": 2968.561767578125,
+          "y": 892.5001831054688,
+          "width": 371.874755859375,
+          "height": 325.49993896484375,
+          "right": 3340.4365234375,
+          "bottom": 1218.0001220703125
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-entity-scaffold_metadata-18",
+        "text": "scaffold_metadatatextkeyPKNOT NULL",
+        "box": {
+          "x": 640.6173095703125,
+          "y": 128.75039672851562,
+          "width": 250.89056396484375,
+          "height": 92.99998474121094,
+          "right": 891.5078735351562,
+          "bottom": 221.75038146972656
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-entity-schema_migrations-19",
+        "text": "schema_migrationstextnamePKNOT NULL",
+        "box": {
+          "x": 334.60174560546875,
+          "y": 128.75039672851562,
+          "width": 266.0155029296875,
+          "height": 92.99998474121094,
+          "right": 600.6172485351562,
+          "bottom": 221.75038146972656
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-entity-venue_bookings-20",
+        "text": "venue_bookingsuuididPKNOT NULLuuidevent_request_idFKNOT NULLuuidvenue_idFKNOT NULLuuidrequested_byFKNOT NULLtextstatusNOT NULLtimestamptzstarts_atNOT NULLtimestamptzends_atNOT NULLuuiddecided_byFKnullableuuidreplaces_booking_idFKnullabletimestamptzhold_expires_atnullableuuidheld_byFKnullableuuidcancelled_byFKnullable",
+        "box": {
+          "x": 1137.406005859375,
+          "y": 2211.499755859375,
+          "width": 433.2186279296875,
+          "height": 604.5,
+          "right": 1570.6246337890625,
+          "bottom": 2815.999755859375
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-entity-venue_outage_impacts-21",
+        "text": "venue_outage_impactsuuididPKNOT NULLuuidunavailability_idFKnullableuuidvenue_booking_idFKNOT NULLuuidvenue_idFKNOT NULLtextstatusNOT NULLuuidrecorded_byFKnullable",
+        "box": {
+          "x": 106.67340087890625,
+          "y": 2956.999755859375,
+          "width": 360.3280334472656,
+          "height": 325.499755859375,
+          "right": 467.0014343261719,
+          "bottom": 3282.49951171875
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-entity-venue_unavailability-22",
+        "text": "venue_unavailabilityuuididPKNOT NULLuuidvenue_idFKNOT NULLtimestamptzstarts_atNOT NULLtimestamptzends_atNOT NULLuuidcreated_byFKnullable",
+        "box": {
+          "x": 67.99998474121094,
+          "y": 2319.999755859375,
+          "width": 365.6092529296875,
+          "height": 279,
+          "right": 433.60923767089844,
+          "bottom": 2598.999755859375
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-entity-venues-23",
+        "text": "venuesuuididPKNOT NULLintegersetup_minutesNOT NULLintegerturnaround_minutesNOT NULL",
+        "box": {
+          "x": 213.88406372070312,
+          "y": 1804.5,
+          "width": 391.4217834472656,
+          "height": 185.9998779296875,
+          "right": 605.3058471679688,
+          "bottom": 1990.4998779296875
+        },
+        "clipped": []
+      }
+    ],
+    "edges": [
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-coordinator_assignments-1_0",
+        "start": "url(#my-svg_er-zeroOrOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-coordinator_assignments-1_1",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-event_requests-10_entity-coordinator_assignments-1_2",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-equipment_requests-2_3",
+        "start": "url(#my-svg_er-zeroOrOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-equipment_types-4_entity-equipment_requests-2_4",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-event_requests-10_entity-equipment_requests-2_5",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-equipment_requests-2_6",
+        "start": "url(#my-svg_er-zeroOrOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-equipment_requests-2_7",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-equipment_stock_changes-3_8",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-equipment_types-4_entity-equipment_stock_changes-3_9",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-event_cancellations-5_10",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-event_requests-10_entity-event_cancellations-5_11",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrOneEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-event_change_requests-6_12",
+        "start": "url(#my-svg_er-zeroOrOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-event_requests-10_entity-event_change_requests-6_13",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-event_change_requests-6_14",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-event_requests-10_entity-event_clarifications-7_15",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-event_clarifications-7_16",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-event_registrations-8_17",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-event_requests-10_entity-event_registrations-8_18",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-event_request_edits-9_19",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-event_requests-10_entity-event_request_edits-9_20",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-event_requests-10_21",
+        "start": "url(#my-svg_er-zeroOrOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-event_requests-10_22",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-safety_reviews-17_entity-event_requests-10_23",
+        "start": "url(#my-svg_er-zeroOrOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-event_requests-10_24",
+        "start": "url(#my-svg_er-zeroOrOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-event_requests-10_entity-event_reviews-11_25",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-event_reviews-11_26",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-event_status_history-12_27",
+        "start": "url(#my-svg_er-zeroOrOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-event_requests-10_entity-event_status_history-12_28",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-event_change_requests-6_entity-notifications-13_29",
+        "start": "url(#my-svg_er-zeroOrOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-equipment_requests-2_entity-notifications-13_30",
+        "start": "url(#my-svg_er-zeroOrOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-event_requests-10_entity-notifications-13_31",
+        "start": "url(#my-svg_er-zeroOrOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-notifications-13_32",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-event_registrations-8_entity-notifications-13_33",
+        "start": "url(#my-svg_er-zeroOrOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-safety_reviews-17_entity-notifications-13_34",
+        "start": "url(#my-svg_er-zeroOrOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-venue_bookings-20_entity-notifications-13_35",
+        "start": "url(#my-svg_er-zeroOrOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-safety_reviews-17_entity-safety_approval_invalidations-14_36",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrOneEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-safety_reviews-17_entity-safety_review_change_baselines-15_37",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrOneEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-safety_reviews-17_entity-safety_review_context_baselines-16_38",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrOneEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-safety_reviews-17_39",
+        "start": "url(#my-svg_er-zeroOrOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-event_requests-10_entity-safety_reviews-17_40",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-safety_reviews-17_41",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-venue_bookings-20_42",
+        "start": "url(#my-svg_er-zeroOrOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-venue_bookings-20_43",
+        "start": "url(#my-svg_er-zeroOrOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-event_requests-10_entity-venue_bookings-20_44",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-venue_bookings-20_45",
+        "start": "url(#my-svg_er-zeroOrOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-venue_bookings-20_entity-venue_bookings-20_46",
+        "start": "url(#my-svg_er-zeroOrOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-venue_bookings-20_47",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-venues-23_entity-venue_bookings-20_48",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-venue_outage_impacts-21_49",
+        "start": "url(#my-svg_er-zeroOrOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-venue_unavailability-22_entity-venue_outage_impacts-21_50",
+        "start": "url(#my-svg_er-zeroOrOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-venue_bookings-20_entity-venue_outage_impacts-21_51",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-venues-23_entity-venue_outage_impacts-21_52",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-venue_unavailability-22_53",
+        "start": "url(#my-svg_er-zeroOrOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-venues-23_entity-venue_unavailability-22_54",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      }
+    ],
+    "edgeLabels": [
+      {
+        "text": "assigned_by",
+        "box": {
+          "x": 585.8058471679688,
+          "y": 1398.0001220703125,
+          "width": 78.62493896484375,
+          "height": 21,
+          "right": 664.4307861328125,
+          "bottom": 1419.0001220703125
+        }
+      },
+      {
+        "text": "coordinator_id",
+        "box": {
+          "x": 713.2029418945312,
+          "y": 1398.0001220703125,
+          "width": 88.734375,
+          "height": 21,
+          "right": 801.9373168945312,
+          "bottom": 1419.0001220703125
+        }
+      },
+      {
+        "text": "event_request_id",
+        "box": {
+          "x": 797.3357543945312,
+          "y": 2130.5,
+          "width": 107.42181396484375,
+          "height": 21,
+          "right": 904.757568359375,
+          "bottom": 2151.5
+        }
+      },
+      {
+        "text": "decided_by",
+        "box": {
+          "x": 4880.6875,
+          "y": 1398.0001220703125,
+          "width": 71.625,
+          "height": 21,
+          "right": 4952.3125,
+          "bottom": 1419.0001220703125
+        }
+      },
+      {
+        "text": "equipment_type_id",
+        "box": {
+          "x": 5504.640625,
+          "y": 1398.0001220703125,
+          "width": 118.3125,
+          "height": 21,
+          "right": 5622.953125,
+          "bottom": 1419.0001220703125
+        }
+      },
+      {
+        "text": "event_request_id",
+        "box": {
+          "x": 4789.265625,
+          "y": 2130.5,
+          "width": 107.421875,
+          "height": 21,
+          "right": 4896.6875,
+          "bottom": 2151.5
+        }
+      },
+      {
+        "text": "released_by",
+        "box": {
+          "x": 5303.515625,
+          "y": 1398.0001220703125,
+          "width": 76.28125,
+          "height": 21,
+          "right": 5379.796875,
+          "bottom": 1419.0001220703125
+        }
+      },
+      {
+        "text": "requested_by",
+        "box": {
+          "x": 5399.796875,
+          "y": 1398.0001220703125,
+          "width": 84.84375,
+          "height": 21,
+          "right": 5484.640625,
+          "bottom": 1419.0001220703125
+        }
+      },
+      {
+        "text": "changed_by",
+        "box": {
+          "x": 5027.296875,
+          "y": 831.500244140625,
+          "width": 76.296875,
+          "height": 21,
+          "right": 5103.59375,
+          "bottom": 852.500244140625
+        }
+      },
+      {
+        "text": "equipment_type_id",
+        "box": {
+          "x": 5134.40625,
+          "y": 831.500244140625,
+          "width": 118.3125,
+          "height": 21,
+          "right": 5252.71875,
+          "bottom": 852.500244140625
+        }
+      },
+      {
+        "text": "cancelled_by",
+        "box": {
+          "x": 3948.640869140625,
+          "y": 1398.0001220703125,
+          "width": 81.734375,
+          "height": 21,
+          "right": 4030.375244140625,
+          "bottom": 1419.0001220703125
+        }
+      },
+      {
+        "text": "event_request_id",
+        "box": {
+          "x": 3816.226806640625,
+          "y": 2130.5,
+          "width": 107.421875,
+          "height": 21,
+          "right": 3923.648681640625,
+          "bottom": 2151.5
+        }
+      },
+      {
+        "text": "decided_by",
+        "box": {
+          "x": 3491.593994140625,
+          "y": 1398.0001220703125,
+          "width": 71.625,
+          "height": 21,
+          "right": 3563.218994140625,
+          "bottom": 1419.0001220703125
+        }
+      },
+      {
+        "text": "event_request_id",
+        "box": {
+          "x": 3320.6083984375,
+          "y": 2130.5,
+          "width": 107.421875,
+          "height": 21,
+          "right": 3428.0302734375,
+          "bottom": 2151.5
+        }
+      },
+      {
+        "text": "requested_by",
+        "box": {
+          "x": 3583.218994140625,
+          "y": 1398.0001220703125,
+          "width": 84.84375,
+          "height": 21,
+          "right": 3668.062744140625,
+          "bottom": 1419.0001220703125
+        }
+      },
+      {
+        "text": "event_request_id",
+        "box": {
+          "x": 2718.27392578125,
+          "y": 2130.5,
+          "width": 107.421875,
+          "height": 21,
+          "right": 2825.69580078125,
+          "bottom": 2151.5
+        }
+      },
+      {
+        "text": "requested_by",
+        "box": {
+          "x": 2472.264892578125,
+          "y": 1398.0001220703125,
+          "width": 84.84375,
+          "height": 21,
+          "right": 2557.108642578125,
+          "bottom": 1419.0001220703125
+        }
+      },
+      {
+        "text": "attendee_id",
+        "box": {
+          "x": 4316.56298828125,
+          "y": 1398.0001220703125,
+          "width": 73.1875,
+          "height": 21,
+          "right": 4389.75048828125,
+          "bottom": 1419.0001220703125
+        }
+      },
+      {
+        "text": "event_request_id",
+        "box": {
+          "x": 4226.02392578125,
+          "y": 2130.5,
+          "width": 107.421875,
+          "height": 21,
+          "right": 4333.44580078125,
+          "bottom": 2151.5
+        }
+      },
+      {
+        "text": "edited_by",
+        "box": {
+          "x": 3269.108642578125,
+          "y": 1398.0001220703125,
+          "width": 60.718505859375,
+          "height": 21,
+          "right": 3329.8271484375,
+          "bottom": 1419.0001220703125
+        }
+      },
+      {
+        "text": "event_request_id",
+        "box": {
+          "x": 3009.076171875,
+          "y": 2130.5,
+          "width": 107.421875,
+          "height": 21,
+          "right": 3116.498046875,
+          "bottom": 2151.5
+        }
+      },
+      {
+        "text": "coordinator_id",
+        "box": {
+          "x": 2535.764892578125,
+          "y": 1044.7501220703125,
+          "width": 88.734375,
+          "height": 21,
+          "right": 2624.499267578125,
+          "bottom": 1065.7501220703125
+        }
+      },
+      {
+        "text": "organiser_id",
+        "box": {
+          "x": 2644.499267578125,
+          "y": 1044.7501220703125,
+          "width": 77.0625,
+          "height": 21,
+          "right": 2721.561767578125,
+          "bottom": 1065.7501220703125
+        }
+      },
+      {
+        "text": "preparation_safety_review_id",
+        "box": {
+          "x": 2921.686767578125,
+          "y": 1398.0001220703125,
+          "width": 200,
+          "height": 21,
+          "right": 3121.686767578125,
+          "bottom": 1419.0001220703125
+        }
+      },
+      {
+        "text": "preparation_started_by",
+        "box": {
+          "x": 2741.561767578125,
+          "y": 1044.7501220703125,
+          "width": 144,
+          "height": 21,
+          "right": 2885.561767578125,
+          "bottom": 1065.7501220703125
+        }
+      },
+      {
+        "text": "event_request_id",
+        "box": {
+          "x": 1792.09326171875,
+          "y": 2130.5,
+          "width": 107.421875,
+          "height": 21,
+          "right": 1899.51513671875,
+          "bottom": 2151.5
+        }
+      },
+      {
+        "text": "reviewed_by",
+        "box": {
+          "x": 1688.85888671875,
+          "y": 1398.0001220703125,
+          "width": 78.609375,
+          "height": 21,
+          "right": 1767.46826171875,
+          "bottom": 1419.0001220703125
+        }
+      },
+      {
+        "text": "changed_by",
+        "box": {
+          "x": 2083.06201171875,
+          "y": 1398.0001220703125,
+          "width": 76.296875,
+          "height": 21,
+          "right": 2159.35888671875,
+          "bottom": 1419.0001220703125
+        }
+      },
+      {
+        "text": "event_request_id",
+        "box": {
+          "x": 2185.29638671875,
+          "y": 2130.5,
+          "width": 107.421875,
+          "height": 21,
+          "right": 2292.71826171875,
+          "bottom": 2151.5
+        }
+      },
+      {
+        "text": "change_request_id",
+        "box": {
+          "x": 3467.593994140625,
+          "y": 2855.999755859375,
+          "width": 119.109375,
+          "height": 21,
+          "right": 3586.703369140625,
+          "bottom": 2876.999755859375
+        }
+      },
+      {
+        "text": "equipment_request_id",
+        "box": {
+          "x": 5272.515625,
+          "y": 2855.999755859375,
+          "width": 138.546875,
+          "height": 21,
+          "right": 5411.0625,
+          "bottom": 2876.999755859375
+        }
+      },
+      {
+        "text": "event_request_id",
+        "box": {
+          "x": 2791.69580078125,
+          "y": 2503.249755859375,
+          "width": 107.421875,
+          "height": 21,
+          "right": 2899.11767578125,
+          "bottom": 2524.249755859375
+        }
+      },
+      {
+        "text": "recipient_id",
+        "box": {
+          "x": 5606.953125,
+          "y": 1724.25,
+          "width": 71.609375,
+          "height": 21,
+          "right": 5678.5625,
+          "bottom": 1745.25
+        }
+      },
+      {
+        "text": "registration_id",
+        "box": {
+          "x": 4294.89111328125,
+          "y": 2855.999755859375,
+          "width": 87.9375,
+          "height": 21,
+          "right": 4382.82861328125,
+          "bottom": 2876.999755859375
+        }
+      },
+      {
+        "text": "safety_review_id",
+        "box": {
+          "x": 4664.98486328125,
+          "y": 2130.5,
+          "width": 104.28076171875,
+          "height": 21,
+          "right": 4769.265625,
+          "bottom": 2151.5
+        }
+      },
+      {
+        "text": "venue_booking_id",
+        "box": {
+          "x": 1369.2183837890625,
+          "y": 2855.999755859375,
+          "width": 113.65625,
+          "height": 21,
+          "right": 1482.8746337890625,
+          "bottom": 2876.999755859375
+        }
+      },
+      {
+        "text": "review_id",
+        "box": {
+          "x": 4506.02392578125,
+          "y": 1398.0001220703125,
+          "width": 59.140625,
+          "height": 21,
+          "right": 4565.16455078125,
+          "bottom": 1419.0001220703125
+        }
+      },
+      {
+        "text": "review_id",
+        "box": {
+          "x": 3778.179931640625,
+          "y": 1398.0001220703125,
+          "width": 59.140625,
+          "height": 21,
+          "right": 3837.320556640625,
+          "bottom": 1419.0001220703125
+        }
+      },
+      {
+        "text": "review_id",
+        "box": {
+          "x": 4142.10205078125,
+          "y": 1398.0001220703125,
+          "width": 59.140625,
+          "height": 21,
+          "right": 4201.24267578125,
+          "bottom": 1419.0001220703125
+        }
+      },
+      {
+        "text": "decided_by",
+        "box": {
+          "x": 3056.52001953125,
+          "y": 831.500244140625,
+          "width": 71.625,
+          "height": 21,
+          "right": 3128.14501953125,
+          "bottom": 852.500244140625
+        }
+      },
+      {
+        "text": "event_request_id",
+        "box": {
+          "x": 3141.686767578125,
+          "y": 1398.0001220703125,
+          "width": 107.421875,
+          "height": 21,
+          "right": 3249.108642578125,
+          "bottom": 1419.0001220703125
+        }
+      },
+      {
+        "text": "submitted_by",
+        "box": {
+          "x": 3148.14501953125,
+          "y": 831.500244140625,
+          "width": 83.28125,
+          "height": 21,
+          "right": 3231.42626953125,
+          "bottom": 852.500244140625
+        }
+      },
+      {
+        "text": "cancelled_by",
+        "box": {
+          "x": 960.585693359375,
+          "y": 1398.0001220703125,
+          "width": 81.734375,
+          "height": 21,
+          "right": 1042.320068359375,
+          "bottom": 1419.0001220703125
+        }
+      },
+      {
+        "text": "decided_by",
+        "box": {
+          "x": 1287.071044921875,
+          "y": 1398.0001220703125,
+          "width": 71.625,
+          "height": 21,
+          "right": 1358.696044921875,
+          "bottom": 1419.0001220703125
+        }
+      },
+      {
+        "text": "event_request_id",
+        "box": {
+          "x": 1511.242919921875,
+          "y": 2130.5,
+          "width": 107.421875,
+          "height": 21,
+          "right": 1618.664794921875,
+          "bottom": 2151.5
+        }
+      },
+      {
+        "text": "held_by",
+        "box": {
+          "x": 1378.696044921875,
+          "y": 1398.0001220703125,
+          "width": 49.046875,
+          "height": 21,
+          "right": 1427.742919921875,
+          "bottom": 1419.0001220703125
+        }
+      },
+      {
+        "text": "replaces_booking_id",
+        "box": {
+          "x": 984.968505859375,
+          "y": 2503.249755859375,
+          "width": 128.4375,
+          "height": 21,
+          "right": 1113.406005859375,
+          "bottom": 2524.249755859375
+        }
+      },
+      {
+        "text": "requested_by",
+        "box": {
+          "x": 1447.742919921875,
+          "y": 1398.0001220703125,
+          "width": 84.84375,
+          "height": 21,
+          "right": 1532.586669921875,
+          "bottom": 1419.0001220703125
+        }
+      },
+      {
+        "text": "venue_id",
+        "box": {
+          "x": 924.757568359375,
+          "y": 2130.5,
+          "width": 56.828125,
+          "height": 21,
+          "right": 981.585693359375,
+          "bottom": 2151.5
+        }
+      },
+      {
+        "text": "recorded_by",
+        "box": {
+          "x": 7.999998092651367,
+          "y": 1724.25,
+          "width": 77.8281021118164,
+          "height": 21,
+          "right": 85.82810020446777,
+          "bottom": 1745.25
+        }
+      },
+      {
+        "text": "unavailability_id",
+        "box": {
+          "x": 201.3046417236328,
+          "y": 2855.999755859375,
+          "width": 98.84370422363281,
+          "height": 21,
+          "right": 300.1483459472656,
+          "bottom": 2876.999755859375
+        }
+      },
+      {
+        "text": "venue_booking_id",
+        "box": {
+          "x": 1224.8121337890625,
+          "y": 2855.999755859375,
+          "width": 113.65625,
+          "height": 21,
+          "right": 1338.4683837890625,
+          "bottom": 2876.999755859375
+        }
+      },
+      {
+        "text": "venue_id",
+        "box": {
+          "x": 473.6092529296875,
+          "y": 2503.249755859375,
+          "width": 56.828125,
+          "height": 21,
+          "right": 530.4373779296875,
+          "bottom": 2524.249755859375
+        }
+      },
+      {
+        "text": "created_by",
+        "box": {
+          "x": 154.8697509765625,
+          "y": 1398.0001220703125,
+          "width": 69.28123474121094,
+          "height": 21,
+          "right": 224.15098571777344,
+          "bottom": 1419.0001220703125
+        }
+      },
+      {
+        "text": "venue_id",
+        "box": {
+          "x": 283.2395324707031,
+          "y": 2130.5,
+          "width": 56.828094482421875,
+          "height": 21,
+          "right": 340.067626953125,
+          "bottom": 2151.5
+        }
+      }
+    ],
+    "edgeLabelOverlaps": [],
+    "edgeLabelNodeOverlaps": [],
+    "messageCount": 0,
+    "participantCount": 0,
+    "outOfBounds": []
+  },
+  {
+    "name": "erd-events",
+    "kind": "erDiagram",
+    "source_sha256": "c2029e34f4eac209f3bb2c2591057c8a91ed58e6ca80db6695450b42ba2727bc",
+    "svg_sha256": "91749137f2ed7221f5d1266f3dc0c3f2efdfd9697df9af6d5dd753f044075fcc",
+    "png_sha256": "6a0c66fba7f7c97808602595510d62be4ebb67b1a2a5fa796a4795cce772db6a",
+    "expected_nodes": 11,
+    "expected_edges": 22,
+    "width": 4208.2158203125,
+    "height": 3020.5,
+    "nodes": [
+      {
+        "id": "my-svg-entity-app_users-0",
+        "text": "app_usersuuididPKNOT NULLtextemailNOT NULLtextdisplay_nameNOT NULLtextroleNOT NULLtextpassword_hashnullabletimestamptzcreated_atNOT NULLtimestamptzupdated_atNOT NULLuuidsupabase_user_idnullablebooleancoordinator_availableNOT NULL",
+        "box": {
+          "x": 1634.970458984375,
+          "y": 59.00437927246094,
+          "width": 438.54541015625,
+          "height": 464.99859619140625,
+          "right": 2073.515869140625,
+          "bottom": 524.0029754638672
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-entity-coordinator_assignments-1",
+        "text": "coordinator_assignmentsuuididPKNOT NULLuuidevent_request_idFKNOT NULLuuidcoordinator_idFKNOT NULLuuidassigned_byFKnullabletextnotenullabletimestamptzassigned_atNOT NULLtimestamptzunassigned_atnullabletextassignment_methodNOT NULL",
+        "box": {
+          "x": 308.16314697265625,
+          "y": 2268.497802734375,
+          "width": 430.5299072265625,
+          "height": 418.49853515625,
+          "right": 738.6930541992188,
+          "bottom": 2686.996337890625
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-entity-event_cancellations-2",
+        "text": "event_cancellationsuuidevent_request_idPK,FKNOT NULLuuidcancelled_byFKNOT NULLtimestamptzcancelled_atNOT NULLtextreasonNOT NULLintegeraffected_venue_bookingsNOT NULLintegeraffected_equipment_requestsNOT NULLintegeraffected_registrationsNOT NULL",
+        "box": {
+          "x": 778.6929931640625,
+          "y": 2268.497802734375,
+          "width": 521.8577880859375,
+          "height": 371.998779296875,
+          "right": 1300.55078125,
+          "bottom": 2640.49658203125
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-entity-event_change_requests-3",
+        "text": "event_change_requestsuuididPKNOT NULLuuidevent_request_idFKNOT NULLuuidrequested_byFKNOT NULLtextstatusNOT NULLjsonbproposed_changesNOT NULLtextreasonnullableuuiddecided_byFKnullabletimestamptzdecided_atnullabletextdecision_reasonnullabletimestamptzcreated_atNOT NULLtimestamptzupdated_atNOT NULLjsonbpreviousNOT NULLintegerbase_revisionNOT NULLintegerapplied_revisionnullablejsonbcancelled_arrangementsnullable",
+        "box": {
+          "x": 1340.5506591796875,
+          "y": 2268.497802734375,
+          "width": 461.65478515625,
+          "height": 743.99755859375,
+          "right": 1802.2054443359375,
+          "bottom": 3012.495361328125
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-entity-event_clarifications-4",
+        "text": "event_clarificationsuuididPKNOT NULLuuidevent_request_idFKNOT NULLuuidrequested_byFKNOT NULLtextmessageNOT NULLtextresponsenullabletimestamptzcreated_atNOT NULLtimestamptzresponded_atnullable",
+        "box": {
+          "x": 1842.205322265625,
+          "y": 2268.497802734375,
+          "width": 409.201904296875,
+          "height": 371.998779296875,
+          "right": 2251.4072265625,
+          "bottom": 2640.49658203125
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-entity-event_registrations-5",
+        "text": "event_registrationsuuididPKNOT NULLuuidevent_request_idFKNOT NULLuuidattendee_idFKNOT NULLtextstatusNOT NULLtimestamptzregistered_atNOT NULLtimestamptzwithdrawn_atnullabletimestamptzcancellation_outcome_atnullableintegeroutcome_versionNOT NULL",
+        "box": {
+          "x": 2389.146240234375,
+          "y": 2268.497802734375,
+          "width": 463.451904296875,
+          "height": 418.49853515625,
+          "right": 2852.59814453125,
+          "bottom": 2686.996337890625
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-entity-event_request_edits-6",
+        "text": "event_request_editsuuididPKNOT NULLuuidevent_request_idFKNOT NULLintegerrevisionNOT NULLuuidedited_byFKNOT NULLtexteditor_roleNOT NULLtextevent_statusNOT NULLjsonbchangesNOT NULLtimestamptzcreated_atNOT NULL",
+        "box": {
+          "x": 2892.597900390625,
+          "y": 2268.497802734375,
+          "width": 409.201904296875,
+          "height": 418.49853515625,
+          "right": 3301.7998046875,
+          "bottom": 2686.996337890625
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-entity-event_requests-7",
+        "text": "event_requestsuuididPKNOT NULLuuidorganiser_idFKNOT NULLuuidcoordinator_idFKnullabletextstatusNOT NULLtextnamenullabletextpurposenullabletextdescriptionnullabletimestamptzstarts_atnullabletimestamptzends_atnullableintegerexpected_attendancenullabletextvenue_requirementsnullabletextaccessibility_needsnullabletextequipment_requirementsnullablebooleanregistration_requirednullabletimestamptzcreated_atNOT NULLtimestamptzupdated_atNOT NULLintegerregistration_capacitynullabletimestamptzregistration_opens_atnullabletimestamptzregistration_closes_atnullableintegerrevisionNOT NULLtextequipment_plan_statusNOT NULLtimestamptzpreparation_started_atnullableuuidpreparation_started_byFKnullableuuidpreparation_safety_review_idFKnullable",
+        "box": {
+          "x": 1967.1771240234375,
+          "y": 845.0020141601562,
+          "width": 495.4517822265625,
+          "height": 1162.49658203125,
+          "right": 2462.62890625,
+          "bottom": 2007.4985961914062
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-entity-event_reviews-8",
+        "text": "event_reviewsuuididPKNOT NULLuuidevent_request_idFKNOT NULLuuidreviewed_byFKNOT NULLtextdecisionNOT NULLtextreasonnullabletimestamptzcreated_atNOT NULL",
+        "box": {
+          "x": 3341.7998046875,
+          "y": 2268.497802734375,
+          "width": 409.201904296875,
+          "height": 325.4990234375,
+          "right": 3751.001708984375,
+          "bottom": 2593.996826171875
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-entity-event_status_history-9",
+        "text": "event_status_historyuuididPKNOT NULLuuidevent_request_idFKNOT NULLtextfrom_statusnullabletextto_statusNOT NULLuuidchanged_byFKnullabletimestamptzcreated_atNOT NULLtextreasonnullable",
+        "box": {
+          "x": 3791.00146484375,
+          "y": 2268.497802734375,
+          "width": 409.20166015625,
+          "height": 371.998779296875,
+          "right": 4200.203125,
+          "bottom": 2640.49658203125
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-entity-safety_reviews-10",
+        "text": "safety_reviewsuuididPKNOT NULLuuidevent_request_idFKNOT NULLintegerroundNOT NULLtextstatusNOT NULLuuidsubmitted_byFKNOT NULLuuiddecided_byFKnullable",
+        "box": {
+          "x": 2177.6015625,
+          "y": 198.5039520263672,
+          "width": 371.873779296875,
+          "height": 325.4990234375,
+          "right": 2549.475341796875,
+          "bottom": 524.0029754638672
+        },
+        "clipped": []
+      }
+    ],
+    "edges": [
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-coordinator_assignments-1_0",
+        "start": "url(#my-svg_er-zeroOrOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-coordinator_assignments-1_1",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-event_requests-7_entity-coordinator_assignments-1_2",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-event_cancellations-2_3",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-event_requests-7_entity-event_cancellations-2_4",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrOneEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-event_change_requests-3_5",
+        "start": "url(#my-svg_er-zeroOrOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-event_requests-7_entity-event_change_requests-3_6",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-event_change_requests-3_7",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-event_requests-7_entity-event_clarifications-4_8",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-event_clarifications-4_9",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-event_registrations-5_10",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-event_requests-7_entity-event_registrations-5_11",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-event_request_edits-6_12",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-event_requests-7_entity-event_request_edits-6_13",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-event_requests-7_14",
+        "start": "url(#my-svg_er-zeroOrOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-event_requests-7_15",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-safety_reviews-10_entity-event_requests-7_16",
+        "start": "url(#my-svg_er-zeroOrOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-event_requests-7_17",
+        "start": "url(#my-svg_er-zeroOrOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-event_requests-7_entity-event_reviews-8_18",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-event_reviews-8_19",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-event_status_history-9_20",
+        "start": "url(#my-svg_er-zeroOrOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-event_requests-7_entity-event_status_history-9_21",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      }
+    ],
+    "edgeLabels": [
+      {
+        "text": "assigned_by",
+        "box": {
+          "x": 7.999975681304932,
+          "y": 1415.750244140625,
+          "width": 78.62476348876953,
+          "height": 21,
+          "right": 86.62473917007446,
+          "bottom": 1436.750244140625
+        }
+      },
+      {
+        "text": "coordinator_id",
+        "box": {
+          "x": 106.62467956542969,
+          "y": 1415.750244140625,
+          "width": 88.73410034179688,
+          "height": 21,
+          "right": 195.35877990722656,
+          "bottom": 1436.750244140625
+        }
+      },
+      {
+        "text": "event_request_id",
+        "box": {
+          "x": 577.0607299804688,
+          "y": 2107.498291015625,
+          "width": 107.42156982421875,
+          "height": 20.999755859375,
+          "right": 684.4822998046875,
+          "bottom": 2128.498046875
+        }
+      },
+      {
+        "text": "cancelled_by",
+        "box": {
+          "x": 215.3587188720703,
+          "y": 1415.750244140625,
+          "width": 81.73414611816406,
+          "height": 21,
+          "right": 297.0928649902344,
+          "bottom": 1436.750244140625
+        }
+      },
+      {
+        "text": "event_request_id",
+        "box": {
+          "x": 1072.5982666015625,
+          "y": 2107.498291015625,
+          "width": 107.421630859375,
+          "height": 20.999755859375,
+          "right": 1180.0198974609375,
+          "bottom": 2128.498046875
+        }
+      },
+      {
+        "text": "decided_by",
+        "box": {
+          "x": 317.0928039550781,
+          "y": 1415.750244140625,
+          "width": 71.62478637695312,
+          "height": 21,
+          "right": 388.71759033203125,
+          "bottom": 1436.750244140625
+        }
+      },
+      {
+        "text": "event_request_id",
+        "box": {
+          "x": 1632.7919921875,
+          "y": 2107.498291015625,
+          "width": 107.4215087890625,
+          "height": 20.999755859375,
+          "right": 1740.2135009765625,
+          "bottom": 2128.498046875
+        }
+      },
+      {
+        "text": "requested_by",
+        "box": {
+          "x": 408.717529296875,
+          "y": 1415.750244140625,
+          "width": 84.84347534179688,
+          "height": 21,
+          "right": 493.5610046386719,
+          "bottom": 1436.750244140625
+        }
+      },
+      {
+        "text": "event_request_id",
+        "box": {
+          "x": 2061.0068359375,
+          "y": 2107.498291015625,
+          "width": 107.42138671875,
+          "height": 20.999755859375,
+          "right": 2168.42822265625,
+          "bottom": 2128.498046875
+        }
+      },
+      {
+        "text": "requested_by",
+        "box": {
+          "x": 513.5609741210938,
+          "y": 1415.750244140625,
+          "width": 84.84344482421875,
+          "height": 21,
+          "right": 598.4044189453125,
+          "bottom": 1436.750244140625
+        }
+      },
+      {
+        "text": "attendee_id",
+        "box": {
+          "x": 2661.1142578125,
+          "y": 1415.750244140625,
+          "width": 73.187255859375,
+          "height": 21,
+          "right": 2734.301513671875,
+          "bottom": 1436.750244140625
+        }
+      },
+      {
+        "text": "event_request_id",
+        "box": {
+          "x": 2188.42822265625,
+          "y": 2107.498291015625,
+          "width": 107.421630859375,
+          "height": 20.999755859375,
+          "right": 2295.849853515625,
+          "bottom": 2128.498046875
+        }
+      },
+      {
+        "text": "edited_by",
+        "box": {
+          "x": 3134.8994140625,
+          "y": 1415.750244140625,
+          "width": 60.71875,
+          "height": 21,
+          "right": 3195.6181640625,
+          "bottom": 1436.750244140625
+        }
+      },
+      {
+        "text": "event_request_id",
+        "box": {
+          "x": 2315.849609375,
+          "y": 2107.498291015625,
+          "width": 107.421630859375,
+          "height": 20.999755859375,
+          "right": 2423.271240234375,
+          "bottom": 2128.498046875
+        }
+      },
+      {
+        "text": "coordinator_id",
+        "box": {
+          "x": 1809.7432861328125,
+          "y": 664.0025634765625,
+          "width": 88.734130859375,
+          "height": 20.99993896484375,
+          "right": 1898.4774169921875,
+          "bottom": 685.0025024414062
+        }
+      },
+      {
+        "text": "organiser_id",
+        "box": {
+          "x": 1918.4774169921875,
+          "y": 664.0025634765625,
+          "width": 77.062255859375,
+          "height": 20.99993896484375,
+          "right": 1995.5396728515625,
+          "bottom": 685.0025024414062
+        }
+      },
+      {
+        "text": "preparation_safety_review_id",
+        "box": {
+          "x": 2263.538818359375,
+          "y": 664.0025634765625,
+          "width": 199.99951171875,
+          "height": 20.99993896484375,
+          "right": 2463.538330078125,
+          "bottom": 685.0025024414062
+        }
+      },
+      {
+        "text": "preparation_started_by",
+        "box": {
+          "x": 2015.53955078125,
+          "y": 664.0025634765625,
+          "width": 143.99951171875,
+          "height": 20.99993896484375,
+          "right": 2159.5390625,
+          "bottom": 685.0025024414062
+        }
+      },
+      {
+        "text": "event_request_id",
+        "box": {
+          "x": 2443.271240234375,
+          "y": 2107.498291015625,
+          "width": 107.42138671875,
+          "height": 20.999755859375,
+          "right": 2550.692626953125,
+          "bottom": 2128.498046875
+        }
+      },
+      {
+        "text": "reviewed_by",
+        "box": {
+          "x": 3575.101318359375,
+          "y": 1415.750244140625,
+          "width": 78.609130859375,
+          "height": 21,
+          "right": 3653.71044921875,
+          "bottom": 1436.750244140625
+        }
+      },
+      {
+        "text": "changed_by",
+        "box": {
+          "x": 4025.302978515625,
+          "y": 1415.750244140625,
+          "width": 76.297119140625,
+          "height": 21,
+          "right": 4101.60009765625,
+          "bottom": 1436.750244140625
+        }
+      },
+      {
+        "text": "event_request_id",
+        "box": {
+          "x": 2570.692626953125,
+          "y": 2107.498291015625,
+          "width": 107.421630859375,
+          "height": 20.999755859375,
+          "right": 2678.1142578125,
+          "bottom": 2128.498046875
+        }
+      }
+    ],
+    "edgeLabelOverlaps": [],
+    "edgeLabelNodeOverlaps": [],
+    "messageCount": 0,
+    "participantCount": 0,
+    "outOfBounds": []
+  },
+  {
+    "name": "erd-planning",
+    "kind": "erDiagram",
+    "source_sha256": "0e624002984db8cbb31b706bae9656d6635f60270696da6c1a0cefa8a23e5a78",
+    "svg_sha256": "be30fb2b21131a8ed82308268213d9b257cbb747f0b4f34634d6a10861acf3fe",
+    "png_sha256": "be31220976165be1b91ee0359de2e93f3686c69d8a5d9c31ab850fc0dbdcaace",
+    "expected_nodes": 9,
+    "expected_edges": 20,
+    "width": 2387.78125,
+    "height": 3000,
+    "nodes": [
+      {
+        "id": "my-svg-entity-app_users-0",
+        "text": "app_usersuuididPKNOT NULLtextroleNOT NULL",
+        "box": {
+          "x": 1021.64208984375,
+          "y": 710,
+          "width": 257.125,
+          "height": 139.5,
+          "right": 1278.76708984375,
+          "bottom": 849.5
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-entity-equipment_requests-1",
+        "text": "equipment_requestsuuididPKNOT NULLuuidevent_request_idFKNOT NULLuuidequipment_type_idFKNOT NULLuuidrequested_byFKNOT NULLintegerquantityNOT NULLtextstatusNOT NULLtimestamptzstarts_atNOT NULLtimestamptzends_atNOT NULLtextnotesnullableuuiddecided_byFKnullabletimestamptzdecided_atnullabletextdecision_reasonnullabletimestamptzcreated_atNOT NULLtimestamptzupdated_atNOT NULLtimestamptzreleased_atnullableuuidreleased_byFKnullabletextrelease_reasonnullabletextrelease_causenullabletexttechnical_requirementsnullableintegerrevisionNOT NULL",
+        "box": {
+          "x": 560.375,
+          "y": 1130.5,
+          "width": 451.859375,
+          "height": 976.5,
+          "right": 1012.234375,
+          "bottom": 2107
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-entity-equipment_stock_changes-2",
+        "text": "equipment_stock_changesuuididPKNOT NULLuuidequipment_type_idFKNOT NULLintegerrevisionNOT NULLuuidchanged_byFKNOT NULLtimestamptzchanged_atNOT NULLtextreasonNOT NULLintegerprevious_total_quantityNOT NULLintegerprevious_damaged_quantityNOT NULLintegerprevious_maintenance_quantityNOT NULLintegernew_total_quantityNOT NULLintegernew_damaged_quantityNOT NULLintegernew_maintenance_quantityNOT NULL",
+        "box": {
+          "x": 8,
+          "y": 1130.5,
+          "width": 512.375,
+          "height": 604.5,
+          "right": 520.375,
+          "bottom": 1735
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-entity-equipment_types-3",
+        "text": "equipment_typesuuididPKNOT NULLtextnameNOT NULLtextcategorynullabletextdescriptionnullableintegertotal_quantityNOT NULLbooleanis_activeNOT NULLtimestamptzcreated_atNOT NULLtimestamptzupdated_atNOT NULLintegerdamaged_quantityNOT NULLintegermaintenance_quantityNOT NULLintegerstock_revisionNOT NULL",
+        "box": {
+          "x": 216.02865600585938,
+          "y": 291.5,
+          "width": 443.0000305175781,
+          "height": 558,
+          "right": 659.0286865234375,
+          "bottom": 849.5
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-entity-event_requests-4",
+        "text": "event_requestsuuididPKNOT NULLuuidorganiser_idFKNOT NULLuuidcoordinator_idFKnullabletextstatusNOT NULLtimestamptzstarts_atnullabletimestamptzends_atnullableintegerrevisionNOT NULLtextequipment_plan_statusNOT NULLuuidpreparation_started_byFKnullableuuidpreparation_safety_review_idFKnullable",
+        "box": {
+          "x": 1318.76708984375,
+          "y": 338,
+          "width": 495.453125,
+          "height": 511.5,
+          "right": 1814.22021484375,
+          "bottom": 849.5
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-entity-venue_bookings-5",
+        "text": "venue_bookingsuuididPKNOT NULLuuidevent_request_idFKNOT NULLuuidvenue_idFKNOT NULLuuidrequested_byFKNOT NULLtextstatusNOT NULLtimestamptzstarts_atNOT NULLtimestamptzends_atNOT NULLtextlayoutnullabletextnotesnullableuuiddecided_byFKnullabletimestamptzdecided_atnullabletextdecision_reasonnullabletimestamptzcreated_atNOT NULLtimestamptzupdated_atNOT NULLuuidreplaces_booking_idFKnullableintegerreserved_setup_minutesNOT NULLintegerreserved_turnaround_minutesNOT NULLtimestamptzhold_expires_atnullableuuidheld_byFKnullabletimestamptzheld_atnullabletimestamptzexpired_atnullableuuidcancelled_byFKnullabletimestamptzcancelled_atnullabletextcancellation_reasonnullable",
+        "box": {
+          "x": 1322.5,
+          "y": 1130.5,
+          "width": 499.90625,
+          "height": 1162.5,
+          "right": 1822.40625,
+          "bottom": 2293
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-entity-venue_outage_impacts-6",
+        "text": "venue_outage_impactsuuididPKNOT NULLuuidunavailability_idFKnullableuuidvenue_booking_idFKNOT NULLuuidvenue_idFKNOT NULLtimestamptzoutage_starts_atNOT NULLtimestamptzoutage_ends_atNOT NULLtextoutage_reasonNOT NULLtextstatusNOT NULLuuidrecorded_byFKnullabletimestamptzcreated_atNOT NULLtimestamptzupdated_atNOT NULL",
+        "box": {
+          "x": 1963.453125,
+          "y": 2434,
+          "width": 416.328125,
+          "height": 558,
+          "right": 2379.78125,
+          "bottom": 2992
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-entity-venue_unavailability-7",
+        "text": "venue_unavailabilityuuididPKNOT NULLuuidvenue_idFKNOT NULLtimestamptzstarts_atNOT NULLtimestamptzends_atNOT NULLtextreasonnullableuuidcreated_byFKnullabletimestamptzcreated_atNOT NULL",
+        "box": {
+          "x": 1862.40625,
+          "y": 1394,
+          "width": 365.609375,
+          "height": 372,
+          "right": 2228.015625,
+          "bottom": 1766
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-entity-venues-8",
+        "text": "venuesuuididPKNOT NULLtextnameNOT NULLtextdescriptionnullabletextlocationnullableintegercapacityNOT NULLtextArraylayoutsNOT NULLtextArrayfacilitiesNOT NULLtextArrayaccessibility_featuresNOT NULLbooleanwheelchair_accessibleNOT NULLtimeopens_atnullabletimecloses_atnullablebooleanis_activeNOT NULLtimestamptzcreated_atNOT NULLtimestamptzupdated_atNOT NULLintegersetup_minutesNOT NULLintegerturnaround_minutesNOT NULL",
+        "box": {
+          "x": 1882.880126953125,
+          "y": 59,
+          "width": 446.53125,
+          "height": 790.5,
+          "right": 2329.411376953125,
+          "bottom": 849.5
+        },
+        "clipped": []
+      }
+    ],
+    "edges": [
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-equipment_requests-1_0",
+        "start": "url(#my-svg_er-zeroOrOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-equipment_types-3_entity-equipment_requests-1_1",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-event_requests-4_entity-equipment_requests-1_2",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-equipment_requests-1_3",
+        "start": "url(#my-svg_er-zeroOrOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-equipment_requests-1_4",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-equipment_stock_changes-2_5",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-equipment_types-3_entity-equipment_stock_changes-2_6",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-venue_bookings-5_7",
+        "start": "url(#my-svg_er-zeroOrOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-venue_bookings-5_8",
+        "start": "url(#my-svg_er-zeroOrOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-event_requests-4_entity-venue_bookings-5_9",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-venue_bookings-5_10",
+        "start": "url(#my-svg_er-zeroOrOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-venue_bookings-5_entity-venue_bookings-5_11",
+        "start": "url(#my-svg_er-zeroOrOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-venue_bookings-5_12",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-venues-8_entity-venue_bookings-5_13",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-venue_outage_impacts-6_14",
+        "start": "url(#my-svg_er-zeroOrOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-venue_unavailability-7_entity-venue_outage_impacts-6_15",
+        "start": "url(#my-svg_er-zeroOrOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-venue_bookings-5_entity-venue_outage_impacts-6_16",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-venues-8_entity-venue_outage_impacts-6_17",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-venue_unavailability-7_18",
+        "start": "url(#my-svg_er-zeroOrOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-venues-8_entity-venue_unavailability-7_19",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      }
+    ],
+    "edgeLabels": [
+      {
+        "text": "decided_by",
+        "box": {
+          "x": 590.1744995117188,
+          "y": 1009.5,
+          "width": 71.625,
+          "height": 21,
+          "right": 661.7994995117188,
+          "bottom": 1030.5
+        }
+      },
+      {
+        "text": "equipment_type_id",
+        "box": {
+          "x": 451.86199951171875,
+          "y": 1009.5,
+          "width": 118.3125,
+          "height": 21,
+          "right": 570.1744995117188,
+          "bottom": 1030.5
+        }
+      },
+      {
+        "text": "event_request_id",
+        "box": {
+          "x": 882.9244995117188,
+          "y": 1009.5,
+          "width": 107.421875,
+          "height": 21,
+          "right": 990.3463745117188,
+          "bottom": 1030.5
+        }
+      },
+      {
+        "text": "released_by",
+        "box": {
+          "x": 681.7994995117188,
+          "y": 1009.5,
+          "width": 76.28125,
+          "height": 21,
+          "right": 758.0807495117188,
+          "bottom": 1030.5
+        }
+      },
+      {
+        "text": "requested_by",
+        "box": {
+          "x": 778.0807495117188,
+          "y": 1009.5,
+          "width": 84.84375,
+          "height": 21,
+          "right": 862.9244995117188,
+          "bottom": 1030.5
+        }
+      },
+      {
+        "text": "changed_by",
+        "box": {
+          "x": 311.0833435058594,
+          "y": 1009.5,
+          "width": 76.296875,
+          "height": 21,
+          "right": 387.3802185058594,
+          "bottom": 1030.5
+        }
+      },
+      {
+        "text": "equipment_type_id",
+        "box": {
+          "x": 119.29167175292969,
+          "y": 1009.5,
+          "width": 118.3125,
+          "height": 21,
+          "right": 237.6041717529297,
+          "bottom": 1030.5
+        }
+      },
+      {
+        "text": "cancelled_by",
+        "box": {
+          "x": 1120.89208984375,
+          "y": 1009.5,
+          "width": 81.734375,
+          "height": 21,
+          "right": 1202.62646484375,
+          "bottom": 1030.5
+        }
+      },
+      {
+        "text": "decided_by",
+        "box": {
+          "x": 1329.5535888671875,
+          "y": 1009.5,
+          "width": 71.625,
+          "height": 21,
+          "right": 1401.1785888671875,
+          "bottom": 1030.5
+        }
+      },
+      {
+        "text": "event_request_id",
+        "box": {
+          "x": 1595.0692138671875,
+          "y": 1009.5,
+          "width": 107.421875,
+          "height": 21,
+          "right": 1702.4910888671875,
+          "bottom": 1030.5
+        }
+      },
+      {
+        "text": "held_by",
+        "box": {
+          "x": 1421.1785888671875,
+          "y": 1009.5,
+          "width": 49.046875,
+          "height": 21,
+          "right": 1470.2254638671875,
+          "bottom": 1030.5
+        }
+      },
+      {
+        "text": "replaces_booking_id",
+        "box": {
+          "x": 1170.0625,
+          "y": 1701.25,
+          "width": 128.4375,
+          "height": 21,
+          "right": 1298.5,
+          "bottom": 1722.25
+        }
+      },
+      {
+        "text": "requested_by",
+        "box": {
+          "x": 1490.2254638671875,
+          "y": 1009.5,
+          "width": 84.84375,
+          "height": 21,
+          "right": 1575.0692138671875,
+          "bottom": 1030.5
+        }
+      },
+      {
+        "text": "venue_id",
+        "box": {
+          "x": 1722.4910888671875,
+          "y": 1009.5,
+          "width": 56.828125,
+          "height": 21,
+          "right": 1779.3192138671875,
+          "bottom": 1030.5
+        }
+      },
+      {
+        "text": "recorded_by",
+        "box": {
+          "x": 1052.234375,
+          "y": 1701.25,
+          "width": 77.828125,
+          "height": 21,
+          "right": 1130.0625,
+          "bottom": 1722.25
+        }
+      },
+      {
+        "text": "unavailability_id",
+        "box": {
+          "x": 1995.7109375,
+          "y": 2333,
+          "width": 98.84375,
+          "height": 21,
+          "right": 2094.5546875,
+          "bottom": 2354
+        }
+      },
+      {
+        "text": "venue_booking_id",
+        "box": {
+          "x": 1515.453125,
+          "y": 2333,
+          "width": 113.65625,
+          "height": 21,
+          "right": 1629.109375,
+          "bottom": 2354
+        }
+      },
+      {
+        "text": "venue_id",
+        "box": {
+          "x": 2268.015625,
+          "y": 1701.25,
+          "width": 56.828125,
+          "height": 21,
+          "right": 2324.84375,
+          "bottom": 1722.25
+        }
+      },
+      {
+        "text": "created_by",
+        "box": {
+          "x": 1949.2760009765625,
+          "y": 1009.5,
+          "width": 69.28125,
+          "height": 21,
+          "right": 2018.5572509765625,
+          "bottom": 1030.5
+        }
+      },
+      {
+        "text": "venue_id",
+        "box": {
+          "x": 2077.645751953125,
+          "y": 1009.5,
+          "width": 56.828125,
+          "height": 21,
+          "right": 2134.473876953125,
+          "bottom": 1030.5
+        }
+      }
+    ],
+    "edgeLabelOverlaps": [],
+    "edgeLabelNodeOverlaps": [],
+    "messageCount": 0,
+    "participantCount": 0,
+    "outOfBounds": []
+  },
+  {
+    "name": "erd-safety-invalidation",
+    "kind": "erDiagram",
+    "source_sha256": "652aa95871aa25c7f901fe7e3fe95664e279a6bfeff78382c018a0253e5ec95e",
+    "svg_sha256": "167270f4b465b7d70cf3fd5f0be35d8682384e43ce295b5fff6c94b0ac723ff0",
+    "png_sha256": "398fcb29cd5c4ad02a7076206cf8e0f69555b034e4f16adbb7d8b188bb28e4be",
+    "expected_nodes": 11,
+    "expected_edges": 13,
+    "width": 3259.828125,
+    "height": 2255.5,
+    "nodes": [
+      {
+        "id": "my-svg-entity-app_users-0",
+        "text": "app_usersuuididPKNOT NULLtextroleNOT NULL",
+        "box": {
+          "x": 188.29376220703125,
+          "y": 431,
+          "width": 257.125,
+          "height": 139.5,
+          "right": 445.41876220703125,
+          "bottom": 570.5
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-entity-equipment_requests-1",
+        "text": "equipment_requestsuuididPKNOT NULLuuidevent_request_idFKNOT NULLuuidequipment_type_idFKNOT NULLuuidrequested_byFKNOT NULLintegerquantityNOT NULLtextstatusNOT NULLtimestamptzstarts_atNOT NULLtimestamptzends_atNOT NULLuuiddecided_byFKnullableuuidreleased_byFKnullableintegerrevisionNOT NULL",
+        "box": {
+          "x": 2209.53125,
+          "y": 811,
+          "width": 421.65625,
+          "height": 558,
+          "right": 2631.1875,
+          "bottom": 1369
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-entity-event_change_requests-2",
+        "text": "event_change_requestsuuididPKNOT NULLuuidevent_request_idFKNOT NULLuuidrequested_byFKNOT NULLtextstatusNOT NULLuuiddecided_byFKnullable",
+        "box": {
+          "x": 1816.328125,
+          "y": 1090,
+          "width": 353.203125,
+          "height": 279,
+          "right": 2169.53125,
+          "bottom": 1369
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-entity-event_registrations-3",
+        "text": "event_registrationsuuididPKNOT NULLuuidevent_request_idFKNOT NULLuuidattendee_idFKNOT NULLtextstatusNOT NULL",
+        "box": {
+          "x": 1423.125,
+          "y": 1136.5,
+          "width": 353.203125,
+          "height": 232.5,
+          "right": 1776.328125,
+          "bottom": 1369
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-entity-event_requests-4",
+        "text": "event_requestsuuididPKNOT NULLuuidorganiser_idFKNOT NULLuuidcoordinator_idFKnullabletextstatusNOT NULLtimestamptzstarts_atnullabletimestamptzends_atnullableintegerrevisionNOT NULLtextequipment_plan_statusNOT NULLuuidpreparation_started_byFKnullableuuidpreparation_safety_review_idFKnullable",
+        "box": {
+          "x": 1257.3646240234375,
+          "y": 59,
+          "width": 495.453125,
+          "height": 511.5,
+          "right": 1752.8177490234375,
+          "bottom": 570.5
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-entity-notifications-5",
+        "text": "notificationsuuididPKNOT NULLuuidrecipient_idFKNOT NULLuuidevent_request_idFKnullabletexttypeNOT NULLtexttitleNOT NULLtextmessageNOT NULLtimestamptzread_atnullabletimestamptzcreated_atNOT NULLuuidvenue_booking_idFKnullabletextdedupe_keynullableuuidequipment_request_idFKnullableuuidregistration_idFKnullableuuidchange_request_idFKnullableuuidsafety_review_idFKnullable",
+        "box": {
+          "x": 1770.5390625,
+          "y": 1550,
+          "width": 444.78125,
+          "height": 697.5,
+          "right": 2215.3203125,
+          "bottom": 2247.5
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-entity-safety_approval_invalidations-6",
+        "text": "safety_approval_invalidationsuuidreview_idPK,FKNOT NULLtimestamptzinvalidated_atNOT NULLtextsourceNOT NULL",
+        "box": {
+          "x": 8,
+          "y": 1550,
+          "width": 410.078125,
+          "height": 186,
+          "right": 418.078125,
+          "bottom": 1736
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-entity-safety_review_change_baselines-7",
+        "text": "safety_review_change_baselinesuuidreview_idPK,FKNOT NULLtextvenue_fingerprintNOT NULLtexttechnical_fingerprintNOT NULLtimestamptzcaptured_atNOT NULL",
+        "box": {
+          "x": 458.078125,
+          "y": 1550,
+          "width": 454.53125,
+          "height": 232.5,
+          "right": 912.609375,
+          "bottom": 1782.5
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-entity-safety_review_context_baselines-8",
+        "text": "safety_review_context_baselinesuuidreview_idPK,FKNOT NULLtextcontext_fingerprintNOT NULLtimestamptzcaptured_atNOT NULL",
+        "box": {
+          "x": 952.609375,
+          "y": 1550,
+          "width": 442.96875,
+          "height": 186,
+          "right": 1395.578125,
+          "bottom": 1736
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-entity-safety_reviews-9",
+        "text": "safety_reviewsuuididPKNOT NULLuuidevent_request_idFKNOT NULLintegerroundNOT NULLtextstatusNOT NULLtextarrangement_fingerprintNOT NULLtextemergency_accessnullabletextequipment_placementnullabletextcrowd_movementnullableuuidsubmitted_byFKNOT NULLtimestamptzsubmitted_atNOT NULLuuiddecided_byFKnullabletimestamptzdecided_atnullabletextdecision_notesnullabletextArrayrequested_areasnullable",
+        "box": {
+          "x": 121.59844970703125,
+          "y": 671.5,
+          "width": 457.203125,
+          "height": 697.5,
+          "right": 578.8015747070312,
+          "bottom": 1369
+        },
+        "clipped": []
+      },
+      {
+        "id": "my-svg-entity-venue_bookings-10",
+        "text": "venue_bookingsuuididPKNOT NULLuuidevent_request_idFKNOT NULLuuidvenue_idFKNOT NULLuuidrequested_byFKNOT NULLtextstatusNOT NULLtimestamptzstarts_atNOT NULLtimestamptzends_atNOT NULLuuiddecided_byFKnullableuuidreplaces_booking_idFKnullabletimestamptzhold_expires_atnullableuuidheld_byFKnullableuuidcancelled_byFKnullable",
+        "box": {
+          "x": 2671.1875,
+          "y": 764.5,
+          "width": 433.21875,
+          "height": 604.5,
+          "right": 3104.40625,
+          "bottom": 1369
+        },
+        "clipped": []
+      }
+    ],
+    "edges": [
+      {
+        "id": "my-svg-id_entity-event_change_requests-2_entity-notifications-5_0",
+        "start": "url(#my-svg_er-zeroOrOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-equipment_requests-1_entity-notifications-5_1",
+        "start": "url(#my-svg_er-zeroOrOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-event_requests-4_entity-notifications-5_2",
+        "start": "url(#my-svg_er-zeroOrOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-notifications-5_3",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-event_registrations-3_entity-notifications-5_4",
+        "start": "url(#my-svg_er-zeroOrOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-safety_reviews-9_entity-notifications-5_5",
+        "start": "url(#my-svg_er-zeroOrOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-venue_bookings-10_entity-notifications-5_6",
+        "start": "url(#my-svg_er-zeroOrOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-safety_reviews-9_entity-safety_approval_invalidations-6_7",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrOneEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-safety_reviews-9_entity-safety_review_change_baselines-7_8",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrOneEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-safety_reviews-9_entity-safety_review_context_baselines-8_9",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrOneEnd)",
+        "style": "edge-thickness-normal edge-pattern-solid relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-safety_reviews-9_10",
+        "start": "url(#my-svg_er-zeroOrOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-event_requests-4_entity-safety_reviews-9_11",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      },
+      {
+        "id": "my-svg-id_entity-app_users-0_entity-safety_reviews-9_12",
+        "start": "url(#my-svg_er-onlyOneStart)",
+        "end": "url(#my-svg_er-zeroOrMoreEnd)",
+        "style": "edge-thickness-normal edge-pattern-dashed relationshipLine"
+      }
+    ],
+    "edgeLabels": [
+      {
+        "text": "change_request_id",
+        "box": {
+          "x": 1932.9296875,
+          "y": 1449,
+          "width": 119.109375,
+          "height": 21,
+          "right": 2052.0390625,
+          "bottom": 1470
+        }
+      },
+      {
+        "text": "equipment_request_id",
+        "box": {
+          "x": 2350.859375,
+          "y": 1449,
+          "width": 138.546875,
+          "height": 21,
+          "right": 2489.40625,
+          "bottom": 1470
+        }
+      },
+      {
+        "text": "event_request_id",
+        "box": {
+          "x": 3144.40625,
+          "y": 1009.75,
+          "width": 107.421875,
+          "height": 21,
+          "right": 3251.828125,
+          "bottom": 1030.75
+        }
+      },
+      {
+        "text": "recipient_id",
+        "box": {
+          "x": 1311.515625,
+          "y": 1009.75,
+          "width": 71.609375,
+          "height": 21,
+          "right": 1383.125,
+          "bottom": 1030.75
+        }
+      },
+      {
+        "text": "registration_id",
+        "box": {
+          "x": 1555.7265625,
+          "y": 1449,
+          "width": 87.9375,
+          "height": 21,
+          "right": 1643.6640625,
+          "bottom": 1470
+        }
+      },
+      {
+        "text": "safety_review_id",
+        "box": {
+          "x": 1223.234375,
+          "y": 1449,
+          "width": 104.28125,
+          "height": 21,
+          "right": 1327.515625,
+          "bottom": 1470
+        }
+      },
+      {
+        "text": "venue_booking_id",
+        "box": {
+          "x": 2830.796875,
+          "y": 1449,
+          "width": 113.65625,
+          "height": 21,
+          "right": 2944.453125,
+          "bottom": 1470
+        }
+      },
+      {
+        "text": "review_id",
+        "box": {
+          "x": 183.0390625,
+          "y": 1449,
+          "width": 59.140625,
+          "height": 21,
+          "right": 242.1796875,
+          "bottom": 1470
+        }
+      },
+      {
+        "text": "review_id",
+        "box": {
+          "x": 655.34375,
+          "y": 1449,
+          "width": 59.140625,
+          "height": 21,
+          "right": 714.484375,
+          "bottom": 1470
+        }
+      },
+      {
+        "text": "review_id",
+        "box": {
+          "x": 1144.09375,
+          "y": 1449,
+          "width": 59.140625,
+          "height": 21,
+          "right": 1203.234375,
+          "bottom": 1470
+        }
+      },
+      {
+        "text": "decided_by",
+        "box": {
+          "x": 216.57501220703125,
+          "y": 610.5,
+          "width": 71.625,
+          "height": 21,
+          "right": 288.20001220703125,
+          "bottom": 631.5
+        }
+      },
+      {
+        "text": "event_request_id",
+        "box": {
+          "x": 1368.515625,
+          "y": 610.5,
+          "width": 107.421875,
+          "height": 21,
+          "right": 1475.9375,
+          "bottom": 631.5
+        }
+      },
+      {
+        "text": "submitted_by",
+        "box": {
+          "x": 308.20001220703125,
+          "y": 610.5,
+          "width": 83.28125,
+          "height": 21,
+          "right": 391.48126220703125,
+          "bottom": 631.5
+        }
+      }
+    ],
+    "edgeLabelOverlaps": [],
+    "edgeLabelNodeOverlaps": [],
+    "messageCount": 0,
+    "participantCount": 0,
+    "outOfBounds": []
+  },
+  {
+    "name": "seq-event-confirmation",
+    "kind": "sequenceDiagram",
+    "source_sha256": "ff9c55c3fe68ebba8e51c0d20a64170562a6b4b8421e0b215c1a5667b6e42faa",
+    "svg_sha256": "8c84ed683225df3553064bfc53066faee76ba89293e33a140c6799c4c902c138",
+    "png_sha256": "e82a244d3876d35ba9db194dff4ae5f8af6ff5bcaa216de8be59be6becf4eab0",
+    "expected_nodes": 4,
+    "expected_edges": 15,
+    "width": 991,
+    "height": 1293,
+    "nodes": [],
+    "edges": [],
+    "edgeLabels": [],
+    "edgeLabelOverlaps": [],
+    "edgeLabelNodeOverlaps": [],
+    "messageCount": 15,
+    "participantCount": 4,
+    "outOfBounds": []
+  },
+  {
+    "name": "seq-event-cancellation-equipment",
+    "kind": "sequenceDiagram",
+    "source_sha256": "ecba7d6dd375fb3e67429e2a7c7e2fc12d0334fe9c9359a1f0e8187254b78dae",
+    "svg_sha256": "144d04ec93ee9a47df8f425c58e043e2d1a2dd1ea1a114e45bf1488949cc0569",
+    "png_sha256": "558897c61735345b3b37a72b960640a78dcb569a53aa5a9589239bcd118196e3",
+    "expected_nodes": 4,
+    "expected_edges": 15,
+    "width": 988,
+    "height": 1184,
+    "nodes": [],
+    "edges": [],
+    "edgeLabels": [],
+    "edgeLabelOverlaps": [],
+    "edgeLabelNodeOverlaps": [],
+    "messageCount": 15,
+    "participantCount": 4,
+    "outOfBounds": []
+  },
+  {
+    "name": "seq-lead-assignment",
+    "kind": "sequenceDiagram",
+    "source_sha256": "1fe31b1af05cd9dfb29505eb3c8dfdf58aa0141d74f5d80de8440ffe86bd1d38",
+    "svg_sha256": "c89dc217abd8cf4b2ada54e55bf931f367bc785fbc9314f40427c1d0f5fd8ce1",
+    "png_sha256": "40004fdec0771abae92b4a4d47fa9c1f643e12229397db61268b7dcb5f43d92e",
+    "expected_nodes": 4,
+    "expected_edges": 13,
+    "width": 992,
+    "height": 1197,
+    "nodes": [],
+    "edges": [],
+    "edgeLabels": [],
+    "edgeLabelOverlaps": [],
+    "edgeLabelNodeOverlaps": [],
+    "messageCount": 13,
+    "participantCount": 4,
+    "outOfBounds": []
+  },
+  {
+    "name": "seq-safety-review",
+    "kind": "sequenceDiagram",
+    "source_sha256": "55f159e26d9436dc525fe9023aafe4b97ce74ab5fe2b60c834ff38bcb2bb0d21",
+    "svg_sha256": "5ebdcdcf1c8f4d5fd44676ac28126cdc425e972ffa95d8115c00df7eb8d5e41d",
+    "png_sha256": "93f18b509a9aca560e6599066d5d7a9071d821520c16f43d0ebaf8e64d720caf",
+    "expected_nodes": 4,
+    "expected_edges": 29,
+    "width": 998,
+    "height": 2270,
+    "nodes": [],
+    "edges": [],
+    "edgeLabels": [],
+    "edgeLabelOverlaps": [],
+    "edgeLabelNodeOverlaps": [],
+    "messageCount": 29,
+    "participantCount": 4,
+    "outOfBounds": []
+  },
+  {
+    "name": "seq-event-completion",
+    "kind": "sequenceDiagram",
+    "source_sha256": "98573f36ad1c647904e358214ec0f2f8ad27937b41cc346ad43c9fef59635c64",
+    "svg_sha256": "53678e20797d2eff497450a747790c6088aa8a9f795962b4fb255c36f9d4cb5a",
+    "png_sha256": "b30e85f7c15b585866099540248e8a26a65d5a5a4d817bfc336115579e02468b",
+    "expected_nodes": 4,
+    "expected_edges": 12,
+    "width": 981,
+    "height": 967,
+    "nodes": [],
+    "edges": [],
+    "edgeLabels": [],
+    "edgeLabelOverlaps": [],
+    "edgeLabelNodeOverlaps": [],
+    "messageCount": 12,
+    "participantCount": 4,
+    "outOfBounds": []
+  },
+  {
+    "name": "seq-registration-withdrawal",
+    "kind": "sequenceDiagram",
+    "source_sha256": "ca8bd151b92b08dfe7b109f602c8b0d53ee864f425d9b08371e52cbfa038fde8",
+    "svg_sha256": "eaea9f50f0373d810efe457b08631ccda55c48f9171960a704320ce4572f4ead",
+    "png_sha256": "f1550a02b533733e579b81af8847e224f3198c5145c027098dd743941a84def0",
+    "expected_nodes": 4,
+    "expected_edges": 12,
+    "width": 997,
+    "height": 1172,
+    "nodes": [],
+    "edges": [],
+    "edgeLabels": [],
+    "edgeLabelOverlaps": [],
+    "edgeLabelNodeOverlaps": [],
+    "messageCount": 12,
+    "participantCount": 4,
+    "outOfBounds": []
+  },
+  {
+    "name": "seq-equipment-availability",
+    "kind": "sequenceDiagram",
+    "source_sha256": "a0c80426c5240be3ad7e50f1eba6ee9532888def7ec6f9cb630748811c790887",
+    "svg_sha256": "0affcf91d9ac7463a344394996e5b70934e89c4b9bab192b182aef1a2027d33f",
+    "png_sha256": "7fb330c350d724f913d85895260f3d09e63db1c0266ab7541be064950111e9a9",
+    "expected_nodes": 4,
+    "expected_edges": 10,
+    "width": 981,
+    "height": 1133,
+    "nodes": [],
+    "edges": [],
+    "edgeLabels": [],
+    "edgeLabelOverlaps": [],
+    "edgeLabelNodeOverlaps": [],
+    "messageCount": 10,
+    "participantCount": 4,
+    "outOfBounds": []
+  },
+  {
+    "name": "seq-equipment-reservation",
+    "kind": "sequenceDiagram",
+    "source_sha256": "d8f06b53ae3481101755f8b6aad999adfeaf2a047e9c7d1e76d5388f24c73e59",
+    "svg_sha256": "67a643508a112e2c108bb6390a210bd2b6c3334fd1529588a4780d4a08456bac",
+    "png_sha256": "fac59dbeb723e9202195d569e2d5faf78b1d8654c8f61cc2778e5b091aa80893",
+    "expected_nodes": 4,
+    "expected_edges": 14,
+    "width": 980,
+    "height": 1289,
+    "nodes": [],
+    "edges": [],
+    "edgeLabels": [],
+    "edgeLabelOverlaps": [],
+    "edgeLabelNodeOverlaps": [],
+    "messageCount": 14,
+    "participantCount": 4,
+    "outOfBounds": []
+  },
+  {
+    "name": "seq-venue-write-locking",
+    "kind": "sequenceDiagram",
+    "source_sha256": "2ba79a7cd1747d5ed9fca86c82c57279a049ffc7778a06cdb51bc92180331504",
+    "svg_sha256": "bcc4589d80b383580c8cda8459019cad472b27ba1e4dca973a5dd21a175a00cc",
+    "png_sha256": "a0666d44d0ab269047643c1db4654d9d5f236e66b612f1a0c1b6c2dcb5318d7f",
+    "expected_nodes": 4,
+    "expected_edges": 13,
+    "width": 982,
+    "height": 1141,
+    "nodes": [],
+    "edges": [],
+    "edgeLabels": [],
+    "edgeLabelOverlaps": [],
+    "edgeLabelNodeOverlaps": [],
+    "messageCount": 13,
+    "participantCount": 4,
+    "outOfBounds": []
+  },
+  {
+    "name": "seq-venue-hold",
+    "kind": "sequenceDiagram",
+    "source_sha256": "c21b01165ded51b8d6c51034b72863d04c3c17a1918cb385c8e4d10626a56a3a",
+    "svg_sha256": "69820398ed9a9e2915c94fb35ce593421f973a7cfcba564793b7558ac544e61a",
+    "png_sha256": "f7a4843cdd9c5ee5928b4158574bd6664f36789fbfcb6673f962c085499a24e3",
+    "expected_nodes": 5,
+    "expected_edges": 14,
+    "width": 1229,
+    "height": 1165,
+    "nodes": [],
+    "edges": [],
+    "edgeLabels": [],
+    "edgeLabelOverlaps": [],
+    "edgeLabelNodeOverlaps": [],
+    "messageCount": 14,
+    "participantCount": 5,
+    "outOfBounds": []
+  },
+  {
+    "name": "seq-venue-recovery",
+    "kind": "sequenceDiagram",
+    "source_sha256": "59d36c0de513fc0c563076ec64a9f70f5ae27afab670cf21610a40cd87c6039d",
+    "svg_sha256": "3156f9df07aebf82b262925c7d59e1627fe30e6645d53312448111ac725a7cba",
+    "png_sha256": "e556b3d2f135b3af3aadf8843798e709ef5b9900ab6693ebc3c7dba372736780",
+    "expected_nodes": 4,
+    "expected_edges": 15,
+    "width": 985,
+    "height": 1136,
+    "nodes": [],
+    "edges": [],
+    "edgeLabels": [],
+    "edgeLabelOverlaps": [],
+    "edgeLabelNodeOverlaps": [],
+    "messageCount": 15,
+    "participantCount": 4,
+    "outOfBounds": []
+  },
+  {
+    "name": "seq-planning-change",
+    "kind": "sequenceDiagram",
+    "source_sha256": "4c697ff12b33192633a880176c98784371b254589e5cde2dfb61697ac94b9bf5",
+    "svg_sha256": "463a5b3450279805491d3d9a392ffceccbe944fe0736d15f82f502f816efd1e2",
+    "png_sha256": "14362576c719c9fe5fb324847de59a2693b6f0ce0f3010e603b2fb4e9bab6aa2",
+    "expected_nodes": 4,
+    "expected_edges": 15,
+    "width": 981,
+    "height": 1288,
+    "nodes": [],
+    "edges": [],
+    "edgeLabels": [],
+    "edgeLabelOverlaps": [],
+    "edgeLabelNodeOverlaps": [],
+    "messageCount": 15,
+    "participantCount": 4,
+    "outOfBounds": []
+  }
+]

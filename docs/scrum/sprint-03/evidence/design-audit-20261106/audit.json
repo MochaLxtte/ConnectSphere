@@ -1,0 +1,192 @@
+{
+  "audit_id": "DESIGN-20261106-01",
+  "date": "2026-11-06",
+  "source_commit": "fb6d8d93f721b114accc9857a05d62e859987e23",
+  "status": "Pass",
+  "checks": [
+    "All 25 original files match preserved hashes; genuine historical files also match Git blobs",
+    "Original dated API, database and architecture history retained",
+    "C1, C2 and C3 Mermaid source unchanged from preceding C4 correction",
+    "Every displayed class/entity attribute, node, FK endpoint, cardinality and association label checked against catalog",
+    "Every sequence participant and all 177 messages have unchanged implementation proof anchors; rendered counts match",
+    "Complete catalog: 24 tables, 243 columns, 55 FKs; all 243 dictionary rows and all 55 graph relationships covered",
+    "All 85 documented endpoints match registered runtime routes, status/role inventory and individual handler references",
+    "Exact TypeScript DTO declarations retained from 30 current source files",
+    "All 239 current-document file links resolve; immutable snapshot links are scoped to their recorded original context"
+  ],
+  "original_files_hash_verified": 25,
+  "tables": 24,
+  "application_tables": 22,
+  "columns": 243,
+  "foreign_keys": 55,
+  "routes": 85,
+  "new_or_refreshed_models": 20,
+  "sequence_participants": 49,
+  "sequence_messages": 177,
+  "models": [
+    {
+      "name": "class",
+      "nodes_or_participants": 22,
+      "connections_or_messages": 55,
+      "source_and_export_match": true,
+      "source_proofs_or_catalog_match": true,
+      "geometry_pass": true
+    },
+    {
+      "name": "class-events",
+      "nodes_or_participants": 11,
+      "connections_or_messages": 22,
+      "source_and_export_match": true,
+      "source_proofs_or_catalog_match": true,
+      "geometry_pass": true
+    },
+    {
+      "name": "class-planning",
+      "nodes_or_participants": 9,
+      "connections_or_messages": 20,
+      "source_and_export_match": true,
+      "source_proofs_or_catalog_match": true,
+      "geometry_pass": true
+    },
+    {
+      "name": "class-safety",
+      "nodes_or_participants": 11,
+      "connections_or_messages": 13,
+      "source_and_export_match": true,
+      "source_proofs_or_catalog_match": true,
+      "geometry_pass": true
+    },
+    {
+      "name": "erd-database",
+      "nodes_or_participants": 24,
+      "connections_or_messages": 55,
+      "source_and_export_match": true,
+      "source_proofs_or_catalog_match": true,
+      "geometry_pass": true
+    },
+    {
+      "name": "erd-events",
+      "nodes_or_participants": 11,
+      "connections_or_messages": 22,
+      "source_and_export_match": true,
+      "source_proofs_or_catalog_match": true,
+      "geometry_pass": true
+    },
+    {
+      "name": "erd-planning",
+      "nodes_or_participants": 9,
+      "connections_or_messages": 20,
+      "source_and_export_match": true,
+      "source_proofs_or_catalog_match": true,
+      "geometry_pass": true
+    },
+    {
+      "name": "erd-safety-invalidation",
+      "nodes_or_participants": 11,
+      "connections_or_messages": 13,
+      "source_and_export_match": true,
+      "source_proofs_or_catalog_match": true,
+      "geometry_pass": true
+    },
+    {
+      "name": "seq-registration-withdrawal",
+      "nodes_or_participants": 4,
+      "connections_or_messages": 12,
+      "source_and_export_match": true,
+      "source_proofs_or_catalog_match": true,
+      "geometry_pass": true
+    },
+    {
+      "name": "seq-event-confirmation",
+      "nodes_or_participants": 4,
+      "connections_or_messages": 15,
+      "source_and_export_match": true,
+      "source_proofs_or_catalog_match": true,
+      "geometry_pass": true
+    },
+    {
+      "name": "seq-event-cancellation-equipment",
+      "nodes_or_participants": 4,
+      "connections_or_messages": 15,
+      "source_and_export_match": true,
+      "source_proofs_or_catalog_match": true,
+      "geometry_pass": true
+    },
+    {
+      "name": "seq-lead-assignment",
+      "nodes_or_participants": 4,
+      "connections_or_messages": 13,
+      "source_and_export_match": true,
+      "source_proofs_or_catalog_match": true,
+      "geometry_pass": true
+    },
+    {
+      "name": "seq-equipment-availability",
+      "nodes_or_participants": 4,
+      "connections_or_messages": 10,
+      "source_and_export_match": true,
+      "source_proofs_or_catalog_match": true,
+      "geometry_pass": true
+    },
+    {
+      "name": "seq-equipment-reservation",
+      "nodes_or_participants": 4,
+      "connections_or_messages": 14,
+      "source_and_export_match": true,
+      "source_proofs_or_catalog_match": true,
+      "geometry_pass": true
+    },
+    {
+      "name": "seq-safety-review",
+      "nodes_or_participants": 4,
+      "connections_or_messages": 29,
+      "source_and_export_match": true,
+      "source_proofs_or_catalog_match": true,
+      "geometry_pass": true
+    },
+    {
+      "name": "seq-venue-write-locking",
+      "nodes_or_participants": 4,
+      "connections_or_messages": 13,
+      "source_and_export_match": true,
+      "source_proofs_or_catalog_match": true,
+      "geometry_pass": true
+    },
+    {
+      "name": "seq-venue-hold",
+      "nodes_or_participants": 5,
+      "connections_or_messages": 14,
+      "source_and_export_match": true,
+      "source_proofs_or_catalog_match": true,
+      "geometry_pass": true
+    },
+    {
+      "name": "seq-venue-recovery",
+      "nodes_or_participants": 4,
+      "connections_or_messages": 15,
+      "source_and_export_match": true,
+      "source_proofs_or_catalog_match": true,
+      "geometry_pass": true
+    },
+    {
+      "name": "seq-event-completion",
+      "nodes_or_participants": 4,
+      "connections_or_messages": 12,
+      "source_and_export_match": true,
+      "source_proofs_or_catalog_match": true,
+      "geometry_pass": true
+    },
+    {
+      "name": "seq-planning-change",
+      "nodes_or_participants": 4,
+      "connections_or_messages": 15,
+      "source_and_export_match": true,
+      "source_proofs_or_catalog_match": true,
+      "geometry_pass": true
+    }
+  ],
+  "scope_limits": [
+    "Static/code and migrated-schema audit, with runtime router construction and render checks; no deployed/shared-database or integrated app acceptance test",
+    "No commits, pushes, PRs, Jira status changes or product-code changes"
+  ]
+}
