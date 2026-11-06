@@ -1,0 +1,52 @@
+{
+  "prepared": "2026-11-06",
+  "basis": "Planning forecasts and accepted scope at review. Intermediate accepted-point totals were not reported. Release series starts with the two-sprint forecast.",
+  "sprints": [
+    {
+      "sprint": 3,
+      "planning": "2026-10-04",
+      "review": "2026-10-17",
+      "stories": 13,
+      "openingSP": 63,
+      "acceptedSP": 63,
+      "carriedSP": 0,
+      "dailyReports": 6,
+      "planningSource": "../sprint-03/evidence/meetings/planning.docx",
+      "reviewSource": "../sprint-03/review.md"
+    },
+    {
+      "sprint": 4,
+      "planning": "2026-10-18",
+      "review": "2026-10-31",
+      "stories": 15,
+      "openingSP": 63,
+      "acceptedSP": 63,
+      "carriedSP": 0,
+      "dailyReports": 6,
+      "planningSource": "../sprint-04/evidence/meetings/planning.docx",
+      "reviewSource": "../sprint-04/review.md"
+    }
+  ],
+  "release": [
+    {
+      "date": "4 Oct",
+      "meeting": "Sprint 3 planning",
+      "remainingSP": 126
+    },
+    {
+      "date": "17 Oct",
+      "meeting": "Sprint 3 review",
+      "remainingSP": 63
+    },
+    {
+      "date": "18 Oct",
+      "meeting": "Sprint 4 planning",
+      "remainingSP": 63
+    },
+    {
+      "date": "31 Oct",
+      "meeting": "Sprint 4 review",
+      "remainingSP": 0
+    }
+  ]
+}

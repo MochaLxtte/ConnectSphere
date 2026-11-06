@@ -1,0 +1,25 @@
+---
+title: Venue temporary hold - deadline and automatic expiry
+---
+sequenceDiagram
+  autonumber
+  participant Client as Venue Staff client
+  participant API as Express HTTP boundary
+  participant Service as Venue booking service
+  participant DB as PostgreSQL
+  participant Timer as API startup and 60-second timer
+  Client->>API: POST /api/venue-bookings/:id/hold {expiresAt}
+  API->>Service: Verify Venue Staff and explicit deadline
+  Service->>DB: BEGIN READ COMMITTED, set transaction actor
+  Service->>DB: Take venue gate, lock booking then event then venue
+  Service->>Service: Require PENDING booking and APPROVED event
+  Service->>DB: Recheck suitability, buffered occupancy, hours and database clock
+  Service->>Service: Require now < expiresAt <= occupied start
+  Service->>DB: Set HELD with deadline and actor, notify current coordinator
+  Service->>DB: COMMIT on success, ROLLBACK on thrown error
+  Service-->>API: Resolve committed result or throw failure to HTTP boundary
+  API-->>Client: HTTP status and JSON, typed failures mapped
+  Timer->>Service: Call expireVenueHolds at startup and each timer tick
+  Service->>DB: SELECT expire_venue_holds()
+  DB->>DB: Lock overdue holds, set EXPIRED and write deduplicated notices
+  Note over Service,DB: Reads stop counting a hold at its deadline, independently of timer execution.

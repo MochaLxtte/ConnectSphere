@@ -1705,7 +1705,7 @@ The current tested source is identified by the updated SHA-256 manifest. Fronten
 
 **Report ID:** `REPORT-20261025-CLOSEOUT-RETEST`. **Report received:** 25 October 2026. **Source:** Tristan's project-chat confirmation: “We have tested the fixes, you can document that the fixes work and are done.” This follows the current-fix smoke checklist, rather than the earlier reports for the sprint-review dates.
 
-**Outcome:** the closeout fixes and integrated smoke follow-up are **complete, reported Pass**. Application deployment is not planned or required by the [current DoD](../scrum/definition-of-done.md#local-acceptance-policy--25-october-2026). The application testing context is localhost; the existing shared Supabase expiry configuration remains operational evidence in `OPS-20261025-HOLD-EXPIRY-01`.
+**Outcome:** the closeout fixes and integrated smoke follow-up are **complete, reported Pass**. Application deployment is not planned or required by the [current DoD](../scrum/definition-of-done.md). The application testing context is localhost; the existing shared Supabase expiry configuration remains operational evidence in `OPS-20261025-HOLD-EXPIRY-01`.
 
 | Specification | Reported scope / actual result |
 | --- | --- |
@@ -3160,3 +3160,50 @@ A separate read-only review found no blocker in refresh generation, cookie-write
 Evidence under [MAN-20261101-03](evidence/MAN-20261101-03/) includes rendered UI observations, live equipment readback, independent HTTP status results, before/after read-only database comparisons and screenshots. Registered as **S4-E32**; automated verification and migration artifacts are **S4-E31**. Earlier failures and planning placeholders are preserved, and these four case results do not relabel every linked scenario or historic acceptance.
 
 **Release disposition:** connected repair acceptance is complete for these four cases. R24/TC-06-32 remains open for candidate integration, exact-commit CI, actual independent teammate review and the team's freeze decision. No new Scrum meeting, Done-point credit or collective release approval is recorded by this run.
+
+## CI-20261102-199 — pushed release candidate
+
+[PR #80](https://github.com/MochaLxtte/ConnectSphere/pull/80) was opened from `fix/release-regressions`. [CI run 199](https://github.com/MochaLxtte/ConnectSphere/actions/runs/41323715692), run ID `41323715692`, job `124899143896`, completed **successfully**. Head: `0384a3c5edb2b992e52f112edf3b0513134b5b32`; base main: `54910211b4af9920af087e65e2c2ff15b9591b27`; GitHub test-merge: `bb198fe37a42f0f6687902d26ee49e1e7634b943`. The UTC run crossed midnight in Singapore; completion/evidence capture is recorded on **2 November**, without changing the 1 November local and connected execution dates.
+
+Ubuntu CI passed installation, `npm run check` (1,363 frontend, 2,032 backend and two harness tests, types/builds), workspace coverage, migration/seed on disposable PostgreSQL 17, combined coverage (2,868 tests including 836 database tests), and **253/253 browser tests** with two workers and zero retries. Coverage statements/branches/functions/lines: frontend **96.56/93.41/98.54/98.95%**, backend unit/HTTP **90.62/89.98/91.02/90.75%**, combined backend **99.24/97.88/99.72/99.46%**. The Linux frontend line denominator is 3,722 with 39 uncovered, versus the local report's 40 uncovered; both measurements are retained. No new case-level manual Pass is inferred.
+
+Retained under [freeze-candidate-20261101](../scrum/sprint-04/evidence/freeze-candidate-20261101/): `ci-199.txt` (decoded complete job log), `ci-199.json` (run/jobs/artifact metadata) and three `ci-199-*-coverage.json` per-file summaries normalized to repository-relative paths. Artifact `13089869784` was downloaded and its SHA-256 matched GitHub: `b8745f5bffc84112f57787c05d27836efe9c8b398a6db2628b1affb7ce1b6288`. The full 671-entry ZIP is retained locally outside the repo; the GitHub archive expires 15 November. Essential results and per-file coverage remain committed after that expiry. Raw console spacing/ANSI output is retained. All 456 committed source hashes matched the tested local manifest.
+
+Arvin (`arvinty`) and Ryan (`ryanc9029`) were requested as independent reviewers. No approval had been submitted when this record was prepared. This documentation-only evidence follow-up receives its own CI run; the PR Checks tab and final PR update identify that exact head's result. **R24/TC-06-32 remains open for independent review, merge and the team's formal freeze decision.** No self-approval, merge or team decision is claimed.
+
+
+## CI-20261102-MAIN — merge readback and frozen-source verification
+
+The subsequent GitHub readback corrected the earlier assumption that PR #80 remained open: the author (`MochaLxtte`) merged it at **2026-11-01 23:58:58 +08:00**, while candidate CI was still running. The merge commit is `fb6d8d93f721b114accc9857a05d62e859987e23`. Requested reviewers remained listed, but the review API returned no submitted reviews. This is an author merge without a recorded independent GitHub approval; it is not described as reviewed. The code commit itself was `55e2b61` at 23:55:42, before the 23:59 cutoff.
+
+Both the candidate run above and the push-triggered [main CI run 41323940034](https://github.com/MochaLxtte/ConnectSphere/actions/runs/41323940034) subsequently passed. Main's `verify` check completed at **2 November 00:08:53 Singapore time** on the exact merge SHA. It reran installation, types/unit/builds, all coverage floors, migration/seed and combined PostgreSQL tests, then all 253 browser cases. [Main metadata](../scrum/sprint-04/evidence/freeze-candidate-20261101/main-ci.json) and the [full main job log](../scrum/sprint-04/evidence/freeze-candidate-20261101/main-ci.txt) are retained. The connector's commit-workflow listing only returns pull-request-triggered runs; the push-triggered main status was therefore read from GitHub's Actions/check-run API. This was a read-only verification.
+
+Later commits contain documentation/evidence only. They are retained on `docs/release-freeze-evidence`, based on that main commit, because no new PR is wanted while documentation is still being updated. No new main change, application code, SQL, test or configuration edit was made after the cutoff. New findings must be reported without code changes. The editing freeze is in effect; **R24/TC-06-32 formal release acceptance remains Not assessed**, with the missing independent-review evidence explicitly recorded. No team ceremony or acceptance vote is inferred from the freeze instruction or green CI.
+
+## MAN-20261031-S4-REVIEW — team-reported manual results
+
+**Sprint 4 review, 31 October 2026, 14:00 SGT.** Tristan confirmed that each story owner ran their planned manual cases as written and that they all passed. The identified set comprises 72 cases marked manual in the pre-review plan and three manual end-to-end procedures. Ryan’s review account and Ernest’s retrospective give the overall outcome. The earlier written accounts did not list the individual IDs. The case-level entries use the confirmed roster and the sprint’s owner assignments.
+
+| Recorded result | Source and scope |
+| --- | --- |
+| 75 Pass entries | The [individual result record](sprint-4-manual-review.md) lists each ID, planned scenario, test group and executor. The [execution register](test-executions.csv) uses run ID `MAN-20261031-S4-REVIEW` and execution date 31 October. |
+| Method and source | Manual executions reported by the team. The build, environment, detailed observations and individual captures were not supplied for this session. [Meeting accounts](../scrum/review-testing.md) · [Owner assignments](../scrum/sprint-04/review.md#story-decisions) |
+| Release boundary | The 75 cases exclude TC-06-32 and TC-14-20. R24 remains open under the [release decision](../submission/release-record.md#release-decision). Later recorded failures, retests and scoped walkthrough results retain their own dates and environments. |
+
+## REPORT-PREFREEZE-R24 — functional release walkthrough
+
+Tristan reports that the team ran the final release end-to-end test before the 1 November 2026, 23:59 SGT cutoff and that it passed, including R24. The execution register records this as a **team-reported functional Pass** for TC-06-32. The exact date, build, environment, individual participants and per-step output for that reported run are unrecorded. The earlier preparation row and the 1 November walkthrough checkpoint retain their original status.
+
+The retained walkthrough records scoped results for R01–R23 and the R24 browser access/logout checks. It also records a user-observed HTTP 401 after sign-out. Those observations support their specific steps. The passing result for the final test as a whole comes from Tristan's report. It does not supply an independent review or a team release decision. [Earlier walkthrough evidence](#man-20261101-01--signed-out-http-status-confirmed-1-november-2026) · [TC-06-32](case-catalogue/cf-06.md#tc-06-32) · [Formal release decision](../submission/release-record.md#release-decision)
+
+## Pre-freeze case mappings from retained automated runs
+
+Twelve previously unmatched case IDs have Pass results from executions already in this ledger. **AUTO-20261026-KAN26-01** recorded the database migration/constraint and representative persistence checks for TC-DB-202 and TC-DB-204. **AUTO-20261101-FREEZE-CANDIDATE** supplied ten further results: TC-05-15 and TC-14-204 for concurrent writers, plus TC-20-23, TC-20-24, TC-20-404, TC-20-412, TC-20-413, TC-20-416, TC-20-426 and TC-20-428 for notification behaviour.
+
+The 26 October evidence includes individually named PostgreSQL results. For the 1 November results the retained log shows the unfiltered combined run started at 23:35:28 SGT and passed all 2,868 tests across 123 files. The frozen source manifest, test selection and unskipped assertions establish the tests that ran. The case audit links each row to its source and states which part of its specification was verified. The results belong to those original dates and builds. [Full case audit](pre-freeze-case-audit.md) · [26 October run](../scrum/sprint-04/evidence/kan26-20261026/integration.txt) · [1 November run](../scrum/sprint-04/evidence/freeze-candidate-20261101/backend-combined.txt) · [Frozen selection and source hashes](../scrum/sprint-04/evidence/freeze-candidate-20261101/summary.json)
+
+## REPORT-PREFREEZE-MANUAL — team-reported manual cases
+
+Tristan confirms that the team ran the active manual cases before the 1 November 2026, 23:59 SGT cutoff and they passed. The [case-level record](pre-freeze-manual-results.md) identifies 21 previously preparation-only cases by ID and story owner. Two UI smoke checks span two owners; individual step operators were not supplied. No exact date, build, environment or per-step observation is attributed to this report.
+
+The 31 October review checklist is recorded under `MAN-20261031-S4-REVIEW`; the pre-freeze confirmation is a separate source. Existing historical placeholders, automated results and failures remain dated as originally recorded. Superseded requirement versions are excluded from this new run. [Execution register](test-executions.csv) · [Earlier checkpoints and current case dispositions](pre-freeze-case-audit.md)

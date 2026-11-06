@@ -1,0 +1,22 @@
+---
+title: Equipment availability - advisory saved or what-if assessment
+---
+sequenceDiagram
+  autonumber
+  participant Client as Technical Support client
+  participant API as Express HTTP boundary
+  participant Service as Equipment availability service
+  participant DB as PostgreSQL snapshot
+  Client->>API: GET context, POST assessment with requirementsVersion
+  API->>Service: Verified Technical Support and validated input
+  Service->>DB: Load event, saved lines, stock and reservations as one snapshot
+  Service->>Service: Compare source-value requirementsVersion
+  alt saved mode
+  Service->>Service: Aggregate non-cancelled saved lines, enforce current event period
+  Service->>Service: Exclude only the saved RESERVED line IDs being assessed
+  else what-if mode
+  Service->>Service: Use explicit items and interval, exclude no saved reservation
+  end
+  Service->>Service: Compute half-open peak demand against operational stock
+  Service-->>API: Return advisory assessment, no reservation or other write
+  API-->>Client: 200 {assessment}, stale context requires refresh

@@ -1,0 +1,24 @@
+---
+title: Event cancellation - arrangements and notices commit together
+---
+sequenceDiagram
+  autonumber
+  participant Client as Owner or assigned coordinator client
+  participant API as Express HTTP boundary
+  participant Service as cancelEvent
+  participant DB as PostgreSQL
+  Client->>API: POST /api/events/:id/cancel with reason and acknowledgement
+  API->>Service: Validate reason and confirmAffectedArrangements true
+  Service->>DB: BEGIN READ COMMITTED, set transaction actor
+  Service->>DB: Trusted actor, sorted venue gates and bookings before event
+  Service->>Service: Check ownership or current assignment and cancellable state
+  Service->>DB: Assert booking set unchanged, lock sorted equipment pools and lines
+  Service->>DB: Capture affected staff and counts before release
+  Service->>DB: Cancel live venue arrangements, set event CANCELLED
+  DB->>DB: Status trigger releases RESERVED equipment once
+  Service->>DB: Cancel remaining REQUESTED or REJECTED lines and active registrations
+  Service->>DB: Insert cancellation audit, attach internal history reason
+  Service->>DB: Store notices for owner, coordinator, affected staff and attendees
+  Service->>DB: COMMIT on success, ROLLBACK on thrown error
+  Service-->>API: Resolve committed result or throw failure to HTTP boundary
+  API-->>Client: HTTP status and JSON, typed failures mapped

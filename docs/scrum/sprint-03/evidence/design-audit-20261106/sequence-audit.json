@@ -1,0 +1,2937 @@
+[
+  {
+    "name": "seq-registration-withdrawal",
+    "title": "Registration withdrawal - owned record and event-start cutoff",
+    "kind": "sequenceDiagram",
+    "source": "models/seq-registration-withdrawal.mmd",
+    "sha256": "ca8bd151b92b08dfe7b109f602c8b0d53ee864f425d9b08371e52cbfa038fde8",
+    "nodes": [
+      {
+        "id": "Client",
+        "label": "Attendee client",
+        "proof": {
+          "file": "backend/src/modules/registrations/router.ts",
+          "line": 7,
+          "token": "router.",
+          "sha256": "43210e1d45219329c7734bd311f8046a22aed9ae179b7d5841a4df137481d14b"
+        }
+      },
+      {
+        "id": "API",
+        "label": "Express HTTP boundary",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-http.ts",
+          "line": 28,
+          "token": "workflowRoute",
+          "sha256": "1d1df110382c004a8ae6762f36b0573b502e9927afa7506c30284cd09e4831fc"
+        }
+      },
+      {
+        "id": "Service",
+        "label": "withdrawRegistration",
+        "proof": {
+          "file": "backend/src/modules/registrations/service.ts",
+          "line": 43,
+          "token": "function withdrawRegistration",
+          "sha256": "167aa72038bc635dbc15b1038efc5b7ac5bc5b5753121714c226eb7d602f8cae"
+        }
+      },
+      {
+        "id": "DB",
+        "label": "PostgreSQL",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-support.ts",
+          "line": 84,
+          "token": "inActorTransaction",
+          "sha256": "b3ef2d98469c805a9f537d1d4c6aabe5e2f615aa495b8885c86db75f658c4323"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "number": 1,
+        "from": "Client",
+        "to": "API",
+        "label": "POST /api/registrations/:id/withdraw {confirm:true}",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/registrations/router.ts",
+          "line": 10,
+          "token": "'/registrations/:id/withdraw'",
+          "sha256": "43210e1d45219329c7734bd311f8046a22aed9ae179b7d5841a4df137481d14b"
+        }
+      },
+      {
+        "number": 2,
+        "from": "API",
+        "to": "Service",
+        "label": "Verified attendee, UUID and explicit confirmation",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/registrations/service.ts",
+          "line": 46,
+          "token": "WITHDRAWAL_CONFIRMATION_REQUIRED",
+          "sha256": "167aa72038bc635dbc15b1038efc5b7ac5bc5b5753121714c226eb7d602f8cae"
+        }
+      },
+      {
+        "number": 3,
+        "from": "Service",
+        "to": "DB",
+        "label": "BEGIN READ COMMITTED, set transaction actor",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-support.ts",
+          "line": 138,
+          "token": "BEGIN ISOLATION LEVEL READ COMMITTED",
+          "sha256": "b3ef2d98469c805a9f537d1d4c6aabe5e2f615aa495b8885c86db75f658c4323"
+        }
+      },
+      {
+        "number": 4,
+        "from": "Service",
+        "to": "DB",
+        "label": "Share-lock trusted profile, discover only own registration",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/registrations/service.ts",
+          "line": 52,
+          "token": "WHERE id = $1 AND attendee_id = $2",
+          "sha256": "167aa72038bc635dbc15b1038efc5b7ac5bc5b5753121714c226eb7d602f8cae"
+        }
+      },
+      {
+        "number": 5,
+        "from": "Service",
+        "to": "DB",
+        "label": "Lock event, then registration, read database clock",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/registrations/service.ts",
+          "line": 56,
+          "token": "FOR UPDATE OF r",
+          "sha256": "167aa72038bc635dbc15b1038efc5b7ac5bc5b5753121714c226eb7d602f8cae"
+        }
+      },
+      {
+        "number": 6,
+        "from": "Service",
+        "to": "Service",
+        "label": "Refuse withdrawal before replay check",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/registrations/service.ts",
+          "line": 62,
+          "token": "if (!beforeStart(row, now))",
+          "sha256": "167aa72038bc635dbc15b1038efc5b7ac5bc5b5753121714c226eb7d602f8cae"
+        }
+      },
+      {
+        "number": 7,
+        "from": "Service",
+        "to": "Service",
+        "label": "Keep outcome and timestamps, changed false",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/registrations/service.ts",
+          "line": 65,
+          "token": "if (row.status === 'WITHDRAWN')",
+          "sha256": "167aa72038bc635dbc15b1038efc5b7ac5bc5b5753121714c226eb7d602f8cae"
+        }
+      },
+      {
+        "number": 8,
+        "from": "Service",
+        "to": "DB",
+        "label": "Set WITHDRAWN and withdrawal time",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/registrations/service.ts",
+          "line": 68,
+          "token": "SET status = 'WITHDRAWN'",
+          "sha256": "167aa72038bc635dbc15b1038efc5b7ac5bc5b5753121714c226eb7d602f8cae"
+        }
+      },
+      {
+        "number": 9,
+        "from": "DB",
+        "to": "DB",
+        "label": "Registration outcome trigger writes deduplicated notices",
+        "arrow": "->>",
+        "proof": {
+          "file": "database/migrations/019_registration_notification_outcomes.sql",
+          "line": 17,
+          "token": "notify_registration_outcome",
+          "sha256": "d683c90bdb0345b1e1cf8d0c8562e2ffc335fa28fd757a9e483c0982d1d27933"
+        }
+      },
+      {
+        "number": 10,
+        "from": "Service",
+        "to": "DB",
+        "label": "COMMIT on success, ROLLBACK on thrown error",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-support.ts",
+          "line": 141,
+          "token": "client.query('COMMIT')",
+          "sha256": "b3ef2d98469c805a9f537d1d4c6aabe5e2f615aa495b8885c86db75f658c4323"
+        }
+      },
+      {
+        "number": 11,
+        "from": "Service",
+        "to": "API",
+        "label": "Resolve committed result or throw failure to HTTP boundary",
+        "arrow": "-->>",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-http.ts",
+          "line": 56,
+          "token": "await action(actor, request)",
+          "sha256": "1d1df110382c004a8ae6762f36b0573b502e9927afa7506c30284cd09e4831fc"
+        }
+      },
+      {
+        "number": 12,
+        "from": "API",
+        "to": "Client",
+        "label": "HTTP status and JSON, typed failures mapped",
+        "arrow": "-->>",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-http.ts",
+          "line": 25,
+          "token": "statusByKind",
+          "sha256": "1d1df110382c004a8ae6762f36b0573b502e9927afa7506c30284cd09e4831fc"
+        }
+      }
+    ],
+    "notes": "Only an active owned registration can change. A replay after the event-start cutoff is refused. Capacity comes from active rows; no stock-style counter is incremented. Notices are stored in the same transaction, with no push to an inbox client."
+  },
+  {
+    "name": "seq-event-confirmation",
+    "title": "Event confirmation - live readiness under shared arrangement locks",
+    "kind": "sequenceDiagram",
+    "source": "models/seq-event-confirmation.mmd",
+    "sha256": "ff9c55c3fe68ebba8e51c0d20a64170562a6b4b8421e0b215c1a5667b6e42faa",
+    "nodes": [
+      {
+        "id": "Client",
+        "label": "Assigned coordinator client",
+        "proof": {
+          "file": "backend/src/modules/events/confirmation-router.ts",
+          "line": 8,
+          "token": "router.",
+          "sha256": "c3e4527a6d53b7446a2c31dada7917b25cb55c6d25aeb1099d77cf2dc830b10f"
+        }
+      },
+      {
+        "id": "API",
+        "label": "Express HTTP boundary",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-http.ts",
+          "line": 28,
+          "token": "workflowRoute",
+          "sha256": "1d1df110382c004a8ae6762f36b0573b502e9927afa7506c30284cd09e4831fc"
+        }
+      },
+      {
+        "id": "Service",
+        "label": "confirmEvent",
+        "proof": {
+          "file": "backend/src/modules/events/confirmation.ts",
+          "line": 175,
+          "token": "function confirmEvent",
+          "sha256": "f147a39dbe093cf18bd81e1c2072a345345005b5b560b9a690f9a679a13a5db2"
+        }
+      },
+      {
+        "id": "DB",
+        "label": "PostgreSQL",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-support.ts",
+          "line": 84,
+          "token": "inActorTransaction",
+          "sha256": "b3ef2d98469c805a9f537d1d4c6aabe5e2f615aa495b8885c86db75f658c4323"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "number": 1,
+        "from": "Client",
+        "to": "API",
+        "label": "POST /api/events/:id/confirm {}",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/confirmation-router.ts",
+          "line": 12,
+          "token": "'/:id/confirm'",
+          "sha256": "c3e4527a6d53b7446a2c31dada7917b25cb55c6d25aeb1099d77cf2dc830b10f"
+        }
+      },
+      {
+        "number": 2,
+        "from": "API",
+        "to": "Service",
+        "label": "Authenticate, restrict role, validate UUID and empty body",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/confirmation.ts",
+          "line": 179,
+          "token": "parseObjectBody(input ?? {}, [])",
+          "sha256": "f147a39dbe093cf18bd81e1c2072a345345005b5b560b9a690f9a679a13a5db2"
+        }
+      },
+      {
+        "number": 3,
+        "from": "Service",
+        "to": "DB",
+        "label": "BEGIN READ COMMITTED, set transaction actor",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-support.ts",
+          "line": 138,
+          "token": "BEGIN ISOLATION LEVEL READ COMMITTED",
+          "sha256": "b3ef2d98469c805a9f537d1d4c6aabe5e2f615aa495b8885c86db75f658c4323"
+        }
+      },
+      {
+        "number": 4,
+        "from": "Service",
+        "to": "DB",
+        "label": "Trusted profile, venue gates and bookings before event",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/confirmation.ts",
+          "line": 185,
+          "token": "lockEventArrangements(client, eventRequestId)",
+          "sha256": "f147a39dbe093cf18bd81e1c2072a345345005b5b560b9a690f9a679a13a5db2"
+        }
+      },
+      {
+        "number": 5,
+        "from": "Service",
+        "to": "DB",
+        "label": "Sorted equipment pools and lines, share-lock venue catalogue",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/confirmation.ts",
+          "line": 136,
+          "token": "ORDER BY v.id FOR SHARE",
+          "sha256": "f147a39dbe093cf18bd81e1c2072a345345005b5b560b9a690f9a679a13a5db2"
+        }
+      },
+      {
+        "number": 6,
+        "from": "Service",
+        "to": "Service",
+        "label": "Recheck current coordinator assignment",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/confirmation.ts",
+          "line": 186,
+          "token": "requireRelation(actor, event, ['ASSIGNED_COORDINATOR']",
+          "sha256": "f147a39dbe093cf18bd81e1c2072a345345005b5b560b9a690f9a679a13a5db2"
+        }
+      },
+      {
+        "number": 7,
+        "from": "Service",
+        "to": "DB",
+        "label": "Read original confirmation history, changed false",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/confirmation.ts",
+          "line": 188,
+          "token": "if (event.status === 'CONFIRMED')",
+          "sha256": "f147a39dbe093cf18bd81e1c2072a345345005b5b560b9a690f9a679a13a5db2"
+        }
+      },
+      {
+        "number": 8,
+        "from": "Service",
+        "to": "DB",
+        "label": "Require APPROVED and start still in future by database clock",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/confirmation.ts",
+          "line": 160,
+          "token": "await hasStarted(client, eventRequestId)",
+          "sha256": "f147a39dbe093cf18bd81e1c2072a345345005b5b560b9a690f9a679a13a5db2"
+        }
+      },
+      {
+        "number": 9,
+        "from": "Service",
+        "to": "DB",
+        "label": "Read current venue, equipment and pending-change readiness",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/confirmation.ts",
+          "line": 159,
+          "token": "await eventReadiness(client, eventRequestId)",
+          "sha256": "f147a39dbe093cf18bd81e1c2072a345345005b5b560b9a690f9a679a13a5db2"
+        }
+      },
+      {
+        "number": 10,
+        "from": "Service",
+        "to": "Service",
+        "label": "Reject all unmet readiness checks together",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/confirmation.ts",
+          "line": 198,
+          "token": "if (!readiness.ready)",
+          "sha256": "f147a39dbe093cf18bd81e1c2072a345345005b5b560b9a690f9a679a13a5db2"
+        }
+      },
+      {
+        "number": 11,
+        "from": "Service",
+        "to": "DB",
+        "label": "Set event CONFIRMED",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/confirmation.ts",
+          "line": 202,
+          "token": "setEventStatus(client, eventRequestId, 'CONFIRMED')",
+          "sha256": "f147a39dbe093cf18bd81e1c2072a345345005b5b560b9a690f9a679a13a5db2"
+        }
+      },
+      {
+        "number": 12,
+        "from": "DB",
+        "to": "DB",
+        "label": "Status history and final-confirmation notices in transaction",
+        "arrow": "->>",
+        "proof": {
+          "file": "database/migrations/019_registration_notification_outcomes.sql",
+          "line": 40,
+          "token": "notify_final_event_outcome",
+          "sha256": "d683c90bdb0345b1e1cf8d0c8562e2ffc335fa28fd757a9e483c0982d1d27933"
+        }
+      },
+      {
+        "number": 13,
+        "from": "Service",
+        "to": "DB",
+        "label": "COMMIT on success, ROLLBACK on thrown error",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-support.ts",
+          "line": 141,
+          "token": "client.query('COMMIT')",
+          "sha256": "b3ef2d98469c805a9f537d1d4c6aabe5e2f615aa495b8885c86db75f658c4323"
+        }
+      },
+      {
+        "number": 14,
+        "from": "Service",
+        "to": "API",
+        "label": "Resolve committed result or throw failure to HTTP boundary",
+        "arrow": "-->>",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-http.ts",
+          "line": 56,
+          "token": "await action(actor, request)",
+          "sha256": "1d1df110382c004a8ae6762f36b0573b502e9927afa7506c30284cd09e4831fc"
+        }
+      },
+      {
+        "number": 15,
+        "from": "API",
+        "to": "Client",
+        "label": "HTTP status and JSON, typed failures mapped",
+        "arrow": "-->>",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-http.ts",
+          "line": 25,
+          "token": "statusByKind",
+          "sha256": "1d1df110382c004a8ae6762f36b0573b502e9927afa7506c30284cd09e4831fc"
+        }
+      }
+    ],
+    "notes": "The already-confirmed branch precedes first-confirmation state, clock and readiness checks. Safety approval is a separate preparation gate; it is not an extra confirmation precondition. GET /confirmation supplies the panel, and POST wraps the result in {confirmation}."
+  },
+  {
+    "name": "seq-event-cancellation-equipment",
+    "title": "Event cancellation - arrangements and notices commit together",
+    "kind": "sequenceDiagram",
+    "source": "models/seq-event-cancellation-equipment.mmd",
+    "sha256": "ecba7d6dd375fb3e67429e2a7c7e2fc12d0334fe9c9359a1f0e8187254b78dae",
+    "nodes": [
+      {
+        "id": "Client",
+        "label": "Owner or assigned coordinator client",
+        "proof": {
+          "file": "backend/src/modules/events/cancellation-router.ts",
+          "line": 7,
+          "token": "router.",
+          "sha256": "bed99a87648cf1b861d7598747eee4833fbca8406ab5326fd4406b10d53f3d54"
+        }
+      },
+      {
+        "id": "API",
+        "label": "Express HTTP boundary",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-http.ts",
+          "line": 28,
+          "token": "workflowRoute",
+          "sha256": "1d1df110382c004a8ae6762f36b0573b502e9927afa7506c30284cd09e4831fc"
+        }
+      },
+      {
+        "id": "Service",
+        "label": "cancelEvent",
+        "proof": {
+          "file": "backend/src/modules/events/cancellation.ts",
+          "line": 22,
+          "token": "function cancelEvent",
+          "sha256": "da73fcb6830e800c8a638dee48e440ef22be48ade49d1222ce19f9bed41ee8d8"
+        }
+      },
+      {
+        "id": "DB",
+        "label": "PostgreSQL",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-support.ts",
+          "line": 84,
+          "token": "inActorTransaction",
+          "sha256": "b3ef2d98469c805a9f537d1d4c6aabe5e2f615aa495b8885c86db75f658c4323"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "number": 1,
+        "from": "Client",
+        "to": "API",
+        "label": "POST /api/events/:id/cancel with reason and acknowledgement",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/cancellation-router.ts",
+          "line": 7,
+          "token": "'/:id/cancel'",
+          "sha256": "bed99a87648cf1b861d7598747eee4833fbca8406ab5326fd4406b10d53f3d54"
+        }
+      },
+      {
+        "number": 2,
+        "from": "API",
+        "to": "Service",
+        "label": "Validate reason and confirmAffectedArrangements true",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/cancellation.ts",
+          "line": 14,
+          "token": "confirmAffectedArrangements !== true",
+          "sha256": "da73fcb6830e800c8a638dee48e440ef22be48ade49d1222ce19f9bed41ee8d8"
+        }
+      },
+      {
+        "number": 3,
+        "from": "Service",
+        "to": "DB",
+        "label": "BEGIN READ COMMITTED, set transaction actor",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-support.ts",
+          "line": 138,
+          "token": "BEGIN ISOLATION LEVEL READ COMMITTED",
+          "sha256": "b3ef2d98469c805a9f537d1d4c6aabe5e2f615aa495b8885c86db75f658c4323"
+        }
+      },
+      {
+        "number": 4,
+        "from": "Service",
+        "to": "DB",
+        "label": "Trusted actor, sorted venue gates and bookings before event",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/cancellation.ts",
+          "line": 33,
+          "token": "lockVenueBookingsBeforeEvent(client, eventRequestId)",
+          "sha256": "da73fcb6830e800c8a638dee48e440ef22be48ade49d1222ce19f9bed41ee8d8"
+        }
+      },
+      {
+        "number": 5,
+        "from": "Service",
+        "to": "Service",
+        "label": "Check ownership or current assignment and cancellable state",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/cancellation.ts",
+          "line": 43,
+          "token": "eligible.includes(event.status)",
+          "sha256": "da73fcb6830e800c8a638dee48e440ef22be48ade49d1222ce19f9bed41ee8d8"
+        }
+      },
+      {
+        "number": 6,
+        "from": "Service",
+        "to": "DB",
+        "label": "Assert booking set unchanged, lock sorted equipment pools and lines",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/cancellation.ts",
+          "line": 46,
+          "token": "assertVenueBookingsLocked(client, eventRequestId, lockedBookings)",
+          "sha256": "da73fcb6830e800c8a638dee48e440ef22be48ade49d1222ce19f9bed41ee8d8"
+        }
+      },
+      {
+        "number": 7,
+        "from": "Service",
+        "to": "DB",
+        "label": "Capture affected staff and counts before release",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/cancellation.ts",
+          "line": 53,
+          "token": "Capture only arrangements being released",
+          "sha256": "da73fcb6830e800c8a638dee48e440ef22be48ade49d1222ce19f9bed41ee8d8"
+        }
+      },
+      {
+        "number": 8,
+        "from": "Service",
+        "to": "DB",
+        "label": "Cancel live venue arrangements, set event CANCELLED",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/cancellation.ts",
+          "line": 66,
+          "token": "UPDATE event_requests SET status = 'CANCELLED'",
+          "sha256": "da73fcb6830e800c8a638dee48e440ef22be48ade49d1222ce19f9bed41ee8d8"
+        }
+      },
+      {
+        "number": 9,
+        "from": "DB",
+        "to": "DB",
+        "label": "Status trigger releases RESERVED equipment once",
+        "arrow": "->>",
+        "proof": {
+          "file": "database/migrations/015_equipment_reservations.sql",
+          "line": 14,
+          "token": "EVENT_CANCELLED",
+          "sha256": "8f7458aaefd6a93ed297b1f4a02a0442157bdd5ac3d33947deb752ee83cba587"
+        }
+      },
+      {
+        "number": 10,
+        "from": "Service",
+        "to": "DB",
+        "label": "Cancel remaining REQUESTED or REJECTED lines and active registrations",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/cancellation.ts",
+          "line": 73,
+          "token": "status IN ('REQUESTED', 'REJECTED')",
+          "sha256": "da73fcb6830e800c8a638dee48e440ef22be48ade49d1222ce19f9bed41ee8d8"
+        }
+      },
+      {
+        "number": 11,
+        "from": "Service",
+        "to": "DB",
+        "label": "Insert cancellation audit, attach internal history reason",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/cancellation.ts",
+          "line": 78,
+          "token": "INSERT INTO event_cancellations",
+          "sha256": "da73fcb6830e800c8a638dee48e440ef22be48ade49d1222ce19f9bed41ee8d8"
+        }
+      },
+      {
+        "number": 12,
+        "from": "Service",
+        "to": "DB",
+        "label": "Store notices for owner, coordinator, affected staff and attendees",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/cancellation.ts",
+          "line": 98,
+          "token": "recordNotifications(client, notices)",
+          "sha256": "da73fcb6830e800c8a638dee48e440ef22be48ade49d1222ce19f9bed41ee8d8"
+        }
+      },
+      {
+        "number": 13,
+        "from": "Service",
+        "to": "DB",
+        "label": "COMMIT on success, ROLLBACK on thrown error",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-support.ts",
+          "line": 141,
+          "token": "client.query('COMMIT')",
+          "sha256": "b3ef2d98469c805a9f537d1d4c6aabe5e2f615aa495b8885c86db75f658c4323"
+        }
+      },
+      {
+        "number": 14,
+        "from": "Service",
+        "to": "API",
+        "label": "Resolve committed result or throw failure to HTTP boundary",
+        "arrow": "-->>",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-http.ts",
+          "line": 56,
+          "token": "await action(actor, request)",
+          "sha256": "1d1df110382c004a8ae6762f36b0573b502e9927afa7506c30284cd09e4831fc"
+        }
+      },
+      {
+        "number": 15,
+        "from": "API",
+        "to": "Client",
+        "label": "HTTP status and JSON, typed failures mapped",
+        "arrow": "-->>",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-http.ts",
+          "line": 25,
+          "token": "statusByKind",
+          "sha256": "1d1df110382c004a8ae6762f36b0573b502e9927afa7506c30284cd09e4831fc"
+        }
+      }
+    ],
+    "notes": "Repeated whole-event cancellation returns a state conflict. Equipment release preserves allocation history and does not increment pooled stock. Attendee notices omit the internal cancellation reason; only affected staff are selected before updates. Completion is shown separately below."
+  },
+  {
+    "name": "seq-lead-assignment",
+    "title": "Lead allocation and handover - versioned assignment history",
+    "kind": "sequenceDiagram",
+    "source": "models/seq-lead-assignment.mmd",
+    "sha256": "1fe31b1af05cd9dfb29505eb3c8dfdf58aa0141d74f5d80de8440ffe86bd1d38",
+    "nodes": [
+      {
+        "id": "Client",
+        "label": "Coordinator Lead client",
+        "proof": {
+          "file": "backend/src/modules/events/assignment-router.ts",
+          "line": 20,
+          "token": "router.",
+          "sha256": "271ef4aef3a6f7e83895f087400480c8f07700a9a63b35b13393365b695701fd"
+        }
+      },
+      {
+        "id": "API",
+        "label": "Express HTTP boundary",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-http.ts",
+          "line": 28,
+          "token": "workflowRoute",
+          "sha256": "1d1df110382c004a8ae6762f36b0573b502e9927afa7506c30284cd09e4831fc"
+        }
+      },
+      {
+        "id": "Service",
+        "label": "Assignment service",
+        "proof": {
+          "file": "backend/src/modules/events/assignment.ts",
+          "line": 213,
+          "token": "function assignCoordinator",
+          "sha256": "9cb5c95707050fa166737cbaedb45f27624b2ba0e4b67ef107ca320ec9628750"
+        }
+      },
+      {
+        "id": "DB",
+        "label": "PostgreSQL",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-support.ts",
+          "line": 84,
+          "token": "inActorTransaction",
+          "sha256": "b3ef2d98469c805a9f537d1d4c6aabe5e2f615aa495b8885c86db75f658c4323"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "number": 1,
+        "from": "Client",
+        "to": "API",
+        "label": "PUT /api/events/:id/coordinator or POST coordinator/reassign",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/assignment-router.ts",
+          "line": 49,
+          "token": "'/:id/coordinator/reassign'",
+          "sha256": "271ef4aef3a6f7e83895f087400480c8f07700a9a63b35b13393365b695701fd"
+        }
+      },
+      {
+        "number": 2,
+        "from": "API",
+        "to": "Service",
+        "label": "Verified Lead, parse target and optional note or handover reason",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/assignment.ts",
+          "line": 119,
+          "token": "requireLead(actor)",
+          "sha256": "9cb5c95707050fa166737cbaedb45f27624b2ba0e4b67ef107ca320ec9628750"
+        }
+      },
+      {
+        "number": 3,
+        "from": "Service",
+        "to": "DB",
+        "label": "BEGIN READ COMMITTED, set transaction actor",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-support.ts",
+          "line": 138,
+          "token": "BEGIN ISOLATION LEVEL READ COMMITTED",
+          "sha256": "b3ef2d98469c805a9f537d1d4c6aabe5e2f615aa495b8885c86db75f658c4323"
+        }
+      },
+      {
+        "number": 4,
+        "from": "Service",
+        "to": "DB",
+        "label": "Lock event, hide drafts and reject closed states",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/assignment.ts",
+          "line": 222,
+          "token": "lockEventRequest(client, eventRequestId)",
+          "sha256": "9cb5c95707050fa166737cbaedb45f27624b2ba0e4b67ef107ca320ec9628750"
+        }
+      },
+      {
+        "number": 5,
+        "from": "Service",
+        "to": "DB",
+        "label": "Require no coordinator and no active assignment history",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/assignment.ts",
+          "line": 229,
+          "token": "COORDINATOR_ALREADY_ASSIGNED",
+          "sha256": "9cb5c95707050fa166737cbaedb45f27624b2ba0e4b67ef107ca320ec9628750"
+        }
+      },
+      {
+        "number": 6,
+        "from": "Service",
+        "to": "DB",
+        "label": "Lock active history and compare expectedAssignmentVersion",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/assignment.ts",
+          "line": 313,
+          "token": "previous.id !== input.expectedAssignmentVersion",
+          "sha256": "9cb5c95707050fa166737cbaedb45f27624b2ba0e4b67ef107ca320ec9628750"
+        }
+      },
+      {
+        "number": 7,
+        "from": "Service",
+        "to": "Service",
+        "label": "Same target is unchanged only after version check",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/assignment.ts",
+          "line": 316,
+          "token": "input.coordinatorId === event.coordinatorId",
+          "sha256": "9cb5c95707050fa166737cbaedb45f27624b2ba0e4b67ef107ca320ec9628750"
+        }
+      },
+      {
+        "number": 8,
+        "from": "Service",
+        "to": "DB",
+        "label": "Lock selected profile, require available EVENT_COORDINATOR",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/assignment.ts",
+          "line": 244,
+          "token": "FOR NO KEY UPDATE",
+          "sha256": "9cb5c95707050fa166737cbaedb45f27624b2ba0e4b67ef107ca320ec9628750"
+        }
+      },
+      {
+        "number": 9,
+        "from": "Service",
+        "to": "DB",
+        "label": "Close previous interval when handing over, insert assignment",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/assignment.ts",
+          "line": 335,
+          "token": "WITH closed_assignment AS",
+          "sha256": "9cb5c95707050fa166737cbaedb45f27624b2ba0e4b67ef107ca320ec9628750"
+        }
+      },
+      {
+        "number": 10,
+        "from": "Service",
+        "to": "DB",
+        "label": "Set current event coordinator and store allocation notices",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/assignment.ts",
+          "line": 266,
+          "token": "recordNotifications(client, assignmentNotifications(",
+          "sha256": "9cb5c95707050fa166737cbaedb45f27624b2ba0e4b67ef107ca320ec9628750"
+        }
+      },
+      {
+        "number": 11,
+        "from": "Service",
+        "to": "DB",
+        "label": "COMMIT on success, ROLLBACK on thrown error",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-support.ts",
+          "line": 141,
+          "token": "client.query('COMMIT')",
+          "sha256": "b3ef2d98469c805a9f537d1d4c6aabe5e2f615aa495b8885c86db75f658c4323"
+        }
+      },
+      {
+        "number": 12,
+        "from": "Service",
+        "to": "API",
+        "label": "Resolve committed result or throw failure to HTTP boundary",
+        "arrow": "-->>",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-http.ts",
+          "line": 56,
+          "token": "await action(actor, request)",
+          "sha256": "1d1df110382c004a8ae6762f36b0573b502e9927afa7506c30284cd09e4831fc"
+        }
+      },
+      {
+        "number": 13,
+        "from": "API",
+        "to": "Client",
+        "label": "HTTP status and JSON, typed failures mapped",
+        "arrow": "-->>",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-http.ts",
+          "line": 25,
+          "token": "statusByKind",
+          "sha256": "1d1df110382c004a8ae6762f36b0573b502e9927afa7506c30284cd09e4831fc"
+        }
+      }
+    ],
+    "notes": "Initial allocation inserts directly; only reassignment closes a previous interval. Reassignment checks the assignment-row UUID before its same-target no-op, preventing an A \u2192 B \u2192 A stale form from succeeding. Submission leaves the request unassigned for Lead allocation; historical AUTOMATIC assignment_method rows remain valid history. Lead reads do not widen the ordinary event-detail policy."
+  },
+  {
+    "name": "seq-equipment-availability",
+    "title": "Equipment availability - advisory saved or what-if assessment",
+    "kind": "sequenceDiagram",
+    "source": "models/seq-equipment-availability.mmd",
+    "sha256": "a0c80426c5240be3ad7e50f1eba6ee9532888def7ec6f9cb630748811c790887",
+    "nodes": [
+      {
+        "id": "Client",
+        "label": "Technical Support client",
+        "proof": {
+          "file": "backend/src/modules/equipment/availability-router.ts",
+          "line": 18,
+          "token": "router.post",
+          "sha256": "ef3961d89f709a26496d55ce149af194bf75a6507c8310a80f1012270f49a0b3"
+        }
+      },
+      {
+        "id": "API",
+        "label": "Express HTTP boundary",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-http.ts",
+          "line": 28,
+          "token": "workflowRoute",
+          "sha256": "1d1df110382c004a8ae6762f36b0573b502e9927afa7506c30284cd09e4831fc"
+        }
+      },
+      {
+        "id": "Service",
+        "label": "Equipment availability service",
+        "proof": {
+          "file": "backend/src/modules/equipment/availability-service.ts",
+          "line": 104,
+          "token": "function checkEquipmentAvailability",
+          "sha256": "460393e52c5ccd3ebd2cd068f0ef8eb1b2be320669b918a303d7216d73b1c9b9"
+        }
+      },
+      {
+        "id": "DB",
+        "label": "PostgreSQL snapshot",
+        "proof": {
+          "file": "backend/src/modules/equipment/availability-service.ts",
+          "line": 52,
+          "token": "query",
+          "sha256": "460393e52c5ccd3ebd2cd068f0ef8eb1b2be320669b918a303d7216d73b1c9b9"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "number": 1,
+        "from": "Client",
+        "to": "API",
+        "label": "GET context, POST assessment with requirementsVersion",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/equipment/availability-router.ts",
+          "line": 18,
+          "token": "router.post('/events/:id'",
+          "sha256": "ef3961d89f709a26496d55ce149af194bf75a6507c8310a80f1012270f49a0b3"
+        }
+      },
+      {
+        "number": 2,
+        "from": "API",
+        "to": "Service",
+        "label": "Verified Technical Support and validated input",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/equipment/availability-service.ts",
+          "line": 6,
+          "token": "parseEquipmentAvailabilityInput",
+          "sha256": "460393e52c5ccd3ebd2cd068f0ef8eb1b2be320669b918a303d7216d73b1c9b9"
+        }
+      },
+      {
+        "number": 3,
+        "from": "Service",
+        "to": "DB",
+        "label": "Load event, saved lines, stock and reservations as one snapshot",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/equipment/availability-service.ts",
+          "line": 59,
+          "token": "readSnapshot",
+          "sha256": "460393e52c5ccd3ebd2cd068f0ef8eb1b2be320669b918a303d7216d73b1c9b9"
+        }
+      },
+      {
+        "number": 4,
+        "from": "Service",
+        "to": "Service",
+        "label": "Compare source-value requirementsVersion",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/equipment/availability-service.ts",
+          "line": 114,
+          "token": "EQUIPMENT_CONTEXT_CHANGED",
+          "sha256": "460393e52c5ccd3ebd2cd068f0ef8eb1b2be320669b918a303d7216d73b1c9b9"
+        }
+      },
+      {
+        "number": 5,
+        "from": "Service",
+        "to": "Service",
+        "label": "Aggregate non-cancelled saved lines, enforce current event period",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/equipment/availability-service.ts",
+          "line": 132,
+          "token": "EQUIPMENT_REQUEST_PERIOD_MISMATCH",
+          "sha256": "460393e52c5ccd3ebd2cd068f0ef8eb1b2be320669b918a303d7216d73b1c9b9"
+        }
+      },
+      {
+        "number": 6,
+        "from": "Service",
+        "to": "Service",
+        "label": "Exclude only the saved RESERVED line IDs being assessed",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/equipment/availability-service.ts",
+          "line": 135,
+          "token": "status === 'RESERVED'",
+          "sha256": "460393e52c5ccd3ebd2cd068f0ef8eb1b2be320669b918a303d7216d73b1c9b9"
+        }
+      },
+      {
+        "number": 7,
+        "from": "Service",
+        "to": "Service",
+        "label": "Use explicit items and interval, exclude no saved reservation",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/equipment/availability-service.ts",
+          "line": 121,
+          "token": "parsed.mode === 'saved'",
+          "sha256": "460393e52c5ccd3ebd2cd068f0ef8eb1b2be320669b918a303d7216d73b1c9b9"
+        }
+      },
+      {
+        "number": 8,
+        "from": "Service",
+        "to": "Service",
+        "label": "Compute half-open peak demand against operational stock",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/equipment/availability-service.ts",
+          "line": 8,
+          "token": "assessEquipmentItem",
+          "sha256": "460393e52c5ccd3ebd2cd068f0ef8eb1b2be320669b918a303d7216d73b1c9b9"
+        }
+      },
+      {
+        "number": 9,
+        "from": "Service",
+        "to": "API",
+        "label": "Return advisory assessment, no reservation or other write",
+        "arrow": "-->>",
+        "proof": {
+          "file": "backend/src/modules/equipment/availability-router.ts",
+          "line": 19,
+          "token": "assessment: await checkEquipmentAvailability",
+          "sha256": "ef3961d89f709a26496d55ce149af194bf75a6507c8310a80f1012270f49a0b3"
+        }
+      },
+      {
+        "number": 10,
+        "from": "API",
+        "to": "Client",
+        "label": "200 {assessment}, stale context requires refresh",
+        "arrow": "-->>",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-http.ts",
+          "line": 56,
+          "token": "response.status(options.successStatus ?? 200)",
+          "sha256": "1d1df110382c004a8ae6762f36b0573b502e9927afa7506c30284cd09e4831fc"
+        }
+      }
+    ],
+    "notes": "Each check is a fresh advisory snapshot. Inactive stock is zero; exact adjacency does not overlap. What-if mode includes reservations of the same event. The later reservation action performs its own live locked check."
+  },
+  {
+    "name": "seq-equipment-reservation",
+    "title": "Equipment reservation - serialized stock and replay checks",
+    "kind": "sequenceDiagram",
+    "source": "models/seq-equipment-reservation.mmd",
+    "sha256": "d8f06b53ae3481101755f8b6aad999adfeaf2a047e9c7d1e76d5388f24c73e59",
+    "nodes": [
+      {
+        "id": "Client",
+        "label": "Technical Support client",
+        "proof": {
+          "file": "backend/src/modules/equipment/reservation-router.ts",
+          "line": 11,
+          "token": "router.",
+          "sha256": "8f3aa796613e8e90774b9e142f0bf9fc6e381dc15a604778c03c1b40babaadea"
+        }
+      },
+      {
+        "id": "API",
+        "label": "Express HTTP boundary",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-http.ts",
+          "line": 28,
+          "token": "workflowRoute",
+          "sha256": "1d1df110382c004a8ae6762f36b0573b502e9927afa7506c30284cd09e4831fc"
+        }
+      },
+      {
+        "id": "Service",
+        "label": "Equipment reservation service",
+        "proof": {
+          "file": "backend/src/modules/equipment/reservation-service.ts",
+          "line": 157,
+          "token": "function changeEquipmentReservation",
+          "sha256": "371db19a332cb69fcb3f1acf35fdac2f751be91ecb33e77bc20941d5dfa48e1e"
+        }
+      },
+      {
+        "id": "DB",
+        "label": "PostgreSQL",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-support.ts",
+          "line": 84,
+          "token": "inActorTransaction",
+          "sha256": "b3ef2d98469c805a9f537d1d4c6aabe5e2f615aa495b8885c86db75f658c4323"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "number": 1,
+        "from": "Client",
+        "to": "API",
+        "label": "POST reserve or cancel for the named event and saved request",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/equipment/reservation-router.ts",
+          "line": 13,
+          "token": "['reserve', 'cancel']",
+          "sha256": "8f3aa796613e8e90774b9e142f0bf9fc6e381dc15a604778c03c1b40babaadea"
+        }
+      },
+      {
+        "number": 2,
+        "from": "API",
+        "to": "Service",
+        "label": "Verify Technical Support, validate version and cancellation reason",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/equipment/reservation-service.ts",
+          "line": 13,
+          "token": "parseEquipmentReservationInput",
+          "sha256": "371db19a332cb69fcb3f1acf35fdac2f751be91ecb33e77bc20941d5dfa48e1e"
+        }
+      },
+      {
+        "number": 3,
+        "from": "Service",
+        "to": "DB",
+        "label": "BEGIN READ COMMITTED, set transaction actor",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-support.ts",
+          "line": 138,
+          "token": "BEGIN ISOLATION LEVEL READ COMMITTED",
+          "sha256": "b3ef2d98469c805a9f537d1d4c6aabe5e2f615aa495b8885c86db75f658c4323"
+        }
+      },
+      {
+        "number": 4,
+        "from": "Service",
+        "to": "DB",
+        "label": "Lock trusted actor, event and reserve-recipient profile",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/equipment/reservation-service.ts",
+          "line": 169,
+          "token": "Keep the trusted profile stable",
+          "sha256": "371db19a332cb69fcb3f1acf35fdac2f751be91ecb33e77bc20941d5dfa48e1e"
+        }
+      },
+      {
+        "number": 5,
+        "from": "Service",
+        "to": "Service",
+        "label": "Require APPROVED or confirmed TECHNICAL remediation, even for replay",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/equipment/reservation-service.ts",
+          "line": 178,
+          "token": "EQUIPMENT_EVENT_NOT_APPROVED",
+          "sha256": "371db19a332cb69fcb3f1acf35fdac2f751be91ecb33e77bc20941d5dfa48e1e"
+        }
+      },
+      {
+        "number": 6,
+        "from": "Service",
+        "to": "DB",
+        "label": "Lock sorted pools then saved lines, reload live snapshot",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/equipment/reservation-service.ts",
+          "line": 189,
+          "token": "Shared writer protocol: event -> sorted pools -> sorted lines",
+          "sha256": "371db19a332cb69fcb3f1acf35fdac2f751be91ecb33e77bc20941d5dfa48e1e"
+        }
+      },
+      {
+        "number": 7,
+        "from": "Service",
+        "to": "Service",
+        "label": "Validate source version or exact reconstructed pre-action replay",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/equipment/reservation-service.ts",
+          "line": 146,
+          "token": "versionMatches",
+          "sha256": "371db19a332cb69fcb3f1acf35fdac2f751be91ecb33e77bc20941d5dfa48e1e"
+        }
+      },
+      {
+        "number": 8,
+        "from": "Service",
+        "to": "DB",
+        "label": "Check live capacity and exact period, set RESERVED",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/equipment/reservation-service.ts",
+          "line": 204,
+          "token": "reserveEquipmentInTransaction",
+          "sha256": "371db19a332cb69fcb3f1acf35fdac2f751be91ecb33e77bc20941d5dfa48e1e"
+        }
+      },
+      {
+        "number": 9,
+        "from": "Service",
+        "to": "DB",
+        "label": "Write deduplicated reserve notices with the same client",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/equipment/reservation-service.ts",
+          "line": 245,
+          "token": "recordNotifications(client, equipmentReservationNotifications(",
+          "sha256": "371db19a332cb69fcb3f1acf35fdac2f751be91ecb33e77bc20941d5dfa48e1e"
+        }
+      },
+      {
+        "number": 10,
+        "from": "Service",
+        "to": "DB",
+        "label": "Set CANCELLED and immutable release actor, time, reason and cause",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/equipment/reservation-service.ts",
+          "line": 209,
+          "token": "release_cause = 'MANUAL_CANCELLATION'",
+          "sha256": "371db19a332cb69fcb3f1acf35fdac2f751be91ecb33e77bc20941d5dfa48e1e"
+        }
+      },
+      {
+        "number": 11,
+        "from": "Service",
+        "to": "DB",
+        "label": "Read refreshed reservation context",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/equipment/reservation-service.ts",
+          "line": 43,
+          "token": "readEquipmentReservationSnapshot",
+          "sha256": "371db19a332cb69fcb3f1acf35fdac2f751be91ecb33e77bc20941d5dfa48e1e"
+        }
+      },
+      {
+        "number": 12,
+        "from": "Service",
+        "to": "DB",
+        "label": "COMMIT on success, ROLLBACK on thrown error",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-support.ts",
+          "line": 141,
+          "token": "client.query('COMMIT')",
+          "sha256": "b3ef2d98469c805a9f537d1d4c6aabe5e2f615aa495b8885c86db75f658c4323"
+        }
+      },
+      {
+        "number": 13,
+        "from": "Service",
+        "to": "API",
+        "label": "Resolve committed result or throw failure to HTTP boundary",
+        "arrow": "-->>",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-http.ts",
+          "line": 56,
+          "token": "await action(actor, request)",
+          "sha256": "1d1df110382c004a8ae6762f36b0573b502e9927afa7506c30284cd09e4831fc"
+        }
+      },
+      {
+        "number": 14,
+        "from": "API",
+        "to": "Client",
+        "label": "HTTP status and JSON, typed failures mapped",
+        "arrow": "-->>",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-http.ts",
+          "line": 25,
+          "token": "statusByKind",
+          "sha256": "1d1df110382c004a8ae6762f36b0573b502e9927afa7506c30284cd09e4831fc"
+        }
+      }
+    ],
+    "notes": "The input never supplies quantity/type/period. An exact eligible replay returns changed:false without rewriting the allocation or release. Both reservation and saved-request mutation services allow APPROVED, or CONFIRMED only while the latest safety round requests TECHNICAL changes. Other confirmed events are read-only. State eligibility is checked before the replay no-op."
+  },
+  {
+    "name": "seq-safety-review",
+    "title": "Safety review rounds and preparation - current approval required",
+    "kind": "sequenceDiagram",
+    "source": "models/seq-safety-review.mmd",
+    "sha256": "55f159e26d9436dc525fe9023aafe4b97ce74ab5fe2b60c834ff38bcb2bb0d21",
+    "nodes": [
+      {
+        "id": "Client",
+        "label": "Coordinator or Safety Officer client",
+        "proof": {
+          "file": "backend/src/modules/safety/router.ts",
+          "line": 14,
+          "token": "router.",
+          "sha256": "676af0c4928692d3ccce06d0ba7e3ac63e2b94f8938b5197050dd3debb89ff70"
+        }
+      },
+      {
+        "id": "API",
+        "label": "Express HTTP boundary",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-http.ts",
+          "line": 28,
+          "token": "workflowRoute",
+          "sha256": "1d1df110382c004a8ae6762f36b0573b502e9927afa7506c30284cd09e4831fc"
+        }
+      },
+      {
+        "id": "Service",
+        "label": "Safety service",
+        "proof": {
+          "file": "backend/src/modules/safety/service.ts",
+          "line": 150,
+          "token": "function submitSafetyReview",
+          "sha256": "4df1257126672c53ae49ca01ea2c5724117550724610258ae5ccdf6dcaf5de3f"
+        }
+      },
+      {
+        "id": "DB",
+        "label": "PostgreSQL",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-support.ts",
+          "line": 84,
+          "token": "inActorTransaction",
+          "sha256": "b3ef2d98469c805a9f537d1d4c6aabe5e2f615aa495b8885c86db75f658c4323"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "number": 1,
+        "from": "Client",
+        "to": "API",
+        "label": "Coordinator POST /api/events/:id/safety-reviews",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/safety/router.ts",
+          "line": 17,
+          "token": "'/events/:id/safety-reviews'",
+          "sha256": "676af0c4928692d3ccce06d0ba7e3ac63e2b94f8938b5197050dd3debb89ff70"
+        }
+      },
+      {
+        "number": 2,
+        "from": "API",
+        "to": "Service",
+        "label": "Verify assigned coordinator, parse optional planning notes",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/safety/service.ts",
+          "line": 19,
+          "token": "NOTE_FIELDS",
+          "sha256": "4df1257126672c53ae49ca01ea2c5724117550724610258ae5ccdf6dcaf5de3f"
+        }
+      },
+      {
+        "number": 3,
+        "from": "Service",
+        "to": "DB",
+        "label": "BEGIN READ COMMITTED, set transaction actor",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-support.ts",
+          "line": 138,
+          "token": "BEGIN ISOLATION LEVEL READ COMMITTED",
+          "sha256": "b3ef2d98469c805a9f537d1d4c6aabe5e2f615aa495b8885c86db75f658c4323"
+        }
+      },
+      {
+        "number": 4,
+        "from": "Service",
+        "to": "DB",
+        "label": "Lock trusted profile and arrangements, read readiness and latest round",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/safety/service.ts",
+          "line": 158,
+          "token": "lockEventArrangements(client, eventRequestId)",
+          "sha256": "4df1257126672c53ae49ca01ea2c5724117550724610258ae5ccdf6dcaf5de3f"
+        }
+      },
+      {
+        "number": 5,
+        "from": "Service",
+        "to": "Service",
+        "label": "Require ready arrangements and every requested area changed",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/safety/service.ts",
+          "line": 78,
+          "token": "unresolvedPlanningAreas",
+          "sha256": "4df1257126672c53ae49ca01ea2c5724117550724610258ae5ccdf6dcaf5de3f"
+        }
+      },
+      {
+        "number": 6,
+        "from": "Service",
+        "to": "DB",
+        "label": "Insert next PENDING review with arrangement fingerprint",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/safety/service.ts",
+          "line": 177,
+          "token": "INSERT INTO safety_reviews",
+          "sha256": "4df1257126672c53ae49ca01ea2c5724117550724610258ae5ccdf6dcaf5de3f"
+        }
+      },
+      {
+        "number": 7,
+        "from": "DB",
+        "to": "DB",
+        "label": "Capture supplemental context baseline on insert",
+        "arrow": "->>",
+        "proof": {
+          "file": "database/migrations/023_safety_approval_invalidation.sql",
+          "line": 21,
+          "token": "safety_review_context_baselines",
+          "sha256": "87b039205c29c427b32f0d93f6fed76e502cc148981b0869b7ca70bdd4d48955"
+        }
+      },
+      {
+        "number": 8,
+        "from": "Service",
+        "to": "DB",
+        "label": "Notify Safety Officers in submission transaction",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/safety/service.ts",
+          "line": 185,
+          "token": "type: 'SAFETY_REVIEW_SUBMITTED'",
+          "sha256": "4df1257126672c53ae49ca01ea2c5724117550724610258ae5ccdf6dcaf5de3f"
+        }
+      },
+      {
+        "number": 9,
+        "from": "Service",
+        "to": "DB",
+        "label": "COMMIT on success, ROLLBACK on thrown error",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-support.ts",
+          "line": 141,
+          "token": "client.query('COMMIT')",
+          "sha256": "b3ef2d98469c805a9f537d1d4c6aabe5e2f615aa495b8885c86db75f658c4323"
+        }
+      },
+      {
+        "number": 10,
+        "from": "Service",
+        "to": "API",
+        "label": "Resolve committed result or throw failure to HTTP boundary",
+        "arrow": "-->>",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-http.ts",
+          "line": 56,
+          "token": "await action(actor, request)",
+          "sha256": "1d1df110382c004a8ae6762f36b0573b502e9927afa7506c30284cd09e4831fc"
+        }
+      },
+      {
+        "number": 11,
+        "from": "API",
+        "to": "Client",
+        "label": "HTTP status and JSON, typed failures mapped",
+        "arrow": "-->>",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-http.ts",
+          "line": 25,
+          "token": "statusByKind",
+          "sha256": "1d1df110382c004a8ae6762f36b0573b502e9927afa7506c30284cd09e4831fc"
+        }
+      },
+      {
+        "number": 12,
+        "from": "Client",
+        "to": "API",
+        "label": "Officer POST /api/safety-reviews/:id/decision",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/safety/router.ts",
+          "line": 29,
+          "token": "'/safety-reviews/:id/decision'",
+          "sha256": "676af0c4928692d3ccce06d0ba7e3ac63e2b94f8938b5197050dd3debb89ff70"
+        }
+      },
+      {
+        "number": 13,
+        "from": "API",
+        "to": "Service",
+        "label": "Officer-only, decision, fingerprint, notes and requested areas",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/safety/service.ts",
+          "line": 284,
+          "token": "function decideSafetyReview",
+          "sha256": "4df1257126672c53ae49ca01ea2c5724117550724610258ae5ccdf6dcaf5de3f"
+        }
+      },
+      {
+        "number": 14,
+        "from": "Service",
+        "to": "DB",
+        "label": "BEGIN READ COMMITTED, set transaction actor",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-support.ts",
+          "line": 138,
+          "token": "BEGIN ISOLATION LEVEL READ COMMITTED",
+          "sha256": "b3ef2d98469c805a9f537d1d4c6aabe5e2f615aa495b8885c86db75f658c4323"
+        }
+      },
+      {
+        "number": 15,
+        "from": "Service",
+        "to": "DB",
+        "label": "Lock arrangements then target review, check existing decision first",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/safety/service.ts",
+          "line": 298,
+          "token": "if (review.status !== 'PENDING')",
+          "sha256": "4df1257126672c53ae49ca01ea2c5724117550724610258ae5ccdf6dcaf5de3f"
+        }
+      },
+      {
+        "number": 16,
+        "from": "Service",
+        "to": "Service",
+        "label": "Same decision unchanged, different saved decision conflicts",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/safety/service.ts",
+          "line": 301,
+          "token": "SAFETY_REVIEW_DECIDED",
+          "sha256": "4df1257126672c53ae49ca01ea2c5724117550724610258ae5ccdf6dcaf5de3f"
+        }
+      },
+      {
+        "number": 17,
+        "from": "Service",
+        "to": "Service",
+        "label": "For pending round require supplied fingerprint and planning state",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/safety/service.ts",
+          "line": 303,
+          "token": "decision.fingerprint !== review.fingerprint",
+          "sha256": "4df1257126672c53ae49ca01ea2c5724117550724610258ae5ccdf6dcaf5de3f"
+        }
+      },
+      {
+        "number": 18,
+        "from": "Service",
+        "to": "DB",
+        "label": "Require original and supplemental context unchanged and ready",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/safety/service.ts",
+          "line": 310,
+          "token": "if (review.contextChanged || await fingerprint(client, eventId) !== review.fingerprint)",
+          "sha256": "4df1257126672c53ae49ca01ea2c5724117550724610258ae5ccdf6dcaf5de3f"
+        }
+      },
+      {
+        "number": 19,
+        "from": "Service",
+        "to": "DB",
+        "label": "Persist decision, CHANGES_REQUESTED captures per-area baselines",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/safety/service.ts",
+          "line": 321,
+          "token": "INSERT INTO safety_review_change_baselines",
+          "sha256": "4df1257126672c53ae49ca01ea2c5724117550724610258ae5ccdf6dcaf5de3f"
+        }
+      },
+      {
+        "number": 20,
+        "from": "Service",
+        "to": "DB",
+        "label": "Store coordinator and relevant Venue or Technical Staff notices",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/safety/service.ts",
+          "line": 352,
+          "token": "recordNotifications(client, notices)",
+          "sha256": "4df1257126672c53ae49ca01ea2c5724117550724610258ae5ccdf6dcaf5de3f"
+        }
+      },
+      {
+        "number": 21,
+        "from": "Service",
+        "to": "DB",
+        "label": "COMMIT on success, ROLLBACK on thrown error",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-support.ts",
+          "line": 141,
+          "token": "client.query('COMMIT')",
+          "sha256": "b3ef2d98469c805a9f537d1d4c6aabe5e2f615aa495b8885c86db75f658c4323"
+        }
+      },
+      {
+        "number": 22,
+        "from": "Service",
+        "to": "API",
+        "label": "Resolve committed result or throw failure to HTTP boundary",
+        "arrow": "-->>",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-http.ts",
+          "line": 56,
+          "token": "await action(actor, request)",
+          "sha256": "1d1df110382c004a8ae6762f36b0573b502e9927afa7506c30284cd09e4831fc"
+        }
+      },
+      {
+        "number": 23,
+        "from": "API",
+        "to": "Client",
+        "label": "HTTP status and JSON, typed failures mapped",
+        "arrow": "-->>",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-http.ts",
+          "line": 25,
+          "token": "statusByKind",
+          "sha256": "1d1df110382c004a8ae6762f36b0573b502e9927afa7506c30284cd09e4831fc"
+        }
+      },
+      {
+        "number": 24,
+        "from": "Client",
+        "to": "API",
+        "label": "Coordinator POST /api/events/:id/preparation/start {}",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/safety/router.ts",
+          "line": 20,
+          "token": "'/events/:id/preparation/start'",
+          "sha256": "676af0c4928692d3ccce06d0ba7e3ac63e2b94f8938b5197050dd3debb89ff70"
+        }
+      },
+      {
+        "number": 25,
+        "from": "API",
+        "to": "Service",
+        "label": "Assigned coordinator, lock arrangements in new transaction",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/safety/service.ts",
+          "line": 359,
+          "token": "function startPreparation",
+          "sha256": "4df1257126672c53ae49ca01ea2c5724117550724610258ae5ccdf6dcaf5de3f"
+        }
+      },
+      {
+        "number": 26,
+        "from": "Service",
+        "to": "DB",
+        "label": "Require CONFIRMED, latest current approval and live readiness",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/safety/service.ts",
+          "line": 369,
+          "token": "if (event.status !== 'CONFIRMED')",
+          "sha256": "4df1257126672c53ae49ca01ea2c5724117550724610258ae5ccdf6dcaf5de3f"
+        }
+      },
+      {
+        "number": 27,
+        "from": "Service",
+        "to": "DB",
+        "label": "Store preparation time, actor and exact approved round",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/safety/service.ts",
+          "line": 384,
+          "token": "UPDATE event_requests SET preparation_started_at",
+          "sha256": "4df1257126672c53ae49ca01ea2c5724117550724610258ae5ccdf6dcaf5de3f"
+        }
+      },
+      {
+        "number": 28,
+        "from": "Service",
+        "to": "API",
+        "label": "After commit return eventRequestId and changed",
+        "arrow": "-->>",
+        "proof": {
+          "file": "backend/src/modules/safety/service.ts",
+          "line": 386,
+          "token": "return { eventRequestId, changed: true }",
+          "sha256": "4df1257126672c53ae49ca01ea2c5724117550724610258ae5ccdf6dcaf5de3f"
+        }
+      },
+      {
+        "number": 29,
+        "from": "API",
+        "to": "Client",
+        "label": "200 JSON, failures roll back",
+        "arrow": "-->>",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-http.ts",
+          "line": 25,
+          "token": "statusByKind",
+          "sha256": "1d1df110382c004a8ae6762f36b0573b502e9927afa7506c30284cd09e4831fc"
+        }
+      }
+    ],
+    "notes": "Each HTTP action has its own transaction. Identical decided-round retries are handled before fingerprint validation; pending approval still requires the submitted fingerprint and both live context checks. Requested-area baselines fail closed if missing. Preparation validates current approval before its same-round no-op."
+  },
+  {
+    "name": "seq-venue-write-locking",
+    "title": "Venue writers - gates precede booking and event row locks",
+    "kind": "sequenceDiagram",
+    "source": "models/seq-venue-write-locking.mmd",
+    "sha256": "2ba79a7cd1747d5ed9fca86c82c57279a049ffc7778a06cdb51bc92180331504",
+    "nodes": [
+      {
+        "id": "Client",
+        "label": "Planning client",
+        "proof": {
+          "file": "backend/src/modules/venues/venue-bookings-router.ts",
+          "line": 25,
+          "token": "router.post",
+          "sha256": "7dfe8e19c8d029c8066dfbef521d261173d57aa75cc6749eb38186651ddbe80e"
+        }
+      },
+      {
+        "id": "API",
+        "label": "Express HTTP boundary",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-http.ts",
+          "line": 28,
+          "token": "workflowRoute",
+          "sha256": "1d1df110382c004a8ae6762f36b0573b502e9927afa7506c30284cd09e4831fc"
+        }
+      },
+      {
+        "id": "Service",
+        "label": "Venue or lifecycle service",
+        "proof": {
+          "file": "backend/src/modules/venues/booking-service.ts",
+          "line": 359,
+          "token": "lockBooking",
+          "sha256": "93bc18dc6af60df3b48712498acd8e2e435739fbaf4e9de56d1794b743b918c4"
+        }
+      },
+      {
+        "id": "DB",
+        "label": "PostgreSQL",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-support.ts",
+          "line": 84,
+          "token": "inActorTransaction",
+          "sha256": "b3ef2d98469c805a9f537d1d4c6aabe5e2f615aa495b8885c86db75f658c4323"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "number": 1,
+        "from": "Client",
+        "to": "API",
+        "label": "Send authorized venue or lifecycle mutation",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/venues/venue-bookings-router.ts",
+          "line": 25,
+          "token": "'/:id/decision'",
+          "sha256": "7dfe8e19c8d029c8066dfbef521d261173d57aa75cc6749eb38186651ddbe80e"
+        }
+      },
+      {
+        "number": 2,
+        "from": "API",
+        "to": "Service",
+        "label": "Authenticate and enforce route role and identifiers",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-http.ts",
+          "line": 43,
+          "token": "options.roles",
+          "sha256": "1d1df110382c004a8ae6762f36b0573b502e9927afa7506c30284cd09e4831fc"
+        }
+      },
+      {
+        "number": 3,
+        "from": "Service",
+        "to": "DB",
+        "label": "BEGIN READ COMMITTED, set transaction actor",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-support.ts",
+          "line": 138,
+          "token": "BEGIN ISOLATION LEVEL READ COMMITTED",
+          "sha256": "b3ef2d98469c805a9f537d1d4c6aabe5e2f615aa495b8885c86db75f658c4323"
+        }
+      },
+      {
+        "number": 4,
+        "from": "Service",
+        "to": "DB",
+        "label": "Take venue advisory gate before booking row lock",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/venues/booking-service.ts",
+          "line": 359,
+          "token": "async function lockBooking",
+          "sha256": "93bc18dc6af60df3b48712498acd8e2e435739fbaf4e9de56d1794b743b918c4"
+        }
+      },
+      {
+        "number": 5,
+        "from": "Service",
+        "to": "DB",
+        "label": "Lock replacement original before event when approving replacement",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/venues/booking-service.ts",
+          "line": 428,
+          "token": "Locking the original after the event deadlocked",
+          "sha256": "93bc18dc6af60df3b48712498acd8e2e435739fbaf4e9de56d1794b743b918c4"
+        }
+      },
+      {
+        "number": 6,
+        "from": "Service",
+        "to": "DB",
+        "label": "Lock event then venue, re-read clock and availability after waits",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/venues/booking-service.ts",
+          "line": 445,
+          "token": "Recheck the deadline after every lock wait",
+          "sha256": "93bc18dc6af60df3b48712498acd8e2e435739fbaf4e9de56d1794b743b918c4"
+        }
+      },
+      {
+        "number": 7,
+        "from": "Service",
+        "to": "DB",
+        "label": "Take selected venue gate then event and venue rows",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/venues/booking-service.ts",
+          "line": 278,
+          "token": "await lockVenuePlanning(client, submission.venueId)",
+          "sha256": "93bc18dc6af60df3b48712498acd8e2e435739fbaf4e9de56d1794b743b918c4"
+        }
+      },
+      {
+        "number": 8,
+        "from": "Service",
+        "to": "DB",
+        "label": "Snapshot live bookings, take sorted venue gates then booking rows",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/arrangement-locks.ts",
+          "line": 11,
+          "token": "const venueIds =",
+          "sha256": "3195a942a0d2c78458b490a04c674adaf3bdd6aa64d592d8a1d8551a60c6f289"
+        }
+      },
+      {
+        "number": 9,
+        "from": "Service",
+        "to": "DB",
+        "label": "Lock event then verify no new booking escaped the snapshot",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/arrangement-locks.ts",
+          "line": 27,
+          "token": "assertVenueBookingsLocked",
+          "sha256": "3195a942a0d2c78458b490a04c674adaf3bdd6aa64d592d8a1d8551a60c6f289"
+        }
+      },
+      {
+        "number": 10,
+        "from": "Service",
+        "to": "DB",
+        "label": "Apply mutation, triggers enforce buffered occupancy and state",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/venues/booking-service.ts",
+          "line": 383,
+          "token": "mapTriggerConflict",
+          "sha256": "93bc18dc6af60df3b48712498acd8e2e435739fbaf4e9de56d1794b743b918c4"
+        }
+      },
+      {
+        "number": 11,
+        "from": "Service",
+        "to": "DB",
+        "label": "COMMIT on success, ROLLBACK on thrown error",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-support.ts",
+          "line": 141,
+          "token": "client.query('COMMIT')",
+          "sha256": "b3ef2d98469c805a9f537d1d4c6aabe5e2f615aa495b8885c86db75f658c4323"
+        }
+      },
+      {
+        "number": 12,
+        "from": "Service",
+        "to": "API",
+        "label": "Resolve committed result or throw failure to HTTP boundary",
+        "arrow": "-->>",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-http.ts",
+          "line": 56,
+          "token": "await action(actor, request)",
+          "sha256": "1d1df110382c004a8ae6762f36b0573b502e9927afa7506c30284cd09e4831fc"
+        }
+      },
+      {
+        "number": 13,
+        "from": "API",
+        "to": "Client",
+        "label": "HTTP status and JSON, typed failures mapped",
+        "arrow": "-->>",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-http.ts",
+          "line": 25,
+          "token": "statusByKind",
+          "sha256": "1d1df110382c004a8ae6762f36b0573b502e9927afa7506c30284cd09e4831fc"
+        }
+      }
+    ],
+    "notes": "This shows the shared venue-gate ordering, not one universal lock list. The existing-booking branch models approval and hold placement; a rejection skips the approval-only event/venue eligibility checks. Venue catalogue edits lock the venue row and check expected buffer values. Outage writers use gate \u2192 venue \u2192 overlapping hold rows; they do not lock reverse event/review rows. Confirmation additionally locks equipment rows and share-locks venues. A newly discovered arrangement yields a conflict instead of taking a gate after the event."
+  },
+  {
+    "name": "seq-venue-hold",
+    "title": "Venue temporary hold - deadline and automatic expiry",
+    "kind": "sequenceDiagram",
+    "source": "models/seq-venue-hold.mmd",
+    "sha256": "c21b01165ded51b8d6c51034b72863d04c3c17a1918cb385c8e4d10626a56a3a",
+    "nodes": [
+      {
+        "id": "Client",
+        "label": "Venue Staff client",
+        "proof": {
+          "file": "backend/src/modules/venues/venue-bookings-router.ts",
+          "line": 15,
+          "token": "router.",
+          "sha256": "7dfe8e19c8d029c8066dfbef521d261173d57aa75cc6749eb38186651ddbe80e"
+        }
+      },
+      {
+        "id": "API",
+        "label": "Express HTTP boundary",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-http.ts",
+          "line": 28,
+          "token": "workflowRoute",
+          "sha256": "1d1df110382c004a8ae6762f36b0573b502e9927afa7506c30284cd09e4831fc"
+        }
+      },
+      {
+        "id": "Service",
+        "label": "Venue booking service",
+        "proof": {
+          "file": "backend/src/modules/venues/booking-service.ts",
+          "line": 524,
+          "token": "function placeVenueHold",
+          "sha256": "93bc18dc6af60df3b48712498acd8e2e435739fbaf4e9de56d1794b743b918c4"
+        }
+      },
+      {
+        "id": "DB",
+        "label": "PostgreSQL",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-support.ts",
+          "line": 84,
+          "token": "inActorTransaction",
+          "sha256": "b3ef2d98469c805a9f537d1d4c6aabe5e2f615aa495b8885c86db75f658c4323"
+        }
+      },
+      {
+        "id": "Timer",
+        "label": "API startup and 60-second timer",
+        "proof": {
+          "file": "backend/src/modules/venues/hold-expiry-scheduler.ts",
+          "line": 22,
+          "token": "60_000",
+          "sha256": "626805eecc6cc40add24694311fdc0bdebe514a148800eea704d73744a97873e"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "number": 1,
+        "from": "Client",
+        "to": "API",
+        "label": "POST /api/venue-bookings/:id/hold {expiresAt}",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/venues/venue-bookings-router.ts",
+          "line": 33,
+          "token": "'/:id/hold'",
+          "sha256": "7dfe8e19c8d029c8066dfbef521d261173d57aa75cc6749eb38186651ddbe80e"
+        }
+      },
+      {
+        "number": 2,
+        "from": "API",
+        "to": "Service",
+        "label": "Verify Venue Staff and explicit deadline",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/venues/booking-service.ts",
+          "line": 531,
+          "token": "parseHoldPlacement(input)",
+          "sha256": "93bc18dc6af60df3b48712498acd8e2e435739fbaf4e9de56d1794b743b918c4"
+        }
+      },
+      {
+        "number": 3,
+        "from": "Service",
+        "to": "DB",
+        "label": "BEGIN READ COMMITTED, set transaction actor",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-support.ts",
+          "line": 138,
+          "token": "BEGIN ISOLATION LEVEL READ COMMITTED",
+          "sha256": "b3ef2d98469c805a9f537d1d4c6aabe5e2f615aa495b8885c86db75f658c4323"
+        }
+      },
+      {
+        "number": 4,
+        "from": "Service",
+        "to": "DB",
+        "label": "Take venue gate, lock booking then event then venue",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/venues/booking-service.ts",
+          "line": 418,
+          "token": "const booking = await lockBooking(client, bookingId)",
+          "sha256": "93bc18dc6af60df3b48712498acd8e2e435739fbaf4e9de56d1794b743b918c4"
+        }
+      },
+      {
+        "number": 5,
+        "from": "Service",
+        "to": "Service",
+        "label": "Require PENDING booking and APPROVED event",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/venues/booking-service.ts",
+          "line": 538,
+          "token": "if (booking.status !== 'PENDING')",
+          "sha256": "93bc18dc6af60df3b48712498acd8e2e435739fbaf4e9de56d1794b743b918c4"
+        }
+      },
+      {
+        "number": 6,
+        "from": "Service",
+        "to": "DB",
+        "label": "Recheck suitability, buffered occupancy, hours and database clock",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/venues/booking-service.ts",
+          "line": 453,
+          "token": "await assertOccupiedIntervalAvailable(client, booking.venueId",
+          "sha256": "93bc18dc6af60df3b48712498acd8e2e435739fbaf4e9de56d1794b743b918c4"
+        }
+      },
+      {
+        "number": 7,
+        "from": "Service",
+        "to": "Service",
+        "label": "Require now < expiresAt <= occupied start",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/venues/booking-service.ts",
+          "line": 179,
+          "token": "venue_occupied_start($2::timestamptz, v.setup_minutes)",
+          "sha256": "93bc18dc6af60df3b48712498acd8e2e435739fbaf4e9de56d1794b743b918c4"
+        }
+      },
+      {
+        "number": 8,
+        "from": "Service",
+        "to": "DB",
+        "label": "Set HELD with deadline and actor, notify current coordinator",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/venues/booking-service.ts",
+          "line": 579,
+          "token": "SET status = 'HELD', hold_expires_at",
+          "sha256": "93bc18dc6af60df3b48712498acd8e2e435739fbaf4e9de56d1794b743b918c4"
+        }
+      },
+      {
+        "number": 9,
+        "from": "Service",
+        "to": "DB",
+        "label": "COMMIT on success, ROLLBACK on thrown error",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-support.ts",
+          "line": 141,
+          "token": "client.query('COMMIT')",
+          "sha256": "b3ef2d98469c805a9f537d1d4c6aabe5e2f615aa495b8885c86db75f658c4323"
+        }
+      },
+      {
+        "number": 10,
+        "from": "Service",
+        "to": "API",
+        "label": "Resolve committed result or throw failure to HTTP boundary",
+        "arrow": "-->>",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-http.ts",
+          "line": 56,
+          "token": "await action(actor, request)",
+          "sha256": "1d1df110382c004a8ae6762f36b0573b502e9927afa7506c30284cd09e4831fc"
+        }
+      },
+      {
+        "number": 11,
+        "from": "API",
+        "to": "Client",
+        "label": "HTTP status and JSON, typed failures mapped",
+        "arrow": "-->>",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-http.ts",
+          "line": 25,
+          "token": "statusByKind",
+          "sha256": "1d1df110382c004a8ae6762f36b0573b502e9927afa7506c30284cd09e4831fc"
+        }
+      },
+      {
+        "number": 12,
+        "from": "Timer",
+        "to": "Service",
+        "label": "Call expireVenueHolds at startup and each timer tick",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/venues/hold-expiry-scheduler.ts",
+          "line": 33,
+          "token": "await expireVenueHolds(pool)",
+          "sha256": "626805eecc6cc40add24694311fdc0bdebe514a148800eea704d73744a97873e"
+        }
+      },
+      {
+        "number": 13,
+        "from": "Service",
+        "to": "DB",
+        "label": "SELECT expire_venue_holds()",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/venues/booking-service.ts",
+          "line": 709,
+          "token": "SELECT expire_venue_holds() AS expired",
+          "sha256": "93bc18dc6af60df3b48712498acd8e2e435739fbaf4e9de56d1794b743b918c4"
+        }
+      },
+      {
+        "number": 14,
+        "from": "DB",
+        "to": "DB",
+        "label": "Lock overdue holds, set EXPIRED and write deduplicated notices",
+        "arrow": "->>",
+        "proof": {
+          "file": "database/migrations/013_venue_holds.sql",
+          "line": 102,
+          "token": "CREATE FUNCTION expire_venue_holds",
+          "sha256": "999e966a9c6cf95b433fe08b0c74959317b92ad5180dc411f8a4778eff8447e1"
+        }
+      }
+    ],
+    "notes": "An approval must finish its deadline check while owning current locks. Staff cancellation needs a reason; an outage can also release an overlapping live hold. Optional pg_cron is another caller of the same idempotent SQL function, not a required extension or browser timer."
+  },
+  {
+    "name": "seq-venue-recovery",
+    "title": "Venue outage - preserve approved booking and recover arrangements",
+    "kind": "sequenceDiagram",
+    "source": "models/seq-venue-recovery.mmd",
+    "sha256": "59d36c0de513fc0c563076ec64a9f70f5ae27afab670cf21610a40cd87c6039d",
+    "nodes": [
+      {
+        "id": "Client",
+        "label": "Venue Staff client",
+        "proof": {
+          "file": "backend/src/modules/venues/block-router.ts",
+          "line": 19,
+          "token": "router.",
+          "sha256": "bd133fdf6782848a85c49cf71394f60a008c5ef135b9706a9e32802a489650e3"
+        }
+      },
+      {
+        "id": "API",
+        "label": "Express HTTP boundary",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-http.ts",
+          "line": 28,
+          "token": "workflowRoute",
+          "sha256": "1d1df110382c004a8ae6762f36b0573b502e9927afa7506c30284cd09e4831fc"
+        }
+      },
+      {
+        "id": "Service",
+        "label": "Venue outage service",
+        "proof": {
+          "file": "backend/src/modules/venues/block-service.ts",
+          "line": 79,
+          "token": "function createVenueBlock",
+          "sha256": "ab5e1747503f9eac9c878da747b51ddce810ddec898be0a06485a755e28d4990"
+        }
+      },
+      {
+        "id": "DB",
+        "label": "PostgreSQL",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-support.ts",
+          "line": 84,
+          "token": "inActorTransaction",
+          "sha256": "b3ef2d98469c805a9f537d1d4c6aabe5e2f615aa495b8885c86db75f658c4323"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "number": 1,
+        "from": "Client",
+        "to": "API",
+        "label": "POST /api/venues/:venueId/unavailability",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/venues/block-router.ts",
+          "line": 25,
+          "token": "router.post('/:venueId/unavailability'",
+          "sha256": "bd133fdf6782848a85c49cf71394f60a008c5ef135b9706a9e32802a489650e3"
+        }
+      },
+      {
+        "number": 2,
+        "from": "API",
+        "to": "Service",
+        "label": "Staff-only, validate outage period and reason",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/venues/block-service.ts",
+          "line": 84,
+          "token": "parseBlockSubmission(input)",
+          "sha256": "ab5e1747503f9eac9c878da747b51ddce810ddec898be0a06485a755e28d4990"
+        }
+      },
+      {
+        "number": 3,
+        "from": "Service",
+        "to": "DB",
+        "label": "BEGIN READ COMMITTED, set transaction actor",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-support.ts",
+          "line": 138,
+          "token": "BEGIN ISOLATION LEVEL READ COMMITTED",
+          "sha256": "b3ef2d98469c805a9f537d1d4c6aabe5e2f615aa495b8885c86db75f658c4323"
+        }
+      },
+      {
+        "number": 4,
+        "from": "Service",
+        "to": "DB",
+        "label": "Take venue gate, lock active venue and overlapping live holds",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/venues/block-service.ts",
+          "line": 86,
+          "token": "await lockVenuePlanning(client, venueId)",
+          "sha256": "ab5e1747503f9eac9c878da747b51ddce810ddec898be0a06485a755e28d4990"
+        }
+      },
+      {
+        "number": 5,
+        "from": "Service",
+        "to": "DB",
+        "label": "Release overlapping HELD arrangements with recorded reason",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/venues/block-service.ts",
+          "line": 2,
+          "token": "releaseHold",
+          "sha256": "ab5e1747503f9eac9c878da747b51ddce810ddec898be0a06485a755e28d4990"
+        }
+      },
+      {
+        "number": 6,
+        "from": "Service",
+        "to": "DB",
+        "label": "Insert unavailability, record impacts for overlapping APPROVED bookings",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/venues/block-service.ts",
+          "line": 8,
+          "token": "recordOutageImpacts",
+          "sha256": "ab5e1747503f9eac9c878da747b51ddce810ddec898be0a06485a755e28d4990"
+        }
+      },
+      {
+        "number": 7,
+        "from": "Service",
+        "to": "DB",
+        "label": "Keep approved booking and event, store recovery notices",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/venues/block-service.ts",
+          "line": 120,
+          "token": "recordNotifications(client, outageRecoveryNotifications(",
+          "sha256": "ab5e1747503f9eac9c878da747b51ddce810ddec898be0a06485a755e28d4990"
+        }
+      },
+      {
+        "number": 8,
+        "from": "Service",
+        "to": "DB",
+        "label": "COMMIT on success, ROLLBACK on thrown error",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-support.ts",
+          "line": 141,
+          "token": "client.query('COMMIT')",
+          "sha256": "b3ef2d98469c805a9f537d1d4c6aabe5e2f615aa495b8885c86db75f658c4323"
+        }
+      },
+      {
+        "number": 9,
+        "from": "Service",
+        "to": "API",
+        "label": "Resolve committed result or throw failure to HTTP boundary",
+        "arrow": "-->>",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-http.ts",
+          "line": 56,
+          "token": "await action(actor, request)",
+          "sha256": "1d1df110382c004a8ae6762f36b0573b502e9927afa7506c30284cd09e4831fc"
+        }
+      },
+      {
+        "number": 10,
+        "from": "API",
+        "to": "Client",
+        "label": "HTTP status and JSON, typed failures mapped",
+        "arrow": "-->>",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-http.ts",
+          "line": 25,
+          "token": "statusByKind",
+          "sha256": "1d1df110382c004a8ae6762f36b0573b502e9927afa7506c30284cd09e4831fc"
+        }
+      },
+      {
+        "number": 11,
+        "from": "Client",
+        "to": "API",
+        "label": "DELETE outage block by venueId and blockId",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/venues/block-router.ts",
+          "line": 32,
+          "token": "router.delete('/:venueId/unavailability/:blockId'",
+          "sha256": "bd133fdf6782848a85c49cf71394f60a008c5ef135b9706a9e32802a489650e3"
+        }
+      },
+      {
+        "number": 12,
+        "from": "API",
+        "to": "Service",
+        "label": "Staff-only, locate block then take its venue gate",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/venues/block-service.ts",
+          "line": 135,
+          "token": "function deleteVenueBlock",
+          "sha256": "ab5e1747503f9eac9c878da747b51ddce810ddec898be0a06485a755e28d4990"
+        }
+      },
+      {
+        "number": 13,
+        "from": "Service",
+        "to": "DB",
+        "label": "In transaction, clear open impacts and delete block",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/venues/block-service.ts",
+          "line": 148,
+          "token": "clearOutageImpacts(client, blockId)",
+          "sha256": "ab5e1747503f9eac9c878da747b51ddce810ddec898be0a06485a755e28d4990"
+        }
+      },
+      {
+        "number": 14,
+        "from": "Service",
+        "to": "API",
+        "label": "After commit return cleared booking IDs",
+        "arrow": "-->>",
+        "proof": {
+          "file": "backend/src/modules/venues/block-router.ts",
+          "line": 38,
+          "token": "return { id: blockId, clearedBookingIds }",
+          "sha256": "bd133fdf6782848a85c49cf71394f60a008c5ef135b9706a9e32802a489650e3"
+        }
+      },
+      {
+        "number": 15,
+        "from": "API",
+        "to": "Client",
+        "label": "200 {id, clearedBookingIds}",
+        "arrow": "-->>",
+        "proof": {
+          "file": "backend/src/modules/venues/block-router.ts",
+          "line": 38,
+          "token": "return { id: blockId, clearedBookingIds }",
+          "sha256": "bd133fdf6782848a85c49cf71394f60a008c5ef135b9706a9e32802a489650e3"
+        }
+      }
+    ],
+    "notes": "Approved bookings are retained with RECOVERY_REQUIRED impacts. A successfully approved replacement resolves the original recovery and cancels the superseded arrangement in the booking decision transaction. Removing one block clears only its impacts; other outages can still block readiness. The implemented DELETE looks up blockId and does not verify it belongs to the venueId path segment; documented as a limitation, not silently fixed in a diagram."
+  },
+  {
+    "name": "seq-event-completion",
+    "title": "Event completion - ended confirmed event and equipment release",
+    "kind": "sequenceDiagram",
+    "source": "models/seq-event-completion.mmd",
+    "sha256": "98573f36ad1c647904e358214ec0f2f8ad27937b41cc346ad43c9fef59635c64",
+    "nodes": [
+      {
+        "id": "Client",
+        "label": "Assigned coordinator client",
+        "proof": {
+          "file": "backend/src/modules/events/completion-router.ts",
+          "line": 8,
+          "token": "router.",
+          "sha256": "ce9bc00a11e78c417e85fcf5392f282728e9f476ae1f2f9c5865289ed7897025"
+        }
+      },
+      {
+        "id": "API",
+        "label": "Express HTTP boundary",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-http.ts",
+          "line": 28,
+          "token": "workflowRoute",
+          "sha256": "1d1df110382c004a8ae6762f36b0573b502e9927afa7506c30284cd09e4831fc"
+        }
+      },
+      {
+        "id": "Service",
+        "label": "completeEvent",
+        "proof": {
+          "file": "backend/src/modules/events/completion.ts",
+          "line": 26,
+          "token": "function completeEvent",
+          "sha256": "d4da7464455ee9d58be6ba05d33a030989af0ebfdaaac73380ac72c16959c5ca"
+        }
+      },
+      {
+        "id": "DB",
+        "label": "PostgreSQL",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-support.ts",
+          "line": 84,
+          "token": "inActorTransaction",
+          "sha256": "b3ef2d98469c805a9f537d1d4c6aabe5e2f615aa495b8885c86db75f658c4323"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "number": 1,
+        "from": "Client",
+        "to": "API",
+        "label": "POST /api/events/:id/complete",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/completion-router.ts",
+          "line": 8,
+          "token": "'/:id/complete'",
+          "sha256": "ce9bc00a11e78c417e85fcf5392f282728e9f476ae1f2f9c5865289ed7897025"
+        }
+      },
+      {
+        "number": 2,
+        "from": "API",
+        "to": "Service",
+        "label": "Verify coordinator and UUID",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/completion.ts",
+          "line": 26,
+          "token": "function completeEvent",
+          "sha256": "d4da7464455ee9d58be6ba05d33a030989af0ebfdaaac73380ac72c16959c5ca"
+        }
+      },
+      {
+        "number": 3,
+        "from": "Service",
+        "to": "DB",
+        "label": "BEGIN READ COMMITTED, set transaction actor",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-support.ts",
+          "line": 138,
+          "token": "BEGIN ISOLATION LEVEL READ COMMITTED",
+          "sha256": "b3ef2d98469c805a9f537d1d4c6aabe5e2f615aa495b8885c86db75f658c4323"
+        }
+      },
+      {
+        "number": 4,
+        "from": "Service",
+        "to": "DB",
+        "label": "Trusted profile, venue gates and bookings before event",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/completion.ts",
+          "line": 35,
+          "token": "lockVenueBookingsBeforeEvent(client, eventRequestId)",
+          "sha256": "d4da7464455ee9d58be6ba05d33a030989af0ebfdaaac73380ac72c16959c5ca"
+        }
+      },
+      {
+        "number": 5,
+        "from": "Service",
+        "to": "Service",
+        "label": "Require current coordinator, CONFIRMED and database-clock end reached",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/completion.ts",
+          "line": 51,
+          "token": "event.ended !== true",
+          "sha256": "d4da7464455ee9d58be6ba05d33a030989af0ebfdaaac73380ac72c16959c5ca"
+        }
+      },
+      {
+        "number": 6,
+        "from": "Service",
+        "to": "DB",
+        "label": "Assert booking set, lock sorted equipment pools and lines",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/completion.ts",
+          "line": 55,
+          "token": "assertVenueBookingsLocked(client, eventRequestId, lockedBookings)",
+          "sha256": "d4da7464455ee9d58be6ba05d33a030989af0ebfdaaac73380ac72c16959c5ca"
+        }
+      },
+      {
+        "number": 7,
+        "from": "Service",
+        "to": "DB",
+        "label": "Count RESERVED lines, set event COMPLETED",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/completion.ts",
+          "line": 65,
+          "token": "UPDATE event_requests SET status = 'COMPLETED'",
+          "sha256": "d4da7464455ee9d58be6ba05d33a030989af0ebfdaaac73380ac72c16959c5ca"
+        }
+      },
+      {
+        "number": 8,
+        "from": "DB",
+        "to": "DB",
+        "label": "Record history and release reservations as EVENT_COMPLETED",
+        "arrow": "->>",
+        "proof": {
+          "file": "database/migrations/015_equipment_reservations.sql",
+          "line": 14,
+          "token": "EVENT_COMPLETED",
+          "sha256": "8f7458aaefd6a93ed297b1f4a02a0442157bdd5ac3d33947deb752ee83cba587"
+        }
+      },
+      {
+        "number": 9,
+        "from": "Service",
+        "to": "DB",
+        "label": "Read saved completion history and write completion notices",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/completion.ts",
+          "line": 73,
+          "token": "recordNotifications(client, eventCompletedNotifications(",
+          "sha256": "d4da7464455ee9d58be6ba05d33a030989af0ebfdaaac73380ac72c16959c5ca"
+        }
+      },
+      {
+        "number": 10,
+        "from": "Service",
+        "to": "DB",
+        "label": "COMMIT on success, ROLLBACK on thrown error",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-support.ts",
+          "line": 141,
+          "token": "client.query('COMMIT')",
+          "sha256": "b3ef2d98469c805a9f537d1d4c6aabe5e2f615aa495b8885c86db75f658c4323"
+        }
+      },
+      {
+        "number": 11,
+        "from": "Service",
+        "to": "API",
+        "label": "Resolve committed result or throw failure to HTTP boundary",
+        "arrow": "-->>",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-http.ts",
+          "line": 56,
+          "token": "await action(actor, request)",
+          "sha256": "1d1df110382c004a8ae6762f36b0573b502e9927afa7506c30284cd09e4831fc"
+        }
+      },
+      {
+        "number": 12,
+        "from": "API",
+        "to": "Client",
+        "label": "HTTP status and JSON, typed failures mapped",
+        "arrow": "-->>",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-http.ts",
+          "line": 25,
+          "token": "statusByKind",
+          "sha256": "1d1df110382c004a8ae6762f36b0573b502e9927afa7506c30284cd09e4831fc"
+        }
+      }
+    ],
+    "notes": "Completion leaves registrations and venue bookings as history; it does not cancel them. Repeated completion conflicts with EVENT_ALREADY_COMPLETED. The route does not inspect the request body. GET /completion returns {completion:null} for unrelated, absent or not-completed records."
+  },
+  {
+    "name": "seq-planning-change",
+    "title": "Significant planning change - reviewed revision and arrangement impact",
+    "kind": "sequenceDiagram",
+    "source": "models/seq-planning-change.mmd",
+    "sha256": "4c697ff12b33192633a880176c98784371b254589e5cde2dfb61697ac94b9bf5",
+    "nodes": [
+      {
+        "id": "Client",
+        "label": "Assigned coordinator client",
+        "proof": {
+          "file": "backend/src/modules/events/change-request-router.ts",
+          "line": 14,
+          "token": "router.",
+          "sha256": "331d5bff35e02d7c48691381ec14d5d61377ac4c95970a236ed842917b61839a"
+        }
+      },
+      {
+        "id": "API",
+        "label": "Express HTTP boundary",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-http.ts",
+          "line": 28,
+          "token": "workflowRoute",
+          "sha256": "1d1df110382c004a8ae6762f36b0573b502e9927afa7506c30284cd09e4831fc"
+        }
+      },
+      {
+        "id": "Service",
+        "label": "decideChangeRequest",
+        "proof": {
+          "file": "backend/src/modules/events/change-requests.ts",
+          "line": 255,
+          "token": "function decideChangeRequest",
+          "sha256": "e94723428ec0e70d4f7494f41d2fabb13cea58435b285c2822a99b86711b1e85"
+        }
+      },
+      {
+        "id": "DB",
+        "label": "PostgreSQL",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-support.ts",
+          "line": 84,
+          "token": "inActorTransaction",
+          "sha256": "b3ef2d98469c805a9f537d1d4c6aabe5e2f615aa495b8885c86db75f658c4323"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "number": 1,
+        "from": "Client",
+        "to": "API",
+        "label": "POST decision for the named event and change request",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/change-request-router.ts",
+          "line": 28,
+          "token": "'/:id/change-requests/:changeRequestId/decision'",
+          "sha256": "331d5bff35e02d7c48691381ec14d5d61377ac4c95970a236ed842917b61839a"
+        }
+      },
+      {
+        "number": 2,
+        "from": "API",
+        "to": "Service",
+        "label": "Coordinator, decision and required expectedRevision",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/change-requests.ts",
+          "line": 80,
+          "token": "parseExpectedRevision(body.expectedRevision, true)",
+          "sha256": "e94723428ec0e70d4f7494f41d2fabb13cea58435b285c2822a99b86711b1e85"
+        }
+      },
+      {
+        "number": 3,
+        "from": "Service",
+        "to": "DB",
+        "label": "BEGIN READ COMMITTED, set transaction actor",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-support.ts",
+          "line": 138,
+          "token": "BEGIN ISOLATION LEVEL READ COMMITTED",
+          "sha256": "b3ef2d98469c805a9f537d1d4c6aabe5e2f615aa495b8885c86db75f658c4323"
+        }
+      },
+      {
+        "number": 4,
+        "from": "Service",
+        "to": "DB",
+        "label": "Take venue gates and booking locks before event",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/change-requests.ts",
+          "line": 263,
+          "token": "await lockVenueBookingsBeforeEvent(client, eventRequestId)",
+          "sha256": "e94723428ec0e70d4f7494f41d2fabb13cea58435b285c2822a99b86711b1e85"
+        }
+      },
+      {
+        "number": 5,
+        "from": "Service",
+        "to": "DB",
+        "label": "Lock event and pending change request, require current assignment",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/change-requests.ts",
+          "line": 269,
+          "token": "WHERE id = $1 AND event_request_id = $2 FOR UPDATE",
+          "sha256": "e94723428ec0e70d4f7494f41d2fabb13cea58435b285c2822a99b86711b1e85"
+        }
+      },
+      {
+        "number": 6,
+        "from": "Service",
+        "to": "Service",
+        "label": "Compare event revision",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/change-requests.ts",
+          "line": 206,
+          "token": "assertExpectedRevision(event.revision, expectedRevision)",
+          "sha256": "e94723428ec0e70d4f7494f41d2fabb13cea58435b285c2822a99b86711b1e85"
+        }
+      },
+      {
+        "number": 7,
+        "from": "Service",
+        "to": "DB",
+        "label": "Save rejection and decision notice, keep event details",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/change-requests.ts",
+          "line": 278,
+          "token": "UPDATE event_change_requests SET status = 'REJECTED'",
+          "sha256": "e94723428ec0e70d4f7494f41d2fabb13cea58435b285c2822a99b86711b1e85"
+        }
+      },
+      {
+        "number": 8,
+        "from": "Service",
+        "to": "DB",
+        "label": "Recheck saved prior values, then assess arrangement impacts",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/change-requests.ts",
+          "line": 180,
+          "token": "impactFor(client, event, fields)",
+          "sha256": "e94723428ec0e70d4f7494f41d2fabb13cea58435b285c2822a99b86711b1e85"
+        }
+      },
+      {
+        "number": 9,
+        "from": "Service",
+        "to": "Service",
+        "label": "Refuse approval that requires cancel and resubmit",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/change-requests.ts",
+          "line": 300,
+          "token": "CANCEL_AND_RESUBMIT_REQUIRED",
+          "sha256": "e94723428ec0e70d4f7494f41d2fabb13cea58435b285c2822a99b86711b1e85"
+        }
+      },
+      {
+        "number": 10,
+        "from": "Service",
+        "to": "DB",
+        "label": "Validate merged event, apply values and append revision edit audit",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/change-requests.ts",
+          "line": 323,
+          "token": "INSERT INTO event_request_edits",
+          "sha256": "e94723428ec0e70d4f7494f41d2fabb13cea58435b285c2822a99b86711b1e85"
+        }
+      },
+      {
+        "number": 11,
+        "from": "Service",
+        "to": "DB",
+        "label": "Cancel affected pending arrangements only, preserve others",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/change-requests.ts",
+          "line": 328,
+          "token": "const venueIds = impact.pending.filter",
+          "sha256": "e94723428ec0e70d4f7494f41d2fabb13cea58435b285c2822a99b86711b1e85"
+        }
+      },
+      {
+        "number": 12,
+        "from": "Service",
+        "to": "DB",
+        "label": "Persist applied revision, cancelled IDs and relevant notices",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/change-requests.ts",
+          "line": 342,
+          "token": "cancelled_arrangements = $5",
+          "sha256": "e94723428ec0e70d4f7494f41d2fabb13cea58435b285c2822a99b86711b1e85"
+        }
+      },
+      {
+        "number": 13,
+        "from": "Service",
+        "to": "DB",
+        "label": "COMMIT on success, ROLLBACK on thrown error",
+        "arrow": "->>",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-support.ts",
+          "line": 141,
+          "token": "client.query('COMMIT')",
+          "sha256": "b3ef2d98469c805a9f537d1d4c6aabe5e2f615aa495b8885c86db75f658c4323"
+        }
+      },
+      {
+        "number": 14,
+        "from": "Service",
+        "to": "API",
+        "label": "Resolve committed result or throw failure to HTTP boundary",
+        "arrow": "-->>",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-http.ts",
+          "line": 56,
+          "token": "await action(actor, request)",
+          "sha256": "1d1df110382c004a8ae6762f36b0573b502e9927afa7506c30284cd09e4831fc"
+        }
+      },
+      {
+        "number": 15,
+        "from": "API",
+        "to": "Client",
+        "label": "HTTP status and JSON, typed failures mapped",
+        "arrow": "-->>",
+        "proof": {
+          "file": "backend/src/modules/events/workflow-http.ts",
+          "line": 25,
+          "token": "statusByKind",
+          "sha256": "1d1df110382c004a8ae6762f36b0573b502e9927afa7506c30284cd09e4831fc"
+        }
+      }
+    ],
+    "notes": "This is the decision step; the owner first submits a change request with changes and expectedRevision. Rejections do not need the event to remain in planning, but approvals do. Approved or reserved arrangements may prevent significant changes; this is not a general override. Ordinary name/description edits use PATCH /api/events/:id instead."
+  }
+]

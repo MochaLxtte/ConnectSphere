@@ -1,5 +1,31 @@
 # Sprint 1 evidence register
 
+The meeting accounts establish a **32-point forecast on 6 September** and **24 accepted / 8 carried at the 19 September review**. The four Word files in the table retain the earlier ZIP versions supplied on 6 November. The separately supplied files clarify the manual tests and their results. [Current review, cues 7 and 15](meetings/current/review.docx) · [All meeting versions](../../review-testing.md#which-meeting-files-to-read)
+
+<a id="team-input-needed"></a>
+
+## Sprint 1 meeting accounts
+
+| ID | Supplied source and event | Use and limits |
+| --- | --- | --- |
+| S1-E26 | [Planning](meetings/planning.docx) · 6 September · original filename `ConnectSphere Sprint 1 Planning Script.docx` | Cues 01–14 cover the two-week sprint, goal and capacity discussion. Cues 15–35 cover scope boundaries and final estimates. Cues 36–61 record six volunteered bundles, dependencies, review arrangements and the forecast. Individual poker ballots were not transcribed. |
+| S1-E27 | [Daily standup collection](meetings/daily.docx) · 8, 12, 15 and 19 September · original filename `ConnectSphere Sprint 1 Daily Standup Collection.docx` | Standups 01–04 identify all six speakers each time. The field and access handoffs, browser/form dependency and readiness gaps are summarised in [daily progress](../daily-progress.md). |
+| S1-E28 | [Review](meetings/review.docx) · 19 September · original filename `ConnectSphere Sprint 1 Review Script.docx` | Cues 03–12 describe the demonstrated paths and four defects. Cues 13–17 identify feedback, the three carried items and seven accepted items. The 26 October team report confirmed collective agreement. The historical demonstrated build is unavailable. |
+| S1-E29 | [Retrospective](meetings/retrospective.docx) · 19 September · original filename `ConnectSphere Sprint 1 Retrospective Script.docx` | Cues 01–07 identify the six individual perspectives. Cues 08–14 name actions for Sprint 2. The closing prompt leaves individual responses unspecified. Follow-through is cross-referenced in the [retrospective](../retrospective.md#agreed-actions). |
+| E05 / E12 | Original starting and closing board images | Unavailable in the supplied materials. Planning and review identify the scope and its disposition. |
+| E08 | [Sprint 1 release burndown and sprint checkpoints](../../ws4-evidence/board-history.md#sprint-1) | The chart shows 103 of 127 release SP remaining. The sprint table records 32 SP selected and eight carried. The standups describe intermediate progress qualitatively. Original native chart export unavailable. |
+
+## Planning-note source received 5 November 2026
+
+The supplied [Documentation Tasks PDF, pp. 2–5](documentation-tasks-20261105.pdf) identifies the six participants, approximate 22:35–23:58 Zoom session, Fibonacci scale, 2-point status anchor, 8-versus-10 capacity debate and preliminary technology choices. The later pages include unfilled prompts. Tristan corrected the PDF’s role description on 6 November. The [planning record](../planning.md#supplied-planning-notes--5-november-2026) identifies Arvin as Scrum Master and Irfan as Product Owner. The [estimation record](../estimation-and-capacity.md#re-estimates-and-interpretation) distinguishes preliminary figures from the selected estimates.
+
+## Dated register entries
+
+The entries below retain what was available on each original date, including requests for meeting notes and chart evidence that were later addressed by the current sources above. The acceptance decision belongs to 19 September and later technical verification belongs to its own builds and dates. [Current review](../review.md) · [Current chart inputs](../daily-progress.md#burndown-data)
+
+<details>
+<summary>Dated technical records and historical evidence requests</summary>
+
 ## Closure evidence position — 26 October 2026
 
 The [current review and closure summary](../review.md#current-acceptance-and-closure--26-october-2026) consolidates existing source records. This is a documentation reconciliation, not a new sprint review, test execution or screenshot. The 26 October confirmation now documents the collective acceptance decision at the 19 September review; the original **32 committed / 24 accepted / 8 carried** point outcome is unchanged.
@@ -61,7 +87,7 @@ Replace planned filenames with the captured artifact's relative path or stable l
 | E18 | Actual owner walkthrough notes connecting a requirement to code/tests and explaining design trade-offs and any AI contributions | Accountability and Explainability | During reviews and preparation for sprint/course Q&A | [Add dated notes or PR discussion links and named contributors] | Planned — owner explanations not attached |
 | E19 | Sprint 2 handoff, carryover, baseline and story-selection actions | Adaptation and continuity between sprints | Closeout notes prepared 21 September; attach Jira captures with actual export times | [Sprint 2](../../sprint-02/README.md); [planning handoff](../planning.md#closeout-and-sprint-2-handoff--recorded-21-september) | Current Jira snapshot matches 43 points: nine new stories / 35 points plus KAN-6/33/34 / 8 points. New stories remain unassigned; Kai Jie retains KAN-6/34 and Irfan KAN-33. Three weekly Daily Scrums agreed for Saturday, Tuesday and Thursday. Preserve the reviewed export with its actual capture metadata. |
 
-Repository: `https://github.com/MochaLxtte/ConnectSphere.git`. Add verified commit, PR and CI links as implementation progresses. Record instructor access checks in submission folder 7.
+Repository: `https://github.com/MochaLxtte/ConnectSphere.git`. Add verified commit, PR and CI links as implementation progresses. Record instructor access checks in the release record.
 
 ## Capture and preservation rules
 
@@ -131,3 +157,5 @@ The retained [GitHub metadata](../../sprint-03/evidence/arvin-contributions-gith
 | Evidence ID | Artifact | Source and limits |
 | --- | --- | --- |
 | S1-E25 | [REPORT-20261025-TEAM-S1](../../../testing/test-evidence.md#25-october-2026--team-manual-result-reports); [execution register](../../../testing/test-executions.csv), EX-TEAM-20261025-S1-001 onward | Supplied 25 October; 60 manual scenario Pass reports dated 19 September 2026. Build/environment, individual observed output, captures and cleanup Not recorded. Attendance confirmed for all six at planning/review/retro. Does not establish formal acceptance, hosted checks or new velocity; existing failures and current-fix retests remain separate. |
+
+</details>

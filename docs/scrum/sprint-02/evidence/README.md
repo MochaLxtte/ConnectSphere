@@ -1,8 +1,23 @@
 # Sprint 2 evidence register
 
+The team reviewed **12 stories / 43 SP** on 3 October, accepted **7 / 24 SP**, and carried **5 / 19 SP**. Each owner’s progress and the closing reasons can be followed through the meeting accounts below. The [Sprint 2 release chart and sprint checkpoint table](../../ws4-evidence/board-history.md#sprint-2) show cumulative release progress and the sprint’s closing disposition.
+
+| Evidence ID | Team-supplied source (original filename) | Date and relevant cues |
+| --- | --- | --- |
+| S2-E38 | [Planning](meetings/planning.docx) · *ConnectSphere Sprint 2 Planning Script.docx* | 20 September. Goal and capacity (1–15), all estimates (29–35), volunteers (36–42), handoffs and review arrangements (43–55), forecast (56–62). |
+| S2-E39 | [Daily standups](meetings/daily.docx) · *ConnectSphere Sprint 2 Daily Standup Collection.docx* | 22, 24, 26, 29 September and 1, 3 October. Six speakers per date. Standup 02 cues 6–9 and standup 03 cues 2–3 trace the booking-field blocker. |
+| S2-E40 | [Review](meetings/review.docx) · *ConnectSphere Sprint 2 Review Script.docx* | 3 October. Cues 2–10 identify the twelve outcomes. Cues 11–13 close the 24/19 split. The earlier team confirmation on 26 October records the same decisions. |
+| S2-E41 | [Retrospective](meetings/retrospective.docx) · *ConnectSphere Sprint 2 Retrospective Script.docx* | 3 October. Cues 1–6 describe workload and late handoffs, cues 7–11 name owners and deadlines. [Sprint 3 standups](../../sprint-03/evidence/meetings/daily.docx) record the follow-through on 6 October. |
+
+The four Word files in the table match the earlier ZIP. The individual review file clarifies the result of the original manual scenarios and the five unfinished stories. [Current review, cue 11](meetings/current/review.docx) · [All meeting versions](../../review-testing.md#which-meeting-files-to-read) · [Story decisions](../review.md#story-decisions)
+
+## Team input needed
+
+The original day-one and end-board screenshots, native sprint burndown export, original retrospective board and demonstrated build were unavailable. A dated 21 September export and a 29 September board observation survive as separate administrative records. The release chart shows 79 SP remaining against the original scope. The checkpoint table records the two board observations separately from the sprint forecast and review balance. No intermediate meeting-point estimates were recorded. [Daily observations](../daily-progress.md#burndown-data) · [Shared checklist](../../../submission/checklist.md#ws4-sprint-1-and-2)
+
 ## Current acceptance and closure — 26 October 2026
 
-The [current twelve-story decision register](../review.md#current-acceptance-and-closure--26-october-2026) records **7 accepted stories / 24 SP at the 3 October review**, confirmed on **26 October**, and retains **5 carried stories / 19 SP**. **S2-E37** registers the supplied acceptance confirmation and closure reconciliation; it is not a newly performed test, review meeting or contemporaneous 3 October capture.
+The [current twelve-story decision register](../review.md#story-decisions) records **7 accepted stories / 24 SP at the 3 October review**, confirmed on **26 October**, and retains **5 carried stories / 19 SP**. **S2-E37** registers the supplied acceptance confirmation and closure reconciliation; it is not a newly performed test, review meeting or contemporaneous 3 October capture.
 
 | Evidence / requirement | Current source and remaining detail |
 | --- | --- |
@@ -10,15 +25,18 @@ The [current twelve-story decision register](../review.md#current-acceptance-and
 | S2-E34 / Tristan original stories report | KAN-29/KAN-8/KAN-52 manual Pass scenarios reported for 3 October on localhost; exact build and captures **Not recorded** |
 | S2-E36 / team meeting and manual report | 52 manual Pass rows for the remaining owners; all-six attendance confirmed for 20 September planning and 3 October review/retrospective |
 | S2-E35 / administrative closure | Retained 16 October administrative closure and five selected carry-over parents / 19 SP; the [26 October metadata read](../../sprint-03/evidence/jira-sprint-metadata-20261026.json) confirms Closed and actual completion 16 October 02:06:49 Singapore time. This is not a 3 October end-board capture |
-| S2-E37 / acceptance confirmation and closure reconciliation | [26 October current review summary](../review.md#current-acceptance-and-closure--26-october-2026); all 12 stories, original criterion links, test reports and retained carry-over. All six members collectively agreed at the 3 October review, according to the confirmation supplied on 26 October. |
+| S2-E37 / acceptance confirmation and closure reconciliation | [Review decision register](../review.md#story-decisions); all 12 stories, original criterion links, test reports and retained carry-over. All six members collectively agreed at the 3 October review, according to the confirmation supplied on 26 October. |
 | Historical acceptance / velocity | **24 SP:** KAN-29/51/53/8/54/55/33 accepted 3 October. KAN-6/34/50/12/52 retain **19 SP** in Sprint 3 and contribute **0 delivered SP** to Sprint 2. Customer-change-only work does not revoke earlier acceptance; the five carried stories are recorded as original-work repairs/clarification, not new customer scope. |
 | Original reviewed build | **Not recorded**, confirmed unavailable; retain any identifier if recovered, without substituting a later build |
-| Closing board and review feedback/actions | **Not recorded** beyond retained findings; the team will supply artifacts and actual feedback/actions |
-| Sprint 2 burndown | Team-owned preparation; chart and underlying observations **Not recorded** until supplied. No chart or daily values generated here. |
+| Closing board and review feedback/actions | No original closing board was supplied. The 3 October meeting account, supplied on 6 November, explains the five carries and the handoff to 4 October planning. [Review feedback](../review.md#review-feedback) |
+| Sprint 2 burndown | The [release chart and sprint checkpoint table](../../ws4-evidence/board-history.md#sprint-2) show 79 SP remaining for the release, 19 SP carried from the sprint and the two dated internal-board observations. The original native export is unavailable. |
 
 Later fixes and successful retests remain [current closeout evidence](../../../testing/test-evidence.md#25-october-2026--closeout-retest-confirmation). Earlier rows below retain their source dates and limitations; the reports above supersede outdated blanket pending-test/attendance/acceptance statements only for their documented scope. No later DoD amendment or customer change is applied retrospectively to the original Sprint 2 outcome. In particular, KAN-29's accepted original automatic-assignment workflow remains separate from CR-5, while KAN-52's retained carry decision concerns original zero-attendance policy clarification rather than a demonstrated direct failure of its over-capacity criterion.
 
 ## Retained earlier evidence records
+
+<details>
+<summary>Dated technical records and historical evidence requests</summary>
 
 ## 15 October current evidence position
 
@@ -40,7 +58,7 @@ Sprint 2 covers **20 September–3 October 2026**, Asia/Singapore, with a confir
 | ID | Artifact / purpose | Location | Current evidence position |
 | --- | --- | --- | --- |
 | S2-E01 | Planning goal, selected scope, meeting decisions and dependencies | [Planning](../planning.md) | Planning held 20 September; written record prepared 21 September. Scrum Master Arvin and Product Owner Irfan recorded; original meeting notes, attendance and exact times not attached. |
-| S2-E02 | Jira start backlog and board, including retained carry-over estimates | [Backlog](../sprint-backlog.md); [21 September snapshot](../../../submission/1/jira-backlog-2026-09-21.csv) | Historical snapshot: 12 PBIs / 43 points, carry-over assignees retained, nine new stories unassigned. Exported 21 September at 03:59 +08:00 after refinement; this does not replace the original start-board capture, which remains missing. Tristan's later KAN-29/KAN-8/KAN-52 implementation responsibility is not a live Jira update or recheck. |
+| S2-E02 | Jira start backlog and board, including retained carry-over estimates | [Backlog](../sprint-backlog.md); [21 September snapshot](../../../archive/jira-exports/jira-backlog-2026-09-21.csv) | Historical snapshot: 12 PBIs / 43 points, carry-over assignees retained, nine new stories unassigned. Exported 21 September at 03:59 +08:00 after refinement; this does not replace the original start-board capture, which remains missing. Tristan's later KAN-29/KAN-8/KAN-52 implementation responsibility is not a live Jira update or recheck. |
 | S2-E03 | Estimation discussion, method, participants and capacity | [Estimation and capacity](../estimation-and-capacity.md) | Estimates recorded; comparative rationale proposed, hours/allocation and meeting discussion not recorded |
 | S2-E04 | Detailed criteria, task refinement and owner/reviewer agreement | [Backlog and acceptance test plan](../sprint-backlog.md) | 93 planning criteria retain stable KAN-prefixed IDs. The pre-edit export had 77; six shorter cards now include missing checks and customer-rule refinements. Tristan implements KAN-29 on 28 September and KAN-8/KAN-52 on 4 October (nine points total); this is not a live Jira allocation update. Ryan's KAN-12 and Ernest's KAN-51 implementations are integrated; remaining allocation and all peer reviewers need confirmation. Implemented automatic-allocation details await team/customer acceptance; handover is deferred to future KAN-65 and removed from the application by the 30 September correction. |
 | S2-E05 | Sprint 1 closure and carry-over observations | [Sprint 1 review](../../sprint-01/review.md#review-defects-and-carry-over) | Four defect references now map to KAN-56–KAN-59 under the three carried stories; Sprint 2 reproduction/retest records pending |
@@ -143,3 +161,5 @@ The retained [GitHub metadata](../../sprint-03/evidence/arvin-contributions-gith
 | Evidence ID | Artifact | Source and limits |
 | --- | --- | --- |
 | S2-E36 | [REPORT-20261025-TEAM-S2](../../../testing/test-evidence.md#25-october-2026--team-manual-result-reports); [execution register](../../../testing/test-executions.csv), EX-TEAM-20261025-S2-001 onward | Supplied 25 October; 52 manual scenario Pass reports dated 3 October 2026. Build/environment, individual observed output, captures and cleanup Not recorded. Attendance confirmed for all six at planning/review/retro. Does not establish formal acceptance, hosted checks or new velocity; existing failures and current-fix retests remain separate. |
+
+</details>

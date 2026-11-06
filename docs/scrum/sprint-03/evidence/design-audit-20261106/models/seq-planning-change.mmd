@@ -1,0 +1,29 @@
+---
+title: Significant planning change - reviewed revision and arrangement impact
+---
+sequenceDiagram
+  autonumber
+  participant Client as Assigned coordinator client
+  participant API as Express HTTP boundary
+  participant Service as decideChangeRequest
+  participant DB as PostgreSQL
+  Client->>API: POST decision for the named event and change request
+  API->>Service: Coordinator, decision and required expectedRevision
+  Service->>DB: BEGIN READ COMMITTED, set transaction actor
+  opt approval action
+  Service->>DB: Take venue gates and booking locks before event
+  end
+  Service->>DB: Lock event and pending change request, require current assignment
+  Service->>Service: Compare event revision
+  alt reject
+  Service->>DB: Save rejection and decision notice, keep event details
+  else approve
+  Service->>DB: Recheck saved prior values, then assess arrangement impacts
+  Service->>Service: Refuse approval that requires cancel and resubmit
+  Service->>DB: Validate merged event, apply values and append revision edit audit
+  Service->>DB: Cancel affected pending arrangements only, preserve others
+  Service->>DB: Persist applied revision, cancelled IDs and relevant notices
+  end
+  Service->>DB: COMMIT on success, ROLLBACK on thrown error
+  Service-->>API: Resolve committed result or throw failure to HTTP boundary
+  API-->>Client: HTTP status and JSON, typed failures mapped

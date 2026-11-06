@@ -1,0 +1,83 @@
+erDiagram
+  EVENT_REQUESTS ||--o{ VENUE_BOOKINGS : reserves
+  EVENT_REQUESTS ||--o{ EQUIPMENT_REQUESTS : needs
+  EVENT_REQUESTS ||--o{ EVENT_REGISTRATIONS : "opens to"
+  EVENT_REQUESTS ||--o{ EVENT_CHANGE_REQUESTS : "amended by"
+  EVENT_REQUESTS o|--o{ NOTIFICATIONS : concerns
+  VENUES ||--o{ VENUE_BOOKINGS : "booked as"
+  VENUES ||--o{ VENUE_UNAVAILABILITY : blocks
+  EQUIPMENT_TYPES ||--o{ EQUIPMENT_REQUESTS : "drawn from"
+  APP_USERS ||--o{ EVENT_REGISTRATIONS : attends
+  APP_USERS ||--o{ NOTIFICATIONS : receives
+  VENUES {
+    uuid id PK
+    text name UK
+    integer capacity
+    text_array layouts
+    text_array facilities
+    text_array accessibility_features
+    boolean wheelchair_accessible
+    time opens_at "nullable operating hours"
+    time closes_at
+    boolean is_active
+  }
+  VENUE_UNAVAILABILITY {
+    uuid id PK
+    uuid venue_id FK
+    timestamptz starts_at
+    timestamptz ends_at
+    text reason "nullable"
+  }
+  VENUE_BOOKINGS {
+    uuid id PK
+    uuid event_request_id FK
+    uuid venue_id FK
+    uuid requested_by FK
+    text status "PENDING APPROVED REJECTED CANCELLED"
+    timestamptz starts_at
+    timestamptz ends_at
+    text layout "nullable"
+    uuid decided_by FK "set with decided_at on a decision"
+  }
+  EQUIPMENT_TYPES {
+    uuid id PK
+    text name UK
+    text category "nullable"
+    integer total_quantity "pooled by type"
+    boolean is_active
+  }
+  EQUIPMENT_REQUESTS {
+    uuid id PK
+    uuid event_request_id FK
+    uuid equipment_type_id FK
+    uuid requested_by FK
+    integer quantity
+    text status "REQUESTED RESERVED REJECTED CANCELLED"
+    timestamptz starts_at
+    timestamptz ends_at
+    uuid decided_by FK "set with decided_at on a decision"
+  }
+  EVENT_REGISTRATIONS {
+    uuid id PK
+    uuid event_request_id FK
+    uuid attendee_id FK
+    text status "REGISTERED WITHDRAWN"
+    timestamptz withdrawn_at "nullable"
+  }
+  EVENT_CHANGE_REQUESTS {
+    uuid id PK
+    uuid event_request_id FK
+    uuid requested_by FK
+    text status "PENDING APPROVED REJECTED WITHDRAWN"
+    jsonb proposed_changes "non-empty object of event fields"
+    text reason
+    uuid decided_by FK "nullable until decided"
+  }
+  NOTIFICATIONS {
+    uuid id PK
+    uuid recipient_id FK
+    uuid event_request_id FK "nullable"
+    text type
+    text title
+    timestamptz read_at "nullable until read"
+  }

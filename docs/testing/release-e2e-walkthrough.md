@@ -2,7 +2,7 @@
 
 Sprints 1 to 4 · Manual end-to-end acceptance and regression testing · Prepared 30 October 2026 · Updated 1 November 2026
 
-Use this guide to test the complete application with real sign-in, the local frontend and API, the agreed Supabase development database and the real hold-expiry job. Follow the steps in order, switching to the stated role. Record what actually happens in a separate copy of the results form at the end. All checks in this newly prepared walkthrough are **Not executed**.
+Use this guide to test the complete application with real sign-in, the local frontend and API, the agreed Supabase development database and the real hold-expiry job. Follow the steps in order, switching to the stated role. The results form at the end is a reusable blank form. For the project run, R01–R23 have scoped results and the team reports that the final end-to-end test, including R24, passed before the freeze. [Execution report](test-evidence.md#report-prefreeze-r24--functional-release-walkthrough) · [Formal release decision](../submission/release-record.md#release-decision)
 
 The guide covers the 20 core features and six Week 7 customer changes through connected user journeys and important negative paths. It complements the detailed test cards and automated unit/integration tests; completing it alone does not prove every concurrency, rollback, migration or acceptance-criterion boundary. Release and code-freeze approval remains a team decision after reviewing all relevant evidence.
 

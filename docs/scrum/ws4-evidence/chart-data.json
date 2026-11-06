@@ -1,0 +1,100 @@
+{
+  "prepared_on": "2026-11-06",
+  "timezone": "Asia/Singapore",
+  "unit": "whole parent story points",
+  "basis": "Opening balances are forecasts. Closing balances deduct accepted estimates from the selected scope. Sprint 2 internal-board snapshots are a separate measure of the contemporary board. No interpolation or partial credit.",
+  "sprints": [
+    {
+      "sprint": 1,
+      "accepted": {
+        "KAN-4": 3,
+        "KAN-16": 2,
+        "KAN-24": 5,
+        "KAN-25": 5,
+        "KAN-27": 3,
+        "KAN-31": 3,
+        "KAN-36": 3
+      },
+      "carried": {
+        "KAN-6": 3,
+        "KAN-33": 2,
+        "KAN-34": 3
+      },
+      "observations": [
+        {
+          "date": "2026-09-06",
+          "kind": "Planning forecast",
+          "scope": 32,
+          "remaining": 32,
+          "source": "../sprint-01/evidence/meetings/planning.docx",
+          "cues": "34–35, 55–61"
+        },
+        {
+          "date": "2026-09-19",
+          "kind": "Review decision",
+          "scope": 32,
+          "accepted": 24,
+          "remaining": 8,
+          "source": "../sprint-01/evidence/meetings/review.docx",
+          "cues": "16–17"
+        }
+      ]
+    },
+    {
+      "sprint": 2,
+      "accepted": {
+        "KAN-8": 3,
+        "KAN-29": 3,
+        "KAN-33": 2,
+        "KAN-51": 5,
+        "KAN-53": 3,
+        "KAN-54": 5,
+        "KAN-55": 3
+      },
+      "carried": {
+        "KAN-6": 3,
+        "KAN-12": 5,
+        "KAN-34": 3,
+        "KAN-50": 5,
+        "KAN-52": 3
+      },
+      "observations": [
+        {
+          "date": "2026-09-20",
+          "kind": "Planning forecast",
+          "scope": 43,
+          "remaining": 43,
+          "source": "../sprint-02/evidence/meetings/planning.docx",
+          "cues": "8–15, 29–35, 56–62"
+        },
+        {
+          "date": "2026-09-21",
+          "kind": "Internal board observation",
+          "scope": 43,
+          "board_done": 0,
+          "remaining": 43,
+          "source": "../sprint-02/archive/2026-11-05/daily-progress.md#burndown-data",
+          "support": "../../submission/1/jira-backlog-2026-09-21.csv"
+        },
+        {
+          "date": "2026-09-29",
+          "time": "approximately 18:40 SGT",
+          "kind": "Internal board observation",
+          "scope": 43,
+          "board_done": 0,
+          "remaining": 43,
+          "source": "../sprint-02/archive/2026-11-05/daily-progress.md#burndown-data"
+        },
+        {
+          "date": "2026-10-03",
+          "kind": "Review decision",
+          "scope": 43,
+          "accepted": 24,
+          "remaining": 19,
+          "source": "../sprint-02/evidence/meetings/review.docx",
+          "cues": "2, 7–13"
+        }
+      ]
+    }
+  ]
+}

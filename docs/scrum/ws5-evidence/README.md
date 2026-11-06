@@ -1,0 +1,33 @@
+# Sprint 3 and 4 evidence index
+
+At Sprint 3 planning on **4 October**, the team selected 13 stories / 63 SP for the request-to-venue journey and forecast the remaining 63 SP for Sprint 4. The administrative backlog update on **16 October** recorded that allocation. Sprint 4 extended the journey through equipment, registration, changes and safety-approved preparation. Each review accepted its 63 SP. [Planning decisions](../sprint-03/planning.md#customer-change-chronology) · [Meeting balances](board-history.md)
+
+The current written reviews report passing manual cases in both sprints. For Sprint 4, Ryan and Ernest reported the checklist result. The 75 individual results are now entered under their story owners following the team’s confirmation. [Manual review outcomes and source versions](../review-testing.md) · [Cases and executors](../../testing/sprint-4-manual-review.md)
+
+**Assignment basis.** The *IS212 (AY 2026/27, T1) Scrum Project Instructions*, “Deliverables – Working Code & Evidence of Scrum”, Folder 4, call for meeting documents or screenshots across all sprints. They give starting backlogs, estimation, closing boards, burndowns and retrospective boards as examples. The final showcase sprint additionally requires unlisted links to planning, review, retrospective and one Daily Scrum. The rubric asks how the team planned against capacity, inspected progress and adapted. WS5 is the team's allocation for Sprints 3 and 4. [Team documentation responsibilities](../../README.md#ws5-sprint-3-and-4)
+
+| Assessor’s question | Sprint 3 evidence | Sprint 4 evidence |
+| --- | --- | --- |
+| What goal, work and tasks did the team select? | [Planning decisions](../sprint-03/planning.md) · [13 story cards and task/test mappings](../sprint-03/sprint-backlog.md) | [Planning decisions](../sprint-04/planning.md) · [15 story cards and task/test mappings](../sprint-04/sprint-backlog.md) |
+| How did the team size the work and assess capacity? | [Estimates, anchors and carry-over](../sprint-03/estimation-and-capacity.md) · [planning dialogue](../sprint-03/evidence/meetings/planning.docx) | [150-hour forecast and KAN-84 vote](../sprint-04/estimation-and-capacity.md) · [planning poker frame](../sprint-04/evidence/meetings/planning-votes-001000.png) |
+| How did members coordinate and clear blockers? | [Six standups and follow-through](../sprint-03/daily-progress.md) · [member accounts](../sprint-03/evidence/meetings/daily.docx) | [Six standups and follow-through](../sprint-04/daily-progress.md) · [member accounts](../sprint-04/evidence/meetings/daily.docx) |
+| What happened to the sprint scope? | [Forecast and review balance](board-history.md#sprint-3) · [dated scope reconciliation](../sprint-03/planning.md) | [Forecast and review balance](board-history.md#sprint-4) · [start board extracted from planning](../sprint-04/evidence/meetings/planning-board-002440.png) |
+| What did the team accept and discuss? | [13 stories accepted](../sprint-03/review.md) · [review account, cues 9–13](../sprint-03/evidence/meetings/review.docx) | [15 stories accepted together](../sprint-04/review.md) · [feedback and recorded assent](../final-sprint-recordings.md#review-decision-in-the-recording) |
+| Which improvements carried forward? | [Six reflections, owner commitments and later evidence](../sprint-03/retrospective.md) · [retrospective dialogue](../sprint-03/evidence/meetings/retrospective.docx) | [Handover checklist and evidence check](../sprint-04/retrospective.md) · [retrospective dialogue](../sprint-04/evidence/meetings/retrospective.docx) |
+| Where are the showcase recordings? | Written accounts are supplied for all four ceremony types. [Sprint 3 register](../sprint-03/evidence/README.md) | [Four unlisted recordings, timestamps and verified link access](../final-sprint-recordings.md#published-recordings-and-access-check) · [Sprint 4 register](../sprint-04/evidence/README.md) |
+
+**One adaptation across the two sprints.** On 8 October Irfan identified the missing occupied-period calculation needed for holds. He reported the dependency cleared on 10 October after pairing with Arvin. The subsequent retrospective asked for earlier handoffs and an integration checklist. In Sprint 4 Ryan coordinated the checklist, Tristan and Ryan checked resource release together, and Kai Jie reported the missing equipment-state response resolved by 24 October. [Sprint 3 standups 02–03](../sprint-03/evidence/meetings/daily.docx) · [Sprint 3 retrospective, cues 7–10](../sprint-03/evidence/meetings/retrospective.docx) · [Sprint 4 standups 02–03](../sprint-04/evidence/meetings/daily.docx)
+
+**Link to product evidence.** The Sprint 4 review discusses how changed arrangements invalidate safety approval. Later testing reproduced a restoration defect, retained the failed check and verified the repair. A reader can follow the criterion, see the behaviour and distinguish the 31 October story decision from the November repair. [KAN-84 story and acceptance plan](../sprint-04/sprint-backlog.md#acceptance-test-plan) · [targeted failure](../../testing/test-evidence.md#man-20261101-02--targeted-release-follow-up-1-november-2026) · [connected retest](../../testing/test-evidence.md#man-20261101-03--connected-repaired-candidate-acceptance-1-november-2026)
+
+## Outstanding inputs
+
+All six WS5 checklist items have a recorded disposition. The four unlisted recordings played without sign-in on 6 November. Tristan confirmed that the team has no other board screenshots beyond the view preserved from Sprint 4 planning. [Published recordings](../final-sprint-recordings.md#published-recordings-and-access-check) · [Board evidence](board-history.md)
+
+| Optional input | What the draft already provides | Where to add it |
+| --- | --- | --- |
+| More detailed chart observations, if retained | Supplied end-of-sprint release charts and separate planning/review checkpoint tables | Add a native board export or further dated within-sprint observations if available. The accounts already support the opening and closing balances. [Release accounting](../release-burndown.md) |
+
+The final retrospective assigned the handover checklist to Irfan and the evidence check to Ernest, with Tristan checking equipment. A dated handover artifact can close those actions when available. [Agreed actions](../sprint-04/retrospective.md#agreed-actions)
+
+The [shared checklist](../../submission/checklist.md#ws5-sprint-3-and-4) records completion by item. The separate formal decision on the frozen release belongs to [the release decision record](../../submission/release-record.md#release-decision).

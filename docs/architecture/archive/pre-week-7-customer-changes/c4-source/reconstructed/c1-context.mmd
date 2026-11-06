@@ -1,0 +1,28 @@
+---
+title: Pre-Week 7 C1 - reconstructed from b981f11 on 6 Nov 2026
+config:
+  layout: elk
+---
+flowchart LR
+  organiser["Event Organiser<br/>[Person]<br/>Own requests and outcomes"]
+  coordinator["Event Coordinator<br/>[Person]<br/>Allocation, review and lifecycle"]
+  venue["Venue Staff<br/>[Person: planned workflow]<br/>Venue management and decisions"]
+  technical["Technical Support Staff<br/>[Person: planned workflow]<br/>Equipment availability and reservations"]
+  attendee["Attendee<br/>[Person: planned workflow]<br/>Registration and withdrawal"]
+  system["ConnectSphere<br/>[Software system]<br/>Implemented request and review workflows"]
+  identity["Supabase Auth<br/>[External software system]<br/>Email/password identity and signing keys"]
+  legend["Legend<br/>Solid: implemented interaction<br/>Dashed: planned business interaction<br/>Source: 1 Oct 2026 / b981f11<br/>Reconstructed: 6 Nov 2026"]
+  organiser -->|"Draft, submit, respond and view outcomes"| system
+  coordinator -->|"Allocate, clarify, review and manage lifecycle"| system
+  venue -.->|"Planned: maintain venues and decide bookings"| system
+  technical -.->|"Planned: equipment availability and reservations"| system
+  attendee -.->|"Planned: registration and withdrawal"| system
+  system -->|"Sign-in and signing-key discovery"| identity
+  classDef person fill:#e0f2fe,stroke:#0369a1,color:#0c4a6e;
+  classDef external fill:#f1f5f9,stroke:#64748b,color:#0f172a;
+  classDef planned fill:#fff7ed,stroke:#c2410c,color:#7c2d12,stroke-dasharray:5 4;
+  classDef legend fill:#ffffff,stroke:#94a3b8,color:#475569;
+  class legend legend;
+  class venue planned;
+  class technical planned;
+  class attendee planned;

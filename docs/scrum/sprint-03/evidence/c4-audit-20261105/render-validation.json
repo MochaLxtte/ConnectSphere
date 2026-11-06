@@ -1,0 +1,920 @@
+{
+  "browser": "Chrome/153.0.8010.12",
+  "method": "Local SVG DOM inspection with Puppeteer; no application server or database",
+  "limitations": "Checks label geometry and rendered counts; semantic accuracy is recorded separately in audit.json.",
+  "diagrams": [
+    {
+      "name": "c1-context",
+      "result": "Pass",
+      "includes_legend_node": true,
+      "viewBox": "0 -49 1362 1403",
+      "title": "C1 - ConnectSphere system context",
+      "nodes": [
+        {
+          "id": "my-svg-flowchart-organiser-0",
+          "label": "Event Organiser[Person]Manages own requests and events",
+          "bounds": {
+            "x": 8,
+            "y": 57,
+            "width": 272,
+            "height": 132
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-coordinator-1",
+          "label": "Event Coordinator[Person]Reviews and plans assigned events",
+          "bounds": {
+            "x": 8,
+            "y": 219,
+            "width": 272,
+            "height": 132
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-lead-2",
+          "label": "Coordinator Lead[Person]Allocates coordinators and oversees events",
+          "bounds": {
+            "x": 8,
+            "y": 381,
+            "width": 272,
+            "height": 132
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-venue-3",
+          "label": "Venue Staff[Person]Maintains venues and booking arrangements",
+          "bounds": {
+            "x": 8,
+            "y": 543,
+            "width": 272,
+            "height": 132
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-technical-4",
+          "label": "Technical Support Staff[Person]Manages pooled equipment and reservations",
+          "bounds": {
+            "x": 8,
+            "y": 705,
+            "width": 272,
+            "height": 132
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-attendee-5",
+          "label": "Attendee[Person]Manages own event registrations",
+          "bounds": {
+            "x": 8,
+            "y": 867,
+            "width": 272,
+            "height": 132
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-safety-6",
+          "label": "Safety Officer[Person]Assesses safety and requests remediation",
+          "bounds": {
+            "x": 8,
+            "y": 1029,
+            "width": 272,
+            "height": 132
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-system-7",
+          "label": "ConnectSphere[Software System]Event planning, resource arrangements,registration and safety workflows",
+          "bounds": {
+            "x": 545,
+            "y": 519,
+            "width": 272,
+            "height": 180
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-identity-8",
+          "label": "Supabase Auth[External Software System]Authenticates users and publishestoken verification keys",
+          "bounds": {
+            "x": 1082,
+            "y": 531,
+            "width": 272,
+            "height": 156
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-key-25",
+          "label": "LegendPale blue: person; dark blue: ConnectSphere; grey: external system.Each arrow points from the caller to the system it interacts with.",
+          "bounds": {
+            "x": 8,
+            "y": 1191,
+            "width": 272,
+            "height": 204
+          },
+          "label_within_shape": true
+        }
+      ],
+      "edges": [
+        {
+          "id": "my-svg-L_organiser_system_0"
+        },
+        {
+          "id": "my-svg-L_coordinator_system_0"
+        },
+        {
+          "id": "my-svg-L_lead_system_0"
+        },
+        {
+          "id": "my-svg-L_venue_system_0"
+        },
+        {
+          "id": "my-svg-L_technical_system_0"
+        },
+        {
+          "id": "my-svg-L_attendee_system_0"
+        },
+        {
+          "id": "my-svg-L_safety_system_0"
+        },
+        {
+          "id": "my-svg-L_system_identity_0"
+        }
+      ],
+      "edge_labels": [
+        {
+          "text": "Submits requests, proposes changes and tracks outcomes",
+          "bounds": {
+            "x": 312.5,
+            "y": 87,
+            "width": 200,
+            "height": 72
+          }
+        },
+        {
+          "text": "Reviews, plans, confirms and closes assigned events",
+          "bounds": {
+            "x": 312.5,
+            "y": 261,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "text": "Assigns, reassigns and reads basic oversight",
+          "bounds": {
+            "x": 312.5,
+            "y": 423,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "text": "Maintains venues and blocks; decides bookings and holds",
+          "bounds": {
+            "x": 312.5,
+            "y": 573,
+            "width": 200,
+            "height": 72
+          }
+        },
+        {
+          "text": "Maintains stock, checks availability and decides equipment requests",
+          "bounds": {
+            "x": 312.5,
+            "y": 735,
+            "width": 200,
+            "height": 72
+          }
+        },
+        {
+          "text": "Browses eligible events, registers and withdraws",
+          "bounds": {
+            "x": 312.5,
+            "y": 909,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "text": "Approves, rejects or requests safety changes",
+          "bounds": {
+            "x": 312.5,
+            "y": 1071,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "text": "Authenticates users and obtains token verification keys",
+          "bounds": {
+            "x": 849.5,
+            "y": 573,
+            "width": 200,
+            "height": 72
+          }
+        }
+      ],
+      "label_node_overlaps": [],
+      "edge_label_overlaps": []
+    },
+    {
+      "name": "c2-containers",
+      "result": "Pass",
+      "includes_legend_node": true,
+      "viewBox": "0 -49 1964 742.3283081054688",
+      "title": "C2 - ConnectSphere containers",
+      "nodes": [
+        {
+          "id": "my-svg-flowchart-user-0",
+          "label": "Application user[Person]One of seven supported roles",
+          "bounds": {
+            "x": 8.000240325927734,
+            "y": 248.3282470703125,
+            "width": 271.99993896484375,
+            "height": 131.99996948242188
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-identity-1",
+          "label": "Supabase Auth[External Software System]Email/password sign-in;published JSON Web Key Set - JWKS",
+          "bounds": {
+            "x": 1651.4998779296875,
+            "y": 500.32818603515625,
+            "width": 271.9998779296875,
+            "height": 155.99993896484375
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-web-2",
+          "label": "Web application[Container: Vue 3 / TypeScript]Runs in the browser; built with Vite.Pages, sign-in and same-origin API client",
+          "bounds": {
+            "x": 577.5001220703125,
+            "y": 212.32826232910156,
+            "width": 271.99993896484375,
+            "height": 203.9999542236328
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-api-3",
+          "label": "API application[Container: Node.js / Express 5 / TypeScript]Verifies sessions and permissions;executes business rules and hold-expiry timer",
+          "bounds": {
+            "x": 1114.5,
+            "y": 136.8282928466797,
+            "width": 271.9998779296875,
+            "height": 203.9999237060547
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-db-4",
+          "label": "Application database[Container: Supabase PostgreSQL]Records, constraints, audit and notification triggers;hold-expiry function and optional pg_cron scheduler",
+          "bounds": {
+            "x": 1678.4998779296875,
+            "y": 81.99996948242188,
+            "width": 217.9998779296875,
+            "height": 233.65658569335938
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-key-15",
+          "label": "LegendPale blue: person; blue: ConnectSphere container; grey: external system.Arrows show caller-to-dependency interactions, including their protocol.Local development uses the Vite /api proxy. Legacy HS256 verifies with a backend secret instead of JWKS.",
+          "bounds": {
+            "x": 8.000240325927734,
+            "y": 410.3282165527344,
+            "width": 271.99993896484375,
+            "height": 323.9999084472656
+          },
+          "label_within_shape": true
+        }
+      ],
+      "edges": [
+        {
+          "id": "my-svg-L_user_web_0"
+        },
+        {
+          "id": "my-svg-L_web_api_0"
+        },
+        {
+          "id": "my-svg-L_web_identity_0"
+        },
+        {
+          "id": "my-svg-L_api_identity_0"
+        },
+        {
+          "id": "my-svg-L_api_db_0"
+        }
+      ],
+      "edge_labels": [
+        {
+          "text": "Uses pages in a web browser",
+          "bounds": {
+            "x": 312.5001525878906,
+            "y": 290.3282470703125,
+            "width": 199.99996948242188,
+            "height": 47.999969482421875
+          }
+        },
+        {
+          "text": "HTTP JSON /api with HttpOnly session cookie",
+          "bounds": {
+            "x": 882,
+            "y": 214.82827758789062,
+            "width": 200,
+            "height": 47.999969482421875
+          }
+        },
+        {
+          "text": "Signs in with email and password over HTTPS",
+          "bounds": {
+            "x": 1150.5,
+            "y": 365.8282165527344,
+            "width": 199.9998779296875,
+            "height": 48
+          }
+        },
+        {
+          "text": "Fetches and caches JWKS over HTTPS in asymmetric mode",
+          "bounds": {
+            "x": 1471.8499755859375,
+            "y": 307.8039245605469,
+            "width": 200,
+            "height": 71.99996948242188
+          }
+        },
+        {
+          "text": "Executes SQL using pg; TLS for shared Supabase",
+          "bounds": {
+            "x": 1418.9998779296875,
+            "y": 174.82827758789062,
+            "width": 200,
+            "height": 47.99998474121094
+          }
+        }
+      ],
+      "label_node_overlaps": [],
+      "edge_label_overlaps": []
+    },
+    {
+      "name": "c3-components",
+      "result": "Pass",
+      "includes_legend_node": true,
+      "viewBox": "4 -49 4880.234375 1570.5",
+      "title": "C3 - Components of the ConnectSphere API",
+      "nodes": [
+        {
+          "id": "my-svg-flowchart-browser-0",
+          "label": "Web application[Container: Vue 3 / TypeScript]Browser pages and API clients",
+          "bounds": {
+            "x": 8,
+            "y": 610.1666870117188,
+            "width": 272,
+            "height": 156
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-identity-1",
+          "label": "Supabase Auth[External Software System]Published JSON Web Key Set - JWKS",
+          "bounds": {
+            "x": 4600.234375,
+            "y": 142,
+            "width": 272,
+            "height": 132
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-routes-2",
+          "label": "HTTP routers[Component: Express / TypeScript]Session and role gates, input validation,service dispatch and error mapping",
+          "bounds": {
+            "x": 579.5,
+            "y": 586.1666870117188,
+            "width": 272,
+            "height": 204
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-auth-3",
+          "label": "Session authentication[Component: jose / TypeScript]Verifies cookie token; loads trustedapplication profile and role",
+          "bounds": {
+            "x": 1164.234375,
+            "y": 148,
+            "width": 272,
+            "height": 180
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-events-4",
+          "label": "Event workflows[Component: TypeScript]Drafts, submission, assignment, review,changes, lifecycle and access rules",
+          "bounds": {
+            "x": 1731.234375,
+            "y": 789.5,
+            "width": 272,
+            "height": 180
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-readiness-5",
+          "label": "Readiness and arrangement locks[Component: TypeScript]Coordinates live venue, equipmentand pending-change checks",
+          "bounds": {
+            "x": 2263.234375,
+            "y": 811.5,
+            "width": 272,
+            "height": 204
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-venues-6",
+          "label": "Venue services[Component: TypeScript]Catalogue, search, suitability, bookings,holds, expiry and outage recovery",
+          "bounds": {
+            "x": 2829.734375,
+            "y": 440,
+            "width": 272,
+            "height": 180
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-equipment-7",
+          "label": "Equipment services[Component: TypeScript]Stock, availability, requests,reservation decisions and release",
+          "bounds": {
+            "x": 2829.734375,
+            "y": 650,
+            "width": 272,
+            "height": 156
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-registrations-8",
+          "label": "Registration services[Component: TypeScript]Eligibility, capacity, registration,withdrawal and authorised rosters",
+          "bounds": {
+            "x": 1160.234375,
+            "y": 1370.5,
+            "width": 272,
+            "height": 180
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-safety-9",
+          "label": "Safety reviews and preparation[Component: TypeScript]Review rounds, decisions, snapshotsand current-approval gates",
+          "bounds": {
+            "x": 1160.234375,
+            "y": 1147.5,
+            "width": 272,
+            "height": 180
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-remediation-10",
+          "label": "Technical remediation policy[Component: TypeScript]Permits confirmed-event equipment editsduring requested technical changes",
+          "bounds": {
+            "x": 1160.234375,
+            "y": 913.5,
+            "width": 272,
+            "height": 204
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-notifications-11",
+          "label": "Notifications[Component: TypeScript]Caller-scoped inbox and read state;transactional deduplicated notice writer",
+          "bounds": {
+            "x": 3376.734375,
+            "y": 957,
+            "width": 272,
+            "height": 180
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-expiry-12",
+          "label": "Hold-expiry timer[Component: Node.js / TypeScript]Calls expiry at startup and every minute",
+          "bounds": {
+            "x": 2275.234375,
+            "y": 359,
+            "width": 272,
+            "height": 156
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-connections-13",
+          "label": "Database connections[Component: pg / TypeScript]Shared connection pool and borrowed clients;SQL queries and transaction execution",
+          "bounds": {
+            "x": 4028.734375,
+            "y": 1275.04541015625,
+            "width": 272,
+            "height": 204
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-db-14",
+          "label": "Application database[Container: Supabase PostgreSQL]Records, integrity guards and audit;SQL notification and safety-invalidation triggers;expiry function and optional database pg_cron",
+          "bounds": {
+            "x": 4600.234375,
+            "y": 1236.217041015625,
+            "width": 218,
+            "height": 281.6566162109375
+          },
+          "label_within_shape": true
+        },
+        {
+          "id": "my-svg-flowchart-key-75",
+          "label": "LegendPale blue: API component; blue: supporting container; grey: external system.Labelled arrows show calls/dependencies. Nested groups identify module ownership.SQL triggers and pg_cron execute inside PostgreSQL. Legacy HS256 uses a backend secret instead of JWKS.",
+          "bounds": {
+            "x": 8,
+            "y": 222.16665649414062,
+            "width": 272,
+            "height": 347.9999694824219
+          },
+          "label_within_shape": true
+        }
+      ],
+      "edges": [
+        {
+          "id": "my-svg-L_browser_routes_0"
+        },
+        {
+          "id": "my-svg-L_routes_auth_0"
+        },
+        {
+          "id": "my-svg-L_routes_connections_0"
+        },
+        {
+          "id": "my-svg-L_routes_events_0"
+        },
+        {
+          "id": "my-svg-L_routes_venues_0"
+        },
+        {
+          "id": "my-svg-L_routes_equipment_0"
+        },
+        {
+          "id": "my-svg-L_routes_registrations_0"
+        },
+        {
+          "id": "my-svg-L_routes_safety_0"
+        },
+        {
+          "id": "my-svg-L_routes_notifications_0"
+        },
+        {
+          "id": "my-svg-L_auth_identity_0"
+        },
+        {
+          "id": "my-svg-L_auth_connections_0"
+        },
+        {
+          "id": "my-svg-L_events_readiness_0"
+        },
+        {
+          "id": "my-svg-L_safety_readiness_0"
+        },
+        {
+          "id": "my-svg-L_readiness_venues_0"
+        },
+        {
+          "id": "my-svg-L_readiness_equipment_0"
+        },
+        {
+          "id": "my-svg-L_readiness_connections_0"
+        },
+        {
+          "id": "my-svg-L_equipment_remediation_0"
+        },
+        {
+          "id": "my-svg-L_remediation_connections_0"
+        },
+        {
+          "id": "my-svg-L_events_notifications_0"
+        },
+        {
+          "id": "my-svg-L_venues_notifications_0"
+        },
+        {
+          "id": "my-svg-L_equipment_notifications_0"
+        },
+        {
+          "id": "my-svg-L_safety_notifications_0"
+        },
+        {
+          "id": "my-svg-L_events_connections_0"
+        },
+        {
+          "id": "my-svg-L_venues_connections_0"
+        },
+        {
+          "id": "my-svg-L_equipment_connections_0"
+        },
+        {
+          "id": "my-svg-L_registrations_connections_0"
+        },
+        {
+          "id": "my-svg-L_safety_connections_0"
+        },
+        {
+          "id": "my-svg-L_notifications_connections_0"
+        },
+        {
+          "id": "my-svg-L_expiry_venues_0"
+        },
+        {
+          "id": "my-svg-L_connections_db_0"
+        }
+      ],
+      "edge_labels": [
+        {
+          "text": "HTTP JSON /api; session cookie",
+          "bounds": {
+            "x": 320,
+            "y": 663.6666870117188,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "text": "Verifies session and actor",
+          "bounds": {
+            "x": 919.953125,
+            "y": 225.5,
+            "width": 182.328125,
+            "height": 24
+          }
+        },
+        {
+          "text": "Queries public database-readiness status",
+          "bounds": {
+            "x": 2584.734375,
+            "y": 318.5,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "text": "Calls event workflows",
+          "bounds": {
+            "x": 1219.3203125,
+            "y": 687,
+            "width": 153.828125,
+            "height": 24
+          }
+        },
+        {
+          "text": "Calls venue services",
+          "bounds": {
+            "x": 1508.3671875,
+            "y": 517.5,
+            "width": 146.734375,
+            "height": 24
+          }
+        },
+        {
+          "text": "Calls equipment services",
+          "bounds": {
+            "x": 1492.8046875,
+            "y": 658.5,
+            "width": 177.859375,
+            "height": 24
+          }
+        },
+        {
+          "text": "Calls registration services",
+          "bounds": {
+            "x": 919.9765625,
+            "y": 1448,
+            "width": 182.28125,
+            "height": 24
+          }
+        },
+        {
+          "text": "Calls safety and preparation",
+          "bounds": {
+            "x": 911.5,
+            "y": 1225,
+            "width": 199.234375,
+            "height": 24
+          }
+        },
+        {
+          "text": "Lists inbox; marks notices read",
+          "bounds": {
+            "x": 2033.234375,
+            "y": 1330,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "text": "HTTPS: cached JWKS in asymmetric mode",
+          "bounds": {
+            "x": 4360.234375,
+            "y": 183.5,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "text": "Queries trusted profile",
+          "bounds": {
+            "x": 2887.03125,
+            "y": 255.5,
+            "width": 157.40625,
+            "height": 24
+          }
+        },
+        {
+          "text": "Checks readiness; locks arrangements",
+          "bounds": {
+            "x": 2033.234375,
+            "y": 855,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "text": "Reuses readiness and locks",
+          "bounds": {
+            "x": 1481.734375,
+            "y": 1168,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "text": "Checks live venue readiness",
+          "bounds": {
+            "x": 2584.734375,
+            "y": 837,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "text": "Reads equipment readiness",
+          "bounds": {
+            "x": 2585.1171875,
+            "y": 901,
+            "width": 199.234375,
+            "height": 24
+          }
+        },
+        {
+          "text": "Runs readiness and lock SQL",
+          "bounds": {
+            "x": 3131.734375,
+            "y": 916.5,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "text": "Checks technical edit policy",
+          "bounds": {
+            "x": 1483.4609375,
+            "y": 715.5,
+            "width": 196.546875,
+            "height": 24
+          }
+        },
+        {
+          "text": "Reads latest safety round",
+          "bounds": {
+            "x": 2875.015625,
+            "y": 1139.5,
+            "width": 181.4375,
+            "height": 24
+          }
+        },
+        {
+          "text": "Calls notice writer",
+          "bounds": {
+            "x": 2902.6015625,
+            "y": 1034.5,
+            "width": 126.265625,
+            "height": 24
+          }
+        },
+        {
+          "text": "Calls notice writer",
+          "bounds": {
+            "x": 3168.6015625,
+            "y": 547.5,
+            "width": 126.265625,
+            "height": 24
+          }
+        },
+        {
+          "text": "Calls notice writer",
+          "bounds": {
+            "x": 3168.6015625,
+            "y": 741.5,
+            "width": 126.265625,
+            "height": 24
+          }
+        },
+        {
+          "text": "Calls notice writer",
+          "bounds": {
+            "x": 2621.6015625,
+            "y": 1225,
+            "width": 126.265625,
+            "height": 24
+          }
+        },
+        {
+          "text": "Pool reads; transaction writes",
+          "bounds": {
+            "x": 3131.734375,
+            "y": 796.5,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "text": "Pool/client queries; expiry SQL",
+          "bounds": {
+            "x": 3412.734375,
+            "y": 507,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "text": "Pool/client queries",
+          "bounds": {
+            "x": 3447.359375,
+            "y": 713,
+            "width": 130.75,
+            "height": 24
+          }
+        },
+        {
+          "text": "Reads; writes under locks",
+          "bounds": {
+            "x": 2874.140625,
+            "y": 1448,
+            "width": 183.1875,
+            "height": 24
+          }
+        },
+        {
+          "text": "Review and preparation SQL",
+          "bounds": {
+            "x": 2865.734375,
+            "y": 1289.5,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "text": "Inbox reads; caller-client inserts",
+          "bounds": {
+            "x": 3678.734375,
+            "y": 1022.5,
+            "width": 200,
+            "height": 48
+          }
+        },
+        {
+          "text": "Calls expiry wrapper",
+          "bounds": {
+            "x": 2612.265625,
+            "y": 424.5,
+            "width": 144.9375,
+            "height": 24
+          }
+        },
+        {
+          "text": "PostgreSQL via pg; TLS for shared Supabase",
+          "bounds": {
+            "x": 4360.234375,
+            "y": 1352.54541015625,
+            "width": 200,
+            "height": 48
+          }
+        }
+      ],
+      "label_node_overlaps": [],
+      "edge_label_overlaps": []
+    }
+  ]
+}

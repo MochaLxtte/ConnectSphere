@@ -1,51 +1,44 @@
 # Sprint 4 backlog and acceptance test plan
 
-## Release verification checkpoint — 1 November 2026
+Sprint 4 delivered **15 stories / 63 SP accepted, zero carry-over**. The selected table records the agreed owners and reviewers. The story cards and test groups retain the criteria and dated verification checkpoints for all 15 stories. [Sprint review](review.md)
 
-Shared migration 023 is applied and verified. [MAN-20261101-03](../../testing/test-evidence.md#man-20261101-03--connected-repaired-candidate-acceptance-1-november-2026) passes the four outstanding repair/authentication cases using real local frontend/API/Supabase sessions. [AUTO-20261101-FREEZE-CANDIDATE](../../testing/test-evidence.md#auto-20261101-freeze-candidate--final-local-verification-1-november-2026) passes the final check, coverage gates, combined PostgreSQL suite and two full browser runs. Earlier dated administrative snapshots and failed attempts below remain historical; this checkpoint does not create sprint-end acceptance or velocity.
+<a id="team-input-needed"></a>
 
-| Acceptance area | Current scoped result |
-| --- | --- |
-| S4-T03 / KAN-63 cancellation outcome | TC-15-108 connected repaired readback Pass; saved release reason and prior review reason are distinct. |
-| S4-T05 / KAN-61 readiness | TC-06-447 connected retest Pass; new pending arrangement removes Ready/confirmation controls without reload; cancellation restores readiness without changing event status. |
-| S4-T15 / KAN-84 safety | TC-06-446 connected retest Pass; exact venue restoration leaves the old approval invalid; fresh review then permits preparation. Previous review/audit history retained. |
-| Cross-sprint KAN-25 authentication | TC-01-213 connected smoke Pass; real sign-in, reload, role restrictions and logout verified. Earlier Sprint 1 acceptance is not rewritten. |
-| S4-T16 / release journey | Four repair checks are complete. R24/TC-06-32 remains open for candidate integration, actual teammate review, exact-commit remote CI and a recorded team freeze decision. No blanket release Pass is inferred. |
+## How to use this record
 
-**26 October 2026 targeted update:** KAN-9 is In Progress / Tristan, with approved AC104–107, implementation and automated evidence. KAN-26 is In Progress / Tristan with local reservation implementation and AUTO-20261026-KAN26-01 evidence. This update does not start the administratively Future sprint, change its 63 SP allocation or record a review. Other stories retain their dated snapshots.
+- Read the selected/committed table, then the relevant story card and acceptance-test group.
+- Criterion wording and historical test checkpoints below retain their source versions. A dated "Not executed" or pending dependency is not automatically the latest release result.
+- Read the [current testing report](../../testing/README.md) and [execution register](../../testing/test-executions.csv) for later runs. An automated pass or a broad walkthrough does not establish every linked criterion passed.
+- Record formal sprint decisions in [review](review.md); do not infer them from Jira or CI. Detailed development and superseded allocation history is linked at the end.
 
-**16 October 2026 update.** Selected scope: **15 parents / 63 SP**. Sprint window: **18–31 October 2026**. Jira: **Future (ID 68); not started**. All selected parents are To Do; tests **Not executed** and acceptance **Not assessed**.
-
-This rebalanced allocation replaces the earlier 97/29 split with **63/63**, without dropping criteria or increasing the 126 remaining release points. Customer changes were received **2 October**, as confirmed on 16 October; Sprint 2 is assessed against its original scope. The five selected carried stories retain **19 SP**; their current unfinished disposition does not invent historical acceptance or reduce Jira estimates to zero.
-
-[Planning](planning.md) and [estimation](estimation-and-capacity.md) record the allocation and recorded decisions. Active criteria below retain the Jira wording. Expandable source descriptions are preserved snapshots from before the self-selection update; old administrative owner/reviewer labels in those snapshots are historical. Notification work is an explicit **KAN-64 5 + KAN-80 3** split, not hidden unpointed preparation. S3 delivers all of its narrowed inbox and trigger scope; S4 adds the separately tracked remaining triggers.
-
-**16 October ownership update:** stories are unassigned for team members to choose, targeting roughly **10–11 SP each per sprint / 21 SP across both**. Keep whole estimates and dependencies; choose another member to review. The integration lead is **To agree**. See the [selection rules](planning.md#selected-backlog).
+The 16 October passages within the story cards preserve the board fields and release allocation recorded that day. Sprint 3 selected its 13 stories / 63 SP on 4 October, and Sprint 4 selected its 15 stories / 63 SP on 18 October. [Sprint 3 planning](../sprint-03/planning.md#customer-change-chronology) · [Sprint 4 planning](planning.md)
 
 ## Selected backlog
 
-| Jira | Story | SP | Owner | Independent reviewer | Origin | Test |
+All 15 stories were accepted together at the 31 October review. The owners volunteered and the reviewers agreed at planning. These columns identify responsibility agreed in that meeting. Actual PR reviewers and findings are documented in the dated engineering records, including Tristan’s later reviews on KAN-61 and KAN-84. [Planning cues 45–71](evidence/meetings/planning.docx) · [Story decisions](review.md#story-decisions)
+
+| Jira | Story | SP | Planning owner | Agreed reviewer | Origin | Test |
 | --- | --- | ---: | --- | --- | --- | --- |
-| [KAN-18](https://smu-g7-grp1.atlassian.net/browse/KAN-18) | Update Equipment Availability Status | 3 | Unassigned — team member to choose | To agree after owner chosen | Existing release backlog | S4-T01 |
-| [KAN-9](https://smu-g7-grp1.atlassian.net/browse/KAN-9) | Check Equipment Availability for an Event | 8 | Tristan | To agree | Existing release backlog | S4-T02 |
-| [KAN-63](https://smu-g7-grp1.atlassian.net/browse/KAN-63) | Submit and Review Event Equipment Requests | 5 | Ryan | PR #63 review | Existing release backlog | S4-T03 |
-| [KAN-26](https://smu-g7-grp1.atlassian.net/browse/KAN-26) | Reserve Equipment | 3 | Tristan | To agree | Existing release backlog | S4-T04 |
-| [KAN-61](https://smu-g7-grp1.atlassian.net/browse/KAN-61) | Confirm Event After Planning Arrangements | 3 | Kai Jie (29 October 2026) | Tristan | Existing release backlog | S4-T05 |
-| [KAN-62](https://smu-g7-grp1.atlassian.net/browse/KAN-62) | Cancel Event and Release Its Arrangements | 5 | Ryan | PR #63 review | Existing release backlog | S4-T06 |
-| [KAN-10](https://smu-g7-grp1.atlassian.net/browse/KAN-10) | Mark Event as Completed | 3 | Unassigned — team member to choose | To agree after owner chosen | Existing release backlog | S4-T07 |
-| [KAN-14](https://smu-g7-grp1.atlassian.net/browse/KAN-14) | Register for an Event | 5 | Unassigned — team member to choose | To agree after owner chosen | Existing release backlog | S4-T08 |
-| [KAN-17](https://smu-g7-grp1.atlassian.net/browse/KAN-17) | Withdraw Attendee Registration | 2 | Arvin (Jira read 29 October) | PR #70: changes requested | Existing release backlog | S4-T09 |
-| [KAN-67](https://smu-g7-grp1.atlassian.net/browse/KAN-67) | View Event Registrations | 2 | Arvin (Jira read 29 October) | PR #70: changes requested | Existing release backlog | S4-T10 |
-| [KAN-66](https://smu-g7-grp1.atlassian.net/browse/KAN-66) | Update Event Information During Planning | 3 | Irfan (assigned in Jira 26 October 2026) | To agree | Existing release backlog | S4-T11 |
-| [KAN-15](https://smu-g7-grp1.atlassian.net/browse/KAN-15) | Submit and Review Event Change Requests | 5 | Irfan (assigned in Jira 26 October 2026) | To agree | Existing release backlog | S4-T12 |
-| [KAN-80](https://smu-g7-grp1.atlassian.net/browse/KAN-80) | Receive Equipment, Lifecycle, Change and Registration Notifications | 3 | Arvin (Jira read 29 October) | PR #70: changes requested | Explicit original notification split | S4-T13 |
-| [KAN-82](https://smu-g7-grp1.atlassian.net/browse/KAN-82) | Manage each venue arrangement independently for an event | 5 | Irfan (In Progress in Jira since 26 October 2026) | To agree | Customer change CR-3 | S4-T14 |
-| [KAN-84](https://smu-g7-grp1.atlassian.net/browse/KAN-84) | Review operational safety before event preparation | 8 | Kai Jie (29 October 2026) | Tristan | Customer change CR-6 | S4-T15 |
+| [KAN-18](https://smu-g7-grp1.atlassian.net/browse/KAN-18) | Update Equipment Availability Status | 3 | Ernest | Arvin | Existing release backlog | S4-T01 |
+| [KAN-9](https://smu-g7-grp1.atlassian.net/browse/KAN-9) | Check Equipment Availability for an Event | 8 | Tristan | Irfan | Existing release backlog | S4-T02 |
+| [KAN-63](https://smu-g7-grp1.atlassian.net/browse/KAN-63) | Submit and Review Event Equipment Requests | 5 | Ryan | Kai Jie | Existing release backlog | S4-T03 |
+| [KAN-26](https://smu-g7-grp1.atlassian.net/browse/KAN-26) | Reserve Equipment | 3 | Tristan | Irfan | Existing release backlog | S4-T04 |
+| [KAN-61](https://smu-g7-grp1.atlassian.net/browse/KAN-61) | Confirm Event After Planning Arrangements | 3 | Kai Jie | Ryan | Existing release backlog | S4-T05 |
+| [KAN-62](https://smu-g7-grp1.atlassian.net/browse/KAN-62) | Cancel Event and Release Its Arrangements | 5 | Ryan | Kai Jie | Existing release backlog | S4-T06 |
+| [KAN-10](https://smu-g7-grp1.atlassian.net/browse/KAN-10) | Mark Event as Completed | 3 | Ernest | Arvin | Existing release backlog | S4-T07 |
+| [KAN-14](https://smu-g7-grp1.atlassian.net/browse/KAN-14) | Register for an Event | 5 | Ernest | Arvin | Existing release backlog | S4-T08 |
+| [KAN-17](https://smu-g7-grp1.atlassian.net/browse/KAN-17) | Withdraw Attendee Registration | 2 | Arvin | Ernest | Existing release backlog | S4-T09 |
+| [KAN-67](https://smu-g7-grp1.atlassian.net/browse/KAN-67) | View Event Registrations | 2 | Arvin | Ernest | Existing release backlog | S4-T10 |
+| [KAN-66](https://smu-g7-grp1.atlassian.net/browse/KAN-66) | Update Event Information During Planning | 3 | Irfan | Tristan | Existing release backlog | S4-T11 |
+| [KAN-15](https://smu-g7-grp1.atlassian.net/browse/KAN-15) | Submit and Review Event Change Requests | 5 | Irfan | Tristan | Existing release backlog | S4-T12 |
+| [KAN-80](https://smu-g7-grp1.atlassian.net/browse/KAN-80) | Receive Equipment, Lifecycle, Change and Registration Notifications | 3 | Arvin | Ernest | Explicit original notification split | S4-T13 |
+| [KAN-82](https://smu-g7-grp1.atlassian.net/browse/KAN-82) | Manage each venue arrangement independently for an event | 5 | Irfan | Tristan | Customer change CR-3 | S4-T14 |
+| [KAN-84](https://smu-g7-grp1.atlassian.net/browse/KAN-84) | Review operational safety before event preparation | 8 | Kai Jie | Ryan | Customer change CR-6 | S4-T15 |
 | **Total** | **15 parents** | **63** | | | | |
 
 ## Shared test data and execution rules
 
-These are specifications, **Not executed**, with acceptance **Not assessed**. The original 26 aggregate/audit rows and historical dated evidence remain unchanged; a past Fail is not replaced by a planned repair Pass.
+These are historical test specifications. Each case retains its own execution status and evidence. The original 26 aggregate/audit rows, earlier failures and repairs still identify the conditions tested. The 31 October [story decisions](review.md#story-decisions) apply to the selected scope as a whole.
 
 - Use synthetic **O1/O2** organisers, **C1/C2** coordinators, **T** Technical Support, **V** Venue Staff, **L1/L2** Leads, **A1/A2** attendees and **S** Safety Officer. Record real mapped account aliases at execution; a person signs in themselves and no credentials are recorded.
 - **E-A/E-B**, venues **A/B** and equipment **EQ-A/EQ-B** are separate fixtures. Default future period: **12 January 2031, 10:00–12:00 Asia/Singapore**. Each case sets specific boundaries, quantities, statuses, revisions and clocks.
@@ -56,26 +49,26 @@ These are specifications, **Not executed**, with acceptance **Not assessed**. Th
 
 ## Acceptance test plan
 
-Every row requires its complete active criterion set plus applicable Definition of Done. Normal, boundary, conflict and failure cases in the CSV remain specifications until an actual run is recorded.
+The [31 October manual review](../../testing/sprint-4-manual-review.md) records the 75 cases the team reported as passing under S4-T01–T15. Each group links to those individual results. The other text in the result column preserves dated technical checkpoints, including preparation entries and later outcomes. S4-T16 has a separate whole-release completion condition.
 
 | Test | Story / active criteria | Functional cases | Result / evidence |
 | --- | --- | --- | --- |
-| S4-T01 | KAN-18: AC1, AC2, AC3, AC4, AC5, AC6, AC101, AC102, AC103 | TC-16-01, TC-16-02, TC-16-03, TC-16-04, TC-16-05 | **Partly executed**: the integration cases TC-16-01, -03 and -04 passed 29 October, AUTO-20261029-KAN18-02 (retests on the tree merged with main; -01 earlier); TC-16-02 and TC-16-05 (planned manual) have automated equivalents in the same run but are **Not executed** as manual cases. Hosted run and acceptance Not executed / Not assessed |
-| S4-T02 | KAN-9: AC1–AC5, AC101–AC107 | TC-16-06–TC-16-18 | Automated evidence: AUTO-20261026-KAN9-01. Integrated manual **Not executed**; acceptance **Not assessed**. TC-16-09 combined reservation path is now implemented locally with KAN-26; its integrated manual run remains Not executed. |
-| S4-T03 | KAN-63: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC101, AC102, AC103, AC104 | TC-15-01, TC-15-02, TC-15-03, TC-15-04, TC-15-05, TC-15-06, TC-15-07, TC-15-108, TC-15-109 | AUTO-20261028-PR63-01 / S4-E16: automated checks recorded; integrated manual **Not executed**, acceptance **Not assessed**. **1 November:** targeted repairs verified in AUTO-20261101-RELEASE-REGRESSIONS / S4-E29; earlier MAN-20261101-02 failures retained. Post-repair connected retest Not executed; shared 023 required for safety. |
-| S4-T04 | KAN-26: AC1–AC7, AC101–AC108 | TC-17-01–08; automated TC-17-101–110 | AUTO-20261026-KAN26-01 records automated results. Integrated manual **Not executed**; acceptance **Not assessed**. Shared migration 015 and KAN-18/63/62/10 UI integration remain pending. |
-| S4-T05 | KAN-61: AC1, AC2, AC3, AC4, AC5, AC6, AC101, AC102, AC103, AC104, AC105, AC106 | TC-06-01, TC-06-02, TC-06-03, TC-06-04, TC-06-05, TC-06-06, TC-06-07, TC-06-432, TC-06-431, TC-06-447, TC-06-451 | Partial automated coverage (AUTO-20261029-KAN61-01); 29 October follow-up: TC-06-431 Pass in AUTO-20261029-PR77-REVIEW / S4-E21 for an existing operational block overlapped by a later buffer edit; integrated acceptance **Not executed** / acceptance **Not assessed** **1 November:** targeted repairs verified in AUTO-20261101-RELEASE-REGRESSIONS / S4-E29; earlier MAN-20261101-02 failures retained. Post-repair connected retest Not executed; shared 023 required for safety. |
-| S4-T06 | KAN-62: AC1, AC2, AC3, AC4, AC5, AC6, AC101, AC102, AC103, AC104 | TC-06-08, TC-06-09, TC-06-10, TC-06-11, TC-06-12, TC-06-13 | AUTO-20261028-PR63-01 / S4-E16: automated checks recorded; integrated manual **Not executed**, acceptance **Not assessed**. |
-| S4-T07 | KAN-10: AC1, AC2, AC3, AC4, AC5, AC101, AC102, AC103 | TC-06-14, TC-06-15, TC-06-16, TC-06-17, TC-06-18 | **Partly executed**: the integration cases TC-06-18 (Pass) and TC-06-15 (Pass, scoped: no controlled clock) passed 29 October, AUTO-20261029-KAN10-01; TC-06-14, -16 and -17 (planned manual) have automated equivalents but are **Not executed** as manual cases. Hosted run and acceptance Not executed / Not assessed |
-| S4-T08 | KAN-14: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC101, AC102, AC103, AC104 | TC-18-01, TC-18-02, TC-18-03, TC-18-04, TC-18-05, TC-18-06 | **Partly executed**: the integration cases TC-18-04 and TC-18-05 passed 29 October, AUTO-20261029-KAN14-02 (retests on the tree merged with main; -01 earlier); TC-18-01, -02, -03 and -06 (planned manual) have automated equivalents but are **Not executed** as manual cases. Hosted run and acceptance Not executed / Not assessed |
-| S4-T09 | KAN-17: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC101, AC102, AC103 | TC-18-07, TC-18-08, TC-18-09, TC-18-10, TC-18-11, TC-18-401, TC-18-402, TC-18-403, TC-18-404, TC-18-405, TC-18-406, TC-18-407, TC-18-408, TC-18-409, TC-18-410, TC-18-411, TC-18-412, TC-18-413, TC-18-414, TC-18-415, TC-18-416, TC-18-417 | Partial automated coverage; integrated acceptance **Not executed** / acceptance **Not assessed** |
-| S4-T10 | KAN-67: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC101, AC102, AC103 | TC-18-12, TC-18-13, TC-18-14, TC-18-15, TC-18-16, TC-18-17, TC-18-418, TC-18-419, TC-18-420, TC-18-421, TC-18-422, TC-18-423, TC-18-424, TC-18-425, TC-18-426, TC-18-427, TC-18-428, TC-18-429, TC-18-430, TC-18-431 | Partial automated coverage; integrated acceptance **Not executed** / acceptance **Not assessed** |
-| S4-T11 | KAN-66: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC101, AC102, AC103 | TC-07-01, TC-07-02, TC-07-03, TC-07-04, TC-07-05, TC-07-06 | **In progress (27 October 2026):** automated unit/component and browser-fixture runs Pass (`AUTO-20261026-KAN66-01`, `-02`; unit re-run `AUTO-20261027-KAN66-03` on `3ac15d5`); PostgreSQL integration 533/533 and browser 161/161 Pass in CI on `27d5d84` (`CI-20261027-KAN66-02`); re-confirmed after merging main, 578/578 and 182/182 on `a5d1a3a` (`CI-20261027-KAN66-04`); local integrated acceptance Pass for TC-07-01/03/04/06 on `main` `ac5cd8b` with real sign-in (`MAN-20261028-KAN66-KAN15-01`; TC-07-02 and TC-07-05 Not executed); acceptance **Not assessed** (sprint review) |
-| S4-T12 | KAN-15: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC101, AC102, AC103, AC104, AC105 | TC-19-01, TC-19-02, TC-19-03, TC-19-04, TC-19-05, TC-19-06, TC-19-07, TC-19-08, TC-19-09 | **In progress (27 October 2026):** unit/component and browser-fixture runs Pass (`AUTO-20261027-KAN15-01`); PostgreSQL integration 544/544 and browser 164/164 Pass in CI on `6c5043c` (`CI-20261027-KAN15-02`); local integrated acceptance Pass for TC-19-01 to 05, and for TC-19-08's attendance-change cancellation only, on `main` `ac5cd8b` with real sign-in (`MAN-20261028-KAN66-KAN15-01`; minor display defect O-1, fixed in PR #69; TC-19-06/07/09 and the preservation and equipment parts of TC-19-08 Not executed); acceptance **Not assessed** (sprint review) |
-| S4-T13 | KAN-80: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9 | TC-20-21, TC-20-22, TC-20-23, TC-20-24, TC-20-25, TC-20-26, TC-20-27, TC-20-28, TC-20-29, TC-20-401, TC-20-402, TC-20-403, TC-20-404, TC-20-405, TC-20-406, TC-20-407, TC-20-408, TC-20-409, TC-20-410, TC-20-411, TC-20-412, TC-20-413, TC-20-414, TC-20-415, TC-20-416, TC-20-417, TC-20-418, TC-20-419, TC-20-420, TC-20-421, TC-20-422, TC-20-423, TC-20-424, TC-20-425, TC-20-426, TC-20-427, TC-20-428, TC-20-429, TC-20-430, TC-20-431 | **30 October 2026:** KAN-80-AC2 submission-as-request-for-action clarified; corrected TC-20-405 and automated notification regressions are recorded in `AUTO-20261030-S4-AC-FIXES` / S4-E23. TC-20-431 was initially Not executed. **1 November:** its scoped connected Pass is recorded in MAN-20261101-01; this does not pass all KAN-80 cases. Story acceptance **Not assessed** |
-| S4-T14 | KAN-82: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12 | TC-12-01, TC-12-02, TC-12-03, TC-12-04, TC-12-05, TC-12-06, TC-12-07, TC-12-08, TC-12-09, TC-12-10, TC-12-11, TC-12-12, TC-12-13, TC-12-14, TC-12-15, TC-12-16, TC-12-17, TC-12-18, TC-12-19, TC-12-20 | **30 October 2026:** saved-arrangement advisory checks and stale-context regressions are recorded in `AUTO-20261030-S4-AC-FIXES` / S4-E23 (TC-12-15 to TC-12-19); TC-12-20 integrated manual journey **Not executed**, acceptance **Not assessed**. **In progress (29 October 2026):** PR #67 review fixes verified (`AUTO-20261029-KAN82-03`): TC-12-13 and TC-12-14 failed on the code under review and pass after the fixes; integration 639/639, KAN-82 and venue browser specs 76/76; local integrated acceptance **Not executed**; acceptance **Not assessed**. **28 October 2026:** unit/component, isolated PostgreSQL integration and browser-fixture runs Pass (`AUTO-20261028-KAN82-01`, S4-E17); GitHub CI Pass on `4414fde` (`CI-20261028-KAN82-02`, run 40684714674: integration 637/637, browser 191/191); local integrated acceptance **Not executed**; acceptance **Not assessed** |
-| S4-T15 | KAN-84: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12, AC101 | TC-06-20, TC-06-21, TC-06-22, TC-06-23, TC-06-24, TC-06-25, TC-06-26, TC-06-27, TC-06-28, TC-06-29, TC-06-30, TC-06-31, TC-06-433–441, TC-06-442, TC-06-443, TC-06-444, TC-06-445, TC-06-446, TC-06-450, TC-06-452 | **30 October 2026:** current-review decision guards, stale responses and refresh recovery are recorded in `AUTO-20261030-S4-AC-FIXES` / S4-E23 (TC-06-442 to TC-06-444); TC-06-445 integrated manual journey **Not executed**. Partial automated coverage (AUTO-20261029-KAN84-01; AUTO-20261029-PR78-REVIEW); integrated acceptance **Not executed** / acceptance **Not assessed** **1 November:** targeted repairs verified in AUTO-20261101-RELEASE-REGRESSIONS / S4-E29; earlier MAN-20261101-02 failures retained. Post-repair connected retest Not executed; shared 023 required for safety. |
-| S4-T16 | Integrated complete release with equipment, registration, independent venue actions and safety | TC-06-32; supporting TC-14-20 | **30 October 2026:** [24-step team walkthrough](../../testing/release-e2e-walkthrough.md) and [Word copy](../../testing/release-e2e-walkthrough.docx) prepared against the current release workflows and scoped corrections. Initially **Not executed**. **1 November:** MAN-20261101-01 records R01–R23 passed within scope, with R24 browser checks complete but its release gate open (23/24 groups complete). MAN-20261101-02 found three later defects; their automated repairs do not replace pending connected retests. Full TC-06-32/release decision **Not assessed**; no whole-case Pass recorded. |
+| S4-T01 | KAN-18: AC1, AC2, AC3, AC4, AC5, AC6, AC101, AC102, AC103 | TC-16-01, TC-16-02, TC-16-03, TC-16-04, TC-16-05 | [31 Oct review: 2 manual Pass results](../../testing/sprint-4-manual-review.md#s4-t01). **Partly executed**: the integration cases TC-16-01, -03 and -04 passed 29 October, AUTO-20261029-KAN18-02 (retests on the tree merged with main; -01 earlier); TC-16-02 and TC-16-05 (planned manual) have automated equivalents in the same run but are **Not executed** as manual cases. Hosted run and acceptance Not executed / Not assessed |
+| S4-T02 | KAN-9: AC1–AC5, AC101–AC107 | TC-16-06–TC-16-18 | [31 Oct review: 3 manual Pass results](../../testing/sprint-4-manual-review.md#s4-t02). Automated evidence: AUTO-20261026-KAN9-01. Integrated manual **Not executed**; acceptance **Not assessed**. TC-16-09 combined reservation path is now implemented locally with KAN-26; its integrated manual run remains Not executed. |
+| S4-T03 | KAN-63: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC101, AC102, AC103, AC104 | TC-15-01, TC-15-02, TC-15-03, TC-15-04, TC-15-05, TC-15-06, TC-15-07, TC-15-108, TC-15-109 | [31 Oct review: 6 manual Pass results](../../testing/sprint-4-manual-review.md#s4-t03). AUTO-20261028-PR63-01 / S4-E16: automated checks recorded; integrated manual **Not executed**, acceptance **Not assessed**. **1 November:** targeted repairs verified in AUTO-20261101-RELEASE-REGRESSIONS / S4-E29; earlier MAN-20261101-02 failures retained. Post-repair connected retest Not executed; shared 023 required for safety. |
+| S4-T04 | KAN-26: AC1–AC7, AC101–AC108 | TC-17-01–08; automated TC-17-101–110 | [31 Oct review: 7 manual Pass results](../../testing/sprint-4-manual-review.md#s4-t04). AUTO-20261026-KAN26-01 records automated results. Integrated manual **Not executed**; acceptance **Not assessed**. Shared migration 015 and KAN-18/63/62/10 UI integration remain pending. |
+| S4-T05 | KAN-61: AC1, AC2, AC3, AC4, AC5, AC6, AC101, AC102, AC103, AC104, AC105, AC106 | TC-06-01, TC-06-02, TC-06-03, TC-06-04, TC-06-05, TC-06-06, TC-06-07, TC-06-432, TC-06-431, TC-06-447, TC-06-451 | [31 Oct review: 7 manual Pass results](../../testing/sprint-4-manual-review.md#s4-t05). Partial automated coverage (AUTO-20261029-KAN61-01); 29 October follow-up: TC-06-431 Pass in AUTO-20261029-PR77-REVIEW / S4-E21 for an existing operational block overlapped by a later buffer edit; integrated acceptance **Not executed** / acceptance **Not assessed** **1 November:** targeted repairs verified in AUTO-20261101-RELEASE-REGRESSIONS / S4-E29; earlier MAN-20261101-02 failures retained. Post-repair connected retest Not executed; shared 023 required for safety. |
+| S4-T06 | KAN-62: AC1, AC2, AC3, AC4, AC5, AC6, AC101, AC102, AC103, AC104 | TC-06-08, TC-06-09, TC-06-10, TC-06-11, TC-06-12, TC-06-13 | [31 Oct review: 5 manual Pass results](../../testing/sprint-4-manual-review.md#s4-t06). AUTO-20261028-PR63-01 / S4-E16: automated checks recorded; integrated manual **Not executed**, acceptance **Not assessed**. |
+| S4-T07 | KAN-10: AC1, AC2, AC3, AC4, AC5, AC101, AC102, AC103 | TC-06-14, TC-06-15, TC-06-16, TC-06-17, TC-06-18 | [31 Oct review: 3 manual Pass results](../../testing/sprint-4-manual-review.md#s4-t07). **Partly executed**: the integration cases TC-06-18 (Pass) and TC-06-15 (Pass, scoped: no controlled clock) passed 29 October, AUTO-20261029-KAN10-01; TC-06-14, -16 and -17 (planned manual) have automated equivalents but are **Not executed** as manual cases. Hosted run and acceptance Not executed / Not assessed |
+| S4-T08 | KAN-14: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC101, AC102, AC103, AC104 | TC-18-01, TC-18-02, TC-18-03, TC-18-04, TC-18-05, TC-18-06 | [31 Oct review: 4 manual Pass results](../../testing/sprint-4-manual-review.md#s4-t08). **Partly executed**: the integration cases TC-18-04 and TC-18-05 passed 29 October, AUTO-20261029-KAN14-02 (retests on the tree merged with main; -01 earlier); TC-18-01, -02, -03 and -06 (planned manual) have automated equivalents but are **Not executed** as manual cases. Hosted run and acceptance Not executed / Not assessed |
+| S4-T09 | KAN-17: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC101, AC102, AC103 | TC-18-07, TC-18-08, TC-18-09, TC-18-10, TC-18-11, TC-18-401, TC-18-402, TC-18-403, TC-18-404, TC-18-405, TC-18-406, TC-18-407, TC-18-408, TC-18-409, TC-18-410, TC-18-411, TC-18-412, TC-18-413, TC-18-414, TC-18-415, TC-18-416, TC-18-417 | [31 Oct review: 5 manual Pass results](../../testing/sprint-4-manual-review.md#s4-t09). Partial automated coverage; integrated acceptance **Not executed** / acceptance **Not assessed** |
+| S4-T10 | KAN-67: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC101, AC102, AC103 | TC-18-12, TC-18-13, TC-18-14, TC-18-15, TC-18-16, TC-18-17, TC-18-418, TC-18-419, TC-18-420, TC-18-421, TC-18-422, TC-18-423, TC-18-424, TC-18-425, TC-18-426, TC-18-427, TC-18-428, TC-18-429, TC-18-430, TC-18-431 | [31 Oct review: 6 manual Pass results](../../testing/sprint-4-manual-review.md#s4-t10). Partial automated coverage; integrated acceptance **Not executed** / acceptance **Not assessed** |
+| S4-T11 | KAN-66: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC101, AC102, AC103 | TC-07-01, TC-07-02, TC-07-03, TC-07-04, TC-07-05, TC-07-06 | [31 Oct review: 4 manual Pass results](../../testing/sprint-4-manual-review.md#s4-t11). **In progress (27 October 2026):** automated unit/component and browser-fixture runs Pass (`AUTO-20261026-KAN66-01`, `-02`; unit re-run `AUTO-20261027-KAN66-03` on `3ac15d5`); PostgreSQL integration 533/533 and browser 161/161 Pass in CI on `27d5d84` (`CI-20261027-KAN66-02`); re-confirmed after merging main, 578/578 and 182/182 on `a5d1a3a` (`CI-20261027-KAN66-04`); local integrated acceptance Pass for TC-07-01/03/04/06 on `main` `ac5cd8b` with real sign-in (`MAN-20261028-KAN66-KAN15-01`; TC-07-02 and TC-07-05 Not executed); acceptance **Not assessed** (sprint review) |
+| S4-T12 | KAN-15: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC101, AC102, AC103, AC104, AC105 | TC-19-01, TC-19-02, TC-19-03, TC-19-04, TC-19-05, TC-19-06, TC-19-07, TC-19-08, TC-19-09 | [31 Oct review: 7 manual Pass results](../../testing/sprint-4-manual-review.md#s4-t12). **In progress (27 October 2026):** unit/component and browser-fixture runs Pass (`AUTO-20261027-KAN15-01`); PostgreSQL integration 544/544 and browser 164/164 Pass in CI on `6c5043c` (`CI-20261027-KAN15-02`); local integrated acceptance Pass for TC-19-01 to 05, and for TC-19-08's attendance-change cancellation only, on `main` `ac5cd8b` with real sign-in (`MAN-20261028-KAN66-KAN15-01`; minor display defect O-1, fixed in PR #69; TC-19-06/07/09 and the preservation and equipment parts of TC-19-08 Not executed); acceptance **Not assessed** (sprint review) |
+| S4-T13 | KAN-80: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9 | TC-20-21, TC-20-22, TC-20-23, TC-20-24, TC-20-25, TC-20-26, TC-20-27, TC-20-28, TC-20-29, TC-20-401, TC-20-402, TC-20-403, TC-20-404, TC-20-405, TC-20-406, TC-20-407, TC-20-408, TC-20-409, TC-20-410, TC-20-411, TC-20-412, TC-20-413, TC-20-414, TC-20-415, TC-20-416, TC-20-417, TC-20-418, TC-20-419, TC-20-420, TC-20-421, TC-20-422, TC-20-423, TC-20-424, TC-20-425, TC-20-426, TC-20-427, TC-20-428, TC-20-429, TC-20-430, TC-20-431 | [31 Oct review: 4 manual Pass results](../../testing/sprint-4-manual-review.md#s4-t13). **30 October 2026:** KAN-80-AC2 submission-as-request-for-action clarified; corrected TC-20-405 and automated notification regressions are recorded in `AUTO-20261030-S4-AC-FIXES` / S4-E23. TC-20-431 was initially Not executed. **1 November:** its scoped connected Pass is recorded in MAN-20261101-01; this does not pass all KAN-80 cases. Story acceptance **Not assessed** |
+| S4-T14 | KAN-82: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12 | TC-12-01, TC-12-02, TC-12-03, TC-12-04, TC-12-05, TC-12-06, TC-12-07, TC-12-08, TC-12-09, TC-12-10, TC-12-11, TC-12-12, TC-12-13, TC-12-14, TC-12-15, TC-12-16, TC-12-17, TC-12-18, TC-12-19, TC-12-20 | [31 Oct review: 6 manual Pass results](../../testing/sprint-4-manual-review.md#s4-t14). **30 October 2026:** saved-arrangement advisory checks and stale-context regressions are recorded in `AUTO-20261030-S4-AC-FIXES` / S4-E23 (TC-12-15 to TC-12-19); TC-12-20 integrated manual journey **Not executed**, acceptance **Not assessed**. **In progress (29 October 2026):** PR #67 review fixes verified (`AUTO-20261029-KAN82-03`): TC-12-13 and TC-12-14 failed on the code under review and pass after the fixes; integration 639/639, KAN-82 and venue browser specs 76/76; local integrated acceptance **Not executed**; acceptance **Not assessed**. **28 October 2026:** unit/component, isolated PostgreSQL integration and browser-fixture runs Pass (`AUTO-20261028-KAN82-01`, S4-E17); GitHub CI Pass on `4414fde` (`CI-20261028-KAN82-02`, run 40684714674: integration 637/637, browser 191/191); local integrated acceptance **Not executed**; acceptance **Not assessed** |
+| S4-T15 | KAN-84: AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12, AC101 | TC-06-20, TC-06-21, TC-06-22, TC-06-23, TC-06-24, TC-06-25, TC-06-26, TC-06-27, TC-06-28, TC-06-29, TC-06-30, TC-06-31, TC-06-433–441, TC-06-442, TC-06-443, TC-06-444, TC-06-445, TC-06-446, TC-06-450, TC-06-452 | [31 Oct review: 6 manual Pass results](../../testing/sprint-4-manual-review.md#s4-t15). **30 October 2026:** current-review decision guards, stale responses and refresh recovery are recorded in `AUTO-20261030-S4-AC-FIXES` / S4-E23 (TC-06-442 to TC-06-444); TC-06-445 integrated manual journey **Not executed**. Partial automated coverage (AUTO-20261029-KAN84-01; AUTO-20261029-PR78-REVIEW); integrated acceptance **Not executed** / acceptance **Not assessed** **1 November:** targeted repairs verified in AUTO-20261101-RELEASE-REGRESSIONS / S4-E29; earlier MAN-20261101-02 failures retained. Post-repair connected retest Not executed; shared 023 required for safety. |
+| S4-T16 | Integrated complete release with equipment, registration, independent venue actions and safety | TC-06-32; supporting TC-14-20 | **Final functional result:** [TC-06-32 passed before freeze, team-reported](../../testing/test-evidence.md#report-prefreeze-r24--functional-release-walkthrough). The release record tracks the formal decision. The following entries retain the earlier checkpoint. **30 October 2026:** [24-step team walkthrough](../../testing/release-e2e-walkthrough.md) and [Word copy](../../testing/release-e2e-walkthrough.docx) prepared against the current release workflows and scoped corrections. Initially **Not executed**. **1 November:** MAN-20261101-01 records R01–R23 passed within scope, with R24 browser checks complete but its release gate open (23/24 groups complete). MAN-20261101-02 found three later defects; their automated repairs do not replace pending connected retests. Full TC-06-32/release decision **Not assessed**; no whole-case Pass recorded. |
 
 ## Selected story cards
 
@@ -116,8 +109,7 @@ Customer changes were received 2 October 2026 (Tristan's confirmation recorded 1
 
 | **User Story** | As a Technical Support Staff member, I want to update the operational status of unavailable equipment so that damaged or maintained equipment is not incorrectly treated as available for event use. |
 | --- | --- |
-| **Acceptance Criteria** |
-| Technical Support Staff can view the current operational status of equipment. Technical Support Staff can mark equipment as unavailable when it is damaged, undergoing repair or maintenance, or otherwise unavailable for event use. When the equipment's operational status is changed, the updated status is saved. Equipment marked as unavailable is not counted as available when equipment availability is checked for an event. Equipment marked as unavailable cannot be newly reserved for an event while it remains unavailable. Technical Support Staff can update the equipment's operational status when it becomes available for event use again. |
+| **Acceptance Criteria** | Technical Support Staff can view the current operational status of equipment. Technical Support Staff can mark equipment as unavailable when it is damaged, undergoing repair or maintenance, or otherwise unavailable for event use. When the equipment's operational status is changed, the updated status is saved. Equipment marked as unavailable is not counted as available when equipment availability is checked for an event. Equipment marked as unavailable cannot be newly reserved for an event while it remains unavailable. Technical Support Staff can update the equipment's operational status when it becomes available for event use again. |
 
 ### Sprint 3 selected scope and verification
 
@@ -174,8 +166,7 @@ Customer changes were received 2 October 2026 (Tristan's confirmation recorded 1
 
 | **User Story** | As a Technical Support Staff member, I want to check whether sufficient suitable equipment is available for an event's requested date and time, so that I can determine if the event's technical requirements can be fulfilled. |
 | --- | --- |
-| **Acceptance Criteria** |
-| Ensure that the Technical Support Staff member:  Can view the requested equipment types, requested quantities, and the event date/time window.  Is shown only equipment that excludes units marked as damaged, undergoing maintenance, or reserved for overlapping bookings.  Can perform the availability check independently of whether the venue booking is confirmed.  Given an event request with equipment requirements, when the available quantity meets or exceeds the requested quantity for all items on that date/time, then the system marks the technical requirements as "Fulfillable" with a green confirmation indicator.  Given an event request with equipment requirements, when any requested item has fewer available units than requested, then the system marks the technical requirements as "Shortfall / Unfulfillable" and highlights the specific item deficit. |
+| **Acceptance Criteria** | Ensure that the Technical Support Staff member:  Can view the requested equipment types, requested quantities, and the event date/time window.  Is shown only equipment that excludes units marked as damaged, undergoing maintenance, or reserved for overlapping bookings.  Can perform the availability check independently of whether the venue booking is confirmed.  Given an event request with equipment requirements, when the available quantity meets or exceeds the requested quantity for all items on that date/time, then the system marks the technical requirements as "Fulfillable" with a green confirmation indicator.  Given an event request with equipment requirements, when any requested item has fewer available units than requested, then the system marks the technical requirements as "Shortfall / Unfulfillable" and highlights the specific item deficit. |
 
 ### Sprint 3 selected scope and verification
 
@@ -1075,7 +1066,7 @@ As an Event Coordinator, I want to manage multiple venue arrangements independen
 
 Week 7 Customer Changes.pdf, page 1, item 3: support multiple venues per event, check each arrangement separately, and preserve other arrangements when one is changed or cancelled.
 
-Received 2 October 2026, confirmed by Tristan in chat on 16 October. The team intended to finish Sprint 2 against its original scope and consider these changes during Sprint 3 planning. Source inspection recorded 15 October; backlog reconstruction recorded 16 October. These dates are distinct; no earlier finalisation or customer approval of implementation defaults is claimed.
+The team received the changes on 2 October 2026, after setting Sprint 2 scope. It planned the changes on 4 October. The source inspection is dated 15 October. On 16 October, Tristan confirmed the receipt date and the administrative records documented the backlog allocation. Customer approval of implementation defaults remains unrecorded. [Sprint 3 planning chronology](../sprint-03/planning.md#customer-change-chronology)
 
 Classification: New linked extension covering missing independent arrangement actions; reuse already implemented multi-row booking creation.
 
@@ -1169,7 +1160,7 @@ As a Safety Officer, I want to review confirmed venue and technical arrangements
 
 Week 7 Customer Changes.pdf, page 2, item 6: a new Safety Officer reviews after venue and technical arrangements are confirmed and before preparation; three possible outcomes; requested changes return to the relevant planning stage; preparation blocked without safety approval; officer response can be assumed.
 
-Received 2 October 2026, confirmed by Tristan in chat on 16 October. The team intended to finish Sprint 2 against its original scope and consider these changes during Sprint 3 planning. Source inspection recorded 15 October; backlog reconstruction recorded 16 October. These dates are distinct; no earlier finalisation or customer approval of implementation defaults is claimed.
+The team received the changes on 2 October 2026, after setting Sprint 2 scope. It planned the changes on 4 October. The source inspection is dated 15 October. On 16 October, Tristan confirmed the receipt date and the administrative records documented the backlog allocation. Customer approval of implementation defaults remains unrecorded. [Sprint 3 planning chronology](../sprint-03/planning.md#customer-change-chronology)
 
 Classification: New role and safety approval gate; distinct from advisory venue suitability and initial event approval.
 
@@ -1257,113 +1248,55 @@ KAN-64 is a completed usable inbox and early-trigger scope prerequisite; KAN-80 
 
 Sprint 4 is the final development sprint. Capture actual planning/review/retrospective/standup recordings as required in [final-sprint-recordings](../final-sprint-recordings.md); planned test specifications are not replacements for those records.
 
-## 29 October 2026 — KAN-17, KAN-67 and KAN-80 test specification planning
+## Historical records
 
-Current Jira readback on 28 October: all three stories are assigned to Arvin, To Do, Sprint 4 (Future), with unchanged estimates 2/2/3 SP. Earlier unassigned/owner snapshots are retained as dated history. Independent reviewer: **To agree**. This is approved test preparation with Codex, not implementation, a sprint start, acceptance or a team estimate decision.
+[Preserved pre-cleanup record](archive/2026-11-05/sprint-backlog.md) contains the original dated updates, earlier preparations and source limitations.
 
-The active criterion wording above matches the live cards. Added 61 detailed cases and 29 individual-AC traceability rows; original cases and execution history remain. [Preparation scope and source limitations](../../testing/test-evidence.md#29-october-2026--kan-17-kan-67-and-kan-80-test-specification-expansion) distinguish inspected existing equipment/change notification tests from unimplemented or unmapped slices. Current statuses for these new cases are **Not executed**, with story acceptance **Not assessed**. Integration uses localhost with real API/authentication and the agreed development database under the current Definition of Done; public application deployment is not required. No new AC, estimate or migration is introduced.
+<details>
+<summary>Earlier section links</summary>
 
-| Individual acceptance criterion | New detailed specifications | Execution / acceptance |
-| --- | --- | --- |
-| KAN-17-AC1 | TC-18-401, TC-18-405 | **Not executed** / **Not assessed** |
-| KAN-17-AC2 | TC-18-402, TC-18-403 | **Not executed** / **Not assessed** |
-| KAN-17-AC3 | TC-18-401 | **Not executed** / **Not assessed** |
-| KAN-17-AC4 | TC-18-404 | **Not executed** / **Not assessed** |
-| KAN-17-AC5 | TC-18-408, TC-18-417 | **Not executed** / **Not assessed** |
-| KAN-17-AC6 | TC-18-409, TC-18-410 | **Not executed** / **Not assessed** |
-| KAN-17-AC7 | TC-18-403, TC-18-406, TC-18-407, TC-18-409, TC-18-410, TC-18-411, TC-18-412, TC-18-413 | **Not executed** / **Not assessed** |
-| KAN-17-AC101 | TC-18-405, TC-18-406, TC-18-407, TC-18-413, TC-18-415 | **Not executed** / **Not assessed** |
-| KAN-17-AC102 | TC-18-402, TC-18-414, TC-18-415 | **Not executed** / **Not assessed** |
-| KAN-17-AC103 | TC-18-408, TC-18-412, TC-18-416, TC-18-417 | **Not executed** / **Not assessed** |
-| KAN-67-AC1 | TC-18-418, TC-18-419, TC-18-428 | **Not executed** / **Not assessed** |
-| KAN-67-AC2 | TC-18-420 | **Not executed** / **Not assessed** |
-| KAN-67-AC3 | TC-18-420 | **Not executed** / **Not assessed** |
-| KAN-67-AC4 | TC-18-421, TC-18-422, TC-18-423 | **Not executed** / **Not assessed** |
-| KAN-67-AC5 | TC-18-424, TC-18-425, TC-18-430 | **Not executed** / **Not assessed** |
-| KAN-67-AC6 | TC-18-426, TC-18-428, TC-18-429 | **Not executed** / **Not assessed** |
-| KAN-67-AC7 | TC-18-427 | **Not executed** / **Not assessed** |
-| KAN-67-AC101 | TC-18-427 | **Not executed** / **Not assessed** |
-| KAN-67-AC102 | TC-18-420, TC-18-431 | **Not executed** / **Not assessed** |
-| KAN-67-AC103 | TC-18-425, TC-18-428, TC-18-429, TC-18-430 | **Not executed** / **Not assessed** |
-| KAN-80-AC1 | TC-20-401, TC-20-402, TC-20-403 | **Not executed** / **Not assessed** |
-| KAN-80-AC2 | TC-20-404, TC-20-405, TC-20-406, TC-20-407, TC-20-408 | **Not executed** / **Not assessed** |
-| KAN-80-AC3 | TC-20-409, TC-20-410, TC-20-411 | **Not executed** / **Not assessed** |
-| KAN-80-AC4 | TC-20-412, TC-20-413, TC-20-414, TC-20-415, TC-20-416 | **Not executed** / **Not assessed** |
-| KAN-80-AC5 | TC-20-401, TC-20-406, TC-20-407, TC-20-417, TC-20-418 | **Not executed** / **Not assessed** |
-| KAN-80-AC6 | TC-20-418, TC-20-419, TC-20-420, TC-20-421 | **Not executed** / **Not assessed** |
-| KAN-80-AC7 | TC-20-403, TC-20-414, TC-20-415, TC-20-416, TC-20-422, TC-20-423, TC-20-424, TC-20-425, TC-20-426, TC-20-429 | **Not executed** / **Not assessed** |
-| KAN-80-AC8 | TC-20-427, TC-20-428, TC-20-429 | **Not executed** / **Not assessed** |
-| KAN-80-AC9 | TC-20-430 | Static review **Pass** / story acceptance **Not assessed** |
+<a id="release-verification-checkpoint--1-november-2026"></a>
 
-Use [test-cases.csv](../../testing/test-cases.csv) for executable specifications and [traceability.csv](../../requirements/traceability.csv) for each AC's code/test mapping. Append real executions separately when implementation and environment are available; never infer a whole story's acceptance from these planning links.
+[Release verification checkpoint — 1 November 2026](archive/2026-11-05/sprint-backlog.md#release-verification-checkpoint--1-november-2026)
 
-## 29 October 2026 — KAN-17 / KAN-67 / KAN-80 acceptance planning
+<a id="29-october-2026--kan-17-kan-67-and-kan-80-test-specification-planning"></a>
 
-Jira readback: all three assigned to Arvin and moved to **In Progress**; KAN-116–118, KAN-119–121 and KAN-122–124 are their implementation, verification and documentation subtasks respectively. Estimates remain 2 / 2 / 3 SP. This is development during administratively Future Sprint 4, not a sprint-start ceremony or acceptance decision.
+[29 October 2026 — KAN-17, KAN-67 and KAN-80 test specification planning](archive/2026-11-05/sprint-backlog.md#29-october-2026--kan-17-kan-67-and-kan-80-test-specification-planning)
 
-The planned S4-T09/T10/T13 groups have partial automated coverage; TC-18-408 has a specific automated Pass and TC-20-430 a static scope-review Pass. Remaining newly specified cases retain their individual execution state. Full integrated acceptance is **Not executed** and story acceptance is **Not assessed**. KAN-14, KAN-61 and KAN-18 source workflows remain dependencies under their existing owners. Shared migration 019, independent review and complete end-to-end acceptance remain pending. See [test evidence](../../testing/test-evidence.md#29-october-2026--kan-17-kan-67-and-kan-80-implementation-verification) and the active sprint's [development update](../sprint-03/daily-progress.md#development-updates).
+<a id="29-october-2026--kan-17--kan-67--kan-80-acceptance-planning"></a>
 
-## 29 October 2026 — KAN-84 PR #78 follow-up
+[29 October 2026 — KAN-17 / KAN-67 / KAN-80 acceptance planning](archive/2026-11-05/sprint-backlog.md#29-october-2026--kan-17--kan-67--kan-80-acceptance-planning)
 
-S4-T15 has additional automated evidence in AUTO-20261029-PR78-REVIEW / S4-E22: per-area Request Changes enforcement (AC7), complete officer hours/buffer context (AC3), current-readiness preparation blocking (AC8/AC9), terminal equipment guards, and preservation when upgrading original 021 to forward migration 022. Existing AC wording and 8 SP remain unchanged. The new targeted case mappings are maintained in traceability.
+<a id="29-october-2026--kan-84-pr-78-follow-up"></a>
 
-Full checks, coverage and the 795-test PostgreSQL suite passed on the reviewed candidate. The run record retains browser outcomes and earlier failed attempts separately. Integrated local acceptance remains **Not executed** and story acceptance remains **Not assessed**. Merging this implementation does not mark KAN-84 Done; the shared 022 rollout and connected manual scenarios remain to perform.
+[29 October 2026 — KAN-84 PR #78 follow-up](archive/2026-11-05/sprint-backlog.md#29-october-2026--kan-84-pr-78-follow-up)
 
-## 30 October 2026 — KAN-80 clarification and KAN-82 / KAN-84 acceptance corrections
+<a id="30-october-2026--kan-80-clarification-and-kan-82--kan-84-acceptance-corrections"></a>
 
-**Source and scope:** Tristan confirmed the KAN-80 submission interpretation in chat on 29 October and authorized this update and the implementation corrections on 30 October. The active KAN-80-AC2 wording above matches the clarified live Jira criterion; the older Jira description remains in its historical snapshot. This is not a customer response, team vote or acceptance decision. The [dated decision record](../../requirements/assumptions-and-questions.md#30-october-2026--sprint-4-acceptance-clarification-and-corrections) preserves the source and resolves the earlier request-for-action question. Estimates remain **3 / 5 / 8 SP** for KAN-80 / KAN-82 / KAN-84; scope and migrations are unchanged.
+[30 October 2026 — KAN-80 clarification and KAN-82 / KAN-84 acceptance corrections](archive/2026-11-05/sprint-backlog.md#30-october-2026--kan-80-clarification-and-kan-82--kan-84-acceptance-corrections)
 
-| Story | Current correction and implementation | Verification boundary |
-| --- | --- | --- |
-| KAN-80 / S4-T13 | Submission acknowledges the organiser and asks the current coordinator to review; approval/rejection informs the organiser and reviewing coordinator; applied attendee-relevant changes inform active attendees. This clarifies the existing KAN-15 notification workflow in `backend/src/modules/notifications/change-request-notifications.ts`. `TC-20-405` now specifies the submission request for action. | Notification regression evidence is recorded in `AUTO-20261030-S4-AC-FIXES` / S4-E23. This does not claim all later-workflow cases passed. The real-authentication manual journey `TC-20-431` is **Not executed**. |
-| KAN-82 / S4-T14 | Optional `bookingId` on the existing suitability GET/POST routes assesses the saved arrangement's venue, interval and layout with current parent requirements. `VenueBookingPanel.vue` links each eligible row to `VenueSuitabilityPage.vue`; the page shows saved notes, locks venue/layout, requires explicit interpretation/confirmation and clears stale route/account results. The selected booking is excluded from its own conflict check; other occupying arrangements remain relevant. Files: `backend/src/modules/venues/suitability-{input,router,service}.ts`, `frontend/src/features/venues/api/venue-suitability.ts` and the two Vue components. Advisory results do not reserve, approve or change bookings or parent fields. | New specifications `TC-12-15` to `TC-12-19` separate advisory checks from the existing booking-write cases. Named unit/component, isolated PostgreSQL and browser/UI integration evidence is recorded in `AUTO-20261030-S4-AC-FIXES` / S4-E23 with its actual outcomes. `TC-12-20`, the complete local frontend/API/authentication/database journey, is **Not executed**. |
-| KAN-84 / S4-T15 | `frontend/src/features/safety/SafetyReviewPage.vue` requires the current permitted reviewer and loaded review for every decision. Context loading and post-write refresh disable saving; route/account changes clear old details/selections, and late completions cannot restore them. A failed reload removes decision controls and reports failure accurately. Existing decision outcomes and server rules are preserved. | `TC-06-442` to `TC-06-444` cover focused decision/refresh/response regressions in `SafetyPages.test.ts` and `tests/e2e/safety-review.spec.ts`, recorded in `AUTO-20261030-S4-AC-FIXES` / S4-E23. Component and browser API substitutes do not execute the integrated manual journey `TC-06-445`, which remains **Not executed**. |
+<a id="31-october-2026--release-ui-consistency-follow-up"></a>
 
-The execution register and run narrative contain case-specific observed results and retained failures/retests. Test-group coverage is bounded by those records; passing a suite does not award a case result without supporting scenario evidence. Integrated manual acceptance remains **Not executed**, story acceptance remains **Not assessed**, and no story is moved to Done or credited with Done points by this update.
+[31 October 2026 — Release UI consistency follow-up](archive/2026-11-05/sprint-backlog.md#31-october-2026--release-ui-consistency-follow-up)
 
-## 31 October 2026 — Release UI consistency follow-up
+<a id="31-october-2026--shared-spacing-and-clickable-text-follow-up"></a>
 
-The reported year-entry problem and review-link appearance are addressed on `fix/minor-ui-fixes` under the existing KAN-12 date-filter, KAN-9 what-if input and KAN-67 roster-access criteria. All date/time entry forms use native segmented controls with a four-digit-year bound where a year exists; the equipment checker preserves exact untouched source instants. No new acceptance criterion, workflow, schema, estimate or sprint-scope change is introduced. Live KAN-12/KAN-9/KAN-67 criteria were read for this follow-up; historical sprint cards are preserved.
+[31 October 2026 — Shared spacing and clickable-text follow-up](archive/2026-11-05/sprint-backlog.md#31-october-2026--shared-spacing-and-clickable-text-follow-up)
 
-AUTO-20261031-MINOR-UI / S4-E24 records 1,209 frontend + 1,959 backend tests, passing typechecks/builds/coverage and 234 Chromium tests. New cases TC-10-211, TC-16-19/20 and TC-18-432 have specific automated UI/component evidence with substituted API boundaries. Manual cross-form TC-10-212 remains **Not executed** and acceptance of this follow-up remains **Not assessed**. Existing S4-T02/S4-T10 acceptance records are not promoted by these automated results; the release walkthrough remains the connected acceptance route.
+<a id="1-november-2026--kan-82-replacement-feedback-follow-up"></a>
 
-## 31 October 2026 — Shared spacing and clickable-text follow-up
+[1 November 2026 — KAN-82 replacement feedback follow-up](archive/2026-11-05/sprint-backlog.md#1-november-2026--kan-82-replacement-feedback-follow-up)
 
-The release UI follow-up on `fix/minor-ui-fixes` addresses review-queue card insets and the filtered venue-booking list shortcut under the existing KAN-33 view/open and KAN-8 coordinator-outcome criteria. Live cards were checked; no criterion, estimate, workflow or historical acceptance is changed. Shared panel padding and plain-link underlines also apply across the app, with explicit exceptions for existing button/navigation/card controls. The missing shared screen-reader-only utility is restored.
+<a id="1-november-2026--targeted-release-regression-qualification"></a>
 
-AUTO-20261031-UI-SPACING / S4-E25 records 1,209 frontend + 1,959 backend tests, passing typechecks/builds/coverage and 244 browser tests. TC-04-232 and TC-13-205 have specific failed reproductions and passing retests; the broader layout sample covers 229 states across 28 route patterns. Manual smoke TC-04-233 is **Not executed**; follow-up acceptance remains **Not assessed**. This supports the ongoing R01-R24 release walkthrough without replacing its connected acceptance results or promoting existing sprint test statuses.
+[1 November 2026 — Targeted release regression qualification](archive/2026-11-05/sprint-backlog.md#1-november-2026--targeted-release-regression-qualification)
 
-## 1 November 2026 — KAN-82 replacement feedback follow-up
+<a id="1-november-2026--release-regression-repairs-awaiting-connected-retest"></a>
 
-The live KAN-82-AC5/AC6/AC12 criteria were checked for this release UI correction. The cancelled-arrangement shortcut now reveals the linked form with focus and next-step guidance; submission errors and success are visible beside submit, with nearby uncertain-save reconciliation. No new workflow, criterion, estimate, schema or sprint-scope change is introduced.
+[1 November 2026 — release regression repairs awaiting connected retest](archive/2026-11-05/sprint-backlog.md#1-november-2026--release-regression-repairs-awaiting-connected-retest)
 
-AUTO-20261101-BOOKING-FEEDBACK / S4-E26 retains failed reproductions and specific passing automated evidence for TC-12-21/22. Check/coverage passed with 1,209 frontend and 1,959 backend tests; all 248 browser cases passed. TC-12-23 remains **Not executed**, patch acceptance **Not assessed**, and S4-T14 is not promoted by these API-substituted browser results. The connected release walkthrough is at R11 in progress after the R01-R10 reports.
+<a id="1-november-2026--test-hardening-checkpoint"></a>
 
-## 1 November 2026 — Targeted release regression qualification
+[1 November 2026 — test hardening checkpoint](archive/2026-11-05/sprint-backlog.md#1-november-2026--test-hardening-checkpoint)
 
-MAN-20261101-02 / S4-E28 adds five scoped checks after the full walkthrough, on source `034a631`. Earlier dated acceptance/implementation records remain unchanged; these findings qualify the current release candidate rather than rewriting sprint-end decisions.
-
-| Story / group | Current targeted result and remaining work |
-| --- | --- |
-| KAN-84 / S4-T15 | TC-06-446 **Fail against AC9**: changing then restoring a venue buffer revives the original approved round without re-review. Current-value fingerprint design explains the behaviour; its compatibility with AC9's re-review wording is unresolved. Restoration policy/code correction **To agree**. TC-06-448 **Pass** for fetching the current officer decision after actual queue-link navigation; no live-update requirement inferred. |
-| KAN-61 / S4-T05 | TC-06-447 **Fail for stale UI** after a new pending venue request; attempted confirmation was correctly refused and the event stayed APPROVED. The server prerequisite guard passed this attempt. UI repair/retest remains pending; no new AC wording or backend bypass is asserted. |
-| KAN-63 / S4-T03 | TC-15-108 **Fail for cancellation-reason presentation** after a rejected line is cancelled. API preserves the correct rejection and cancellation reasons separately; UI shows the former beside CANCELLED. Repair/retest pending. |
-| KAN-10 / S4-T07 | TC-06-449 **Pass** for authorized completion read, unrelated/missing-event 200/null and signed-out 401. This matches the existing API contract; it is not a full role/action matrix or a reason to reopen KAN-10. |
-
-The run record contains exact steps, observed results and retained fixtures. No product code, AC text, Jira status, estimate, Done date, velocity or release approval changed. Formal acceptance remains **Not assessed**; the two UI defects and safety-rule discrepancy require disposition before code freeze.
-
-## 1 November 2026 — release regression repairs awaiting connected retest
-
-`AUTO-20261101-RELEASE-REGRESSIONS` / **S4-E29** repairs KAN-61 readiness refresh, KAN-63 release-reason presentation and KAN-84 permanent post-approval invalidation under the existing Jira criteria. Current API shapes remain stable except additive officer context fields; migration 023 is required before the matching safety service. Automated cases `TC-06-450`–`TC-06-452` and `TC-15-109` pass with their stated component/browser/database boundaries.
-
-- **S4-T05 / KAN-61:** stale Ready/actions now clear and reconcile on writes, reloads and uncertain outcomes. Server refusal remains authoritative. Connected `TC-06-447` retest: **Not executed**.
-- **S4-T03 / KAN-63:** cancelled equipment displays release reason separately from previous review reason. Connected `TC-15-108` retest: **Not executed**.
-- **S4-T15 / KAN-84:** restoring values no longer revives an invalidated approval; a fresh approved round is required. Pending-round restoration remains supported. Shared 023 and connected `TC-06-446` retest: **Not executed**.
-
-The earlier MAN-20261101-02 failures and historical sprint decisions remain unchanged. No new story-point estimate or Done/acceptance claim is recorded. OBS-12 and OBS-8 retain their earlier scoped passes. Release acceptance remains **Not assessed** until rollout/retests and review are complete.
-
-## 1 November 2026 — test hardening checkpoint
-
-`AUTO-20261101-TEST-HARDENING` / S4-E30 adds full-source coverage measurement/gates, authentication and HTTP boundary tests, real PostgreSQL safety guards, isolated browser infrastructure and corrected test-level classifications. Session sequencing and pending safety-queue access feedback have focused failure/retest evidence. C1/C2/C3/class design views now describe the implemented system. These are release-quality repairs and evidence cleanup; historical sprint acceptance, velocity and customer-change scope are unchanged.
-
-Shared 023, connected TC-06-446/447 and TC-15-108 repair retests, plus authentication smoke TC-01-213 remain **Not executed**. Source-level/fixture tests and improved coverage do not close those acceptance gates.
+</details>

@@ -1,32 +1,47 @@
 # Sprint 4 evidence register
 
-**16 October 2026 update.** Final development sprint, planned 18–31 October. Jira id 68 is Future, not started; current selection is 15 parent items / 63 SP. No meeting or product acceptance is recorded by this preparation.
+The 31 October review recording establishes the Sprint 4 outcome: **all 15 selected stories accepted together, 63 SP accepted, zero carry-over**. The revised review and retrospective accounts report the review’s passing manual checklist. The team confirmed that story owners ran 75 named cases successfully. [Manual results by ID and executor](../../../testing/sprint-4-manual-review.md) Dates below are event dates. The index distinguishes those written reports, the recorded decision and the later automated runs. [Story decisions](../review.md#story-decisions) · [Recording register](../../final-sprint-recordings.md)
 
-| ID | What | Captured date | File or link | Purpose / limits |
+| Evidence to inspect | Where to open it | What it supports |
+| --- | --- | --- |
+| Scope, estimates and ownership | [Planning account, cues 11–19, 35–56, 65–71](meetings/current/planning.docx) · [First vote at 10:00](meetings/planning-votes-001000.png) · [Second vote at 10:59, cropped](meetings/planning-votes-001059.jpg) | 150 forecast hours, KAN-84 ballot, six volunteers and reviewer pairs. |
+| Starting board view and sprint balance | [Planning video frame at 24:40](meetings/planning-board-002440.png) · [Burndown and source notes](../../ws5-evidence/board-history.md) | Recording shows 15 To Do entries. The sprint selected and accepted 63 SP. The release chart shows 174 SP done and zero remaining. |
+| Six Daily Scrums | [Daily account, standups 01–06](meetings/current/daily.docx) · [Member log](../daily-progress.md#daily-scrum-log) | Six members on 20, 22, 24, 27, 29 and 31 October. Equipment response blocker raised 22 October and reported resolved by 24 October. |
+| Review and acceptance | [Review account](meetings/current/review.docx) · [Recording register, review 00:01–00:31 and 03:39–03:57](../../final-sprint-recordings.md) · [Story decisions](../review.md#story-decisions) | Ryan reports a passing manual checklist in written cue 13. Tristan confirmed 75 case IDs and execution by story owners. Irfan identified the 15-story / 63-SP scope and the recording captures collective assent after feedback. [Manual result and evidence limits](../../review-testing.md) |
+| Retrospective and action owners | [Retrospective account](meetings/current/retrospective.docx) · [Recording register, retrospective 01:35–02:11 and 02:20–02:39](../../final-sprint-recordings.md) | Ernest confirmed the manual result in written cue 4. Irfan took the rules/examples checklist, Ernest the evidence audit and Tristan equipment checks. The recording captures agreement on those actions. |
+| Engineering evidence after review | [Final-candidate verification](#final-candidate-verification-and-shared-rollout--1-november-2026) · [Main verification](#main-verification-and-documentation-only-handover--2-november-2026) | Later tests and repairs identify their actual builds and dates. Formal R24 is separate. [Release decision](../../../submission/release-record.md#release-decision) |
+
+## Team input needed
+
+The board-capture request was closed on 6 November 2026. The planning video supplies the opening board view, and the team confirmed that no separate opening or closing screenshot exists. A native burndown export or demonstrated build can be registered if supplied. For retro actions, record completed artifacts and actual review dates when available. [Shared checklist](../../../submission/checklist.md#ws5-sprint-3-and-4)
+
+| ID | What | Source / date | File or link | Purpose / limits |
 | --- | --- | --- | --- | --- |
-| S4-E01 | Actual Jira board at sprint start | Not recorded | Not recorded | Capture the actual 18 October starting scope; do not substitute the earlier allocation snapshot |
-| S4-E02 | Jira board at sprint end | Not recorded | Not recorded | Actual closing state and whole-story outcomes |
-| S4-E03 | Sprint burndown at close | Not recorded | Not recorded | Observed scope/delivery changes, not an invented ideal curve |
-| S4-E04 | Retrospective notes / board | Not recorded | Not recorded | Actual member feedback and agreed actions |
-| S4-E05 | Pre-start administrative selection | 16 October 2026 | [Rebalanced Jira snapshot](../../sprint-03/evidence/jira-rebalanced-state-2026-10-16.json), [current CSV](../../../submission/1/jira-backlog-2026-10-16.csv), [master workbook](../../../submission/1/product-backlog.xlsx) | Current Future sprint with 15 To Do parents / 63 SP; not a starting board, meeting or acceptance result |
-| S4-E06 | Customer-change and planning record | 16 October 2026 | [Change register](../../../requirements/change-requests.md), [planning](../planning.md), [story/test plan](../sprint-backlog.md) | Preserves 2 October user-reported receipt, recorded 16 October, and the 63/63 split; tests Not executed |
+| S4-E01 | Starting board view | Planning recording, frame 24:40. Extracted 6 November. | [Board still](meetings/planning-board-002440.png) | Shows 15 To Do and 0 in the other three columns. The team confirmed on 6 November 2026 that there is no separate opening screenshot. |
+| S4-E02 | Closing board | Team confirmed on 6 November 2026 that the original closing screenshot does not exist. | [Board and chart notes](../../ws5-evidence/board-history.md) | Internal board statuses can differ from the team decision. The recorded review determines the submitted outcome. |
+| S4-E03 | Release burndown and sprint checkpoints | End of Sprint 4. | [Supplied release chart](../../burndown-charts/sprint-4.jpg) · [Point observations](../daily-progress.md#burndown-data) | The chart shows 174 SP done. Its provisional annotation is qualified by the recorded Sprint 4 acceptance. Original Jira sprint chart and intermediate accepted-point observations unavailable. |
+| S4-E04 | Retrospective notes / board | 31 October, 14:30 SGT. Account supplied 6 November. | [Retrospective account](meetings/current/retrospective.docx) · [Actions](../retrospective.md#agreed-actions) | Six member contributions and two agreed follow-ups. Original retrospective board unavailable. |
+| S4-E05 | Pre-start administrative allocation snapshot | 16 October 2026 | [Rebalanced Jira snapshot](../../sprint-03/evidence/jira-rebalanced-state-2026-10-16.json), [current CSV](../../../archive/jira-exports/jira-backlog-2026-10-16.csv), [master workbook](../../../submission/1/product-backlog.xlsx) | Current Future sprint with 15 To Do parents / 63 SP; not a starting board, meeting or acceptance result |
+| S4-E06 | Customer-change and planning record | 16 October 2026 | [Change register](../../../requirements/change-requests.md), [planning](../planning.md), [story/test plan](../sprint-backlog.md) | The administrative record documents the 2 October receipt and 63/63 allocation from Sprint 3 planning on 4 October. Test execution in this record was marked Not executed. |
+
+The current DOCX files below preserve the team's revised accounts. Earlier copies remain alongside the video stills. For the manual-review result, use Ryan’s updated review cue 13 and Ernest’s retrospective cue 4. Tristan confirmed the roster of 72 manual-labelled cases and three separately listed connected procedures from the pre-review plan. The original itemized checklist was not retained. The video independently documents the build-check follow-up and collective story decision. [The 75 review results](../../../testing/sprint-4-manual-review.md) [Earlier review account](meetings/review.docx) · [Earlier retrospective account](meetings/retrospective.docx) · [Review testing and sources](../../review-testing.md)
+
+| ID | Source | Relevant segment |
+| --- | --- | --- |
+| S4-E35 | [Planning account](meetings/current/planning.docx) | 18 October. Cues 11–19 capacity, 35–44 votes, 45–71 volunteers and review assignments, 82–97 forecast and checkpoints. |
+| S4-E36 | [Daily standup collection](meetings/current/daily.docx) | Six dates. The second standup, 22 October at 20:00, corresponds to the supplied daily recording. |
+| S4-E37 | [Review account](meetings/current/review.docx) | 31 October, 14:00. Cues 2–12 describe delivery. Ryan reports that all manual cases on the review checklist passed in cue 13. Cue 16 records the accepted 15 stories / 63 SP. The recording captures assent. The team later identified 75 passing case IDs and their story-owner executors. Build and per-step observations are unrecorded. |
+| S4-E38 | [Retrospective account](meetings/current/retrospective.docx) | 31 October, 14:30. Ernest confirms the reported manual-checklist result and outstanding documentation in cue 4. Cues 7–11 assign handover and evidence checks. The recording captures agreement to those actions. |
+| S4-E39 | [First poker reveal](meetings/planning-votes-001000.png) · [Second poker reveal (crop)](meetings/planning-votes-001059.jpg) · [Active board](meetings/planning-board-002440.png) | 10:00, 10:59 and 24:40 of the planning MP4 respectively. Stills extracted on 6 November. The capture date of the original video is held separately. |
+| S4-E40 | [Register for all four supplied MP4s](../../final-sprint-recordings.md) | Planning, Daily Scrum, review and retrospective. The register carries timestamps and access status. |
 
 ## Final-sprint recordings
 
-The [recording register](../../final-sprint-recordings.md) must contain live recordings of planning, review, retrospective and one Daily Scrum, with actual dates, participants and accessible links. Never commit video files or fabricate retrospective recordings.
+The four unlisted videos cover planning, the 22 October Daily Scrum, review and retrospective. Each started playing without sign-in on 6 November. [Recording register and access check](../../final-sprint-recordings.md#published-recordings-and-access-check)
 
 ## Required at sprint close
 
-- [ ] Actual start and end boards
-- [ ] Observed burndown data and export
-- [ ] Reviewed build, demonstration and acceptance record
-- [ ] Retrospective feedback and actions
-- [ ] Planning, review, retrospective and one Daily Scrum recording
-- [ ] Current Jira export and master backlog workbook
-- [ ] Coverage summary and relevant automated/hosted test evidence
-- [ ] Final release traceability, diagrams and submission links
-
-Current planning data is separate from product verification. Record actual document/export validation after the complete update; no validation result or test pass is pre-filled here.
+The review decision, six-member daily accounts, retrospective commitments and source-linked chart are recorded above. Board evidence consists of the planning-video frame and the team’s 6 November confirmation that separate opening and closing screenshots do not exist. The team can supply the native chart and later action completion if retained. Outstanding links and access checks are tracked once in the [shared checklist](../../../submission/checklist.md#ws5-sprint-3-and-4). The dated sections below describe individual planning and engineering observations in their original context.
 
 ## Planning artifact validation — 16 October 2026
 
@@ -34,12 +49,14 @@ Current planning data is separate from product verification. Record actual docum
 
 ## Self-selection follow-up — 16 October 2026
 
-Current story ownership is unassigned for team selection; reviewers and integration lead are To agree. Earlier captured Jira JSON/validation artifacts retain the assignments observed when captured. Their owner fields are historical evidence, not the current allocation. The 63/63 scope and existing test results are unchanged. See [planning](../planning.md) for the selection rule and [record preparation](../../README.md#record-preparation) for the preparation method.
+The 16 October snapshot showed unassigned owner fields for the Sprint 4 stories. The team agreed the Sprint 4 owners, reviewers and integration lead at 18 October planning. The captured Jira and validation files record the values visible when each export was taken. [Sprint 4 planning](../planning.md) · [Record preparation](../../README.md#record-preparation)
 
 | ID | Artifact | Source / result | Limits |
 | --- | --- | --- | --- |
 | S4-E08 | [Current ownership snapshot](../../sprint-03/evidence/jira-ownership-state-2026-10-16.json) | Live Jira read on 16 October: all 28 unfinished parents are unassigned; Sprint 4 remains Future with 15 parents / 63 SP. Historical Done subtasks KAN-57/KAN-58 also have unassigned metadata. | Assignment metadata only; no sprint start, implementation, acceptance or estimate change. Earlier named allocation is history. |
 | S4-E09 | [Handover validation](../../sprint-03/evidence/handover-validation-2026-10-16.json) | Course-format Jira/export/card/case checks 17/17; 28 active cards, 299 criteria, 256 cases and 76 traceability rows. Workbook source refresh, saved readback, formulas, preserved formatting and changed views passed. Final link/whitespace results are in the artifact. | Planning artifacts only; future product tests and acceptance remain unexecuted/unassessed. |
+
+<a id="kan-9-equipment-availability--26-october-2026"></a>
 
 ## KAN-9 implementation verification — 26 October 2026
 
@@ -78,9 +95,9 @@ KAN-26 is In Progress / Tristan (3 SP), with unestimated KAN-104–106 In Progre
 | ID | Artifact | Source / result | Limits |
 | --- | --- | --- | --- |
 | S4-E16 | [Summary/source hashes](pr63-20261028/summary.json), [check](pr63-20261028/check.txt), [coverage](pr63-20261028/coverage.txt), [database](pr63-20261028/integration.txt), [browser](pr63-20261028/browser.txt), [initial browser](pr63-20261028/browser-initial.txt), [workbook validation](pr63-20261028/workbook-validation.json), [document validation](pr63-20261028/document-validation.json) | AUTO-20261028-PR63-01: 1,034 frontend / 1,691 backend; 616 isolated PostgreSQL; 189 browser tests Pass. Earlier failed attempts and focused retests retained in the same folder. | Synthetic sessions and browser API substitutes; no shared migration or manual acceptance. Review repair for KAN-62/KAN-63 with KAN-15/KAN-26 regression protection. |
-| S4-E18 | [Check](kan10-20261029/check.txt), [coverage](kan10-20261029/coverage.txt), [integration](kan10-20261029/integration.txt), [browser](kan10-20261029/browser.txt); [AUTO-20261029-KAN10-01](../../../testing/test-evidence.md#29-october-2026--kan-10-mark-event-as-completed) | KAN-10 local automated results, 29 October 2026, Node 24.21.0 and PostgreSQL 17.11. Not a hosted run; acceptance Not assessed. |
-| S4-E19 | [Check](kan14-20261029/check.txt), [coverage](kan14-20261029/coverage.txt), [integration](kan14-20261029/integration.txt), [browser](kan14-20261029/browser.txt); [AUTO-20261029-KAN14-02](../../../testing/test-evidence.md#29-october-2026--kan-14-register-for-an-event) | KAN-14 rerun on the tree merged with main (migrations 001–019, KAN-17/67/80, KAN-10), 29 October 2026, Node 24.21.0 and PostgreSQL 17.11. These files replace the isolated-branch outputs of AUTO-20261029-KAN14-01, which remain in commit 3940f92. Not a hosted run; acceptance Not assessed. |
-| S4-E20 | [Check](kan18-20261029/check.txt), [backend coverage](kan18-20261029/backend-coverage.txt), [frontend coverage](kan18-20261029/frontend-coverage.txt), [integration](kan18-20261029/integration.txt), [browser](kan18-20261029/browser.txt); [AUTO-20261029-KAN18-02](../../../testing/test-evidence.md#29-october-2026--kan-18-equipment-stock-and-operational-status) | KAN-18 rerun on the tree merged with main (migrations 001–020), 29 October 2026, Node 24.21.0 and PostgreSQL 17.11. S4-E17 is KAN-82's; these files replace the isolated-branch outputs of AUTO-20261029-KAN18-01, which remain in commit b0ba1ce. Not a hosted run; acceptance Not assessed. |
+| S4-E18 | [Check](kan10-20261029/check.txt), [coverage](kan10-20261029/coverage.txt), [integration](kan10-20261029/integration.txt), [browser](kan10-20261029/browser.txt); [AUTO-20261029-KAN10-01](../../../testing/test-evidence.md#29-october-2026--kan-10-mark-event-as-completed) | KAN-10 local automated results, 29 October 2026, Node 24.21.0 and PostgreSQL 17.11. Not a hosted run; acceptance Not assessed. | |
+| S4-E19 | [Check](kan14-20261029/check.txt), [coverage](kan14-20261029/coverage.txt), [integration](kan14-20261029/integration.txt), [browser](kan14-20261029/browser.txt); [AUTO-20261029-KAN14-02](../../../testing/test-evidence.md#29-october-2026--kan-14-register-for-an-event) | KAN-14 rerun on the tree merged with main (migrations 001–019, KAN-17/67/80, KAN-10), 29 October 2026, Node 24.21.0 and PostgreSQL 17.11. These files replace the isolated-branch outputs of AUTO-20261029-KAN14-01, which remain in commit 3940f92. Not a hosted run; acceptance Not assessed. | |
+| S4-E20 | [Check](kan18-20261029/check.txt), [backend coverage](kan18-20261029/backend-coverage.txt), [frontend coverage](kan18-20261029/frontend-coverage.txt), [integration](kan18-20261029/integration.txt), [browser](kan18-20261029/browser.txt); [AUTO-20261029-KAN18-02](../../../testing/test-evidence.md#29-october-2026--kan-18-equipment-stock-and-operational-status) | KAN-18 rerun on the tree merged with main (migrations 001–020), 29 October 2026, Node 24.21.0 and PostgreSQL 17.11. S4-E17 is KAN-82's; these files replace the isolated-branch outputs of AUTO-20261029-KAN18-01, which remain in commit b0ba1ce. Not a hosted run; acceptance Not assessed. | |
 
 
 ## KAN-82 automated verification — 28 October 2026
@@ -199,3 +216,17 @@ Native [browser run 1](test-hardening-20261101/browser-final-1.json), [run 2](te
 | S4-E32 | [MAN-20261101-03](../../../testing/test-evidence.md#man-20261101-03--connected-repaired-candidate-acceptance-1-november-2026), [browser/API/database evidence](../../../testing/evidence/MAN-20261101-03/) | Four scoped connected Pass results: permanent safety invalidation/re-review, readiness refresh, cancellation-reason readback and real-auth smoke. Dedicated venue restored; temporary booking cancelled; new review/audit history retained. Formal release decision remains separate. |
 
 Connected captures: [baseline](../../../testing/evidence/MAN-20261101-03/probe-before.jpg), [pending venue removes Ready](../../../testing/evidence/MAN-20261101-03/pending-readiness.jpg), [restored venue still requires review](../../../testing/evidence/MAN-20261101-03/safety-restored-stale.jpg), [new review restores preparation](../../../testing/evidence/MAN-20261101-03/safety-recovered.jpg), [organiser denied coordinator page](../../../testing/evidence/MAN-20261101-03/auth-wrong-role.jpg). These use real role sessions and shared development persistence; no credentials are retained.
+
+
+## Pushed-candidate CI — 2 November 2026
+
+| ID | Artifact | Result / boundary |
+| --- | --- | --- |
+| S4-E33 | [CI run 199](https://github.com/MochaLxtte/ConnectSphere/actions/runs/41323715692), [metadata](freeze-candidate-20261101/ci-199.json), [full log](freeze-candidate-20261101/ci-199.txt), [frontend coverage](freeze-candidate-20261101/ci-199-frontend-coverage.json), [backend unit coverage](freeze-candidate-20261101/ci-199-backend-unit-coverage.json), [combined coverage](freeze-candidate-20261101/ci-199-backend-combined-coverage.json) | Pass on PR #80 head `0384a3c`, test-merge `bb198fe`: all checks/coverage/database suites and 253 browser cases, zero retries. Archive digest verified. These results do not replace the connected run or establish teammate approval. Documentation-only follow-up CI is linked from the PR. |
+
+
+## Main verification and documentation-only handover — 2 November 2026
+
+| ID | Artifact | Result / boundary |
+| --- | --- | --- |
+| S4-E34 | [Main CI](https://github.com/MochaLxtte/ConnectSphere/actions/runs/41323940034), [metadata](freeze-candidate-20261101/main-ci.json), [full log](freeze-candidate-20261101/main-ci.txt) | Pass on main `fb6d8d9`, following PR #80 author-merge at 23:58:58 on 1 November. No submitted independent review was present. Subsequent changes are documentation only on `docs/release-freeze-evidence`; no new PR requested yet. Formal release acceptance remains separate. |

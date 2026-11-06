@@ -1,84 +1,67 @@
 # Sprint 1 retrospective
 
-**25 October 2026 reconciliation:** The [new supplied report](#25-october-2026--team-meeting-and-manual-result-reconciliation) records meeting attendance and/or manual results separately from earlier dated evidence. It does not backdate new fixes or infer acceptance.
+On **19 September 2026** the six members discussed why separate features had worked while the full request journey still failed. They carried forward concrete checks for draft editing, submission and access after approval. The next sprint began with the goal, added a third weekly standup and kept the unfinished eight points in its forecast. [Retrospective cues 01–14](evidence/meetings/retrospective.docx) · [Sprint 2 planning](../sprint-02/planning.md)
 
-**Record check — 15 October 2026:** the meeting date and source observations below are retained. Individual feedback, actual participants and agreement to the proposed actions remain **Not recorded**. An improvement agreed now should be dated now and followed up in [Sprint 3 planning](../sprint-03/planning.md), rather than being attributed to the historical meeting.
+<a id="team-input-needed"></a>
 
-Sprint: **6–19 September 2026**, inclusive, Asia/Singapore. **Retrospective held: 19 September. Writeup prepared: 21 September. Owner: Tristan.** Sprint 1 review is complete and the sprint is closed in Jira. This writeup draws together the review observations and proposed process improvements for Sprint 2. Attendance, participant discussion, voting and agreed root causes have not been recorded.
+## Meeting record
 
-| Meeting detail | Record |
-| --- | --- |
-| Actual retrospective date | Saturday 19 September 2026 |
-| Start/end time and timezone | Times not recorded; Asia/Singapore |
-| Facilitator and note taker | Not recorded; Tristan owns this writeup |
-| Scrum roles | Arvin is Scrum Master and Irfan is Product Owner; both also work as developers. These roles do not establish who attended or facilitated this meeting. |
-| Attendees and absences | Not recorded |
-| Review timing | Review also held on 19 September; exact meeting times not recorded |
-| Meeting evidence | Original notes or Zoom transcript not available in this record; no recording linked |
-| Input evidence | [Review results and defects](review.md), [historical progress and missing burndown observations](daily-progress.md), [test evidence](../../testing/test-evidence.md), and the agreed Sprint 2 handoff |
+Arvin facilitated. Ernest, Irfan, Kai Jie, Ryan and Tristan contributed. All-six attendance was separately confirmed on 25 October. Time and location are unavailable. The written account identifies each contribution and leaves a pause after Arvin asks the group to confirm the closing recap. [Retrospective account](evidence/meetings/retrospective.docx)
 
-## Outcome and observations
+## Previous actions follow-up
 
-The original commitment was **10 PBIs and 32 points**. Seven PBIs are Done at closure: KAN-25, KAN-31, KAN-4, KAN-27, KAN-36, KAN-16 and KAN-24. Their **24 points** comprise 19 business-story points and 5 infrastructure points. KAN-6, KAN-33 and KAN-34 carry forward at **8 points**. Exact completion timestamps remain to attach, so the closure outcome does not establish how much was Done by the original 19 September boundary.
+This was the first sprint, so there was no previous retrospective action to close. The team did revisit the comparison Ernest and Kai Jie arranged after the 12 September standup. It clarified shared fields, but the No-to-Yes registration path still failed at review. This led to the proposal to exercise one saved request across screens. [Standup 02, cues 04 and 07–10](evidence/meetings/daily.docx) · [Retrospective cues 03–06](evidence/meetings/retrospective.docx)
 
-| What we observed | Evidence and effect | What to take into Sprint 2 |
+## Per-member feedback
+
+| Contributor | What helped | What needed to improve |
 | --- | --- | --- |
-| Much of the demonstrated workflow worked | DEMO-01, DEMO-03, DEMO-04, DEMO-05, DEMO-07, DEMO-08, DEMO-09, DEMO-10 and DEMO-11 passed. Earlier dated manual checks also covered status persistence and access restrictions. | Preserve the passing paths as regression scenarios while fixing the remaining cases. |
-| Follow-up integration brought the branches together | After the 19 September retrospective, Tristan merged all team branches into `main`; [PR #12](https://github.com/MochaLxtte/ConnectSphere/pull/12) produced `db2c9db` on 20 September. This later update is separate from the review; the exact demo build remains to record. | Continue integrating shared work and retain a reproducible build for review. A merge alone does not describe the tested behavior. |
-| Draft editing needs another pass | In DEMO-02, changing registration from no to yes in a saved draft did not expose the capacity/date fields. KAN-34 carries forward. | Include changes to conditional fields after save and reload in the acceptance walkthrough. |
-| A later workflow stage became inaccessible | In DEMO-06, approval removed the request from the coordinator view, leaving no accessible path to final confirmation. KAN-33 carries forward. | Walk through how the responsible actor finds the request again after each status transition. Approval and final confirmation are separate stages. |
-| Submission observations need to be reconciled | DEMO-04/05 worked, but saved-draft submission was also reported as not implemented and some submissions with missing required fields were accepted. KAN-6 carries forward. | Retain both observations and reproduce the exact routes, request states, input fields and tested build before concluding which behavior failed. |
-| Closure evidence is incomplete | The Done/carryover totals and later Jira resolution updates are recorded. The closing board/report, actual acceptance times, daily burndown and meeting attendance are still missing. | Capture observations as work happens. Keep unknown daily values blank and distinguish tracker updates, record preparation and actual meeting/acceptance times. |
+| Ryan · cue 02 | Getting sign-in and access working gave the team a foundation. | Eight or ten points per person had been discussed before the work was understood. Be more cautious when forecasting. |
+| Ernest · cues 03 and 10 | Creating a request and saving an incomplete draft worked. | Follow the saved request through reopen, change and submission. Capture the build, data and observed result to distinguish differing paths. |
+| Kai Jie · cues 04 and 09 | Discussing the shared fields after the 12 September standup clarified the handoff. | Test the No-to-Yes toggle and missing required fields through the complete saved-draft path. |
+| Irfan · cues 05 and 08 | The review exposed the difference between a pending request and access after approval. | Bring the follow-up access case to planning. Start with the goal, clear overlaps and unfinished criteria, and allow for the eight carried points. |
+| Tristan · cues 06 and 13 | Review and organiser status gave the team a working demonstration. | Follow one request through refresh and post-decision navigation. Share smaller changes and ask for review earlier. |
+| Arvin · cues 07 and 12 | Connecting the database gave feature owners a usable foundation. | Set the goal before splitting work, expose blockers and schedule integrated checks before the end. |
 
-The remaining draft, submission and coordinator-navigation cases interrupt the integrated goal path and explain the carryover. The [review defect register](review.md#review-defects-and-carry-over) tracks S1-DEF-01 through S1-DEF-04.
+[Retrospective account, cues 02–13](evidence/meetings/retrospective.docx)
 
-## Lessons to discuss
+## Agreed actions
 
-The review suggests that we should test how a request moves across saved drafts, conditional form fields and later statuses, in addition to demonstrating individual features. This is a proposed lesson from the observed gaps; it is not a recorded team agreement about why they occurred.
+Arvin’s recap named four changes for Sprint 2: goal first, explicit carry-over checks, more regular standups and earlier checks between features. Individual commitments are recorded below. The final pause contains no separate record of each member’s response. Subsequent meeting accounts show which changes the team put into practice. [Retrospective cues 08–14](evidence/meetings/retrospective.docx)
 
-| Topic | Possible explanation to examine | Evidence still needed |
+| Action and owner | Due / measure | Follow-through recorded in Sprint 2 |
 | --- | --- | --- |
-| Draft registration and submission | The saved-draft path may behave differently from the creation path, or the demonstrations may have used different data or builds. | Exact DEMO-02/04/05 routes, request states, field values and build; repeatable saved-draft cases. |
-| Approved-request access | Queue eligibility and later navigation may not support the same lifecycle stages. Historical direct-detail checks and the review navigation issue need to be considered separately. | Steps from approval to final confirmation for the assigned coordinator, including refresh and navigation. |
-| Required-field validation | Client/server checks or the agreed field rules may differ across submission paths. | The exact missing fields, expected rules, API response and persisted state for each reproduction. |
-| Estimation and capacity | Shared workflow checks and evidence collection may need more explicit allowance in planning. | Actual development availability and task history; missing hours cannot be inferred from story points. |
+| **Irfan** to begin planning with the goal and priorities, clarify overlaps and reserve the carried points. | Planning on 20 September, before selecting new work. | Irfan set out the assigned-request-to-venue goal in cues 04–06 before selection. Ernest named the three carried stories in cue 08. The final forecast included their full 8 SP. [Sprint 2 planning](../sprint-02/planning.md) |
+| **Kai Jie and Ernest** to check registration changes, save/reopen, valid submission and missing fields on one request. Ernest would retain build, inputs and outcomes. | Bring the checklist to 20 September planning; revisit it before accepting the carried stories. | Kai Jie called for the connected check in Sprint 2 planning cue 17. The 1 October standup still reported open required-field validation. At the 3 October retrospective Kai Jie reported that KAN-6 and KAN-34 still carried. Ernest said evidence collection remained late. [Sprint 2 daily progress](../sprint-02/daily-progress.md) · [Sprint 2 retrospective](../sprint-02/retrospective.md) |
+| **Irfan and Ryan** to check access after approval, including refresh and the wrong account. | Bring the case to 20 September planning; review KAN-33 against the repaired navigation. | Sprint 2 planning included KAN-33, and Irfan reported it accepted at the 3 October review. The available account does not separately identify each suggested test execution. [Sprint 2 review](../sprint-02/review.md) · [Sprint 2 retrospective, cue 02](../sprint-02/retrospective.md) |
+| **Arvin and all six members** to move from two standups to Tuesday, Thursday and Saturday, identifying blockers and the people needed to clear them. | Through Sprint 2; revisit at the 3 October retrospective. | The collection records six meetings: 22, 24, 26, 29 September and 1, 3 October. On 24 September members arranged a shared-field discussion across venue work. [Sprint 2 daily progress](../sprint-02/daily-progress.md) |
+| **Arvin** to schedule a combined walkthrough before review; **Tristan** to share smaller changes and request earlier review. | Plan early checks and revisit their effect on 3 October. | In the Sprint 2 retrospective Arvin acknowledged he had not given the walkthrough a firm checkpoint. Tristan reported the shared-field discussion helped but was still late. The sources do not verify every proposed early review. [Sprint 2 retrospective, cues 04–07](../sprint-02/retrospective.md) |
 
-No root cause, vote or consensus has been recorded. Keep alternative explanations open until reproduction and discussion provide evidence.
+## Historical records
 
-## Agreed handoff and coordination
+[Preserved pre-cleanup record](archive/2026-11-05/retrospective.md) contains the original dated updates, earlier preparations and source limitations.
 
-| Action or decision | Owner | Timing and follow-up | Status |
-| --- | --- | --- | --- |
-| Prepare the Sprint 1 retrospective writeup | Tristan | Prepared 21 September; team review date to record | Writeup prepared; discussion and agreement of proposed improvements pending |
-| Select Sprint 2 stories | Each of Ryan, Ernest, Kai Jie, Irfan, Tristan and Arvin | At Sprint 2 planning; record selections in the backlog | Owners not yet selected |
-| Hold Daily Scrums three times per week | Team; facilitator to record | Saturday, Tuesday and Thursday during Sprint 2; exact times to agree | Current cadence recorded; attendance to record for each actual meeting |
-| Continue the two-week review/planning cycle | Team | Saturday review at the end of the fortnight; next planning and sprint start on Sunday | Sprint 2 planned 20 September–3 October; review 3 October; Sprint 3 planning 4 October |
+<details>
+<summary>Earlier section links</summary>
 
-Sprint 1's earlier plan was two standups per week. The three-times-weekly cadence is the Sprint 2 arrangement and does not establish that those meetings occurred during Sprint 1.
+<a id="outcome-and-observations"></a>
 
-Sprint 2's baseline is **43 points: nine new stories at 35 points plus 8 carryover points**. The approximate six-point target per member applies to the new work; check the additional carryover, integration and testing load when stories are selected. The venue catalogue, venue calendar and coordinator assignment form the Sprint 2 goal.
+[Outcome and observations](archive/2026-11-05/retrospective.md#outcome-and-observations)
 
-## Proposed improvements for team agreement
+<a id="lessons-to-discuss"></a>
 
-The following are proposals, with owners and dates to be agreed. They are not yet commitments made at a retrospective.
+[Lessons to discuss](archive/2026-11-05/retrospective.md#lessons-to-discuss)
 
-| Action ID | Proposed change | Proposed verification | Owner / target date | Outcome |
-| --- | --- | --- | --- | --- |
-| S1-RETRO-01 | Add a shared acceptance walkthrough covering an incomplete saved draft, registration changing from no to yes, save/reload, valid submission and rejection of missing required fields. Reproduce S1-DEF-01/03/04 and keep the successful DEMO-04/05 paths. | Record the build, account role, route, input fields, expected/actual result and persisted status for each case before closing KAN-6/KAN-34. | To agree; proposed before carryover acceptance | Pending agreement and execution |
-| S1-RETRO-02 | Check that the responsible actor can still find a request after each relevant transition, starting with approval and the route to final confirmation. | Record the assigned coordinator's approval-to-later-access walkthrough, refresh behavior and denied-access cases before closing KAN-33. | To agree; proposed before carryover acceptance | Pending agreement and execution |
+<a id="agreed-handoff-and-coordination"></a>
 
-Complete this record with the discussion and any actions agreed on 19 September. If the team agrees additional improvements later, record that follow-up date, participants, owners and success measures separately. Link accepted actions from the Sprint 2 backlog and review their outcome at the next retrospective. Retain original notes and any recording link in [E14](evidence/README.md); do not replace missing meeting evidence with this writeup.
+[Agreed handoff and coordination](archive/2026-11-05/retrospective.md#agreed-handoff-and-coordination)
 
-## 25 October 2026 — Team meeting and manual-result reconciliation
+<a id="proposed-improvements-for-team-agreement"></a>
 
-The supplied **25 October 2026** report confirms planning on **6 September 2026**, and review and retrospective on **19 September 2026**, with **Arvin, Ernest, Irfan, Kai Jie, Ryan and Tristan** attending all three. **Arvin is Scrum Master; Irfan is Product Owner.** Exact times, location, facilitator, note taker, original notes/recordings and individual estimation votes are **Not recorded**. Attendance does not establish who voted, accepted each story, or agreed a particular retrospective action.
+[Proposed improvements for team agreement](archive/2026-11-05/retrospective.md#proposed-improvements-for-team-agreement)
 
-The retrospective is now **reported as held**, with the attendance above. The supplied information does not include individual feedback, quotations, root-cause discussion or an agreed improvement action. Those fields remain **Not recorded**; earlier observations and proposals are preserved. The following recommendations are prepared on 25 October for team agreement, not attributed to the historical meeting.
+<a id="25-october-2026--team-meeting-and-manual-result-reconciliation"></a>
 
-| Recommended action | Status / owner | Proposed completion check |
-| --- | --- | --- |
-| Record the tested commit, environment and case outcomes during each acceptance walkthrough, including failures and retests. | To agree / To agree | Every new manual run has a case-level execution record and evidence reference. |
-| Reserve a shared integration checkpoint for cross-role workflows, conflicting writes and recovery from uncertain responses. | To agree / To agree | Relevant integration/browser tests and a current-build walkthrough are linked before acceptance. |
-| Reconcile story ownership, current Jira status and repository evidence before closing each sprint. | To agree / To agree | Scope/points reconcile; acceptance decisions and remaining work are explicit; team burndown exports are linked. |
+[25 October 2026 — Team meeting and manual-result reconciliation](archive/2026-11-05/retrospective.md#25-october-2026--team-meeting-and-manual-result-reconciliation)
 
-Agreement date, owners, due dates and follow-through are **To agree**. Per-member feedback and the result of previous actions remain **Not recorded** unless already supported above. [REPORT-20261025-TEAM-S1](../../testing/test-evidence.md#25-october-2026--team-manual-result-reports) supplies manual-result reports; it does not establish retrospective consensus.
+</details>

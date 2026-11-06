@@ -1,0 +1,215 @@
+---
+config:
+  layout: elk
+title: Physical model - all 24 tables and 55 foreign keys
+---
+erDiagram
+  direction TB
+  app_users {
+    uuid id PK "NOT NULL"
+    text role "NOT NULL"
+  }
+  coordinator_assignments {
+    uuid id PK "NOT NULL"
+    uuid event_request_id FK "NOT NULL"
+    uuid coordinator_id FK "NOT NULL"
+    uuid assigned_by FK "nullable"
+    text assignment_method "NOT NULL"
+  }
+  equipment_requests {
+    uuid id PK "NOT NULL"
+    uuid event_request_id FK "NOT NULL"
+    uuid equipment_type_id FK "NOT NULL"
+    uuid requested_by FK "NOT NULL"
+    integer quantity "NOT NULL"
+    text status "NOT NULL"
+    timestamptz starts_at "NOT NULL"
+    timestamptz ends_at "NOT NULL"
+    uuid decided_by FK "nullable"
+    uuid released_by FK "nullable"
+    integer revision "NOT NULL"
+  }
+  equipment_stock_changes {
+    uuid id PK "NOT NULL"
+    uuid equipment_type_id FK "NOT NULL"
+    integer revision "NOT NULL"
+    uuid changed_by FK "NOT NULL"
+  }
+  equipment_types {
+    uuid id PK "NOT NULL"
+    integer total_quantity "NOT NULL"
+    integer damaged_quantity "NOT NULL"
+    integer maintenance_quantity "NOT NULL"
+  }
+  event_cancellations {
+    uuid event_request_id PK,FK "NOT NULL"
+    uuid cancelled_by FK "NOT NULL"
+  }
+  event_change_requests {
+    uuid id PK "NOT NULL"
+    uuid event_request_id FK "NOT NULL"
+    uuid requested_by FK "NOT NULL"
+    text status "NOT NULL"
+    uuid decided_by FK "nullable"
+  }
+  event_clarifications {
+    uuid id PK "NOT NULL"
+    uuid event_request_id FK "NOT NULL"
+    uuid requested_by FK "NOT NULL"
+  }
+  event_registrations {
+    uuid id PK "NOT NULL"
+    uuid event_request_id FK "NOT NULL"
+    uuid attendee_id FK "NOT NULL"
+    text status "NOT NULL"
+  }
+  event_request_edits {
+    uuid id PK "NOT NULL"
+    uuid event_request_id FK "NOT NULL"
+    integer revision "NOT NULL"
+    uuid edited_by FK "NOT NULL"
+  }
+  event_requests {
+    uuid id PK "NOT NULL"
+    uuid organiser_id FK "NOT NULL"
+    uuid coordinator_id FK "nullable"
+    text status "NOT NULL"
+    timestamptz starts_at "nullable"
+    timestamptz ends_at "nullable"
+    integer revision "NOT NULL"
+    text equipment_plan_status "NOT NULL"
+    uuid preparation_started_by FK "nullable"
+    uuid preparation_safety_review_id FK "nullable"
+  }
+  event_reviews {
+    uuid id PK "NOT NULL"
+    uuid event_request_id FK "NOT NULL"
+    uuid reviewed_by FK "NOT NULL"
+  }
+  event_status_history {
+    uuid id PK "NOT NULL"
+    uuid event_request_id FK "NOT NULL"
+    uuid changed_by FK "nullable"
+  }
+  notifications {
+    uuid id PK "NOT NULL"
+    uuid recipient_id FK "NOT NULL"
+    uuid event_request_id FK "nullable"
+    uuid venue_booking_id FK "nullable"
+    uuid equipment_request_id FK "nullable"
+    uuid registration_id FK "nullable"
+    uuid change_request_id FK "nullable"
+    uuid safety_review_id FK "nullable"
+  }
+  safety_approval_invalidations {
+    uuid review_id PK,FK "NOT NULL"
+  }
+  safety_review_change_baselines {
+    uuid review_id PK,FK "NOT NULL"
+  }
+  safety_review_context_baselines {
+    uuid review_id PK,FK "NOT NULL"
+  }
+  safety_reviews {
+    uuid id PK "NOT NULL"
+    uuid event_request_id FK "NOT NULL"
+    integer round "NOT NULL"
+    text status "NOT NULL"
+    uuid submitted_by FK "NOT NULL"
+    uuid decided_by FK "nullable"
+  }
+  scaffold_metadata {
+    text key PK "NOT NULL"
+  }
+  schema_migrations {
+    text name PK "NOT NULL"
+  }
+  venue_bookings {
+    uuid id PK "NOT NULL"
+    uuid event_request_id FK "NOT NULL"
+    uuid venue_id FK "NOT NULL"
+    uuid requested_by FK "NOT NULL"
+    text status "NOT NULL"
+    timestamptz starts_at "NOT NULL"
+    timestamptz ends_at "NOT NULL"
+    uuid decided_by FK "nullable"
+    uuid replaces_booking_id FK "nullable"
+    timestamptz hold_expires_at "nullable"
+    uuid held_by FK "nullable"
+    uuid cancelled_by FK "nullable"
+  }
+  venue_outage_impacts {
+    uuid id PK "NOT NULL"
+    uuid unavailability_id FK "nullable"
+    uuid venue_booking_id FK "NOT NULL"
+    uuid venue_id FK "NOT NULL"
+    text status "NOT NULL"
+    uuid recorded_by FK "nullable"
+  }
+  venue_unavailability {
+    uuid id PK "NOT NULL"
+    uuid venue_id FK "NOT NULL"
+    timestamptz starts_at "NOT NULL"
+    timestamptz ends_at "NOT NULL"
+    uuid created_by FK "nullable"
+  }
+  venues {
+    uuid id PK "NOT NULL"
+    integer setup_minutes "NOT NULL"
+    integer turnaround_minutes "NOT NULL"
+  }
+  app_users |o..o{ coordinator_assignments : "assigned_by"
+  app_users ||..o{ coordinator_assignments : "coordinator_id"
+  event_requests ||..o{ coordinator_assignments : "event_request_id"
+  app_users |o..o{ equipment_requests : "decided_by"
+  equipment_types ||..o{ equipment_requests : "equipment_type_id"
+  event_requests ||..o{ equipment_requests : "event_request_id"
+  app_users |o..o{ equipment_requests : "released_by"
+  app_users ||..o{ equipment_requests : "requested_by"
+  app_users ||..o{ equipment_stock_changes : "changed_by"
+  equipment_types ||..o{ equipment_stock_changes : "equipment_type_id"
+  app_users ||..o{ event_cancellations : "cancelled_by"
+  event_requests ||--o| event_cancellations : "event_request_id"
+  app_users |o..o{ event_change_requests : "decided_by"
+  event_requests ||..o{ event_change_requests : "event_request_id"
+  app_users ||..o{ event_change_requests : "requested_by"
+  event_requests ||..o{ event_clarifications : "event_request_id"
+  app_users ||..o{ event_clarifications : "requested_by"
+  app_users ||..o{ event_registrations : "attendee_id"
+  event_requests ||..o{ event_registrations : "event_request_id"
+  app_users ||..o{ event_request_edits : "edited_by"
+  event_requests ||..o{ event_request_edits : "event_request_id"
+  app_users |o..o{ event_requests : "coordinator_id"
+  app_users ||..o{ event_requests : "organiser_id"
+  safety_reviews |o..o{ event_requests : "preparation_safety_review_id"
+  app_users |o..o{ event_requests : "preparation_started_by"
+  event_requests ||..o{ event_reviews : "event_request_id"
+  app_users ||..o{ event_reviews : "reviewed_by"
+  app_users |o..o{ event_status_history : "changed_by"
+  event_requests ||..o{ event_status_history : "event_request_id"
+  event_change_requests |o..o{ notifications : "change_request_id"
+  equipment_requests |o..o{ notifications : "equipment_request_id"
+  event_requests |o..o{ notifications : "event_request_id"
+  app_users ||..o{ notifications : "recipient_id"
+  event_registrations |o..o{ notifications : "registration_id"
+  safety_reviews |o..o{ notifications : "safety_review_id"
+  venue_bookings |o..o{ notifications : "venue_booking_id"
+  safety_reviews ||--o| safety_approval_invalidations : "review_id"
+  safety_reviews ||--o| safety_review_change_baselines : "review_id"
+  safety_reviews ||--o| safety_review_context_baselines : "review_id"
+  app_users |o..o{ safety_reviews : "decided_by"
+  event_requests ||..o{ safety_reviews : "event_request_id"
+  app_users ||..o{ safety_reviews : "submitted_by"
+  app_users |o..o{ venue_bookings : "cancelled_by"
+  app_users |o..o{ venue_bookings : "decided_by"
+  event_requests ||..o{ venue_bookings : "event_request_id"
+  app_users |o..o{ venue_bookings : "held_by"
+  venue_bookings |o..o{ venue_bookings : "replaces_booking_id"
+  app_users ||..o{ venue_bookings : "requested_by"
+  venues ||..o{ venue_bookings : "venue_id"
+  app_users |o..o{ venue_outage_impacts : "recorded_by"
+  venue_unavailability |o..o{ venue_outage_impacts : "unavailability_id"
+  venue_bookings ||..o{ venue_outage_impacts : "venue_booking_id"
+  venues ||..o{ venue_outage_impacts : "venue_id"
+  app_users |o..o{ venue_unavailability : "created_by"
+  venues ||..o{ venue_unavailability : "venue_id"

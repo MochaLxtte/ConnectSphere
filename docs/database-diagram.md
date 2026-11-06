@@ -1,3 +1,807 @@
+# ConnectSphere data model
+
+**Frozen build:** 1 November 2026, `fb6d8d93f721b114accc9857a05d62e859987e23`, migrations 001–023. **Schema checked:** 6 November 2026. The design audit applied all migrations to a disposable PostgreSQL 17 container with no network, host ports, host bind mounts or application data. Its catalog describes the schema produced by those migrations.
+
+There are **22 application tables**, two infrastructure tables (`schema_migrations`, `scaffold_metadata`), **243 columns**, **55 foreign keys**, one view and 26 non-internal triggers. Authentication verifies Supabase identities and maps them through nullable, unique `app_users.supabase_user_id`; no current `auth_sessions` table exists. Legacy nullable `password_hash` remains in SQL but is not the current login mechanism.
+
+The [audit](scrum/sprint-03/evidence/design-audit-20261106/README.md) contains the exact catalog, migration checksums and per-node/per-connection inventory. [Pre-Week 7 originals](architecture/archive/pre-week-7-customer-changes/README.md) and [before-update copies](architecture/archive/before-2026-11-06-update/README.md) are retained.
+
+## Complete relationship model
+
+Every table and every declared FK appears below. Attributes here are curated keys/statuses; the dictionary below contains **every column**. Crow’s-foot ends come from FK nullability and nonpartial unique constraints, not assumed business intent: a child may have many siblings unless its FK is unique. In particular, `event_reviews.event_request_id` is not unique, while cancellation and the three safety supplement tables have shared primary keys. Solid lines identify FK columns in the child primary key; dotted lines are other FK associations. A nullable FK points to zero or one parent. A parent has zero or more children unless the child FK is unique.
+
+```mermaid
+---
+config:
+  layout: elk
+title: Physical model - all 24 tables and 55 foreign keys
+---
+erDiagram
+  direction TB
+  app_users {
+    uuid id PK "NOT NULL"
+    text role "NOT NULL"
+  }
+  coordinator_assignments {
+    uuid id PK "NOT NULL"
+    uuid event_request_id FK "NOT NULL"
+    uuid coordinator_id FK "NOT NULL"
+    uuid assigned_by FK "nullable"
+    text assignment_method "NOT NULL"
+  }
+  equipment_requests {
+    uuid id PK "NOT NULL"
+    uuid event_request_id FK "NOT NULL"
+    uuid equipment_type_id FK "NOT NULL"
+    uuid requested_by FK "NOT NULL"
+    integer quantity "NOT NULL"
+    text status "NOT NULL"
+    timestamptz starts_at "NOT NULL"
+    timestamptz ends_at "NOT NULL"
+    uuid decided_by FK "nullable"
+    uuid released_by FK "nullable"
+    integer revision "NOT NULL"
+  }
+  equipment_stock_changes {
+    uuid id PK "NOT NULL"
+    uuid equipment_type_id FK "NOT NULL"
+    integer revision "NOT NULL"
+    uuid changed_by FK "NOT NULL"
+  }
+  equipment_types {
+    uuid id PK "NOT NULL"
+    integer total_quantity "NOT NULL"
+    integer damaged_quantity "NOT NULL"
+    integer maintenance_quantity "NOT NULL"
+  }
+  event_cancellations {
+    uuid event_request_id PK,FK "NOT NULL"
+    uuid cancelled_by FK "NOT NULL"
+  }
+  event_change_requests {
+    uuid id PK "NOT NULL"
+    uuid event_request_id FK "NOT NULL"
+    uuid requested_by FK "NOT NULL"
+    text status "NOT NULL"
+    uuid decided_by FK "nullable"
+  }
+  event_clarifications {
+    uuid id PK "NOT NULL"
+    uuid event_request_id FK "NOT NULL"
+    uuid requested_by FK "NOT NULL"
+  }
+  event_registrations {
+    uuid id PK "NOT NULL"
+    uuid event_request_id FK "NOT NULL"
+    uuid attendee_id FK "NOT NULL"
+    text status "NOT NULL"
+  }
+  event_request_edits {
+    uuid id PK "NOT NULL"
+    uuid event_request_id FK "NOT NULL"
+    integer revision "NOT NULL"
+    uuid edited_by FK "NOT NULL"
+  }
+  event_requests {
+    uuid id PK "NOT NULL"
+    uuid organiser_id FK "NOT NULL"
+    uuid coordinator_id FK "nullable"
+    text status "NOT NULL"
+    timestamptz starts_at "nullable"
+    timestamptz ends_at "nullable"
+    integer revision "NOT NULL"
+    text equipment_plan_status "NOT NULL"
+    uuid preparation_started_by FK "nullable"
+    uuid preparation_safety_review_id FK "nullable"
+  }
+  event_reviews {
+    uuid id PK "NOT NULL"
+    uuid event_request_id FK "NOT NULL"
+    uuid reviewed_by FK "NOT NULL"
+  }
+  event_status_history {
+    uuid id PK "NOT NULL"
+    uuid event_request_id FK "NOT NULL"
+    uuid changed_by FK "nullable"
+  }
+  notifications {
+    uuid id PK "NOT NULL"
+    uuid recipient_id FK "NOT NULL"
+    uuid event_request_id FK "nullable"
+    uuid venue_booking_id FK "nullable"
+    uuid equipment_request_id FK "nullable"
+    uuid registration_id FK "nullable"
+    uuid change_request_id FK "nullable"
+    uuid safety_review_id FK "nullable"
+  }
+  safety_approval_invalidations {
+    uuid review_id PK,FK "NOT NULL"
+  }
+  safety_review_change_baselines {
+    uuid review_id PK,FK "NOT NULL"
+  }
+  safety_review_context_baselines {
+    uuid review_id PK,FK "NOT NULL"
+  }
+  safety_reviews {
+    uuid id PK "NOT NULL"
+    uuid event_request_id FK "NOT NULL"
+    integer round "NOT NULL"
+    text status "NOT NULL"
+    uuid submitted_by FK "NOT NULL"
+    uuid decided_by FK "nullable"
+  }
+  scaffold_metadata {
+    text key PK "NOT NULL"
+  }
+  schema_migrations {
+    text name PK "NOT NULL"
+  }
+  venue_bookings {
+    uuid id PK "NOT NULL"
+    uuid event_request_id FK "NOT NULL"
+    uuid venue_id FK "NOT NULL"
+    uuid requested_by FK "NOT NULL"
+    text status "NOT NULL"
+    timestamptz starts_at "NOT NULL"
+    timestamptz ends_at "NOT NULL"
+    uuid decided_by FK "nullable"
+    uuid replaces_booking_id FK "nullable"
+    timestamptz hold_expires_at "nullable"
+    uuid held_by FK "nullable"
+    uuid cancelled_by FK "nullable"
+  }
+  venue_outage_impacts {
+    uuid id PK "NOT NULL"
+    uuid unavailability_id FK "nullable"
+    uuid venue_booking_id FK "NOT NULL"
+    uuid venue_id FK "NOT NULL"
+    text status "NOT NULL"
+    uuid recorded_by FK "nullable"
+  }
+  venue_unavailability {
+    uuid id PK "NOT NULL"
+    uuid venue_id FK "NOT NULL"
+    timestamptz starts_at "NOT NULL"
+    timestamptz ends_at "NOT NULL"
+    uuid created_by FK "nullable"
+  }
+  venues {
+    uuid id PK "NOT NULL"
+    integer setup_minutes "NOT NULL"
+    integer turnaround_minutes "NOT NULL"
+  }
+  app_users |o..o{ coordinator_assignments : "assigned_by"
+  app_users ||..o{ coordinator_assignments : "coordinator_id"
+  event_requests ||..o{ coordinator_assignments : "event_request_id"
+  app_users |o..o{ equipment_requests : "decided_by"
+  equipment_types ||..o{ equipment_requests : "equipment_type_id"
+  event_requests ||..o{ equipment_requests : "event_request_id"
+  app_users |o..o{ equipment_requests : "released_by"
+  app_users ||..o{ equipment_requests : "requested_by"
+  app_users ||..o{ equipment_stock_changes : "changed_by"
+  equipment_types ||..o{ equipment_stock_changes : "equipment_type_id"
+  app_users ||..o{ event_cancellations : "cancelled_by"
+  event_requests ||--o| event_cancellations : "event_request_id"
+  app_users |o..o{ event_change_requests : "decided_by"
+  event_requests ||..o{ event_change_requests : "event_request_id"
+  app_users ||..o{ event_change_requests : "requested_by"
+  event_requests ||..o{ event_clarifications : "event_request_id"
+  app_users ||..o{ event_clarifications : "requested_by"
+  app_users ||..o{ event_registrations : "attendee_id"
+  event_requests ||..o{ event_registrations : "event_request_id"
+  app_users ||..o{ event_request_edits : "edited_by"
+  event_requests ||..o{ event_request_edits : "event_request_id"
+  app_users |o..o{ event_requests : "coordinator_id"
+  app_users ||..o{ event_requests : "organiser_id"
+  safety_reviews |o..o{ event_requests : "preparation_safety_review_id"
+  app_users |o..o{ event_requests : "preparation_started_by"
+  event_requests ||..o{ event_reviews : "event_request_id"
+  app_users ||..o{ event_reviews : "reviewed_by"
+  app_users |o..o{ event_status_history : "changed_by"
+  event_requests ||..o{ event_status_history : "event_request_id"
+  event_change_requests |o..o{ notifications : "change_request_id"
+  equipment_requests |o..o{ notifications : "equipment_request_id"
+  event_requests |o..o{ notifications : "event_request_id"
+  app_users ||..o{ notifications : "recipient_id"
+  event_registrations |o..o{ notifications : "registration_id"
+  safety_reviews |o..o{ notifications : "safety_review_id"
+  venue_bookings |o..o{ notifications : "venue_booking_id"
+  safety_reviews ||--o| safety_approval_invalidations : "review_id"
+  safety_reviews ||--o| safety_review_change_baselines : "review_id"
+  safety_reviews ||--o| safety_review_context_baselines : "review_id"
+  app_users |o..o{ safety_reviews : "decided_by"
+  event_requests ||..o{ safety_reviews : "event_request_id"
+  app_users ||..o{ safety_reviews : "submitted_by"
+  app_users |o..o{ venue_bookings : "cancelled_by"
+  app_users |o..o{ venue_bookings : "decided_by"
+  event_requests ||..o{ venue_bookings : "event_request_id"
+  app_users |o..o{ venue_bookings : "held_by"
+  venue_bookings |o..o{ venue_bookings : "replaces_booking_id"
+  app_users ||..o{ venue_bookings : "requested_by"
+  venues ||..o{ venue_bookings : "venue_id"
+  app_users |o..o{ venue_outage_impacts : "recorded_by"
+  venue_unavailability |o..o{ venue_outage_impacts : "unavailability_id"
+  venue_bookings ||..o{ venue_outage_impacts : "venue_booking_id"
+  venues ||..o{ venue_outage_impacts : "venue_id"
+  app_users |o..o{ venue_unavailability : "created_by"
+  venues ||..o{ venue_unavailability : "venue_id"
+```
+
+[PNG overview](architecture/exports/erd-database.png) · [SVG overview](architecture/exports/erd-database.svg). Readable domain views: [events](architecture/design-reference.md#current-domain-data-views), [planning](architecture/exports/erd-planning.svg), [safety and notices](architecture/exports/erd-safety-invalidation.svg).
+
+## Column dictionary
+
+SQL types/defaults are transcribed from PostgreSQL. `NULL` means the column is nullable; it does not imply the API may accept null. API projections use camelCase and have separate visibility rules. Empty default cells mean no SQL default. FK targets and ON DELETE/UPDATE behavior follow in the relationship register.
+
+### app_users
+
+| Column | SQL type | Nullability | Default | Key |
+| --- | --- | --- | --- | --- |
+| `id` | `uuid` | NOT NULL | `gen_random_uuid()` | PK |
+| `email` | `text` | NOT NULL |  |  |
+| `display_name` | `text` | NOT NULL |  |  |
+| `role` | `text` | NOT NULL |  |  |
+| `password_hash` | `text` | NULL |  |  |
+| `created_at` | `timestamp with time zone` | NOT NULL | `now()` |  |
+| `updated_at` | `timestamp with time zone` | NOT NULL | `now()` |  |
+| `supabase_user_id` | `uuid` | NULL |  |  |
+| `coordinator_available` | `boolean` | NOT NULL | `false` |  |
+
+### coordinator_assignments
+
+| Column | SQL type | Nullability | Default | Key |
+| --- | --- | --- | --- | --- |
+| `id` | `uuid` | NOT NULL | `gen_random_uuid()` | PK |
+| `event_request_id` | `uuid` | NOT NULL |  | FK |
+| `coordinator_id` | `uuid` | NOT NULL |  | FK |
+| `assigned_by` | `uuid` | NULL |  | FK |
+| `note` | `text` | NULL |  |  |
+| `assigned_at` | `timestamp with time zone` | NOT NULL | `now()` |  |
+| `unassigned_at` | `timestamp with time zone` | NULL |  |  |
+| `assignment_method` | `text` | NOT NULL | `'MANUAL'::text` |  |
+
+### equipment_requests
+
+| Column | SQL type | Nullability | Default | Key |
+| --- | --- | --- | --- | --- |
+| `id` | `uuid` | NOT NULL | `gen_random_uuid()` | PK |
+| `event_request_id` | `uuid` | NOT NULL |  | FK |
+| `equipment_type_id` | `uuid` | NOT NULL |  | FK |
+| `requested_by` | `uuid` | NOT NULL |  | FK |
+| `quantity` | `integer` | NOT NULL |  |  |
+| `status` | `text` | NOT NULL | `'REQUESTED'::text` |  |
+| `starts_at` | `timestamp with time zone` | NOT NULL |  |  |
+| `ends_at` | `timestamp with time zone` | NOT NULL |  |  |
+| `notes` | `text` | NULL |  |  |
+| `decided_by` | `uuid` | NULL |  | FK |
+| `decided_at` | `timestamp with time zone` | NULL |  |  |
+| `decision_reason` | `text` | NULL |  |  |
+| `created_at` | `timestamp with time zone` | NOT NULL | `now()` |  |
+| `updated_at` | `timestamp with time zone` | NOT NULL | `now()` |  |
+| `released_at` | `timestamp with time zone` | NULL |  |  |
+| `released_by` | `uuid` | NULL |  | FK |
+| `release_reason` | `text` | NULL |  |  |
+| `release_cause` | `text` | NULL |  |  |
+| `technical_requirements` | `text` | NULL |  |  |
+| `revision` | `integer` | NOT NULL | `1` |  |
+
+### equipment_stock_changes
+
+| Column | SQL type | Nullability | Default | Key |
+| --- | --- | --- | --- | --- |
+| `id` | `uuid` | NOT NULL | `gen_random_uuid()` | PK |
+| `equipment_type_id` | `uuid` | NOT NULL |  | FK |
+| `revision` | `integer` | NOT NULL |  |  |
+| `changed_by` | `uuid` | NOT NULL |  | FK |
+| `changed_at` | `timestamp with time zone` | NOT NULL | `clock_timestamp()` |  |
+| `reason` | `text` | NOT NULL |  |  |
+| `previous_total_quantity` | `integer` | NOT NULL |  |  |
+| `previous_damaged_quantity` | `integer` | NOT NULL |  |  |
+| `previous_maintenance_quantity` | `integer` | NOT NULL |  |  |
+| `new_total_quantity` | `integer` | NOT NULL |  |  |
+| `new_damaged_quantity` | `integer` | NOT NULL |  |  |
+| `new_maintenance_quantity` | `integer` | NOT NULL |  |  |
+
+### equipment_types
+
+| Column | SQL type | Nullability | Default | Key |
+| --- | --- | --- | --- | --- |
+| `id` | `uuid` | NOT NULL | `gen_random_uuid()` | PK |
+| `name` | `text` | NOT NULL |  |  |
+| `category` | `text` | NULL |  |  |
+| `description` | `text` | NULL |  |  |
+| `total_quantity` | `integer` | NOT NULL |  |  |
+| `is_active` | `boolean` | NOT NULL | `true` |  |
+| `created_at` | `timestamp with time zone` | NOT NULL | `now()` |  |
+| `updated_at` | `timestamp with time zone` | NOT NULL | `now()` |  |
+| `damaged_quantity` | `integer` | NOT NULL | `0` |  |
+| `maintenance_quantity` | `integer` | NOT NULL | `0` |  |
+| `stock_revision` | `integer` | NOT NULL | `0` |  |
+
+### event_cancellations
+
+| Column | SQL type | Nullability | Default | Key |
+| --- | --- | --- | --- | --- |
+| `event_request_id` | `uuid` | NOT NULL |  | PK, FK |
+| `cancelled_by` | `uuid` | NOT NULL |  | FK |
+| `cancelled_at` | `timestamp with time zone` | NOT NULL | `now()` |  |
+| `reason` | `text` | NOT NULL |  |  |
+| `affected_venue_bookings` | `integer` | NOT NULL |  |  |
+| `affected_equipment_requests` | `integer` | NOT NULL |  |  |
+| `affected_registrations` | `integer` | NOT NULL |  |  |
+
+### event_change_requests
+
+| Column | SQL type | Nullability | Default | Key |
+| --- | --- | --- | --- | --- |
+| `id` | `uuid` | NOT NULL | `gen_random_uuid()` | PK |
+| `event_request_id` | `uuid` | NOT NULL |  | FK |
+| `requested_by` | `uuid` | NOT NULL |  | FK |
+| `status` | `text` | NOT NULL | `'PENDING'::text` |  |
+| `proposed_changes` | `jsonb` | NOT NULL |  |  |
+| `reason` | `text` | NULL |  |  |
+| `decided_by` | `uuid` | NULL |  | FK |
+| `decided_at` | `timestamp with time zone` | NULL |  |  |
+| `decision_reason` | `text` | NULL |  |  |
+| `created_at` | `timestamp with time zone` | NOT NULL | `now()` |  |
+| `updated_at` | `timestamp with time zone` | NOT NULL | `now()` |  |
+| `previous` | `jsonb` | NOT NULL |  |  |
+| `base_revision` | `integer` | NOT NULL |  |  |
+| `applied_revision` | `integer` | NULL |  |  |
+| `cancelled_arrangements` | `jsonb` | NULL |  |  |
+
+### event_clarifications
+
+| Column | SQL type | Nullability | Default | Key |
+| --- | --- | --- | --- | --- |
+| `id` | `uuid` | NOT NULL | `gen_random_uuid()` | PK |
+| `event_request_id` | `uuid` | NOT NULL |  | FK |
+| `requested_by` | `uuid` | NOT NULL |  | FK |
+| `message` | `text` | NOT NULL |  |  |
+| `response` | `text` | NULL |  |  |
+| `created_at` | `timestamp with time zone` | NOT NULL | `now()` |  |
+| `responded_at` | `timestamp with time zone` | NULL |  |  |
+
+### event_registrations
+
+| Column | SQL type | Nullability | Default | Key |
+| --- | --- | --- | --- | --- |
+| `id` | `uuid` | NOT NULL | `gen_random_uuid()` | PK |
+| `event_request_id` | `uuid` | NOT NULL |  | FK |
+| `attendee_id` | `uuid` | NOT NULL |  | FK |
+| `status` | `text` | NOT NULL | `'REGISTERED'::text` |  |
+| `registered_at` | `timestamp with time zone` | NOT NULL | `now()` |  |
+| `withdrawn_at` | `timestamp with time zone` | NULL |  |  |
+| `cancellation_outcome_at` | `timestamp with time zone` | NULL |  |  |
+| `outcome_version` | `integer` | NOT NULL | `1` |  |
+
+### event_request_edits
+
+| Column | SQL type | Nullability | Default | Key |
+| --- | --- | --- | --- | --- |
+| `id` | `uuid` | NOT NULL | `gen_random_uuid()` | PK |
+| `event_request_id` | `uuid` | NOT NULL |  | FK |
+| `revision` | `integer` | NOT NULL |  |  |
+| `edited_by` | `uuid` | NOT NULL |  | FK |
+| `editor_role` | `text` | NOT NULL |  |  |
+| `event_status` | `text` | NOT NULL |  |  |
+| `changes` | `jsonb` | NOT NULL |  |  |
+| `created_at` | `timestamp with time zone` | NOT NULL | `now()` |  |
+
+### event_requests
+
+| Column | SQL type | Nullability | Default | Key |
+| --- | --- | --- | --- | --- |
+| `id` | `uuid` | NOT NULL | `gen_random_uuid()` | PK |
+| `organiser_id` | `uuid` | NOT NULL |  | FK |
+| `coordinator_id` | `uuid` | NULL |  | FK |
+| `status` | `text` | NOT NULL | `'DRAFT'::text` |  |
+| `name` | `text` | NULL |  |  |
+| `purpose` | `text` | NULL |  |  |
+| `description` | `text` | NULL |  |  |
+| `starts_at` | `timestamp with time zone` | NULL |  |  |
+| `ends_at` | `timestamp with time zone` | NULL |  |  |
+| `expected_attendance` | `integer` | NULL |  |  |
+| `venue_requirements` | `text` | NULL |  |  |
+| `accessibility_needs` | `text` | NULL |  |  |
+| `equipment_requirements` | `text` | NULL |  |  |
+| `registration_required` | `boolean` | NULL |  |  |
+| `created_at` | `timestamp with time zone` | NOT NULL | `now()` |  |
+| `updated_at` | `timestamp with time zone` | NOT NULL | `now()` |  |
+| `registration_capacity` | `integer` | NULL |  |  |
+| `registration_opens_at` | `timestamp with time zone` | NULL |  |  |
+| `registration_closes_at` | `timestamp with time zone` | NULL |  |  |
+| `revision` | `integer` | NOT NULL | `1` |  |
+| `equipment_plan_status` | `text` | NOT NULL | `'REQUIRED'::text` |  |
+| `preparation_started_at` | `timestamp with time zone` | NULL |  |  |
+| `preparation_started_by` | `uuid` | NULL |  | FK |
+| `preparation_safety_review_id` | `uuid` | NULL |  | FK |
+
+### event_reviews
+
+| Column | SQL type | Nullability | Default | Key |
+| --- | --- | --- | --- | --- |
+| `id` | `uuid` | NOT NULL | `gen_random_uuid()` | PK |
+| `event_request_id` | `uuid` | NOT NULL |  | FK |
+| `reviewed_by` | `uuid` | NOT NULL |  | FK |
+| `decision` | `text` | NOT NULL |  |  |
+| `reason` | `text` | NULL |  |  |
+| `created_at` | `timestamp with time zone` | NOT NULL | `now()` |  |
+
+### event_status_history
+
+| Column | SQL type | Nullability | Default | Key |
+| --- | --- | --- | --- | --- |
+| `id` | `uuid` | NOT NULL | `gen_random_uuid()` | PK |
+| `event_request_id` | `uuid` | NOT NULL |  | FK |
+| `from_status` | `text` | NULL |  |  |
+| `to_status` | `text` | NOT NULL |  |  |
+| `changed_by` | `uuid` | NULL |  | FK |
+| `created_at` | `timestamp with time zone` | NOT NULL | `now()` |  |
+| `reason` | `text` | NULL |  |  |
+
+### notifications
+
+| Column | SQL type | Nullability | Default | Key |
+| --- | --- | --- | --- | --- |
+| `id` | `uuid` | NOT NULL | `gen_random_uuid()` | PK |
+| `recipient_id` | `uuid` | NOT NULL |  | FK |
+| `event_request_id` | `uuid` | NULL |  | FK |
+| `type` | `text` | NOT NULL |  |  |
+| `title` | `text` | NOT NULL |  |  |
+| `message` | `text` | NOT NULL |  |  |
+| `read_at` | `timestamp with time zone` | NULL |  |  |
+| `created_at` | `timestamp with time zone` | NOT NULL | `now()` |  |
+| `venue_booking_id` | `uuid` | NULL |  | FK |
+| `dedupe_key` | `text` | NULL |  |  |
+| `equipment_request_id` | `uuid` | NULL |  | FK |
+| `registration_id` | `uuid` | NULL |  | FK |
+| `change_request_id` | `uuid` | NULL |  | FK |
+| `safety_review_id` | `uuid` | NULL |  | FK |
+
+### safety_approval_invalidations
+
+| Column | SQL type | Nullability | Default | Key |
+| --- | --- | --- | --- | --- |
+| `review_id` | `uuid` | NOT NULL |  | PK, FK |
+| `invalidated_at` | `timestamp with time zone` | NOT NULL | `clock_timestamp()` |  |
+| `source` | `text` | NOT NULL |  |  |
+
+### safety_review_change_baselines
+
+| Column | SQL type | Nullability | Default | Key |
+| --- | --- | --- | --- | --- |
+| `review_id` | `uuid` | NOT NULL |  | PK, FK |
+| `venue_fingerprint` | `text` | NOT NULL |  |  |
+| `technical_fingerprint` | `text` | NOT NULL |  |  |
+| `captured_at` | `timestamp with time zone` | NOT NULL | `now()` |  |
+
+### safety_review_context_baselines
+
+| Column | SQL type | Nullability | Default | Key |
+| --- | --- | --- | --- | --- |
+| `review_id` | `uuid` | NOT NULL |  | PK, FK |
+| `context_fingerprint` | `text` | NOT NULL |  |  |
+| `captured_at` | `timestamp with time zone` | NOT NULL | `clock_timestamp()` |  |
+
+### safety_reviews
+
+| Column | SQL type | Nullability | Default | Key |
+| --- | --- | --- | --- | --- |
+| `id` | `uuid` | NOT NULL | `gen_random_uuid()` | PK |
+| `event_request_id` | `uuid` | NOT NULL |  | FK |
+| `round` | `integer` | NOT NULL |  |  |
+| `status` | `text` | NOT NULL | `'PENDING'::text` |  |
+| `arrangement_fingerprint` | `text` | NOT NULL |  |  |
+| `emergency_access` | `text` | NULL |  |  |
+| `equipment_placement` | `text` | NULL |  |  |
+| `crowd_movement` | `text` | NULL |  |  |
+| `submitted_by` | `uuid` | NOT NULL |  | FK |
+| `submitted_at` | `timestamp with time zone` | NOT NULL | `now()` |  |
+| `decided_by` | `uuid` | NULL |  | FK |
+| `decided_at` | `timestamp with time zone` | NULL |  |  |
+| `decision_notes` | `text` | NULL |  |  |
+| `requested_areas` | `text[]` | NULL |  |  |
+
+### scaffold_metadata
+
+| Column | SQL type | Nullability | Default | Key |
+| --- | --- | --- | --- | --- |
+| `key` | `text` | NOT NULL |  | PK |
+| `value` | `text` | NOT NULL |  |  |
+
+### schema_migrations
+
+| Column | SQL type | Nullability | Default | Key |
+| --- | --- | --- | --- | --- |
+| `name` | `text` | NOT NULL |  | PK |
+| `checksum` | `text` | NOT NULL |  |  |
+| `applied_at` | `timestamp with time zone` | NOT NULL | `now()` |  |
+
+### venue_bookings
+
+| Column | SQL type | Nullability | Default | Key |
+| --- | --- | --- | --- | --- |
+| `id` | `uuid` | NOT NULL | `gen_random_uuid()` | PK |
+| `event_request_id` | `uuid` | NOT NULL |  | FK |
+| `venue_id` | `uuid` | NOT NULL |  | FK |
+| `requested_by` | `uuid` | NOT NULL |  | FK |
+| `status` | `text` | NOT NULL | `'PENDING'::text` |  |
+| `starts_at` | `timestamp with time zone` | NOT NULL |  |  |
+| `ends_at` | `timestamp with time zone` | NOT NULL |  |  |
+| `layout` | `text` | NULL |  |  |
+| `notes` | `text` | NULL |  |  |
+| `decided_by` | `uuid` | NULL |  | FK |
+| `decided_at` | `timestamp with time zone` | NULL |  |  |
+| `decision_reason` | `text` | NULL |  |  |
+| `created_at` | `timestamp with time zone` | NOT NULL | `now()` |  |
+| `updated_at` | `timestamp with time zone` | NOT NULL | `now()` |  |
+| `replaces_booking_id` | `uuid` | NULL |  | FK |
+| `reserved_setup_minutes` | `integer` | NOT NULL | `0` |  |
+| `reserved_turnaround_minutes` | `integer` | NOT NULL | `0` |  |
+| `hold_expires_at` | `timestamp with time zone` | NULL |  |  |
+| `held_by` | `uuid` | NULL |  | FK |
+| `held_at` | `timestamp with time zone` | NULL |  |  |
+| `expired_at` | `timestamp with time zone` | NULL |  |  |
+| `cancelled_by` | `uuid` | NULL |  | FK |
+| `cancelled_at` | `timestamp with time zone` | NULL |  |  |
+| `cancellation_reason` | `text` | NULL |  |  |
+
+### venue_outage_impacts
+
+| Column | SQL type | Nullability | Default | Key |
+| --- | --- | --- | --- | --- |
+| `id` | `uuid` | NOT NULL | `gen_random_uuid()` | PK |
+| `unavailability_id` | `uuid` | NULL |  | FK |
+| `venue_booking_id` | `uuid` | NOT NULL |  | FK |
+| `venue_id` | `uuid` | NOT NULL |  | FK |
+| `outage_starts_at` | `timestamp with time zone` | NOT NULL |  |  |
+| `outage_ends_at` | `timestamp with time zone` | NOT NULL |  |  |
+| `outage_reason` | `text` | NOT NULL |  |  |
+| `status` | `text` | NOT NULL | `'RECOVERY_REQUIRED'::text` |  |
+| `recorded_by` | `uuid` | NULL |  | FK |
+| `created_at` | `timestamp with time zone` | NOT NULL | `now()` |  |
+| `updated_at` | `timestamp with time zone` | NOT NULL | `now()` |  |
+
+### venue_unavailability
+
+| Column | SQL type | Nullability | Default | Key |
+| --- | --- | --- | --- | --- |
+| `id` | `uuid` | NOT NULL | `gen_random_uuid()` | PK |
+| `venue_id` | `uuid` | NOT NULL |  | FK |
+| `starts_at` | `timestamp with time zone` | NOT NULL |  |  |
+| `ends_at` | `timestamp with time zone` | NOT NULL |  |  |
+| `reason` | `text` | NULL |  |  |
+| `created_by` | `uuid` | NULL |  | FK |
+| `created_at` | `timestamp with time zone` | NOT NULL | `now()` |  |
+
+### venues
+
+| Column | SQL type | Nullability | Default | Key |
+| --- | --- | --- | --- | --- |
+| `id` | `uuid` | NOT NULL | `gen_random_uuid()` | PK |
+| `name` | `text` | NOT NULL |  |  |
+| `description` | `text` | NULL |  |  |
+| `location` | `text` | NULL |  |  |
+| `capacity` | `integer` | NOT NULL |  |  |
+| `layouts` | `text[]` | NOT NULL | `'{}'::text[]` |  |
+| `facilities` | `text[]` | NOT NULL | `'{}'::text[]` |  |
+| `accessibility_features` | `text[]` | NOT NULL | `'{}'::text[]` |  |
+| `wheelchair_accessible` | `boolean` | NOT NULL | `false` |  |
+| `opens_at` | `time without time zone` | NULL |  |  |
+| `closes_at` | `time without time zone` | NULL |  |  |
+| `is_active` | `boolean` | NOT NULL | `true` |  |
+| `created_at` | `timestamp with time zone` | NOT NULL | `now()` |  |
+| `updated_at` | `timestamp with time zone` | NOT NULL | `now()` |  |
+| `setup_minutes` | `integer` | NOT NULL | `0` |  |
+| `turnaround_minutes` | `integer` | NOT NULL | `0` |  |
+
+## Foreign-key register
+
+Each row is one actual database constraint; all actor references and all seven notification references are included.
+
+| Constraint | Child columns → parent columns | Parent per child | Children per parent | SQL behavior |
+| --- | --- | --- | --- | --- |
+| `coordinator_assignments_assigned_by_fkey` | `coordinator_assignments.assigned_by` → `app_users.id` | 0..1 | 0..* | `FOREIGN KEY (assigned_by) REFERENCES app_users(id)` |
+| `coordinator_assignments_coordinator_id_fkey` | `coordinator_assignments.coordinator_id` → `app_users.id` | 1 | 0..* | `FOREIGN KEY (coordinator_id) REFERENCES app_users(id)` |
+| `coordinator_assignments_event_request_id_fkey` | `coordinator_assignments.event_request_id` → `event_requests.id` | 1 | 0..* | `FOREIGN KEY (event_request_id) REFERENCES event_requests(id) ON DELETE CASCADE` |
+| `equipment_requests_decided_by_fkey` | `equipment_requests.decided_by` → `app_users.id` | 0..1 | 0..* | `FOREIGN KEY (decided_by) REFERENCES app_users(id)` |
+| `equipment_requests_equipment_type_id_fkey` | `equipment_requests.equipment_type_id` → `equipment_types.id` | 1 | 0..* | `FOREIGN KEY (equipment_type_id) REFERENCES equipment_types(id)` |
+| `equipment_requests_event_request_id_fkey` | `equipment_requests.event_request_id` → `event_requests.id` | 1 | 0..* | `FOREIGN KEY (event_request_id) REFERENCES event_requests(id)` |
+| `equipment_requests_released_by_fkey` | `equipment_requests.released_by` → `app_users.id` | 0..1 | 0..* | `FOREIGN KEY (released_by) REFERENCES app_users(id)` |
+| `equipment_requests_requested_by_fkey` | `equipment_requests.requested_by` → `app_users.id` | 1 | 0..* | `FOREIGN KEY (requested_by) REFERENCES app_users(id)` |
+| `equipment_stock_changes_changed_by_fkey` | `equipment_stock_changes.changed_by` → `app_users.id` | 1 | 0..* | `FOREIGN KEY (changed_by) REFERENCES app_users(id)` |
+| `equipment_stock_changes_equipment_type_id_fkey` | `equipment_stock_changes.equipment_type_id` → `equipment_types.id` | 1 | 0..* | `FOREIGN KEY (equipment_type_id) REFERENCES equipment_types(id)` |
+| `event_cancellations_cancelled_by_fkey` | `event_cancellations.cancelled_by` → `app_users.id` | 1 | 0..* | `FOREIGN KEY (cancelled_by) REFERENCES app_users(id)` |
+| `event_cancellations_event_request_id_fkey` | `event_cancellations.event_request_id` → `event_requests.id` | 1 | 0..1 | `FOREIGN KEY (event_request_id) REFERENCES event_requests(id)` |
+| `event_change_requests_decided_by_fkey` | `event_change_requests.decided_by` → `app_users.id` | 0..1 | 0..* | `FOREIGN KEY (decided_by) REFERENCES app_users(id)` |
+| `event_change_requests_event_request_id_fkey` | `event_change_requests.event_request_id` → `event_requests.id` | 1 | 0..* | `FOREIGN KEY (event_request_id) REFERENCES event_requests(id)` |
+| `event_change_requests_requested_by_fkey` | `event_change_requests.requested_by` → `app_users.id` | 1 | 0..* | `FOREIGN KEY (requested_by) REFERENCES app_users(id)` |
+| `event_clarifications_event_request_id_fkey` | `event_clarifications.event_request_id` → `event_requests.id` | 1 | 0..* | `FOREIGN KEY (event_request_id) REFERENCES event_requests(id)` |
+| `event_clarifications_requested_by_fkey` | `event_clarifications.requested_by` → `app_users.id` | 1 | 0..* | `FOREIGN KEY (requested_by) REFERENCES app_users(id)` |
+| `event_registrations_attendee_id_fkey` | `event_registrations.attendee_id` → `app_users.id` | 1 | 0..* | `FOREIGN KEY (attendee_id) REFERENCES app_users(id)` |
+| `event_registrations_event_request_id_fkey` | `event_registrations.event_request_id` → `event_requests.id` | 1 | 0..* | `FOREIGN KEY (event_request_id) REFERENCES event_requests(id)` |
+| `event_request_edits_edited_by_fkey` | `event_request_edits.edited_by` → `app_users.id` | 1 | 0..* | `FOREIGN KEY (edited_by) REFERENCES app_users(id)` |
+| `event_request_edits_event_request_id_fkey` | `event_request_edits.event_request_id` → `event_requests.id` | 1 | 0..* | `FOREIGN KEY (event_request_id) REFERENCES event_requests(id) ON DELETE CASCADE` |
+| `event_requests_coordinator_id_fkey` | `event_requests.coordinator_id` → `app_users.id` | 0..1 | 0..* | `FOREIGN KEY (coordinator_id) REFERENCES app_users(id)` |
+| `event_requests_organiser_id_fkey` | `event_requests.organiser_id` → `app_users.id` | 1 | 0..* | `FOREIGN KEY (organiser_id) REFERENCES app_users(id)` |
+| `event_requests_preparation_safety_review_id_fkey` | `event_requests.preparation_safety_review_id` → `safety_reviews.id` | 0..1 | 0..* | `FOREIGN KEY (preparation_safety_review_id) REFERENCES safety_reviews(id)` |
+| `event_requests_preparation_started_by_fkey` | `event_requests.preparation_started_by` → `app_users.id` | 0..1 | 0..* | `FOREIGN KEY (preparation_started_by) REFERENCES app_users(id)` |
+| `event_reviews_event_request_id_fkey` | `event_reviews.event_request_id` → `event_requests.id` | 1 | 0..* | `FOREIGN KEY (event_request_id) REFERENCES event_requests(id)` |
+| `event_reviews_reviewed_by_fkey` | `event_reviews.reviewed_by` → `app_users.id` | 1 | 0..* | `FOREIGN KEY (reviewed_by) REFERENCES app_users(id)` |
+| `event_status_history_changed_by_fkey` | `event_status_history.changed_by` → `app_users.id` | 0..1 | 0..* | `FOREIGN KEY (changed_by) REFERENCES app_users(id)` |
+| `event_status_history_event_request_id_fkey` | `event_status_history.event_request_id` → `event_requests.id` | 1 | 0..* | `FOREIGN KEY (event_request_id) REFERENCES event_requests(id) ON DELETE CASCADE` |
+| `notifications_change_request_id_fkey` | `notifications.change_request_id` → `event_change_requests.id` | 0..1 | 0..* | `FOREIGN KEY (change_request_id) REFERENCES event_change_requests(id)` |
+| `notifications_equipment_request_id_fkey` | `notifications.equipment_request_id` → `equipment_requests.id` | 0..1 | 0..* | `FOREIGN KEY (equipment_request_id) REFERENCES equipment_requests(id)` |
+| `notifications_event_request_id_fkey` | `notifications.event_request_id` → `event_requests.id` | 0..1 | 0..* | `FOREIGN KEY (event_request_id) REFERENCES event_requests(id) ON DELETE CASCADE` |
+| `notifications_recipient_id_fkey` | `notifications.recipient_id` → `app_users.id` | 1 | 0..* | `FOREIGN KEY (recipient_id) REFERENCES app_users(id) ON DELETE CASCADE` |
+| `notifications_registration_id_fkey` | `notifications.registration_id` → `event_registrations.id` | 0..1 | 0..* | `FOREIGN KEY (registration_id) REFERENCES event_registrations(id)` |
+| `notifications_safety_review_id_fkey` | `notifications.safety_review_id` → `safety_reviews.id` | 0..1 | 0..* | `FOREIGN KEY (safety_review_id) REFERENCES safety_reviews(id)` |
+| `notifications_venue_booking_id_fkey` | `notifications.venue_booking_id` → `venue_bookings.id` | 0..1 | 0..* | `FOREIGN KEY (venue_booking_id) REFERENCES venue_bookings(id) ON DELETE SET NULL` |
+| `safety_approval_invalidations_review_id_fkey` | `safety_approval_invalidations.review_id` → `safety_reviews.id` | 1 | 0..1 | `FOREIGN KEY (review_id) REFERENCES safety_reviews(id)` |
+| `safety_review_change_baselines_review_id_fkey` | `safety_review_change_baselines.review_id` → `safety_reviews.id` | 1 | 0..1 | `FOREIGN KEY (review_id) REFERENCES safety_reviews(id)` |
+| `safety_review_context_baselines_review_id_fkey` | `safety_review_context_baselines.review_id` → `safety_reviews.id` | 1 | 0..1 | `FOREIGN KEY (review_id) REFERENCES safety_reviews(id)` |
+| `safety_reviews_decided_by_fkey` | `safety_reviews.decided_by` → `app_users.id` | 0..1 | 0..* | `FOREIGN KEY (decided_by) REFERENCES app_users(id)` |
+| `safety_reviews_event_request_id_fkey` | `safety_reviews.event_request_id` → `event_requests.id` | 1 | 0..* | `FOREIGN KEY (event_request_id) REFERENCES event_requests(id)` |
+| `safety_reviews_submitted_by_fkey` | `safety_reviews.submitted_by` → `app_users.id` | 1 | 0..* | `FOREIGN KEY (submitted_by) REFERENCES app_users(id)` |
+| `venue_bookings_cancelled_by_fkey` | `venue_bookings.cancelled_by` → `app_users.id` | 0..1 | 0..* | `FOREIGN KEY (cancelled_by) REFERENCES app_users(id)` |
+| `venue_bookings_decided_by_fkey` | `venue_bookings.decided_by` → `app_users.id` | 0..1 | 0..* | `FOREIGN KEY (decided_by) REFERENCES app_users(id)` |
+| `venue_bookings_event_request_id_fkey` | `venue_bookings.event_request_id` → `event_requests.id` | 1 | 0..* | `FOREIGN KEY (event_request_id) REFERENCES event_requests(id)` |
+| `venue_bookings_held_by_fkey` | `venue_bookings.held_by` → `app_users.id` | 0..1 | 0..* | `FOREIGN KEY (held_by) REFERENCES app_users(id)` |
+| `venue_bookings_replaces_booking_id_fkey` | `venue_bookings.replaces_booking_id` → `venue_bookings.id` | 0..1 | 0..* | `FOREIGN KEY (replaces_booking_id) REFERENCES venue_bookings(id)` |
+| `venue_bookings_requested_by_fkey` | `venue_bookings.requested_by` → `app_users.id` | 1 | 0..* | `FOREIGN KEY (requested_by) REFERENCES app_users(id)` |
+| `venue_bookings_venue_id_fkey` | `venue_bookings.venue_id` → `venues.id` | 1 | 0..* | `FOREIGN KEY (venue_id) REFERENCES venues(id)` |
+| `venue_outage_impacts_recorded_by_fkey` | `venue_outage_impacts.recorded_by` → `app_users.id` | 0..1 | 0..* | `FOREIGN KEY (recorded_by) REFERENCES app_users(id)` |
+| `venue_outage_impacts_unavailability_id_fkey` | `venue_outage_impacts.unavailability_id` → `venue_unavailability.id` | 0..1 | 0..* | `FOREIGN KEY (unavailability_id) REFERENCES venue_unavailability(id) ON DELETE SET NULL` |
+| `venue_outage_impacts_venue_booking_id_fkey` | `venue_outage_impacts.venue_booking_id` → `venue_bookings.id` | 1 | 0..* | `FOREIGN KEY (venue_booking_id) REFERENCES venue_bookings(id)` |
+| `venue_outage_impacts_venue_id_fkey` | `venue_outage_impacts.venue_id` → `venues.id` | 1 | 0..* | `FOREIGN KEY (venue_id) REFERENCES venues(id)` |
+| `venue_unavailability_created_by_fkey` | `venue_unavailability.created_by` → `app_users.id` | 0..1 | 0..* | `FOREIGN KEY (created_by) REFERENCES app_users(id)` |
+| `venue_unavailability_venue_id_fkey` | `venue_unavailability.venue_id` → `venues.id` | 1 | 0..* | `FOREIGN KEY (venue_id) REFERENCES venues(id) ON DELETE CASCADE` |
+
+## Other constraints, indexes, view and triggers
+
+The catalog is the authority for the final migrated schema; retained migrations are immutable source history. All 169 constraints, 62 indexes, the `venue_booking_intervals` view and 26 triggers are included in [schema.json](scrum/sprint-03/evidence/design-audit-20261106/schema.json). Unique partial indexes impose workflow rules beyond FK cardinality (for example, active assignments and pending changes); they do not make every historical row one-to-one.
+
+### Unique and check constraints
+
+| Table | Constraint | Definition |
+| --- | --- | --- |
+| `app_users` | `app_users_role_check` | `CHECK (role = ANY (ARRAY['EVENT_ORGANISER'::text, 'EVENT_COORDINATOR'::text, 'EVENT_COORDINATOR_LEAD'::text, 'VENUE_STAFF'::text, 'TECHNICAL_SUPPORT_STAFF'::text, 'ATTENDEE'::text, 'SAFETY_OFFICER'::text]))` |
+| `coordinator_assignments` | `coordinator_assignments_check` | `CHECK (unassigned_at IS NULL OR unassigned_at >= assigned_at)` |
+| `coordinator_assignments` | `coordinator_assignments_method_actor_check` | `CHECK (assignment_method = 'MANUAL'::text AND assigned_by IS NOT NULL OR assignment_method = 'AUTOMATIC'::text AND assigned_by IS NULL)` |
+| `equipment_requests` | `equipment_release_metadata` | `CHECK (released_at IS NULL AND released_by IS NULL AND release_reason IS NULL AND release_cause IS NULL OR status = 'CANCELLED'::text AND released_at IS NOT NULL AND release_reason IS NOT NULL AND length(TRIM(BOTH FROM release_reason)) > 0 AND release_cause IS NOT NULL AND (release_cause = ANY (ARRAY['MANUAL_CANCELLATION'::text, 'EVENT_CANCELLED'::text, 'EVENT_COMPLETED'::text])) AND (release_cause <> 'MANUAL_CANCELLATION'::text OR released_by IS NOT NULL))` |
+| `equipment_requests` | `equipment_requests_check` | `CHECK (ends_at > starts_at)` |
+| `equipment_requests` | `equipment_requests_check1` | `CHECK ((status = ANY (ARRAY['RESERVED'::text, 'REJECTED'::text])) = (decided_by IS NOT NULL AND decided_at IS NOT NULL) OR status = 'CANCELLED'::text)` |
+| `equipment_requests` | `equipment_requests_quantity_check` | `CHECK (quantity > 0)` |
+| `equipment_requests` | `equipment_requests_revision_check` | `CHECK (revision > 0)` |
+| `equipment_requests` | `equipment_requests_status_check` | `CHECK (status = ANY (ARRAY['REQUESTED'::text, 'RESERVED'::text, 'REJECTED'::text, 'CANCELLED'::text]))` |
+| `equipment_stock_changes` | `equipment_stock_changes_equipment_type_id_revision_key` | `UNIQUE (equipment_type_id, revision)` |
+| `equipment_stock_changes` | `equipment_stock_changes_new_damaged_quantity_check` | `CHECK (new_damaged_quantity >= 0)` |
+| `equipment_stock_changes` | `equipment_stock_changes_new_maintenance_quantity_check` | `CHECK (new_maintenance_quantity >= 0)` |
+| `equipment_stock_changes` | `equipment_stock_changes_new_total_quantity_check` | `CHECK (new_total_quantity >= 0)` |
+| `equipment_stock_changes` | `equipment_stock_changes_new_within_total` | `CHECK ((new_damaged_quantity::bigint + new_maintenance_quantity::bigint) <= new_total_quantity::bigint)` |
+| `equipment_stock_changes` | `equipment_stock_changes_previous_damaged_quantity_check` | `CHECK (previous_damaged_quantity >= 0)` |
+| `equipment_stock_changes` | `equipment_stock_changes_previous_maintenance_quantity_check` | `CHECK (previous_maintenance_quantity >= 0)` |
+| `equipment_stock_changes` | `equipment_stock_changes_previous_total_quantity_check` | `CHECK (previous_total_quantity >= 0)` |
+| `equipment_stock_changes` | `equipment_stock_changes_reason_check` | `CHECK (length(TRIM(BOTH FROM reason)) > 0 AND length(reason) <= 500)` |
+| `equipment_stock_changes` | `equipment_stock_changes_revision_check` | `CHECK (revision >= 1)` |
+| `equipment_types` | `equipment_damaged_quantity_nonnegative` | `CHECK (damaged_quantity >= 0)` |
+| `equipment_types` | `equipment_maintenance_quantity_nonnegative` | `CHECK (maintenance_quantity >= 0)` |
+| `equipment_types` | `equipment_operational_quantities_within_total` | `CHECK ((damaged_quantity::bigint + maintenance_quantity::bigint) <= total_quantity::bigint)` |
+| `equipment_types` | `equipment_types_name_check` | `CHECK (length(TRIM(BOTH FROM name)) > 0)` |
+| `equipment_types` | `equipment_types_stock_revision_check` | `CHECK (stock_revision >= 0)` |
+| `equipment_types` | `equipment_types_total_quantity_check` | `CHECK (total_quantity >= 0)` |
+| `event_cancellations` | `event_cancellations_affected_equipment_requests_check` | `CHECK (affected_equipment_requests >= 0)` |
+| `event_cancellations` | `event_cancellations_affected_registrations_check` | `CHECK (affected_registrations >= 0)` |
+| `event_cancellations` | `event_cancellations_affected_venue_bookings_check` | `CHECK (affected_venue_bookings >= 0)` |
+| `event_cancellations` | `event_cancellations_reason_check` | `CHECK (length(TRIM(BOTH FROM reason)) > 0)` |
+| `event_change_requests` | `event_change_requests_applied_check` | `CHECK ((status = 'APPROVED'::text) = (applied_revision IS NOT NULL)) NOT VALID` |
+| `event_change_requests` | `event_change_requests_applied_revision_check` | `CHECK (applied_revision >= 2)` |
+| `event_change_requests` | `event_change_requests_base_revision_check` | `CHECK (base_revision >= 1)` |
+| `event_change_requests` | `event_change_requests_cancelled_check` | `CHECK (cancelled_arrangements IS NULL OR jsonb_typeof(cancelled_arrangements) = 'object'::text)` |
+| `event_change_requests` | `event_change_requests_decision_check` | `CHECK ((status = 'PENDING'::text) = (decided_at IS NULL) AND (decided_at IS NULL) = (decided_by IS NULL)) NOT VALID` |
+| `event_change_requests` | `event_change_requests_previous_check` | `CHECK (jsonb_typeof(previous) = 'object'::text)` |
+| `event_change_requests` | `event_change_requests_proposed_changes_check` | `CHECK (jsonb_typeof(proposed_changes) = 'object'::text AND proposed_changes <> '{}'::jsonb)` |
+| `event_change_requests` | `event_change_requests_reason_text_check` | `CHECK (reason IS NULL OR length(TRIM(BOTH FROM reason)) > 0)` |
+| `event_change_requests` | `event_change_requests_rejection_reason_check` | `CHECK (status <> 'REJECTED'::text OR length(TRIM(BOTH FROM COALESCE(decision_reason, ''::text))) > 0)` |
+| `event_change_requests` | `event_change_requests_status_check` | `CHECK (status = ANY (ARRAY['PENDING'::text, 'APPROVED'::text, 'REJECTED'::text, 'WITHDRAWN'::text]))` |
+| `event_clarifications` | `event_clarifications_message_check` | `CHECK (length(TRIM(BOTH FROM message)) > 0)` |
+| `event_registrations` | `event_registrations_cancelled_at_check` | `CHECK ((status = 'CANCELLED'::text) = (cancellation_outcome_at IS NOT NULL))` |
+| `event_registrations` | `event_registrations_check` | `CHECK ((status = 'WITHDRAWN'::text) = (withdrawn_at IS NOT NULL))` |
+| `event_registrations` | `event_registrations_event_request_id_attendee_id_key` | `UNIQUE (event_request_id, attendee_id)` |
+| `event_registrations` | `event_registrations_outcome_version_check` | `CHECK (outcome_version > 0)` |
+| `event_registrations` | `event_registrations_status_check` | `CHECK (status = ANY (ARRAY['REGISTERED'::text, 'WITHDRAWN'::text, 'CANCELLED'::text]))` |
+| `event_request_edits` | `event_request_edits_changes_check` | `CHECK (jsonb_typeof(changes) = 'object'::text AND changes <> '{}'::jsonb)` |
+| `event_request_edits` | `event_request_edits_editor_role_check` | `CHECK (editor_role = ANY (ARRAY['EVENT_ORGANISER'::text, 'EVENT_COORDINATOR'::text]))` |
+| `event_request_edits` | `event_request_edits_event_request_id_revision_key` | `UNIQUE (event_request_id, revision)` |
+| `event_request_edits` | `event_request_edits_revision_check` | `CHECK (revision >= 2)` |
+| `event_requests` | `event_requests_equipment_plan_status_check` | `CHECK (equipment_plan_status = ANY (ARRAY['REQUIRED'::text, 'NOT_REQUIRED'::text]))` |
+| `event_requests` | `event_requests_expected_attendance_check` | `CHECK (expected_attendance >= 0)` |
+| `event_requests` | `event_requests_preparation_check` | `CHECK ((preparation_started_at IS NULL) = (preparation_started_by IS NULL) AND (preparation_started_at IS NULL) = (preparation_safety_review_id IS NULL))` |
+| `event_requests` | `event_requests_registration_capacity_check` | `CHECK (registration_capacity >= 0)` |
+| `event_requests` | `event_requests_revision_check` | `CHECK (revision >= 1)` |
+| `event_requests` | `event_requests_status_check` | `CHECK (status = ANY (ARRAY['DRAFT'::text, 'SUBMITTED'::text, 'UNDER_REVIEW'::text, 'CLARIFICATION_REQUESTED'::text, 'APPROVED'::text, 'REJECTED'::text, 'CONFIRMED'::text, 'CANCELLED'::text, 'COMPLETED'::text]))` |
+| `event_reviews` | `event_reviews_decision_check` | `CHECK (decision = ANY (ARRAY['APPROVED'::text, 'REJECTED'::text]))` |
+| `notifications` | `notifications_dedupe_key_check` | `CHECK (dedupe_key IS NULL OR length(TRIM(BOTH FROM dedupe_key)) > 0)` |
+| `notifications` | `notifications_title_check` | `CHECK (length(TRIM(BOTH FROM title)) > 0)` |
+| `notifications` | `notifications_type_check` | `CHECK (length(TRIM(BOTH FROM type)) > 0)` |
+| `safety_review_change_baselines` | `safety_review_change_baselines_technical_fingerprint_check` | `CHECK (technical_fingerprint ~ '^[0-9a-f]{32}$'::text)` |
+| `safety_review_change_baselines` | `safety_review_change_baselines_venue_fingerprint_check` | `CHECK (venue_fingerprint ~ '^[0-9a-f]{32}$'::text)` |
+| `safety_review_context_baselines` | `safety_review_context_baselines_context_fingerprint_check` | `CHECK (context_fingerprint ~ '^[0-9a-f]{32}$'::text)` |
+| `safety_reviews` | `safety_reviews_arrangement_fingerprint_check` | `CHECK (length(arrangement_fingerprint) = 32)` |
+| `safety_reviews` | `safety_reviews_check` | `CHECK ((status = 'PENDING'::text) = (decided_at IS NULL) AND (decided_at IS NULL) = (decided_by IS NULL))` |
+| `safety_reviews` | `safety_reviews_check1` | `CHECK ((status = ANY (ARRAY['PENDING'::text, 'APPROVED'::text])) OR decision_notes IS NOT NULL)` |
+| `safety_reviews` | `safety_reviews_check2` | `CHECK ((status = 'CHANGES_REQUESTED'::text) = (requested_areas IS NOT NULL))` |
+| `safety_reviews` | `safety_reviews_crowd_movement_check` | `CHECK (crowd_movement IS NULL OR length(TRIM(BOTH FROM crowd_movement)) >= 1 AND length(TRIM(BOTH FROM crowd_movement)) <= 2000)` |
+| `safety_reviews` | `safety_reviews_decision_notes_check` | `CHECK (decision_notes IS NULL OR length(TRIM(BOTH FROM decision_notes)) >= 1 AND length(TRIM(BOTH FROM decision_notes)) <= 2000)` |
+| `safety_reviews` | `safety_reviews_emergency_access_check` | `CHECK (emergency_access IS NULL OR length(TRIM(BOTH FROM emergency_access)) >= 1 AND length(TRIM(BOTH FROM emergency_access)) <= 2000)` |
+| `safety_reviews` | `safety_reviews_equipment_placement_check` | `CHECK (equipment_placement IS NULL OR length(TRIM(BOTH FROM equipment_placement)) >= 1 AND length(TRIM(BOTH FROM equipment_placement)) <= 2000)` |
+| `safety_reviews` | `safety_reviews_event_request_id_round_key` | `UNIQUE (event_request_id, round)` |
+| `safety_reviews` | `safety_reviews_requested_areas_check` | `CHECK (requested_areas IS NULL OR cardinality(requested_areas) > 0 AND requested_areas <@ ARRAY['VENUE'::text, 'TECHNICAL'::text])` |
+| `safety_reviews` | `safety_reviews_round_check` | `CHECK (round > 0)` |
+| `safety_reviews` | `safety_reviews_status_check` | `CHECK (status = ANY (ARRAY['PENDING'::text, 'APPROVED'::text, 'REJECTED'::text, 'CHANGES_REQUESTED'::text]))` |
+| `venue_bookings` | `venue_bookings_cancellation_check` | `CHECK ((cancelled_at IS NULL) = (cancelled_by IS NULL) AND (cancelled_at IS NULL OR length(TRIM(BOTH FROM cancellation_reason)) > 0))` |
+| `venue_bookings` | `venue_bookings_check` | `CHECK (ends_at > starts_at)` |
+| `venue_bookings` | `venue_bookings_check1` | `CHECK ((status = ANY (ARRAY['APPROVED'::text, 'REJECTED'::text])) = (decided_by IS NOT NULL AND decided_at IS NOT NULL) OR status = 'CANCELLED'::text)` |
+| `venue_bookings` | `venue_bookings_expired_check` | `CHECK ((status = 'EXPIRED'::text) = (expired_at IS NOT NULL) AND (status <> 'EXPIRED'::text OR hold_expires_at IS NOT NULL))` |
+| `venue_bookings` | `venue_bookings_held_has_deadline_check` | `CHECK (status <> 'HELD'::text OR hold_expires_at IS NOT NULL)` |
+| `venue_bookings` | `venue_bookings_hold_fields_check` | `CHECK ((hold_expires_at IS NULL) = (held_by IS NULL) AND (held_by IS NULL) = (held_at IS NULL))` |
+| `venue_bookings` | `venue_bookings_status_check` | `CHECK (status = ANY (ARRAY['PENDING'::text, 'HELD'::text, 'APPROVED'::text, 'REJECTED'::text, 'CANCELLED'::text, 'EXPIRED'::text]))` |
+| `venue_outage_impacts` | `venue_outage_impacts_check` | `CHECK (outage_ends_at > outage_starts_at)` |
+| `venue_outage_impacts` | `venue_outage_impacts_outage_reason_check` | `CHECK (length(TRIM(BOTH FROM outage_reason)) > 0)` |
+| `venue_outage_impacts` | `venue_outage_impacts_status_check` | `CHECK (status = ANY (ARRAY['RECOVERY_REQUIRED'::text, 'RESOLVED'::text, 'CLEARED'::text]))` |
+| `venues` | `venues_capacity_check` | `CHECK (capacity > 0)` |
+| `venues` | `venues_check` | `CHECK (opens_at IS NULL OR closes_at IS NULL OR closes_at > opens_at)` |
+| `venues` | `venues_name_check` | `CHECK (length(TRIM(BOTH FROM name)) > 0)` |
+| `venues` | `venues_setup_minutes_check` | `CHECK (setup_minutes >= 0 AND setup_minutes <= 1440)` |
+| `venues` | `venues_turnaround_minutes_check` | `CHECK (turnaround_minutes >= 0 AND turnaround_minutes <= 1440)` |
+| `venue_unavailability` | `venue_unavailability_check` | `CHECK (ends_at > starts_at)` |
+
+### Trigger inventory
+
+| Table | Trigger | Function |
+| --- | --- | --- |
+| `equipment_requests` | `equipment_requests_overbooking` | `prevent_equipment_overbooking` |
+| `equipment_requests` | `equipment_requests_preserve_reservation` | `protect_equipment_reservation_history` |
+| `equipment_requests` | `invalidate_safety_equipment` | `invalidate_safety_on_arrangement_change` |
+| `equipment_stock_changes` | `equipment_stock_changes_append_only` | `equipment_stock_changes_append_only` |
+| `equipment_types` | `invalidate_safety_stock` | `invalidate_safety_on_arrangement_change` |
+| `equipment_types` | `notify_equipment_shortfall` | `notify_equipment_shortfall` |
+| `event_registrations` | `event_registrations_capacity` | `prevent_registration_overflow` |
+| `event_registrations` | `notify_registration_outcome` | `notify_registration_outcome` |
+| `event_registrations` | `registration_outcome_version` | `registration_outcome_version` |
+| `event_requests` | `event_requests_advance_revision` | `advance_event_request_revision` |
+| `event_requests` | `event_requests_release_equipment` | `release_terminal_event_equipment` |
+| `event_requests` | `event_requests_status_insert` | `record_event_status_change` |
+| `event_requests` | `event_requests_status_update` | `record_event_status_change` |
+| `event_requests` | `invalidate_safety_event` | `invalidate_safety_on_arrangement_change` |
+| `event_requests` | `notify_final_event_outcome` | `notify_final_event_outcome` |
+| `safety_approval_invalidations` | `protect_safety_invalidation_evidence` | `protect_safety_invalidation_evidence` |
+| `safety_review_change_baselines` | `protect_safety_change_baseline` | `protect_safety_change_baseline` |
+| `safety_review_context_baselines` | `protect_safety_context_baseline` | `protect_safety_invalidation_evidence` |
+| `safety_reviews` | `capture_safety_review_context` | `capture_safety_review_context` |
+| `safety_reviews` | `protect_decided_safety_review` | `protect_decided_safety_review` |
+| `venue_bookings` | `invalidate_safety_booking` | `invalidate_safety_on_arrangement_change` |
+| `venue_bookings` | `venue_bookings_conflict` | `prevent_venue_booking_conflict` |
+| `venue_outage_impacts` | `invalidate_safety_outage` | `invalidate_safety_on_arrangement_change` |
+| `venues` | `invalidate_safety_venue` | `invalidate_safety_on_arrangement_change` |
+| `venue_unavailability` | `invalidate_safety_unavailability` | `invalidate_safety_on_unavailability` |
+| `venue_unavailability` | `venue_blocks_conflict` | `prevent_blocking_occupied_booking` |
+
+## Runtime meaning
+
+- Venue occupied periods include setup and turnaround buffers. Live HELD rows occupy only until the database-clock deadline; APPROVED rows occupy their interval. Outages retain separate impact history and never silently reject or move approved bookings. Replacement is a nullable self-FK, not a new event.
+- Equipment stock is pooled: operational quantity is total minus damaged and maintenance (zero for inactive types). Reservations are saved request states, not a decrementing stock counter. Release fields preserve the original allocation and its later cancellation/completion.
+- Confirmation and completion use `event_requests.status` and `event_status_history`; there are no separate confirmation/completion tables. Cancellation has its own one-per-event audit record. Registrations retain withdrawal/cancellation outcomes and an outcome version for notification deduplication.
+- Safety review rounds and decisions are retained. Migration 022 records requested-area baselines; 023 records supplemental context baselines and permanent approval invalidations. Restoring an old arrangement does not revive a latched invalid approval. Preparation on the event refers to the specific safety round.
+- Notifications are in-app persisted records. Application notification writers use the caller’s transaction; registration, final confirmation and stock-shortfall notices also have explicit SQL-trigger owners. Hold expiry notices are written inside `expire_venue_holds()`. No email transport is implied.
+
+## Earlier data-model notes (historical)
+
+<details>
+<summary>Preserved notes from before the 6 November update; current schema above takes precedence</summary>
+
 # ConnectSphere Database Diagram
 
 **Current additive schema:** migrations 001–023. The dated sections retain their rollout checkpoints; [migration 023](#1-november-2026--migration-023-permanent-safety-invalidation) adds persistent invalidation and supplemental context. Shared 023 application and its focused connected retests were verified on 1 November 2026; see the [current rollout checkpoint](../database/README.md#1-november-2026--shared-023-rollout-and-connected-retests).
@@ -512,3 +1316,6 @@ erDiagram
 Existing-round supplemental baselines start at upgrade time. Backfill records detectable original-fingerprint mismatches and current buffered operational-block overlaps, including blocks without outage-impact rows. Changes already restored before 023 cannot be inferred. The initial automated repair changed only disposable schemas; the subsequent shared application is recorded below. Use the [023 procedure](../database/README.md#kan-84-persistent-invalidation--migration-023-1-november-2026) for databases not yet upgraded before running the matching safety service.
 
 **1 November 2026 — shared schema verification:** 023 was applied at 23:26:05 Singapore time; the repeat runner applied nothing. Read-only snapshots confirmed unchanged hashes for 30 existing review rows and 10 preparation records, 30 new supplemental baselines, one detectable invalidation and RLS on both new tables. [Migration evidence](scrum/sprint-04/evidence/freeze-candidate-20261101/migration-after.json). The subsequent connected `MAN-20261101-03` test verified that exact buffer restoration retains invalidation and that a fresh approved round permits preparation to resume; [database comparisons](testing/evidence/MAN-20261101-03/safety-db-recovery-comparison.json) preserve the original history and new round separately. The diagram structure is unchanged by this rollout checkpoint.
+
+
+</details>

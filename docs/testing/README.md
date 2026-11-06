@@ -1,525 +1,235 @@
-# Testing and evidence
+# Testing and requirements traceability
 
-## Current release checkpoint — 1 November 2026
+ConnectSphere must keep event decisions, bookings and notifications consistent across roles. A refusal matters as much as a successful request. If two people claim the last place, or a venue change invalidates an approval, a correct response must agree with the stored state and the notices sent to users.
 
-[MAN-20261101-01](test-evidence.md) records the real local-app walkthrough: R01–R23 passed within their recorded scope; R24's browser checks completed, while the release/code-freeze gate remains open (**23 of 24 groups complete**). Later MAN-20261101-02 reproduced three defects; those failures and the automated repairs remain separate. The complete release case TC-06-32 is not a Pass merely because individual steps have observations. TC-20-431 has its own scoped Pass; that does not pass all KAN-80 scenarios.
+Folder 3 covers all **20 core features and six customer changes**. Its 624 reusable specifications include 604 detailed cases and 20 historical feature summaries. The connected walkthrough records scoped results for R01–R23. Tristan confirms that the team ran the final end-to-end test, including R24, before the freeze and it passed. Formal acceptance of the frozen release remains with WS6. [Requirements and results](traceability-review.md) · [final test report](test-evidence.md#report-prefreeze-r24--functional-release-walkthrough) · [release decision](../submission/release-record.md#release-decision)
 
-**Final-candidate follow-up, 1 November:** shared migration **023 is applied**, with its checksum, unchanged original review/preparation records and repeat-run no-op verified. **MAN-20261101-03** passes the three connected repair retests (**TC-06-446, TC-06-447, TC-15-108**) and real-authentication smoke **TC-01-213**. The prior failures and Not executed preparation rows remain historical. **AUTO-20261101-FREEZE-CANDIDATE** passes all local checks, coverage gates, 2,868 combined backend/database tests and two full 253-case browser runs (two workers, zero retries). Independent teammate review, exact-commit remote CI and the team's release/code-freeze decision remain pending. R24 is still a release gate, not automatically passed by these scoped checks. The dated sections below retain earlier checkpoints; their pending/planned/hosted wording does not override this checkpoint or the local-acceptance policy.
+**The full configured automated suites passed locally on 1 November before the 23:59 SGT code freeze.** The run covered the frontend, backend, PostgreSQL integration, browser-environment guards and Chromium tests. CI repeated the checks on the frozen merge and finished at 00:08:53 SGT on 2 November. These run totals count executable tests. The case register below counts written scenarios with individually recorded results, including manual checks. [Freeze run and suite counts](#latest-retained-automated-results) · [original run report](../scrum/sprint-04/evidence/freeze-candidate-20261101/summary.json)
 
-## Coverage gates and remaining exceptions — 1 November 2026
+At the **31 October Sprint 4 review**, the team reports that all **75 manual cases** on the identified checklist passed. Ryan reported the result at review and Ernest confirmed it in the retrospective. Tristan subsequently identified the roster and confirmed that each story owner performed their cases. The register now lists the individual results, including the three manual end-to-end procedures. The demonstrated build and case-level captures remain unrecorded. [75 cases and executors](sprint-4-manual-review.md) · [Meeting accounts and recording](../scrum/review-testing.md)
 
-The Week 4 rubric requires traceable normal, boundary, conflict and failure scenarios, with 100% coverage unless an exception is explained. Coverage measures executed source paths, not requirements acceptance, assertion quality or protection against all mutants. These thresholds are regression floors, **not a declaration that 95% satisfies a 100% target**. See the [hardening evidence](test-evidence.md#auto-20261101-test-hardening--coverage-browser-isolation-and-documentation), latest [frontend gaps](../scrum/sprint-04/evidence/freeze-candidate-20261101/frontend-gaps.json) and [combined backend gaps](../scrum/sprint-04/evidence/freeze-candidate-20261101/backend-combined-gaps.json). Latest statements/branches/functions/lines are **96.56/93.41/98.54/98.92% frontend**, **90.62/89.98/91.02/90.75% backend isolated/HTTP**, and **99.24/97.88/99.72/99.46% backend combined with PostgreSQL**.
+**Of 604 detailed cases, 523 have a recorded outcome.** The other 81 comprise 69 active cases with partial evidence and 12 superseded specifications. The 523 outcomes are 521 Pass, one Fail and one Blocked. [Coverage and retest rules](coverage-results.md) · [Case-by-case evidence](pre-freeze-case-audit.md) · [Additional manual results](pre-freeze-manual-results.md)
 
-| Measurement | Included source / boundary | Enforced statements / branches / functions / lines |
+## Read in this order
+
+| To assess | Open | What it contains |
 | --- | --- | --- |
-| Frontend workspace coverage | All executable `src/**/*.ts` and `.vue`, including auth/router/shared components; excludes tests, setup, test-only API fixture and declarations. | 95 / 92 / 97 / 98%; session, Supabase client, LoginPage, router and AppShell each 100% on all four metrics. |
-| Backend workspace coverage | All backend source except process entry `server.ts`, including runtime constants in `types.ts`; isolated rules and controlled HTTP/service boundaries plus local JWKS. | 90 / 89 / 91 / 90%; Supabase verifier and pool each 100% on all four metrics. |
-| `npm run test:coverage:backend` | Same backend source in one combined run of backend tests and every real PostgreSQL integration suite. Requires dedicated `TEST_DATABASE_URL`. | 99 / 97 / 99 / 99%. Database-path coverage is measured, not inferred from a suite count. |
+| Test design and quality | [Course methods and worked cases](course-case-design.md) · [complete case catalogue](case-catalogue/README.md) | Week 4 fields, concrete inputs, expected results and dated attempts for each case where available. |
+| Scope and outcomes | [Traceability review](traceability-review.md) · [coverage and results](coverage-results.md) | All 20 features and six changes, relevant AC versions, case-to-run links, status counts and denominators. |
+| Which preparation entries already had supporting runs? | [Pre-freeze audit of 115 cases](pre-freeze-case-audit.md) · [filterable list](pre-freeze-case-audit.csv) | Each case identifies its scenario, the strongest retained evidence, the run or team report that establishes a Pass, or the part still unverified. |
+| Testing during the project | [Testing across four sprints](testing-across-sprints.md) | Named meeting discussions and how early defects changed the team's test selection, handoffs and later regression checks. |
+| Supporting evidence | [Evidence index](evidence-index.md) | Local and CI results, screenshots and observations, original failures, repaired-candidate results and the R24 decision boundary. |
 
-Backend `server.ts` is exercised by the browser harness as a long-lived subprocess; that subprocess coverage is not merged into V8. Frontend `main.ts`, `app/App.vue` and unused `FeaturePlaceholder.vue` remain included at their measured values, even though bootstrap/composition is exercised by the browser instead of component tests. The planning-panel forwarding functions now have 100% function/line coverage. Remaining gaps include venue-block access/catalogue failure, draft uncertain-submit feedback, form error branches, defensive service errors and optional-value rendering. These are disclosed untested paths, not all proven unreachable or impossible to test. The linked file-level reports identify exact locations, testable gaps and an instrumentation anomaly; exceptions do not accept untested criteria.
+## Test levels and environments
 
-SQL/trigger statement coverage, provider implementation coverage, cross-tab session ordering, mutation score and load/performance measurements are **Not recorded**. Real PostgreSQL tests assert locking, constraints, rollback and races. JWT tests use real signatures and loopback JWKS. Most browser scenarios substitute API/auth responses. Neither proves connected Supabase acceptance.
+The tests use different environments because each can answer a different question. Functional describes the behaviour checked. Manual and automated describe how a check was performed. A regression test repeats a previously relevant check after a change.
 
-CI runs `check` (types, workspace suites, browser-environment guards, builds), workspace coverage, migrate/seed on PostgreSQL 17, combined backend/database coverage, then Playwright. Reports upload even on failure for 14 days; retain release evidence in the repo before expiry. Browser tests own ports 4173/4311, never reuse developer servers, build once, run two workers and **zero retries**. The launcher refuses shared/non-loopback databases. Coverage failures fail CI; required-check enforcement is a separate GitHub setting, unchanged here.
+| Question | Method and environment | What to inspect |
+| --- | --- | --- |
+| Does one validation, calculation or state update follow its rule? | Vitest isolated backend and frontend component tests. Controlled inputs and test doubles permit invalid data, delayed responses and error branches to be exercised repeatably. | Compare expected state or messages with the observed result. For example, the saved-draft component checks the order and deduplication of field errors. [Draft example](course-case-design.md#selecting-inputs-and-checking-outcomes) |
+| Does a request reach the right handler with the right permissions? | HTTP/router and component integration exercise middleware, parsing and service contracts. A substituted identity or repository narrows what the result establishes. | For a refusal, check both the response and the absence of an unintended write. Where persistence matters, follow the case into the database tests. [Cases by feature](case-catalogue/README.md) |
+| Do competing writes preserve the business rule? | Isolated PostgreSQL 17 with migrations and synthetic fixtures exercises transactions, locks, constraints and rollback. Two concurrent requests can succeed individually in a unit test and still conflict when they share one stock pool. | Compare committed reservations and notifications after both transactions finish. [Equipment reservations](../../database/tests/equipment/reservations.integration.test.ts) · [combined results](../scrum/sprint-04/evidence/freeze-candidate-20261101/backend-combined.txt) |
+| Does the UI navigate, show the right feedback and recover? | Automated Chromium integration exercises navigation and rendering. Many cases substitute API or authentication responses to control timing and failures. | The two local runs repeated the same 253 cases. Real sign-in and persisted state have separate evidence. [Browser reports and boundaries](evidence-index.md#from-a-question-to-the-record) |
+| Does the workflow hold across real roles and saved data? | Connected manual checks used the local frontend, running API, real Supabase authentication and shared development database. Operators reloaded records under different roles. Independent HTTP probes and read-only database comparisons supplied additional observations. | The run narratives distinguish direct observations from results reported by teammates. They record fixture changes and restoration. [Connected failures and retests](evidence-index.md#follow-a-defect-through-retest) |
 
-## Test level, execution method and purpose
+The course's testing pyramid guided the interpretation of these levels. Short deterministic checks isolate the cause of a failure. Database tests check consequences across components. Connected runs check that the resulting workflow is usable under real role and session boundaries. The Week 4 case-design examples and the Week 6 and 9 worked examples are identified in the [course methods guide](course-case-design.md#course-sources-and-the-submitted-format).
 
-`planned_level` uses `unit`, `integration`, `e2e` or `static analysis`, separated by semicolons for genuinely distinct variants. **Manual/automated is the method; regression is the purpose.** These qualifiers remain in notes and execution records. The [classification audit](../scrum/sprint-04/evidence/test-hardening-20261101/test-level-classification.json) retains prior labels and boundary rationale for 337 corrections; existing IDs, steps, data and outcomes were preserved.
+## Following a requirement to its result
 
-Browser tests with substituted API responses are frontend integration, despite the `e2e` command/directory name. Direct API/database permission or concurrency checks are integration, even if issued manually in DevTools. The complete real-authentication application walkthrough is **manual E2E acceptance testing**. Schema/document inspection is static analysis. Test cards can specify any level; link meaningful AC scenarios to executable tests instead of duplicating every low-level assertion as a manual case.
+**CR-6, Safety Officer review.** KAN-84-AC9 requires a fresh safety review after a relevant arrangement change. TC-06-446 starts with a confirmed event and approved Round 3, changes the setup buffer from 15 to 20 minutes and back to 15, then asks whether preparation can continue. The first connected attempt failed because restoring the values brought the old approval back. On the repaired build, the original decision remained in the history, preparation stayed blocked, and a new Round 4 decision enabled it. This traces one customer change through its AC, scenario, implementation, failure and observed recovery. [Change register](../requirements/change-requests.md) · [case and both attempts](case-catalogue/cf-06.md#tc-06-446) · [safety service](../../backend/src/modules/safety/service.ts) · [database integration test](../../database/tests/safety/safety-reviews.integration.test.ts) · [before and after evidence](evidence-index.md#follow-a-defect-through-retest)
 
-## Full Sprints 1 to 4 manual E2E release walkthrough
+For the remaining features and changes, the matrix identifies a concrete route into the cases and executions. The preserved CSV records use repository-relative source paths, which start in Folder 6 of the package. [All requirements](traceability-review.md) · [trace register](../requirements/traceability.csv)
 
-Use the [complete team walkthrough](release-e2e-walkthrough.md) or send its [Word copy](release-e2e-walkthrough.docx). It expands the earlier Sprints 1–3 journey into 24 ordered release checks, with role accounts, concrete fixtures, expected outcomes, separate failure branches, a 20-feature/six-change coverage map and a separate results form. It is **E2E acceptance/regression testing with a manual execution method** using the real local frontend/API/authentication/database and expiry job. Recorded observations and outstanding retests are summarized in the current checkpoint above; a fresh run needs its own execution record.
+## Latest retained automated results
 
-TC-14-20 retains the original connected venue journey; TC-06-32 / S4-T16 is the full release journey. The guide includes the 30 October KAN-80/82/84 corrections, so use a candidate containing those changes. Referenced narrower cards and controlled automated tests retain their own scopes; completing one related step is not a Pass for all of them. Append actual results to the existing execution register and evidence narrative. The Word file is a shareable export, not a separate result record or replacement for test specifications.
+| Run | Result and build | Source |
+| --- | --- | --- |
+| Local workspace checks, 1 November | 1,363 frontend tests across 63 files, 2,032 backend tests across 80 files, two browser-environment guards, type checks and builds passed. Local candidate was base `034a631` plus the recorded source manifest. | [Workspace log](../scrum/sprint-04/evidence/freeze-candidate-20261101/check.txt) · [manifest](../scrum/sprint-04/evidence/freeze-candidate-20261101/summary.json) |
+| Local combined backend/database, 1 November | 2,868 tests across 123 files, including the 2,032 backend tests and 836 additional PostgreSQL tests across 43 files. | [Combined log](../scrum/sprint-04/evidence/freeze-candidate-20261101/backend-combined.txt) |
+| Local browser runs, 1 November | 253/253 passed on each of two runs, with two workers, zero retries, zero skips and zero unexpected or flaky results in those runs. Earlier parallel navigation timeout failures are preserved. | [First](../scrum/sprint-04/evidence/freeze-candidate-20261101/browser-1.json) · [second](../scrum/sprint-04/evidence/freeze-candidate-20261101/browser-2.json) · [earlier attempts](test-evidence.md#auto-20261101-release-regressions--targeted-repairs-1-november-2026) |
+| Candidate and merged-main CI | PR head `0384a3c` was tested at merge candidate `bb198fe`. Main CI tested the frozen merge `fb6d8d9` and passed the builds, coverage gates, migration/seed, combined tests and 253 browser cases. Main verification completed on 2 November at 00:08:53 SGT. The retained comparison matched 456 source hashes. | [Candidate record](../scrum/sprint-04/evidence/freeze-candidate-20261101/ci-199.json) · [merged-main record and log](evidence-index.md#from-a-question-to-the-record) |
 
-**Current acceptance policy and repair result — 25 October 2026.** Application deployment is not required; use the complete local frontend/API with real authentication and the agreed Supabase development database. The latest closeout fixes were manually tested and reported working in [REPORT-20261025-CLOSEOUT-RETEST](test-evidence.md#25-october-2026--closeout-retest-confirmation). The follow-up smoke check is complete as a reported Pass. Earlier dated hosted-only requirements and pending outcomes below are retained history, superseded for current acceptance by the [DoD amendment](../scrum/definition-of-done.md#local-acceptance-policy--25-october-2026).
+## Measured coverage and limitations
 
-**Arvin verification readback — 25 October 2026.** KAN-34 and KAN-78 are integrated in main `96a0d10`; [AUTO-20261025-ARVIN-01](test-evidence.md#25-october-2026--arvin-kan-78-and-kan-34-documentation-reconciliation) imports existing current-main CI without a new local/hosted run. KAN-78 uses migration 012 after KAN-77 settings in 009, with the later hold extension in 013. The dated 21 October prerequisites below retain that earlier checkpoint. The [25 October hosted record](test-evidence.md#25-october-2026--kan-60-and-kan-83-manual-hosted-runs) reports migrations 001–013 applied, but does not complete S3-T06 or S3-T19. Use the scoped planned walkthroughs at the end of this guide and retain actual execution separately.
+The coverage tool counts instrumented source statements, branches, functions and lines. The table gives its reported percentages and the raw line denominator for each run. Requirement mapping, case execution and pass rates are separate measures in the [coverage and results report](coverage-results.md).
 
-**25 October 2026 — original-story manual records.** [Reported manual results](test-evidence.md#25-october-2026--reported-manual-results-for-original-stories) now cover KAN-36/KAN-16 (Sprint 1), KAN-29/KAN-8/original KAN-52 (Sprint 2), and KAN-79/KAN-65 (Sprint 3). The 46 appended executions record reported localhost success, the reported review-day dates and unavailable build/fixture metadata. TC-05-09 covers the local candidate only. Original KAN-52 evidence stays separate from Ernest's revision, and KAN-29 remains a superseded baseline. Older dated pending notes describe their original checkpoints. Current KAN-65/KAN-64 integration is implemented; deployed verification and team acceptance retain their own records.
+| Measured code | Statements | Branches | Functions | Lines | Lines covered / measured |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Frontend, local | 96.56% | 93.41% | 98.54% | 98.92% | 3,685 / 3,725 |
+| Frontend, candidate CI | 96.56% | 93.41% | 98.54% | 98.95% | 3,683 / 3,722 |
+| Backend, unit/HTTP | 90.62% | 89.98% | 91.02% | 90.75% | 2,720 / 2,997 |
+| Backend, combined with PostgreSQL | 99.24% | 97.88% | 99.72% | 99.46% | 2,981 / 2,997 |
 
-**25 October 2026 — Ryan's story records.** [Verification records](test-evidence.md#25-october-2026--ryan-story-verification-records) now distinguish KAN-25 authentication (Sprint 1), original KAN-12 venue search (Sprint 2), and KAN-12/KAN-50 repairs (Sprint 3). `REPORT-20261025-RYAN-S1/S2/S3` record Tristan's report of Ryan's manual passes on the respective 19 September, 3 October and 17 October review dates. Tested builds and environments remain **Not recorded**; these reports do not establish team acceptance. Earlier failed runs and their later automated repairs remain separate evidence.
+The frontend local and CI measurements have different executable-line denominators. Both are preserved, with no averaging. Adding the database suite exercises transaction paths that isolated tests miss. The combined backend still has 16 uncovered lines and 53 uncovered branch arms. [Frontend local](../scrum/sprint-04/evidence/freeze-candidate-20261101/frontend-coverage-summary.json) · [frontend CI](../scrum/sprint-04/evidence/freeze-candidate-20261101/ci-199-frontend-coverage.json) · [backend isolated](../scrum/sprint-04/evidence/freeze-candidate-20261101/backend-unit-coverage-summary.json) · [backend combined](../scrum/sprint-04/evidence/freeze-candidate-20261101/backend-combined-coverage-summary.json)
 
-## Current test-document structure — 21 October 2026
+**Why the measured coverage falls short of 100%.** The local frontend report has 40 uncovered lines and 413 uncovered branch arms, including venue-block access failures, uncertain draft-submit feedback and form validation paths. The backend inventory identifies error handling and rollback paths. Some gaps are practical test candidates, including the explicitly unexecuted draft-submit variant in the design guide. Others reflect what the tools measured: the backend process entry runs as a subprocess whose coverage is outside the combined V8 report. SQL statement coverage, external-provider internals, mutation score and load/performance measurements were not recorded. A passing configurable threshold establishes only that measurement's floor. [Frontend gap inventory](../scrum/sprint-04/evidence/freeze-candidate-20261101/frontend-gaps.json) · [backend gap inventory](../scrum/sprint-04/evidence/freeze-candidate-20261101/backend-combined-gaps.json) · [proposed case](course-case-design.md#where-test-design-can-go-further)
 
-Maintain the test specification once and keep a separate execution record for each run, following the Week 4 **Test Case Template**. The specification says what should happen; the execution records say what was actually observed. Maintain the current records below during development.
+## Connected walkthrough and repair evidence
 
-| Record | Purpose |
+On 1 November the release walkthrough combined earlier team-reported results with real-role browser observations. R01–R23 have scoped Passes. R24's functional access/logout checks also have evidence. A follow-up run exposed three problems: restoring venue settings revived an old safety approval, a pending booking left a stale Ready panel, and a cancelled equipment line displayed its old rejection reason. Later connected checks recorded repaired Passes on those three cases and verified an authentication smoke case. The original failures and their builds remain visible. [Walkthrough sources](evidence-index.md) · [four repaired-candidate checks](test-evidence.md#man-20261101-03--connected-repaired-candidate-acceptance-1-november-2026)
+
+## Current release position
+
+The team accepted 15 stories and 63 SP at the 31 October Sprint 4 review. The frozen merge subsequently passed CI. **TC-06-32 has a team-reported functional Pass**, including R24, before the freeze. The report does not identify the exact time or build. The earlier preparation row remains in its history. **Formal release decision: Not assessed.** The release record carries the outstanding independent review and team decision. [Full-case reconciliation](evidence-index.md#reconciling-the-full-release-case) · [Sprint 4 decision](../scrum/sprint-04/review.md) · [WS6/DOC-603](../submission/release-record.md#release-decision)
+
+## Evidence and historical records
+
+The [specification register](test-cases.csv), [execution register](test-executions.csv), [traceability register](../requirements/traceability.csv) and [run ledger](test-evidence.md) preserve the historical records. The [21 October combined register](archive/test-cases-2026-10-21.csv) and [earlier coverage reports](coverage-reports/README.md) retain the original checkpoints. The [walkthrough](release-e2e-walkthrough.md) and its [Word copy](release-e2e-walkthrough.docx) are reusable procedures. The [evidence index](evidence-index.md) identifies where actual observations were recorded.
+
+## Documentation review and team handover
+
+The 6 November WS3 documentation review checked the course examples, case and execution IDs, requirement versions, retained run logs, native coverage summaries, browser reports and CI metadata. Codex prepared the catalogue, traceability analysis and evidence cross-checks from these sources. [Workstream checklist](../submission/checklist.md#ws3-testing-and-traceability)
+
+| Review record | Status |
 | --- | --- |
-| [test-cases.csv](test-cases.csv) | Specifications with stable case IDs, requirement links, preconditions, steps, data and expected results. No result or run evidence columns. |
-| [test-executions.csv](test-executions.csv) | Case-level results and evidence: one row per case, run and attempt. Unperformed cases have **Not executed** placeholders, which are not test runs. |
-| [test-evidence.md](test-evidence.md) | Run narratives, commands, suite totals, environment details, limitations, cleanup and evidence links. Aggregate suite results remain here when case-level execution cannot be established. |
-| [traceability.csv](../requirements/traceability.csv) | Core feature → story → acceptance criterion → case → relevant automated test file. A file link alone is not evidence that a case passed. |
-| [Archived combined register](archive/test-cases-2026-10-21.csv) | Unchanged snapshot of the earlier specification/result format. Retained as a historical source; do not enter new cases or results here. |
+| Evidence and calculations | Reviewed by Codex, 6 November 2026, using the retained records above. |
+| Different team reviewer, actual date and corrections | Awaiting the team's review under DOC-301. The reviewer can check the build, suite totals, raw coverage denominators and R24 disposition using the [evidence index](evidence-index.md). |
 
-The dated notes under **Reading the case and evidence registers — 17 October 2026** below describe that earlier combined format. References there to result/evidence cells refer to the archived register. Current results belong in `test-executions.csv`.
+<a id="testing-report-and-editing-guide"></a>
+<a id="team-input-needed"></a>
+<a id="editing-specifications-and-results"></a>
+<a id="specification-template"></a>
+<a id="execution-record-template"></a>
+<a id="recording-a-test-run"></a>
+<a id="coverage-required-by-is212"></a>
 
-**21 October combined-build verification:** [S3-E19](../scrum/sprint-03/evidence/README.md) links the [integration evidence](../scrum/sprint-03/evidence/team-integration-2026-10-21.json). `AUTO-20261021-INTEGRATION-01` passed check/coverage: 676 frontend and 1,165 backend tests; frontend statement/branch coverage 94.95%/92.26%, backend 86.31%/89.51%. `AUTO-20261021-INTEGRATION-05` passed 380 isolated PostgreSQL tests; `AUTO-20261021-INTEGRATION-06` passed 147 browser tests with zero retries. Preserve the earlier runs below as dated evidence. These totals cover their recorded automated boundaries; they do not pass every linked specification or establish hosted acceptance.
+## Historical link index
 
-**Historical candidate prerequisites — 19 October snapshot:** the active schema was 001–009. Migration 007 and Lead login were reported successful on 19 October. Migrations [008 (notifications)](../../database/migrations/008_notification_inbox.sql) and [009 (venue buffers)](../../database/migrations/009_venue_buffer_durations.sql) have no recorded shared Supabase application; coordinate both before deploying/testing this combined backend. KAN-64 assignment/handover notifications can now be tested with the guides below, but manual execution remains **Not executed** and the proposed recipient matrix remains **To agree**. KAN-77 settings do not yet alter availability intervals or conflict checks: KAN-78 and KAN-77 AC6 booking re-evaluation/warnings remain incomplete.
+Established links below continue to resolve to the preserved source sections. Their dated pending/hosted guidance describes its original checkpoint; the current release position above takes precedence for this report.
 
-### Specification template
+<details>
+<summary>Earlier checkpoints and story-specific verification guides</summary>
 
-Create a row for each independently verifiable scenario and link all relevant ACs. Reuse stable IDs and existing content; if a legacy scenario lacks a concrete input, record **Not recorded** until it is specified rather than inventing data used by an earlier run.
+<a id="testing-and-evidence"></a>
 
-| Course template field | CSV field | What to record |
-| --- | --- | --- |
-| Test Case ID | `test_case_id` | Stable `TC-<feature>-<case>` ID. |
-| Test Scenario | `scenario_outline` | One concise objective or behaviour. |
-| Pre-conditions | `preconditions` | Required role, application state, fixture setup, dependencies and baseline/build restrictions. |
-| Test Steps | `test_steps` | Ordered actions that another tester can repeat, or an explicit automated test/fixture reference. |
-| Test Data | `test_data` | Concrete synthetic inputs, account aliases, boundary values and fixture identifiers; never passwords or tokens. |
-| Expected Result | `expected_result` | Observable response, UI or saved-state outcome, including what must remain unchanged. |
-| Created By* | `created_by` | Actual author if known; otherwise **Not recorded**. |
-| Date of Creation* | `date_of_creation` | Actual creation date if known; otherwise **Not recorded**. A format migration is not the original creation date. |
-| Traceability and scope | `feature_id`, `acceptance_criterion_ids`, `planned_level`, `specification_notes` | CF/AC links, intended test level, automation/manual method and any historical, superseded or aggregate status. |
+- [Testing and evidence](archive/2026-11-05/README.md#testing-and-evidence)
 
-`*` Author/date fields are optional metadata in the course template. They remain explicit columns here so unknown values are visible. The original standardisation retained `planned_level` wording; the 1 November classification audit above separates level from execution method and scenario purpose while preserving the earlier wording in its audit artifact.
+<a id="current-release-checkpoint--1-november-2026"></a>
 
-### Execution-record template
+- [Current release checkpoint — 1 November 2026](archive/2026-11-05/README.md#current-release-checkpoint--1-november-2026)
 
-Append a record when a case is attempted, including a blocked attempt where a prerequisite prevents completion. Keep earlier failures and add a separate retest; never replace a failed attempt with its later Pass.
+<a id="coverage-gates-and-remaining-exceptions--1-november-2026"></a>
 
-| Course template field | CSV field | What to record |
-| --- | --- | --- |
-| Record and case references | `execution_id`, `test_case_id`, `run_id` | Unique execution row, stable case ID and the actual `AUTO-…`/`MAN-…` run in `test-evidence.md`. Use the ID rules in [AGENTS.md](../../AGENTS.md#62-ids). |
-| Actual Result | `actual_result` | Observed response and persisted/UI state, rather than a copy of the expected result. |
-| Pass/Fail/Not Executed/Blocked | `result` | **Pass**, **Fail**, **Not executed** or **Blocked**. Pass requires evidence for the complete specified case. |
-| Remarks | `remarks` | Failure/defect link, blocked prerequisite, partial scope, retest relationship, exclusions or source limitations. |
-| Executed By* | `executed_by` | Actual executor if known; otherwise **Not recorded**. |
-| Date of Execution* | `date_of_execution` | Actual run date/time if known; otherwise **Not recorded**. Never use a documentation-edit date as a run date. |
-| Build, environment and evidence | `build`, `environment`, `evidence` | Tested commit/build, environment/browser and traceable report, run narrative or artifact. Missing historical metadata is **Not recorded**. |
+- [Coverage gates and remaining exceptions — 1 November 2026](archive/2026-11-05/README.md#coverage-gates-and-remaining-exceptions--1-november-2026)
 
-**Not executed** placeholders are planning records: they have no observed outcome or execution date. Keep them separate from actual attempts when counting runs or calculating pass rates. **Blocked** means a real attempted check could not proceed; name its blocking condition. For a legacy outcome with missing detail, retain the recorded outcome and source, mark missing details **Not recorded**, and do not infer a new execution.
+<a id="test-level-execution-method-and-purpose"></a>
 
-The retained `TC-01`–`TC-20` rows are aggregate feature summaries, not additional individual test runs. They have no execution-register rows: their mixed historical outcomes remain in the archive and dated run narratives. Their summary results are not added to detailed-case pass/fail counts; in particular, the five failing aggregate summaries refer to the same five defects as the detailed audit cases, not five additional failures. Likewise, a passing suite total does not turn every linked case into a Pass. Historical tests stay tied to their historical requirements/builds; current acceptance must use the applicable customer-change criteria.
+- [Test level, execution method and purpose](archive/2026-11-05/README.md#test-level-execution-method-and-purpose)
 
-### Coverage required by IS212
+<a id="full-sprints-1-to-4-manual-e2e-release-walkthrough"></a>
 
-Submission folder 3 must cover **all 20 core features**, including applicable customer changes, with traceable tests for important user stories and acceptance criteria. Maintain an appropriate combination of levels:
+- [Full Sprints 1 to 4 manual E2E release walkthrough](archive/2026-11-05/README.md#full-sprints-1-to-4-manual-e2e-release-walkthrough)
 
-| Level | Cases to document | Existing implementation and evidence boundary |
-| --- | --- | --- |
-| Unit / isolated component | Validation, state transitions, calculations, boundary values, error handling and component behaviour. | Backend pure-function/service tests under `backend/test/` and isolated frontend `*.test.ts` tests. State the mocked dependencies; these do not prove database persistence or a complete user journey. |
-| Integration | HTTP authorization, role/ownership scope, component contracts, persistence, transaction rollback, races and competing reservations. | HTTP tests with mocked repositories prove that boundary only. Real PostgreSQL tests under `database/tests/` verify database interactions against an isolated test database; record any substituted authentication or external services. |
-| End-to-end | Critical connected user journeys across roles, including refresh, persisted outcomes, denied access and recovery. | Complete frontend/API/real-authentication/database journeys, such as the manual release walkthrough. API-substituted Playwright scenarios belong to frontend integration, even though they live in `tests/e2e/`. |
+<a id="current-test-document-structure--21-october-2026"></a>
 
-Normal, boundary, conflict, failure and regression describe **scenario coverage**, not interchangeable test levels. For example, a permission-denial regression may need unit policy checks, a real HTTP/database integration check and a browser check for useful feedback. Document the boundaries each proves.
+- [Current test-document structure — 21 October 2026](archive/2026-11-05/README.md#current-test-document-structure--21-october-2026)
 
-Every applicable AC needs coverage in the specification register and traceability matrix; add distinct cases where different inputs or outcomes need separate verification. Automated test names and source files can provide detailed executable steps, so there is no need to duplicate every `it()` assertion into a separate manual document. Functional testing can be manual or automated. Record relevant negative cases, invalid inputs, concurrency, unavailable dependencies and post-change regressions as well as happy paths. Additional performance, accessibility or security checks should follow the relevant requirements and risks, not an invented claim that every possible test has been performed.
+<a id="reading-the-case-and-evidence-registers--17-october-2026"></a>
 
-Course basis: [requirements source index](../requirements/README.md); **Week 4 Project Instructions**, deliverable 3 and testing rubric; **Week 4 Test Cases and Software Architecture**, pages 16, 21–22, 30, 32 and 42; **Week 9 Automated Testing 2 and Continuous Delivery**, pages 19–21 and 26–27. The template's fields and specification/run separation matter; its colours are not required submission formatting.
+- [Reading the case and evidence registers — 17 October 2026](archive/2026-11-05/README.md#reading-the-case-and-evidence-registers--17-october-2026)
 
-## Reading the case and evidence registers — 17 October 2026
+<a id="browser-regression-reliability"></a>
 
-The [functional case register](test-cases.csv) contains specifications; the [traceability register](../requirements/traceability.csv) connects them to requirement IDs and relevant automated suites. The dated Sprint 1/2 crosswalks preserve the original source requirements and distinguish later customer changes. New detailed historical-requirement cases use the `TC-<feature>-201+` range; this range does not add scope or imply that the cases ran during the original sprint.
+- [Browser regression reliability](archive/2026-11-05/README.md#browser-regression-reliability)
 
-The older `TC-01`–`TC-20` rows are feature-level summaries retained for stable references. Their steps, expected results and criterion references are now populated. Earlier narrative result text is retained in the evidence cell when the result field is normalised to Pass, Fail or Not executed. Partial observations do not become a full Pass: a recorded failing scenario remains Fail, while a whole summary without a complete executed run remains Not executed. Use the detailed cases for individual executions and retain the linked original observations.
+<a id="database-environments"></a>
 
-Newly specified cases remain **Not executed** until an actual run is recorded. A traceability path identifies an existing suite relevant to the requirement; it does not prove every scenario is asserted or passed. Historical baseline expectations (for example, automatic assignment and no venue buffers) are checked against the corresponding baseline; current release tests must apply the explicit supersession rules in the [customer-change register](../requirements/change-requests.md). Keep fixture cleanup isolated from shared data, and follow the hosted instructions below for shared-development observations.
+- [Database environments](archive/2026-11-05/README.md#database-environments)
 
-**Historical audit, 15 October 2026:** [AUTO-20261015-01](test-evidence.md#15-october-2026-post-sprint-implementation-audit) records 1,356 passing unit/component tests, 304 PostgreSQL integration tests and 95 browser tests, plus measured coverage. Separate reproductions found five defects that those suites missed; the record names each failure and required regression. The [retained summary](coverage-reports/2026-10-15-post-sprint-audit.txt) is a post-sprint result, not a Sprint 1/2 closure or hosted acceptance record.
+<a id="business-test-planning"></a>
 
-The suite covers application wiring, authentication/session handling, request creation, draft editing and submission, scoped request retrieval, approval/rejection, assignment, clarification and read-only status history. **19 October 2026:** KAN-79 / CR-5 replaces new-submission automatic allocation with a Lead-only queue, initial assignment and active-event oversight. KAN-65 subsequently adds versioned Lead reassignment, audit intervals, atomic access transfer and protected-history read concurrency. The current `automatic-assignment.integration.test.ts` filename is retained for compatibility regressions: it now checks unassigned submission and preservation of old automatic history, rather than the former workload-selection policy. KAN-29's original criteria and dated results remain historical. The 26 September cleanup removed the broader venue, equipment, registration and change-request application suites. The 30 September audit additionally removes later lifecycle writes, reassignment and notification generation, and adds regression checks that deferred routes and controls stay unavailable. Retained database guards and compatibility tests do not establish those future application features. The 4 October integration brings back only the selected KAN-12 search, KAN-51 calendar and KAN-8 booking decision workflows. KAN-55 block management is also integrated from current main, and KAN-52 adds read-only suitability with explicit coordinator interpretation. The 5 October integration adds KAN-53 coordinator booking submission and the latest KAN-12 continuous-interval date filtering. Recorded automated results and hosted acceptance are separate.
+- [Business-test planning](archive/2026-11-05/README.md#business-test-planning)
 
-Infrastructure database checks live in [database.integration.test.ts](../../database/tests/database.integration.test.ts) and [core-schema.integration.test.ts](../../database/tests/core-schema.integration.test.ts); feature integration suites are grouped under `database/tests/` by module. Browser checks live in `tests/e2e/`, including [review-decision.spec.ts](../../tests/e2e/review-decision.spec.ts). The [test evidence register](test-evidence.md) records actual runs, manual observations and remaining gaps.
+<a id="kan-79-integrated-local-verification"></a>
 
-For the current assignment workflow, use the [KAN-79 hosted guide](#kan-79-hosted-verification), [authenticated Lead integration tests](../../database/tests/events/lead-assignment.integration.test.ts), [assignment transaction tests](../../database/tests/events/assignment.integration.test.ts) and [Lead browser tests](../../tests/e2e/lead-assignment.spec.ts). The [KAN-29 guide](#kan-29-hosted-verification) is the retained pre-change baseline. The [30 September verification](test-evidence.md#30-september-migration-and-hosted-schema-consistency) confirmed migration 006 and all six then-current migration checksums against shared Supabase history through recognised filename aliases. That earlier check does not establish migration 007, a provisioned Lead or deployment of KAN-79; verify those together before releasing the new submission policy.
+- [KAN-79 integrated local verification](archive/2026-11-05/README.md#kan-79-integrated-local-verification)
 
-For handovers, use the [KAN-65 hosted guide](#kan-65-hosted-verification), [reassignment integration tests](../../database/tests/events/reassignment.integration.test.ts) and [reassignment browser tests](../../tests/e2e/coordinator-reassignment.spec.ts). `AUTO-20261019-02` records 604 frontend and 1,035 backend tests with coverage, 341 PostgreSQL tests and 132 browser tests. Manual acceptance is deferred. KAN-64 was pending at that 19 October checkpoint; it is implemented in the 21 October combined build, with shared rollout and hosted verification still pending.
+<a id="kan-65-hosted-verification"></a>
 
-For KAN-8, input/HTTP tests are in `backend/test/venues/booking-input.test.ts` and `venue-bookings-router.test.ts`; transactional authorization, persistence, rollback and competing-decision checks are in [venue-bookings.integration.test.ts](../../database/tests/venues/venue-bookings.integration.test.ts). Vue suites sit beside `VenueBookingsPage.vue` and `VenueBookingDetailPage.vue`, with browser fixtures in `tests/e2e/venue-bookings.spec.ts`. These tests check KAN-51 availability after booking decisions as well as repeated/opposite decisions and denied actors. Use the [KAN-8 manual guide](README.md#kan-8-hosted-verification) for real account/persistence checks. KAN-53 submission is integrated on this branch; create synthetic pending rows through the coordinator review panel and verify the connected workflow using [submission checks](#kan-53-hosted-verification). No new migration is needed.
+- [KAN-65 hosted verification](archive/2026-11-05/README.md#kan-65-hosted-verification)
 
-Run commands from the repository root using the setup in the [main README](../../README.md):
+<a id="kan-29-hosted-verification"></a>
 
-```sh
-npm run check
-npm run test:coverage
-npm run test:integration
-npm run test:e2e
-```
+- [KAN-29 hosted verification](archive/2026-11-05/README.md#kan-29-hosted-verification)
 
-Follow the README for database and browser prerequisites. Treat the exit status and test report as evidence of an actual run; this document is not a stored passing result.
+<a id="kan-53-hosted-verification"></a>
 
-## Browser regression reliability
+- [KAN-53 hosted verification](archive/2026-11-05/README.md#kan-53-hosted-verification)
 
-Scope live-region assertions to the intended message when notices and loading indicators can
-coexist. For response-order tests, hold and release the relevant fixture explicitly, assert the
-pending state, then wait for the final state before checking absence of stale data. Logout tests
-should observe cancellation and fixture completion before checking late feedback. A passing
-negative assertion before the response settles is insufficient evidence.
+<a id="kan-8-hosted-verification"></a>
 
-Use focused repetitions followed by a full-suite run when diagnosing timing failures. Keep the
-original failed attempt and each retest; do not hide the race with sleeps, retries or enlarged
-timeouts. Run heavy suites sequentially when they share local CPU/database resources. The
-[21 October KAN-79 audit](test-evidence.md#21-october-2026--kan-79-test-reliability-and-owned-story-audit)
-records 30 focused and 396 full-suite executions, with separate specification and execution rows.
-These runs provide bounded evidence, not a guarantee that a test can never flake.
+- [KAN-8 hosted verification](archive/2026-11-05/README.md#kan-8-hosted-verification)
 
-## Database environments
+<a id="kan-52-hosted-verification"></a>
 
-Supabase hosts the development PostgreSQL database following the [8 September technical decision](../requirements/assumptions-and-questions.md#8-september-2026--hosted-postgresql). Keep database integration tests on an isolated test database: CI uses PostgreSQL 17, and Docker Compose provides an optional local test instance. Do not run tests that create or clean up fixtures against the shared development project or production.
+- [KAN-52 hosted verification](archive/2026-11-05/README.md#kan-52-hosted-verification)
 
-Record hosted setup verification separately: project/environment, connection mode, verified TLS, migration and seed results, API readiness, disabled Data API setting and application-table RLS/privilege protections. Keep credentials out of evidence. Local or CI PostgreSQL results do not prove those hosted settings have been checked.
+<a id="kan-59-hosted-verification"></a>
 
-KAN-25 uses Supabase Auth. Express verifies the session and maps the Supabase identity to `app_users`, then enforces role, ownership and assigned-coordinator access. Local authenticated integration tests exercise this boundary with local tokens/profiles; they do not establish real Supabase login or hosted acceptance. The 15 September manual login/approval observation is recorded separately in [test evidence](test-evidence.md).
+- [KAN-59 hosted verification](archive/2026-11-05/README.md#kan-59-hosted-verification)
 
-## Business-test planning
+<a id="kan-50-hosted-verification"></a>
 
-[test-cases.csv](test-cases.csv) indexes specifications for all 20 release features. Partial evidence in [test-executions.csv](test-executions.csv) does not establish full feature acceptance; remaining outlines must be refined into concrete preconditions, actions, test data, expected outcomes and acceptance-criterion links. Questions such as interval boundaries and registration eligibility must reference a recorded decision.
+- [KAN-50 hosted verification](archive/2026-11-05/README.md#kan-50-hosted-verification)
 
-The original `TC-01`–`TC-20` rows remain aggregate feature summaries; their historical outcomes are retained in the archive and dated run narratives, with no execution-register rows. Case-specific rows such as `TC-08-01` identify individual regression scenarios, steps and expected results. The 15 October additions record five observed **Fail** results and one future KAN-60 **Not executed** scenario; they do not claim that permanent regression tests or fixed-code retests already exist. Existing test files in [traceability.csv](../requirements/traceability.csv) are labelled as regression targets where a new case is still missing.
+<a id="rebalanced-release-1-verification-plan--16-october-2026"></a>
 
-Use the [product backlog](../requirements/product-backlog.md) for future-story scope and dependencies. KAN-65 reassignment, KAN-66 planning edits and KAN-67 registration viewing require their own acceptance evidence. Historical KAN-34 draft-edit results do not accept KAN-66; retained draft evidence belongs to TC-03 and its original result entries.
+- [Rebalanced Release 1 verification plan — 16 October 2026](archive/2026-11-05/README.md#rebalanced-release-1-verification-plan--16-october-2026)
 
-Sprint 1 has [33 proposed acceptance scenarios](../scrum/sprint-01/sprint-backlog.md#acceptance-test-plan), each linked to a specific acceptance criterion. Review these alongside the story cards, then link the implemented tests and actual results in the [test evidence record](test-evidence.md). The release-wide CSV remains the coverage index for all 20 core features.
+<a id="kan-34-hosted-verification"></a>
 
-Sprint 2 has a [criterion-linked acceptance plan](../scrum/sprint-02/sprint-backlog.md#acceptance-test-plan) covering the nine new Jira stories and three carried stories. New-story criteria use `KAN-<number>-AC<number>` labels; proposed robustness and policy checks are identified separately. The plan is not an executed test report. Keep actual results linked to their tested build and retain failed/retested paths from the Sprint 1 review.
+- [KAN-34 hosted verification](archive/2026-11-05/README.md#kan-34-hosted-verification)
 
-Choose the test level for the behaviour being verified using [the level and evidence boundaries above](#coverage-required-by-is212). A fixture-based browser test and a live hosted workflow have different coverage, even when both use the same browser tool.
+<a id="kan-78-hosted-verification"></a>
 
-Reservation and registration limits need competing-request tests against PostgreSQL, not only sequential happy-path tests or mocked repositories. Significant event-change tests should verify the resulting reservations, registrations and notifications together. Test user access to records belonging to someone else, even when both users have the same role.
+- [KAN-78 hosted verification](archive/2026-11-05/README.md#kan-78-hosted-verification)
 
-Add the actual test file and acceptance-criterion ID to [traceability.csv](../requirements/traceability.csv) when implementing a story. Split feature-level outlines into multiple cases as needed; retain stable IDs or record replacements. A test is not complete merely because its title repeats a requirement.
+<a id="25-october-2026--arvin-contribution-reconciliation-sprints-13"></a>
 
-## Recording a test run
+- [25 October 2026 — Arvin contribution reconciliation (Sprints 1–3)](archive/2026-11-05/README.md#25-october-2026--arvin-contribution-reconciliation-sprints-13)
 
-Keep concise evidence containing the date, commit SHA, environment, command or manual steps, actual result, report link, and any failures or exclusions. Add the actual run narrative to [test-evidence.md](test-evidence.md), then append a row to [test-executions.csv](test-executions.csv) for each case whose execution can be supported. Use separate rows for separate attempts and retests; retain the original failure. Keep aggregate command/suite results in the narrative when they cannot be attributed to a particular case. Update the matching `S#-Txx` status only for the scope actually checked. Link CI runs and store exports needed for the course submission. Do not commit credentials, attendee data, `node_modules`, or bulky generated browser artifacts.
+<a id="25-october-2026--closeout-retest"></a>
 
-Test specifications, execution records, the traceability matrix and curated run evidence are assembled into **submission folder 3**; Sprint 1 scenario details remain linked in folder 4. Maintain these source documents now; final formatting/export and packaging can wait until submission. `npm run submission:prepare` copies `docs/testing/` and `docs/requirements/traceability.csv` into folder 3, so do not maintain a second numbered folder by hand. Executable test code is included with the software in folder 6. See the [submission checklist](../submission/checklist.md). Packaging does not execute tests or establish acceptance.
+- [25 October 2026 — Closeout retest](archive/2026-11-05/README.md#25-october-2026--closeout-retest)
 
-Paths inside CSV cells remain repository-relative for source traceability. In the submission package,
-resolve those paths from folder `6/`, which contains the repository copy. Markdown navigation links
-are rewritten by the packaging script. The archived CSV is retained unchanged as source evidence.
+<a id="kan-9-integrated-local-verification"></a>
 
-The excellent course rubric asks for 100% coverage unless infeasible and explained. Agree what coverage measures apply, report the measured result, and explain gaps. Line coverage alone cannot demonstrate all requirements or concurrency behavior; the release traceability matrix must also be complete.
+- [KAN-9 integrated local verification](archive/2026-11-05/README.md#kan-9-integrated-local-verification)
+
+<a id="setup"></a>
+
+- [Setup](archive/2026-11-05/README.md#setup)
+
+<a id="manual-scenarios"></a>
+
+- [Manual scenarios](archive/2026-11-05/README.md#manual-scenarios)
+
+<a id="kan-26-integrated-local-verification"></a>
+
+- [KAN-26 integrated local verification](archive/2026-11-05/README.md#kan-26-integrated-local-verification)
+
+<a id="setup-and-migration"></a>
+
+- [Setup and migration](archive/2026-11-05/README.md#setup-and-migration)
+
+<a id="checks-to-perform"></a>
+
+- [Checks to perform](archive/2026-11-05/README.md#checks-to-perform)
+
+<a id="kan-61--kan-84-review-follow-up-manual-e2e-acceptance"></a>
+
+- [KAN-61 / KAN-84 review-follow-up manual E2E acceptance](archive/2026-11-05/README.md#kan-61--kan-84-review-follow-up-manual-e2e-acceptance)
+
+<a id="30-october-2026--focused-local-e2e-acceptance-for-kan-80-kan-82-and-kan-84"></a>
+
+- [30 October 2026 — Focused local E2E acceptance for KAN-80, KAN-82 and KAN-84](archive/2026-11-05/README.md#30-october-2026--focused-local-e2e-acceptance-for-kan-80-kan-82-and-kan-84)
+
+<a id="1-november-2026--release-regression-retests"></a>
+
+- [1 November 2026 — release regression retests](archive/2026-11-05/README.md#1-november-2026--release-regression-retests)
 
 <a id="kan-79-hosted-verification"></a>
 
-## KAN-79 integrated local verification
+- [Legacy kan-79-hosted-verification](archive/2026-11-05/README.md#kan-79-hosted-verification)
 
-**Prepared 19 October 2026; manual execution: Not executed.** Use the current KAN-79 criteria and S3-T20. The local run `AUTO-20261019-01` covers unit/component checks, 304 PostgreSQL integration tests and 119 browser tests. Browser fixtures and an isolated database do not prove real Supabase identity mapping, deployment or hosted acceptance. `TC-05-17`–`TC-05-28` record those automated scenarios; the manual cases below require their own evidence.
-
-**Setup and test data, updated 21 October.** Confirm [migration 007](../../database/migrations/007_add_coordinator_lead.sql) and coordinate the current candidate prerequisites above, including migrations 008/009, the matching backend and Lead/inbox interfaces as one build. Confirm an operational Lead can use the queue before enabling unassigned submissions. A trusted maintainer provisions mapped synthetic `app_users` profiles: organiser O1, two Leads L1/L2 (`EVENT_COORDINATOR_LEAD`), available ordinary coordinator C1 and unavailable C2. No signup/profile request grants Lead. Each person signs in themselves through Supabase Auth; do not place passwords or session tokens in the test record. Event ownership, coordinator targets and audit actors use `app_users.id`, not the Auth UUID.
-
-Use only the shared development project with the team's agreed synthetic fixtures, or an isolated test project. Record original roles, availability flags, event IDs, current coordinator/history and the team's restoration agreement before changing shared data. Do not make every shared coordinator unavailable without a coordinated window. Automated fixture cleanup, injected failures and controlled concurrent role/availability changes belong only on an isolated database. A local branch does not isolate Supabase.
-
-Prepare distinct fixtures rather than reusing one completed allocation: E-new is a complete unassigned draft; E-active contains one unassigned event for each of `SUBMITTED`, `UNDER_REVIEW`, `CLARIFICATION_REQUESTED`, `APPROVED` and `CONFIRMED`; E-draft and E-closed test excluded states; E-old retains an existing `AUTOMATIC` assignment. Use fictional names, purpose, venue requirements, positive attendance, registration off and a valid future start/end in Singapore time (for example, 12 January 2031, 10:00–12:00). Record every concrete ID and input used. Prepare otherwise unreachable states through agreed synthetic setup, not by rewriting a teammate's event.
-
-Run `npm.cmd run dev` for the complete local candidate against the agreed development database. Public application deployment is not required. Use separate browser profiles for L1/L2 and coordinators. Lead entry points are `/lead` (**Assignment queue**), `/lead/oversight` (**Event oversight**) and `/lead/oversight/:id` (**Event allocation**). Same-origin API calls use the existing signed-in session; see the [current contract](../architecture/api-contract.md#kan-79-submission-and-lead-allocation--19-october-2026).
-
-| Group / case links | Steps and test data | Expected result |
-| --- | --- | --- |
-| K79-M01 — Provisioning and release setup; TC-05-01/09; AC1/AC10 | Confirm the candidate build and migrations 001–009; sign in as L1 and L2 and open all three Lead routes. As O1 and C1 try the same routes and the Lead APIs, including forged role input. | Only trusted mapped Leads load protected data. Other roles cannot self-grant access. Submission policy, usable queue, assignment endpoint and Lead coverage are available together. |
-| K79-M02 — Submit and find; TC-05-02/03; AC2/AC3/AC5 | In the isolated/agreed no-available setup, O1 submits E-new. Reload as owner and both Leads. Compare E-new, E-draft, E-closed and assigned-active records in the queue and oversight. | E-new becomes `SUBMITTED`, with null coordinator and no assignment/review decision. Both Leads see it in the queue even without targets. Oversight includes the five active non-draft states and current coordinator; drafts/closed events stay excluded. |
-| K79-M03 — Select and allocate; TC-05-04/09; AC4/AC10 | Restore C1 availability as agreed. From `/lead` explicitly select C1, assign and follow the success link; refresh oversight/detail/history. Repeat on separate unassigned E-active fixtures for all five states. On a fresh fixture try C2 and O1 IDs through `PUT /api/events/:id/coordinator`. | One selected coordinator and one current `MANUAL` history row persist with Lead actor/time and optional note. Status/reviews are unchanged. Invalid targets return `400 INVALID_COORDINATOR`; no writes occur. Assigned events leave the queue but remain in oversight. |
-| K79-M04 — Role and event boundaries; TC-05-03/05; AC5/AC6 | As C1 and unrelated C2 compare `/reviews` and `/reviews/:id` before/after allocation. As C2 try `/reviews/unassigned` and the old assignment PUT. As Lead attempt shared review detail, event decisions and venue operations; inspect visible controls. | Only selected C1 gains assignment-based event access. Ordinary coordinators cannot self-allocate (`403 ASSIGNMENT_FORBIDDEN`); the legacy URL redirects to a denying Lead gate. Owner/current-coordinator history stays read-only. Lead has allocation/oversight controls only; no review, booking, equipment or roster actions are granted. Deferred-module integration is not accepted here. |
-| K79-M05 — Repeat, conflict and refresh; TC-05-06 and automated TC-05-23/26/27; AC7 | For a new synthetic event, L1/L2 load the same unassigned request and attempt distinct targets; refresh the loser. Repeat the winner's PUT and try another target. Inspect persisted event/history. With local fixtures, also exercise interrupted writes, sign-out and account/route changes. | One allocation wins; stale/repeated writes return `409 COORDINATOR_ALREADY_ASSIGNED` without replacement. Inconsistent history returns `ASSIGNMENT_HISTORY_CONFLICT` for investigation. An uncertain write stays disabled until **Refresh** on the queue or **Refresh assignment** on detail reconciles current state. Late responses reveal no old account data or false success. Fault injection remains an isolated automated check. |
-| K79-M06 — Preserve and hand off; TC-05-07/09; AC8/AC10 | Compare recorded E-old values/history with the candidate after deployment, then submit and allocate a distinct E-new. Sign in as the selected coordinator and reload its review detail. | Existing automatic assignment/history remain unchanged. New events follow Lead allocation and the selected coordinator can continue the event workflow. Record both the old and new paths without rewriting KAN-29's historical acceptance. |
-
-**Remaining dependency — TC-05-08 / AC9: Not executed.** The original KAN-79 delivery refused replacement and left both KAN-65 and KAN-64 integration pending. The 19 October KAN-65 follow-up now verifies initial allocation followed by Lead reassignment, retained history and transferred access locally (`TC-05-45`, `AUTO-20261019-02`). **21 October follow-up:** KAN-64 assignment/handover notifications are now implemented. After coordinated migrations 008/009, use the connected notification checks below and K65-M06 to inspect organiser, old/new coordinator and unrelated-user inboxes. Manual execution and complete hosted acceptance remain **Not executed**; initial-assignment or handover passes alone do not satisfy the complete criterion.
-
-**Execution record.** For each actual run, add `MAN-YYYYMMDD-NN` to [test-evidence.md](test-evidence.md) with the date/time (Singapore time), executor, build SHA, URL/environment/browser, group and TC IDs, preconditions, exact synthetic inputs, numbered steps, expected versus actual result, HTTP outcome and saved-state checks. Append supported case results to [test-executions.csv](test-executions.csv) as Pass, Fail or Blocked; leave unperformed cases as Not executed. Link redacted screenshots, update S3-T20 for the scope checked, and register captured evidence in the applicable sprint evidence index. An API error alone is insufficient: inspect event/status/assignment rows for unintended writes. Restore only changes covered by the recorded team agreement, confirm restoration, and list every synthetic row left behind. Do not delete shared data without that agreement.
-
-## KAN-65 hosted verification
-
-**Prepared 19 October 2026; manual execution: Not executed.** Run these after the remaining features are ready, as agreed. `TC-05-10`–`TC-05-16` and S3-T21 remain deferred manual specifications. Automated cases `TC-05-29`–`TC-05-45` have separate results in [AUTO-20261019-02](test-evidence.md#19-october-2026--kan-65-coordinator-reassignment). At that checkpoint KAN-65 added no migration beyond KAN-79 migration 007. **21 October follow-up:** the combined build additionally requires migrations 008/009 as described above. Migration/login setup confirmation does not establish the workflow outcomes below.
-
-**Accounts, build and original values.** Use the shared development project with agreed synthetic fixtures, or an isolated test project. Record the deployed/local candidate SHA, URL and browser. A trusted maintainer maps organiser O1, Leads L1/L2, available coordinators C1/C2, unavailable C3 and representative other-role accounts through `app_users.supabase_user_id`. Each user signs in themselves; never record passwords, cookies or tokens. Before changing shared data, record the original application UUIDs, role/availability values, event status/current coordinator, full assignment history and any decisions/arrangements. Agree the restoration plan with the team. A local branch still uses the shared database if configured that way.
-
-Prepare separate E-SUBMITTED, E-UNDER_REVIEW, E-CLARIFICATION_REQUESTED, E-APPROVED and E-CONFIRMED fixtures initially assigned to C1 through the KAN-79 Lead action, so each has a matching active assignment UUID. Prepare separate excluded-state fixtures (Draft, Rejected, Cancelled, Completed) and an unassigned fixture through agreed synthetic setup. For retention checks, include an approval, answered clarification and venue booking on suitable fixtures; keep original actor/time and arrangement identifiers. Use fictional event details and a valid future interval, such as 12 January 2031, 10:00–12:00 Singapore time. Do not repurpose another person's event or silently repair inconsistent history.
-
-Use separate browser profiles for L1/L2/C1/C2. Open `/lead/oversight/:id` as Lead; organiser and coordinator routes remain `/events/:id` and `/reviews/:id`. The Lead chooses an available replacement and enters a reason in the Assignment panel. **Refresh assignment** reconciles current coordinator, history and the version before retrying a stale or uncertain action. The API is `POST /api/events/:id/coordinator/reassign` with `{ "coordinatorId": "<app_users UUID>", "reason": "Covering coordinator leave", "expectedAssignmentVersion": "<active assignment UUID>" }`. Obtain the version from the authenticated `GET /api/events/oversight/:id` response; it is an assignment-record UUID, not a coordinator ID or timestamp.
-
-| Group / case links | Numbered steps and test data | Expected result |
-| --- | --- | --- |
-| K65-M01 — Successful handover and refresh; TC-05-10; AC1/AC2/AC6 | 1. L1 opens E-SUBMITTED and records C1/version/history. 2. Select available C2, enter `Covering coordinator leave` and save once. 3. Refresh as L1, O1 and C2; inspect event/history rows. | The same event points to C2 and exactly one assignment is active. Prior history is retained; current coordinator survives refresh. The Lead panel shows the new coordinator and latest version. |
-| K65-M02 — Permission transfer; TC-05-11/13; AC3/AC4/AC7/AC101 | 1. Keep C1's event page open before L1 hands it to C2. 2. As C1 refresh and attempt review/start-review, clarification, history, suitability and venue-booking reads/writes through valid API requests. 3. As C2 continue permitted operations on separate fixtures. 4. As O1 confirm owned-event access. 5. Try handover as non-Leads and event approval as L1. | Old assignment-derived access ends immediately, including through existing sessions/forms; C1 cannot retain event/history or venue access. C2 gains the appropriate workflow access and O1 keeps ownership access. Non-Leads cannot reassign (`403`); Lead role alone cannot approve events or decide bookings. |
-| K65-M03 — Retention and audit; TC-05-12; AC5/AC8 | 1. Save snapshots of the approved/confirmed fixture's event, review, clarification and arrangement rows. 2. Hand C1 to C2 with `  Covering coordinator leave  `. 3. Compare identifiers/content and old/new assignment history after refresh. | Prior event information, decisions and arrangements remain intact. Old/new coordinator, Lead actor and trimmed reason are recorded. Old `unassigned_at`, new `assigned_at` and event `updated_at` identify the same handover boundary. Also run the connected notification checks below; persistence of history alone does not fully accept AC8. Hosted notification execution remains **Not executed**. |
-| K65-M04 — State and target matrix; TC-05-14; AC102 | 1. Repeat a valid handover on separate fixtures for all five active statuses. 2. Attempt Draft and terminal-state fixtures, an unavailable coordinator, a missing UUID and an organiser/Lead target UUID. 3. Inspect saved state after each refusal. | All five active statuses permit a valid target without changing status. Draft is unavailable; terminal statuses return `409 ASSIGNMENT_NOT_ALLOWED`. Missing, unavailable or non-coordinator targets return `400 INVALID_COORDINATOR`. Refused attempts preserve the original event and history. |
-| K65-M05 — Input, competing versions and retry; TC-05-15; AC103 | 1. Try omitted/blank/whitespace-only reason and malformed/missing version; try a reason over 2000 trimmed characters. 2. L1/L2 open the same current version and attempt different targets. 3. Refresh the losing view and choose a replacement again. 4. On a separate fixture perform C1→C2→C1 and retry the originally viewed version. | Invalid input returns `400` without writes. One competing handover wins; the stale request returns `409 ASSIGNMENT_VERSION_CONFLICT`, including after C1→C2→C1. No newer assignment is overwritten and no duplicate active history appears. Refresh clears stale selection and does not announce a failed save as successful. |
-| K65-M06 — No-op and notifications; TC-05-16; AC104 | 1. As L1 use the API to send the current coordinator and current version with a valid reason. 2. Compare event timestamps, active version and all history rows before/after. 3. On the integrated KAN-64 candidate, repeat successful/failed/no-op handovers and inspect organiser, previous/new coordinator and unrelated-user inboxes using the checks below. | A current-target request returns `changed: false`; no timestamps/history or notification rows change. A successful handover creates one keyed notice per intended recipient; refused/replayed attempts create no duplicate outcome. Manual execution remains **Not executed**; no blanket AC104 pass is claimed. |
-| K65-M07 — Uncertain save and historical integrity; TC-05-15 with automated TC-05-40/43 | 1. In an isolated candidate/fixture environment interrupt a response after submitting and use Refresh assignment before retrying. 2. Inspect an agreed inconsistent/missing-history fixture through Lead detail and attempt a handover. 3. Use the isolated automated integration suite for controlled insertion/update failures and concurrent availability/role changes. | An uncertain save is disabled until refresh reconciles saved state. Missing/mismatched history is refused with `409 ASSIGNMENT_HISTORY_CONFLICT`; an unassigned event uses initial allocation instead (`COORDINATOR_NOT_ASSIGNED`). Automated rollback tests leave the old assignment and related data intact. Do not inject database failures, damage history or globally change availability in shared Supabase. |
-
-**Connected KAN-64 checks, prepared 21 October; manual execution: Not executed.** Confirm the proposed [recipient matrix](../architecture/api-contract.md#notifications-kan-64-cf-20) with the team (**To agree**) before treating its recipient expectations as accepted policy. On separate agreed synthetic events: (1) record existing notification IDs/read state, then submit, allocate and hand over C1→C2; (2) open `/notifications` separately as O1, C1, C2 and an unrelated account and refresh the unread bell; (3) compare keyed rows with the triggering outcome, then retry a refused stale/repeated action and a valid same-coordinator no-op; (4) mark one notice and then all visible notices read, refresh and compare stored read state; (5) sign out or change account while a read/action is pending. Under the implemented matrix, the organiser and new coordinator receive the assignment/handover notices, and the previous coordinator receives only a minimal reassignment notice without protected details or links after access is lost. Unrelated users see none of those rows; old protected notices cease to be visible when access is lost. No-op/refused actions add no rows, and a repeated outcome key cannot produce duplicates. Only the current account may receive displayed rows/counts or apply a read result. Compare exact before/after data and retain each observed result separately; do not use a suite-wide pass as this manual result. Keep rollback fault injection on the isolated automated database.
-
-**Record and restore.** For each completed group, record `MAN-YYYYMMDD-NN` in [test-evidence.md](test-evidence.md) with executor, date/time, SHA/environment, concrete account aliases and application/event/assignment IDs, original values, numbered steps, expected/actual outcomes, HTTP responses and saved-state checks. Append records to [test-executions.csv](test-executions.csv) only for supported case outcomes, and update S3-T21 and the sprint evidence index; preserve failed attempts and add separate retests. Notification-dependent groups and KAN-79 AC9 stay incomplete until their connected checks run. Restore only team-approved synthetic changes, confirm the result and list rows left behind. Returning an event to its earlier coordinator through a valid handover adds a real audit entry; do not erase that history to make the test appear never to have happened. Do not delete shared test data without the recorded agreement.
-
-## KAN-29 hosted verification
-
-**Historical baseline, superseded for new submissions by KAN-79 / CR-5 on the 19 October 2026 candidate.** The checks below retain the original automatic-selection specification and earlier evidence boundaries. Do not apply their automatic-assignment or `NO_AVAILABLE_COORDINATOR` expectations to a KAN-79 build. Use the current guide above; run this old baseline only against its recorded pre-change revision in an isolated environment. Its retained pending cases are not retroactively passed by current compatibility tests.
-
-These checks remain **pending until actual results are recorded** in [test evidence](test-evidence.md), with the commit, date, environment, tester, request/coordinator IDs, before/after data and any defects. Local automation and existing Sprint 1 results do not establish this hosted allocation path.
-
-Prepare migration [006](../../database/migrations/006_automatic_coordinator_assignment.sql), an organiser and at least two real Supabase Auth coordinator accounts linked to `app_users`. Shared schema verification on 30 September is already recorded; coordinate other environments with Arvin using the migration runner rather than editing applied history. Set `coordinator_available = true` only for provisioned coordinators ready for work; the default is false and there is no availability-setting UI. Event ownership and assignment use **app_users.id**, not the Auth UUID.
-
-Run `npm.cmd run dev` and use separate browser profiles or sign out between roles. Prepare valid drafts with name, purpose, start/end, attendance and venue requirements; keep registration off for these focused checks. Before selection tests, record each eligible coordinator's workload: assigned `SUBMITTED`, `UNDER_REVIEW`, `CLARIFICATION_REQUESTED`, `APPROVED` and legacy `CONFIRMED` requests count; drafts and closed requests do not. Ties use ascending application UUID.
-
-Use an isolated project for controlled workloads, preassigned drafts and no-available-coordinator cases. A shared test needs a coordinated window and restoration of original availability flags; do not change teammates' live requests. A local Git branch does not isolate Supabase.
-
-| ID | Check | Expected result |
-| --- | --- | --- |
-| K29-M01 | Submit separate valid drafts from the creation form, edit-draft form and saved detail action; refresh. | `SUBMITTED`, expected coordinator, one current `AUTOMATIC` assignment with `assigned_by = NULL` and `unassigned_at = NULL`, and no event review decision. |
-| K29-M02 | Open the request and queue as the selected coordinator, then as another coordinator. | Selected coordinator retains access after refresh without manual assignment; unrelated coordinator cannot list/read it. |
-| K29-M03 | Read the Assignment panel as organiser and assigned coordinator. | Matching coordinator, Current history and automatic timestamp; assignments API returns `AUTOMATIC` with null assigning actor/name. No handover control. |
-| K29-M04 | Give exactly two eligible coordinators equal active loads; submit two drafts sequentially. | First selects the lower UUID, second selects the now-lower workload. Record counts before each submission; restore temporary flags. |
-| K29-M05 | Opt the otherwise lowest-workload coordinator out, leaving another available. | New submission excludes the unavailable coordinator; existing assignments and access remain intact. Restore flags. |
-| K29-M06 | Make all coordinators unavailable in the controlled environment; submit from form and detail, edit/save, then opt one in and retry. | `409 NO_AVAILABLE_COORDINATOR`; draft remains editable with no assignment or submitted history. Retry submits the same draft without duplication. |
-| K29-M07 | As owner, repeat `POST /api/events/:id/submit` for M01's submitted request. | `409 REQUEST_NOT_SUBMITTABLE`; original status, coordinator, assignment ID/time and single active history row remain unchanged. |
-| K29-M08 | As assigned and unrelated coordinators, send `PUT /api/events/:id/coordinator` with another application UUID in `coordinatorId`. | Assigned actor gets `409 REASSIGNMENT_NOT_AVAILABLE`; unrelated actor gets `404 EVENT_REQUEST_NOT_FOUND`. No history changes or handover UI. Initial manual assignment remains available only for unassigned Submitted, Under review, Clarification requested or Approved requests; reassignment is future KAN-65. |
-| K29-M09 | Submit an isolated valid draft with an existing coordinator or active assignment row. | `409 DRAFT_ALREADY_ASSIGNED`; original draft/history preserved and UI permits edit/save. Reconcile test fixtures without clearing real history. |
-| K29-M10 | Submit an incomplete owned draft; attempt another organiser's draft; attempt submission as coordinator. | Respectively `400 SUBMISSION_INCOMPLETE`, `404 EVENT_REQUEST_NOT_FOUND`, `403 SUBMIT_FORBIDDEN`; no allocation/status change. |
-
-API checks use the browser's same-origin authenticated session and fictional request IDs. For every refusal, inspect both `event_status_history` and `coordinator_assignments` before/after; an HTTP error alone does not prove no write occurred. Record case outcomes in [test-executions.csv](test-executions.csv) using Pass, Fail, Not executed or Blocked, link the historical-baseline run narrative and restore temporary flags. CI, peer review and policy acceptance remain separate evidence.
-
-## KAN-53 hosted verification
-
-Use KAN-53-AC1–AC11, S2-T11/T12 and the submission-conflict portions of S2-T15. These checks are **pending until actual results are recorded** with the build, environment, tester, fixture IDs, HTTP result and persisted data. The original branch's unit/component evidence is [AUTO-20261004-KAN53-01](test-evidence.md#4-october-venue-booking-submission); it is not the integrated hosted workflow.
-
-Prepare an active synthetic venue, a non-draft event assigned to a provisioned coordinator, another coordinator, organiser and Venue Staff accounts. Use an Approved event for the connected staff-approval journey. On `/reviews/<event-id>`, find **Venue booking requests**, choose the venue, enter **Starts (Singapore time)** / **Ends (Singapore time)** and optional **Room layout** / **Notes for Venue Staff**, then choose **Request this venue**. Booking timing is entered separately from the event's timing; assess any difference explicitly. KAN-52's assessment does not reserve the venue or automatically limit this picker.
-
-| Check / acceptance link | Expected result |
-| --- | --- |
-| Submit and retain — S2-T11; AC1–AC10 | A free interval saves one Pending request, shows a success message and survives **Refresh booking requests** and page reload. The row has the correct event, venue, coordinator application ID, interval and trimmed layout/notes, with null decision fields. Event status remains unchanged. |
-| Staff handoff — S2-T11; AC4/AC8 | Venue Staff sees the new request in **Venue bookings**, with current event requirements and saved booking interval/layout/notes. Complete [KAN-8](#kan-8-hosted-verification) approval/rejection and coordinator outcome checks separately. Submission alone creates no reservation. |
-| Existing reservation or block — S2-T15; customer refinement | Submit against an approved booking or operational block: respectively `409 VENUE_BOOKING_CONFLICT` / `409 VENUE_UNAVAILABLE`, useful feedback and no new row. An exactly adjacent free interval is accepted; another venue is independent. |
-| Pending requests — S2-T12 policy | Two overlapping pending requests may be created before either is approved; neither reserves availability. Once one is approved, a later conflicting submission is refused and the other's approval must be refused. This is the current documented default, not confirmed duplicate/hold policy. |
-| Input and eligibility — S2-T12 | Invalid UUID, impossible calendar date, missing timezone, end at/before start, unknown identity/status fields or text over the API limit return 400 with no row. Missing/inactive venue gives 404/409. Rejected/Cancelled/Completed event gives `409 EVENT_NOT_ELIGIBLE`; draft/missing/unrelated event gives `404 EVENT_REQUEST_NOT_FOUND`. API layout/notes limit is 2,000; UI layout limit is 100. |
-| Role and relationship — AC11; S2-T12 | An unrelated coordinator cannot create a booking for this event. Organisers, Venue Staff and Technical Support Staff cannot submit (403) and do not mount the coordinator panel. Signed-out calls get 401. Verify no new row or forged requesting actor. |
-| Recovery and navigation — S2-T12 robustness | Read/catalogue failures offer retry. Server refusals retain editable input without a success message. After an uncertain write, **Request this venue** stays disabled until **Refresh booking requests** succeeds; inspect the list before retrying because the first write may have committed. Changing account/event or leaving the page discards stale responses. |
-
-API checks use the same-origin authenticated session and `POST /api/events/<event-id>/venue-bookings`; the [contract](../architecture/api-contract.md#venue-booking-submission-kan-53-cf-12) defines the body and errors. Store no cookies, credentials or real personal data in evidence. Check database rows before/after refusals, not only response codes. There is no automatic duplicate-submission idempotency guarantee. Eligible states, pending holds/duplicates, current requirements versus a snapshot, and any future suitability gate remain open policy choices. Hosted acceptance, policy confirmation, peer review and CI are distinct from local implementation.
-
-## KAN-8 hosted verification
-
-These checks also remain **pending**, separately from AUTO-20261004-KAN8-01's local results. Record the build, tester, date, fixture IDs, responses and persisted outcomes in [test evidence](test-evidence.md). Keep credentials, cookies and tokens out of evidence.
-
-Run `npm.cmd run dev` and open `http://127.0.0.1:5173`. Provision Supabase Auth accounts mapped through `app_users.supabase_user_id`: Venue Staff, the event's assigned coordinator, another coordinator, an organiser and Technical Support Staff. Passwords belong in Supabase Authentication. KAN-8 uses migration 004's retained tables; **no new migration is required** and current 001–006 history stays intact.
-
-Use the integrated KAN-53 panel to prepare fictional pending bookings against an active venue and an `APPROVED` test event assigned to the coordinator. Fill the event timing, attendance, venue/accessibility needs and descriptive fields first. From `/reviews/<event-id>`, use **Venue booking requests** and **Request this venue**; follow [the submission checks](#kan-53-hosted-verification). The service sets `requested_by` to the coordinator's application ID, status to Pending and decision fields to null. There is no new migration.
-
-Prepare A/B with overlapping free intervals at the same venue, C at another free interval, and D at a third free interval. **Create both A/B before approving either. Create D before adding its operational block** through `/venue-blocks` as staff. Submission against an already approved reservation/block is now refused, so those would not produce the pending fixtures needed for the separate approval-time checks. Pending overlaps are permitted. Avoid real bookings and retain IDs before decided rows leave the pending queue; restore synthetic fixture changes in a coordinated environment.
-
-| Check / acceptance link | Actions and expected outcome |
-| --- | --- |
-| Staff approval — S2-T13 | Open **Venue bookings** as staff. Verify pending A/B/C/D and correct booking/current-event details. On A select **Approve booking → Record decision**. Refresh: saved Approved outcome/time, no controls, absent from pending queue. Database attribution is the staff application ID; only A changes, its event/venue/interval stay intact, and event status stays `APPROVED`. |
-| Coordinator and availability — S2-T13/S2-T15 | Assigned coordinator sees A's saved outcome/reason/time after refresh with no controls. Calendar marks A's venue/period booked and search excludes it. Adjacent intervals do not conflict. |
-| Rejection — S2-T13 | On C select **Reject booking**, provide a reason and **Record decision**. Staff and assigned coordinator retain the Rejected outcome/reason/time after reload. C does not reserve availability. Reason is optional, trimmed, maximum 2,000 characters; a mandatory venue rejection reason has not been agreed. |
-| Conflict and concurrency — S2-T14/S2-T15 | Approving B after A returns `409 VENUE_BOOKING_CONFLICT`; D returns `409 VENUE_UNAVAILABLE`. Each remains pending with null decision fields, A unchanged. Concurrent overlapping approvals allow only one success; automated PostgreSQL tests provide stronger race evidence than near-simultaneous clicks. |
-| Repeat/opposite decision — S2-T14 | As staff, POST both `{ "decision": "APPROVED" }` and `{ "decision": "REJECTED" }` to `/api/venue-bookings/<A-id>/decision`. Both return `409 BOOKING_ALREADY_DECIDED`; original status, actor, time and reason remain unchanged. |
-| Role/relationship access — S2-T14 | Organiser/Technical Support Staff see no booking navigation/data on direct list/detail URLs. Technical Support Staff keeps separate calendar access. Another coordinator cannot list A and receives 404 for its API detail. A coordinator/non-staff decision POST returns `403 ACTION_FORBIDDEN`, unchanged data. Signed-out list/detail/decision APIs return 401 and UI asks for login. |
-| Stale state and recovery | Decide in one of two staff sessions; the other's write conflicts and reloads the saved outcome without replacing it. Failed reads offer retry. Offline/uncertain writes require **Refresh booking** before another decision; no automatic write retry. An unapproved event or inactive venue blocks approval without writes; rejection remains possible. |
-
-Use the same-origin authenticated browser session for API requests, with `Content-Type: application/json` and the stated JSON bodies. Compare persisted data before/after refusals, not only HTTP responses. Approval eligibility, all-staff review scope, current requirements rather than a snapshot, optional reason and half-open reservation intervals remain [documented implementation choices](../requirements/assumptions-and-questions.md#4-october-2026--kan-8-venue-booking-decisions) awaiting team/customer review. Record actual failures and exclusions; CI on PostgreSQL 17, peer review, hosted acceptance and Sprint 2 acceptance are separate. Do not infer Done points or change the 43-point baseline from these instructions.
-
-## KAN-52 hosted verification
-
-Use S2-T09/T10 and KAN-52-AC1–AC9. These are instructions, not recorded passes. Record commit, date, tester, environment, synthetic IDs, inputs, expected/actual results and defects in [test evidence](test-evidence.md). No migration is required. Local automated tests do not establish hosted login, authorization or customer acceptance.
-
-Prepare an assigned, non-draft synthetic event and active venues with known capacity, facilities, layouts, accessibility and opening hours. Provision mapped accounts for the assigned coordinator, another coordinator and a non-coordinator. Use an isolated project or coordinate dashboard fixture changes with Arvin and restore original values; a Git branch does not isolate Supabase. KAN-55 can create synthetic blocks through the staff page. For an approved-reservation fixture, create a synthetic request through KAN-53 as its assigned coordinator, then approve it as Venue Staff through KAN-8; the event must be Approved for that decision. Avoid changing real requests/bookings.
-
-Run `npm.cmd run dev`, sign in as the assigned coordinator, open the event from review queue/history and choose **Check venue suitability**. Inspect the source event text, timing/attendance and selected venue capabilities. Enter one required facility/accessibility label per line, one layout where applicable, the wheelchair requirement and any unresolved needs. Confirm only after reviewing the source: blank fields mean none required only when explicitly confirmed.
-
-| Check / criterion link | Expected result |
-| --- | --- |
-| Matching venue — AC1/AC8; S2-T09 | With sufficient capacity, every required capability and a free period inside opening hours, confirm and choose **Check suitability**, then **Recheck suitability**. Suitable shows the correct venue, check time and explanations. Exact capacity equality passes; case/outer whitespace differences do not create false label mismatches. |
-| Individual mismatches — AC2–AC5/AC7; S2-T09 | Separately exceed capacity, require a missing facility, unsupported layout, missing accessibility feature and unavailable wheelchair access. Reconfirm after each edit. Each mismatch gives Unsuitable and identifies its cause. A different accessibility feature must not satisfy a missing one; unlisted requirements can be entered. |
-| Unknown/inapplicable needs — AC1/AC8; S2-T10 robustness | Before confirmation the Check button is disabled. An unresolved requirement keeps the result Needs review unless another check definitely fails. Missing/invalid attendance or timing is unknown, never Suitable. Explicitly confirmed inapplicable needs do not falsely fail; source prose is not guessed or parsed. |
-| Availability — AC6/AC7; S2-T09 | An overlapping approved booking or operational block gives Unsuitable with a reason; an adjacent interval remains eligible. Pending/rejected bookings do not reserve. The same event's own booking still reserves in event-only mode. Crossing closed overnight/intervening hours fails even when endpoint clock times look valid. **Current-version correction, 30 October 2026:** KAN-78 setup/turnaround buffers and KAN-83 live holds apply. Check adjacency against occupied intervals. KAN-82 saved-arrangement mode excludes only the selected booking itself. The original Sprint 2 baseline did not add buffers; that historical scope does not describe the current application. |
-| Current data — AC9; S2-T10 | Change a synthetic venue capability/capacity or create/remove a block, then recheck to see the new result. Change relevant event source fields while open: the next check gets `409 SUITABILITY_CONTEXT_CHANGED`, refreshes source data and requires a new interpretation. **Refresh event and venues** also reloads current data. |
-| Access/recovery — S2-T10 robustness | Another coordinator gets 404, non-coordinators 403 and signed-out API calls 401 with UI sign-in. Failed reads/checks, expired sessions and account/event changes do not retain a stale successful result or expose another event. Retry after recovery. |
-| Read-only boundary — S2-T09/T10 | Compare event/status and booking rows before/after both successful and unsuccessful assessments. No event rejection, requirement update, booking, reservation or stored decision is created. An assessment is an observation at check time, not a guaranteed booking. |
-
-For API checks, use the authenticated same-origin session: GET `/api/events/<event-id>/venue-suitability`, then POST to the same route with every explicit field and the returned version; see [the request body/errors](../architecture/api-contract.md#venue-suitability-kan-52-cf-11). Unconfirmed/unresolved input must never manufacture Suitable. Keep cookies and credentials out of evidence.
-
-Automated suites: `backend/test/venues/suitability-input.test.ts`, `suitability-rules.test.ts`, `suitability-router.test.ts`, `database/tests/venues/venue-suitability.integration.test.ts`, `frontend/src/features/venues/pages/VenueSuitabilityPage.test.ts` and `tests/e2e/venue-suitability.spec.ts`. [AUTO-20261004-KAN52-01](test-evidence.md#4-october-venue-suitability) records the passing local runs. Hosted checks, peer review, published CI and [remaining policy acceptance](../requirements/assumptions-and-questions.md#4-october-2026--kan-52-venue-suitability) remain separate from implementation and do not award Done points automatically.
-
-## KAN-59 hosted verification
-
-Use S2-T22, KAN-6-AC2/AC3 and KAN-6-AC5–AC7. These are instructions, not recorded passes. Record commit, date, tester, environment, synthetic IDs, inputs, expected/actual results and defects in [test evidence](test-evidence.md). No migration is required. Local automated tests do not establish hosted login, authorization or customer acceptance.
-
-Provision a mapped Event Organiser and a second organiser. **19 October 2026 CR-5 update:** on the KAN-79 candidate a valid submission stays unassigned and does not require an available coordinator; use the [Lead guide](#kan-79-hosted-verification) for the subsequent allocation. Use an isolated project or coordinate dashboard fixture changes and restore them afterwards. Earlier KAN-59 evidence remains tied to its tested baseline.
-
-Run `npm.cmd run dev`, sign in as the organiser and use **Submit for review** from `/events/new` and from a reopened saved draft (`/events/:id/edit`). For direct API checks, call `POST /api/events/<draft-id>/submit` from the signed-in browser session (for example with `fetch` from the developer console on the same origin); see [the current submission contract](../architecture/api-contract.md#kan-79-submission-and-lead-allocation--19-october-2026).
-
-| Check / criterion link | Expected result |
-| --- | --- |
-| Missing mandatory fields — AC2; S2-T22 | A draft without name, purpose, start, end, attendance or venue requirements is refused with the missing fields listed (`400 SUBMISSION_INCOMPLETE`). The draft is saved, stays `DRAFT`, has no coordinator, and the form marks each field. |
-| Blank text — AC5; S2-T22 robustness | Through the API, set `name`, `purpose` or `venueRequirements` to `""`, spaces, or a tab/newline and submit: each is treated as missing and refused. In the form, blank text is stored as empty and is also refused. |
-| End not after start — AC6; S2-T22 | Set the end equal to, then before, the start (API; the form blocks it earlier). Submission is refused with `400 SUBMISSION_INVALID` and an `endsAt` message; the draft is unchanged. |
-| Registration window — AC7; S2-T22 | With registration required, set the close equal to or before the open: refused with a `registrationClosesAt` message. With registration not required, the same dates are ignored. A blank capacity submits (no limit). |
-| Several problems at once — AC2/AC5/AC6 | A blank name plus a bad end reports both together. After correcting both, the same request submits and shows `SUBMITTED` with no coordinator until a Lead explicitly allocates it (19 October KAN-79 candidate policy). |
-| Optional needs — S2-T22 | Description, accessibility needs and equipment requirements may be left blank or set to "None" / "Not Required"; submission is not blocked. |
-| Access — AC3; S2-T22 | A second organiser gets 404 for the first organiser's draft whether or not it is complete; a coordinator gets 403; signed-out callers get 401. None of them can learn from the response whether the draft is complete. |
-| Open question | An expected attendance of 0 currently submits. Record the Product Owner's or customer's decision. |
-
-Automated suites: `backend/test/events/submit-input.test.ts`, `submit-request.test.ts`, `submitted-requests-router.test.ts`, `database/tests/events/submit-request.integration.test.ts`, `frontend/src/features/events/api/event-requests.test.ts` and `components/EventRequestForm.test.ts`. [AUTO-20261009-KAN59-01](test-evidence.md#9-october-submission-validation-kan-59--s1-def-04) records which have been executed.
-
-## KAN-50 hosted verification
-
-Use S2-T03/S2-T04 and KAN-50-AC1–AC21 for the original catalogue, plus S3-T15 / KAN-50-AC101 / TC-08-14 for the stale-save repair. These are reusable instructions; actual outcomes belong in the execution register and [test evidence](test-evidence.md). Record commit, date, tester, environment, synthetic IDs, inputs, expected/actual results and defects for each new run. No migration is required for the original catalogue or stale-save repair. Local automated tests do not establish hosted login, authorization or customer acceptance.
-
-Prepare two or three synthetic active venues with known values and one inactive one. Provision mapped accounts (a Supabase user plus an `app_users` row with `supabase_user_id`; accounts are provisioned manually, Q-01) for **two Venue Staff members**, an Event Coordinator, an Event Organiser and a Technical Support Staff member. Use an isolated project or coordinate dashboard fixture changes with Arvin and restore the original values afterwards; a Git branch does not isolate the shared database.
-
-Run `npm.cmd run dev` (with `NODE_EXTRA_CA_CERTS` set if a TLS-intercepting antivirus is installed), sign in as Venue Staff and choose **Venue catalogue** in the sidebar.
-
-| Check / criterion link | Expected result |
-| --- | --- |
-| View — AC1/AC2/AC12; S2-T03 | Every active venue is listed by name with location, capacity, layouts and facilities; the inactive venue is absent. **Edit** opens one venue showing exactly the values stored in the database. |
-| Update each attribute — AC3–AC9/AC11/AC12; S2-T03 | Change location, capacity, facilities, accessibility features, the wheelchair flag, two or more layouts and both operating hours; save. The success message appears, the form shows the saved values, and a full reload and the list page show them too. Only the chosen venue changed; its name and description did not. |
-| Layouts stay with the venue — AC10/AC11; S2-T03 | Give venue A two layouts and venue B different ones; save both. Each venue keeps only its own after a reload. |
-| Search and suitability use the change — AC13/AC20; S2-T03 | As the coordinator, search venues by the new capacity, layout and facility: the edited venue now appears (and stops appearing when capacity is lowered). Open a suitability check for an event and see the new values. An existing approved booking is unchanged. |
-| Validation — AC15–AC17; S2-T04 robustness | Capacity 0, a negative or decimal capacity, closing at or before opening, an entry over 100 characters, more than 30 distinct entries and a blank form are each refused with a clear message and nothing is saved. Entries that differ only by case or surrounding spaces are stored once. |
-| Single hour change — AC16; S2-T04 robustness | With stored hours 08:00–22:00, setting only opening to 23:00 or only closing to 07:00 is refused; clearing one endpoint leaves the other and means no restriction at that end. |
-| Concurrent edits — AC18; S2-T04 robustness | Open the same venue in two Venue Staff sessions. Change capacity in one and facilities in the other, saving each. Reload: both changes are present. Changing the same field in both keeps the last save. |
-| Access — AC14; S2-T04 | Coordinator, organiser and technical support see no Venue catalogue link; opening `/venue-catalogue` or `/venue-catalogue/<id>` directly shows the staff-only message and requests no venue data. `GET`/`PATCH /api/venues/catalogue…` return 403 for them and 401 when signed out. A `PATCH` containing `name` returns 400 and the stored name is unchanged. |
-| Inactive or missing venue — AC19; S2-T04 robustness | Deactivate a synthetic venue in the dashboard: it leaves the list, its direct page shows "not in the active catalogue", and a `PATCH` returns 409 `VENUE_INACTIVE`. Restore it afterwards. |
-| Save failure — AC21; S2-T04 robustness | Interrupt the connection or expire the session while saving: a clear message appears, the entered values stay, and nothing is reported as saved. |
-| Stale save — AC101; S3-T15; TC-08-14 | Using controlled response delays in an isolated fixture, start saving venue A, navigate to B, then release A's delayed success or error. B's URL, editor and messages remain aligned; a later save targets B. Repeat with an account change, including delayed 401 and buffer-conflict errors. An old completion must not clear a newer save's busy state. Aborting the old request only invalidates its UI response; inspect and restore any original-venue change that the server already committed. |
-
-For API checks, use the authenticated same-origin session; see [the routes, body rules and errors](../architecture/api-contract.md#venue-catalogue-maintenance-kan-50-cf-08). Keep cookies and tokens out of evidence.
-
-Automated suites: `backend/test/venues/venue-catalogue-input.test.ts`, `venue-catalogue-service.test.ts`, `venue-catalogue-router.test.ts`, `database/tests/venues/venue-catalogue.integration.test.ts`, the four files under `frontend/src/features/venues/` named `catalogue-form`, `api/venue-catalogue`, `VenueCataloguePage` and `VenueCatalogueEditPage`, and `tests/e2e/venue-catalogue.spec.ts`. [AUTO-20261009-KAN50-01](test-evidence.md#9-october-venue-catalogue-maintenance-kan-50) records which have been executed.
-
-**25 October 2026 repair verification:** PR #56 adds 11 component regressions for KAN-50-AC101. [CI run 40175958221](https://github.com/MochaLxtte/ConnectSphere/actions/runs/40175958221) on merge build `89c2cb0` passed 770 frontend tests, 1,354 backend tests, 479 PostgreSQL integration tests and 156 browser tests, with the coverage checks passing. This automated result is separate from [Ryan's reported manual outcomes](test-evidence.md#25-october-2026--ryan-story-verification-records). KAN-12 regression coverage also needs the [current search contract](../architecture/api-contract.md#venue-search-kan-12-cf-10): real calendar dates with explicit time zones, setup/turnaround boundaries and live-versus-expired holds. The original PR #51 integration failure and skipped E2E run remain historical; the repaired integration run `39750396624` is recorded in the 22 October evidence.
-
-## Rebalanced Release 1 verification plan — 16 October 2026
-
-[Sprint 3](../scrum/sprint-03/sprint-backlog.md) and [Sprint 4](../scrum/sprint-04/sprint-backlog.md) allocate all active criteria after the 63/63 rebalance. Transferred tests retain their existing case IDs; old combined KAN-64 cases are labelled historical and its active AC201–209 plus KAN-80 have separate cases. CR-1–CR-6 trace to the 2 October receipt and later refinement in the [change register](../requirements/change-requests.md). New case specifications are Not executed, not passing evidence. The five original failed audit cases retain their dated failures until an actual fixed-code run is recorded.
-
-S3 connected verification ends with usable request/venue decisions, Lead access, buffers, outage recovery and expiring holds with notifications. S4 extends this through equipment, event lifecycle/registration, independent arrangements, safety/preparation and the remaining notification matrix. Expiry tests need a controlled clock, worker restart/replay and race checks; safety tests need current arrangement revisions and three outcomes. These checks are acceptance requirements for implementation, not results from this documentation update.
-
-## KAN-34 hosted verification
-
-**Prepared 25 October 2026; Not executed here.** Use S3-T06 and TC-03-02?06 with the permanent automated cases TC-03-301/302. A human signs in to mapped synthetic organiser O1/O2 accounts; record actual aliases, release SHA, environment and original draft values. Use the integrated frontend/API against the agreed shared development environment. Never expose passwords or point cleanup-based tests at shared Supabase.
-
-1. O1 opens an owned saved draft and compares every populated field with the persisted record. Save one field, omit another, explicitly clear a permitted nullable field, then reload and reopen; the updated values persist and the request stays Draft.
-2. Change registration No to Yes, fill the capacity/window, save/reopen and refresh; repeat Yes to No. Compare fields and persisted values against the agreed update contract rather than assuming that hidden fields are deleted.
-3. Check the other organiser and a non-editable request are refused without revealing or changing protected data. For impossible dates/offsets use the existing direct-HTTP and parser specifications, recording only the variants actually attempted; a browser date control alone does not exercise a forged API value.
-4. Restore original draft values or record labelled synthetic data retained. Append case-level results under the actual MAN run, link captures, and update S3-T06 only to the demonstrated extent. Automated fixture-browser results are not this hosted run; acceptance remains a review decision.
-
-## KAN-78 hosted verification
-
-**Prepared 25 October 2026; Not executed here.** Use S3-T19 and TC-14-01?07; TC-14-301?307 supply the existing automated boundaries. Confirm the integrated migrations (009 settings, 012 intervals, 013 holds), mapped assigned coordinator and Venue Staff accounts, an agreed synthetic venue and future bookings. Record current buffers, operating hours, existing bookings/blocks and the tested commit before changing shared data.
-
-1. For a 10:00?12:00 Singapore-time booking set setup 30 and turnaround 45 minutes. Compare the 09:30?12:45 occupied interval in search, suitability, calendar and booking details; retain the distinct event interval. Check a buffer-only overlap, exact occupied adjacency and zero-buffer behaviour using the relevant case's data.
-2. In the authorised catalogue editor change buffers after two synthetic adjacent approved bookings. Check returned affected-booking links/warnings and both persisted bookings; no booking should be silently moved, cancelled or deleted. The previously recorded raw-warning/no-event-name display issue remains to assess, not a claimed repair.
-3. Distinguish write direction: refuse a new booking/approval against an existing block, but save a later outage over an approved booking and flag recovery, including setup/turnaround-only overlap. Staff recovery handles outage-only warnings; they do not become pending booking decisions. Restricted opening hours cover the entire occupied interval.
-4. Verify unrelated venue and unauthorised caller behaviour. Keep concurrency, injected failures and historical-row setup in the isolated PostgreSQL tests; do not infer these cases passed from an ordinary UI walkthrough. Live-hold extension checks belong to the recorded KAN-83 dependency and must state their tested scope.
-5. Restore venue buffers/hours and agreed test blocks; record every synthetic booking/event retained and obtain the team's agreement before cleanup. Append the actual MAN outcomes and evidence per attempted case, then update S3-T19. A migration-presence check or another story's manual run does not accept the complete KAN-78 group.
-
-## 25 October 2026 — Arvin contribution reconciliation (Sprints 1–3)
-
-This is a dated evidence backfill prepared with Codex on 25 October, not a new ceremony, Jira transition, test execution or acceptance decision. Historical entries, other members’ ownership and agreed estimates are preserved.
-
-Historical KAN-24 and KAN-51 results retain their test-environment boundaries in [test evidence](test-evidence.md). Before acceptance, complete the outstanding setup/security/diagram checks for KAN-24 and hosted role, venue and session checks for KAN-51 against their existing criteria. The local fixture-token walkthrough is not hosted sign-in evidence. No new case results are added by this historical contribution readback.
-
-## 25 October 2026 — Closeout retest
-
-**Outcome: reported Pass.** The team confirms the fixes work; see [REPORT-20261025-CLOSEOUT-RETEST](test-evidence.md#25-october-2026--closeout-retest-confirmation). The checklist below remains the reusable procedure. Exact execution date, individual executors, build, fixture identifiers and captures are **Not recorded**. The report covers the integrated smoke checks; controlled race/fault-injection assertions remain separately proved by automation.
-
-The full local suites pass in `AUTO-20261025-CLOSEOUT-01`. Historical team manual reports are retained separately as `REPORT-20261025-TEAM-S1/S2/S3`; they do not retest code changed afterwards. Use the current build with agreed synthetic accounts/data, record original values and restore them after the test. Record the tested build, environment, screenshots and leftover data with the results.
-
-1. As Venue Staff, approve a linked replacement for a confirmed event; refresh and verify the replacement/recovery outcome. Check an ordinary confirmed-event request remains non-reviewable (`TC-09-25`).
-2. Place a hold with setup time: the hint must show the buffered occupied start; the exact deadline boundary is accepted, one minute later refused (`TC-14-309`). Create an overlapping outage and verify the hold is released with one notice. Deterministic races remain covered by the isolated PostgreSQL test (`TC-14-308`).
-3. Increase venue buffers around existing bookings. Confirm the warning identifies each event/period and explains the problem; verify bookings are unchanged (`TC-14-307`). Review decision/clarification times must display Singapore time (`TC-04-303`).
-4. Verify an invalid year/offset submitted to each draft date field returns HTTP 400 and leaves the draft unchanged (`TC-03-303`). The automated HTTP/database regression already exercises this without shared data.
-5. Agree on one synthetic held booking, let the enabled Supabase job pass its deadline without manually calling expiry, and verify expiry plus the coordinator's inbox. Job execution itself is verified in `TC-14-310`; the integrated journey/build must be recorded separately. A public app/API URL is not required. KAN-79 uses the same complete local candidate for its integrated queue/allocation check; Sprint 4 confirmation/safety consumers remain future integration work.
-
-Formal story acceptance, Done dates and sprint velocity require the team's review decision; neither local suite counts nor broad historical result reports create that decision.
-
-## KAN-9 integrated local verification
-
-**Status: Not executed.** Use `http://127.0.0.1:5173`, the running Express API, real Supabase Auth and only coordinated synthetic data in the agreed development project. The person enters passwords. Record the actual tested commit, date, executor, fixture IDs and cleanup in a new MAN run and append case results; do not replace existing placeholders.
-
-**26 October setup follow-up:** migration 014 and the test accounts were reported ready. This is setup confirmation, not a completed KAN-9 or KAN-26 manual run. The original preparation steps below remain reusable. The local KAN-26 branch now includes reservation writes; the combined TC-16-09 scenario can be tested after migration 015, with the boundary below superseding the earlier deferral.
-
-### Setup
-
-1. Coordinate migration 014 with the team, then apply `npm run db:migrate` from the intended branch using the agreed development connection. Verify `equipment_types.damaged_quantity` and `maintenance_quantity` exist with zero defaults. It has been tested in isolated PostgreSQL, **not applied to shared Supabase** by this implementation.
-2. Use a Supabase Auth test account mapped through `app_users.supabase_user_id`, with trusted role `TECHNICAL_SUPPORT_STAFF`. Use separate organiser/coordinator/Lead/venue/attendee accounts for denial checks. Do not change your real account's role solely to test.
-3. Prepare an APPROVED synthetic event E-A with an assigned coordinator, an explicit future window and equipment requirement text. A venue booking may remain Pending; equipment checking must work. Prepare EQ-A total 10 / damaged 2 / maintenance 1 and active EQ-B total 5 / no losses. KAN-18's stock editor and KAN-63's request UI are separate work: until available, coordinate fixture rows through Supabase Table Editor/SQL, recording original values and inserted IDs.
-4. For saved-mode and overlap checks, prepare non-CANCELLED `equipment_requests` linked to the correct event and equipment IDs, with exactly matching event windows. RESERVED rows require decision metadata and must satisfy the existing guard. Use a separate synthetic event for competing reservations. Never disable triggers to force a fixture. The automated isolated fixture in `database/tests/equipment/availability.integration.test.ts` shows the required columns; **do not run its cleanup suite on shared Supabase**.
-
-### Manual scenarios
-
-| Cases | Steps | Expected outcome |
-| --- | --- | --- |
-| TC-16-06 / TC-16-08 | Sign in as Technical Support, open **Equipment availability**, select E-A and verify its saved types/quantities/window. Check with venue still Pending. In unsaved mode choose explicit types and quantities. | Correct event and quantities; venue confirmation is not required. Adequate stock shows green **Fulfillable**. No request or reservation is saved by the checker. |
-| TC-16-07 / TC-16-17 | Use the event window 10:00–12:00 Singapore time. Reserve EQ-A 4 elsewhere for 10:00–11:00 and 3 for 11:00–12:00. Request EQ-A 3 plus EQ-B 1, then increase EQ-A to 4. | Operational 7 minus peak 4 gives available 3. Equality is Fulfillable; quantity 4 yields only EQ-A deficit 1. Requested/Rejected/Cancelled rows do not consume stock. Results show all quantities, checked time and advisory wording. |
-| TC-16-10 | Enter February 30, end equal/before start and quantities 0, -1 or 1.5. Check a valid leap day and exact adjacency. | Invalid fields are identified; no assessment is sent for invalid form input. Valid dates work; adjacent periods do not overlap. |
-| TC-16-13 / TC-16-15 | Check combined saved same-type lines including an existing RESERVED line; compare the same quantities in unsaved mode. Try an empty event, inactive stock and a saved period mismatch. | Saved demand counts its existing reservation once; unsaved demand excludes none. Empty/mismatched saved checks do not pass; inactive stock shows its deficit. |
-| TC-16-11 / TC-16-14 / TC-16-16 | After a result, edit an input; change the event's saved requirements in a separate coordinated session and recheck; sign out or use another role and open the URL directly. Optionally use browser offline mode to check a failed request. | Old result clears. Changed source requires refreshed context and a new check; current stock changes are reflected. Unauthorised users cannot see private equipment context. Failed/late responses do not restore a green result. |
-| TC-16-12 | Compare event/request/reservation/history/notification records before and after saved and unsaved checks; reload. | No persisted change caused by the check. Record and restore only authorised fixture changes; list anything deliberately retained. |
-
-**TC-16-09 remains Not executed until the complete combined scenario runs.** On the KAN-26 branch, first check availability, then reserve from the saved-request panel and refresh the checker. A green advisory result does not reserve equipment; the reservation rechecks operational capacity under lock. KAN-18 and KAN-63 integrations need rechecking when their editors/workflows arrive.
-
-## KAN-26 integrated local verification
-
-**Manual status: Not executed.** The reusable specifications are TC-17-01–08 (TC-17-02 is a database integration case), with automation TC-17-101–110 recorded separately in [AUTO-20261026-KAN26-01](test-evidence.md#26-october-2026--kan-26-equipment-reservations). Run the complete local frontend/API with real Supabase login. Record the actual build, date, executor, account aliases, fixture IDs, original values and cleanup. The user enters passwords; never commit credentials.
-
-### Setup and migration
-
-1. The user reports migration 014 and test accounts are ready. Coordinate additive **015_equipment_reservations.sql** with the team, then run `npm run db:migrate` using the agreed development connection. Check `schema_migrations` contains 015 and `equipment_requests` has `released_at`, `released_by`, `release_reason`, `release_cause`; `notifications` has `equipment_request_id`. This implementation applied 015 only to disposable local PostgreSQL.
-2. Start `npm run dev` on this branch. Sign in as the mapped **TECHNICAL_SUPPORT_STAFF** test account. Use separate assigned/unrelated coordinators and the other application roles for permissions and inbox checks.
-3. Agree on synthetic APPROVED event E-A assigned to C1, with future event window **12 January 2031, 10:00–12:00 Singapore time**. Prepare active EQ-A operational 5 and EQ-B operational 2, and saved REQUESTED lines A3/B1 using exactly that event window. Venue confirmation is unnecessary. Until KAN-63's request entry is integrated, an authorised teammate must create these labelled fixture rows via the database; plain free-text equipment requirements and unsaved what-if checks do not create them. Use the isolated integration fixture only as a column reference, never run its cleanup tests against Supabase.
-4. Use a separate E-B and two browser sessions for conflicts. Record rows before changes. Do not disable capacity/history triggers, mutate real events, or force lifecycle transitions in the shared database to claim a UI acceptance test.
-5. Use fresh labelled events/request rows for each independent case. A cancelled reservation is immutable history and cannot be reset to REQUESTED or reserved again; create a fresh request for later scenarios and record retained history/cleanup. For TC-17-04 completion, use a separate eligible CONFIRMED event whose valid period has already ended at the actual test time; the default future period is only for planning/reservation scenarios. Wait for the owning lifecycle workflow before claiming its integrated acceptance.
-
-### Checks to perform
-
-| Case | Action | Expected observation |
-| --- | --- | --- |
-| TC-17-01; TC-16-09 | Open **Equipment availability → E-A → Load saved reservations**, reserve A3 and confirm; refresh the page and saved-mode checker. | The complete saved line is RESERVED with its original quantity/window and decision audit. Venue/event state stays unchanged. Availability counts the reservation once; readiness remains pending while B1 is unresolved. |
-| TC-17-03 | Sign in as C1, unrelated C2 and deciding Technical Support T after a reservation; inspect inboxes and links. Repeat the unchanged API action only with its captured version. | C1 and T each get one confirmation; C2 gets none. T's link opens equipment planning without exposing general event detail. Repeating the same outcome creates no duplicate notice. Closed-event notice behaviour is checked after lifecycle integration. |
-| TC-17-05 | Choose **Cancel reservation**, try an empty reason, then enter a valid reason and confirm. Refresh and inspect the recorded row. | Empty reason refused. Cancellation preserves the original reservation decision and adds release actor/time/reason/cause; stock total does not increment. CONFIRMED events show read-only controls. |
-| TC-17-06 | Use organiser/coordinator/Lead/Venue Staff/Attendee and signed-out sessions to open the URL and call GET/reserve/cancel endpoints. | Unauthorised reads/writes fail with 401/403, reveal no protected context and cause no data changes. |
-| TC-17-07 | Reserve A3 then B1; compare empty/unresolved/rejected/shortfall fixtures. Run an unsaved what-if check and inspect rows. | Only all active full lines within current stock show **Equipment ready**. Empty or unsuccessful requirements never imply readiness. What-if checks never save a reservation. |
-| TC-17-08 | Use two sessions with the same saved context. Reserve in one, retry from the other, then change a separate saved line through an agreed fixture update and retry the old version. Test offline/error recovery and sign-out. | Exact unchanged replay is harmless. Changed source requires refresh and deliberate retry; stale readiness clears. An uncertain response is resolved by reading current state, not by assuming a second write is necessary. |
-| TC-17-02 | Inspect the recorded isolated-database race evidence; optionally run the suite against a disposable local test database. | At most one competing reservation exceeds neither the operational pool nor the peak constraint. Do not run cleanup/fault injection on shared Supabase. |
-
-**Pending owning-story integration:** TC-17-04 requires the KAN-62 cancellation and KAN-10 completion UI/API journeys; the underlying real database transitions are automated here. KAN-18's stock editor must be checked against TC-16-01–05, and KAN-63 must provide saved request entry/revision and its explicit Not Required policy. Empty requests are not treated as Not Required by this branch. KAN-80's other notification triggers and KAN-61's final confirmation consumer are separate work. These dependencies do not become manual Pass from the reservation unit/database/browser tests.
-
-Append each actual result under a new MAN run, retain earlier Not executed placeholders, register captures and list any fixture data retained. Keep S4-T04 unaccepted until its complete active criteria and Definition of Done are demonstrated.
-
-## KAN-61 / KAN-84 review-follow-up manual E2E acceptance
-
-**Status: Not executed.** After the team applies the forward 022 migration with the normal migration runner, use the complete local frontend/API, real Supabase sign-in and agreed synthetic events. Record the tested build, date, executor, original values, results and cleanup in a new MAN run. Never run the isolated-database cleanup suites against shared Supabase.
-
-1. Create an approved booking next to an operational block with zero buffers. Increase the venue turnaround until it overlaps the block. Confirmation must become unavailable and a direct confirm attempt must fail without changing status/history/notices. Restore the buffer and verify confirmation succeeds.
-2. As Safety Officer, inspect opening/closing hours and setup/turnaround buffers. Request Venue changes, Technical changes, and both on separate suitable events. As assigned coordinator, try changing only notes and, separately, only an unrequested area: resubmission remains refused. Perform the requested planning work through the venue/equipment workflows. Both-area requests require changes in both before submission. A new round needs an officer decision; it is not automatically approved.
-3. On a CONFIRMED event with requested technical changes, replace/re-reserve equipment through coordinator and Technical Support screens. Resubmission closes that remediation window. CANCELLED/COMPLETED events must never advertise reservation actions, even with an old Request Changes round.
-4. Start preparation after current approval. Introduce an agreed pending event change or other readiness blocker, then refresh as organiser/coordinator: preparation is blocked even if the approval fingerprint itself is unchanged. Restore readiness through its owning workflow and verify the current eligibility again.
-5. Restore agreed venue values and record all retained synthetic requests, immutable review rounds and notifications. Record permissions and notification observations using the existing KAN-61/KAN-84 specifications. Database races and fault injection remain automated integration evidence, not an implied manual Pass.
-
-Migration 022 preserves original 021 history and backfills missing per-area baselines using the arrangements at upgrade time. Legacy Request Changes rounds may therefore require a new relevant update before resubmission. Never rewrite a decided round or mark earlier unperformed tests as passed.
-
-## 30 October 2026 — Focused local E2E acceptance for KAN-80, KAN-82 and KAN-84
-
-**Status: Not executed.** These are focused retests of the changed behavior and the corrected KAN-80 action-prompt interpretation. Use the complete local frontend (`http://127.0.0.1:5173`) and Express API, real Supabase authentication and only agreed synthetic data in the shared development database. Confirm the current branch's required migrations and mapped roles before execution. The person signs in and enters their own password. Record the actual build, date, executor, account aliases, event/booking/review/change IDs, original values, observations and retained data in a new MAN run. This preparation is not an execution or acceptance decision.
-
-Prepare an organiser O1, currently assigned coordinator C1, unrelated coordinator C2, Venue Staff V1 and Safety Officer S1; use another permitted Safety Officer S2 when available for the reviewer-switch observation. Agree on an eligible synthetic event E-A with multiple venue arrangements, a separate eligible event E-B, two undecided safety review rounds, and an event eligible for an organiser's significant-change request. For the arrangement check, give one saved arrangement a period distinct from its parent's and explicit layout/notes. Create the pending comparison arrangement before introducing an agreed competing hold, approved booking or block; ordinary request validation may refuse creation once that conflict exists. Record existing hours, buffers, blocks, reservations and assignments before any changes. Create comparison fixtures through their authorised workflows; never run cleanup, concurrency or fault-injection suites against shared Supabase.
-
-| Manual E2E case | Focused connected steps | Expected observation |
-| --- | --- | --- |
-| **TC-12-20 — KAN-82 saved arrangement journey** | As C1 open E-A and an arrangement's **Check suitability** link. Compare the saved venue, own interval, layout and notes with the parent event information. Confirm an explicit interpretation and check one matching and one failing arrangement. Include a selected approved booking with no other conflict, and a separate pending arrangement overlapping another live hold/approved booking or operational block. Change an agreed source through its owning workflow, then recheck the old context. Switch arrangements and try the saved link as C2 and after sign-out. | Assessment uses the selected arrangement's period/layout and current venue information; its own reservation is excluded while other rows still conflict. The check makes no persisted change. Source changes require refreshed details and confirmation. Navigation clears the previous interpretation/result; unrelated or signed-out viewers cannot obtain protected context. |
-| **TC-06-445 — KAN-84 current-review journey** | As S1 open round A, choose a decision and enter notes, then open round B through the queue. Sign out and sign in again, using S2 for the account-switch observation when available. On a fresh round save one permitted decision and refresh to verify persistence. On another undecided test round, briefly go offline before Save, restore connectivity and reload the page to reconcile the saved state before considering a retry. | The heading, arrangements and controls always belong to the current round/reviewer. Old selections, notes and messages clear. Saving blocks duplicate actions. A confirmed response and refreshed record agree on the saved decision; a failed response never claims a save, and failed reconciliation leaves controls unavailable until reload. Record actual persisted outcomes rather than assuming the offline attempt committed or failed. |
-| **TC-20-431 — KAN-80 submission notification and current-access link** | As O1 submit a permitted significant-change request X1 for an APPROVED/CONFIRMED event assigned to C1. Refresh O1/C1 inboxes and follow both notices. Check an unrelated user. Where an agreed test handover is available, reassign the synthetic event through the Lead workflow and revisit C1's old notice/link after refresh. | O1 sees the submission acknowledgement; C1 sees **Change request to review** linking to `/reviews/<eventId>?change=<changeId>`, and O1's link uses `/events/<eventId>?change=<changeId>`. The pending change is the requested review action; no separate reverse request-for-action transition is required. Unrelated users receive no protected notice, and former access does not permit protected event/change content after handover. |
-
-The deterministic checks remain in their automated scopes: TC-12-15–19 cover saved-source calculations, self-only conflict exclusion, source changes, authorization and UI context; TC-06-442–444 cover route/reviewer changes and uncertain-write reconciliation; TC-20-405 covers the significant-change submission prompt. Isolated component tests control delayed responses; PostgreSQL integration tests cover real authorization, conflicts and persistence; browser tests with substituted API responses are browser/UI integration. Optional slow-network navigation during the manual safety journey is supplementary observation, not proof that every race occurred. Do not turn an automated case into a manual Pass merely by completing a related UI journey.
-
-Restore agreed mutable values after the run and obtain the team's agreement before deleting shared test data. Preserve immutable decisions and history; list any synthetic rows and notifications retained. Append each attempted manual case's actual result to `test-executions.csv`, with steps and evidence in `test-evidence.md`, retaining earlier placeholders/failures. Record unavailable observations explicitly and keep story acceptance separate from the test result.
-
-## 1 November 2026 — release regression retests
-
-Run these **manual E2E acceptance** checks against the complete local app/API and shared development Supabase only after coordinating and applying migration 023. The earlier failures in MAN-20261101-02 remain historical. Append new executions for `TC-06-446`, `TC-06-447` and `TC-15-108`; do not overwrite them or mark mocked browser tests as connected passes.
-
-1. **Safety restoration (TC-06-446 / R20):** use the dedicated test venue and an event with a current approved round and preparation started. Record original venue values. Change a relevant buffer after 023, then restore it **without opening the event in between**. Reload the coordinator page: the old round must remain out of date and preparation blocked. Submit a fresh round, approve as Safety Officer, then resume preparation as assigned coordinator. Check the original decision/history remains and record the new round. Restore only agreed test configuration; keep resulting review history.
-2. **Readiness refresh (TC-06-447 / R11/R14):** on an APPROVED event whose confirmation checklist is Ready, add a second pending venue request. Without reloading the page, expect loading followed by Not ready and no usable Confirm action. After a staff decision, use Refresh booking requests and expect the summaries to reread current readiness. Also check equipment changes and an unavailable-API retry: stale Ready/actions must not remain visible. A failed/unknown save must not be treated as successful. Use a synthetic request and account for its occupied interval.
-3. **Cancellation reason (TC-15-108 / R13):** have Technical Support reject a test line with one reason; cancel it as its assigned coordinator using a different reason. Immediately and after reload, the cancelled line must show **Release reason** with the cancellation reason and **Previous review reason** with the original rejection reason. Existing PROBE line `144fb6b8-9d99-44a7-a740-46b6d76c1138` may be read for the retained historical example; use a separate test line for another write.
-
-Record build, actual date/executor, observed result, affected record IDs and retained data. Missing metadata is Not recorded. Post-repair connected execution is currently **Not executed**; the full release walkthrough's earlier observations and R24 release gate are not replaced by these regression tests.
-
-**Additional connected smoke after test hardening — Not executed:** run TC-01-213 on the final local candidate: real organiser login, owned request, logout and protected-page reload (401 /api/auth/me), then coordinator login with current identity/access and invalid-login retry. Also verify a signed-out safety-queue visit shows the sign-in message. Controlled delayed-response/cookie-order tests remain automated evidence; this smoke does not prove every race or token revocation.
+</details>

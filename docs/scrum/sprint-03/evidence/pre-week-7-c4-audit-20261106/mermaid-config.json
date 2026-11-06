@@ -1,0 +1,21 @@
+{
+  "theme": "base",
+  "layout": "elk",
+  "themeVariables": {
+    "fontFamily": "Arial, sans-serif",
+    "fontSize": "16px",
+    "primaryColor": "#eff6ff",
+    "primaryTextColor": "#0f172a",
+    "primaryBorderColor": "#64748b",
+    "lineColor": "#475569",
+    "edgeLabelBackground": "#ffffff"
+  },
+  "flowchart": {
+    "htmlLabels": true,
+    "nodeSpacing": 55,
+    "rankSpacing": 100,
+    "padding": 22,
+    "wrappingWidth": 240,
+    "useMaxWidth": false
+  }
+}

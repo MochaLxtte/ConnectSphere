@@ -1,5 +1,24 @@
 # Sprint 3 evidence register
 
+The accounts cover the **4 October planning session, six standups and the 17 October review and retrospective**. The table retains the versions supplied in the earlier ZIP on 6 November. The individual review file adds Ernest’s report that all planned manual cases passed and their individual entries still needed writing. [Current review, cue 11](meetings/current/review.docx) · [All meeting versions](../../review-testing.md#which-meeting-files-to-read)
+
+<a id="team-input-needed"></a>
+
+## Sprint 3 meeting accounts
+
+| ID | Meeting account | What it supports |
+| --- | --- | --- |
+| S3-E30 | [Planning](meetings/planning.docx), 4 October, cues 01–85 | Goal, capacity assumptions, six change requests, estimate rationale, volunteered allocation, shared checks and 13 stories / 63 SP forecast. Cues 46 and 67 leave individual ballots and planning-stage reviewer nominations unspecified. |
+| S3-E31 | [Daily standups](meetings/daily.docx), 6, 8, 10, 13, 15 and 17 October | Six named contributions per meeting. The interval blocker raised on 8 October was reported resolved on 10 October. The later standups describe integrated examples and readiness for review. |
+| S3-E32 | [Review](meetings/review.docx), 17 October, cues 01–13 | Named contributions, Ryan's expiry question, Irfan's clarification and acceptance of 13 stories / 63 SP with no carry-over. The 26 October [collective confirmation](#s3-e28--collective-review-acceptance-confirmation-26-october-2026) supplies the decision behind the final pause. |
+| S3-E04 | [Retrospective](meetings/retrospective.docx), 17 October, cues 01–11 | Six contributions, earlier action follow-up and the commitments Ryan, Tristan, Ernest and Kai Jie took into Sprint 4. Final group responses and amendments are unspecified. |
+| S3-E03 | [Supplied Sprint 3 release chart and checkpoint table](../../ws5-evidence/board-history.md#sprint-3) | The chart shows 111 of 174 SP accepted and projects a 26-SP shortfall at the previous average. The separate table records the sprint’s 63-SP opening balance and zero carry-over. |
+| S3-E01 / S3-E02 | Original opening and closing board images | The team confirmed on 6 November 2026 that neither original screenshot exists. The dated planning and review accounts identify opening scope and closing outcomes. |
+
+## Dated development and verification entries
+
+The team selected 13 stories / 63 SP at planning on 4 October. The 16 October exports document the administrative reconstruction of that allocation. The entries below retain the dates when the board, code or tests were examined. Later source reviews, tests and repairs apply to their own builds. The team’s formal sprint decision appears in the [review](../review.md), and the meeting-level chart inputs appear in [daily progress](../daily-progress.md#burndown-data).
+
 ## S3-E29 — KAN-17, KAN-67 and KAN-80 development verification, 29 October 2026
 
 | Artifact | Evidence | Limits |
@@ -11,29 +30,31 @@
 | [Attendee desktop](kan1780-20261029/attendee-desktop.png), [manager mobile](kan1780-20261029/roster-mobile.png) | Automated Chromium captures with synthetic API fixtures, visually inspected at desktop and narrow widths. | Screenshots establish layout only, not integrated acceptance. |
 | [Component diagram](../../../architecture/exports/c3-components.png), [class diagram](../../../architecture/exports/class.png), [withdrawal sequence](../../../architecture/exports/seq-registration-withdrawal.png), [planning ERD](../../../architecture/exports/erd-planning.png), [detailed ERD](../../../architecture/exports/erd-database.png) | Rendered from the current Mermaid sources with Mermaid CLI after the registration/notification changes. | Architecture design evidence; not a test execution or acceptance result. |
 
-**Current selected scope is 13 parents / 63 SP; Sprint 4 has 15 parents / 63 SP.** S3-E05/E07 below retain the earlier 97-point snapshot and its actual validation. The later allocation is separately registered as S3-E08; a scope move is not product delivery.
+**The 4 October Sprint 3 forecast was 13 stories / 63 SP.** On 16 October S3-E05/E07 captured and validated a board state with 97 SP assigned to Sprint 3. S3-E08 captured the board later that day with 13 parents / 63 SP in Sprint 3 and 15 parents / 63 SP in Sprint 4. The 34-point difference measures the administrative reallocation.
 
 The original `jira-sprint-state-2026-10-16.json` snapshot is preserved. The shared CSV/workbook links are refreshed working exports and now show the later allocation; use the separate snapshots to compare earlier and later states, rather than treating a refreshed workbook as an immutable historical capture.
 
+The board-capture requests in the dated 16 and 26 October entries below were closed on 6 November 2026, when the team confirmed the original opening and closing screenshots do not exist.
+
 Index of every captured artifact (screenshots, Jira exports, CI runs, transcripts). Store small files in this folder; link large ones. Never commit video files.
 
-**15 October 2026 pre-planning inputs:** [current Jira export](../../../submission/1/jira-backlog-2026-10-15.csv), [AUTO-20261015-01](../../../testing/test-evidence.md#15-october-2026-post-sprint-implementation-audit) and its [retained summary](../../../testing/coverage-reports/2026-10-15-post-sprint-audit.txt) support preparation only. The export and tests are not a Sprint 3 starting board or Sprint 1/2 close-day evidence. The reserved S3-E01–S3-E04 artifacts below remain missing; S3-E05 records the current administrative export separately.
+**15 October 2026 pre-planning inputs:** [current Jira export](../../../archive/jira-exports/jira-backlog-2026-10-15.csv), [AUTO-20261015-01](../../../testing/test-evidence.md#15-october-2026-post-sprint-implementation-audit) and its [retained summary](../../../testing/coverage-reports/2026-10-15-post-sprint-audit.txt) support preparation only. The export and tests are not a Sprint 3 starting board or Sprint 1/2 close-day evidence. At this checkpoint the meeting accounts had yet to be supplied. The current source register above identifies those accounts and the supplied release chart.
 
 | ID | What | Captured date | File or link | Used by |
 | --- | --- | --- | --- | --- |
-| S3-E01 | Jira board at sprint start | Not recorded | Not recorded; a later screenshot cannot establish 4 October board state | planning.md |
-| S3-E02 | Jira board at sprint end | Not recorded | Not recorded | review.md |
-| S3-E03 | Jira burndown chart at sprint end | Not recorded | Not recorded | daily-progress.md, release burndown |
-| S3-E04 | Retrospective board or notes | Not recorded | Not recorded | retrospective.md |
+| S3-E01 | Board screenshot at sprint start | No original capture date | Team confirmed on 6 November 2026 that the opening screenshot does not exist. | planning.md |
+| S3-E02 | Board screenshot at sprint end | No original capture date | Team confirmed on 6 November 2026 that the closing screenshot does not exist. | review.md |
+| S3-E03 | Original native burndown export | Not recorded | Original unavailable. See the [supplied release chart and meeting checkpoint table](../../ws5-evidence/board-history.md#sprint-3). | daily-progress.md, release burndown |
+| S3-E04 | Retrospective account | 17 October meeting, supplied 6 November | [Retrospective account](meetings/retrospective.docx). Original board image unavailable. | retrospective.md |
 
 ## Required at sprint close
 
-- [ ] Board at start and end
-- [ ] Burndown chart
-- [ ] Review notes
-- [ ] Retrospective board
-- [ ] Jira backlog export (for submission folder 1)
-
+| Item | Disposition |
+| --- | --- |
+| Opening and closing board images | Team confirmed on 6 November 2026 that neither screenshot exists. Collection closed. |
+| Burndown | [Reported opening and closing balances](../../ws5-evidence/board-history.md). Intermediate daily balances unavailable. |
+| Review and retrospective | [Review account](meetings/review.docx) and [retrospective account](meetings/retrospective.docx), both dated 17 October. |
+| Backlog export | [Submission folder 1](../../../submission/1/README.md) retains the dated export and workbook. |
 
 ## Current administrative capture — 16 October 2026
 
@@ -41,7 +62,7 @@ Jira was read after the authorised edits. S3-E05 is a current export, not a spri
 
 | ID | Artifact | Source / result | Limits |
 | --- | --- | --- | --- |
-| S3-E05 | [Jira sprint-state snapshot](jira-sprint-state-2026-10-16.json), [Jira CSV](../../../submission/1/jira-backlog-2026-10-16.csv) and [master workbook](../../../submission/1/product-backlog.xlsx) | Live project KAN, all 63 issues: 37 parents / 26 subtasks; 145 parent SP. Sprint 3 id 67 Active with 23 To Do parents / 97 SP. Sprint 2 id 34 closed administratively 16 October 02:06 +08. | Current state only. No historical start/end board, acceptance or burndown is reconstructed. |
+| S3-E05 | [Jira sprint-state snapshot](jira-sprint-state-2026-10-16.json), [Jira CSV](../../../archive/jira-exports/jira-backlog-2026-10-16.csv) and [master workbook](../../../submission/1/product-backlog.xlsx) | Live project KAN, all 63 issues: 37 parents / 26 subtasks; 145 parent SP. Sprint 3 id 67 Active with 23 To Do parents / 97 SP. Sprint 2 id 34 closed administratively 16 October 02:06 +08. | Current state only. No historical start/end board, acceptance or burndown is reconstructed. |
 | S3-E06 | [Selected planning record](../planning.md) and [current story/test plans](../sprint-backlog.md) | Earlier planning allocation of owners/reviewers, estimates and policies; full Jira wording retained. | Not a six-person vote, actual implementation or executed acceptance test. |
 
 Browser board capture was attempted on 16 October but reached the Atlassian sign-in page. Screenshot **Not recorded**; connector export verified independently. No credentials were entered. Capture a board screenshot after signing in and retain its actual capture date.
@@ -60,7 +81,7 @@ This supersedes the earlier current-state allocation while preserving its record
 
 | ID | Artifact | Source / purpose | Limits |
 | --- | --- | --- | --- |
-| S3-E08 | [Rebalanced Jira snapshot](jira-rebalanced-state-2026-10-16.json), [current CSV](../../../submission/1/jira-backlog-2026-10-16.csv), [master workbook](../../../submission/1/product-backlog.xlsx) | Current administrative selection: Sprint 3 id 67 Active, 13 parents / 63 SP; Sprint 4 id 68 Future, 15 parents / 63 SP. Master inventory 42 parents / 174 SP plus 26 subtasks. | All selected parents To Do; no hosted test, story acceptance, start-board reconstruction or historical velocity is implied. |
+| S3-E08 | [Rebalanced Jira snapshot](jira-rebalanced-state-2026-10-16.json), [current CSV](../../../archive/jira-exports/jira-backlog-2026-10-16.csv), [master workbook](../../../submission/1/product-backlog.xlsx) | Current administrative selection: Sprint 3 id 67 Active, 13 parents / 63 SP; Sprint 4 id 68 Future, 15 parents / 63 SP. Master inventory 42 parents / 174 SP plus 26 subtasks. | All selected parents To Do; no hosted test, story acceptance, start-board reconstruction or historical velocity is implied. |
 | S3-E09 | [Change chronology](../../../requirements/change-requests.md) and [current planning](../planning.md) | Receipt on 2 October, confirmed on 16 October; backlog reconstruction, notification split and 63/63 allocation | User-reported receipt and current refinement provenance; not a six-member vote or evidence that the final allocation existed on 4 October. |
 
 Re-run document/export validation after all changes are complete and record the actual results separately. S3-E07's earlier 18/18 workbook and criterion counts do not validate this later snapshot automatically. No application tests have been executed by this planning update.
@@ -203,7 +224,7 @@ Owned KAN-34/KAN-78 merge, CI and acceptance limits remain in the preceding 25 O
 | [closeout-test-summary-20261025.txt](closeout-test-summary-20261025.txt) | Pre-fix findings, local full-suite/coverage results and limitations |
 | [closeout-build-20261025.json](closeout-build-20261025.json) | Base commit and SHA256of tested uncommitted code/test files |
 | [supabase-hold-expiry-20261025.json](supabase-hold-expiry-20261025.json) | Approved pg_cron configuration and observed successful scheduled executions; no application data |
-| [Targeted Jira CSV](../../../submission/1/jira-sprint3-targeted-20261025.csv) | Current13 Sprint 3parent statuses/owners/criteria; not a full-project export |
+| [Targeted Jira CSV](../../../archive/jira-exports/jira-sprint3-targeted-20261025.csv) | Current13 Sprint 3parent statuses/owners/criteria; not a full-project export |
 | [Venue-write sequence](../../../architecture/exports/seq-venue-write-locking.png) | Current gate/row ordering and atomic outcome/notifications |
 
 Runs: `AUTO-20261025-CLOSEOUT-BASELINE`, `AUTO-20261025-CLOSEOUT-01`, `DOC-20261025-NOTIFICATION-SPLIT-01`, `OPS-20261025-HOLD-EXPIRY-01`. None establishes historical sprint-end acceptance, new velocity or a deployed browser journey. Current-build manual repair retests remain pending.
@@ -215,7 +236,7 @@ Runs: `AUTO-20261025-CLOSEOUT-BASELINE`, `AUTO-20261025-CLOSEOUT-01`, `DOC-20261
 | Artifact | Source and scope |
 | --- | --- |
 | [REPORT-20261025-CLOSEOUT-RETEST](../../../testing/test-evidence.md#25-october-2026--closeout-retest-confirmation) and [execution register](../../../testing/test-executions.csv) | Latest repair smoke reported Pass in chat on 25 October; six separate case rows. Actual execution date, individual executors, exact build, captures and cleanup Not recorded. Earlier outcomes retained. |
-| [DoD amendment](../../definition-of-done.md#local-acceptance-policy--25-october-2026) | Complete integrated local acceptance replaces application-hosting prerequisite from this confirmation onward; real authentication, persistence and scheduled-job checks remain. |
+| [DoD amendment](../../archive/definition-of-done.md#local-acceptance-policy--25-october-2026) | Complete integrated local acceptance replaces application-hosting prerequisite from this confirmation onward; real authentication, persistence and scheduled-job checks remain. |
 
 This report closes the manual repair follow-up after S3-E25. It is separate from historical review reports and formal per-story closure decisions. Current code/test hashes and automated suite results are unchanged.
 

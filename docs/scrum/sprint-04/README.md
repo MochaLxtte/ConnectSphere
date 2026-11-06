@@ -1,43 +1,53 @@
-# Sprint 4 overview
+# Sprint 4
 
-**26 October 2026 combined handoff:** `feat/KAN-9-KAN-26-equipment-workflow` contains all seven KAN-9 and six KAN-26 implementation, test and documentation commits. Use this branch for the combined pull request into `main`. Earlier branch names below identify the original development/test sources. The verified code/test commit remains `b29dc1261937c4f66708ae35d043779737c99e2e`; the handoff changes documentation only. Migration 015, integrated manual acceptance and independent review remain pending.
+Sprint 4 ran from **18 to 31 October 2026**. The team selected **15 stories / 63 story points (SP)** to complete arrangements, registration, event changes and safety-approved preparation. At the 31 October review the six members discussed the completed work and the group accepted all 15 selected stories together. **Accepted: 63 SP. Carry-over: 0 SP.** The recorded assent occurs at 03:39–03:57. The project’s formal release decision is recorded separately. [Review](review.md) · [Release decision](../../submission/release-record.md#release-decision)
 
-**26 October 2026 reservation follow-up:** KAN-26 is implemented locally on `feat/KAN-26-equipment-reservations` with KAN-9 included. Both remain In Progress / Tristan (11 SP together); integrated manual acceptance **Not executed**, acceptance **Not assessed**. Migration 014/account setup reported complete; 015 shared application and dependent UI acceptance remain pending. [S4-E12](evidence/README.md#kan-26-implementation-verification--26-october-2026) links automated verification. No sprint ceremony or Done points are inferred.
+<a id="team-input-needed"></a>
 
-**26 October 2026 development update:** KAN-9 is implemented and verified locally on `feat/KAN-9-equipment-availability`, with manual acceptance **Not executed** and acceptance **Not assessed**. Tristan owns KAN-9/KAN-26 (11SP); KAN-26 remains To Do. [S4-E10](evidence/README.md#kan-9-implementation-verification--26-october-2026) records evidence. The dated Future-sprint snapshot below is retained; this development note does not claim a sprint-start ceremony or completed story.
+## Sprint goal
 
-**Estimation status:** The current 63-SP allocation is a planning baseline. Team confirmation of relative estimates, capacity and the sprint commitment is **To agree**; no planning-poker vote is recorded. The 10 to 11 SP selection target is guidance, not an individual quota. Keep existing estimates until a team-agreed change is logged.
+Complete the event journey through equipment arrangements, event lifecycle, registration, ordinary/significant changes, independent venue management and safety-approved preparation; verify the full release and its submission evidence.
 
-**Current release allocation: 15 parent items / 63 SP.** Sprint window: **18–31 October 2026**. Sprint 3 and Sprint 4 each contain 63 SP; this supersedes the earlier 97/29 allocation while keeping 126 SP remaining across the two sprints.
+<a id="read-and-edit-in-this-order"></a>
 
-Scope and estimates follow the recorded planning decisions. Stories are unassigned for team members to choose. Planning votes and meeting attendance are **Not recorded**; see [record preparation](../README.md#record-preparation).
+## Sprint records
 
-| Field | Current value |
+| Order | Document | What the record covers |
+| --- | --- | --- |
+| 1 | [Planning](planning.md) | Confirmed forecast, volunteers, reviewers and integration checkpoints |
+| 2 | [Estimation and capacity](estimation-and-capacity.md) | 150 forecast hours, KAN-84’s two voting rounds and the 63-SP baseline |
+| 3 | [Sprint backlog](sprint-backlog.md) | Selected stories, original criteria and dates of verification |
+| 4 | [Daily progress](daily-progress.md) | 36 member contributions, the equipment blocker and observed point balances |
+| 5 | [Review](review.md) | Group acceptance, all 15 dispositions, two feedback questions and the release boundary |
+| 6 | [Retrospective](retrospective.md) | Six members’ feedback, two agreed handover actions and follow-through status |
+| 7 | [Evidence register](evidence/README.md) | Meeting sources and timestamps plus the dated engineering history |
+
+## Record boundaries
+
+| Item | Account and source |
 | --- | --- |
-| Sprint window | 18–31 October 2026 |
-| Jira state | Future, not started (id 68); planning selection, no implementation or acceptance claimed |
-| Goal | Complete the event journey through equipment arrangements, event lifecycle, registration, ordinary/significant changes, independent venue management and safety-approved preparation; verify the full release and its submission evidence. |
-| Selected scope | 15 parent items / 63 SP; [story cards](sprint-backlog.md) |
-| Unclaimed story pool | 63 SP; target roughly 10–11 SP per member, with whole stories |
-| Independent review | To agree after each owner is chosen; reviewer must be another member; see [planning](planning.md#selected-backlog) |
-| Integration owner | To agree; coordinate contracts, migration order and combined verification |
-| Actual planning attendance / votes | Not recorded |
-| Review / retrospective | Planned 31 October; actual attendance, demonstrated build and outcomes Not recorded |
-| Outcome at close | Not assessed; only whole stories meeting ACs and DoD count |
-| Submission | 6 November 2026, 23:59 Singapore time; final preparation buffer 1–6 November |
+| Planning | 18 October planning account covers six members, a 150-hour forecast, owners for all 15 stories, reviewer pairs and three checkpoints. The capture date is recorded separately when known. [Planning](planning.md) |
+| Daily Scrum | Six member accounts on 20, 22, 24, 27, 29 and 31 October. The equipment-readiness blocker raised on 22 October had cleared by the 24 October standup. [Daily log](daily-progress.md#daily-scrum-log) |
+| Review and retrospective | 31 October at 14:00 and 14:30 SGT respectively. Six members contributed. The recorded review accepts all 15 stories together. The recorded retrospective confirms the handover checklist and the evidence audit. [Review](review.md) · [Retrospective](retrospective.md) |
+| Boards and burndown | The planning video contains a board view. The release chart shows all four sprint outcomes. The separate table records Sprint 4’s 63-SP commitment and zero carry-over. [Chart and sources](../ws5-evidence/board-history.md) |
+| Scrum roles | Arvin facilitated as Scrum Master. Irfan served as Product Owner. Ernest took decisions down and Tristan handled screen/recording duties. Ryan coordinated integration. |
+| Verification | The dated testing records distinguish automated runs, engineering follow-ups and connected manual checks. [Testing report](../../testing/README.md) |
 
-Sprint 4 includes **47 SP** of 12 existing stories relocated before implementation, **3 SP** split from KAN-64 into KAN-80, and **13 SP** for CR-3 (KAN-82, 5) and CR-6 (KAN-84, 8). This is the **final development sprint**: record planning, review, retrospective and one Daily Scrum live, then register the links in the [recording register](../final-sprint-recordings.md). The future sprint has not been started and no 18 October planning meeting is claimed to have occurred. Reconcile actual Sprint 3 completion/carry-over at that meeting.
+The final sprint has a [recording register](../final-sprint-recordings.md). The code freeze was 1 November at 23:59 SGT. November verification retains its actual dates outside the sprint window.
 
-**16 October ownership update:** stories are unassigned for team members to choose, targeting roughly **10–11 SP each per sprint / 21 SP across both**. Keep whole estimates and dependencies; choose another member to review. The integration lead is **To agree**. See the [selection rules](planning.md#selected-backlog).
+## Historical records
 
-## Records
+[Preserved pre-cleanup record](archive/2026-11-05/README.md) contains the original dated updates, earlier preparations and source limitations.
 
-| Record | Purpose |
-| --- | --- |
-| [planning](planning.md) | Goal, selection, ownership, dependencies and decisions |
-| [estimation and capacity](estimation-and-capacity.md) | Relative estimates, changes and available effort |
-| [sprint backlog](sprint-backlog.md) | Full story criteria and acceptance-test plan |
-| [daily progress](daily-progress.md) | Own-member Scrum rows, dated changes and observed burndown |
-| [review](review.md) | Actual demonstration and acceptance outcome |
-| [retrospective](retrospective.md) | Actual member feedback and agreed actions |
-| [evidence](evidence/README.md) | Captured artifacts and their limits |
+<details>
+<summary>Earlier section links</summary>
+
+<a id="sprint-4-overview"></a>
+
+[Sprint 4 overview](archive/2026-11-05/README.md#sprint-4-overview)
+
+<a id="records"></a>
+
+[Records](archive/2026-11-05/README.md#records)
+
+</details>

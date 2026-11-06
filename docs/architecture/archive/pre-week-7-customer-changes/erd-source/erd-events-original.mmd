@@ -1,0 +1,58 @@
+erDiagram
+  APP_USERS ||--o{ EVENT_REQUESTS : organises
+  APP_USERS o|--o{ EVENT_REQUESTS : coordinates
+  EVENT_REQUESTS ||--o{ EVENT_CLARIFICATIONS : has
+  EVENT_REQUESTS ||--o{ EVENT_REVIEWS : has
+  EVENT_REQUESTS ||--o{ EVENT_STATUS_HISTORY : records
+  EVENT_REQUESTS ||--o{ COORDINATOR_ASSIGNMENTS : "assigned through"
+  APP_USERS ||--o{ EVENT_CLARIFICATIONS : requests
+  APP_USERS ||--o{ EVENT_REVIEWS : reviews
+  APP_USERS ||--o{ COORDINATOR_ASSIGNMENTS : coordinates
+  APP_USERS {
+    uuid id PK
+    text email UK
+    text role
+    uuid supabase_user_id UK "nullable until account provisioned"
+  }
+  EVENT_REQUESTS {
+    uuid id PK
+    uuid organiser_id FK
+    uuid coordinator_id FK "nullable; current assignment"
+    text status "nine states"
+    text name "draft fields nullable"
+    timestamptz starts_at
+    timestamptz ends_at
+    integer expected_attendance
+    boolean registration_required
+    integer registration_capacity "nullable; NULL is unlimited"
+    timestamptz registration_opens_at
+    timestamptz registration_closes_at
+  }
+  EVENT_CLARIFICATIONS {
+    uuid id PK
+    uuid event_request_id FK
+    uuid requested_by FK
+    text message
+    text response "nullable until answered"
+  }
+  EVENT_REVIEWS {
+    uuid id PK
+    uuid event_request_id FK
+    uuid reviewed_by FK
+    text decision
+    text reason "nullable"
+  }
+  EVENT_STATUS_HISTORY {
+    uuid id PK
+    uuid event_request_id FK
+    text from_status "null on insert"
+    text to_status
+    uuid changed_by FK "from app.actor_id"
+  }
+  COORDINATOR_ASSIGNMENTS {
+    uuid id PK
+    uuid event_request_id FK
+    uuid coordinator_id FK
+    uuid assigned_by FK
+    timestamptz unassigned_at "nullable; one active row per request"
+  }

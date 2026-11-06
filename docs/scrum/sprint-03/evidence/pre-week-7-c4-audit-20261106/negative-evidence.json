@@ -1,0 +1,97 @@
+{
+  "id": "N1",
+  "method": "Full pinned Git tree plus complete mounted-router and frontend-route source inspection",
+  "commit": "b981f1133750e7ddd42ac412651c915cb4485418",
+  "backend_files": [
+    "backend/src/app.ts",
+    "backend/src/config/env.ts",
+    "backend/src/db/connection.ts",
+    "backend/src/db/pool.ts",
+    "backend/src/modules/auth/router.ts",
+    "backend/src/modules/auth/supabase.ts",
+    "backend/src/modules/auth/types.ts",
+    "backend/src/modules/auth/user-repository.ts",
+    "backend/src/modules/events/assignment-router.ts",
+    "backend/src/modules/events/assignment.ts",
+    "backend/src/modules/events/clarification-router.ts",
+    "backend/src/modules/events/clarifications.ts",
+    "backend/src/modules/events/coordinator-access.ts",
+    "backend/src/modules/events/create-draft.ts",
+    "backend/src/modules/events/draft-eligibility.ts",
+    "backend/src/modules/events/draft-update-input.ts",
+    "backend/src/modules/events/event-request-detail.ts",
+    "backend/src/modules/events/lifecycle-router.ts",
+    "backend/src/modules/events/lifecycle.ts",
+    "backend/src/modules/events/review-decision.ts",
+    "backend/src/modules/events/review-eligibility.ts",
+    "backend/src/modules/events/review-input.ts",
+    "backend/src/modules/events/review-router.ts",
+    "backend/src/modules/events/submit-eligibility.ts",
+    "backend/src/modules/events/submit-input.ts",
+    "backend/src/modules/events/submit-request.ts",
+    "backend/src/modules/events/submitted-requests-router.ts",
+    "backend/src/modules/events/submitted-requests.ts",
+    "backend/src/modules/events/types.ts",
+    "backend/src/modules/events/update-draft.ts",
+    "backend/src/modules/events/workflow-http.ts",
+    "backend/src/modules/events/workflow-support.ts",
+    "backend/src/modules/notifications/notify.ts",
+    "backend/src/runtime-app.ts",
+    "backend/src/server.ts"
+  ],
+  "frontend_pages": [
+    "frontend/src/features/auth/pages/LoginPage.vue",
+    "frontend/src/features/events/pages/EventDraftEditPage.vue",
+    "frontend/src/features/events/pages/EventRequestDetailPage.vue",
+    "frontend/src/features/events/pages/EventRequestsPage.vue",
+    "frontend/src/features/events/pages/NewEventPage.vue",
+    "frontend/src/features/reviews/pages/ReviewAccessPage.vue",
+    "frontend/src/features/reviews/pages/ReviewQueuePage.vue",
+    "frontend/src/features/reviews/pages/ReviewRequestPage.vue",
+    "frontend/src/features/reviews/pages/UnassignedRequestsPage.vue",
+    "frontend/src/features/system/pages/DashboardPage.vue"
+  ],
+  "route_mounts": [
+    {
+      "path": "backend/src/app.ts",
+      "git_blob": "bd59486fedf6df5257da371b528b002f2deabb7d",
+      "sha256": "5f6f497340d329b2890d25e49c014e39058d0d41a1ce1dd53676801d5ef8895d",
+      "token": "if (auth) app.use('/api/auth'",
+      "line": 62,
+      "snippet": "if (auth) app.use('/api/auth', createAuthRouter(auth));",
+      "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/app.ts#L62"
+    },
+    {
+      "path": "backend/src/app.ts",
+      "git_blob": "bd59486fedf6df5257da371b528b002f2deabb7d",
+      "sha256": "5f6f497340d329b2890d25e49c014e39058d0d41a1ce1dd53676801d5ef8895d",
+      "token": "createAssignmentRouter(workspace)",
+      "line": 66,
+      "snippet": "app.use('/api/events', createAssignmentRouter(workspace));",
+      "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/backend/src/app.ts#L66"
+    },
+    {
+      "path": "frontend/src/app/router.ts",
+      "git_blob": "ab8888c0043a31fa5218bcadc09950d2d1dfeec4",
+      "sha256": "296510b95b9f59b5146735d7428ad2401c4c7b6fa73561749aa337770bf9c66c",
+      "token": "routes: [",
+      "line": 16,
+      "snippet": "routes: [",
+      "url": "https://github.com/MochaLxtte/ConnectSphere/blob/b981f1133750e7ddd42ac412651c915cb4485418/frontend/src/app/router.ts#L16"
+    }
+  ],
+  "findings": [
+    "No venue, equipment or registration API module/router/page; relevant SQL schema is present.",
+    "No notification inbox router/page; only notifications/notify.ts persists in-app rows.",
+    "Five role enum values only; no Lead Coordinator or Safety Officer role and no safety/hold-expiry scheduler.",
+    "server.ts starts a single HTTP server; no background scheduling bootstrap."
+  ],
+  "migration_files": [
+    "database/migrations/001_initial_scaffold.sql",
+    "database/migrations/002_restrict_data_api_access.sql",
+    "database/migrations/003_add_firebase_identities.sql",
+    "database/migrations/004_add_supabase_user_id.sql",
+    "database/migrations/005_core_feature_schema.sql",
+    "database/migrations/006_equipment_peak_availability.sql"
+  ]
+}

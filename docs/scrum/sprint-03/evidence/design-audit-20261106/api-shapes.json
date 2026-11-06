@@ -1,0 +1,152 @@
+[
+  {
+    "path": "backend/src/modules/auth/types.ts",
+    "group": "auth",
+    "declarations": "export type UserRole = (typeof USER_ROLES)[number];\n\nexport interface UserSummary {\n  id: string;\n  email: string;\n  displayName: string;\n  role: UserRole;\n}\n\nexport type AuthenticatedUser = UserSummary;"
+  },
+  {
+    "path": "backend/src/modules/events/types.ts",
+    "group": "events",
+    "declarations": "export type EventStatus = (typeof EVENT_STATUSES)[number];\n\nexport interface EventDraftFields {\n  name: string | null;\n  purpose: string | null;\n  description: string | null;\n  startsAt: string | null;\n  endsAt: string | null;\n  expectedAttendance: number | null;\n  venueRequirements: string | null;\n  accessibilityNeeds: string | null;\n  equipmentRequirements: string | null;\n  registrationRequired: boolean | null;\n}\n\nexport interface EventRecord extends EventDraftFields {\n  id: string;\n  organiserId: string;\n  coordinatorId: string | null;\n  status: EventStatus;\n  createdAt: string;\n  updatedAt: string;\n}\n\nexport type SaveEventDraftInput = Partial<EventDraftFields>;"
+  },
+  {
+    "path": "backend/src/modules/events/draft-update-input.ts",
+    "group": "events",
+    "declarations": "export interface DraftRegistrationFields {\n  registrationCapacity: number | null;\n  registrationOpensAt: string | null;\n  registrationClosesAt: string | null;\n}\n\nexport type DraftUpdateInput = SaveEventDraftInput & Partial<DraftRegistrationFields>;"
+  },
+  {
+    "path": "backend/src/modules/events/event-request-detail.ts",
+    "group": "events",
+    "declarations": "export interface EventRequestDetail extends EventRecord, DraftRegistrationFields {\n  /** KAN-66: send as `expectedRevision` with edits and reviewer actions. */\n  revision: number;\n  review: (SavedReview & { createdAt: string }) | null;\n  actions: {\n    canEditDraft: boolean;\n    canMakeInitialDecision: boolean;\n    /** KAN-66: a non-draft direct edit is available; the server rechecks it when saving. */\n    canEditDetails: boolean;\n    editMode: EditMode | null;\n    editableFields: readonly EditableField[];\n  };\n}"
+  },
+  {
+    "path": "backend/src/modules/events/submitted-requests.ts",
+    "group": "events",
+    "declarations": "export type ReviewableRequest = Pick<EventRecord, 'id' | 'organiserId' | 'coordinatorId' | 'status'>;\n\nexport interface SubmittedRequestSummary {\n  id: string;\n  name: string | null;\n  status: EventStatus;\n  createdAt: string;\n  updatedAt: string;\n}"
+  },
+  {
+    "path": "backend/src/modules/events/update-draft.ts",
+    "group": "events",
+    "declarations": "export type DraftEventRecord = EventRecord & DraftRegistrationFields & {\n  /** KAN-66: send back as `expectedRevision` with the next edit. */\n  revision: number;\n};"
+  },
+  {
+    "path": "backend/src/modules/events/assignment.ts",
+    "group": "events",
+    "declarations": "export interface UnassignedRequest {\n  id: string;\n  name: string | null;\n  status: EventStatus;\n  organiserName: string;\n  startsAt: string | null;\n  endsAt: string | null;\n  expectedAttendance: number | null;\n  updatedAt: string;\n}\n\nexport interface LeadEventSummary extends UnassignedRequest {\n  coordinatorId: string | null;\n  coordinatorName: string | null;\n}\n\nexport interface LeadEventDetail extends LeadEventSummary {\n  purpose: string | null;\n  description: string | null;\n  venueRequirements: string | null;\n  accessibilityNeeds: string | null;\n  equipmentRequirements: string | null;\n  registrationRequired: boolean | null;\n  assignmentVersion: string | null;\n  actions: { canAssignCoordinator: boolean; canReassignCoordinator: boolean };\n}\n\nexport interface CoordinatorOption {\n  id: string;\n  displayName: string;\n  email: string;\n}\n\nexport interface AssignmentRecord {\n  id: string;\n  coordinatorId: string;\n  coordinatorName: string;\n  assignmentMethod: 'AUTOMATIC' | 'MANUAL';\n  assignedById: string | null;\n  assignedByName: string | null;\n  note: string | null;\n  assignedAt: string;\n  unassignedAt: string | null;\n}\n\nexport interface AssignmentInput {\n  coordinatorId: string;\n  note: string | null;\n}\n\nexport interface ReassignmentInput {\n  coordinatorId: string;\n  reason: string;\n  expectedAssignmentVersion: string;\n}\n\nexport interface AssignmentResult {\n  eventRequestId: string;\n  assignmentId: string;\n  coordinatorId: string;\n  previousCoordinatorId: string | null;\n}\n\nexport interface ReassignmentResult extends AssignmentResult {\n  changed: boolean;\n}"
+  },
+  {
+    "path": "backend/src/modules/events/clarifications.ts",
+    "group": "events",
+    "declarations": "export interface ClarificationRecord {\n  id: string;\n  eventRequestId: string;\n  requestedById: string;\n  requestedByName: string;\n  message: string;\n  response: string | null;\n  createdAt: string;\n  respondedAt: string | null;\n}"
+  },
+  {
+    "path": "backend/src/modules/events/review-decision.ts",
+    "group": "events",
+    "declarations": "export type ReviewRequest = Pick<EventRecord, 'id' | 'organiserId' | 'coordinatorId' | 'status'>;\n\nexport interface SavedReview {\n  reviewId: string;\n  eventRequestId: string;\n  reviewedBy: string;\n  decision: ReviewDecision;\n  reason: string | null;\n}"
+  },
+  {
+    "path": "backend/src/modules/events/status-history.ts",
+    "group": "events",
+    "declarations": "export interface StatusHistoryEntry {\n  id: string;\n  fromStatus: EventStatus | null;\n  toStatus: EventStatus;\n  changedById: string | null;\n  changedByName: string | null;\n  createdAt: string;\n}"
+  },
+  {
+    "path": "backend/src/modules/events/change-requests.ts",
+    "group": "events",
+    "declarations": "export type ChangeRequestStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'WITHDRAWN';\n\nexport type ChangeValues = Partial<Record<SignificantField, unknown>>;\n\nexport interface ChangeRequestRecord {\n  id: string;\n  eventRequestId: string;\n  status: ChangeRequestStatus;\n  requestedById: string;\n  requestedByName: string;\n  proposed: ChangeValues;\n  previous: ChangeValues;\n  baseRevision: number;\n  decidedById: string | null;\n  decidedByName: string | null;\n  decidedAt: string | null;\n  decisionReason: string | null;\n  appliedRevision: number | null;\n  cancelledArrangements: { venueBookings: string[]; equipmentRequests: string[] } | null;\n  createdAt: string;\n  /** PENDING only: the event's current values for the proposed fields. */\n  current?: ChangeValues;\n  /** PENDING only: a proposed field changed after submission, so the request is out of date. */\n  outdated?: boolean;\n  /** PENDING only: what approval would cancel or what blocks it (KAN-15-AC4). */\n  impact?: ChangeImpact;\n}"
+  },
+  {
+    "path": "backend/src/modules/events/confirmation.ts",
+    "group": "events",
+    "declarations": "export type ReadinessCheckKey = 'VENUE' | 'EQUIPMENT' | 'CHANGE_REQUEST';\n\nexport interface ReadinessCheck {\n  key: ReadinessCheckKey;\n  ready: boolean;\n  message: string;\n}\n\nexport interface EventReadiness {\n  ready: boolean;\n  checks: ReadinessCheck[];\n}\n\nexport interface ConfirmationRecord {\n  confirmedBy: string | null;\n  confirmedByName: string | null;\n  confirmedAt: string;\n}"
+  },
+  {
+    "path": "backend/src/modules/events/completion.ts",
+    "group": "events",
+    "declarations": "export interface EventCompletion {\n  eventRequestId: string;\n  status: 'COMPLETED';\n  completedById: string;\n  completedByName: string | null;\n  completedAt: string;\n  /** Equipment reservations released by the completion. */\n  releasedEquipmentRequests: number;\n}"
+  },
+  {
+    "path": "backend/src/modules/venues/availability.ts",
+    "group": "venues",
+    "declarations": "export interface AvailabilityWindow {\n  from: string;\n  to: string;\n}\n\nexport interface BookedPeriod {\n  id: string;\n  kind: 'BOOKING';\n  eventStartsAt?: string;\n  eventEndsAt?: string;\n  warnings?: string[];\n  startsAt: string;\n  endsAt: string;\n  /** Only for the event's currently assigned coordinator; null for every other reader. */\n  event: { id: string; name: string | null } | null;\n  /** KAN-83: set for a live temporary hold (its deadline); null for an approved booking. */\n  heldUntil: string | null;\n}\n\nexport interface BlockedPeriod {\n  id: string;\n  kind: 'BLOCKED';\n  startsAt: string;\n  endsAt: string;\n  reason: string | null;\n}\n\nexport type UnavailablePeriod = BookedPeriod | BlockedPeriod;\n\nexport interface VenueAvailability {\n  id: string;\n  name: string;\n  location: string | null;\n  capacity: number;\n  /** Daily opening hours in Asia/Singapore as HH:MM; null means unrestricted. */\n  opensAt: string | null;\n  closesAt: string | null;\n  /** KAN-77: setup and turnaround minutes; periods below stay event-only until KAN-78. */\n  setupMinutes: number;\n  turnaroundMinutes: number;\n  /** Confirmed bookings and blocked periods overlapping the window, earliest first. */\n  unavailable: UnavailablePeriod[];\n}"
+  },
+  {
+    "path": "backend/src/modules/venues/venue-search.ts",
+    "group": "venues",
+    "declarations": "export interface VenueSearchFilters {\n  startsAt: string | null;\n  endsAt: string | null;\n  attendance: number | null;\n  capacity: number | null;\n  location: string | null;\n  layout: string | null;\n  wheelchairAccessible: boolean;\n  accessibility: string[];\n  facilities: string[];\n}\n\nexport interface VenueResult {\n  id: string;\n  name: string;\n  description: string | null;\n  location: string | null;\n  capacity: number;\n  layouts: string[];\n  facilities: string[];\n  accessibilityFeatures: string[];\n  wheelchairAccessible: boolean;\n  opensAt: string | null;\n  closesAt: string | null;\n  /** KAN-77: venue setup and turnaround minutes; KAN-78 applies them to occupancy. */\n  setupMinutes: number;\n  turnaroundMinutes: number;\n  occupiedStartsAt?: string | null;\n  occupiedEndsAt?: string | null;\n  updatedAt: string;\n}\n\nexport interface VenueFilterOptions {\n  layouts: string[];\n  facilities: string[];\n  accessibility: string[];\n}"
+  },
+  {
+    "path": "backend/src/modules/venues/venue-catalogue-input.ts",
+    "group": "venues",
+    "declarations": "export interface VenueCatalogueUpdate {\n  location?: string | null;\n  capacity?: number;\n  facilities?: string[];\n  accessibilityFeatures?: string[];\n  wheelchairAccessible?: boolean;\n  layouts?: string[];\n  /** \"HH:MM\" Singapore time; null means unrestricted at that end (as in KAN-12/KAN-52). */\n  opensAt?: string | null;\n  closesAt?: string | null;\n  /** KAN-77: whole minutes needed before and after each booking at this venue (0-1440). */\n  setupMinutes?: number;\n  turnaroundMinutes?: number;\n}\n\nexport interface VenueBufferExpectations {\n  setupMinutes?: number;\n  turnaroundMinutes?: number;\n}\n\nexport interface VenueCatalogueRequest {\n  update: VenueCatalogueUpdate;\n  expected: VenueBufferExpectations;\n}"
+  },
+  {
+    "path": "backend/src/modules/venues/venue-catalogue-service.ts",
+    "group": "venues",
+    "declarations": "export type CatalogueVenue = VenueResult & {\n  affectedBookings?: { id: string; eventName: string | null; startsAt: string; endsAt: string; warnings: string[] }[];\n};"
+  },
+  {
+    "path": "backend/src/modules/venues/booking-input.ts",
+    "group": "venues",
+    "declarations": "export interface BookingDecisionInput {\n  decision: 'APPROVED' | 'REJECTED';\n  reason: string | null;\n}\n\nexport interface BookingSubmissionInput {\n  venueId: string;\n  startsAt: string;\n  endsAt: string;\n  layout: string | null;\n  notes: string | null;\n  /** KAN-81-AC7: the outage-affected booking of the same event that this request replaces. */\n  replacesBookingId: string | null;\n}\n\nexport interface HoldPlacementInput {\n  expiresAt: string;\n}\n\nexport interface HoldCancellationInput {\n  reason: string;\n}"
+  },
+  {
+    "path": "backend/src/modules/venues/booking-service.ts",
+    "group": "venues",
+    "declarations": "export type VenueBookingStatus = 'PENDING' | 'HELD' | 'APPROVED' | 'REJECTED' | 'CANCELLED' | 'EXPIRED';\n\nexport interface VenueBooking {\n  id: string;\n  eventRequestId: string;\n  eventName: string | null;\n  eventStatus: EventStatus;\n  venueId: string;\n  venueName: string;\n  status: VenueBookingStatus;\n  occupiedStartsAt?: string;\n  occupiedEndsAt?: string;\n  warnings?: string[];\n  startsAt: string;\n  endsAt: string;\n  layout: string | null;\n  notes: string | null;\n  decidedBy: string | null;\n  decidedAt: string | null;\n  decisionReason: string | null;\n  createdAt: string;\n  updatedAt: string;\n  eventStartsAt: string | null;\n  eventEndsAt: string | null;\n  purpose: string | null;\n  description: string | null;\n  expectedAttendance: number | null;\n  venueRequirements: string | null;\n  accessibilityNeeds: string | null;\n  /** KAN-81: outages recorded against this booking and their recovery state, earliest first. */\n  recovery: BookingRecovery[];\n  /** KAN-81-AC7 / KAN-82-AC5: the outage-affected or cancelled booking this request replaces, if any. */\n  replacesBookingId: string | null;\n  /** KAN-82-AC8: requests that name this booking as the one they replace, earliest first. */\n  replacedByBookingIds: string[];\n  /** KAN-83: hold deadline and audit. Kept after approval, expiry, rejection or cancellation. */\n  holdExpiresAt: string | null;\n  heldBy: string | null;\n  heldAt: string | null;\n  expiredAt: string | null;\n  cancelledBy: string | null;\n  cancelledAt: string | null;\n  cancellationReason: string | null;\n}\n\nexport interface ArrangementReadiness {\n  /** Every live arrangement is approved, none needs outage recovery, and there is at least one. */\n  ready: boolean;\n  /** Pending, live held or approved arrangements. */\n  live: number;\n  /** Live arrangements that are not yet approved, or that need recovery. */\n  outstanding: number;\n}"
+  },
+  {
+    "path": "backend/src/modules/venues/block-service.ts",
+    "group": "venues",
+    "declarations": "export interface VenueBlock {\n  id: string;\n  venueId: string;\n  venueName: string;\n  startsAt: string;\n  endsAt: string;\n  reason: string;\n  createdBy: string;\n  createdAt: string;\n  /** KAN-81: the approved arrangements this outage affects, with their recovery state. */\n  affected: AffectedArrangement[];\n}"
+  },
+  {
+    "path": "backend/src/modules/venues/outage-impact.ts",
+    "group": "venues",
+    "declarations": "export type RecoveryStatus = 'RECOVERY_REQUIRED' | 'RESOLVED' | 'CLEARED';\n\nexport interface AffectedArrangement {\n  impactId: string;\n  status: RecoveryStatus;\n  bookingId: string;\n  eventRequestId: string;\n  eventName: string | null;\n  bookingStartsAt: string;\n  bookingEndsAt: string;\n}\n\nexport interface RecoveryArrangement extends AffectedArrangement {\n  blockId: string | null;\n  venueId: string;\n  venueName: string;\n  outageStartsAt: string;\n  outageEndsAt: string;\n  outageReason: string;\n}\n\nexport interface BookingRecovery {\n  impactId: string;\n  status: RecoveryStatus;\n  outageStartsAt: string;\n  outageEndsAt: string;\n  outageReason: string;\n}\n\nexport interface OutageNotificationTarget {\n  eventId: string;\n  eventName: string | null;\n  organiserId: string;\n  coordinatorId: string | null;\n  bookingId: string;\n  venueName: string;\n  bookingStartsAt: Date;\n  bookingEndsAt: Date;\n}"
+  },
+  {
+    "path": "backend/src/modules/venues/suitability-input.ts",
+    "group": "venues",
+    "declarations": "export interface VenueSuitabilityInput {\n  bookingId?: string;\n  venueId: string;\n  requirementsVersion: string;\n  facilities: string[];\n  accessibility: string[];\n  layout: string | null;\n  wheelchairRequired: boolean;\n  requirementsConfirmed: boolean;\n  unresolvedRequirements: string | null;\n}"
+  },
+  {
+    "path": "backend/src/modules/venues/suitability-rules.ts",
+    "group": "venues",
+    "declarations": "export interface SuitabilityEvent {\n  id: string;\n  name: string | null;\n  startsAt: string | null;\n  endsAt: string | null;\n  expectedAttendance: number | null;\n  venueRequirements: string | null;\n  accessibilityNeeds: string | null;\n}\n\nexport interface SuitabilityVenue {\n  id: string;\n  name: string;\n  capacity: number;\n  facilities: string[];\n  accessibilityFeatures: string[];\n  layouts: string[];\n  wheelchairAccessible: boolean;\n  opensAt: string | null;\n  closesAt: string | null;\n  /** KAN-77: planning input only; KAN-78 applies the buffers to availability. */\n  setupMinutes: number;\n  turnaroundMinutes: number;\n}\n\nexport interface SuitabilityCheck {\n  key: 'venueActive' | 'capacity' | 'facilities' | 'accessibility' | 'layout' | 'availability' | 'requirements';\n  status: 'PASS' | 'FAIL' | 'UNKNOWN';\n  message: string;\n}\n\nexport interface SuitabilityAssessment {\n  bookingId?: string;\n  eventId: string;\n  eventName: string | null;\n  venueId: string;\n  venueName: string;\n  occupiedStartsAt?: string | null;\n  occupiedEndsAt?: string | null;\n  checkedAt: string;\n  outcome: 'SUITABLE' | 'UNSUITABLE' | 'NEEDS_REVIEW';\n  checks: SuitabilityCheck[];\n}"
+  },
+  {
+    "path": "backend/src/modules/venues/suitability-service.ts",
+    "group": "venues",
+    "declarations": "export interface SuitabilityContext {\n  event: SuitabilityEvent;\n  arrangement?: SuitabilityArrangement;\n  requirementsVersion: string;\n  venues: SuitabilityVenue[];\n}\n\nexport interface SuitabilityArrangement {\n  id: string;\n  venueId: string;\n  startsAt: string | null;\n  endsAt: string | null;\n  layout: string | null;\n  notes: string | null;\n  status: VenueBookingStatus;\n}"
+  },
+  {
+    "path": "backend/src/modules/equipment/availability-types.ts",
+    "group": "equipment",
+    "declarations": "export interface EquipmentEventSummary {\n  id: string;\n  name: string | null;\n  status: 'APPROVED' | 'CONFIRMED';\n  /** KAN-84 Option A: present on reservation contexts; true while technical safety changes are requested. */\n  technicalRemediation?: boolean;\n  startsAt: string | null;\n  endsAt: string | null;\n}\n\nexport interface EquipmentTypeSummary {\n  id: string;\n  name: string;\n  category: string | null;\n  totalQuantity: number;\n  damagedQuantity: number;\n  maintenanceQuantity: number;\n  isActive: boolean;\n}\n\nexport interface SavedEquipmentRequest {\n  id: string;\n  equipmentTypeId: string;\n  quantity: number;\n  status: 'REQUESTED' | 'RESERVED' | 'REJECTED';\n  startsAt: string;\n  endsAt: string;\n  notes: string | null;\n}\n\nexport interface EquipmentAvailabilityContext {\n  event: EquipmentEventSummary & { equipmentRequirements: string | null };\n  requirementsVersion: string;\n  equipmentTypes: EquipmentTypeSummary[];\n  savedRequests: SavedEquipmentRequest[];\n}\n\nexport type EquipmentAvailabilityInput = {\n  mode: 'saved';\n  requirementsVersion: string;\n} | {\n  mode: 'what-if';\n  requirementsVersion: string;\n  startsAt: string;\n  endsAt: string;\n  items: { equipmentTypeId: string; quantity: number }[];\n};\n\nexport interface EquipmentAvailabilityItem {\n  equipmentTypeId: string;\n  equipmentTypeName: string;\n  requestedQuantity: number;\n  totalQuantity: number;\n  damagedQuantity: number;\n  maintenanceQuantity: number;\n  operationalQuantity: number;\n  peakReservedQuantity: number;\n  availableQuantity: number;\n  shortfallQuantity: number;\n  isActive: boolean;\n}\n\nexport interface EquipmentAvailabilityAssessment {\n  eventId: string;\n  eventName: string | null;\n  mode: EquipmentAvailabilityInput['mode'];\n  startsAt: string;\n  endsAt: string;\n  checkedAt: string;\n  advisory: true;\n  outcome: 'FULFILLABLE' | 'SHORTFALL';\n  items: EquipmentAvailabilityItem[];\n}"
+  },
+  {
+    "path": "backend/src/modules/equipment/reservation-types.ts",
+    "group": "equipment",
+    "declarations": "export type EquipmentReleaseCause = 'MANUAL_CANCELLATION' | 'EVENT_CANCELLED' | 'EVENT_COMPLETED';\n\nexport interface EquipmentReservationRequest {\n  id: string;\n  equipmentTypeId: string;\n  equipmentName: string;\n  quantity: number;\n  status: 'REQUESTED' | 'RESERVED' | 'REJECTED' | 'CANCELLED';\n  startsAt: string;\n  endsAt: string;\n  notes: string | null;\n  decidedBy: string | null;\n  decidedAt: string | null;\n  decisionReason: string | null;\n  releasedBy: string | null;\n  releasedAt: string | null;\n  releaseReason: string | null;\n  releaseCause: EquipmentReleaseCause | null;\n  canReserve: boolean;\n  canCancel: boolean;\n}\n\nexport interface EquipmentReadiness {\n  status: 'NO_REQUIREMENTS' | 'PENDING' | 'READY' | 'SHORTFALL' | 'INVALID_REQUIREMENTS';\n  activeCount: number;\n  reservedCount: number;\n  message: string;\n}\n\nexport interface EquipmentReservationContext {\n  event: EquipmentAvailabilityContext['event'];\n  requirementsVersion: string;\n  requests: EquipmentReservationRequest[];\n  readiness: EquipmentReadiness;\n}\n\nexport interface EquipmentReservationResult {\n  changed: boolean;\n  context: EquipmentReservationContext;\n}"
+  },
+  {
+    "path": "backend/src/modules/equipment/stock-types.ts",
+    "group": "equipment",
+    "declarations": "export type EquipmentStockStatus = 'AVAILABLE' | 'PARTLY_UNAVAILABLE' | 'UNAVAILABLE';\n\nexport interface EquipmentStockItem {\n  id: string;\n  name: string;\n  category: string | null;\n  isActive: boolean;\n  totalQuantity: number;\n  damagedQuantity: number;\n  maintenanceQuantity: number;\n  /** total - damaged - maintenance, or 0 for an inactive type (the same figure availability checks use). */\n  operationalQuantity: number;\n  /** Units out of service: damaged + maintenance. */\n  unavailableQuantity: number;\n  status: EquipmentStockStatus;\n  /** The version a stock form must quote to change this row (KAN-18-AC103). */\n  revision: number;\n  /** Events whose reservations currently exceed operational stock. */\n  shortfallEventCount: number;\n  updatedAt: string;\n}\n\nexport interface EquipmentStockChange {\n  id: string;\n  revision: number;\n  changedById: string;\n  changedByName: string | null;\n  changedAt: string;\n  reason: string;\n  previous: { totalQuantity: number; damagedQuantity: number; maintenanceQuantity: number };\n  next: { totalQuantity: number; damagedQuantity: number; maintenanceQuantity: number };\n}\n\nexport interface EquipmentStockShortfall {\n  eventId: string;\n  eventName: string | null;\n  startsAt: string;\n  endsAt: string;\n  reservedQuantity: number;\n  /** Most units reserved at once, across every event, while this event is running. */\n  peakReservedQuantity: number;\n  operationalQuantity: number;\n  shortfallQuantity: number;\n}\n\nexport interface EquipmentStockDetail {\n  item: EquipmentStockItem;\n  history: EquipmentStockChange[];\n  shortfalls: EquipmentStockShortfall[];\n}\n\nexport interface EquipmentStockUpdateResult extends EquipmentStockDetail {\n  /** False when the submitted quantities already matched; nothing was written. */\n  changed: boolean;\n  /** Affected events the database trigger told about a shortfall in this change. */\n  notifiedEvents: number;\n}\n\nexport interface EquipmentStockUpdateInput {\n  expectedRevision: number;\n  totalQuantity?: number;\n  damagedQuantity?: number;\n  maintenanceQuantity?: number;\n  reason: string;\n}"
+  },
+  {
+    "path": "backend/src/modules/registrations/registration-types.ts",
+    "group": "registrations",
+    "declarations": "export interface AttendeeEvent {\n  id: string;\n  name: string | null;\n  purpose: string | null;\n  description: string | null;\n  startsAt: string | null;\n  endsAt: string | null;\n  accessibilityNeeds: string | null;\n  status: string;\n  /** Approved venue bookings only. */\n  venues: { name: string; location: string | null; startsAt: string; endsAt: string }[];\n  registration: {\n    required: boolean;\n    opensAt: string | null;\n    closesAt: string | null;\n    capacity: number | null;\n    placesRemaining: number | null;\n  };\n}\n\nexport interface OwnRegistration {\n  id: string;\n  status: OwnRegistrationStatus;\n  registeredAt: string;\n  withdrawnAt: string | null;\n}\n\nexport interface AttendeeEventDetail {\n  event: AttendeeEvent;\n  /** The caller's own registration, or null. */\n  registration: OwnRegistration | null;\n  availability: RegistrationAvailability;\n}\n\nexport interface AttendeeEventSummary {\n  id: string;\n  name: string | null;\n  startsAt: string | null;\n  endsAt: string | null;\n  registration: AttendeeEvent['registration'];\n  ownStatus: OwnRegistrationStatus | null;\n  availability: RegistrationAvailability;\n}\n\nexport interface OwnRegistrationSummary extends OwnRegistration {\n  event: { id: string; name: string | null; startsAt: string | null; endsAt: string | null; status: string };\n}\n\nexport interface RegistrationResult extends AttendeeEventDetail {\n  /** False only for a repeat that found the attendee already registered (reported as 409, never returned). */\n  changed: true;\n}"
+  },
+  {
+    "path": "backend/src/modules/registrations/registration-rules.ts",
+    "group": "registrations",
+    "declarations": "export type RegistrationBlock =\n  | 'ALREADY_REGISTERED' | 'NOT_CONFIRMED' | 'REGISTRATION_DISABLED' | 'EVENT_STARTED' | 'CLOSED' | 'NOT_YET_OPEN' | 'FULL';\n\nexport type OwnRegistrationStatus = 'REGISTERED' | 'WITHDRAWN' | 'CANCELLED';\n\nexport interface RegistrationFacts {\n  status: string;\n  /** NULL when the organiser never said; treated as not taking registrations. */\n  registrationRequired: boolean | null;\n  /** now >= startsAt; true when the event has no start time. */\n  started: boolean;\n  /** now < registrationOpensAt; false when there is no opening bound. */\n  beforeOpen: boolean;\n  /** now >= registrationClosesAt; false when there is no closing bound. */\n  afterClose: boolean;\n  /** NULL means unlimited; 0 means full. */\n  capacity: number | null;\n  registered: number;\n  ownStatus: OwnRegistrationStatus | null;\n}\n\nexport interface RegistrationAvailability {\n  canRegister: boolean;\n  reason: RegistrationBlock | null;\n  message: string;\n  /** NULL for an unlimited event. */\n  placesRemaining: number | null;\n}"
+  },
+  {
+    "path": "backend/src/modules/notifications/inbox.ts",
+    "group": "notifications",
+    "declarations": "export interface InboxItem {\n  id: string;\n  type: string;\n  title: string;\n  message: string;\n  read: boolean;\n  readAt: string | null;\n  createdAt: string;\n  /** Present only while the caller may still open the event. */\n  event: { id: string; name: string | null } | null;\n  booking: { id: string } | null;\n  /** An application path the destination page will authorise again, or null. */\n  link: string | null;\n}"
+  }
+]
